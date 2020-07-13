@@ -1,235 +1,73 @@
 import React, {useEffect, useState} from "react";
-import {AutoComplete, Button, Card, DatePicker, Form, Icon, Input, Select, Tooltip} from "antd";
+import { Card, Form, Steps} from "antd";
 import {connect} from "react-redux";
 import {fetchPartyList, fetchMaterialList, setInwardDetails, submitInwardEntry} from "../../../appRedux/actions";
 
-const FormItem = Form.Item;
-const Option = Select.Option;
+import PartyDetailsForm from "./InwardSteps/PartyDetailsForm";
+import InvoiceDetailsForm from "./InwardSteps/InvoiceDetailsForm";
+import DimensionDetailsForm from "./InwardSteps/DimensionDetailsForm";
+import QualityDetailsForm from "./InwardSteps/QualityDetailsForm";
+import InwardEntrySummary from "./InwardSteps/InwardEntrySummary";
 
-const formItemLayout = {
+export const formItemLayout = {
     labelCol: {
         xs: {span: 24},
-        sm: {span: 3},
+        sm: {span: 6},
     },
     wrapperCol: {
         xs: {span: 24},
-        sm: {span: 16},
+        sm: {span: 6},
     },
 };
 
-const tailFormItemLayout = {
-    wrapperCol: {
-        xs: {
-            span: 24,
-            offset: 0,
-        },
-        sm: {
-            span: 16,
-            offset: 8,
-        },
-    },
-};
+const { Step } = Steps;
 
 const CreateForm = (props) => {
-    const {getFieldDecorator} = props.form;
-    const [dataSource, setDataSource] = useState([]);
-    const [materialDataSource, setMaterialDataSource] = useState([]);
+    const [currentStep, setCurrentStep] = useState(0);
+    const [steps, setSteps] = useState([]);
 
     useEffect(() => {
-        if(props.party.partyList.length > 0) {
-
-            const { Option } = AutoComplete;
-
-            const options = props.party.partyList.map(party => (
-                <Option key={party.nPartyId} value={`${party.nPartyId}`}>
-                    {party.nPartyName}
-                </Option>
-            ));
-            setDataSource(options);
-        }
-    }, [props.party]);
-
-    useEffect(() => {
-        if(props.material.materialList.length > 0) {
-            let materialListArr = props.material.materialList.map(material => material.description);
-            setMaterialDataSource(materialListArr);
-        }
-    }, [props.material]);
+        const steps = [
+            {
+                title: 'Party Details',
+                content: <PartyDetailsForm updateStep={(step) => setCurrentStep(step)} />,
+            },
+            {
+                title: 'Invoice',
+                content: <InvoiceDetailsForm updateStep={(step) => setCurrentStep(step)} />,
+            },
+            {
+                title: 'Dimensions',
+                content: <DimensionDetailsForm updateStep={(step) => setCurrentStep(step)}/>,
+            },
+            {
+                title: 'Quality',
+                content: <QualityDetailsForm updateStep={(step) => setCurrentStep(step)} />,
+            },{
+                title: 'Summary',
+                content: <InwardEntrySummary updateStep={(step) => setCurrentStep(step)} />,
+            },
+        ];
+        setSteps(steps);
+    }, []);
 
     useEffect(() => {
         props.fetchPartyList();
         props.fetchMaterialList();
     }, []);
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        props.form.validateFieldsAndScroll((err, values) => {
-            if (!err) {
-                console.log('Received values of form: ', values);
-                props.submitInwardEntry(values);
-            }
-        });
-    }
-
-    const config = {
-        rules: [{type: 'object', required: true, message: 'Please select an inward date!', defaultValue: new Date()}],
-    };
-
     return (
         <Card className="gx-card" title="Inward Entry">
-            <Form onSubmit={handleSubmit}>
-                <FormItem
-                    {...formItemLayout}
-                    label="Party Name"
-                >
-                    {getFieldDecorator('partyName', {
-                        rules: [{
-                            required: true, message: 'Please enter a party name!',
-                        }],
-                    })(
-                        <AutoComplete
-                            style={{width: 200}}
-                            onSelect={(value, option) => {console.log(option)}}
-                            onSearch={() => {console.log('search')}}
-                            placeholder="input here"
-                            dataSource={dataSource}
-                            filterOption
-                        />
-                    )}
-                </FormItem>
-                <FormItem
-                    {...formItemLayout}
-                    label={(
-                        <span>
-              Coil number&nbsp;
-                            <Tooltip title="Enter a unique coil number?">
-                <Icon type="question-circle-o"/>
-              </Tooltip>
-            </span>
-                    )}
-                >
-                    {getFieldDecorator('coilNumber', {
-                        rules: [{required: true, message: 'Please input your coil number!', whitespace: false}],
-                    })(
-                        <Input  style={{width: 200}}/>
-                    )}
-                </FormItem>
-                <FormItem
-                    {...formItemLayout}
-                    label="Inward Date"
-                >
-                    {getFieldDecorator('inwardDate', config)(
-                        <DatePicker
-                            style={{width: 200}}
-                            className="gx-mb-3 gx-w-100"/>
-                    )}
-                </FormItem>
-                <FormItem
-                    {...formItemLayout}
-                    label={(
-                        <span>Vehicle number</span>
-                    )}
-                >
-                    {getFieldDecorator('vehicleNumber', {
-                        rules: [{required: true, message: 'Please input your vehicle number!', whitespace: false}],
-                    })(
-                        <Input  style={{width: 200}}/>
-                    )}
-                </FormItem>
-                <FormItem
-                    {...formItemLayout}
-                    label={(
-                        <span>Invoice number</span>
-                    )}
-                >
-                    {getFieldDecorator('invoiceNumber', {
-                        rules: [{required: true, message: 'Please input your invoice number!', whitespace: false}],
-                    })(
-                        <Input  style={{width: 200}}/>
-                    )}
-                </FormItem>
-                <FormItem
-                    {...formItemLayout}
-                    label={(
-                        <span>Invoice date</span>
-                    )}
-                >
-                    {getFieldDecorator('invoiceDate', config)(
-                        <DatePicker
-                            style={{width: 200}}
-                            className="gx-mb-3 gx-w-100"/>
-                    )}
-                </FormItem>
-                <FormItem
-                    {...formItemLayout}
-                    label="Material Description"
-                >
-                    {getFieldDecorator('materialDesc', {
-                        rules: [{
-                            required: true, message: 'Please enter a material description!',
-                        }],
-                    })(
-                        <AutoComplete
-                            dataSource={materialDataSource}
-                            style={{width: 200}}
-                            onSelect={(value) => {console.log(value)}}
-                            onSearch={() => {console.log('search')}}
-                            placeholder="input here"
-                        />
-                    )}
-                </FormItem>
-                <FormItem
-                    {...formItemLayout}
-                    label={(
-                        <span>Width</span>
-                    )}
-                >
-                    {getFieldDecorator('width', {
-                        rules: [{required: true, message: 'Please input your width number!', whitespace: false}],
-                    })(
-                        <Input  style={{width: 200}}/>
-                    )}
-                </FormItem>
-                <FormItem
-                    {...formItemLayout}
-                    label={(
-                        <span>Thickness</span>
-                    )}
-                >
-                    {getFieldDecorator('thickness', {
-                        rules: [{required: true, message: 'Please input your Thickness!', whitespace: false}],
-                    })(
-                        <Input  style={{width: 200}}/>
-                    )}
-                </FormItem>
-                <FormItem
-                    {...formItemLayout}
-                    label={(
-                        <span>Weight</span>
-                    )}
-                >
-                    {getFieldDecorator('weight', {
-                        rules: [{required: true, message: 'Please input your weight!', whitespace: false}],
-                    })(
-                        <Input  style={{width: 200}}/>
-                    )}
-                </FormItem>
-                <FormItem
-                    {...formItemLayout}
-                    label={(
-                        <span>Length</span>
-                    )}
-                >
-                    {getFieldDecorator('length', {
-                        rules: [{required: true, message: 'Please input your length!', whitespace: false}],
-                    })(
-                        <Input  style={{width: 200}}/>
-                    )}
-                </FormItem>
-                <FormItem {...tailFormItemLayout}>
-                    <Button type="primary" htmlType="submit">Register</Button>
-                </FormItem>
-            </Form>
+            <Steps current={currentStep}>
+                <Step title="Party Details" />
+                <Step title="Invoice" />
+                <Step title="Dimensions" />
+                <Step title="Quality" />
+                <Step title="Summary" />
+            </Steps>
+            <div className="gx-mt-4 gx-bg-light-grey gx-inward-form">
+                {steps.length > 0 && steps[currentStep].content}
+            </div>
         </Card>
     )
 }
