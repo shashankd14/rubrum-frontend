@@ -37,7 +37,7 @@ const CreatePartyDetailsForm = (props) => {
         <>
             {props.party.loading && <Spin className="gx-flex-row gx-justify-content-center" size="large"/>}
             {props.party.partyList.length > 0 &&
-                <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4">
+                <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4" style={{"width":"70%"}}>
                     <Form.Item label="Customer Name">
                         {getFieldDecorator('partyName', {
                             rules: [{ required: true, message: 'Please input the customer name!' }],

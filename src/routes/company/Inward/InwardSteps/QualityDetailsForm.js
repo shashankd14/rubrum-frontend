@@ -7,6 +7,7 @@ import {formItemLayout} from "../Create";
 const QualityDetailsForm = (props) => {
     const {getFieldDecorator} = props.form;
     const { Dragger } = Upload;
+    const { TextArea } = Input;
 
     const handleSubmit = e => {
         e.preventDefault();
@@ -30,7 +31,7 @@ const QualityDetailsForm = (props) => {
                 )}
             </Form.Item>
             <Form.Item label="Test Certificate No">
-                {getFieldDecorator('testCertificateNo ', {
+                {getFieldDecorator('testCertificateNo', {
                     rules: [{ required: false, message: 'Please select a received date' }],
                 })(
                     <Input id="testCertificateNo" />
@@ -54,7 +55,7 @@ const QualityDetailsForm = (props) => {
                 )}
             </Form.Item>
             <Form.Item label="More attachments">
-                {getFieldDecorator('testFile ', {
+                {getFieldDecorator('moreFiles ', {
                     rules: [{ required: false, message: 'Please select a received date' }],
                 })(
                     <Dragger
@@ -73,11 +74,11 @@ const QualityDetailsForm = (props) => {
                 {getFieldDecorator('remarks', {
                     rules: [{ required: false, message: 'Please select a received date' }],
                 })(
-                    <Input id="batchNo" />
+                    <TextArea rows={4}/>
                 )}
             </Form.Item>
             <Row className="gx-mt-4">
-                <Col span={12} offset={4} style={{ textAlign: "center"}}>
+                <Col span={24} offset={4}  style={{ textAlign: "center"}}>
                     <Button style={{ marginLeft: 8 }} onClick={() => props.updateStep(0)}>
                         <Icon type="left"/>Back
                     </Button>
@@ -131,6 +132,14 @@ const QualityDetails = Form.create({
             remarks: Form.createFormField({
                 ...props.inward.remarks,
                 value: (props.inward.remarks) ? props.inward.remarks : '',
+            }),
+            testFile: Form.createFormField({
+                ...props.inward.testFile,
+                value: (props.inward.testFile) ? props.inward.testFile : '',
+            }),
+            moreFiles: Form.createFormField({
+                ...props.inward.moreFiles,
+                value: (props.inward.moreFiles) ? props.inward.moreFiles : '',
             }),
         };
     },
