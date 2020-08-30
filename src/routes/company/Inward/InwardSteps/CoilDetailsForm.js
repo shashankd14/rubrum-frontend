@@ -122,7 +122,7 @@ const CoilDetailsForm = (props) => {
                     )}
                 </Form.Item>
                 <Row className="gx-mt-4">
-                    <Col span={12} offset={4} style={{ textAlign: "center"}}>
+                    <Col span={24} style={{ textAlign: "center"}}>
                         <Button style={{ marginLeft: 8 }} onClick={() => props.updateStep(0)}>
                             <Icon type="left"/>Back
                         </Button>

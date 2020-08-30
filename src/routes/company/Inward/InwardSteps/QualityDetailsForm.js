@@ -50,10 +50,6 @@ const QualityDetailsForm = (props) => {
                                 <Icon type="inbox" />
                             </p>
                             <p className="ant-upload-text">Click or drag file to this area to upload</p>
-                            <p className="ant-upload-hint">
-                                Support for a single or bulk upload. Strictly prohibit from uploading company data or other
-                                band files
-                            </p>
                     </Dragger>
                 )}
             </Form.Item>
@@ -64,16 +60,12 @@ const QualityDetailsForm = (props) => {
                     <Dragger
                         name= 'file'
                         multiple= {true}
-                        action= 'https://www.mocky.io/v2/5cc8019d300000980a055e76'
+                        beforeUpload={() => false}
                         onChange = {(info) => console.log(info)}>
                         <p className="ant-upload-drag-icon">
                             <Icon type="inbox" />
                         </p>
                         <p className="ant-upload-text">Click or drag file to this area to upload</p>
-                        <p className="ant-upload-hint">
-                            Support for a single or bulk upload. Strictly prohibit from uploading company data or other
-                            band files
-                        </p>
                     </Dragger>
                 )}
             </Form.Item>
@@ -139,14 +131,6 @@ const QualityDetails = Form.create({
             remarks: Form.createFormField({
                 ...props.inward.remarks,
                 value: (props.inward.remarks) ? props.inward.remarks : '',
-            }),
-            invoiceNumber: Form.createFormField({
-                ...props.inward.invoiceNumber,
-                value: (props.inward.invoiceNumber) ? props.inward.invoiceNumber : '',
-            }),
-            invoiceDate: Form.createFormField({
-                ...props.inward.invoiceDate,
-                value: (props.inward.invoiceDate) ? props.inward.invoiceDate : '',
             }),
         };
     },
