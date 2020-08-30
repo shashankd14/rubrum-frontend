@@ -16,6 +16,7 @@ const List = (props) => {
         columnKey: 'age',
     });
     const [filteredInfo, setFilteredInfo] = useState(null);
+    const [searchValue, setSearchValue] = useState('');
 
     const columns = [{
         title: 'Coil Number',
@@ -29,7 +30,9 @@ const List = (props) => {
         title: 'Party Name',
         dataIndex: 'party.nPartyName',
         key: 'party.nPartyName',
-        filters: [],
+        filteredValue: filteredInfo ? filteredInfo["party.nPartyName"] : null,
+        onFilter: (value, record) => record.party.nPartyName == value,
+        filters: props.inward.inwardList.length > 0 ? [...new Set(props.inward.inwardList.map(item => item.party.nPartyName))].map(partyName => ({ text: partyName, value: partyName })) : [],
         sorter: (a, b) => a.party.nPartyName.length - b.party.nPartyName.length,
         sortOrder: sortedInfo.columnKey === 'party.nPartyName' && sortedInfo.order,
     },
@@ -48,7 +51,9 @@ const List = (props) => {
         title: 'Material',
         dataIndex: 'material.description',
         key: 'material.description',
-        filters: [],
+        filteredValue: filteredInfo ? filteredInfo["material.description"] : null,
+        onFilter: (value, record) => record.material.description == value,
+        filters: props.inward.inwardList.length > 0 ? [...new Set(props.inward.inwardList.map(item => item.material.description))].map(material => ({ text: material, value: material })) : [],
         sorter: (a, b) => a.material.description.length - b.material.description.length,
         sortOrder: sortedInfo.columnKey === 'material.description' && sortedInfo.order,
     },
@@ -97,7 +102,6 @@ const List = (props) => {
     }, []);
 
     const handleChange = (pagination, filters, sorter) => {
-        console.log('Various parameters', pagination, filters, sorter);
         setSortedInfo(sorter);
         setFilteredInfo(filters)
     };
@@ -111,11 +115,12 @@ const List = (props) => {
         setFilteredInfo(null);
     };
 
-    const setAgeSort = () => {
-        sortedInfo({
-            order: 'descend',
-            columnKey: 'coilNumber',
-        });
+    const exportSelectedData = () => {
+
+    }
+
+    const deleteSelectedCoils = () => {
+        console.log('dfd');
     };
 
     return (
@@ -124,17 +129,23 @@ const List = (props) => {
             <Card>
                 <div className="gx-flex-row gx-flex-1">
                     <div className="table-operations gx-col">
-                        <Button onClick={setAgeSort}>Delete</Button>
-                        <Button onClick={clearFilters}>Export</Button>
+                        <Button onClick={deleteSelectedCoils}>Delete</Button>
+                        <Button onClick={exportSelectedData}>Export</Button>
+                        <Button onClick={clearFilters}>Clear All filters</Button>
                     </div>
                     <div className="gx-flex-row gx-w-50">
                         <Button type="primary" icon={() => <i className="icon icon-add"/>} size="medium"
                                 onClick={() => props.history.push('/company/inward/create')}
                         >Add Inward</Button>
-                        <SearchBox styleName="gx-flex-1" placeholder="Search for coil number or party name..."/>
+                        <SearchBox styleName="gx-flex-1" placeholder="Search for coil number or party name..." value={searchValue} onChange={(e) => setSearchValue(e.target.value)}/>
                     </div>
                 </div>
-                <Table className="gx-table-responsive" columns={columns} dataSource={props.inward.inwardList} onChange={handleChange}/>
+                <Table rowSelection={[]}
+                       className="gx-table-responsive"
+                       columns={columns}
+                       dataSource={props.inward.inwardList}
+                       onChange={handleChange}
+                />
             </Card>
         </div>
     );

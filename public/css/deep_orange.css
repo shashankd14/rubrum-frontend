@@ -29448,8 +29448,8 @@ fieldset[disabled] a.gx-btn {
   }
 }
 .ant-card-body .ant-card-head {
-  padding-left: 0 !important;
-  padding-right: 0 !important;
+  /*padding-left: 0 !important;*/
+  /*padding-right: 0 !important;*/
 }
 .ant-card-type-inner .ant-card-head {
   padding-left: 24px !important;

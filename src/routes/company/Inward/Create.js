@@ -1,44 +1,46 @@
 import React, {useEffect, useState} from "react";
-import { Card, Form, Steps} from "antd";
+import { Card, Form, Steps, Row} from "antd";
 import {connect} from "react-redux";
 import {fetchPartyList, fetchMaterialList, setInwardDetails, submitInwardEntry} from "../../../appRedux/actions";
 
 import PartyDetailsForm from "./InwardSteps/PartyDetailsForm";
+import CoilDetailsForm from "./InwardSteps/CoilDetailsForm";
 import InvoiceDetailsForm from "./InwardSteps/InvoiceDetailsForm";
-import DimensionDetailsForm from "./InwardSteps/DimensionDetailsForm";
 import QualityDetailsForm from "./InwardSteps/QualityDetailsForm";
 import InwardEntrySummary from "./InwardSteps/InwardEntrySummary";
 
 export const formItemLayout = {
     labelCol: {
         xs: {span: 24},
-        sm: {span: 6},
+        sm: {span: 24},
+        md: {span: 8},
     },
     wrapperCol: {
         xs: {span: 24},
-        sm: {span: 6},
+        sm: {span: 24},
+        md: {span: 16},
     },
 };
 
 const { Step } = Steps;
 
 const CreateForm = (props) => {
-    const [currentStep, setCurrentStep] = useState(0);
+    const [currentStep, setCurrentStep] = useState(3);
     const [steps, setSteps] = useState([]);
 
     useEffect(() => {
         const steps = [
             {
-                title: 'Party Details',
+                title: 'Customer',
                 content: <PartyDetailsForm updateStep={(step) => setCurrentStep(step)} />,
             },
             {
-                title: 'Invoice',
-                content: <InvoiceDetailsForm updateStep={(step) => setCurrentStep(step)} />,
+                title: 'Coil',
+                content: <CoilDetailsForm updateStep={(step) => setCurrentStep(step)} />,
             },
             {
-                title: 'Dimensions',
-                content: <DimensionDetailsForm updateStep={(step) => setCurrentStep(step)}/>,
+                title: 'Invoice',
+                content: <InvoiceDetailsForm updateStep={(step) => setCurrentStep(step)}/>,
             },
             {
                 title: 'Quality',
@@ -59,15 +61,15 @@ const CreateForm = (props) => {
     return (
         <Card className="gx-card" title="Inward Entry">
             <Steps current={currentStep}>
-                <Step title="Party Details" />
-                <Step title="Invoice" />
-                <Step title="Dimensions" />
-                <Step title="Quality" />
-                <Step title="Summary" />
+                <Step title="Customer" onClick={() => setCurrentStep(0)}/>
+                <Step title="Coil" onClick={() => setCurrentStep(1)} />
+                <Step title="Invoice" onClick={() => setCurrentStep(2)} />
+                <Step title="Quality" onClick={() => setCurrentStep(3)} />
+                <Step title="Summary" onClick={() => setCurrentStep(4)} />
             </Steps>
-            <div className="gx-mt-4 gx-bg-light-grey gx-inward-form">
+            <Row>
                 {steps.length > 0 && steps[currentStep].content}
-            </div>
+            </Row>
         </Card>
     )
 }

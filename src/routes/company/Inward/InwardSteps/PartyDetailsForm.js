@@ -1,8 +1,10 @@
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import {setInwardDetails} from "../../../../appRedux/actions";
-import {Form, Spin, AutoComplete, Icon, Button} from "antd";
+import {Form, Spin, AutoComplete, Icon, Button, Col, Row, Input, Select} from "antd";
 import {formItemLayout} from '../Create';
+
+const Option = Select.Option;
 
 const CreatePartyDetailsForm = (props) => {
     const {getFieldDecorator} = props.form;
@@ -35,10 +37,10 @@ const CreatePartyDetailsForm = (props) => {
         <>
             {props.party.loading && <Spin className="gx-flex-row gx-justify-content-center" size="large"/>}
             {props.party.partyList.length > 0 &&
-                <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form ">
-                    <Form.Item label="Party Name">
+                <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4">
+                    <Form.Item label="Customer Name">
                         {getFieldDecorator('partyName', {
-                            rules: [{ required: true, message: 'Please input the party name!' }],
+                            rules: [{ required: true, message: 'Please input the customer name!' }],
                         })(
                             <AutoComplete
                                 style={{width: 200}}
@@ -51,11 +53,45 @@ const CreatePartyDetailsForm = (props) => {
                             />
                         )}
                     </Form.Item>
-                    <Form.Item wrapperCol={{ span: 12, offset: 6 }}>
-                        <Button type="primary" htmlType="submit">
-                            Forward<Icon type="right"/>
-                        </Button>
+                    <Form.Item label="Customer Id">
+                            {getFieldDecorator('customerId', {
+                            rules: [{ required: false, message: 'Please input the coil number!' }],
+                            })(
+                                <Input id="customerId" />
+                            )}
                     </Form.Item>
+                    <Form.Item label="Customer Batch No">
+                            {getFieldDecorator('customerBatchNo', {
+                            rules: [{ required: false, message: 'Please input the coil number!' }],
+                            })(
+                                <Input id="customerBatchNo" />
+                            )}
+                    </Form.Item>
+                    <Form.Item label="Customer Invoice No">
+                            {getFieldDecorator('customerInvoiceNo', {
+                            rules: [{ required: false, message: 'Please input the coil number!' }],
+                            })(
+                                <Input id="customerInvoiceNo" />
+                            )}
+                    </Form.Item>
+                    <Form.Item label="Purpose Type">
+                        {getFieldDecorator('purposeType', {
+                            rules: [{ required: false, message: 'Please select a purpose type!' }],
+                        })(
+                            <Select placeholder="Select an option">
+                                <Option value="self">Trading (SELF)</Option>
+                                <Option value="ssc">Steel Service Centre (SSC)</Option>
+                                <Option value="epa">External Process Agent (EPA)</Option>
+                            </Select>
+                        )}
+                    </Form.Item>
+                    <Row className="gx-mt-4">
+                        <Col span={12} offset={4} style={{ textAlign: "center"}}>
+                            <Button type="primary" htmlType="submit">
+                                Forward<Icon type="right"/>
+                            </Button>
+                        </Col>
+                    </Row>
                 </Form>
             }
         </>
@@ -75,6 +111,22 @@ const PartyDetailsForm = Form.create({
             partyName: Form.createFormField({
                 ...props.inward.partyName,
                 value: (props.inward.partyName) ? props.inward.partyName : '',
+            }),
+            customerId: Form.createFormField({
+                ...props.inward.customerId,
+                value: (props.inward.customerId) ? props.inward.customerId : '',
+            }),
+            customerBatchNo: Form.createFormField({
+                ...props.inward.customerBatchNo,
+                value: (props.inward.customerBatchNo) ? props.inward.customerBatchNo : '',
+            }),
+            customerInvoiceNo: Form.createFormField({
+                ...props.inward.customerInvoiceNo,
+                value: (props.inward.customerInvoiceNo) ? props.inward.customerInvoiceNo : '',
+            }),
+            purposeType: Form.createFormField({
+                ...props.inward.purposeType,
+                value: (props.inward.purposeType) ? props.inward.purposeType : '',
             }),
         };
     },

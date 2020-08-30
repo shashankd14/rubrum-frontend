@@ -29561,7 +29561,7 @@ fieldset[disabled] a.gx-btn {
   padding-top: 0;
 }
 .gx-card .ant-card-head {
-  border-bottom: 0 none;
+.gx-card .ant-card-head {
   min-height: 10px;
   padding: 0 24px;
 }

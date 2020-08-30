@@ -1,10 +1,12 @@
 import {all, put, fork, takeLatest} from "redux-saga/effects";
 import moment from "moment";
-import {FETCH_INWARD_LIST_REQUEST, SUBMIT_INWARD_ENTRY} from "../../constants/ActionTypes";
+import {CHECK_COIL_EXISTS, FETCH_INWARD_LIST_REQUEST, SUBMIT_INWARD_ENTRY} from "../../constants/ActionTypes";
 import {fetchInwardListError,
     fetchInwardListSuccess,
     submitInwardSuccess,
-    submitInwardError
+    submitInwardError,
+    checkDuplicateCoilSuccess,
+    checkDuplicateCoilError
 } from "../actions";
 
 function* fetchInwardList() {
@@ -19,6 +21,22 @@ function* fetchInwardList() {
             yield put(fetchInwardListError('error'));
     } catch (error) {
         yield put(fetchInwardListError(error));
+    }
+}
+
+function* checkCoilDuplicate(action) {
+    try {
+        const checkCoilDuplicate =  yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/inwardEntry/isCoilPresent?coilNumber=${action.coilNumber}`, {
+            method: 'GET',
+        });
+        if(checkCoilDuplicate.status === 200) {
+            const checkCoilDuplicateResponse = yield checkCoilDuplicate.json();
+            yield put(checkDuplicateCoilSuccess(checkCoilDuplicateResponse));
+        } else
+            yield put(checkDuplicateCoilError('error'));
+    } catch (error) {
+        console.log(error)
+        yield put(checkDuplicateCoilError(error));
     }
 }
 
@@ -66,6 +84,7 @@ function* submitInward(action) {
 export function* watchFetchRequests() {
     yield takeLatest(FETCH_INWARD_LIST_REQUEST, fetchInwardList);
     yield takeLatest(SUBMIT_INWARD_ENTRY, submitInward);
+    yield takeLatest(CHECK_COIL_EXISTS, checkCoilDuplicate);
 }
 
 export default function* inwardSagas() {

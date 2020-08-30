@@ -1,85 +1,99 @@
-import React, {useEffect, useState} from "react";
-import {AutoComplete, Form, Input, DatePicker, Button, Icon} from "antd";
+import React from "react";
 import {connect} from "react-redux";
-import moment from "moment";
 import {setInwardDetails} from "../../../../appRedux/actions";
-import {formItemLayout} from '../Create';
-import {dateFormat} from "util/config";
+import {Button, Col, Form, Icon, Input, Row, DatePicker, Card} from "antd";
+import {formItemLayout} from "../Create";
 
 const InvoiceDetailsForm = (props) => {
     const {getFieldDecorator} = props.form;
-    const [dataSource, setDataSource] = useState([]);
 
     const handleSubmit = e => {
         e.preventDefault();
 
         props.form.validateFields((err, values) => {
             if (!err) {
-                props.updateStep(1);
+                props.updateStep(3);
             }
         });
     };
 
-    useEffect(() => {
-        if(props.material.materialList.length > 0) {
-            let materialListArr = props.material.materialList.map(material => material.description);
-            setDataSource(materialListArr);
-        }
-    }, [props.material]);
-
     return (
         <>
-            <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form ">
-                <Form.Item
-                    label="Coil number"
-                    hasFeedback
-                    validateStatus=""
-                    help="The information is being validated..."
-                >
-                    <Input placeholder="I'm the content is being validated" id="validating" />
-                </Form.Item>
-                <Form.Item
-                    label="Coil number"
-                    hasFeedback
-                    validateStatus=""
-                    help="The information is being validated..."
-                >
-                    <DatePicker defaultValue={moment(moment(), dateFormat)} format={dateFormat} />
-                </Form.Item>
-                <Form.Item label="Material">
-                    {getFieldDecorator('material', {
-                        rules: [{ required: true, message: 'Please input the party name!' }],
-                    })(
-                        <AutoComplete
-                            style={{width: 200}}
-                            onSelect={(value, option) => {
-                                console.log(value);
-                            }}
-                            placeholder="enter material"
-                            dataSource={dataSource}
-                            filterOption
-                        />
-                    )}
-                </Form.Item>
-                {/*<Form.Item wrapperCol={{ span: 12, offset: 6 }}>*/}
-                {/*    <Button type="primary" htmlType="submit">*/}
-                {/*        Back<Icon type="right"/>*/}
-                {/*    </Button>*/}
-                {/*</Form.Item>*/}
-                <Form.Item wrapperCol={{ span: 12, offset: 6 }}>
-                    <Button type="primary" htmlType="submit">
-                        Forward<Icon type="right"/>
-                    </Button>
-                </Form.Item>
-            </Form>
+            <Col span={14}>
+                <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4">
+                    <Form.Item label="Received Date">
+                        {getFieldDecorator('receivedDate', {
+                            rules: [{ required: true, message: 'Please select a received date' }],
+                        })(
+                            <DatePicker
+                                style={{width: 200}}
+                                className="gx-mb-3 gx-w-100"/>
+                        )}
+                    </Form.Item>
+                    <Form.Item label="Batch No.">
+                        {getFieldDecorator('batchNo', {
+                            rules: [{ required: false, message: 'Please select a received date' }],
+                        })(
+                            <Input id="batchNo" />
+                        )}
+                    </Form.Item>
+                    <Form.Item label="Vehicle number">
+                        {getFieldDecorator('vehicleNumber', {
+                            rules: [{ required: false, message: 'Please select a received date' }],
+                        })(
+                            <Input id="vehicleNumber" />
+                        )}
+                    </Form.Item>
+                    <Form.Item label="Invoice number">
+                        {getFieldDecorator('invoiceNumber', {
+                            rules: [{ required: false, message: 'Please select a received date' }],
+                        })(
+                            <Input id="invoiceNumber" />
+                        )}
+                    </Form.Item>
+                    <Form.Item label="Invoice date">
+                        {getFieldDecorator('invoiceDate', {
+                            rules: [{ required: false, message: 'Please select a received date' }],
+                        })(
+                            <DatePicker
+                                style={{width: 200}}
+                                className="gx-mb-3 gx-w-100"/>
+                        )}
+                    </Form.Item>
+                    <Row className="gx-mt-4">
+                        <Col span={24} offset={4} style={{ textAlign: "center"}}>
+                            <Button style={{ marginLeft: 8 }} onClick={() => props.updateStep(1)}>
+                                <Icon type="left"/>Back
+                            </Button>
+                            <Button type="primary" htmlType="submit">
+                                Forward<Icon type="right"/>
+                            </Button>
+                        </Col>
+                    </Row>
+                </Form>
+            </Col>
+            <Col span={10} className="gx-pt-4">
+                <Card title="Coil Details" style={{ width: 300 }}>
+                    <p>Customer Name : {props.inward.partyName}</p>
+                    {props.inward.customerId && <p>Customer Id : {props.inward.customerId}</p>}
+                    {props.inward.customerBatchNo && <p>Customer Batch No : {props.inward.customerBatchNo}</p>}
+                    {props.inward.customerInvoiceNo && <p>Customer Invoice No : {props.inward.customerInvoiceNo}</p>}
+                    {props.inward.purposeType && <p>Purpose Type : {props.inward.purposeType}</p>}
+                    <p>Coil number : {props.inward.coilNumber}</p>
+                    <p>Material Description : {props.inward.material}</p>
+                    <p>Dimensions : {props.inward.width} X {props.inward.thickness} X {props.inward.length}</p>
+                    <p>Net Weight : {props.inward.netWeight}</p>
+                    <p>Gross Weight : {props.inward.grossWeight}</p>
+                </Card>
+            </Col>
         </>
     )
 }
 
-
 const mapStateToProps = state => ({
     inward: state.inward.inward,
     material: state.material,
+    inwardStatus: state.inward,
 });
 
 const InvoiceDetails = Form.create({
@@ -87,9 +101,25 @@ const InvoiceDetails = Form.create({
     },
     mapPropsToFields(props) {
         return {
-            partyName: Form.createFormField({
-                ...props.inward.partyName,
-                value: (props.inward.partyName) ? props.inward.partyName : '',
+            receivedDate: Form.createFormField({
+                ...props.inward.receivedDate,
+                value: (props.inward.receivedDate) ? props.inward.receivedDate : '',
+            }),
+            batchNo: Form.createFormField({
+                ...props.inward.batchNo,
+                value: (props.inward.batchNo) ? props.inward.batchNo : '',
+            }),
+            vehicleNumber: Form.createFormField({
+                ...props.inward.vehicleNumber,
+                value: (props.inward.vehicleNumber) ? props.inward.vehicleNumber : '',
+            }),
+            invoiceNumber: Form.createFormField({
+                ...props.inward.invoiceNumber,
+                value: (props.inward.invoiceNumber) ? props.inward.invoiceNumber : '',
+            }),
+            invoiceDate: Form.createFormField({
+                ...props.inward.invoiceDate,
+                value: (props.inward.invoiceDate) ? props.inward.invoiceDate : '',
             }),
         };
     },

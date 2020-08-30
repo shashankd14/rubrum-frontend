@@ -29447,14 +29447,7 @@ fieldset[disabled] a.gx-btn {
     margin-bottom: 20px;
   }
 }
-.ant-card-body .ant-card-head {
-  padding-left: 0 !important;
-  padding-right: 0 !important;
-}
-.ant-card-type-inner .ant-card-head {
-  padding-left: 24px !important;
-  padding-right: 24px !important;
-}
+
 .ant-card-wider-padding .ant-card-body > :last-child {
   margin-bottom: 0;
 }
@@ -29561,7 +29554,6 @@ fieldset[disabled] a.gx-btn {
   padding-top: 0;
 }
 .gx-card .ant-card-head {
-  border-bottom: 0 none;
   min-height: 10px;
   padding: 0 24px;
 }
