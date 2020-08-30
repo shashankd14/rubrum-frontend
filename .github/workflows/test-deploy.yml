@@ -22,4 +22,4 @@ jobs:
       - name: Build React App
         run:  yarn install && yarn build
       - name: Deploy app build to S3 bucket
-        run: aws s3 sync /build s3://rubrum-frontend --delete
+        run: sudo aws s3 sync /build s3://rubrum-frontend --delete
