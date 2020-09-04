@@ -8,10 +8,9 @@ const QualityDetailsForm = (props) => {
     const {getFieldDecorator} = props.form;
     const { Dragger } = Upload;
     const { TextArea } = Input;
-
+console.log(props);
     const handleSubmit = e => {
         e.preventDefault();
-
         props.form.validateFields((err, values) => {
             if (!err) {
                 props.updateStep(4);
@@ -38,11 +37,12 @@ const QualityDetailsForm = (props) => {
                 )}
             </Form.Item>
             <Form.Item label="Test File">
-                {getFieldDecorator('testFile ', {
+                {getFieldDecorator('testFile', {
                     rules: [{ required: false, message: 'Please select a received date' }],
                 })(
                     <Dragger
-                        name= 'file'
+                        name= 'testFile'
+                        defaultFileList={props.inward.testFile && props.inward.testFile.fileList}
                         multiple= {true}
                         beforeUpload={() => false}
                         action= ''
@@ -55,11 +55,12 @@ const QualityDetailsForm = (props) => {
                 )}
             </Form.Item>
             <Form.Item label="More attachments">
-                {getFieldDecorator('moreFiles ', {
+                {getFieldDecorator('moreFiles', {
                     rules: [{ required: false, message: 'Please select a received date' }],
                 })(
                     <Dragger
-                        name= 'file'
+                        name= 'moreFiles'
+                        defaultFileList={props.inward.moreFiles && props.inward.moreFiles.fileList}
                         multiple= {true}
                         beforeUpload={() => false}
                         onChange = {(info) => console.log(info)}>
@@ -79,7 +80,7 @@ const QualityDetailsForm = (props) => {
             </Form.Item>
             <Row className="gx-mt-4">
                 <Col span={24} offset={4}  style={{ textAlign: "center"}}>
-                    <Button style={{ marginLeft: 8 }} onClick={() => props.updateStep(0)}>
+                    <Button style={{ marginLeft: 8 }} onClick={() => props.updateStep(2)}>
                         <Icon type="left"/>Back
                     </Button>
                     <Button type="primary" htmlType="submit">

@@ -25,7 +25,7 @@ export const formItemLayout = {
 const { Step } = Steps;
 
 const CreateForm = (props) => {
-    const [currentStep, setCurrentStep] = useState(3);
+    const [currentStep, setCurrentStep] = useState(0);
     const [steps, setSteps] = useState([]);
 
     useEffect(() => {

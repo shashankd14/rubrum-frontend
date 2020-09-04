@@ -21570,7 +21570,8 @@ div.ant-typography-edit-content {
   transition: background-color 0.3s;
 }
 .ant-upload-list-item-info > span {
-  display: block;
+  display: flex;
+  align-items: center;
   width: 100%;
   height: 100%;
 }

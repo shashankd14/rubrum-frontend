@@ -16,6 +16,7 @@ function* fetchInwardList() {
         });
         if(fetchInwardList.status === 200) {
             const fetchInwardListResponse = yield fetchInwardList.json();
+            console.log(fetchInwardListResponse);
             yield put(fetchInwardListSuccess(fetchInwardListResponse));
         } else
             yield put(fetchInwardListError('error'));
@@ -35,7 +36,6 @@ function* checkCoilDuplicate(action) {
         } else
             yield put(checkDuplicateCoilError('error'));
     } catch (error) {
-        console.log(error)
         yield put(checkDuplicateCoilError(error));
     }
 }
@@ -47,23 +47,22 @@ function* submitInward(action) {
 
         data.append('partyId', action.inward.partyName);
         data.append('coilNumber', action.inward.coilNumber);
-        data.append('dReceivedDate',  moment(action.inward.inwardDate).format('YYYY-MM-DD HH:mm:ss'));
-        data.append('materialId', '1' );
-        data.append('vLorryNo', action.inward.vehicleNumber);
+        data.append('inwardDate',  moment(action.inward.inwardDate).format('YYYY-MM-DD HH:mm:ss'));
+        data.append('vehicleNumber', action.inward.vehicleNumber);
 
-        data.append('dInvoiceDate', moment(action.inward.invoiceDate).format('YYYY-MM-DD HH:mm:ss'));
-        data.append('vInvoiceNo', action.inward.invoiceNumber);
-        data.append('fWidth', action.inward.width);
-        data.append('fThickness',  action.inward.thickness);
-        data.append('fLength',  action.inward.length);
-        data.append('fQuantity',  action.inward.weight);
+        data.append('invoiceDate', moment(action.inward.invoiceDate).format('YYYY-MM-DD HH:mm:ss'));
+        data.append('invoiceNumber', action.inward.invoiceNumber);
+        data.append('purposeType', action.inward.purposeType);
+        data.append('materialId', '1' );
+        data.append('width', action.inward.width);
+        data.append('thickness',  action.inward.thickness);
+        data.append('length',  action.inward.length);
         data.append('status',  1);
-        data.append('vHeatnumber',  '123');
-        data.append('vPlantname',  'test plant name');
-        data.append('vProcess',  '');
-        data.append('fpresent',  action.inward.weight);
-        data.append('vCast',  'casr');
-        data.append('vGrade',  'grace');
+        data.append('fQuantity',  action.inward.weight);
+        data.append('heatnumber',  '123');
+        data.append('plantname',  'test plant name');
+        data.append('presentWeight',  action.inward.weight);
+        data.append('materialGradeId',  action.inward.grade);
         data.append('createdBy',  1);
         data.append('updatedBy',  1);
 
