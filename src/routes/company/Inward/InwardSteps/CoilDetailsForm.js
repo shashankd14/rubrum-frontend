@@ -3,7 +3,7 @@ import {AutoComplete, Form, Input, Button, Icon, Row, Col, Card} from "antd";
 import {connect} from "react-redux";
 
 import {formItemLayout} from '../Create';
-import {setInwardDetails, checkIfCoilExists} from "../../../../appRedux/actions";
+import {setInwardDetails, checkIfCoilExists, getGradeByMaterialId} from "../../../../appRedux/actions";
 
 const CoilDetailsForm = (props) => {
     const {getFieldDecorator} = props.form;
@@ -36,7 +36,7 @@ const CoilDetailsForm = (props) => {
 
     useEffect(() => {
         if(props.material.materialList.length > 0) {
-            let materialListArr = props.material.materialList.map(material => material.description);
+            let materialListArr = props.material.materialList.map(material => ({ value: material.matId, text: material.description }));
             setDataSource(materialListArr);
         }
     }, [props.material]);
@@ -70,7 +70,7 @@ const CoilDetailsForm = (props) => {
                         <AutoComplete
                             style={{width: 200}}
                             onSelect={(value, option) => {
-                                console.log(value);
+                                // props.getGradeByMaterialId();
                             }}
                             placeholder="enter material"
                             dataSource={dataSource}
@@ -117,7 +117,7 @@ const CoilDetailsForm = (props) => {
                         rules: [{ required: false, message: 'Please input the coil number!' }],
                     })(
                         <>
-                            <Input id="coilLength" value={approxLength} />Approx
+                            <Input id="coilLength" value={approxLength} name="length" />Approx
                         </>
                     )}
                 </Form.Item>
@@ -195,5 +195,6 @@ const CoilDetails = Form.create({
 
 export default connect(mapStateToProps, {
     setInwardDetails,
-    checkIfCoilExists
+    checkIfCoilExists,
+    getGradeByMaterialId
 })(CoilDetails);

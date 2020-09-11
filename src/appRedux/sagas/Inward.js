@@ -1,12 +1,14 @@
 import {all, put, fork, takeLatest} from "redux-saga/effects";
 import moment from "moment";
-import {CHECK_COIL_EXISTS, FETCH_INWARD_LIST_REQUEST, SUBMIT_INWARD_ENTRY} from "../../constants/ActionTypes";
+import {CHECK_COIL_EXISTS, FETCH_INWARD_LIST_REQUEST, SUBMIT_INWARD_ENTRY, FETCH_INWARD_LIST_BY_PARTY_REQUEST} from "../../constants/ActionTypes";
 import {fetchInwardListError,
     fetchInwardListSuccess,
     submitInwardSuccess,
     submitInwardError,
     checkDuplicateCoilSuccess,
-    checkDuplicateCoilError
+    checkDuplicateCoilError,
+    getCoilsByPartyIdSuccess,
+    getCoilsByPartyIdError
 } from "../actions";
 
 function* fetchInwardList() {
@@ -44,25 +46,42 @@ function* submitInward(action) {
     try {
         console.log(action);
         let data = new FormData();
-
+        //customer details
         data.append('partyId', action.inward.partyName);
-        data.append('coilNumber', action.inward.coilNumber);
-        data.append('inwardDate',  moment(action.inward.inwardDate).format('YYYY-MM-DD HH:mm:ss'));
-        data.append('vehicleNumber', action.inward.vehicleNumber);
-
-        data.append('invoiceDate', moment(action.inward.invoiceDate).format('YYYY-MM-DD HH:mm:ss'));
-        data.append('invoiceNumber', action.inward.invoiceNumber);
+        data.append('customerCoilId',  action.inward.customerId);
+        data.append('customerBatchId',  action.inward.customerBatchNo);
+        data.append('customerInvoiceNo',  action.inward.customerInvoiceNo);
         data.append('purposeType', action.inward.purposeType);
-        data.append('materialId', '1' );
+
+        //coil details
+        data.append('coilNumber', action.inward.coilNumber);
+        data.append('materialId',  action.inward.material);
         data.append('width', action.inward.width);
         data.append('thickness',  action.inward.thickness);
-        data.append('length',  action.inward.length);
-        data.append('status',  1);
-        data.append('fQuantity',  action.inward.weight);
+        action.inward.length && data.append('length',  action.inward.length);
+        data.append('presentWeight',  action.inward.netWeight);
+        data.append('grossWeight',  action.inward.grossWeight);
+
+        // invoice details
+        data.append('inwardDate',  moment(action.inward.receivedDate).format('YYYY-MM-DD HH:mm:ss'));
+        data.append('bathchNumber',  action.inward.batchNo);
+        data.append('vehicleNumber', action.inward.vehicleNumber);
+        data.append('invoiceDate', moment(action.inward.invoiceDate).format('YYYY-MM-DD HH:mm:ss'));
+        data.append('invoiceNumber', action.inward.invoiceNumber);
+
+        //quality details
+        data.append('materialGradeId',  action.inward.grade);
+        data.append('testCertificateNumber',  action.inward.testCertificateNo);
+        data.append('remarks',  action.inward.remarks);
+
+        if(action.inward.testFile) {
+            data.append('testCertificateFile', action.inward.testFile.fileList[0].originFileObj, action.inward.testFile.fileList[0].name);
+        }
+
+        data.append('statusId',  1);
         data.append('heatnumber',  '123');
         data.append('plantname',  'test plant name');
-        data.append('presentWeight',  action.inward.weight);
-        data.append('materialGradeId',  action.inward.grade);
+        // data.append('customerInvoiceDajte',  action.inward.grade);
         data.append('createdBy',  1);
         data.append('updatedBy',  1);
 
@@ -80,10 +99,26 @@ function* submitInward(action) {
     }
 }
 
+function* fetchInwardListByParty(action) {
+    try {
+        const fetchPartyInwardList =  yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/inwardEntry/getByPartyId/${action.partyId}`, {
+            method: 'GET',
+        });
+        if(fetchPartyInwardList.status === 200) {
+            const fetchPartyInwardListResponse = yield fetchPartyInwardList.json();
+            yield put(getCoilsByPartyIdSuccess(fetchPartyInwardListResponse.body));
+        } else
+            yield put(getCoilsByPartyIdError('error'));
+    } catch (error) {
+        yield put(getCoilsByPartyIdError(error));
+    }
+}
+
 export function* watchFetchRequests() {
     yield takeLatest(FETCH_INWARD_LIST_REQUEST, fetchInwardList);
     yield takeLatest(SUBMIT_INWARD_ENTRY, submitInward);
     yield takeLatest(CHECK_COIL_EXISTS, checkCoilDuplicate);
+    yield takeLatest(FETCH_INWARD_LIST_BY_PARTY_REQUEST, fetchInwardListByParty);
 }
 
 export default function* inwardSagas() {

@@ -67,7 +67,7 @@ const CreateForm = (props) => {
                 <Step title="Quality" onClick={() => setCurrentStep(3)} />
                 <Step title="Summary" onClick={() => setCurrentStep(4)} />
             </Steps>
-            <Row>
+            <Row className="gx-justify-content-center">
                 {steps.length > 0 && steps[currentStep].content}
             </Row>
         </Card>

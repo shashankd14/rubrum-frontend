@@ -35,7 +35,7 @@ const CreatePartyDetailsForm = (props) => {
 
     return (
         <>
-            {props.party.loading && <Spin className="gx-flex-row gx-justify-content-center" size="large"/>}
+            {props.party.loading && <Spin className="gx-size-100 gx-flex-row gx-justify-content-center gx-align-items-center" size="large"/>}
             {props.party.partyList.length > 0 &&
                 <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4" style={{"width":"70%"}}>
                     <Form.Item label="Customer Name">
@@ -47,7 +47,7 @@ const CreatePartyDetailsForm = (props) => {
                                 onSelect={(value, option) => {
                                    console.log(value);
                                 }}
-                                placeholder="enter partyname"
+                                placeholder="enter customer name"
                                 dataSource={dataSource}
                                 filterOption
                             />
@@ -79,9 +79,9 @@ const CreatePartyDetailsForm = (props) => {
                             rules: [{ required: false, message: 'Please select a purpose type!' }],
                         })(
                             <Select placeholder="Select an option">
-                                <Option value="self">Trading (SELF)</Option>
-                                <Option value="ssc">Steel Service Centre (SSC)</Option>
-                                <Option value="epa">External Process Agent (EPA)</Option>
+                                <Option value="TRADING">Trading (SELF)</Option>
+                                <Option value="STEEL SERVICE CENTRE">Steel Service Centre (SSC)</Option>
+                                <Option value="EXTERNAL PROCESS AGENT">External Process Agent (EPA)</Option>
                             </Select>
                         )}
                     </Form.Item>

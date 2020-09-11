@@ -6,7 +6,11 @@ import {
     SET_INWARD_DETAILS,
     SUBMIT_INWARD_ENTRY,
     SUBMIT_INWARD_SUCCESS,
-    SUBMIT_INWARD_ERROR, CHECK_COIL_EXISTS, CHECK_COIL_EXISTS_SUCCESS, CHECK_COIL_EXISTS_ERROR,
+    SUBMIT_INWARD_ERROR,
+    CHECK_COIL_EXISTS,
+    CHECK_COIL_EXISTS_SUCCESS,
+    CHECK_COIL_EXISTS_ERROR,
+    FETCH_INWARD_LIST_BY_PARTY_REQUEST, FETCH_INWARD_LIST_BY_PARTY_SUCCESS, FETCH_INWARD_LIST_BY_PARTY_ERROR,
 } from "../../constants/ActionTypes";
 
 const INIT_STATE = {
@@ -84,6 +88,29 @@ export default (state = INIT_STATE, action) => {
                 ...state,
                 loading: false,
                 error: true
+            }
+        }
+        case FETCH_INWARD_LIST_BY_PARTY_REQUEST: {
+            return {
+                ...state,
+                loading: true,
+                error: false
+            }
+        }
+        case FETCH_INWARD_LIST_BY_PARTY_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                error: false,
+                inwardList: action.payload,
+            }
+        }
+        case FETCH_INWARD_LIST_BY_PARTY_ERROR: {
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                inwardList: [],
             }
         }
         default:
