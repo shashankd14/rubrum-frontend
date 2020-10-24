@@ -13,7 +13,11 @@ import {
     CHECK_COIL_EXISTS_ERROR,
     FETCH_INWARD_LIST_BY_PARTY_REQUEST,
     FETCH_INWARD_LIST_BY_PARTY_SUCCESS,
-    FETCH_INWARD_LIST_BY_PARTY_ERROR
+    FETCH_INWARD_LIST_BY_PARTY_ERROR,
+
+    FETCH_INWARD_PLAN_DETAILS_REQUESTED,
+    FETCH_INWARD_PLAN_DETAILS_SUCCESS,
+    FETCH_INWARD_PLAN_DETAILS_ERROR
 } from "../../constants/ActionTypes";
 
 export const fetchInwardList = () => ({
@@ -83,3 +87,18 @@ export const getCoilsByPartyIdError = (error) => ({
     type: FETCH_INWARD_LIST_BY_PARTY_ERROR,
     error
 });
+
+export const getCoilPlanDetails = (coilNumber) => ({
+    type: FETCH_INWARD_PLAN_DETAILS_REQUESTED,
+    coilNumber
+})
+
+export const getCoilPlanDetailsSuccess = (payload) => ({
+    type: FETCH_INWARD_PLAN_DETAILS_SUCCESS,
+    payload
+})
+
+export const getCoilPlanDetailsError = (error) => ({
+    type: FETCH_INWARD_PLAN_DETAILS_ERROR,
+    error
+})

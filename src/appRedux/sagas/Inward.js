@@ -1,6 +1,12 @@
 import {all, put, fork, takeLatest} from "redux-saga/effects";
 import moment from "moment";
-import {CHECK_COIL_EXISTS, FETCH_INWARD_LIST_REQUEST, SUBMIT_INWARD_ENTRY, FETCH_INWARD_LIST_BY_PARTY_REQUEST} from "../../constants/ActionTypes";
+import {
+    CHECK_COIL_EXISTS,
+    FETCH_INWARD_LIST_REQUEST,
+    SUBMIT_INWARD_ENTRY,
+    FETCH_INWARD_LIST_BY_PARTY_REQUEST,
+    FETCH_INWARD_PLAN_DETAILS_REQUESTED
+} from "../../constants/ActionTypes";
 import {fetchInwardListError,
     fetchInwardListSuccess,
     submitInwardSuccess,
@@ -8,7 +14,9 @@ import {fetchInwardListError,
     checkDuplicateCoilSuccess,
     checkDuplicateCoilError,
     getCoilsByPartyIdSuccess,
-    getCoilsByPartyIdError
+    getCoilsByPartyIdError,
+    getCoilPlanDetailsSuccess,
+    getCoilPlanDetailsError
 } from "../actions";
 
 function* fetchInwardList() {
@@ -114,11 +122,27 @@ function* fetchInwardListByParty(action) {
     }
 }
 
+function* fetchInwardPlanDetails(action) {
+    try {
+        const fetchInwardPlan =  yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/inwardEntry/getByCoilId/${action.coilNumber}`, {
+            method: 'GET',
+        });
+        if(fetchInwardPlan.status === 200) {
+            const fetchInwardPlanResponse = yield fetchInwardPlan.json();
+            yield put(getCoilPlanDetailsSuccess(fetchInwardPlanResponse));
+        } else
+            yield put(getCoilPlanDetailsError('error'));
+    } catch (error) {
+        yield put(getCoilPlanDetailsError(error));
+    }
+}
+
 export function* watchFetchRequests() {
     yield takeLatest(FETCH_INWARD_LIST_REQUEST, fetchInwardList);
     yield takeLatest(SUBMIT_INWARD_ENTRY, submitInward);
     yield takeLatest(CHECK_COIL_EXISTS, checkCoilDuplicate);
     yield takeLatest(FETCH_INWARD_LIST_BY_PARTY_REQUEST, fetchInwardListByParty);
+    yield takeLatest(FETCH_INWARD_PLAN_DETAILS_REQUESTED, fetchInwardPlanDetails);
 }
 
 export default function* inwardSagas() {

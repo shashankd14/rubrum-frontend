@@ -313,5 +313,8 @@
   "sidebar.company.inwardList": "Inward List",
   "sidebar.company.partywiseRegister": "Partywise Register",
   "sidebar.company.workinprogress": "Work in progress",
-  "inward.list.search": "Search for coil number or party name"
+  "inward.list.search": "Search for coil number or party name",
+  "partywise.plan.label": "Coil Plan",
+  "partywise.plan.availableLength": "Available Length",
+  "partywise.plan.availableWeight": "Available Weight"
 }

@@ -10,7 +10,10 @@ import {
     CHECK_COIL_EXISTS,
     CHECK_COIL_EXISTS_SUCCESS,
     CHECK_COIL_EXISTS_ERROR,
-    FETCH_INWARD_LIST_BY_PARTY_REQUEST, FETCH_INWARD_LIST_BY_PARTY_SUCCESS, FETCH_INWARD_LIST_BY_PARTY_ERROR,
+    FETCH_INWARD_LIST_BY_PARTY_REQUEST,
+    FETCH_INWARD_LIST_BY_PARTY_SUCCESS,
+    FETCH_INWARD_LIST_BY_PARTY_ERROR,
+    FETCH_INWARD_PLAN_DETAILS_REQUESTED, FETCH_INWARD_PLAN_DETAILS_SUCCESS, FETCH_INWARD_PLAN_DETAILS_ERROR,
 } from "../../constants/ActionTypes";
 
 const INIT_STATE = {
@@ -18,7 +21,11 @@ const INIT_STATE = {
     loading: false,
     success: false,
     error: false,
-    inward: {}
+    inward: {},
+    planLoading: false,
+    planSuccess: false,
+    planError: false,
+    plan: {}
 };
 
 export default (state = INIT_STATE, action) => {
@@ -111,6 +118,28 @@ export default (state = INIT_STATE, action) => {
                 loading: false,
                 error: true,
                 inwardList: [],
+            }
+        }
+        case FETCH_INWARD_PLAN_DETAILS_REQUESTED: {
+            return {
+                ...state,
+                planLoading: true
+            }
+        }
+        case FETCH_INWARD_PLAN_DETAILS_SUCCESS: {
+            return {
+                ...state,
+                planLoading: false,
+                planSuccess: true,
+                plan: action.payload
+            }
+        }
+        case FETCH_INWARD_PLAN_DETAILS_ERROR: {
+            return {
+                ...state,
+                planLoading: false,
+                planSuccess: false,
+                planError: action.error
             }
         }
         default:
