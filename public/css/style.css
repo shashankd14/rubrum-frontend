@@ -37109,10 +37109,10 @@ textarea.gx-chat-textarea {
 }
 .gx-branch:before {
   content: "";
-  width: 40px;
+  width: 56px;
   border-top: 2px solid #151515;
   position: absolute;
-  left: -80px;
+  left: calc(-80px + -16px);
   top: 50%;
   margin-top: 1px;
 }

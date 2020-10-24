@@ -24,10 +24,10 @@
 
   &:before {
     content: "";
-    width: @horizontal-gutter / 2;
+    width: @horizontal-gutter / 2 + 16px;
     border-top: 2px solid @border-color;
     position: absolute;
-    left: -@horizontal-gutter;
+    left: calc(-@horizontal-gutter + -16px);
     top: 50%;
     margin-top: 1px;
   }
