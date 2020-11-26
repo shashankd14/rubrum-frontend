@@ -5,9 +5,10 @@ import {
     FETCH_INWARD_LIST_REQUEST,
     SUBMIT_INWARD_ENTRY,
     FETCH_INWARD_LIST_BY_PARTY_REQUEST,
-    FETCH_INWARD_PLAN_DETAILS_REQUESTED
+    FETCH_INWARD_PLAN_DETAILS_REQUESTED, REQUEST_SAVE_CUTTING_DETAILS
 } from "../../constants/ActionTypes";
-import {fetchInwardListError,
+import {
+    fetchInwardListError,
     fetchInwardListSuccess,
     submitInwardSuccess,
     submitInwardError,
@@ -16,8 +17,9 @@ import {fetchInwardListError,
     getCoilsByPartyIdSuccess,
     getCoilsByPartyIdError,
     getCoilPlanDetailsSuccess,
-    getCoilPlanDetailsError
+    getCoilPlanDetailsError, saveCuttingInstruction
 } from "../actions";
+import {CUTTING_INSTRUCTION_PROCESS_ID} from "../../constants";
 
 function* fetchInwardList() {
     try {
@@ -52,7 +54,6 @@ function* checkCoilDuplicate(action) {
 
 function* submitInward(action) {
     try {
-        console.log(action);
         let data = new FormData();
         //customer details
         data.append('partyId', action.inward.partyName);
@@ -129,11 +130,70 @@ function* fetchInwardPlanDetails(action) {
         });
         if(fetchInwardPlan.status === 200) {
             const fetchInwardPlanResponse = yield fetchInwardPlan.json();
+            const formattedResponse = []
+            fetchInwardPlanResponse.instruction.map((instruction) => {
+                if(instruction.groupId) {
+                    // if(instruction.childInstructions.length > 0) {
+                    //     const formattedChildren = [];
+                    //     instruction.childInstructions.map((childInstruction) => {
+                    //         if(childInstruction.groupId) {
+                    //             if (formattedChildren[childInstruction.groupId]) {
+                    //                 formattedChildren[childInstruction.groupId] = [...formattedChildren[childInstruction.groupId], instruction];
+                    //             } else
+                    //                 formattedChildren[childInstruction.groupId] = [childInstruction];
+                    //         } else {
+                    //             formattedChildren.push(childInstruction);
+                    //         }
+                    //     })
+                    //     instruction['formattedChildren'] = formattedChildren;
+                    // }
+                    if(formattedResponse[instruction.groupId]) {
+                        formattedResponse[instruction.groupId] = [...formattedResponse[instruction.groupId], instruction];
+                    } else {
+                        formattedResponse[instruction.groupId] = [];
+                        formattedResponse[instruction.groupId].push(instruction);
+                    }
+                } else
+                    formattedResponse.push([instruction]);
+            })
+            fetchInwardPlanResponse.instruction = formattedResponse;
             yield put(getCoilPlanDetailsSuccess(fetchInwardPlanResponse));
         } else
             yield put(getCoilPlanDetailsError('error'));
     } catch (error) {
         yield put(getCoilPlanDetailsError(error));
+    }
+}
+
+function* requestSaveCuttingInstruction(action) {
+    const requestBody = [];
+    action.cuttingDetails.map((cutDetails) => {
+        const req = {
+            processdId: CUTTING_INSTRUCTION_PROCESS_ID,
+            instructionDate : cutDetails.instructionDate,
+            length: cutDetails.length,
+            weight: cutDetails.weight,
+            noOfPieces: cutDetails.no,
+            status: 1,
+            "createdBy" : "1",
+            "updatedBy" : "1",
+            inwardId: cutDetails.inwardId,
+        }
+        requestBody.push(req);
+    })
+    try {
+        const fetchPartyInwardList =  yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/instruction/save`, {
+            method: 'POST',
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(requestBody)
+        });
+        if(fetchPartyInwardList.status === 200) {
+            const fetchPartyInwardListResponse = yield fetchPartyInwardList.json();
+            yield put(getCoilsByPartyIdSuccess(fetchPartyInwardListResponse.body));
+        } else
+            yield put(getCoilsByPartyIdError('error'));
+    } catch (error) {
+        yield put(getCoilsByPartyIdError(error));
     }
 }
 
@@ -143,6 +203,7 @@ export function* watchFetchRequests() {
     yield takeLatest(CHECK_COIL_EXISTS, checkCoilDuplicate);
     yield takeLatest(FETCH_INWARD_LIST_BY_PARTY_REQUEST, fetchInwardListByParty);
     yield takeLatest(FETCH_INWARD_PLAN_DETAILS_REQUESTED, fetchInwardPlanDetails);
+    yield takeLatest(REQUEST_SAVE_CUTTING_DETAILS, requestSaveCuttingInstruction);
 }
 
 export default function* inwardSagas() {

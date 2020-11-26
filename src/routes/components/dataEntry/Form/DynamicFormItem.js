@@ -9,7 +9,6 @@ let uuid = 0;
 
 class DynamicFormItem extends Component {
 
-
   remove = (k) => {
     const {form} = this.props;
     // can use data-binding to get
@@ -77,7 +76,7 @@ class DynamicFormItem extends Component {
           required={false}
           key={k}
         >
-          {getFieldDecorator(`names[${k}]`, {
+          {getFieldDecorator(`name[${k}]`, {
             validateTrigger: ['onChange', 'onBlur'],
             rules: [{
               required: true,
@@ -116,11 +115,9 @@ class DynamicFormItem extends Component {
       </Card>
     );
   }
-
 }
 
 const WrappedDynamicFieldSet = Form.create()(DynamicFormItem);
-
 
 export default WrappedDynamicFieldSet;
 

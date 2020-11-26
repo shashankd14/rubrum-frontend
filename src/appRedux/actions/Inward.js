@@ -17,7 +17,11 @@ import {
 
     FETCH_INWARD_PLAN_DETAILS_REQUESTED,
     FETCH_INWARD_PLAN_DETAILS_SUCCESS,
-    FETCH_INWARD_PLAN_DETAILS_ERROR
+    FETCH_INWARD_PLAN_DETAILS_ERROR,
+    SET_PROCESS_DETAILS,
+    REQUEST_SAVE_CUTTING_DETAILS,
+    SAVE_CUTTING_DETAILS_SUCCESS,
+    SAVE_CUTTING_DETAILS_ERROR
 } from "../../constants/ActionTypes";
 
 export const fetchInwardList = () => ({
@@ -100,5 +104,26 @@ export const getCoilPlanDetailsSuccess = (payload) => ({
 
 export const getCoilPlanDetailsError = (error) => ({
     type: FETCH_INWARD_PLAN_DETAILS_ERROR,
+    error
+})
+
+export const setProcessDetails = (processDetails) => ({
+    type: SET_PROCESS_DETAILS,
+    processDetails
+});
+
+export const saveCuttingInstruction = (cuttingDetails) => ({
+    type: REQUEST_SAVE_CUTTING_DETAILS,
+    cuttingDetails
+})
+
+export const saveCuttingInstructionSuccess = (payload) => ({
+    type: SAVE_CUTTING_DETAILS_SUCCESS,
+    payload
+})
+
+
+export const saveCuttingInstructionError = (error) => ({
+    type: SAVE_CUTTING_DETAILS_ERROR,
     error
 })

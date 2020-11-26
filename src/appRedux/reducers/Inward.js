@@ -13,7 +13,10 @@ import {
     FETCH_INWARD_LIST_BY_PARTY_REQUEST,
     FETCH_INWARD_LIST_BY_PARTY_SUCCESS,
     FETCH_INWARD_LIST_BY_PARTY_ERROR,
-    FETCH_INWARD_PLAN_DETAILS_REQUESTED, FETCH_INWARD_PLAN_DETAILS_SUCCESS, FETCH_INWARD_PLAN_DETAILS_ERROR,
+    FETCH_INWARD_PLAN_DETAILS_REQUESTED,
+    FETCH_INWARD_PLAN_DETAILS_SUCCESS,
+    FETCH_INWARD_PLAN_DETAILS_ERROR,
+    SET_PROCESS_DETAILS,
 } from "../../constants/ActionTypes";
 
 const INIT_STATE = {
@@ -25,7 +28,8 @@ const INIT_STATE = {
     planLoading: false,
     planSuccess: false,
     planError: false,
-    plan: {}
+    plan: {},
+    process: {}
 };
 
 export default (state = INIT_STATE, action) => {
@@ -140,6 +144,12 @@ export default (state = INIT_STATE, action) => {
                 planLoading: false,
                 planSuccess: false,
                 planError: action.error
+            }
+        }
+        case SET_PROCESS_DETAILS: {
+            return {
+                ...state,
+                process: action.processDetails
             }
         }
         default:
