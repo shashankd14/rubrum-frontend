@@ -36,11 +36,11 @@ const Plan = (props) => {
                         </div>
                         <h5 className="gx-coil-number">{props.inward.plan.coilNumber}</h5>
                         <div className="gx-flex-row">
-                            <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.availableLength"/> - </p>
+                            <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.availableLength"/> : </p>
                             <span className="gx-coil-details-label">{props.inward.plan.fLength}</span>
                         </div>
                         <div className="gx-flex-row">
-                            <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.availableWeight"/> - </p>
+                            <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.availableWeight"/> : </p>
                             <span className="gx-coil-details-label">{props.inward.plan.fQuantity}</span>
                         </div>
                         <div>
@@ -71,11 +71,11 @@ const Plan = (props) => {
                                         <div style={{marginLeft: "8px"}}>
                                             {instruction.processdId == CUTTING_INSTRUCTION_PROCESS_ID ? 'Cutting' : 'Slitting'}
                                             <div className="gx-flex-row">
-                                                <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.availableLength"/> - </p>
+                                                <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.availableLength"/> : </p>
                                                 <span className="gx-coil-details-label">{props.inward.plan.fLength}</span>
                                             </div>
                                             <div className="gx-flex-row">
-                                                <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.availableWeight"/> - </p>
+                                                <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.availableWeight"/> : </p>
                                                 <span className="gx-coil-details-label">{props.inward.plan.fQuantity}</span>
                                             </div>
                                             <div>
