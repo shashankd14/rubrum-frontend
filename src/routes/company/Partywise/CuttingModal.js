@@ -1,8 +1,10 @@
 import {Button, Card, Col, DatePicker, Divider, Form, Icon, Input, Modal, Row, Table} from "antd";
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
+import moment from "moment";
 
 import {setProcessDetails, saveCuttingInstruction} from '../../../appRedux/actions/Inward';
+import {APPLICATION_DATE_FORMAT} from "../../../constants";
 
 export const formItemLayout = {
     labelCol: {
@@ -28,6 +30,7 @@ const columns = [
         title: 'Process Date',
         dataIndex: 'processDate',
         key: 'processDate',
+        render: text => <span className="gx-link">{moment(text).format(APPLICATION_DATE_FORMAT)}</span>
     },
     {
         title: 'Length',
@@ -61,6 +64,7 @@ const CreateCuttingDetailsForm = (props) => {
 
     const handleSubmit = e => {
         e.preventDefault();
+        console.log(props.inward.process);
         setCuts([...cuts, props.inward.process])
     };
 
@@ -93,7 +97,7 @@ const CreateCuttingDetailsForm = (props) => {
                                 className="gx-mb-3 gx-w-100"/>
                         )}
                     </Form.Item>
-                    <Form.Item label="Length">w
+                    <Form.Item label="Length">
                         {getFieldDecorator('length', {
                             rules: [{ required: true, message: 'Please enter Length' },
                                 {pattern: "^(([1-9]*)|(([1-9]*)\\.([0-9]*)))$", message: 'Length should be a number'},],

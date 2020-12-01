@@ -174,9 +174,10 @@ function* fetchInwardPlanDetails(action) {
 function* requestSaveCuttingInstruction(action) {
     const requestBody = [];
     action.cuttingDetails.map((cutDetails) => {
+        console.log(cutDetails);
         const req = {
             processdId: CUTTING_INSTRUCTION_PROCESS_ID,
-            instructionDate : cutDetails.instructionDate,
+            instructionDate :  moment(cutDetails.processDate).format('YYYY-MM-DD HH:mm:ss'),
             length: cutDetails.length,
             weight: cutDetails.weight,
             noOfPieces: cutDetails.no,
@@ -207,7 +208,7 @@ function* requestSaveSlittingInstruction(action) {
     action.slittingDetails.map((slitDetails) => {
         const req = {
             processdId: SLITTING_INSTRUCTION_PROCESS_ID,
-            instructionDate : moment().format('YYYY-MM-DD HH:mm:ss'),
+            instructionDate: moment().format('YYYY-MM-DD HH:mm:ss'),
             length: slitDetails.length,
             width: slitDetails.width,
             weight: slitDetails.weight,
