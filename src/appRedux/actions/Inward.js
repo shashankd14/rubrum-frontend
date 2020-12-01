@@ -27,6 +27,7 @@ import {
     SAVE_SLITTING_DETAILS_SUCCESS,
     SAVE_SLITTING_DETAILS_ERROR,
 
+    RESET_INSTRUCTION_FORM,
     RESET_INWARD_FORM
 } from "../../constants/ActionTypes";
 
@@ -139,14 +140,18 @@ export const saveSlittingInstruction = (slittingDetails) => ({
 });
 
 export const saveSlittingInstructionSuccess = (payload) => ({
-    type: SAVE_CUTTING_DETAILS_SUCCESS,
+    type: SAVE_SLITTING_DETAILS_SUCCESS,
     payload
 });
 
 export const saveSlittingInstructionError = (error) => ({
-    type: SAVE_CUTTING_DETAILS_ERROR,
+    type: SAVE_SLITTING_DETAILS_ERROR,
     error
 });
+
+export const resetInstruction = () => ({
+    type: RESET_INSTRUCTION_FORM,
+})
 
 export const resetInwardForm = () => ({
     type: RESET_INWARD_FORM,

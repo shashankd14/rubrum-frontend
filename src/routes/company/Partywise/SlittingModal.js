@@ -4,7 +4,7 @@ import {connect} from "react-redux";
 import moment from "moment";
 
 import {APPLICATION_DATE_FORMAT} from '../../../constants';
-import {setProcessDetails, saveSlittingInstruction} from '../../../appRedux/actions/Inward';
+import {setProcessDetails, saveSlittingInstruction, resetInstruction} from '../../../appRedux/actions/Inward';
 
 export const formItemLayout = {
     labelCol: {
@@ -157,7 +157,7 @@ const SlittingWidths = (props) => {
                                 <Form.Item>
                                     {getFieldDecorator(`widths[${index}]`, {
                                         rules: [{ required: true, message: 'Please enter width' },
-                                            {pattern: "^(([1-9]*)|(([1-9]*)\\.([0-9]*)))$", message: 'Length should be a number'},],
+                                            {pattern: "^(([1-9]*)|(([1-9]*)\\.([0-9]*)))$", message: 'Width should be a number'},],
                                     })(
                                         <Input id="length" />
                                     )}
@@ -167,7 +167,7 @@ const SlittingWidths = (props) => {
                                 <Form.Item>
                                     {getFieldDecorator(`nos[${index}]`, {
                                         rules: [{ required: true, message: 'Please enter nos' },
-                                            {pattern: "^(([1-9]*)|(([1-9]*)\\.([0-9]*)))$", message: 'Length should be a number'},],
+                                            {pattern: "^(([1-9]*)|(([1-9]*)\\.([0-9]*)))$", message: 'Number of slits should be a number'},],
                                     })(
                                         <Input id="length" />
                                     )}
@@ -177,7 +177,7 @@ const SlittingWidths = (props) => {
                                 <Form.Item>
                                     {getFieldDecorator(`weights[${index}]`, {
                                         rules: [{ required: true, message: 'Please enter weight' },
-                                            {pattern: "^(([1-9]*)|(([1-9]*)\\.([0-9]*)))$", message: 'Length should be a number'},],
+                                            {pattern: "^(([1-9]*)|(([1-9]*)\\.([0-9]*)))$", message: 'Weight should be a number'},],
                                     })(
                                         <Input id="length" />
                                     )}
@@ -208,7 +208,7 @@ const SlittingWidths = (props) => {
 const CreateCuttingDetailsForm = (props) => {
     const {getFieldDecorator} = props.form;
     const [cuts, setCuts] = useState([]);
-
+    let loading = '';
     useEffect(() => {
         if(props.inward.process.length && props.inward.process.no) {
             props.setProcessDetails({...props.inward.process, weight: 0.00000000785*parseFloat(props.inward.plan.fWidth)*parseFloat(props.inward.plan.fThickness)*parseFloat(props.inward.process.length)*parseFloat(props.inward.process.no)});
@@ -216,8 +216,20 @@ const CreateCuttingDetailsForm = (props) => {
     }, [props.inward.process.length, props.inward.process.no])
 
     useEffect(() => {
-        console.log(cuts);
-    }, [cuts]);
+        if(props.inward.instructionSaveLoading) {
+            loading = message.loading('Saving Slit Instruction..');
+        }
+    }, [props.inward.instructionSaveLoading]);
+
+    useEffect(() => {
+        if(props.inward.instructionSaveSuccess) {
+            loading = '';
+            message.success('Slitting instruction saved successfully', 2).then(() => {
+                props.setShowSlittingModal(false);
+                props.resetInstruction();
+            });
+        }
+    }, [props.inward.instructionSaveSuccess])
 
     return (
         <Modal
@@ -225,7 +237,7 @@ const CreateCuttingDetailsForm = (props) => {
             visible={props.showSlittingModal}
             onOk={() => props.saveSlittingInstruction(cuts)}
             width={1020}
-            onCancel={() => props.setShowSlittingModal()}
+            onCancel={() => props.setShowSlittingModal(false)}
         >
             <Row>
                 <Col lg={12} md={16} sm={24} xs={24} span={16} className="gx-align-self-center">
@@ -281,14 +293,6 @@ const CuttingDetailsForm = Form.create({
     },
 })(CreateCuttingDetailsForm);
 
-const SlittingWidthsForm = Form.create({
-    onFieldsChange(props, changedFields) {
-    },
-    mapPropsToFields(props) {
-        console.log(props);
-    },
-    onValuesChange(props, values) {
-    },
-})(SlittingWidths);
+const SlittingWidthsForm = Form.create()(SlittingWidths);
 
-export default  connect(mapStateToProps, {setProcessDetails, saveSlittingInstruction})(CuttingDetailsForm);
+export default  connect(mapStateToProps, {setProcessDetails, saveSlittingInstruction, resetInstruction})(CuttingDetailsForm);

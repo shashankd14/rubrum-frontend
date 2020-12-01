@@ -194,8 +194,7 @@ function* requestSaveCuttingInstruction(action) {
             body: JSON.stringify(requestBody)
         });
         if(fetchPartyInwardList.status === 200) {
-            const fetchPartyInwardListResponse = yield fetchPartyInwardList.json();
-            yield put(saveCuttingInstructionSuccess(fetchPartyInwardListResponse.body));
+            yield put(saveCuttingInstructionSuccess(fetchPartyInwardList));
         } else
             yield put(saveCuttingInstructionError('error'));
     } catch (error) {
@@ -227,8 +226,7 @@ function* requestSaveSlittingInstruction(action) {
             body: JSON.stringify(requestBody)
         });
         if(fetchPartyInwardList.status === 200) {
-            const fetchPartyInwardListResponse = yield fetchPartyInwardList.json();
-            yield put(saveSlittingInstructionSuccess(fetchPartyInwardListResponse.body));
+            yield put(saveSlittingInstructionSuccess(fetchPartyInwardList));
         } else
             yield put(saveSlittingInstructionError('error'));
     } catch (error) {

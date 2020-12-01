@@ -16,7 +16,15 @@ import {
     FETCH_INWARD_PLAN_DETAILS_REQUESTED,
     FETCH_INWARD_PLAN_DETAILS_SUCCESS,
     FETCH_INWARD_PLAN_DETAILS_ERROR,
-    SET_PROCESS_DETAILS, RESET_INWARD_FORM,
+    SET_PROCESS_DETAILS,
+    RESET_INWARD_FORM,
+    REQUEST_SAVE_SLITTING_DETAILS,
+    SAVE_SLITTING_DETAILS_SUCCESS,
+    SAVE_SLITTING_DETAILS_ERROR,
+    REQUEST_SAVE_CUTTING_DETAILS,
+    SAVE_CUTTING_DETAILS_SUCCESS,
+    SAVE_CUTTING_DETAILS_ERROR,
+    RESET_INSTRUCTION_FORM
 } from "../../constants/ActionTypes";
 
 const INIT_STATE = {
@@ -32,7 +40,10 @@ const INIT_STATE = {
     planSuccess: false,
     planError: false,
     plan: {},
-    process: {}
+    process: {},
+    instructionSaveLoading: false,
+    instructionSaveSuccess: false,
+    instructionSaveError: false,
 };
 
 export default (state = INIT_STATE, action) => {
@@ -163,6 +174,62 @@ export default (state = INIT_STATE, action) => {
                 inwardSubmitSuccess: false,
                 inwardSubmitError: false,
                 inward: {},
+            }
+        }
+        case REQUEST_SAVE_CUTTING_DETAILS: {
+            return {
+                ...state,
+                instructionSaveLoading: true,
+                instructionSaveSuccess: false,
+                instructionSaveError: false,
+            }
+        }
+        case SAVE_CUTTING_DETAILS_SUCCESS: {
+            return {
+                ...state,
+                instructionSaveLoading: false,
+                instructionSaveSuccess: true,
+                instructionSaveError: false,
+            }
+        }
+        case SAVE_CUTTING_DETAILS_ERROR: {
+            return {
+                ...state,
+                instructionSaveLoading: false,
+                instructionSaveSuccess: false,
+                instructionSaveError: true,
+            }
+        }
+        case REQUEST_SAVE_SLITTING_DETAILS: {
+            return {
+                ...state,
+                instructionSaveLoading: true,
+                instructionSaveSuccess: false,
+                instructionSaveError: false,
+            }
+        }
+        case SAVE_SLITTING_DETAILS_SUCCESS: {
+            return {
+                ...state,
+                instructionSaveLoading: false,
+                instructionSaveSuccess: true,
+                instructionSaveError: false,
+            }
+        }
+        case SAVE_SLITTING_DETAILS_ERROR: {
+            return {
+                ...state,
+                instructionSaveLoading: false,
+                instructionSaveSuccess: false,
+                instructionSaveError: true,
+            }
+        }
+        case RESET_INSTRUCTION_FORM: {
+            return {
+                ...state,
+                instructionSaveLoading: false,
+                instructionSaveSuccess: false,
+                instructionSaveError: false,
             }
         }
         default:
