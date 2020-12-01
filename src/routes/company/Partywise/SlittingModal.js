@@ -1,8 +1,10 @@
-import {Button, Card, Col, DatePicker, Divider, Form, Icon, Input, Modal, Row, Table} from "antd";
+import {Button, Col, Form, Icon, Input, message, Modal, Row, Table} from "antd";
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
+import moment from "moment";
 
-import {setProcessDetails, saveCuttingInstruction} from '../../../appRedux/actions/Inward';
+import {APPLICATION_DATE_FORMAT} from '../../../constants';
+import {setProcessDetails, saveSlittingInstruction} from '../../../appRedux/actions/Inward';
 
 export const formItemLayout = {
     labelCol: {
@@ -48,6 +50,11 @@ const columns = [
         key: 'length',
     },
     {
+        title: 'Width',
+        dataIndex: 'width',
+        key: 'width',
+    },
+    {
         title: 'No of Sheets',
         dataIndex: 'no',
         key: 'no',
@@ -74,11 +81,27 @@ const SlittingWidths = (props) => {
     getFieldDecorator('keys', {initialValue: [{width:0, no:0, weight:0}]});
     const keys = getFieldValue('keys');
 
+    const addNewSize = (e) => {
+        props.form.validateFields((err, values) => {
+            if (!err) {
+                let totalWidth = 0
+                const slits = []
+                for(let i=0; i < values.widths.length; i++) {
+                    slits.push({name: i+1, processDate: moment().format(APPLICATION_DATE_FORMAT), length: values.length,width: values.widths[i], no: values.nos[i],weight:values.weights[i], inwardId: props.coilDetails.inwardEntryId})
+                    totalWidth += values.widths[i]*values.nos[i];
+                }
+                if(totalWidth > props.coilDetails.fWidth) {
+                    message.error('Sum of slits width is greater than width of coil.', 2);
+                } else
+                    props.setSlits(...slits);
+            }
+        });
+    }
+
     const addNewKey = () => {
         const {form} = props;
         const keys = form.getFieldValue('keys');
         const nextKeys = keys.concat({width:0, no:0, weight:0});
-        console.log(keys);
         form.setFieldsValue({
             keys: nextKeys,
         });
@@ -101,6 +124,17 @@ const SlittingWidths = (props) => {
     return (
         <>
             <Form {...formItemLayoutSlitting}>
+                <label>Available length : {props.coilDetails.fLength}</label>
+                <div><label>Available width : {props.coilDetails.fWidth}</label></div>
+
+                <Form.Item label="Length">
+                    {getFieldDecorator('length', {
+                        rules: [{ required: true, message: 'Please enter Length' },
+                            {pattern: "^(([1-9]*)|(([1-9]*)\\.([0-9]*)))$", message: 'Length should be a number'},],
+                    })(
+                        <Input id="length" />
+                    )}
+                </Form.Item>
                 <Row>
                     <Col lg={6} md={6} sm={12} xs={24}>
                         <label>Width</label>
@@ -117,33 +151,32 @@ const SlittingWidths = (props) => {
                 </Row>
                 <Row>
                     {keys.map((k, index) => {
-                        console.log(k);
                         return (
                         <>
-                            <Col lg={6} md={6} sm={12} xs={24} key={index}>
+                            <Col lg={6} md={6} sm={12} xs={24}>
                                 <Form.Item>
-                                    {getFieldDecorator(keys[index].width, {
-                                        rules: [{ required: true, message: 'Please enter Length' },
+                                    {getFieldDecorator(`widths[${index}]`, {
+                                        rules: [{ required: true, message: 'Please enter width' },
                                             {pattern: "^(([1-9]*)|(([1-9]*)\\.([0-9]*)))$", message: 'Length should be a number'},],
                                     })(
                                         <Input id="length" />
                                     )}
                                 </Form.Item>
                             </Col>
-                            <Col lg={6} md={6} sm={12} xs={24} key={index}>
+                            <Col lg={6} md={6} sm={12} xs={24}>
                                 <Form.Item>
                                     {getFieldDecorator(`nos[${index}]`, {
-                                        rules: [{ required: true, message: 'Please enter Length' },
+                                        rules: [{ required: true, message: 'Please enter nos' },
                                             {pattern: "^(([1-9]*)|(([1-9]*)\\.([0-9]*)))$", message: 'Length should be a number'},],
                                     })(
                                         <Input id="length" />
                                     )}
                                 </Form.Item>
                             </Col>
-                            <Col lg={6} md={6} sm={12} xs={24} key={index}>
+                            <Col lg={6} md={6} sm={12} xs={24}>
                                 <Form.Item>
                                     {getFieldDecorator(`weights[${index}]`, {
-                                        rules: [{ required: true, message: 'Please enter Length' },
+                                        rules: [{ required: true, message: 'Please enter weight' },
                                             {pattern: "^(([1-9]*)|(([1-9]*)\\.([0-9]*)))$", message: 'Length should be a number'},],
                                     })(
                                         <Input id="length" />
@@ -160,6 +193,13 @@ const SlittingWidths = (props) => {
                     ) }
                     )}
                 </Row>
+                <Row className="gx-mt-4">
+                    <Col span={16} style={{ textAlign: "center"}}>
+                        <Button type="primary" htmlType="submit" onClick={() => addNewSize()}>
+                            Add Size<Icon type="right"/>
+                        </Button>
+                    </Col>
+                </Row>
             </Form>
         </>
     )
@@ -168,15 +208,6 @@ const SlittingWidths = (props) => {
 const CreateCuttingDetailsForm = (props) => {
     const {getFieldDecorator} = props.form;
     const [cuts, setCuts] = useState([]);
-console.log(props);
-    const handleSubmit = e => {
-        e.preventDefault();
-        setCuts([...cuts, props.inward.process])
-    };
-
-    const addNewSize = () => {
-        console.log('dsf');
-    }
 
     useEffect(() => {
         if(props.inward.process.length && props.inward.process.no) {
@@ -184,38 +215,26 @@ console.log(props);
         }
     }, [props.inward.process.length, props.inward.process.no])
 
+    useEffect(() => {
+        console.log(cuts);
+    }, [cuts]);
+
     return (
         <Modal
             title="Slitting Instruction"
             visible={props.showSlittingModal}
-            onOk={() => props.saveCuttingInstruction(cuts)}
+            onOk={() => props.saveSlittingInstruction(cuts)}
             width={1020}
             onCancel={() => props.setShowSlittingModal()}
         >
             <Row>
                 <Col lg={12} md={16} sm={24} xs={24} span={16} className="gx-align-self-center">
                     <h3>Coil Details </h3>
-                    <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4">
-                        <Form.Item label="Length">
-                            {getFieldDecorator('length', {
-                                rules: [{ required: true, message: 'Please enter Length' },
-                                    {pattern: "^(([1-9]*)|(([1-9]*)\\.([0-9]*)))$", message: 'Length should be a number'},],
-                            })(
-                                <Input id="length" />
-                            )}
-                        </Form.Item>
+                    <Form {...formItemLayout} className="login-form gx-pt-4">
                         <Form.Item>
-                            {getFieldDecorator('slittingWidths', {
-                                initialValue: {number: 0, currency: 'rmb'},
-                            })(<SlittingWidthsForm/>)}
+                            <SlittingWidthsForm setSlits={(slits) => setCuts([...cuts, slits])} coilDetails={props.inward.plan}/>
                         </Form.Item>
-                        <Row className="gx-mt-4">
-                            <Col span={16} style={{ textAlign: "center"}}>
-                                <Button type="primary" htmlType="submit" onClick={() => addNewSize()}>
-                                    Add Size<Icon type="right"/>
-                                </Button>
-                            </Col>
-                        </Row>
+
                     </Form>
                 </Col>
                 <Col lg={12} md={12} sm={24} xs={24}>
@@ -264,8 +283,12 @@ const CuttingDetailsForm = Form.create({
 
 const SlittingWidthsForm = Form.create({
     onFieldsChange(props, changedFields) {
-        console.log(changedFields);
+    },
+    mapPropsToFields(props) {
+        console.log(props);
+    },
+    onValuesChange(props, values) {
     },
 })(SlittingWidths);
 
-export default  connect(mapStateToProps, {setProcessDetails, saveCuttingInstruction})(CuttingDetailsForm);
+export default  connect(mapStateToProps, {setProcessDetails, saveSlittingInstruction})(CuttingDetailsForm);

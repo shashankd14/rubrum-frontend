@@ -16,7 +16,7 @@ import {
     FETCH_INWARD_PLAN_DETAILS_REQUESTED,
     FETCH_INWARD_PLAN_DETAILS_SUCCESS,
     FETCH_INWARD_PLAN_DETAILS_ERROR,
-    SET_PROCESS_DETAILS,
+    SET_PROCESS_DETAILS, RESET_INWARD_FORM,
 } from "../../constants/ActionTypes";
 
 const INIT_STATE = {
@@ -25,6 +25,9 @@ const INIT_STATE = {
     success: false,
     error: false,
     inward: {},
+    inwardSubmitLoading: false,
+    inwardSubmitSuccess: false,
+    inwardSubmitError: false,
     planLoading: false,
     planSuccess: false,
     planError: false,
@@ -85,20 +88,21 @@ export default (state = INIT_STATE, action) => {
         case SUBMIT_INWARD_ENTRY: {
             return {
                 ...state,
-                loading: true,
+                inwardSubmitLoading: true,
             }
         }
         case SUBMIT_INWARD_SUCCESS: {
             return {
                 ...state,
-                loading: false,
+                inwardSubmitLoading: false,
+                inwardSubmitSuccess: true
             }
         }
         case SUBMIT_INWARD_ERROR: {
             return {
                 ...state,
-                loading: false,
-                error: true
+                inwardSubmitLoading: false,
+                inwardSubmitError: true
             }
         }
         case FETCH_INWARD_LIST_BY_PARTY_REQUEST: {
@@ -150,6 +154,15 @@ export default (state = INIT_STATE, action) => {
             return {
                 ...state,
                 process: action.processDetails
+            }
+        }
+        case RESET_INWARD_FORM: {
+            return {
+                ...state,
+                inwardSubmitLoading: false,
+                inwardSubmitSuccess: false,
+                inwardSubmitError: false,
+                inward: {},
             }
         }
         default:

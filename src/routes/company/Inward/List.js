@@ -7,6 +7,7 @@ import SearchBox from "../../../components/SearchBox";
 import IntlMessages from "../../../util/IntlMessages";
 import {
     fetchInwardList,
+    resetInwardForm
 } from "../../../appRedux/actions/Inward";
 
 const List = (props) => {
@@ -135,7 +136,11 @@ const List = (props) => {
                     </div>
                     <div className="gx-flex-row gx-w-50">
                         <Button type="primary" icon={() => <i className="icon icon-add"/>} size="medium"
-                                onClick={() => props.history.push('/company/inward/create')}
+                                onClick={() => {
+                                        props.resetInwardForm();
+                                        props.history.push('/company/inward/create')
+                                    }
+                                }
                         >Add Inward</Button>
                         <SearchBox styleName="gx-flex-1" placeholder="Search for coil number or party name..." value={searchValue} onChange={(e) => setSearchValue(e.target.value)}/>
                     </div>
@@ -156,5 +161,6 @@ const mapStateToProps = state => ({
 });
 
 export default connect(mapStateToProps, {
-    fetchInwardList
+    fetchInwardList,
+    resetInwardForm
 })(List);

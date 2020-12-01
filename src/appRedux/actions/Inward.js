@@ -21,7 +21,13 @@ import {
     SET_PROCESS_DETAILS,
     REQUEST_SAVE_CUTTING_DETAILS,
     SAVE_CUTTING_DETAILS_SUCCESS,
-    SAVE_CUTTING_DETAILS_ERROR
+    SAVE_CUTTING_DETAILS_ERROR,
+
+    REQUEST_SAVE_SLITTING_DETAILS,
+    SAVE_SLITTING_DETAILS_SUCCESS,
+    SAVE_SLITTING_DETAILS_ERROR,
+
+    RESET_INWARD_FORM
 } from "../../constants/ActionTypes";
 
 export const fetchInwardList = () => ({
@@ -115,15 +121,33 @@ export const setProcessDetails = (processDetails) => ({
 export const saveCuttingInstruction = (cuttingDetails) => ({
     type: REQUEST_SAVE_CUTTING_DETAILS,
     cuttingDetails
-})
+});
 
 export const saveCuttingInstructionSuccess = (payload) => ({
     type: SAVE_CUTTING_DETAILS_SUCCESS,
     payload
-})
-
+});
 
 export const saveCuttingInstructionError = (error) => ({
     type: SAVE_CUTTING_DETAILS_ERROR,
     error
+});
+
+export const saveSlittingInstruction = (slittingDetails) => ({
+    type: REQUEST_SAVE_SLITTING_DETAILS,
+    slittingDetails
+});
+
+export const saveSlittingInstructionSuccess = (payload) => ({
+    type: SAVE_CUTTING_DETAILS_SUCCESS,
+    payload
+});
+
+export const saveSlittingInstructionError = (error) => ({
+    type: SAVE_CUTTING_DETAILS_ERROR,
+    error
+});
+
+export const resetInwardForm = () => ({
+    type: RESET_INWARD_FORM,
 })

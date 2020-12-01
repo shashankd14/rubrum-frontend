@@ -5,8 +5,11 @@ import {
     FETCH_INWARD_LIST_REQUEST,
     SUBMIT_INWARD_ENTRY,
     FETCH_INWARD_LIST_BY_PARTY_REQUEST,
-    FETCH_INWARD_PLAN_DETAILS_REQUESTED, REQUEST_SAVE_CUTTING_DETAILS
+    FETCH_INWARD_PLAN_DETAILS_REQUESTED,
+    REQUEST_SAVE_CUTTING_DETAILS,
+    REQUEST_SAVE_SLITTING_DETAILS
 } from "../../constants/ActionTypes";
+
 import {
     fetchInwardListError,
     fetchInwardListSuccess,
@@ -17,9 +20,13 @@ import {
     getCoilsByPartyIdSuccess,
     getCoilsByPartyIdError,
     getCoilPlanDetailsSuccess,
-    getCoilPlanDetailsError, saveCuttingInstruction
+    getCoilPlanDetailsError,
+    saveCuttingInstructionSuccess,
+    saveCuttingInstructionError,
+    saveSlittingInstructionSuccess,
+    saveSlittingInstructionError
 } from "../actions";
-import {CUTTING_INSTRUCTION_PROCESS_ID} from "../../constants";
+import {CUTTING_INSTRUCTION_PROCESS_ID, SLITTING_INSTRUCTION_PROCESS_ID} from "../../constants";
 
 function* fetchInwardList() {
     try {
@@ -98,8 +105,7 @@ function* submitInward(action) {
             method: 'POST',
             body: data
         });
-        if(newInwardEntry.status === 200) {
-            const newInwardEntryResponse = yield newInwardEntry.json();
+        if(newInwardEntry.status == 200) {
             yield put(submitInwardSuccess());
         } else
             yield put(submitInwardError('error'));
@@ -189,11 +195,44 @@ function* requestSaveCuttingInstruction(action) {
         });
         if(fetchPartyInwardList.status === 200) {
             const fetchPartyInwardListResponse = yield fetchPartyInwardList.json();
-            yield put(getCoilsByPartyIdSuccess(fetchPartyInwardListResponse.body));
+            yield put(saveCuttingInstructionSuccess(fetchPartyInwardListResponse.body));
         } else
-            yield put(getCoilsByPartyIdError('error'));
+            yield put(saveCuttingInstructionError('error'));
     } catch (error) {
-        yield put(getCoilsByPartyIdError(error));
+        yield put(saveCuttingInstructionError(error));
+    }
+}
+
+function* requestSaveSlittingInstruction(action) {
+    const requestBody = [];
+    action.slittingDetails.map((slitDetails) => {
+        const req = {
+            processdId: SLITTING_INSTRUCTION_PROCESS_ID,
+            instructionDate : moment().format('YYYY-MM-DD HH:mm:ss'),
+            length: slitDetails.length,
+            width: slitDetails.width,
+            weight: slitDetails.weight,
+            noOfPieces: slitDetails.no,
+            status: 1,
+            "createdBy" : "1",
+            "updatedBy" : "1",
+            inwardId: slitDetails.inwardId,
+        }
+        requestBody.push(req);
+    })
+    try {
+        const fetchPartyInwardList =  yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/instruction/save`, {
+            method: 'POST',
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(requestBody)
+        });
+        if(fetchPartyInwardList.status === 200) {
+            const fetchPartyInwardListResponse = yield fetchPartyInwardList.json();
+            yield put(saveSlittingInstructionSuccess(fetchPartyInwardListResponse.body));
+        } else
+            yield put(saveSlittingInstructionError('error'));
+    } catch (error) {
+        yield put(saveSlittingInstructionError(error));
     }
 }
 
@@ -204,6 +243,7 @@ export function* watchFetchRequests() {
     yield takeLatest(FETCH_INWARD_LIST_BY_PARTY_REQUEST, fetchInwardListByParty);
     yield takeLatest(FETCH_INWARD_PLAN_DETAILS_REQUESTED, fetchInwardPlanDetails);
     yield takeLatest(REQUEST_SAVE_CUTTING_DETAILS, requestSaveCuttingInstruction);
+    yield takeLatest(REQUEST_SAVE_SLITTING_DETAILS, requestSaveSlittingInstruction);
 }
 
 export default function* inwardSagas() {
