@@ -91,7 +91,7 @@ const CoilDetailsForm = (props) => {
                 <Form.Item label="Coil Thickness">
                     {getFieldDecorator('thickness', {
                         rules: [{ required: true, message: 'Please input the coil thickness!' },
-                            {pattern: "^(([1-9]*)|(([1-9]*)\\.([0-9]*)))$", message: 'Width should be a number'},
+                            {pattern: "^(([1-9]*)|(([1-9]*)\\.([0-9]*)))$", message: 'Coil thickness should be a number'},
                             {validator: checkThickness}
                         ],
                     })(
