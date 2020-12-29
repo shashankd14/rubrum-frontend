@@ -68,7 +68,10 @@ const InwardEntrySummary = (props) => {
                     <Button style={{ marginLeft: 8 }} onClick={() => props.updateStep(3)}>
                         <Icon type="left"/>Back
                     </Button>
-                    <Button type="primary" htmlType="submit" onClick={() => props.submitInwardEntry(props.inward)}>
+                    <Button type="primary" htmlType="submit" onClick={(e) => {
+                        e.preventDefault();
+                        props.submitInwardEntry(props.inward)
+                    }}>
                         Submit<Icon type="right"/>
                     </Button>
                 </Col>

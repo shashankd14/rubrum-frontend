@@ -17,6 +17,10 @@ const InvoiceDetailsForm = (props) => {
         });
     };
 
+    React.useEffect(() => {
+        console.log(props.inward);
+    }, [])
+
     return (
         <>
             <Col span={14}>

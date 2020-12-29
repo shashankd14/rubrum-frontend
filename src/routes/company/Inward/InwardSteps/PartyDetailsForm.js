@@ -45,7 +45,6 @@ const CreatePartyDetailsForm = (props) => {
                             <AutoComplete
                                 style={{width: 200}}
                                 onSelect={(value, option) => {
-                                   console.log(value);
                                 }}
                                 placeholder="enter customer name"
                                 dataSource={dataSource}

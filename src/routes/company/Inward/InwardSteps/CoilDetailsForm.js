@@ -20,6 +20,13 @@ const CoilDetailsForm = (props) => {
         });
     };
 
+    const checkCoilExists = (rule, value, callback) => {
+        if (!props.inwardStatus.loading && props.inwardStatus.success && !props.inwardStatus.duplicateCoil) {
+            return callback();
+        }
+        callback('The coil number already exists');
+    };
+
     const checkWidth = (rule, value, callback) => {
         if (parseFloat(value) < 2000) {
             return callback();
@@ -43,7 +50,7 @@ const CoilDetailsForm = (props) => {
 
     useEffect(() => {
         if(props.inward.width && props.inward.thickness && props.inward.netWeight) {
-            setLength(parseFloat(props.inward.netWeight)/(parseFloat(props.inward.thickness) * props.inward.width * 0.0785));
+            setLength(parseFloat(props.inward.netWeight)/7.85/(parseFloat(props.inward.thickness)/props.inward.width));
         }
     }, [props.inward]);
 
@@ -54,11 +61,12 @@ const CoilDetailsForm = (props) => {
                 <Form.Item
                     label="Coil number"
                     hasFeedback
-                    validateStatus={props.inward.coilNumber ? props.inwardStatus.loading ? 'validating' : !props.inwardStatus.loading && props.inwardStatus.success && !props.inwardStatus.duplicateCoil  ? 'success' : props.inwardStatus.error ? 'error' : '' : ''}
-                    help={props.inwardStatus.loading ? 'We are checking if the coil number already exists' : ''}
+                    validateStatus={props.inward.coilNumber ? props.inwardStatus.loading ? 'validating' : !props.inwardStatus.loading && props.inwardStatus.success && !props.inwardStatus.duplicateCoil  ? 'success' : props.inwardStatus.error || props.inwardStatus.duplicateCoil ? 'error' : '' : ''}
+                    help={props.inwardStatus.loading ? 'We are checking if the coil number already exists' : (!props.inwardStatus.loading && props.inwardStatus.success && props.inwardStatus.duplicateCoil) ? "The coil number already exists" :  ''}
                 >
                     {getFieldDecorator('coilNumber', {
-                        rules: [{ required: true, message: 'Please input the coil number!' }],
+                        rules: [{ required: true, message: 'Please input the coil number!' },
+                            {validator: checkCoilExists}],
                     })(
                         <Input id="validating" onBlur={(e) => props.checkIfCoilExists(e.target.value)} />
                     )}
@@ -78,7 +86,7 @@ const CoilDetailsForm = (props) => {
                         />
                     )}
                 </Form.Item>
-                <Form.Item label="Coil Width">
+                <Form.Item label="Coil Width (in mm)">
                     {getFieldDecorator('width', {
                         rules: [{ required: true, message: 'Please input the coil width!' },
                             {pattern: "^(([1-9]*)|(([1-9]*)\\.([0-9]*)))$", message: 'Width should be a number'},
@@ -88,7 +96,7 @@ const CoilDetailsForm = (props) => {
                         <Input id="coilWidth" />
                     )}
                 </Form.Item>
-                <Form.Item label="Coil Thickness">
+                <Form.Item label="Coil Thickness (in mm)">
                     {getFieldDecorator('thickness', {
                         rules: [{ required: true, message: 'Please input the coil thickness!' },
                             {pattern: "^(([1-9]*)|(([1-9]*)\\.([0-9]*)))$", message: 'Coil thickness should be a number'},
@@ -98,26 +106,26 @@ const CoilDetailsForm = (props) => {
                         <Input id="coilThickness" />
                     )}
                 </Form.Item>
-                <Form.Item label="Net Weight">
+                <Form.Item label="Net Weight (in kgs)">
                     {getFieldDecorator('netWeight', {
                         rules: [{ required: true, message: 'Please input the coil net weight!' }],
                     })(
                         <Input id="coilNetWeight" />
                     )}
                 </Form.Item>
-                <Form.Item label="Gross Weight">
+                <Form.Item label="Gross Weight (in kgs)">
                     {getFieldDecorator('grossWeight', {
                         rules: [{ required: true, message: 'Please input the coil gross weight!' }],
                     })(
                         <Input id="coilGrossWeight" />
                     )}
                 </Form.Item>
-                <Form.Item label="Coil Length">
-                    {getFieldDecorator('length', {
+                <Form.Item label="Coil Length (in mts)">
+                    {getFieldDecorator('approxLength', {
                         rules: [{ required: false, message: 'Please input the coil number!' }],
                     })(
                         <>
-                            <Input id="coilLength" value={approxLength} name="length" />Approx
+                            <Input id="coilLength" value={approxLength} name="approxLength" />Approx
                         </>
                     )}
                 </Form.Item>
@@ -173,9 +181,9 @@ const CoilDetails = Form.create({
                 ...props.inward.thickness,
                 value: (props.inward.thickness) ? props.inward.thickness : '',
             }),
-            length: Form.createFormField({
-                ...props.inward.length,
-                value: (props.inward.length) ? props.inward.length : '',
+            approxLength: Form.createFormField({
+                ...props.inward.approxLength,
+                value: (props.inward.approxLength) ? props.inward.approxLength : '',
             }),
             netWeight: Form.createFormField({
                 ...props.inward.netWeight,
