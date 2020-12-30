@@ -88,9 +88,7 @@ const CoilDetailsForm = (props) => {
                 </Form.Item>
                 <Form.Item label="Coil Width (in mm)">
                     {getFieldDecorator('width', {
-                        rules: [{ required: true, message: 'Please input the coil width!' },
-                            {pattern: "^(([1-9]*)|(([1-9]*)\\.([0-9]*)))$", message: 'Width should be a number'},
-                            {validator: checkWidth}
+                        rules: [{ required: true, message: 'Please input the coil width!' }
                         ],
                     })(
                         <Input id="coilWidth" />
