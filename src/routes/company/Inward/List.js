@@ -18,6 +18,7 @@ const List = (props) => {
     });
     const [filteredInfo, setFilteredInfo] = useState(null);
     const [searchValue, setSearchValue] = useState('');
+    const [filteredInwardList, setFilteredInwardList] = useState(props.inward.inwardList);
 
     const columns = [{
         title: 'Coil Number',
@@ -102,6 +103,21 @@ const List = (props) => {
         props.fetchInwardList();
     }, []);
 
+    useEffect(() => {
+        if(searchValue) {
+            const filteredData = props.inward.inwardList.filter((inward) => {
+                if(inward.coilNumber.toLowerCase().includes(searchValue.toLowerCase()) ||
+                    inward.party.nPartyName.toLowerCase().includes(searchValue.toLowerCase()) ||
+                    inward.vInvoiceNo.toLowerCase().includes(searchValue.toLowerCase())) {
+                    return inward
+                }
+            });
+            setFilteredInwardList(filteredData);
+        } else {
+            setFilteredInwardList(props.inward.inwardList);
+        }
+    }, [searchValue])
+
     const handleChange = (pagination, filters, sorter) => {
         setSortedInfo(sorter);
         setFilteredInfo(filters)
@@ -148,7 +164,7 @@ const List = (props) => {
                 <Table rowSelection={[]}
                        className="gx-table-responsive"
                        columns={columns}
-                       dataSource={props.inward.inwardList}
+                       dataSource={filteredInwardList}
                        onChange={handleChange}
                 />
             </Card>
