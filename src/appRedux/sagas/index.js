@@ -4,6 +4,7 @@ import notesSagas from "./Notes";
 import inwardSagas from "./Inward";
 import partySagas from "./Party";
 import materialSagas from "./Material";
+import deliverySagas from "./Delivery";
 
 export default function* rootSaga(getState) {
   yield all([fork(authSagas)]);
@@ -11,4 +12,5 @@ export default function* rootSaga(getState) {
   yield all([fork(inwardSagas)]);
   yield all([fork(partySagas)]);
   yield all([fork(materialSagas)]);
+  yield all([fork(deliverySagas)]);
 }

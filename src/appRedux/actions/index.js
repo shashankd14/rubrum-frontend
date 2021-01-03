@@ -6,4 +6,5 @@ export * from './Contact';
 export * from './Inward';
 export * from './Party';
 export * from './Material';
+export * from './Delivery';
 

@@ -64,8 +64,10 @@ const CreateCuttingDetailsForm = (props) => {
 
     const handleSubmit = e => {
         e.preventDefault();
-        console.log(props.inward.process);
-        setCuts([...cuts, props.inward.process])
+        setCuts([...cuts, {...props.inward.process,
+            inwardId: props.coilDetails.inwardEntryId ? props.coilDetails.inwardEntryId : "",
+            instructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : ""
+        }]);
     };
 
     useEffect(() => {

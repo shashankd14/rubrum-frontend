@@ -209,7 +209,8 @@ function* requestSaveCuttingInstruction(action) {
             status: 1,
             "createdBy" : "1",
             "updatedBy" : "1",
-            inwardId: cutDetails.inwardId,
+            inwardId: cutDetails.inwardId ? cutDetails.inwardId : "",
+            parentInstructionId: cutDetails.instructionId ? cutDetails.instructionId : ""
         }
         requestBody.push(req);
     })
@@ -230,6 +231,7 @@ function* requestSaveCuttingInstruction(action) {
 
 function* requestSaveSlittingInstruction(action) {
     const requestBody = [];
+    console.log(action.slittingDetails)
     action.slittingDetails.map((slitDetails) => {
         const req = {
             processdId: SLITTING_INSTRUCTION_PROCESS_ID,
@@ -241,7 +243,8 @@ function* requestSaveSlittingInstruction(action) {
             status: 1,
             "createdBy" : "1",
             "updatedBy" : "1",
-            inwardId: slitDetails.inwardId,
+            inwardId: slitDetails.inwardId ? slitDetails.inwardId : '',
+            parentInstructionId: slitDetails.instructionId ? slitDetails.instructionId : '',
         }
         requestBody.push(req);
     })

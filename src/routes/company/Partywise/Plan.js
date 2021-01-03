@@ -19,10 +19,18 @@ const Plan = (props) => {
         props.getCoilPlanDetails(props.match.params.coilNumber);
     }, [])
 
+    useEffect(() => {
+        if(slittingCoil) {
+            console.log(slittingCoil);
+            setShowSlittingModal(true);
+            setSlittingCoil('');
+        }
+    }, [slittingCoil])
+
     return (
         <div className="gx-full-height">
-            <CuttingModal showCuttingModal={showCuttingModal} setShowCuttingModal={() => setShowCuttingModal(false)} coilDetails={cuttingCoil}/>
-            <SlittingModal showSlittingModal={showSlittingModal} setShowSlittingModal={() => setShowSlittingModal(false)} coilDetails={slittingCoil}/>
+            <CuttingModal showCuttingModal={showCuttingModal} setShowCuttingModal={() => setShowCuttingModal(false)} coilDetails={cuttingCoil} />
+            <SlittingModal showSlittingModal={showSlittingModal} setShowSlittingModal={() => setShowSlittingModal(false)} coilDetails={slittingCoil} />
             <h1><IntlMessages id="partywise.plan.label"/></h1>
             <div className="gx-full-height gx-flex-row">
                 <Col lg={7} md={7} sm={24} xs={24} className="gx-align-self-center">
@@ -45,12 +53,12 @@ const Plan = (props) => {
                         </div>
                         <div>
                             <Button onClick={() => {
-                                setShowCuttingModal(true)
-                                setCuttingCoil(props.inward);
+                                setCuttingCoil(props.inward.plan);
+                                setShowCuttingModal(true);
                             }}>Cutting</Button>
                             <Button onClick={() => {
+                                setSlittingCoil(props.inward.plan);
                                 setShowSlittingModal(true)
-                                setSlittingCoil(props.inward);
                             }}>Slitting</Button>
                         </div>
                     </Card>
@@ -60,7 +68,7 @@ const Plan = (props) => {
                         <>
                             {group.length > 0 ? <Card className={`gx-entry ${group[0].processdId == CUTTING_INSTRUCTION_PROCESS_ID ? 'gx-cutting-group' : 'gx-slitting-group'}`}>
                                 {group.map((instruction) => (
-                                    <Card className={`${instruction.processdId == CUTTING_INSTRUCTION_PROCESS_ID ? 'gx-cutting-single' : 'gx-slitting-single'}`} size="small">
+                                    <Card key={instruction.instructionId} className={`${instruction.processdId == CUTTING_INSTRUCTION_PROCESS_ID ? 'gx-cutting-single' : 'gx-slitting-single'}`} size="small">
                                         <img style={{position: "absolute", right: "10.35px"}} src={require("assets/images/inward/info_icon.svg")} alt="main coil image" title="main coil image"/>
                                         <div className="gx-coil-image-bg gx-flex-row gx-align-items-center gx-justify-content-center">
                                             {instruction.processdId == CUTTING_INSTRUCTION_PROCESS_ID ?
@@ -79,7 +87,14 @@ const Plan = (props) => {
                                                 <span className="gx-coil-details-label">{props.inward.plan.fQuantity}</span>
                                             </div>
                                             <div>
-                                                <Button onClick={() => setShowCuttingModal(true)}>Cutting</Button>
+                                                <Button onClick={() => {
+                                                    setCuttingCoil(instruction);
+                                                    setShowCuttingModal(true);
+                                                }}>Cutting</Button>
+                                                <Button onClick={() => {
+                                                    setSlittingCoil(instruction);
+                                                    setShowSlittingModal(true)
+                                                }}>Slitting</Button>
                                             </div>
                                         </div>
 

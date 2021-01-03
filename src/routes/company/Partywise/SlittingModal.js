@@ -87,7 +87,13 @@ const SlittingWidths = (props) => {
                 let totalWidth = 0
                 const slits = []
                 for(let i=0; i < values.widths.length; i++) {
-                    slits.push({name: i+1, processDate: moment().format(APPLICATION_DATE_FORMAT), length: values.length,width: values.widths[i], no: values.nos[i],weight:values.weights[i], inwardId: props.coilDetails.inwardEntryId})
+                    slits.push({name: i+1, processDate: moment().format(APPLICATION_DATE_FORMAT),
+                        length: values.length,width: values.widths[i],
+                        no: values.nos[i],
+                        weight:values.weights[i],
+                        inwardId: props.coilDetails.inwardEntryId ? props.coilDetails.inwardEntryId : '',
+                        instructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : '',
+                    })
                     totalWidth += values.widths[i]*values.nos[i];
                 }
                 if(totalWidth > props.coilDetails.fWidth) {
@@ -284,9 +290,6 @@ const CuttingDetailsForm = Form.create({
                 ...props.inward.process.weight,
                 value: (props.inward.process.weight) ? props.inward.process.weight : '',
             }),
-            coilDetails: Form.createFormField({
-                value: props.coilDetails.plan
-            })
         };
     },
     onValuesChange(props, values) {

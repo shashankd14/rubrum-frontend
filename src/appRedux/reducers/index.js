@@ -8,6 +8,7 @@ import Common from "./Common";
 import Inward from "./Inward";
 import Party from "./Party";
 import Material from "./Material";
+import Delivery from "./Delivery";
 
 const createRootReducer = (history) => combineReducers({
   router: connectRouter(history),
@@ -18,7 +19,8 @@ const createRootReducer = (history) => combineReducers({
   common: Common,
   inward: Inward,
   party: Party,
-  material: Material
+  material: Material,
+  deliveries: Delivery
 });
 
 export default createRootReducer

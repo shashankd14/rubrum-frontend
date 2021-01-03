@@ -82,6 +82,12 @@ const SidebarContent = () => {
                     <span><IntlMessages id="sidebar.company.partywiseRegister"/></span>
                   </Link>
                 </Menu.Item>
+                <Menu.Item key="company/deliveredItems">
+                  <Link to="/company/deliveredItems">
+                    <i className="icon icon-crypto"/>
+                    <span><IntlMessages id="sidebar.company.deliveryItems"/></span>
+                  </Link>
+                </Menu.Item>
                 <Menu.Item key="main/company/workin-progress">
                   <Link to="/company/workin-progress">
                     <i className="icon icon-crypto"/>
