@@ -62,6 +62,7 @@ const CreateCuttingDetailsForm = (props) => {
     const {getFieldDecorator} = props.form;
     const [cuts, setCuts] = useState([]);
 
+    console.log(props);
     const handleSubmit = e => {
         e.preventDefault();
         setCuts([...cuts, {...props.inward.process,
@@ -72,7 +73,10 @@ const CreateCuttingDetailsForm = (props) => {
 
     useEffect(() => {
         if(props.inward.process.length && props.inward.process.no) {
-             props.setProcessDetails({...props.inward.process, weight: 0.00000000785*parseFloat(props.inward.plan.fWidth)*parseFloat(props.inward.plan.fThickness)*parseFloat(props.inward.process.length)*parseFloat(props.inward.process.no)});
+            if(props.coilDetails.instructionId)
+                props.setProcessDetails({...props.inward.process, weight: 0.00000000785*parseFloat(props.coilDetails.width)*parseFloat(props.inward.plan.fThickness)*parseFloat(props.inward.process.length)*parseFloat(props.inward.process.no)});
+            else
+                props.setProcessDetails({...props.inward.process, weight: 0.00000000785*parseFloat(props.inward.plan.fWidth)*parseFloat(props.inward.plan.fThickness)*parseFloat(props.inward.process.length)*parseFloat(props.inward.process.no)});
         }
     }, [props.inward.process.length, props.inward.process.no])
 
@@ -147,7 +151,6 @@ const mapStateToProps = state => ({
 
 const CuttingDetailsForm = Form.create({
     onFieldsChange(props, changedFields) {
-        console.log(props);
     },
     mapPropsToFields(props) {
         return {

@@ -20,17 +20,26 @@ const Plan = (props) => {
     }, [])
 
     useEffect(() => {
+        console.log(slittingCoil);
+
         if(slittingCoil) {
-            console.log(slittingCoil);
+            setSlittingCoil(slittingCoil);
             setShowSlittingModal(true);
-            setSlittingCoil('');
         }
     }, [slittingCoil])
 
+    useEffect(() => {
+        console.log(cuttingCoil);
+        if(cuttingCoil) {
+            setCuttingCoil(cuttingCoil);
+            setShowCuttingModal(true);
+        }
+    }, [cuttingCoil])
+
     return (
         <div className="gx-full-height">
-            <CuttingModal showCuttingModal={showCuttingModal} setShowCuttingModal={() => setShowCuttingModal(false)} coilDetails={cuttingCoil} />
-            <SlittingModal showSlittingModal={showSlittingModal} setShowSlittingModal={() => setShowSlittingModal(false)} coilDetails={slittingCoil} />
+            {cuttingCoil && <CuttingModal showCuttingModal={showCuttingModal} setShowCuttingModal={() => setShowCuttingModal(false)} coilDetails={cuttingCoil} />}
+            {slittingCoil && <SlittingModal showSlittingModal={showSlittingModal} setShowSlittingModal={() => setShowSlittingModal(false)} coilDetails={slittingCoil} />}
             <h1><IntlMessages id="partywise.plan.label"/></h1>
             <div className="gx-full-height gx-flex-row">
                 <Col lg={7} md={7} sm={24} xs={24} className="gx-align-self-center">
@@ -68,7 +77,7 @@ const Plan = (props) => {
                         <>
                             {group.length > 0 ? <Card className={`gx-entry ${group[0].processdId == CUTTING_INSTRUCTION_PROCESS_ID ? 'gx-cutting-group' : 'gx-slitting-group'}`}>
                                 {group.map((instruction) => (
-                                    <Card key={instruction.instructionId} className={`${instruction.processdId == CUTTING_INSTRUCTION_PROCESS_ID ? 'gx-cutting-single' : 'gx-slitting-single'}`} size="small">
+                                    <Card key={`${props.inward.plan.coilNumber}${instruction.instructionId}`} className={`${instruction.processdId == CUTTING_INSTRUCTION_PROCESS_ID ? 'gx-cutting-single' : 'gx-slitting-single'}`} size="small">
                                         <img style={{position: "absolute", right: "10.35px"}} src={require("assets/images/inward/info_icon.svg")} alt="main coil image" title="main coil image"/>
                                         <div className="gx-coil-image-bg gx-flex-row gx-align-items-center gx-justify-content-center">
                                             {instruction.processdId == CUTTING_INSTRUCTION_PROCESS_ID ?
@@ -80,20 +89,20 @@ const Plan = (props) => {
                                             {instruction.processdId == CUTTING_INSTRUCTION_PROCESS_ID ? 'Cutting' : 'Slitting'}
                                             <div className="gx-flex-row">
                                                 <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.availableLength"/> : </p>
-                                                <span className="gx-coil-details-label">{props.inward.plan.fLength}</span>
+                                                <span className="gx-coil-details-label">{instruction.length}</span>
                                             </div>
                                             <div className="gx-flex-row">
                                                 <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.availableWeight"/> : </p>
-                                                <span className="gx-coil-details-label">{props.inward.plan.fQuantity}</span>
+                                                <span className="gx-coil-details-label">{instruction.weight}</span>
                                             </div>
                                             <div>
-                                                <Button onClick={() => {
+                                                <Button onClick={(e) => {
+                                                    e.stopPropagation();
                                                     setCuttingCoil(instruction);
-                                                    setShowCuttingModal(true);
                                                 }}>Cutting</Button>
-                                                <Button onClick={() => {
+                                                <Button onClick={(e) => {
+                                                    e.stopPropagation();
                                                     setSlittingCoil(instruction);
-                                                    setShowSlittingModal(true)
                                                 }}>Slitting</Button>
                                             </div>
                                         </div>

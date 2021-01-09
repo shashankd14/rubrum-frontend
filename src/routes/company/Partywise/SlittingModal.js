@@ -130,8 +130,8 @@ const SlittingWidths = (props) => {
     return (
         <>
             <Form {...formItemLayoutSlitting}>
-                <label>Available length : {props.coilDetails.fLength}</label>
-                <div><label>Available width : {props.coilDetails.fWidth}</label></div>
+                <label>Available length : {props.coilDetails.fLength ? props.coilDetails.fLength : props.coilDetails.length}</label>
+                <div><label>Available width : {props.coilDetails.fWidth ? props.coilDetails.fWidth : props.coilDetails.width}</label></div>
 
                 <Form.Item label="Length">
                     {getFieldDecorator('length', {
@@ -211,7 +211,7 @@ const SlittingWidths = (props) => {
     )
 }
 
-const CreateCuttingDetailsForm = (props) => {
+const CreateSlittingDetailsForm = (props) => {
     const {getFieldDecorator} = props.form;
     const [cuts, setCuts] = useState([]);
     let loading = '';
@@ -251,7 +251,7 @@ const CreateCuttingDetailsForm = (props) => {
                     <h3>Coil Details </h3>
                     <Form {...formItemLayout} className="login-form gx-pt-4">
                         <Form.Item>
-                            <SlittingWidthsForm setSlits={(slits) => setCuts([...cuts, slits])} coilDetails={props.inward.plan}/>
+                            <SlittingWidthsForm setSlits={(slits) => setCuts([...cuts, slits])} coilDetails={props.coilDetails}/>
                         </Form.Item>
 
                     </Form>
@@ -269,7 +269,8 @@ const mapStateToProps = state => ({
     inward: state.inward,
 });
 
-const CuttingDetailsForm = Form.create({
+const SlittingDetailsForm = Form.create({
+
     onFieldsChange(props, changedFields) {
     },
     mapPropsToFields(props) {
@@ -295,8 +296,8 @@ const CuttingDetailsForm = Form.create({
     onValuesChange(props, values) {
         props.setProcessDetails({ ...props.inward.process, ...values});
     },
-})(CreateCuttingDetailsForm);
+})(CreateSlittingDetailsForm);
 
 const SlittingWidthsForm = Form.create()(SlittingWidths);
 
-export default  connect(mapStateToProps, {setProcessDetails, saveSlittingInstruction, resetInstruction})(CuttingDetailsForm);
+export default connect(mapStateToProps, {setProcessDetails, saveSlittingInstruction, resetInstruction})(SlittingDetailsForm);
