@@ -7,7 +7,7 @@ import {
     FETCH_INWARD_LIST_BY_PARTY_REQUEST,
     FETCH_INWARD_PLAN_DETAILS_REQUESTED,
     REQUEST_SAVE_CUTTING_DETAILS,
-    REQUEST_SAVE_SLITTING_DETAILS
+    REQUEST_SAVE_SLITTING_DETAILS, FETCH_MATERIAL_GRADE_LIST_REQUEST
 } from "../../constants/ActionTypes";
 
 import {
@@ -24,7 +24,9 @@ import {
     saveCuttingInstructionSuccess,
     saveCuttingInstructionError,
     saveSlittingInstructionSuccess,
-    saveSlittingInstructionError
+    saveSlittingInstructionError,
+    getGradeByMaterialIdSuccess,
+    getGradeByMaterialIdError
 } from "../actions";
 import {CUTTING_INSTRUCTION_PROCESS_ID, SLITTING_INSTRUCTION_PROCESS_ID} from "../../constants";
 
@@ -199,13 +201,12 @@ function* fetchInwardPlanDetails(action) {
 function* requestSaveCuttingInstruction(action) {
     const requestBody = [];
     action.cuttingDetails.map((cutDetails) => {
-        console.log(cutDetails);
         const req = {
-            processdId: CUTTING_INSTRUCTION_PROCESS_ID,
+            processId: CUTTING_INSTRUCTION_PROCESS_ID,
             instructionDate :  moment(cutDetails.processDate).format('YYYY-MM-DD HH:mm:ss'),
-            length: cutDetails.length,
-            weight: cutDetails.weight,
-            noOfPieces: cutDetails.no,
+            plannedLength: cutDetails.length,
+            plannedWeight: cutDetails.weight,
+            plannedNoOfPieces: cutDetails.no,
             status: 1,
             "createdBy" : "1",
             "updatedBy" : "1",
@@ -231,15 +232,14 @@ function* requestSaveCuttingInstruction(action) {
 
 function* requestSaveSlittingInstruction(action) {
     const requestBody = [];
-    console.log(action.slittingDetails)
     action.slittingDetails.map((slitDetails) => {
         const req = {
-            processdId: SLITTING_INSTRUCTION_PROCESS_ID,
+            processId: SLITTING_INSTRUCTION_PROCESS_ID,
             instructionDate: moment().format('YYYY-MM-DD HH:mm:ss'),
-            length: slitDetails.length,
-            width: slitDetails.width,
-            weight: slitDetails.weight,
-            noOfPieces: slitDetails.no,
+            plannedLength: slitDetails.length,
+            plannedWidth: slitDetails.width,
+            plannedWeight: slitDetails.weight,
+            plannedNoOfPieces: slitDetails.no,
             status: 1,
             "createdBy" : "1",
             "updatedBy" : "1",
@@ -263,6 +263,21 @@ function* requestSaveSlittingInstruction(action) {
     }
 }
 
+function* requestGradesByMaterialId(action) {
+    try {
+        const fetchGradesByMaterialIdList =  yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/materialGrade/getByMaterialId/${action.materialId}`, {
+            method: 'GET',
+        });
+        if(fetchGradesByMaterialIdList.status === 200) {
+            const fetchGradesByMaterialIdListResponse = yield fetchGradesByMaterialIdList.json();
+            yield put(getGradeByMaterialIdSuccess(fetchGradesByMaterialIdListResponse));
+        } else
+            yield put(getGradeByMaterialIdError('error'));
+    } catch (error) {
+        yield put(getGradeByMaterialIdError(error));
+    }
+}
+
 export function* watchFetchRequests() {
     yield takeLatest(FETCH_INWARD_LIST_REQUEST, fetchInwardList);
     yield takeLatest(SUBMIT_INWARD_ENTRY, submitInward);
@@ -271,6 +286,7 @@ export function* watchFetchRequests() {
     yield takeLatest(FETCH_INWARD_PLAN_DETAILS_REQUESTED, fetchInwardPlanDetails);
     yield takeLatest(REQUEST_SAVE_CUTTING_DETAILS, requestSaveCuttingInstruction);
     yield takeLatest(REQUEST_SAVE_SLITTING_DETAILS, requestSaveSlittingInstruction);
+    yield takeLatest(FETCH_MATERIAL_GRADE_LIST_REQUEST, requestGradesByMaterialId);
 }
 
 export default function* inwardSagas() {

@@ -48,7 +48,9 @@ const CreatePartyDetailsForm = (props) => {
                                 }}
                                 placeholder="enter customer name"
                                 dataSource={dataSource}
-                                filterOption
+                                filterOption={(inputValue, option) =>
+                                    option.props.children.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
+                                }
                             />
                         )}
                     </Form.Item>

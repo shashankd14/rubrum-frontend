@@ -15,6 +15,8 @@ const CoilDetailsForm = (props) => {
 
         props.form.validateFields((err, values) => {
             if (!err) {
+                props.setInwardDetails({ ...props.inward, length: approxLength});
+                props.getGradeByMaterialId(props.inward.material);
                 props.updateStep(2);
             }
         });
@@ -50,7 +52,7 @@ const CoilDetailsForm = (props) => {
 
     useEffect(() => {
         if(props.inward.width && props.inward.thickness && props.inward.netWeight) {
-            setLength(parseFloat(props.inward.netWeight)/7.85/(parseFloat(props.inward.thickness)/props.inward.width));
+            setLength(parseFloat(parseFloat(props.inward.netWeight)/7.85/(parseFloat(props.inward.thickness)/props.inward.width)).toFixed(4));
         }
     }, [props.inward]);
 
@@ -82,7 +84,9 @@ const CoilDetailsForm = (props) => {
                             }}
                             placeholder="enter material"
                             dataSource={dataSource}
-                            filterOption
+                            filterOption={(inputValue, option) =>
+                                option.props.children.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
+                            }
                         />
                     )}
                 </Form.Item>

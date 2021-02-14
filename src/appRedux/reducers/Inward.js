@@ -24,7 +24,7 @@ import {
     REQUEST_SAVE_CUTTING_DETAILS,
     SAVE_CUTTING_DETAILS_SUCCESS,
     SAVE_CUTTING_DETAILS_ERROR,
-    RESET_INSTRUCTION_FORM
+    RESET_INSTRUCTION_FORM, FETCH_MATERIAL_GRADE_LIST_REQUEST, FETCH_MATERIAL_GRADE_LIST_SUCCESS
 } from "../../constants/ActionTypes";
 
 const INIT_STATE = {
@@ -44,6 +44,7 @@ const INIT_STATE = {
     instructionSaveLoading: false,
     instructionSaveSuccess: false,
     instructionSaveError: false,
+    materialGrades: {}
 };
 
 export default (state = INIT_STATE, action) => {
@@ -224,6 +225,11 @@ export default (state = INIT_STATE, action) => {
                 instructionSaveError: true,
             }
         }
+        case FETCH_MATERIAL_GRADE_LIST_SUCCESS:
+            return {
+                ...state,
+                materialGrades: action.payload
+            }
         case RESET_INSTRUCTION_FORM: {
             return {
                 ...state,

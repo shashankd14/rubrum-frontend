@@ -62,7 +62,6 @@ const CreateCuttingDetailsForm = (props) => {
     const {getFieldDecorator} = props.form;
     const [cuts, setCuts] = useState([]);
 
-    console.log(props);
     const handleSubmit = e => {
         e.preventDefault();
         setCuts([...cuts, {...props.inward.process,

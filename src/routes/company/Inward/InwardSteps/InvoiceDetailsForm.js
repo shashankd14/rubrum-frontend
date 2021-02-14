@@ -1,8 +1,11 @@
 import React from "react";
 import {connect} from "react-redux";
+import moment from "moment";
 import {setInwardDetails} from "../../../../appRedux/actions";
 import {Button, Col, Form, Icon, Input, Row, DatePicker, Card} from "antd";
 import {formItemLayout} from "../Create";
+
+import {APPLICATION_DATE_FORMAT} from '../../../../constants/index';
 
 const InvoiceDetailsForm = (props) => {
     const {getFieldDecorator} = props.form;
@@ -27,11 +30,15 @@ const InvoiceDetailsForm = (props) => {
                 <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4">
                     <Form.Item label="Received Date">
                         {getFieldDecorator('receivedDate', {
+                            initialValue: moment(new Date(), APPLICATION_DATE_FORMAT),
                             rules: [{ required: true, message: 'Please select a received date' }],
                         })(
                             <DatePicker
                                 style={{width: 200}}
-                                className="gx-mb-3 gx-w-100"/>
+                                className="gx-mb-3 gx-w-100"
+                                defaultValue={moment(new Date(), APPLICATION_DATE_FORMAT)}
+                                format={APPLICATION_DATE_FORMAT}
+                            />
                         )}
                     </Form.Item>
                     <Form.Item label="Batch No.">
@@ -57,11 +64,15 @@ const InvoiceDetailsForm = (props) => {
                     </Form.Item>
                     <Form.Item label="Invoice date">
                         {getFieldDecorator('invoiceDate', {
+                            initialValue: moment(new Date(), APPLICATION_DATE_FORMAT),
                             rules: [{ required: false, message: 'Please select a received date' }],
                         })(
                             <DatePicker
                                 style={{width: 200}}
-                                className="gx-mb-3 gx-w-100"/>
+                                className="gx-mb-3 gx-w-100"
+                                defaultValue={moment(new Date(), APPLICATION_DATE_FORMAT)}
+                                format={APPLICATION_DATE_FORMAT}
+                            />
                         )}
                     </Form.Item>
                     <Row className="gx-mt-4">
@@ -107,7 +118,7 @@ const InvoiceDetails = Form.create({
         return {
             receivedDate: Form.createFormField({
                 ...props.inward.receivedDate,
-                value: (props.inward.receivedDate) ? props.inward.receivedDate : '',
+                value: (props.inward.receivedDate) ? props.inward.receivedDate : moment(new Date(), APPLICATION_DATE_FORMAT),
             }),
             batchNo: Form.createFormField({
                 ...props.inward.batchNo,
@@ -123,7 +134,7 @@ const InvoiceDetails = Form.create({
             }),
             invoiceDate: Form.createFormField({
                 ...props.inward.invoiceDate,
-                value: (props.inward.invoiceDate) ? props.inward.invoiceDate : '',
+                value: (props.inward.invoiceDate) ? props.inward.invoiceDate : moment(new Date(), APPLICATION_DATE_FORMAT),
             }),
         };
     },

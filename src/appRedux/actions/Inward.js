@@ -28,7 +28,11 @@ import {
     SAVE_SLITTING_DETAILS_ERROR,
 
     RESET_INSTRUCTION_FORM,
-    RESET_INWARD_FORM
+    RESET_INWARD_FORM,
+
+    FETCH_MATERIAL_GRADE_LIST_REQUEST,
+    FETCH_MATERIAL_GRADE_LIST_SUCCESS,
+    FETCH_MATERIAL_GRADE_LIST_ERROR
 } from "../../constants/ActionTypes";
 
 export const fetchInwardList = () => ({
@@ -66,7 +70,18 @@ export const checkDuplicateCoilError = (error) => ({
 })
 
 export const getGradeByMaterialId = (materialId) => ({
+    type: FETCH_MATERIAL_GRADE_LIST_REQUEST,
+    materialId
+});
 
+export const getGradeByMaterialIdSuccess = (payload) => ({
+    type: FETCH_MATERIAL_GRADE_LIST_SUCCESS,
+    payload
+});
+
+export const getGradeByMaterialIdError = (error) => ({
+    type: FETCH_MATERIAL_GRADE_LIST_ERROR,
+    error
 });
 
 export const submitInwardEntry = (inward) => ({

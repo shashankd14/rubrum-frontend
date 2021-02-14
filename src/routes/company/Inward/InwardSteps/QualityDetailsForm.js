@@ -1,14 +1,16 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import {setInwardDetails} from "../../../../appRedux/actions";
-import {Form, Input, Upload, Icon, Row, Col, Button, Card} from "antd";
+import {Form, Input, Upload, Icon, Row, Col, Button, Card, AutoComplete} from "antd";
 import {formItemLayout} from "../Create";
 
 const QualityDetailsForm = (props) => {
     const {getFieldDecorator} = props.form;
+    const [dataSource, setDataSource] = useState([]);
+
     const { Dragger } = Upload;
     const { TextArea } = Input;
-console.log(props);
+
     const handleSubmit = e => {
         e.preventDefault();
         props.form.validateFields((err, values) => {
@@ -18,6 +20,14 @@ console.log(props);
         });
     };
 
+    useEffect(() => {
+        console.log(props.inwardDetails);
+        if(props.inwardDetails.materialGrades.length > 0) {
+            let materialListArr = props.inwardDetails.materialGrades.map(materialGrade => ({ value: materialGrade.gradeId, text: materialGrade.gradeName }));
+            setDataSource(materialListArr);
+        }
+    }, [props.inward.materialGrades]);
+
     return (
         <>
             <Col span={14}>
@@ -26,7 +36,17 @@ console.log(props);
                 {getFieldDecorator('grade', {
                     rules: [{ required: false, message: 'Please select a received date' }],
                 })(
-                    <Input id="grade" />
+                    <AutoComplete
+                        style={{width: 200}}
+                        onSelect={(value, option) => {
+                            // props.getGradeByMaterialId();
+                        }}
+                        placeholder="enter material"
+                        dataSource={dataSource}
+                        filterOption={(inputValue, option) =>
+                            option.props.children.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
+                        }
+                    />
                 )}
             </Form.Item>
             <Form.Item label="Test Certificate No">
@@ -115,6 +135,7 @@ console.log(props);
 
 const mapStateToProps = state => ({
     inward: state.inward.inward,
+    inwardDetails: state.inward
 });
 
 const QualityDetails = Form.create({
