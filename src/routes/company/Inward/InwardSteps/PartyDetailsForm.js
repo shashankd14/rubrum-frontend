@@ -44,8 +44,6 @@ const CreatePartyDetailsForm = (props) => {
                         })(
                             <AutoComplete
                                 style={{width: 200}}
-                                onSelect={(value, option) => {
-                                }}
                                 placeholder="enter customer name"
                                 dataSource={dataSource}
                                 filterOption={(inputValue, option) =>
@@ -77,7 +75,7 @@ const CreatePartyDetailsForm = (props) => {
                     </Form.Item>
                     <Form.Item label="Purpose Type">
                         {getFieldDecorator('purposeType', {
-                            rules: [{ required: false, message: 'Please select a purpose type!' }],
+                            rules: [{ required: true, message: 'Please select a purpose type!' }],
                         })(
                             <Select placeholder="Select an option">
                                 <Option value="TRADING">Trading (SELF)</Option>
