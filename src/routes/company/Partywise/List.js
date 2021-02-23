@@ -9,7 +9,7 @@ import {
     fetchInwardList,
     getCoilsByPartyId
 } from "../../../appRedux/actions/Inward";
-import {fetchPartyList} from "../../../appRedux/actions";
+import {fetchPartyList,setInwardSelectedForDelivery} from "../../../appRedux/actions";
 
 const Option = Select.Option;
 
@@ -22,6 +22,7 @@ const List = (props) => {
     const [filteredInfo, setFilteredInfo] = useState(null);
     const [searchValue, setSearchValue] = useState('');
     const [filteredInwardList, setFilteredInwardList] = useState(props.inward.inwardList);
+    const [selectedRowKeys, setSelectedRowKeys] = useState([])
 
     const columns = [{
         title: 'Coil Number',
@@ -152,6 +153,17 @@ const List = (props) => {
         console.log('focus');
     }
 
+    const setSelection = (record,selected,selectedRows) => {
+        setSelectedRowKeys(selectedRows)
+        props.setInwardSelectedForDelivery(selectedRows)
+        console.log(selectedRowKeys)
+    }
+
+    const handleSelection = {onSelect:setSelection,getCheckboxProps: (record) => ({
+        // disabled: record.status.statusName !== 'READY FOR DELIVERY'
+      })}
+    
+
     return (
         <div>
             <h1><IntlMessages id="sidebar.company.partywiseRegister"/></h1>
@@ -176,13 +188,24 @@ const List = (props) => {
                         <Button onClick={clearFilters}>Clear All filters</Button>
                     </div>
                     <div className="gx-flex-row gx-w-50">
+                        { selectedRowKeys.length < 1 ? <Button type="primary" icon={() => <i className="icon icon-add"/>} size="medium"
+                              disabled
+                        >Delivery</Button> : 
+                    <Button type="primary" icon={() => <i className="icon icon-add"/>} size="medium"
+                                onClick={() => {
+                                        props.history.push('/company/partywise-register/delivery')
+                                    }
+                                }
+                        >Delivery</Button>}
                         <Button type="primary" icon={() => <i className="icon icon-add"/>} size="medium"
-                                onClick={() => props.history.push('/company/inward/create')}
+                                onClick={() => {
+                                    
+                                    props.history.push('/company/inward/create')}}
                         >Add Inward</Button>
                         <SearchBox styleName="gx-flex-1" placeholder="Search for coil number or party name..." value={searchValue} onChange={(e) => setSearchValue(e.target.value)}/>
                     </div>
                 </div>
-                <Table rowSelection={[]}
+                <Table rowSelection={handleSelection}
                        className="gx-table-responsive"
                        columns={columns}
                        dataSource={filteredInwardList}
@@ -201,5 +224,7 @@ const mapStateToProps = state => ({
 export default connect(mapStateToProps, {
     fetchPartyList,
     fetchInwardList,
-    getCoilsByPartyId
+    getCoilsByPartyId,
+    getCoilsByPartyId,
+    setInwardSelectedForDelivery,
 })(List);

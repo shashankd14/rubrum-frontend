@@ -32,7 +32,12 @@ import {
 
     FETCH_MATERIAL_GRADE_LIST_REQUEST,
     FETCH_MATERIAL_GRADE_LIST_SUCCESS,
-    FETCH_MATERIAL_GRADE_LIST_ERROR
+    FETCH_MATERIAL_GRADE_LIST_ERROR,
+
+    SET_INWARD_SELECTED_FOR_DELIVERY,
+    POST_DELIVERY_CONFORM_REQUESTED,
+    POST_DELIVERY_CONFORM_SUCCESS,
+    POST_DELIVERY_CONFORM_ERROR,
 } from "../../constants/ActionTypes";
 
 export const fetchInwardList = () => ({
@@ -170,4 +175,24 @@ export const resetInstruction = () => ({
 
 export const resetInwardForm = () => ({
     type: RESET_INWARD_FORM,
+})
+
+export const setInwardSelectedForDelivery = (payload) =>  ({
+    type: SET_INWARD_SELECTED_FOR_DELIVERY,
+    payload:payload
+})
+
+export const postDeliveryConform = (payload) => ({
+    type: POST_DELIVERY_CONFORM_REQUESTED,
+    payload:payload
+})
+
+export const postDeliveryConformSuccess = (payload) => ({
+    type: POST_DELIVERY_CONFORM_SUCCESS,
+    payload:payload
+})
+
+export const postDeliveryConformError = (error) => ({
+    type: POST_DELIVERY_CONFORM_ERROR,
+    payload:error
 })

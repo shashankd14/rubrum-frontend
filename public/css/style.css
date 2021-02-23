@@ -37153,6 +37153,21 @@ textarea.gx-chat-textarea {
   top: 50%;
   margin-top: 1px;
 }
+
+.gx-branch-lvl2 {
+  position: relative;
+  margin-left: 330px;
+}
+.gx-branch-lvl2:before {
+  content: "";
+  width: 56px;
+  border-top: 2px solid #151515;
+  position: absolute;
+  left: -56px;
+  top: 50%;
+  margin-top: 1px;
+}
+
 .gx-entry {
   position: relative;
   min-height: 60px;

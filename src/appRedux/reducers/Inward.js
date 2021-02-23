@@ -24,7 +24,13 @@ import {
     REQUEST_SAVE_CUTTING_DETAILS,
     SAVE_CUTTING_DETAILS_SUCCESS,
     SAVE_CUTTING_DETAILS_ERROR,
-    RESET_INSTRUCTION_FORM, FETCH_MATERIAL_GRADE_LIST_REQUEST, FETCH_MATERIAL_GRADE_LIST_SUCCESS
+    RESET_INSTRUCTION_FORM, FETCH_MATERIAL_GRADE_LIST_REQUEST, FETCH_MATERIAL_GRADE_LIST_SUCCESS,
+
+    SET_INWARD_SELECTED_FOR_DELIVERY,
+    POST_DELIVERY_CONFORM_REQUESTED,
+    POST_DELIVERY_CONFORM_SUCCESS,
+    POST_DELIVERY_CONFORM_ERROR,
+
 } from "../../constants/ActionTypes";
 
 const INIT_STATE = {
@@ -44,7 +50,8 @@ const INIT_STATE = {
     instructionSaveLoading: false,
     instructionSaveSuccess: false,
     instructionSaveError: false,
-    materialGrades: {}
+    materialGrades: {},
+    inwardListForDelivery:[],
 };
 
 export default (state = INIT_STATE, action) => {
@@ -236,6 +243,34 @@ export default (state = INIT_STATE, action) => {
                 instructionSaveLoading: false,
                 instructionSaveSuccess: false,
                 instructionSaveError: false,
+            }
+        }
+        
+        case SET_INWARD_SELECTED_FOR_DELIVERY: {
+            return {
+                ...state,
+                inwardListForDelivery:action.payload
+            }
+        }
+        case POST_DELIVERY_CONFORM_REQUESTED: {
+            return{
+                ...state,
+                loading: true,
+                error: false
+            }
+        }
+        case POST_DELIVERY_CONFORM_REQUESTED: {
+            return{
+                ...state,
+                loading: false,
+                error: false,
+            }
+        }
+        case POST_DELIVERY_CONFORM_REQUESTED: {
+            return{
+                ...state,
+                loading: false,
+                error: true
             }
         }
         default:

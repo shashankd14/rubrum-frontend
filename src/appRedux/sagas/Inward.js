@@ -7,7 +7,8 @@ import {
     FETCH_INWARD_LIST_BY_PARTY_REQUEST,
     FETCH_INWARD_PLAN_DETAILS_REQUESTED,
     REQUEST_SAVE_CUTTING_DETAILS,
-    REQUEST_SAVE_SLITTING_DETAILS, FETCH_MATERIAL_GRADE_LIST_REQUEST
+    REQUEST_SAVE_SLITTING_DETAILS, FETCH_MATERIAL_GRADE_LIST_REQUEST,
+    POST_DELIVERY_CONFORM_REQUESTED,
 } from "../../constants/ActionTypes";
 
 import {
@@ -26,7 +27,9 @@ import {
     saveSlittingInstructionSuccess,
     saveSlittingInstructionError,
     getGradeByMaterialIdSuccess,
-    getGradeByMaterialIdError
+    getGradeByMaterialIdError,
+    postDeliveryConformSuccess,
+    postDeliveryConformError,
 } from "../actions";
 import {CUTTING_INSTRUCTION_PROCESS_ID, SLITTING_INSTRUCTION_PROCESS_ID} from "../../constants";
 
@@ -278,6 +281,26 @@ function* requestGradesByMaterialId(action) {
     }
 }
 
+function* postDeliveryConformRequest(payload) {
+
+    console.log("in saga", payload)
+
+    try{
+        const postConform = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/delivery/save`,{
+            method:"POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify()
+        })
+
+        if(postConform.status === 200) {
+            yield put(postDeliveryConformSuccess());
+        } else
+            yield put(postDeliveryConformError('error'));
+    } catch (error) {
+    yield put(postDeliveryConformError(error));
+}
+}
+
 export function* watchFetchRequests() {
     yield takeLatest(FETCH_INWARD_LIST_REQUEST, fetchInwardList);
     yield takeLatest(SUBMIT_INWARD_ENTRY, submitInward);
@@ -287,6 +310,7 @@ export function* watchFetchRequests() {
     yield takeLatest(REQUEST_SAVE_CUTTING_DETAILS, requestSaveCuttingInstruction);
     yield takeLatest(REQUEST_SAVE_SLITTING_DETAILS, requestSaveSlittingInstruction);
     yield takeLatest(FETCH_MATERIAL_GRADE_LIST_REQUEST, requestGradesByMaterialId);
+    yield takeLatest(POST_DELIVERY_CONFORM_REQUESTED, postDeliveryConformRequest)
 }
 
 export default function* inwardSagas() {
