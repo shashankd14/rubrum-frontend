@@ -86,11 +86,7 @@ function  List(props) {
         key: 'x',
         render: (text, record) => (
             <span>
-                <span className="gx-link">Deliver</span>
-                <Divider type="vertical"/>
-                <span className="gx-link">Edit</span>
-                <Divider type="vertical"/>
-                <span className="gx-link">Delete</span>
+                <span className="gx-link" onClick={() => props.history.push(`plan/${record.coilNumber}`)}>Finish</span>
             </span>
         ),
     },
