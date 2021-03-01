@@ -138,7 +138,7 @@ const SlittingWidths = (props) => {
                         rules: [{ required: true, message: 'Please enter Length' },
                             {pattern: "^(([1-9]*)|(([1-9]*)\\.([0-9]*)))$", message: 'Length should be a number'},],
                     })(
-                        <Input id="length" />
+                        <Input id="length" disabled={props.wip ? true : false}/>
                     )}
                 </Form.Item>
                 <Row>
@@ -165,7 +165,7 @@ const SlittingWidths = (props) => {
                                         rules: [{ required: true, message: 'Please enter width' },
                                             {pattern: "^(([1-9]*)|(([1-9]*)\\.([0-9]*)))$", message: 'Width should be a number'},],
                                     })(
-                                        <Input id="length" />
+                                        <Input id="length" disabled={props.wip ? true : false}/>
                                     )}
                                 </Form.Item>
                             </Col>
@@ -175,7 +175,7 @@ const SlittingWidths = (props) => {
                                         rules: [{ required: true, message: 'Please enter nos' },
                                             {pattern: "^(([1-9]*)|(([1-9]*)\\.([0-9]*)))$", message: 'Number of slits should be a number'},],
                                     })(
-                                        <Input id="length" />
+                                        <Input id="length" disabled={props.wip ? true : false}/>
                                     )}
                                 </Form.Item>
                             </Col>
@@ -185,7 +185,7 @@ const SlittingWidths = (props) => {
                                         rules: [{ required: true, message: 'Please enter weight' },
                                             {pattern: "^(([1-9]*)|(([1-9]*)\\.([0-9]*)))$", message: 'Weight should be a number'},],
                                     })(
-                                        <Input id="length" />
+                                        <Input id="length" disabled={props.wip ? true : false}/>
                                     )}
                                 </Form.Item>
                             </Col>
@@ -201,7 +201,7 @@ const SlittingWidths = (props) => {
                 </Row>
                 <Row className="gx-mt-4">
                     <Col span={16} style={{ textAlign: "center"}}>
-                        <Button type="primary" htmlType="submit" onClick={() => addNewSize()}>
+                        <Button type="primary" htmlType="submit" onClick={() => addNewSize()} disabled={props.wip ? true : false}>
                             Add Size<Icon type="right"/>
                         </Button>
                     </Col>
@@ -251,7 +251,7 @@ const CreateSlittingDetailsForm = (props) => {
                     <h3>Coil Details </h3>
                     <Form {...formItemLayout} className="login-form gx-pt-4">
                         <Form.Item>
-                            <SlittingWidthsForm setSlits={(slits) => setCuts([...cuts, slits])} coilDetails={props.coilDetails}/>
+                            <SlittingWidthsForm setSlits={(slits) => setCuts([...cuts, slits])} coilDetails={props.coilDetails} wip={props.wip}/>
                         </Form.Item>
 
                     </Form>
