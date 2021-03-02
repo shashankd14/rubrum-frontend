@@ -15,6 +15,26 @@ const Plan = (props) => {
     const [cuttingCoil, setCuttingCoil] = useState(false);
     const [slittingCoil, setSlittingCoil] = useState(false);
     console.log(instruction)
+    function getPlannedLength(ins){
+       let length ;
+       const actualLength = ins.actualLength != null ? ins.actualLength : ins.plannedLength ;
+       if(ins.childInstructions.length> 0 ){
+            length = ins.childInstructions.map(i => i.plannedLength);
+            return length.reduce((total,num)=> total+num)
+        }
+        length = actualLength - length ? actualLength - length : 0;
+            return length; 
+    }
+    function getPlannedWeight(ins){
+        let weight ;
+        const actualWeight = ins.actualWeight != null ? ins.actualWeight : ins.plannedWeight ;
+        if(ins.childInstructions.length> 0 ){
+             weight = ins.childInstructions.map(i => i.plannedWeight);
+             return weight.reduce((total,num)=> total+num)
+         }
+         weight = actualWeight - weight ? actualWeight - weight : 0;
+             return weight; 
+     }
     useEffect(() => {
         props.getCoilPlanDetails(props.match.params.coilNumber);
     }, [])
@@ -82,25 +102,26 @@ const Plan = (props) => {
                                             <Card key={`${props.inward.plan.coilNumber}${instruction.instructionId}`} className={`${instruction.processdId == CUTTING_INSTRUCTION_PROCESS_ID ? 'gx-cutting-single' : 'gx-slitting-single'}`} size="small">
                                                 <img style={{ position: "absolute", right: "10.35px" }} src={require("assets/images/inward/info_icon.svg")} alt="main coil image" title="main coil image" />
                                                 <div className="gx-coil-image-bg gx-flex-row gx-align-items-center gx-justify-content-center">
-                                                    {instruction.processdId == CUTTING_INSTRUCTION_PROCESS_ID ?
+                                                    {instruction.process.processName == 'Cutting' ?
                                                         <img src={require("assets/images/inward/cutting_icon.svg")} alt="main coil image" title="main coil image" /> :
                                                         <img src={require("assets/images/inward/slitting_icon.svg")} alt="main coil image" title="main coil image" />
                                                     }
                                                 </div>
                                                 <div style={{ marginLeft: "8px" }}>
-                                                    {instruction.processdId == CUTTING_INSTRUCTION_PROCESS_ID ? 'Cutting' : 'Slitting'}
+                                                    {instruction.process.processName == 'Cutting' ? 'Cutting' : 'Slitting'}
                                                     <div className="gx-flex-row">
                                                         <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.availableLength" /> : </p>
-                                                        <span className="gx-coil-details-label">{instruction.length}</span>
+                                                        <span className="gx-coil-details-label">{getPlannedLength(instruction)}</span>
                                                     </div>
                                                     <div className="gx-flex-row">
                                                         <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.availableWeight" /> : </p>
-                                                        <span className="gx-coil-details-label">{instruction.weight}</span>
+                                                        <span className="gx-coil-details-label">{getPlannedWeight(instruction)}</span>
                                                     </div>
                                                     <div>
                                                         <Button onClick={(e) => {
                                                             e.stopPropagation();
-                                                            setCuttingCoil(instruction);}}>Cutting
+                                                            setCuttingCoil(instruction);
+                                                            }}>Cutting
                                                         </Button>
                                                         <Button onClick={(e) => {
                                                             e.stopPropagation();
