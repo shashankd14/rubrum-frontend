@@ -41,6 +41,9 @@ const columns = [
     {
         title: 'Process Date',
         dataIndex:'instructionDate',
+        render (value) {
+            return moment(value).format('DD/MM/YYYY');
+        },
         key: 'instructionDate',
     },
     {
