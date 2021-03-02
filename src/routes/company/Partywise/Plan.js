@@ -80,7 +80,12 @@ const Plan = (props) => {
                             <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.availableWeight" /> : </p>
                             <span className="gx-coil-details-label">{props.inward.plan.fQuantity}</span>
                         </div>
-                        <div>
+                        {props.wip ? 
+                            <div><Button onClick={() => {
+                                setCuttingCoil(props.inward.plan);
+                                setShowCuttingModal(true);
+                            }}>Finish Coil</Button></div> :
+                            <div>
                             <Button onClick={() => {
                                 setCuttingCoil(props.inward.plan);
                                 setShowCuttingModal(true);
@@ -89,7 +94,7 @@ const Plan = (props) => {
                                 setSlittingCoil(props.inward.plan);
                                 setShowSlittingModal(true)
                             }}>Slitting</Button>
-                        </div>
+                        </div>}
                     </Card>
                 </Col>
                 <div className="gx-branch lv1">
@@ -117,8 +122,19 @@ const Plan = (props) => {
                                                         <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.availableWeight" /> : </p>
                                                         <span className="gx-coil-details-label">{getPlannedWeight(instruction)}</span>
                                                     </div>
-                                                    <div>
-                                                        <Button onClick={(e) => {
+                                                        {instruction.process.processName == 'Cutting' && props.wip ? 
+                                                            <Button onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                setCuttingCoil(instruction);
+                                                                setShowCuttingModal(true);
+                                                            }}>Finish Cutting
+                                                            </Button>: props.wip ? <Button onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setCuttingCoil(instruction);
+                                                            setShowCuttingModal(true);
+                                                            }}>Finish Slitting
+                                                        </Button>:
+                                                        <div><Button onClick={(e) => {
                                                             e.stopPropagation();
                                                             setCuttingCoil(instruction);
                                                             setShowCuttingModal(true);
@@ -129,8 +145,8 @@ const Plan = (props) => {
                                                                 setSlittingCoil(instruction);
                                                                 setShowCuttingModal(true);
                                                             }}>Slitting
-                                                        </Button>
-                                                    </div>
+                                                        </Button></div>}
+                                                        
                                                 </div>
                                             </Card>
                                         </div>
