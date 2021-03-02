@@ -35,42 +35,33 @@ export const formItemLayoutSlitting = {
 const columns = [
     {
         title: 'Serial No',
-        render: record => record.map(r=> r.instructionId),
+        dataIndex:'instructionId',
         key: 'instructionId',
     },
     {
         title: 'Process Date',
-        render: (record) => record.map(r=>  moment(r.instructionDate).format('DD/MM/YYYY')),
+        dataIndex:'instructionDate',
         key: 'instructionDate',
     },
     {
         title: 'Length',
-        render: record => record.map(r=> r.plannedLength),
+        dataIndex:'plannedLength',
         key: 'plannedLength',
     },
     {
         title: 'Width',
-        render: record => record.map(r=> r.plannedWidth),
+        dataIndex:'plannedWidth',
         key: 'plannedWidth',
     },
     {
         title: 'No of Sheets',
-        render: record => record.map(r=> r.plannedNoOfPieces),
+        dataIndex:'plannedNoOfPieces',
         key: 'plannedNoOfPieces',
     },
     {
         title: 'Weight',
-        render: record => record.map(r=> r.plannedWeight),
+        dataIndex:'plannedWeight',
         key: 'plannedWeight',
-    },
-    {
-        title: 'Action',
-        key: 'action',
-        render: (text, record) => (
-            <span>
-                <i className="icon icon-edit"/>
-            </span>
-        ),
     }
 ];
 let uuid = 0;
@@ -256,7 +247,7 @@ const CreateSlittingDetailsForm = (props) => {
                     </Form>
                 </Col>
                 <Col lg={12} md={12} sm={24} xs={24}>
-                    <Table className="gx-table-responsive" columns={columns} dataSource={props.wip ? props.coilDetails.instruction || props.coilDetails.childInstructions:cuts}/>
+                    <Table className="gx-table-responsive" columns={columns} dataSource={props.wip ? ((props.coilDetails && props.coilDetails.instruction) ?  props.coilDetails.instruction.flat() : props.coilDetails.childInstructions): cuts}/>
                 </Col>
             </Row>
         </Modal>
