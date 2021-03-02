@@ -22,30 +22,29 @@ export const formItemLayout = {
 const columns = [
     {
         title: 'Serial No',
-        dataIndex: 'name',
-        key: 'name',
-        render: text => <span className="gx-link">{text}</span>,
+        render: record => record.map(r=> r.instructionId),
+        key: 'instructionId',
+        
     },
     {
         title: 'Process Date',
-        dataIndex: 'processDate',
-        key: 'processDate',
-        render: text => <span className="gx-link">{moment(text).format(APPLICATION_DATE_FORMAT)}</span>
+        render: (record) => record.map(r=>  moment(r.instructionDate).format('DD/MM/YYYY')),
+        key: 'instructionDate',
     },
     {
         title: 'Length',
-        dataIndex: 'length',
-        key: 'length',
+        render: record => record.map(r=> r.plannedLength),
+        key: 'plannedLength',
     },
     {
         title: 'No of Sheets',
-        dataIndex: 'no',
-        key: 'no',
+        render: record => record.map(r=> r.plannedNoOfPieces),
+        key: 'plannedNoOfPieces',
     },
     {
         title: 'Weight',
-        dataIndex: 'weight',
-        key: 'weight',
+        render: record => record.map(r=> r.plannedWeight),
+        key: 'plannedWeight',
     },
     {
         title: 'Action',
@@ -91,7 +90,7 @@ const CreateCuttingDetailsForm = (props) => {
                 <Col lg={12} md={12} sm={24} xs={24} className="gx-align-self-center">
                     <h3>Coil Details </h3>
                     <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4">
-                    <Form.Item label="Received Date">
+                    <Form.Item label="Received Date" >
                         {getFieldDecorator('processDate', {
                             rules: [{ required: true, message: 'Please select a received date' }],
                         })(
@@ -99,7 +98,8 @@ const CreateCuttingDetailsForm = (props) => {
                                 placeholder="dd/mm/yy"
                                 style={{width: 200}}
                                 format="DD/MM/YYYY"
-                                className="gx-mb-3 gx-w-100"/>
+                                className="gx-mb-3 gx-w-100"
+                                disabled={props.wip ? true : false}/>
                         )}
                     </Form.Item>
                     <Form.Item label="Length">
@@ -107,7 +107,7 @@ const CreateCuttingDetailsForm = (props) => {
                             rules: [{ required: true, message: 'Please enter Length' },
                                 {pattern: "^(([1-9]*)|(([1-9]*)\\.([0-9]*)))$", message: 'Length should be a number'},],
                         })(
-                            <Input id="length" />
+                            <Input id="length" disabled={props.wip ? true : false}/>
                         )}
                     </Form.Item>
                     <Form.Item label="No of cuts">
@@ -115,7 +115,7 @@ const CreateCuttingDetailsForm = (props) => {
                             rules: [{ required: true, message: 'Please enter number of cuts required' },
                                 {pattern: "^(([1-9]*)|(([1-9]*)))$", message: 'Number of cuts should be a number'}],
                         })(
-                            <Input id="noOfCuts" />
+                            <Input id="noOfCuts" disabled={props.wip ? true : false}/>
                         )}
                     </Form.Item>
                     <Form.Item label="Weight">
@@ -128,7 +128,7 @@ const CreateCuttingDetailsForm = (props) => {
                     </Form.Item>
                     <Row className="gx-mt-4">
                         <Col span={24} style={{ textAlign: "center"}}>
-                            <Button type="primary" htmlType="submit">
+                            <Button type="primary" htmlType="submit" disabled={props.wip ? true : false}>
                                 Add Size<Icon type="right"/>
                             </Button>
                         </Col>
@@ -136,7 +136,7 @@ const CreateCuttingDetailsForm = (props) => {
                 </Form>
                 </Col>
                 <Col lg={12} md={12} sm={24} xs={24}>
-                    <Table className="gx-table-responsive" columns={columns} dataSource={cuts}/>
+                    <Table className="gx-table-responsive" columns={columns} dataSource={props.wip ? props.coilDetails.instruction: cuts}/>
                 </Col>
             </Row>
         </Modal>
