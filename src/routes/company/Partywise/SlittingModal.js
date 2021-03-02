@@ -216,13 +216,13 @@ const CreateSlittingDetailsForm = (props) => {
     }, [props.inward.process.length, props.inward.process.no])
 
     useEffect(() => {
-        if(props.inward.instructionSaveLoading) {
+        if(props.inward.instructionSaveLoading && !props.wip) {
             loading = message.loading('Saving Slit Instruction..');
         }
     }, [props.inward.instructionSaveLoading]);
 
     useEffect(() => {
-        if(props.inward.instructionSaveSuccess) {
+        if(props.inward.instructionSaveSuccess && !props.wip) {
             loading = '';
             message.success('Slitting instruction saved successfully', 2).then(() => {
                 props.setShowSlittingModal(false);
@@ -235,9 +235,18 @@ const CreateSlittingDetailsForm = (props) => {
         <Modal
             title="Slitting Instruction"
             visible={props.showSlittingModal}
-            onOk={() => props.saveSlittingInstruction(cuts)}
+            onOk={() => {
+                if(props.wip){
+                    props.setShowSlittingModal()
+                }
+                else{
+                    props.saveSlittingInstruction(cuts);
+                props.setShowSlittingModal()
+                }
+                
+            }}
             width={1020}
-            onCancel={() => props.setShowSlittingModal(false)}
+            onCancel={() => props.setShowSlittingModal()}
         >
             <Row>
                 <Col lg={12} md={16} sm={24} xs={24} span={16} className="gx-align-self-center">

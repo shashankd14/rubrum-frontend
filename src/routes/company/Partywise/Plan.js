@@ -15,7 +15,7 @@ const Plan = (props) => {
     const [cuttingCoil, setCuttingCoil] = useState(false);
     const [slittingCoil, setSlittingCoil] = useState(false);
     console.log(instruction)
-    function getPlannedLength(ins){
+    const getPlannedLength= (ins) =>{
        let length ;
        const actualLength = ins.actualLength != null ? ins.actualLength : ins.plannedLength ;
        if(ins.childInstructions.length> 0 ){
@@ -25,7 +25,7 @@ const Plan = (props) => {
         length = actualLength - length ? actualLength - length : 0;
             return length; 
     }
-    function getPlannedWeight(ins){
+    const getPlannedWeight= (ins) =>{
         let weight ;
         const actualWeight = ins.actualWeight != null ? ins.actualWeight : ins.plannedWeight ;
         if(ins.childInstructions.length> 0 ){
@@ -121,11 +121,13 @@ const Plan = (props) => {
                                                         <Button onClick={(e) => {
                                                             e.stopPropagation();
                                                             setCuttingCoil(instruction);
+                                                            setShowCuttingModal(true);
                                                             }}>Cutting
                                                         </Button>
                                                         <Button onClick={(e) => {
                                                             e.stopPropagation();
                                                                 setSlittingCoil(instruction);
+                                                                setShowCuttingModal(true);
                                                             }}>Slitting
                                                         </Button>
                                                     </div>

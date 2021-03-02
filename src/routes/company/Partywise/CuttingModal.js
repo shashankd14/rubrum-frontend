@@ -54,13 +54,7 @@ const columns = [
 const CreateCuttingDetailsForm = (props) => {
     const {getFieldDecorator} = props.form;
     const [cuts, setCuts] = useState([]);
-    const handleChild =(input) =>{
-        var output = input.map(function(obj) {
-            return Object.keys(obj).sort().map(function(key) { 
-              return obj[key];
-            });
-          });
-    }
+    
     const handleSubmit = e => {
         e.preventDefault();
         setCuts([...cuts, {...props.inward.process,
@@ -82,7 +76,17 @@ const CreateCuttingDetailsForm = (props) => {
         <Modal
             title="Cutting Instruction"
             visible={props.showCuttingModal}
-            onOk={() => props.saveCuttingInstruction(cuts)}
+            onOk={() => {
+                if(props.wip){
+                    props.setShowCuttingModal()
+                }
+                else{
+                    props.saveCuttingInstruction(cuts);
+                    props.setShowCuttingModal()
+                }
+                
+                
+            }}
             width={1020}
             onCancel={() => props.setShowCuttingModal()}
         >
