@@ -1,10 +1,8 @@
-import {Button, Card, Col, DatePicker, Divider, Form, Icon, Input, Modal, Row, Table} from "antd";
-import React, {useEffect, useState} from "react";
+import {Button, Card, Col, DatePicker, Divider, Form, Input, Modal, Row, Table, Icon} from "antd";
+import React, {useEffect, useState, useRef, useContext} from "react";
 import {connect} from "react-redux";
 import moment from "moment";
-
 import {setProcessDetails, saveCuttingInstruction} from '../../../appRedux/actions/Inward';
-import {APPLICATION_DATE_FORMAT} from "../../../constants";
 
 export const formItemLayout = {
     labelCol: {
@@ -19,42 +17,74 @@ export const formItemLayout = {
     },
 };
 
-const columns = [
-    {
-        title: 'Serial No',
-        dataIndex:'instructionId',
-        key: 'instructionId',
-        
-    },
-    {
-        title: 'Process Date',
-        dataIndex:'instructionDate',
-        render (value) {
-            return moment(value).format('DD/MM/YYYY');
-        },
-        key: 'instructionDate',
-    },
-    {
-        title: 'Length',
-        dataIndex:'plannedLength',
-        key: 'plannedLength',
-    },
-    {
-        title: 'No of Sheets',
-        dataIndex:'plannedNoOfPieces',
-        key: 'plannedNoOfPieces',
-    },
-    {
-        title: 'Weight',
-        dataIndex:'plannedWeight',
-        key: 'plannedWeight',
-    }
-];
-
 const CreateCuttingDetailsForm = (props) => {
     const {getFieldDecorator} = props.form;
     const [cuts, setCuts] = useState([]);
-    
+    const columns = [
+        {
+            title: 'Serial No',
+            dataIndex:'instructionId',
+            key: 'instructionId',
+            editable:true
+            
+        },
+        {
+            title: 'Process Date',
+            dataIndex:'instructionDate',
+            render (value) {
+                return moment(value).format('DD/MM/YYYY');
+            },
+            key: 'instructionDate',
+        },
+        {
+            title: 'Length',
+            dataIndex:'plannedLength',
+            key: 'plannedLength',
+        },
+        {
+            title: 'Actual Length',
+            dataIndex:'plannedLength',
+            key: 'plannedLength',
+            render: (text, record, index) => (
+                <Input value={text}  onChange={(e)=>handleRowChange({record,plannedWeight:e.target.value})} />
+              )
+        },
+        {
+            title: 'No of Sheets',
+            dataIndex:'plannedNoOfPieces',
+            key: 'plannedNoOfPieces',
+        },
+        {
+            title: 'Actual No of Sheets',
+            dataIndex:'plannedNoOfPieces',
+            key: 'plannedNoOfPieces',
+            render: (text, record, index) => (
+                <Input value={text}  onChange={(e)=>handleRowChange({record,plannedWeight:e.target.value})} />
+              )
+        },
+        {
+            title: 'Weight',
+            dataIndex:'plannedWeight',
+            key:'plannedWeight'
+        },
+        {
+            title: 'Actual Weight',
+            dataIndex:'plannedWeight',
+            editable: true,
+            render: (text, record, index) => (
+                <Input value={text}  onChange={(e)=>handleRowChange({record,plannedWeight:e.target.value})} />
+              )
+        }
+    ];
+   const handleRowChange=(row, changedFields) =>{
+       console.log("akert");
+        const newData = [...props.coilDetails.childInstructions];
+        const index = newData.findIndex((item) => row.key === item.key);
+        const item = newData[index];
+        newData.splice(index, 1, { ...item, ...row });
+        
+       props.coilDetails.childInstructions = newData
+    }
     const handleSubmit = e => {
         e.preventDefault();
         setCuts([...cuts, {...props.inward.process,
@@ -62,7 +92,7 @@ const CreateCuttingDetailsForm = (props) => {
             instructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : ""
         }]);
     };
-
+    
     useEffect(() => {
         if(props.inward.process.length && props.inward.process.no) {
             if(props.coilDetails.instructionId)
@@ -71,8 +101,9 @@ const CreateCuttingDetailsForm = (props) => {
                 props.setProcessDetails({...props.inward.process, weight: 0.00000000785*parseFloat(props.inward.plan.fWidth)*parseFloat(props.inward.plan.fThickness)*parseFloat(props.inward.process.length)*parseFloat(props.inward.process.no)});
         }
     }, [props.inward.process.length, props.inward.process.no])
-
+    
     return (
+        
         <Modal
             title="Cutting Instruction"
             visible={props.showCuttingModal}
@@ -140,7 +171,7 @@ const CreateCuttingDetailsForm = (props) => {
                 </Form>
                 </Col>
                 <Col lg={12} md={12} sm={24} xs={24}>
-                    <Table className="gx-table-responsive" columns={columns} dataSource={props.wip ? ((props.coilDetails && props.coilDetails.instruction) ?  props.coilDetails.instruction.flat() : props.coilDetails.childInstructions) : cuts}/>
+                    <Table className="gx-table-responsive"  columns={columns} dataSource={props.wip ? ((props.coilDetails && props.coilDetails.instruction) ?  props.coilDetails.instruction.flat() : props.coilDetails.childInstructions) : cuts}/>
                 </Col>
             </Row>
         </Modal>
