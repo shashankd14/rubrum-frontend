@@ -20,12 +20,12 @@ export const formItemLayout = {
 const CreateCuttingDetailsForm = (props) => {
     const {getFieldDecorator} = props.form;
     const [cuts, setCuts] = useState([]);
-    const columns = [
+    const dataSource= props.coilDetails.childInstructions;
+    const columns=[
         {
             title: 'Serial No',
             dataIndex:'instructionId',
-            key: 'instructionId',
-            editable:true
+            key: 'instructionId'
             
         },
         {
@@ -43,10 +43,9 @@ const CreateCuttingDetailsForm = (props) => {
         },
         {
             title: 'Actual Length',
-            dataIndex:'plannedLength',
-            key: 'plannedLength',
+            dataIndex:'actualLength',
             render: (text, record, index) => (
-                <Input value={text}  onChange={(e)=>handleRowChange({record,plannedWeight:e.target.value})} />
+                <Input value={text}  onChange={onInputChange("actualLength", index)} />
               )
         },
         {
@@ -56,10 +55,9 @@ const CreateCuttingDetailsForm = (props) => {
         },
         {
             title: 'Actual No of Sheets',
-            dataIndex:'plannedNoOfPieces',
-            key: 'plannedNoOfPieces',
+            dataIndex:'actualNoOfPieces',
             render: (text, record, index) => (
-                <Input value={text}  onChange={(e)=>handleRowChange({record,plannedWeight:e.target.value})} />
+                <Input value={text} onChange={onInputChange("actualNoOfPieces", index)} />
               )
         },
         {
@@ -69,22 +67,12 @@ const CreateCuttingDetailsForm = (props) => {
         },
         {
             title: 'Actual Weight',
-            dataIndex:'plannedWeight',
-            editable: true,
+            dataIndex:'actualWeight',
             render: (text, record, index) => (
-                <Input value={text}  onChange={(e)=>handleRowChange({record,plannedWeight:e.target.value})} />
+                <Input value={text}  onChange={onInputChange("actualWeight", index)} />
               )
         }
     ];
-   const handleRowChange=(row, changedFields) =>{
-       console.log("akert");
-        const newData = [...props.coilDetails.childInstructions];
-        const index = newData.findIndex((item) => row.key === item.key);
-        const item = newData[index];
-        newData.splice(index, 1, { ...item, ...row });
-        
-       props.coilDetails.childInstructions = newData
-    }
     const handleSubmit = e => {
         e.preventDefault();
         setCuts([...cuts, {...props.inward.process,
@@ -92,7 +80,7 @@ const CreateCuttingDetailsForm = (props) => {
             instructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : ""
         }]);
     };
-    
+
     useEffect(() => {
         if(props.inward.process.length && props.inward.process.no) {
             if(props.coilDetails.instructionId)
@@ -101,7 +89,23 @@ const CreateCuttingDetailsForm = (props) => {
                 props.setProcessDetails({...props.inward.process, weight: 0.00000000785*parseFloat(props.inward.plan.fWidth)*parseFloat(props.inward.plan.fThickness)*parseFloat(props.inward.process.length)*parseFloat(props.inward.process.no)});
         }
     }, [props.inward.process.length, props.inward.process.no])
+    const [tableData, setTableData] = useState(dataSource);
+  useEffect(() => {
+    const newData = [...tableData];
     
+    setTableData(newData);
+  }, []);
+  
+
+  const onInputChange = (key, index) => (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const newData = [...tableData];
+    newData[index][key] = Number(e.target.value);
+    setTableData(newData);
+  };
+
+  
     return (
         
         <Modal
@@ -171,7 +175,7 @@ const CreateCuttingDetailsForm = (props) => {
                 </Form>
                 </Col>
                 <Col lg={12} md={12} sm={24} xs={24}>
-                    <Table className="gx-table-responsive"  columns={columns} dataSource={props.wip ? ((props.coilDetails && props.coilDetails.instruction) ?  props.coilDetails.instruction.flat() : props.coilDetails.childInstructions) : cuts}/>
+                    <Table rowkey= {'id'} className="gx-table-responsive"  columns={columns} dataSource={tableData}/>
                 </Col>
             </Row>
         </Modal>
