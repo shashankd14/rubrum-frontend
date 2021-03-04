@@ -4,7 +4,7 @@ import {connect} from "react-redux";
 import moment from "moment";
 
 import {APPLICATION_DATE_FORMAT} from '../../../constants';
-import {setProcessDetails, saveSlittingInstruction, resetInstruction} from '../../../appRedux/actions/Inward';
+import {setProcessDetails, saveSlittingInstruction, resetInstruction, updateInstruction} from '../../../appRedux/actions/Inward';
 
 export const formItemLayout = {
     labelCol: {
@@ -32,41 +32,6 @@ export const formItemLayoutSlitting = {
     },
 };
 
-const columns = [
-    {
-        title: 'Serial No',
-        dataIndex:'instructionId',
-        key: 'instructionId',
-    },
-    {
-        title: 'Process Date',
-        dataIndex:'instructionDate',
-        render (value) {
-            return moment(value).format('DD/MM/YYYY');
-        },
-        key: 'instructionDate',
-    },
-    {
-        title: 'Length',
-        dataIndex:'plannedLength',
-        key: 'plannedLength',
-    },
-    {
-        title: 'Width',
-        dataIndex:'plannedWidth',
-        key: 'plannedWidth',
-    },
-    {
-        title: 'No of Sheets',
-        dataIndex:'plannedNoOfPieces',
-        key: 'plannedNoOfPieces',
-    },
-    {
-        title: 'Weight',
-        dataIndex:'plannedWeight',
-        key: 'plannedWeight',
-    }
-];
 let uuid = 0;
 
 const SlittingWidths = (props) => {
@@ -208,7 +173,116 @@ const CreateSlittingDetailsForm = (props) => {
     const {getFieldDecorator} = props.form;
     const [cuts, setCuts] = useState([]);
     let loading = '';
+    const dataSource= props.wip?((props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions):cuts;
+const columns = [
+    {
+        title: 'Serial No',
+        dataIndex:'instructionId',
+        key: 'instructionId',
+    },
+    {
+        title: 'Process Date',
+        dataIndex:'instructionDate',
+        render (value) {
+            return moment(value).format('DD/MM/YYYY');
+        },
+        key: 'instructionDate',
+    },
+    {
+        title: 'Length',
+        dataIndex:'plannedLength',
+        key: 'plannedLength',
+    },
+    {
+        title: 'Actual Length',
+        dataIndex:'actualLength',
+        render: (text, record, index) => (
+            <Input value={text}  onChange={onInputChange("actualLength", index)} />
+          )
+    },
+    {
+        title: 'Width',
+        dataIndex:'plannedWidth',
+        key: 'plannedWidth',
+    },
+    {
+        title: 'Actual Width',
+        dataIndex:'actualWidth',
+        render: (text, record, index) => (
+            <Input value={text}  onChange={onInputChange("actualWidth", index)} />
+          )
+    },
+    {
+        title: 'No of Sheets',
+        dataIndex:'plannedNoOfPieces',
+        key: 'plannedNoOfPieces',
+    },
+    {
+        title: 'Actual No of Sheets',
+        dataIndex:'actualNoOfPieces',
+        render: (text, record, index) => (
+            <Input value={text}  onChange={onInputChange("actualNoOfPieces", index)} />
+          )
+    },
+    {
+        title: 'Weight',
+        dataIndex:'plannedWeight',
+        key: 'plannedWeight',
+    },
+    {
+        title: 'Actual Weight',
+        dataIndex:'actualWeight',
+        render: (text, record, index) => (
+            <Input value={text}  onChange={onInputChange("actualWeight", index)} />
+          )
+    }
+];
+const columnsPlan=[
+    {
+        title: 'Serial No',
+        dataIndex:'instructionId',
+        key: 'instructionId'
+        
+    },
+    {
+        title: 'Process Date',
+        dataIndex:'processDate',
+        render (value) {
+            return moment(value).format('DD/MM/YYYY');
+        },
+        key: 'instructionprocessDateDate',
+    },
+    {
+        title: 'Length',
+        dataIndex:'length',
+        key: 'length',
+    },
+    {
+        title: 'No of Sheets',
+        dataIndex:'no',
+        key: 'no',
+    },
+    {
+        title: 'Weight',
+        dataIndex:'weight',
+        key:'weight'
+    },
+];
+    const [tableData, setTableData] = useState(dataSource);
+  useEffect(() => {
+    const newData = [...tableData];
+    
+    setTableData(newData);
+  }, []);
+  
 
+  const onInputChange = (key, index) => (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const newData = [...tableData];
+    newData[index][key] = Number(e.target.value);
+    setTableData(newData);
+  };
     useEffect(() => {
         if(props.inward.process.length && props.inward.process.no) {
             props.setProcessDetails({...props.inward.process, weight: 0.00000000785*parseFloat(props.inward.plan.fWidth)*parseFloat(props.inward.plan.fThickness)*parseFloat(props.inward.process.length)*parseFloat(props.inward.process.no)});
@@ -259,7 +333,7 @@ const CreateSlittingDetailsForm = (props) => {
                     </Form>
                 </Col>
                 <Col lg={12} md={12} sm={24} xs={24}>
-                    <Table className="gx-table-responsive" columns={columns} dataSource={props.wip ? ((props.coilDetails && props.coilDetails.instruction) ?  props.coilDetails.instruction.flat() : props.coilDetails.childInstructions): cuts}/>
+                    <Table className="gx-table-responsive" columns={props.wip?columns: columnsPlan} dataSource={props.wip?tableData:cuts}/>
                 </Col>
             </Row>
         </Modal>

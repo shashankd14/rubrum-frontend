@@ -20,7 +20,7 @@ export const formItemLayout = {
 const CreateCuttingDetailsForm = (props) => {
     const {getFieldDecorator} = props.form;
     const [cuts, setCuts] = useState([]);
-    const dataSource= props.coilDetails.childInstructions;
+    const dataSource= props.wip?((props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts;
     const columns=[
         {
             title: 'Serial No',
@@ -72,6 +72,37 @@ const CreateCuttingDetailsForm = (props) => {
                 <Input value={text}  onChange={onInputChange("actualWeight", index)} />
               )
         }
+    ];
+    const columnsPlan=[
+        {
+            title: 'Serial No',
+            dataIndex:'instructionId',
+            key: 'instructionId'
+            
+        },
+        {
+            title: 'Process Date',
+            dataIndex:'processDate',
+            render (value) {
+                return moment(value).format('DD/MM/YYYY');
+            },
+            key: 'instructionprocessDateDate',
+        },
+        {
+            title: 'Length',
+            dataIndex:'length',
+            key: 'length',
+        },
+        {
+            title: 'No of Sheets',
+            dataIndex:'no',
+            key: 'no',
+        },
+        {
+            title: 'Weight',
+            dataIndex:'weight',
+            key:'weight'
+        },
     ];
     const handleSubmit = e => {
         e.preventDefault();
@@ -176,7 +207,7 @@ const CreateCuttingDetailsForm = (props) => {
                 </Form>
                 </Col>
                 <Col lg={12} md={12} sm={24} xs={24}>
-                    <Table rowkey= {'id'} className="gx-table-responsive"  columns={columns} dataSource={tableData}/>
+                    <Table  className="gx-table-responsive"  columns={props.wip? columns :columnsPlan} dataSource={props.wip?tableData:cuts}/>
                 </Col>
             </Row>
         </Modal>
