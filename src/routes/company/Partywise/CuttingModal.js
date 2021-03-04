@@ -2,7 +2,7 @@ import {Button, Card, Col, DatePicker, Divider, Form, Input, Modal, Row, Table, 
 import React, {useEffect, useState, useRef, useContext} from "react";
 import {connect} from "react-redux";
 import moment from "moment";
-import {setProcessDetails, saveCuttingInstruction} from '../../../appRedux/actions/Inward';
+import {setProcessDetails, saveCuttingInstruction, updateInstruction} from '../../../appRedux/actions/Inward';
 
 export const formItemLayout = {
     labelCol: {
@@ -113,7 +113,8 @@ const CreateCuttingDetailsForm = (props) => {
             visible={props.showCuttingModal}
             onOk={() => {
                 if(props.wip){
-                    props.setShowCuttingModal()
+                    props.updateInstruction(tableData);
+                    props.setShowCuttingModal();
                 }
                 else{
                     props.saveCuttingInstruction(cuts);
@@ -215,4 +216,4 @@ const CuttingDetailsForm = Form.create({
     },
 })(CreateCuttingDetailsForm);
 
-export default  connect(mapStateToProps, {setProcessDetails, saveCuttingInstruction})(CuttingDetailsForm);
+export default  connect(mapStateToProps, {setProcessDetails, saveCuttingInstruction, updateInstruction})(CuttingDetailsForm);

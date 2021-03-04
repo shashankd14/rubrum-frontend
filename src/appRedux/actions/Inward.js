@@ -27,6 +27,11 @@ import {
     SAVE_SLITTING_DETAILS_SUCCESS,
     SAVE_SLITTING_DETAILS_ERROR,
 
+    REQUEST_UPDATE_INSTRUCTION_DETAILS, 
+    REQUEST_UPDATE_INSTRUCTION_DETAILS_SUCCESS,
+    REQUEST_UPDATE_INSTRUCTION_DETAILS_ERROR,
+   
+
     RESET_INSTRUCTION_FORM,
     RESET_INWARD_FORM,
 
@@ -168,7 +173,18 @@ export const saveSlittingInstructionError = (error) => ({
     type: SAVE_SLITTING_DETAILS_ERROR,
     error
 });
-
+export const updateInstruction = (instruction) => ({
+    type: REQUEST_UPDATE_INSTRUCTION_DETAILS,
+    instruction
+});
+export const updateInstructionSuccess = (payload) => ({
+    type: REQUEST_UPDATE_INSTRUCTION_DETAILS_SUCCESS,
+    payload
+});
+export const updateInstructionError = (payload) => ({
+    type: REQUEST_UPDATE_INSTRUCTION_DETAILS_ERROR,
+    payload
+});
 export const resetInstruction = () => ({
     type: RESET_INSTRUCTION_FORM,
 })
