@@ -43,6 +43,9 @@ import {
     POST_DELIVERY_CONFORM_REQUESTED,
     POST_DELIVERY_CONFORM_SUCCESS,
     POST_DELIVERY_CONFORM_ERROR,
+    FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST,
+    FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST_SUCCESS,
+    FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST_ERROR
 } from "../../constants/ActionTypes";
 
 export const fetchInwardList = () => ({
@@ -212,3 +215,18 @@ export const postDeliveryConformError = (error) => ({
     type: POST_DELIVERY_CONFORM_ERROR,
     payload:error
 })
+
+export const getCoilsByInstructionId = (partyId) => ({
+    type: FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST,
+    partyId
+});
+
+export const getCoilsByInstructionIdSuccess = (payload) => ({
+    type: FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST_SUCCESS,
+    payload
+});
+
+export const getCoilsByInstructionIdError = (error) => ({
+    type: FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST_ERROR,
+    error
+});

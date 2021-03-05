@@ -33,6 +33,9 @@ import {
     POST_DELIVERY_CONFORM_REQUESTED,
     POST_DELIVERY_CONFORM_SUCCESS,
     POST_DELIVERY_CONFORM_ERROR,
+    FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST,
+    FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST_SUCCESS,
+    FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST_ERROR
 
 } from "../../constants/ActionTypes";
 
@@ -143,6 +146,29 @@ export default (state = INIT_STATE, action) => {
             }
         }
         case FETCH_INWARD_LIST_BY_PARTY_ERROR: {
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                inwardList: [],
+            }
+        }
+        case FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST: {
+            return {
+                ...state,
+                loading: true,
+                error: false
+            }
+        }
+        case FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                error: false,
+                inwardList: action.payload,
+            }
+        }
+        case FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST_ERROR: {
             return {
                 ...state,
                 loading: false,
