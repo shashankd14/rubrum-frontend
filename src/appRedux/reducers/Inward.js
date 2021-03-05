@@ -153,29 +153,6 @@ export default (state = INIT_STATE, action) => {
                 inwardList: [],
             }
         }
-        case FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST: {
-            return {
-                ...state,
-                loading: true,
-                error: false
-            }
-        }
-        case FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST_SUCCESS: {
-            return {
-                ...state,
-                loading: false,
-                error: false,
-                inwardList: action.payload,
-            }
-        }
-        case FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST_ERROR: {
-            return {
-                ...state,
-                loading: false,
-                error: true,
-                inwardList: [],
-            }
-        }
         case FETCH_INWARD_PLAN_DETAILS_REQUESTED: {
             return {
                 ...state,

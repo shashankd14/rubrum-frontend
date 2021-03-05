@@ -1,4 +1,4 @@
-import {all, put, fork, takeLatest, call} from "redux-saga/effects";
+import {all, put, fork, takeLatest, take, call} from "redux-saga/effects";
 import moment from "moment";
 import {
     CHECK_COIL_EXISTS,
@@ -11,7 +11,6 @@ import {
     POST_DELIVERY_CONFORM_REQUESTED,
     REQUEST_UPDATE_INSTRUCTION_DETAILS,
     REQUEST_UPDATE_INSTRUCTION_DETAILS_SUCCESS,
-    FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST
 } from "../../constants/ActionTypes";
 
 import {
@@ -23,8 +22,6 @@ import {
     checkDuplicateCoilError,
     getCoilsByPartyIdSuccess,
     getCoilsByPartyIdError,
-    getCoilsByInstructionIdSuccess,
-    getCoilsByInstructionIdError,
     getCoilPlanDetailsSuccess,
     getCoilPlanDetailsError,
     saveCuttingInstructionSuccess,
@@ -343,20 +340,7 @@ function* postDeliveryConformRequest(payload) {
     yield put(postDeliveryConformError(error));
 }
 }
-function* fetchInwardListByInstruction(action) {
-    try {
-        const fetchPartyInwardList =  yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/instruction/getById/${action.partyId}`, {
-            method: 'GET',
-        });
-        if(fetchPartyInwardList.status === 200) {
-            const fetchPartyInwardListResponse = yield fetchPartyInwardList.json();
-            yield put(getCoilsByInstructionIdSuccess(fetchPartyInwardListResponse.body));
-        } else
-            yield put(getCoilsByInstructionIdError('error'));
-    } catch (error) {
-        yield put(getCoilsByInstructionIdError(error));
-    }
-}
+
 export function* watchFetchRequests() {
     yield takeLatest(FETCH_INWARD_LIST_REQUEST, fetchInwardList);
     yield takeLatest(SUBMIT_INWARD_ENTRY, submitInward);
@@ -368,7 +352,6 @@ export function* watchFetchRequests() {
     yield takeLatest(REQUEST_UPDATE_INSTRUCTION_DETAILS, requestUpdateInstruction);
     yield takeLatest(FETCH_MATERIAL_GRADE_LIST_REQUEST, requestGradesByMaterialId);
     yield takeLatest(POST_DELIVERY_CONFORM_REQUESTED, postDeliveryConformRequest);
-    yield takeLatest(FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST, fetchInwardListByInstruction)
 }
 
 export default function* inwardSagas() {

@@ -20,7 +20,8 @@ export const formItemLayout = {
 const CreateCuttingDetailsForm = (props) => {
     const {getFieldDecorator} = props.form;
     const [cuts, setCuts] = useState([]);
-    const dataSource= props.wip?((props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts;
+    // const dataSource= props.wip?((props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts;
+    const [tableData, setTableData] = useState(props.wip?((props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts);
     const columns=[
         {
             title: 'Serial No',
@@ -120,12 +121,14 @@ const CreateCuttingDetailsForm = (props) => {
                 props.setProcessDetails({...props.inward.process, weight: 0.00000000785*parseFloat(props.inward.plan.fWidth)*parseFloat(props.inward.plan.fThickness)*parseFloat(props.inward.process.length)*parseFloat(props.inward.process.no)});
         }
     }, [props.inward.process.length, props.inward.process.no])
-    const [tableData, setTableData] = useState(dataSource);
+    
   useEffect(() => {
-    const newData = [...tableData];
+        const data = props.wip?((props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts
+        const newData = [...data];
     
     setTableData(newData);
-  }, []);
+    
+  }, [props.coilDetails]);
   
 
   const onInputChange = (key, index) => (
