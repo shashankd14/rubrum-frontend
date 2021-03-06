@@ -24,12 +24,18 @@ import {
     REQUEST_SAVE_CUTTING_DETAILS,
     SAVE_CUTTING_DETAILS_SUCCESS,
     SAVE_CUTTING_DETAILS_ERROR,
+    REQUEST_UPDATE_INSTRUCTION_DETAILS,
+    REQUEST_UPDATE_INSTRUCTION_DETAILS_SUCCESS,
+    REQUEST_UPDATE_INSTRUCTION_DETAILS_ERROR,
     RESET_INSTRUCTION_FORM, FETCH_MATERIAL_GRADE_LIST_REQUEST, FETCH_MATERIAL_GRADE_LIST_SUCCESS,
 
     SET_INWARD_SELECTED_FOR_DELIVERY,
     POST_DELIVERY_CONFORM_REQUESTED,
     POST_DELIVERY_CONFORM_SUCCESS,
     POST_DELIVERY_CONFORM_ERROR,
+    FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST,
+    FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST_SUCCESS,
+    FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST_ERROR
 
 } from "../../constants/ActionTypes";
 
@@ -230,6 +236,27 @@ export default (state = INIT_STATE, action) => {
                 instructionSaveLoading: false,
                 instructionSaveSuccess: false,
                 instructionSaveError: true,
+            }
+        }
+        case REQUEST_UPDATE_INSTRUCTION_DETAILS: {
+            return {
+                ...state,
+                loading: true,
+                error:false
+            }
+        }
+        case REQUEST_UPDATE_INSTRUCTION_DETAILS_SUCCESS: {
+            return {
+                ...state,
+                loading: true,
+                error:false
+            }
+        }
+        case REQUEST_UPDATE_INSTRUCTION_DETAILS_ERROR: {
+            return {
+                ...state,
+                loading: true,
+                error:false
             }
         }
         case FETCH_MATERIAL_GRADE_LIST_SUCCESS:

@@ -1,4 +1,4 @@
-import {all, put, fork, takeLatest} from "redux-saga/effects";
+import {all, put, fork, takeLatest, take, call} from "redux-saga/effects";
 import moment from "moment";
 import {
     CHECK_COIL_EXISTS,
@@ -9,6 +9,8 @@ import {
     REQUEST_SAVE_CUTTING_DETAILS,
     REQUEST_SAVE_SLITTING_DETAILS, FETCH_MATERIAL_GRADE_LIST_REQUEST,
     POST_DELIVERY_CONFORM_REQUESTED,
+    REQUEST_UPDATE_INSTRUCTION_DETAILS,
+    REQUEST_UPDATE_INSTRUCTION_DETAILS_SUCCESS,
 } from "../../constants/ActionTypes";
 
 import {
@@ -30,8 +32,11 @@ import {
     getGradeByMaterialIdError,
     postDeliveryConformSuccess,
     postDeliveryConformError,
+    updateInstructionSuccess,
+    updateInstructionError
 } from "../actions";
 import {CUTTING_INSTRUCTION_PROCESS_ID, SLITTING_INSTRUCTION_PROCESS_ID} from "../../constants";
+import { formItemLayout } from "../../routes/company/Partywise/CuttingModal";
 
 function* fetchInwardList() {
     try {
@@ -265,6 +270,41 @@ function* requestSaveSlittingInstruction(action) {
         yield put(saveSlittingInstructionError(error));
     }
 }
+function* requestUpdateInstruction(action) {
+        const ins = action.instruction.map(item => {
+            let insObj = {
+                processId:item.processId? item.processId:null,
+                instructionDate: moment().format('YYYY-MM-DD HH:mm:ss'),
+                plannedLength: item.plannedLength,
+                plannedNoOfPieces: item.plannedNoOfPieces,
+                noOfPieces: null,
+                plannedWeight: item.plannedWeight,
+                instructionId: item.instructionId,
+                parentInstructionId: null,
+                actualWeight: item.actualWeight,
+                actualLength: item.actualLength,
+                actualNoOfPieces:item.actualNoOfPieces,
+                damage:item.damage?item.damage: null,
+                wastage: item.wastage?item.wastage:null,
+                packingWeight: item.packingWeight?item.packingWeight:null,
+                updatedBy: item.updatedBy,
+                createdBy: item.createdBy
+            }
+            return insObj
+        })
+        const req = {
+            isFinishTask: true,
+            instructionDtos:ins
+        }
+    try {
+      const updateInstruction= yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/instruction/update`, {method:'PUT', headers: { "Content-Type": "application/json" }, body: JSON.stringify(req)
+        });
+        yield put(updateInstructionSuccess(updateInstruction));
+
+    } catch (error) {
+        yield put(updateInstructionError(error));
+    }
+}
 
 function* requestGradesByMaterialId(action) {
     try {
@@ -309,8 +349,9 @@ export function* watchFetchRequests() {
     yield takeLatest(FETCH_INWARD_PLAN_DETAILS_REQUESTED, fetchInwardPlanDetails);
     yield takeLatest(REQUEST_SAVE_CUTTING_DETAILS, requestSaveCuttingInstruction);
     yield takeLatest(REQUEST_SAVE_SLITTING_DETAILS, requestSaveSlittingInstruction);
+    yield takeLatest(REQUEST_UPDATE_INSTRUCTION_DETAILS, requestUpdateInstruction);
     yield takeLatest(FETCH_MATERIAL_GRADE_LIST_REQUEST, requestGradesByMaterialId);
-    yield takeLatest(POST_DELIVERY_CONFORM_REQUESTED, postDeliveryConformRequest)
+    yield takeLatest(POST_DELIVERY_CONFORM_REQUESTED, postDeliveryConformRequest);
 }
 
 export default function* inwardSagas() {

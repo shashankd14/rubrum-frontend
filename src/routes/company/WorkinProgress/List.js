@@ -119,6 +119,5 @@ const mapStateToProps = state => ({
 
 
 export default connect(mapStateToProps, {
-    fetchInwardList,
-    resetInwardForm
+    fetchInwardList
 })(List);
