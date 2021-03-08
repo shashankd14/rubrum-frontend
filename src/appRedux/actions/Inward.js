@@ -43,9 +43,9 @@ import {
     POST_DELIVERY_CONFORM_REQUESTED,
     POST_DELIVERY_CONFORM_SUCCESS,
     POST_DELIVERY_CONFORM_ERROR,
-    FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST,
-    FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST_SUCCESS,
-    FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST_ERROR
+    FETCH_INWARD_INSTRUCTION_DETAILS_REQUESTED,
+    FETCH_INWARD_INSTRUCTION_DETAILS_SUCCESS,
+    FETCH_INWARD_INSTRUCTION_DETAILS_ERROR,
 } from "../../constants/ActionTypes";
 
 export const fetchInwardList = () => ({
@@ -214,4 +214,18 @@ export const postDeliveryConformSuccess = (payload) => ({
 export const postDeliveryConformError = (error) => ({
     type: POST_DELIVERY_CONFORM_ERROR,
     payload:error
+})
+export const getInstructionById = (instrutionId) => ({
+    type: FETCH_INWARD_INSTRUCTION_DETAILS_REQUESTED,
+    instrutionId
+})
+
+export const getInstructionByIdSuccess = (payload) => ({
+    type: FETCH_INWARD_INSTRUCTION_DETAILS_SUCCESS,
+    payload
+})
+
+export const getInstructionByIdError = (error) => ({
+    type: FETCH_INWARD_INSTRUCTION_DETAILS_ERROR,
+    error
 })

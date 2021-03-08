@@ -86,7 +86,7 @@ function  List(props) {
         key: 'x',
         render: (text, record) => (
             <span>
-                <span className="gx-link" onClick={() => props.history.push(`plan/${record.coilNumber}`)}>Finish</span>
+                <span className="gx-link" onClick={() => record.coilNumber? props.history.push(`plan/${record.coilNumber}`):props.history.push(`test/${record.instructionId}`)}>Finish</span>
             </span>
         ),
     },

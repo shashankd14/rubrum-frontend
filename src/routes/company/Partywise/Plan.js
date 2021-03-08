@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { getCoilPlanDetails } from "../../../appRedux/actions";
+import { getCoilPlanDetails, getInstructionById } from "../../../appRedux/actions";
 import { Button, Card, Col, Modal , Row} from "antd";
 
 import { CUTTING_INSTRUCTION_PROCESS_ID, SLITTING_INSTRUCTION_PROCESS_ID } from "../../../constants";
@@ -37,6 +37,7 @@ const Plan = (props) => {
      }
     useEffect(() => {
         props.getCoilPlanDetails(props.match.params.coilNumber);
+        props.getInstructionById(props.match.params.instructionId);
     }, [])
 
     useEffect(() => {
@@ -216,5 +217,6 @@ const mapStateToProps = state => ({
 });
 
 export default connect(mapStateToProps, {
-    getCoilPlanDetails
+    getCoilPlanDetails,
+    getInstructionById
 })(Plan);

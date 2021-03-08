@@ -33,9 +33,9 @@ import {
     POST_DELIVERY_CONFORM_REQUESTED,
     POST_DELIVERY_CONFORM_SUCCESS,
     POST_DELIVERY_CONFORM_ERROR,
-    FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST,
-    FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST_SUCCESS,
-    FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST_ERROR
+    FETCH_INWARD_INSTRUCTION_DETAILS_REQUESTED,
+    FETCH_INWARD_INSTRUCTION_DETAILS_SUCCESS,
+    FETCH_INWARD_INSTRUCTION_DETAILS_ERROR
 
 } from "../../constants/ActionTypes";
 
@@ -168,6 +168,28 @@ export default (state = INIT_STATE, action) => {
             }
         }
         case FETCH_INWARD_PLAN_DETAILS_ERROR: {
+            return {
+                ...state,
+                planLoading: false,
+                planSuccess: false,
+                planError: action.error
+            }
+        }
+        case FETCH_INWARD_INSTRUCTION_DETAILS_REQUESTED: {
+            return {
+                ...state,
+                planLoading: true
+            }
+        }
+        case FETCH_INWARD_INSTRUCTION_DETAILS_SUCCESS: {
+            return {
+                ...state,
+                planLoading: false,
+                planSuccess: true,
+                instruction: action.payload
+            }
+        }
+        case FETCH_INWARD_INSTRUCTION_DETAILS_ERROR: {
             return {
                 ...state,
                 planLoading: false,

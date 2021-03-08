@@ -10,7 +10,7 @@ import {
     REQUEST_SAVE_SLITTING_DETAILS, FETCH_MATERIAL_GRADE_LIST_REQUEST,
     POST_DELIVERY_CONFORM_REQUESTED,
     REQUEST_UPDATE_INSTRUCTION_DETAILS,
-    REQUEST_UPDATE_INSTRUCTION_DETAILS_SUCCESS,
+    FETCH_INWARD_INSTRUCTION_DETAILS_REQUESTED
 } from "../../constants/ActionTypes";
 
 import {
@@ -33,7 +33,9 @@ import {
     postDeliveryConformSuccess,
     postDeliveryConformError,
     updateInstructionSuccess,
-    updateInstructionError
+    updateInstructionError,
+    getInstructionByIdSuccess,
+    getInstructionByIdError
 } from "../actions";
 import {CUTTING_INSTRUCTION_PROCESS_ID, SLITTING_INSTRUCTION_PROCESS_ID} from "../../constants";
 import { formItemLayout } from "../../routes/company/Partywise/CuttingModal";
@@ -273,22 +275,23 @@ function* requestSaveSlittingInstruction(action) {
 function* requestUpdateInstruction(action) {
         const ins = action.instruction.map(item => {
             let insObj = {
-                processId:item.processId? item.processId:null,
-                instructionDate: moment().format('YYYY-MM-DD HH:mm:ss'),
-                plannedLength: item.plannedLength,
-                plannedNoOfPieces: item.plannedNoOfPieces,
-                noOfPieces: null,
-                plannedWeight: item.plannedWeight,
-                instructionId: item.instructionId,
-                parentInstructionId: null,
-                actualWeight: item.actualWeight,
-                actualLength: item.actualLength,
-                actualNoOfPieces:item.actualNoOfPieces,
-                damage:item.damage?item.damage: null,
-                wastage: item.wastage?item.wastage:null,
-                packingWeight: item.packingWeight?item.packingWeight:null,
-                updatedBy: item.updatedBy,
-                createdBy: item.createdBy
+            instructionId: item.instructionId? item.instructionId: null,
+            parentInstructionId: item.parentInstructionId ?item.parentInstructionId: null,
+            processdId: item.processId? item.processId: null,
+            instructionDate: moment().format('YYYY-MM-DD HH:mm:ss'),
+            plannedLength : item.plannedLength? item.plannedLength: null,
+		    plannedWidth : item.plannedWidth ?item.plannedWidth: null,
+		    plannedWeight : item.plannedWeight ? formItemLayout.plannedWeight: null,
+		    plannedNoOfPieces: item.plannedNoOfPieces ? item.plannedNoOfPieces: null,
+            actualWeight: item.actualWeight? item.actualWeight: null,
+            noOfPieces: item.noOfPieces ? item.noOfPieces : null,
+            actualNoOfPieces: item.actualNoOfPieces ? item.actualNoOfPieces: null,
+            wastage: item.wastage? item.wastage : null,
+            damage: item.damage? item.damage : null,
+            packingWeight: item.packingWeight? item.packingWeight : null,
+            createdBy: item.createdBy? item.createdBy : null,
+            updatedBy: item.updatedBy? item.updatedBy : null
+                
             }
             return insObj
         })
@@ -340,7 +343,47 @@ function* postDeliveryConformRequest(payload) {
     yield put(postDeliveryConformError(error));
 }
 }
-
+function* fetchInwardInstructionDetails(action) {
+    try {
+        const fetchInwardInstruction =  yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/instruction/getById/${action.instructionId}`, {
+            method: 'GET',
+        });
+        if(fetchInwardInstruction.status === 200) {
+            const fetchInwardPlanResponse = yield fetchInwardInstruction.json();
+            const formattedResponse = []
+            fetchInwardPlanResponse.instruction.map((instruction) => {
+                if(instruction.groupId) {
+                    // if(instruction.childInstructions.length > 0) {
+                    //     const formattedChildren = [];
+                    //     instruction.childInstructions.map((childInstruction) => {
+                    //         if(childInstruction.groupId) {
+                    //             if (formattedChildren[childInstruction.groupId]) {
+                    //                 formattedChildren[childInstruction.groupId] = [...formattedChildren[childInstruction.groupId], instruction];
+                    //             } else
+                    //                 formattedChildren[childInstruction.groupId] = [childInstruction];
+                    //         } else {
+                    //             formattedChildren.push(childInstruction);
+                    //         }
+                    //     })
+                    //     instruction['formattedChildren'] = formattedChildren;
+                    // }
+                    if(formattedResponse[instruction.groupId]) {
+                        formattedResponse[instruction.groupId] = [...formattedResponse[instruction.groupId], instruction];
+                    } else {
+                        formattedResponse[instruction.groupId] = [];
+                        formattedResponse[instruction.groupId].push(instruction);
+                    }
+                } else
+                    formattedResponse.push([instruction]);
+            })
+            fetchInwardPlanResponse.instruction = formattedResponse;
+            yield put(getInstructionByIdSuccess(fetchInwardPlanResponse));
+        } else
+            yield put(getInstructionByIdError('error'));
+    } catch (error) {
+        yield put(getInstructionByIdError(error));
+    }
+}
 export function* watchFetchRequests() {
     yield takeLatest(FETCH_INWARD_LIST_REQUEST, fetchInwardList);
     yield takeLatest(SUBMIT_INWARD_ENTRY, submitInward);
@@ -352,6 +395,7 @@ export function* watchFetchRequests() {
     yield takeLatest(REQUEST_UPDATE_INSTRUCTION_DETAILS, requestUpdateInstruction);
     yield takeLatest(FETCH_MATERIAL_GRADE_LIST_REQUEST, requestGradesByMaterialId);
     yield takeLatest(POST_DELIVERY_CONFORM_REQUESTED, postDeliveryConformRequest);
+    yield takeLatest(FETCH_INWARD_INSTRUCTION_DETAILS_REQUESTED, fetchInwardInstructionDetails);
 }
 
 export default function* inwardSagas() {
