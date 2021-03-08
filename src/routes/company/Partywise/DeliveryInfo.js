@@ -2,18 +2,19 @@ import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { Card, Table } from "antd";
 import { Popover } from "antd";
-import { InfoCircleOutlined,CloseSquareTwoTone } from "@ant-design/icons";
+import { InfoCircleOutlined, CloseSquareTwoTone } from "@ant-design/icons";
 import { postDeliveryConform } from "../../../appRedux/actions";
 import { Input } from "antd";
+import moment from "moment";
 
 const DeliveryInfo = (props) => {
   const [vehicleNo, setVehicleNo] = useState("");
   const [remarksList, setRemarksList] = useState([]);
 
-  const handleRemark = (elem,id) => {
+  const handleRemark = (elem, id) => {
     let index = remarksList.findIndex(elem => elem.id === id)
     let newRemarksList = remarksList
-    newRemarksList[index] = {instructionId:id,remark:elem.target.value}
+    newRemarksList[index] = { instructionId: id, remark: elem.target.value }
     setRemarksList(newRemarksList)
   }
 
@@ -27,13 +28,14 @@ const DeliveryInfo = (props) => {
       <Card>
         {props.inward.inwardList.length > 0 ? (
           props.inward.inwardListForDelivery.map((elem) => (
-            <div
+            <div key={elem.instructionId}
               style={{
                 border: "1px solid black",
                 display: "flex",
                 padding: "5px 10px",
                 margin: "10px 0px",
               }}
+
             >
               <div style={{ padding: "10px" }}>
                 <img
@@ -45,14 +47,14 @@ const DeliveryInfo = (props) => {
               </div>
               <div className="flex flex-col">
                 <div style={{ marginTop: "5px" }}>
-                  <p style={{ fontWeight: "bold" }}>Coil Number - 001</p>
+                  <p style={{ fontWeight: "bold" }}>Coil Number - {elem.instructionId}</p>
                 </div>
                 <div
                   style={{ display: "flex", justifyContent: "space-around" }}
                 >
                   <div>
                     <p style={{ marginTop: "10px" }}>
-                      Coil Width:{elem.fWidth}
+                      Coil Width:{elem.plannedWidth}
                     </p>
                   </div>
                   <div>
@@ -62,25 +64,25 @@ const DeliveryInfo = (props) => {
                   </div>
                   <div>
                     <p style={{ marginLeft: "5px", marginTop: "10px" }}>
-                      Coil Weight:{elem.fQuantity}
+                      Coil Weight:{elem.plannedWeight}
                     </p>
                   </div>
                   <div>
                     <p style={{ marginLeft: "5px", marginTop: "10px" }}>
-                      Sliting Date:
+                      Sliting Date:{moment(elem.instructionDate).format('DD/MM/YYYY')}
                     </p>
                   </div>
                   <div>
                     <p style={{ marginLeft: "5px", marginTop: "10px" }}>
-                      Coil Length:
+                      Coil Length:{elem.plannedLength}
                     </p>
                   </div>
                   <div>
                     <p style={{ marginLeft: "5px", marginTop: "10px" }}>
-                      Rate -{" "}
+                      Rate -{elem?.rateId}
                     </p>
                   </div>
-                  <div style={{ marginLeft: "3px",marginTop: "10px" }}>
+                  <div style={{ marginLeft: "3px", marginTop: "10px" }}>
                     <Popover
                       content={
                         <div
@@ -96,14 +98,14 @@ const DeliveryInfo = (props) => {
                       <InfoCircleOutlined />
                     </Popover>
                   </div>
-                  <div style={{marginLeft:"20px"}}>
+                  <div style={{ marginLeft: "20px" }}>
                     <Input
                       placeholder="Remarks"
                       type="text"
                     />
                   </div>
-                  <div style={{marginLeft:"20px"}}>
-                  <CloseSquareTwoTone style={{width:"20px"}} />
+                  <div style={{ marginLeft: "20px" }}>
+                    <CloseSquareTwoTone style={{ width: "20px" }} />
                   </div>
                 </div>
               </div>
