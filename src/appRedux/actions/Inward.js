@@ -46,6 +46,9 @@ import {
     FETCH_INWARD_INSTRUCTION_DETAILS_REQUESTED,
     FETCH_INWARD_INSTRUCTION_DETAILS_SUCCESS,
     FETCH_INWARD_INSTRUCTION_DETAILS_ERROR,
+    FETCH_INWARD_INSTRUCTION_WIP_DETAILS_REQUESTED,
+    FETCH_INWARD_INSTRUCTION_WIP_DETAILS_SUCCESS,
+    FETCH_INWARD_INSTRUCTION_WIP_DETAILS_ERROR
 } from "../../constants/ActionTypes";
 
 export const fetchInwardList = () => ({
@@ -215,9 +218,9 @@ export const postDeliveryConformError = (error) => ({
     type: POST_DELIVERY_CONFORM_ERROR,
     payload:error
 })
-export const getInstructionById = (instrutionId) => ({
+export const getInstructionById = (instructionId) => ({
     type: FETCH_INWARD_INSTRUCTION_DETAILS_REQUESTED,
-    instrutionId
+    instructionId
 })
 
 export const getInstructionByIdSuccess = (payload) => ({
@@ -227,5 +230,18 @@ export const getInstructionByIdSuccess = (payload) => ({
 
 export const getInstructionByIdError = (error) => ({
     type: FETCH_INWARD_INSTRUCTION_DETAILS_ERROR,
+    error
+})
+export const getInstructionWipList = () => ({
+    type: FETCH_INWARD_INSTRUCTION_WIP_DETAILS_REQUESTED
+})
+
+export const getInstructionWipListSuccess = (inwardList) => ({
+    type: FETCH_INWARD_INSTRUCTION_WIP_DETAILS_SUCCESS,
+    inwardList
+})
+
+export const getInstructionWipListError = (error) => ({
+    type: FETCH_INWARD_INSTRUCTION_WIP_DETAILS_ERROR,
     error
 })

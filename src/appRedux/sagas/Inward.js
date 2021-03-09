@@ -10,7 +10,8 @@ import {
     REQUEST_SAVE_SLITTING_DETAILS, FETCH_MATERIAL_GRADE_LIST_REQUEST,
     POST_DELIVERY_CONFORM_REQUESTED,
     REQUEST_UPDATE_INSTRUCTION_DETAILS,
-    FETCH_INWARD_INSTRUCTION_DETAILS_REQUESTED
+    FETCH_INWARD_INSTRUCTION_DETAILS_REQUESTED,
+    FETCH_INWARD_INSTRUCTION_WIP_DETAILS_REQUESTED
 } from "../../constants/ActionTypes";
 
 import {
@@ -35,7 +36,9 @@ import {
     updateInstructionSuccess,
     updateInstructionError,
     getInstructionByIdSuccess,
-    getInstructionByIdError
+    getInstructionByIdError,
+    getInstructionWipListSuccess,
+    getInstructionWipListError
 } from "../actions";
 import {CUTTING_INSTRUCTION_PROCESS_ID, SLITTING_INSTRUCTION_PROCESS_ID} from "../../constants";
 import { formItemLayout } from "../../routes/company/Partywise/CuttingModal";
@@ -81,6 +84,46 @@ function* fetchInwardList() {
     }
 }
 
+function* fetchInwardInstructionWIPDetails(action) {
+    try {
+        const fetchInwardList =  yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/instruction/listWIP', {
+            method: 'GET',
+        });
+        if(fetchInwardList.status === 200) {
+            const fetchInwardListResponse = yield fetchInwardList.json();
+            // const inwardResponse = [];
+            // if(fetchInwardListResponse.length > 0) {
+            //     fetchInwardListResponse.map((inward) => {
+            //         let eachInward = {...inward};
+            //         eachInward.key = inward.coilNumber;
+            //         if(inward.instruction.length > 0) {
+            //             eachInward.children = inward.instruction;
+            //             inward.instruction.map((instruction, index) => {
+            //                 eachInward.children[index].key = `${inward.coilNumber}-${instruction.instructionId}`;
+            //                 eachInward.children[index].coilNumber = instruction.instructionId;
+            //                 eachInward.children[index].party = inward.party;
+            //                 eachInward.children[index].material = inward.material;
+            //                 if(instruction.childInstructions && instruction.childInstructions.length > 0) {
+            //                     eachInward.children[index].children = instruction.childInstructions;
+            //                     eachInward.children[index].children.map((childInstruction, childIndex) => {
+            //                         eachInward.children[index].children[childIndex].key = `${inward.coilNumber}-${instruction.instructionId}-${childInstruction.instructionId}`;
+            //                         eachInward.children[index].children[childIndex].coilNumber = instruction.instructionId;
+            //                         eachInward.children[index].children[childIndex].party = inward.party;
+            //                         eachInward.children[index].children[childIndex].material = inward.material;
+            //                     })
+            //                 }
+            //             })
+            //         }
+            //         inwardResponse.push(eachInward);
+            //     });
+            // }
+            yield put(getInstructionWipListSuccess(fetchInwardListResponse));
+        } else
+            yield put(getInstructionWipListError('error'));
+    } catch (error) {
+        yield put(getInstructionWipListError(error));
+    }
+}
 function* checkCoilDuplicate(action) {
     try {
         const checkCoilDuplicate =  yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/inwardEntry/isCoilPresent?coilNumber=${action.coilNumber}`, {
@@ -384,6 +427,7 @@ function* fetchInwardInstructionDetails(action) {
         yield put(getInstructionByIdError(error));
     }
 }
+
 export function* watchFetchRequests() {
     yield takeLatest(FETCH_INWARD_LIST_REQUEST, fetchInwardList);
     yield takeLatest(SUBMIT_INWARD_ENTRY, submitInward);
@@ -396,6 +440,7 @@ export function* watchFetchRequests() {
     yield takeLatest(FETCH_MATERIAL_GRADE_LIST_REQUEST, requestGradesByMaterialId);
     yield takeLatest(POST_DELIVERY_CONFORM_REQUESTED, postDeliveryConformRequest);
     yield takeLatest(FETCH_INWARD_INSTRUCTION_DETAILS_REQUESTED, fetchInwardInstructionDetails);
+    yield takeLatest(FETCH_INWARD_INSTRUCTION_WIP_DETAILS_REQUESTED, fetchInwardInstructionWIPDetails);
 }
 
 export default function* inwardSagas() {
