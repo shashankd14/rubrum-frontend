@@ -1,4 +1,4 @@
-import {all, put, fork, takeLatest, take, call} from "redux-saga/effects";
+import { all, put, fork, takeLatest, take, call } from "redux-saga/effects";
 import moment from "moment";
 import {
     CHECK_COIL_EXISTS,
@@ -8,9 +8,9 @@ import {
     FETCH_INWARD_PLAN_DETAILS_REQUESTED,
     REQUEST_SAVE_CUTTING_DETAILS,
     REQUEST_SAVE_SLITTING_DETAILS, FETCH_MATERIAL_GRADE_LIST_REQUEST,
-    POST_DELIVERY_CONFORM_REQUESTED,
+    POST_DELIVERY_CONFIRM_REQUESTED,
     REQUEST_UPDATE_INSTRUCTION_DETAILS,
-    REQUEST_UPDATE_INSTRUCTION_DETAILS_SUCCESS,
+    REQUEST_UPDATE_INSTRUCTION_DETAILS_SUCCESS
 } from "../../constants/ActionTypes";
 
 import {
@@ -30,34 +30,34 @@ import {
     saveSlittingInstructionError,
     getGradeByMaterialIdSuccess,
     getGradeByMaterialIdError,
-    postDeliveryConformSuccess,
-    postDeliveryConformError,
+    postDeliveryConfirmSuccess,
+    postDeliveryConfirmError,
     updateInstructionSuccess,
     updateInstructionError
 } from "../actions";
-import {CUTTING_INSTRUCTION_PROCESS_ID, SLITTING_INSTRUCTION_PROCESS_ID} from "../../constants";
+import { CUTTING_INSTRUCTION_PROCESS_ID, SLITTING_INSTRUCTION_PROCESS_ID } from "../../constants";
 import { formItemLayout } from "../../routes/company/Partywise/CuttingModal";
 
 function* fetchInwardList() {
     try {
-        const fetchInwardList =  yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/inwardEntry/list', {
+        const fetchInwardList = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/inwardEntry/list', {
             method: 'GET',
         });
-        if(fetchInwardList.status === 200) {
+        if (fetchInwardList.status === 200) {
             const fetchInwardListResponse = yield fetchInwardList.json();
             const inwardResponse = [];
-            if(fetchInwardListResponse.length > 0) {
+            if (fetchInwardListResponse.length > 0) {
                 fetchInwardListResponse.map((inward) => {
-                    let eachInward = {...inward};
+                    let eachInward = { ...inward };
                     eachInward.key = inward.coilNumber;
-                    if(inward.instruction.length > 0) {
+                    if (inward.instruction.length > 0) {
                         eachInward.children = inward.instruction;
                         inward.instruction.map((instruction, index) => {
                             eachInward.children[index].key = `${inward.coilNumber}-${instruction.instructionId}`;
                             eachInward.children[index].coilNumber = instruction.instructionId;
                             eachInward.children[index].party = inward.party;
                             eachInward.children[index].material = inward.material;
-                            if(instruction.childInstructions && instruction.childInstructions.length > 0) {
+                            if (instruction.childInstructions && instruction.childInstructions.length > 0) {
                                 eachInward.children[index].children = instruction.childInstructions;
                                 eachInward.children[index].children.map((childInstruction, childIndex) => {
                                     eachInward.children[index].children[childIndex].key = `${inward.coilNumber}-${instruction.instructionId}-${childInstruction.instructionId}`;
@@ -81,10 +81,10 @@ function* fetchInwardList() {
 
 function* checkCoilDuplicate(action) {
     try {
-        const checkCoilDuplicate =  yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/inwardEntry/isCoilPresent?coilNumber=${action.coilNumber}`, {
+        const checkCoilDuplicate = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/inwardEntry/isCoilPresent?coilNumber=${action.coilNumber}`, {
             method: 'GET',
         });
-        if(checkCoilDuplicate.status === 200) {
+        if (checkCoilDuplicate.status === 200) {
             const checkCoilDuplicateResponse = yield checkCoilDuplicate.json();
             yield put(checkDuplicateCoilSuccess(checkCoilDuplicateResponse));
         } else
@@ -99,48 +99,48 @@ function* submitInward(action) {
         let data = new FormData();
         //customer details
         data.append('partyId', action.inward.partyName);
-        data.append('customerCoilId',  action.inward.customerId);
-        data.append('customerBatchId',  action.inward.customerBatchNo);
-        data.append('customerInvoiceNo',  action.inward.customerInvoiceNo);
+        data.append('customerCoilId', action.inward.customerId);
+        data.append('customerBatchId', action.inward.customerBatchNo);
+        data.append('customerInvoiceNo', action.inward.customerInvoiceNo);
         data.append('purposeType', action.inward.purposeType);
 
         //coil details
         data.append('coilNumber', action.inward.coilNumber);
-        data.append('materialId',  action.inward.material);
+        data.append('materialId', action.inward.material);
         data.append('width', action.inward.width);
-        data.append('thickness',  action.inward.thickness);
-        action.inward.length && data.append('length',  action.inward.length);
-        data.append('presentWeight',  action.inward.netWeight);
-        data.append('grossWeight',  action.inward.grossWeight);
+        data.append('thickness', action.inward.thickness);
+        action.inward.length && data.append('length', action.inward.length);
+        data.append('presentWeight', action.inward.netWeight);
+        data.append('grossWeight', action.inward.grossWeight);
 
         // invoice details
-        data.append('inwardDate',  moment(action.inward.receivedDate).format('YYYY-MM-DD HH:mm:ss'));
-        data.append('bathchNumber',  action.inward.batchNo);
+        data.append('inwardDate', moment(action.inward.receivedDate).format('YYYY-MM-DD HH:mm:ss'));
+        data.append('bathchNumber', action.inward.batchNo);
         data.append('vehicleNumber', action.inward.vehicleNumber);
         data.append('invoiceDate', moment(action.inward.invoiceDate).format('YYYY-MM-DD HH:mm:ss'));
         data.append('invoiceNumber', action.inward.invoiceNumber);
 
         //quality details
-        data.append('materialGradeId',  action.inward.grade);
-        data.append('testCertificateNumber',  action.inward.testCertificateNo);
-        data.append('remarks',  action.inward.remarks);
+        data.append('materialGradeId', action.inward.grade);
+        data.append('testCertificateNumber', action.inward.testCertificateNo);
+        data.append('remarks', action.inward.remarks);
 
-        if(action.inward.testFile) {
+        if (action.inward.testFile) {
             data.append('testCertificateFile', action.inward.testFile.fileList[0].originFileObj, action.inward.testFile.fileList[0].name);
         }
 
-        data.append('statusId',  1);
-        data.append('heatnumber',  '123');
-        data.append('plantname',  'test plant name');
+        data.append('statusId', 1);
+        data.append('heatnumber', '123');
+        data.append('plantname', 'test plant name');
         // data.append('customerInvoiceDajte',  action.inward.grade);
-        data.append('createdBy',  1);
-        data.append('updatedBy',  1);
+        data.append('createdBy', 1);
+        data.append('updatedBy', 1);
 
-        const newInwardEntry =  yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/inwardEntry/addNew', {
+        const newInwardEntry = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/inwardEntry/addNew', {
             method: 'POST',
             body: data
         });
-        if(newInwardEntry.status == 200) {
+        if (newInwardEntry.status == 200) {
             yield put(submitInwardSuccess());
         } else
             yield put(submitInwardError('error'));
@@ -151,10 +151,10 @@ function* submitInward(action) {
 
 function* fetchInwardListByParty(action) {
     try {
-        const fetchPartyInwardList =  yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/inwardEntry/getByPartyId/${action.partyId}`, {
+        const fetchPartyInwardList = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/inwardEntry/getByPartyId/${action.partyId}`, {
             method: 'GET',
         });
-        if(fetchPartyInwardList.status === 200) {
+        if (fetchPartyInwardList.status === 200) {
             const fetchPartyInwardListResponse = yield fetchPartyInwardList.json();
             yield put(getCoilsByPartyIdSuccess(fetchPartyInwardListResponse.body));
         } else
@@ -166,14 +166,14 @@ function* fetchInwardListByParty(action) {
 
 function* fetchInwardPlanDetails(action) {
     try {
-        const fetchInwardPlan =  yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/inwardEntry/getByCoilId/${action.coilNumber}`, {
+        const fetchInwardPlan = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/inwardEntry/getByCoilId/${action.coilNumber}`, {
             method: 'GET',
         });
-        if(fetchInwardPlan.status === 200) {
+        if (fetchInwardPlan.status === 200) {
             const fetchInwardPlanResponse = yield fetchInwardPlan.json();
             const formattedResponse = []
             fetchInwardPlanResponse.instruction.map((instruction) => {
-                if(instruction.groupId) {
+                if (instruction.groupId) {
                     // if(instruction.childInstructions.length > 0) {
                     //     const formattedChildren = [];
                     //     instruction.childInstructions.map((childInstruction) => {
@@ -188,7 +188,7 @@ function* fetchInwardPlanDetails(action) {
                     //     })
                     //     instruction['formattedChildren'] = formattedChildren;
                     // }
-                    if(formattedResponse[instruction.groupId]) {
+                    if (formattedResponse[instruction.groupId]) {
                         formattedResponse[instruction.groupId] = [...formattedResponse[instruction.groupId], instruction];
                     } else {
                         formattedResponse[instruction.groupId] = [];
@@ -211,25 +211,25 @@ function* requestSaveCuttingInstruction(action) {
     action.cuttingDetails.map((cutDetails) => {
         const req = {
             processId: CUTTING_INSTRUCTION_PROCESS_ID,
-            instructionDate :  moment(cutDetails.processDate).format('YYYY-MM-DD HH:mm:ss'),
+            instructionDate: moment(cutDetails.processDate).format('YYYY-MM-DD HH:mm:ss'),
             plannedLength: cutDetails.length,
             plannedWeight: cutDetails.weight,
             plannedNoOfPieces: cutDetails.no,
             status: 1,
-            "createdBy" : "1",
-            "updatedBy" : "1",
+            "createdBy": "1",
+            "updatedBy": "1",
             inwardId: cutDetails.inwardId ? cutDetails.inwardId : "",
             parentInstructionId: cutDetails.instructionId ? cutDetails.instructionId : ""
         }
         requestBody.push(req);
     })
     try {
-        const fetchPartyInwardList =  yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/instruction/save`, {
+        const fetchPartyInwardList = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/instruction/save`, {
             method: 'POST',
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(requestBody)
         });
-        if(fetchPartyInwardList.status === 200) {
+        if (fetchPartyInwardList.status === 200) {
             yield put(saveCuttingInstructionSuccess(fetchPartyInwardList));
         } else
             yield put(saveCuttingInstructionError('error'));
@@ -249,20 +249,20 @@ function* requestSaveSlittingInstruction(action) {
             plannedWeight: slitDetails.weight,
             plannedNoOfPieces: slitDetails.no,
             status: 1,
-            "createdBy" : "1",
-            "updatedBy" : "1",
+            "createdBy": "1",
+            "updatedBy": "1",
             inwardId: slitDetails.inwardId ? slitDetails.inwardId : '',
             parentInstructionId: slitDetails.instructionId ? slitDetails.instructionId : '',
         }
         requestBody.push(req);
     })
     try {
-        const fetchPartyInwardList =  yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/instruction/save`, {
+        const fetchPartyInwardList = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/instruction/save`, {
             method: 'POST',
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(requestBody)
         });
-        if(fetchPartyInwardList.status === 200) {
+        if (fetchPartyInwardList.status === 200) {
             yield put(saveSlittingInstructionSuccess(fetchPartyInwardList));
         } else
             yield put(saveSlittingInstructionError('error'));
@@ -271,33 +271,34 @@ function* requestSaveSlittingInstruction(action) {
     }
 }
 function* requestUpdateInstruction(action) {
-        const ins = action.instruction.map(item => {
-            let insObj = {
-                processId:item.processId? item.processId:null,
-                instructionDate: moment().format('YYYY-MM-DD HH:mm:ss'),
-                plannedLength: item.plannedLength,
-                plannedNoOfPieces: item.plannedNoOfPieces,
-                noOfPieces: null,
-                plannedWeight: item.plannedWeight,
-                instructionId: item.instructionId,
-                parentInstructionId: null,
-                actualWeight: item.actualWeight,
-                actualLength: item.actualLength,
-                actualNoOfPieces:item.actualNoOfPieces,
-                damage:item.damage?item.damage: null,
-                wastage: item.wastage?item.wastage:null,
-                packingWeight: item.packingWeight?item.packingWeight:null,
-                updatedBy: item.updatedBy,
-                createdBy: item.createdBy
-            }
-            return insObj
-        })
-        const req = {
-            isFinishTask: true,
-            instructionDtos:ins
+    const ins = action.instruction.map(item => {
+        let insObj = {
+            processId: item.processId ? item.processId : null,
+            instructionDate: moment().format('YYYY-MM-DD HH:mm:ss'),
+            plannedLength: item.plannedLength,
+            plannedNoOfPieces: item.plannedNoOfPieces,
+            noOfPieces: null,
+            plannedWeight: item.plannedWeight,
+            instructionId: item.instructionId,
+            parentInstructionId: null,
+            actualWeight: item.actualWeight,
+            actualLength: item.actualLength,
+            actualNoOfPieces: item.actualNoOfPieces,
+            damage: item.damage ? item.damage : null,
+            wastage: item.wastage ? item.wastage : null,
+            packingWeight: item.packingWeight ? item.packingWeight : null,
+            updatedBy: item.updatedBy,
+            createdBy: item.createdBy
         }
+        return insObj
+    })
+    const req = {
+        isFinishTask: true,
+        instructionDtos: ins
+    }
     try {
-      const updateInstruction= yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/instruction/update`, {method:'PUT', headers: { "Content-Type": "application/json" }, body: JSON.stringify(req)
+        const updateInstruction = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/instruction/update`, {
+            method: 'PUT', headers: { "Content-Type": "application/json" }, body: JSON.stringify(req)
         });
         yield put(updateInstructionSuccess(updateInstruction));
 
@@ -308,10 +309,10 @@ function* requestUpdateInstruction(action) {
 
 function* requestGradesByMaterialId(action) {
     try {
-        const fetchGradesByMaterialIdList =  yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/materialGrade/getByMaterialId/${action.materialId}`, {
+        const fetchGradesByMaterialIdList = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/materialGrade/getByMaterialId/${action.materialId}`, {
             method: 'GET',
         });
-        if(fetchGradesByMaterialIdList.status === 200) {
+        if (fetchGradesByMaterialIdList.status === 200) {
             const fetchGradesByMaterialIdListResponse = yield fetchGradesByMaterialIdList.json();
             yield put(getGradeByMaterialIdSuccess(fetchGradesByMaterialIdListResponse));
         } else
@@ -321,24 +322,30 @@ function* requestGradesByMaterialId(action) {
     }
 }
 
-function* postDeliveryConformRequest(payload) {
-
-    console.log("in saga", payload)
-
-    try{
-        const postConform = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/delivery/save`,{
-            method:"POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify()
-        })
-
-        if(postConform.status === 200) {
-            yield put(postDeliveryConformSuccess());
+function* postDeliveryConfirmRequest(payload) {
+    let packetsData;
+    console.log(payload);
+    for (let item of payload.inwardListForDelivery) {
+        let tempItem = {};
+        tempItem.instructionId = item.instructionId;
+        tempItem.remarks = item.remarks
+        packetsData.push(tempItem);
+    }
+    const req_obj = {
+        vehicleNo: payload.vehicleNo,
+        packetRemarks: packetsData
+    }
+    try {
+        const postConfirm = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/delivery/save`, {
+            method: 'POST', headers: { "Content-Type": "application/json" }, body: JSON.stringify(req_obj)
+        });
+        if (postConfirm.status === 200) {
+            yield put(postDeliveryConfirmSuccess());
         } else
-            yield put(postDeliveryConformError('error'));
+            yield put(postDeliveryConfirmError('error'));
     } catch (error) {
-    yield put(postDeliveryConformError(error));
-}
+        yield put(postDeliveryConfirmError(error));
+    }
 }
 
 export function* watchFetchRequests() {
@@ -351,7 +358,7 @@ export function* watchFetchRequests() {
     yield takeLatest(REQUEST_SAVE_SLITTING_DETAILS, requestSaveSlittingInstruction);
     yield takeLatest(REQUEST_UPDATE_INSTRUCTION_DETAILS, requestUpdateInstruction);
     yield takeLatest(FETCH_MATERIAL_GRADE_LIST_REQUEST, requestGradesByMaterialId);
-    yield takeLatest(POST_DELIVERY_CONFORM_REQUESTED, postDeliveryConformRequest);
+    yield takeLatest(POST_DELIVERY_CONFIRM_REQUESTED, postDeliveryConfirmRequest);
 }
 
 export default function* inwardSagas() {

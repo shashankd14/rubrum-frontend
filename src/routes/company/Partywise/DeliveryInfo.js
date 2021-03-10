@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { Card, Table } from "antd";
 import { Popover } from "antd";
 import { InfoCircleOutlined, CloseSquareTwoTone } from "@ant-design/icons";
-import { postDeliveryConform } from "../../../appRedux/actions";
+import { postDeliveryConfirm } from "../../../appRedux/actions";
 import { Input } from "antd";
 import moment from "moment";
 
@@ -19,7 +19,12 @@ const DeliveryInfo = (props) => {
   }
 
   const handleSubmit = () => {
-    postDeliveryConform(vehicleNo);
+    console.log(props.inward.inwardListForDelivery);
+    const reqObj = {
+      vehicleNo,
+      inwardListForDelivery: props.inward.inwardListForDelivery
+    }
+    props.postDeliveryConfirm(reqObj);
   };
 
   return (
@@ -102,6 +107,8 @@ const DeliveryInfo = (props) => {
                     <Input
                       placeholder="Remarks"
                       type="text"
+                      defaultValue={elem.remarks}
+                      onChange={(event) => { elem.remarks = event.target.value; }}
                     />
                   </div>
                   <div style={{ marginLeft: "20px" }}>
@@ -136,16 +143,14 @@ const DeliveryInfo = (props) => {
                 border: "none",
               }}
               onClick={handleSubmit}
-            >
-              Conform
+            >Confirm
             </button>
             <button
               style={{ marginBottom: "10px", padding: "6px 15px" }}
               onClick={() => {
                 props.history.push("/company/partywise-register");
               }}
-            >
-              Go Back
+            >Go Back
             </button>
           </div>
         </div>
@@ -167,4 +172,4 @@ const mapStateToProps = (state) => ({
   inward: state.inward,
 });
 
-export default connect(mapStateToProps, { postDeliveryConform })(DeliveryInfo);
+export default connect(mapStateToProps, { postDeliveryConfirm })(DeliveryInfo);
