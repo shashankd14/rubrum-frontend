@@ -146,17 +146,14 @@ const List = (props) => {
     }
 
     function handleBlur() {
-        console.log('blur');
     }
 
     function handleFocus() {
-        console.log('focus');
     }
 
     const setSelection = (record, selected, selectedRows) => {
         setSelectedRowKeys(selectedRows)
         props.setInwardSelectedForDelivery(selectedRows)
-        console.log(selectedRows)
     }
 
     const handleSelection = {

@@ -1,4 +1,5 @@
 import { all, put, fork, takeLatest, take, call } from "redux-saga/effects";
+import { history  } from '../store/index';
 import moment from "moment";
 import {
     CHECK_COIL_EXISTS,
@@ -323,24 +324,26 @@ function* requestGradesByMaterialId(action) {
 }
 
 function* postDeliveryConfirmRequest(payload) {
-    let packetsData;
-    console.log(payload);
-    for (let item of payload.inwardListForDelivery) {
+    let packetsData = [];
+    for (let item of payload.payload.inwardListForDelivery) {
         let tempItem = {};
         tempItem.instructionId = item.instructionId;
-        tempItem.remarks = item.remarks
+        tempItem.remarks = item.remarks;
         packetsData.push(tempItem);
     }
+
     const req_obj = {
         vehicleNo: payload.vehicleNo,
         packetRemarks: packetsData
     }
+
     try {
         const postConfirm = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/delivery/save`, {
             method: 'POST', headers: { "Content-Type": "application/json" }, body: JSON.stringify(req_obj)
         });
         if (postConfirm.status === 200) {
             yield put(postDeliveryConfirmSuccess());
+            history.push('/company/partywise-register')
         } else
             yield put(postDeliveryConfirmError('error'));
     } catch (error) {

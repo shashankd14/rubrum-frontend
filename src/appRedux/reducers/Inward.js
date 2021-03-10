@@ -57,7 +57,7 @@ const INIT_STATE = {
     instructionSaveSuccess: false,
     instructionSaveError: false,
     materialGrades: {},
-    inwardListForDelivery: [],
+    inwardListForDelivery: undefined,
     vehicleNumber: ''
 };
 

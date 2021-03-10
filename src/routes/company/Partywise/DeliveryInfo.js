@@ -19,7 +19,6 @@ const DeliveryInfo = (props) => {
   }
 
   const handleSubmit = () => {
-    console.log(props.inward.inwardListForDelivery);
     const reqObj = {
       vehicleNo,
       inwardListForDelivery: props.inward.inwardListForDelivery
