@@ -314,14 +314,14 @@ export default (state = INIT_STATE, action) => {
                 error: false
             }
         }
-        case POST_DELIVERY_CONFORM_REQUESTED: {
+        case POST_DELIVERY_CONFIRM_REQUESTED: {
             return{
                 ...state,
                 loading: false,
                 error: false,
             }
         }
-        case POST_DELIVERY_CONFORM_REQUESTED: {
+        case POST_DELIVERY_CONFIRM_REQUESTED: {
             return{
                 ...state,
                 loading: false,
