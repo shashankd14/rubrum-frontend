@@ -83,11 +83,7 @@ const Plan = (props) => {
                             <span className="gx-coil-details-label">{props.inward.plan.fQuantity}</span>
                         </div>
                         {props.wip ? 
-                            <div><Button onClick={() => {
-                                setCuttingCoil(props.inward.plan);
-                                setShowCuttingModal(true);
-                                setChildCoil(false)
-                            }}>Finish Coil</Button></div> :
+                            <div></div> :
                             <div>
                             <Button onClick={() => {
                                 setCuttingCoil(props.inward.plan);

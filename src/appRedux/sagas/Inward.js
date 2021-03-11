@@ -321,20 +321,20 @@ function* requestUpdateInstruction(action) {
                 
             instructionId: item.instructionId? item.instructionId: null,
             parentInstructionId: item.parentInstructionId ?item.parentInstructionId: null,
-            processdId: item.process.processId ? item.process.processId: null,
-            instructionDate: moment(item.instructionDate).format('YYYY-MM-DD HH:mm:ss'),
-            plannedLength : item.plannedLength? item.plannedLength: null,
-		    plannedWidth : item.plannedWidth ?item.plannedWidth: null,
-		    plannedWeight : item.plannedWeight ? item.plannedWeight: null,
-		    plannedNoOfPieces: item.plannedNoOfPieces ? item.plannedNoOfPieces: null,
-            actualWeight: item.actualWeight? item.actualWeight: null,
-            noOfPieces: item.noOfPieces ? item.noOfPieces : null,
-            actualNoOfPieces: item.actualNoOfPieces ? item.actualNoOfPieces: null,
-            wastage: item.wastage? item.wastage : null,
-            damage: item.damage? item.damage : null,
-            packingWeight: item.packingWeight? item.packingWeight : null,
-            createdBy: item.createdBy? item.createdBy : null,
-            updatedBy: item.updatedBy? item.updatedBy : null
+            processdId: item.process.processId ? item.process.processId: 1,
+            instructionDate: item.instructionDate ?moment(item.instructionDate).format('YYYY-MM-DD HH:mm:ss'): null,
+            plannedLength : item.plannedLength? item.plannedLength: 0,
+		    plannedWidth : item.plannedWidth ?item.plannedWidth: 0,
+		    plannedWeight : item.plannedWeight ? item.plannedWeight: 0,
+		    plannedNoOfPieces: item.plannedNoOfPieces ? item.plannedNoOfPieces: 0,
+            actualWeight: item.actualWeight? item.actualWeight: 0,
+            noOfPieces: item.noOfPieces ? item.noOfPieces : 0,
+            actualNoOfPieces: item.actualNoOfPieces ? item.actualNoOfPieces: 0,
+            wastage: item.wastage? item.wastage : 0,
+            damage: item.damage? item.damage : 0,
+            packingWeight: item.packingWeight? item.packingWeight : 0,
+            createdBy: item.createdBy? item.createdBy : 1,
+            updatedBy: item.updatedBy? item.updatedBy : 1
                 
             }
             return insObj
