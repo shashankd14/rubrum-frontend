@@ -173,7 +173,7 @@ const CreateSlittingDetailsForm = (props) => {
     const {getFieldDecorator} = props.form;
     const [cuts, setCuts] = useState([]);
     let loading = '';
-    const dataSource= props.wip?((props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions):cuts;
+    // const dataSource= props.wip?((props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions):cuts;
 const columns = [
     {
         title: 'Serial No',
@@ -268,13 +268,19 @@ const columnsPlan=[
         key:'weight'
     },
 ];
-    const [tableData, setTableData] = useState(dataSource);
+    const [tableData, setTableData] = useState(props.wip?(props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts);
   useEffect(() => {
-    const newData = [...tableData];
-    
-    setTableData(newData);
-  }, []);
-  
+    let data = props.wip?(props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts;
+    if(props.childCoil){
+        const arrayData =[];
+        arrayData.push(data);
+        data= arrayData
+    }
+    const newData = [...data];
+
+setTableData(newData);
+
+}, [props.coilDetails]);
 
   const onInputChange = (key, index) => (
     e: React.ChangeEvent<HTMLInputElement>
@@ -311,6 +317,7 @@ const columnsPlan=[
             visible={props.showSlittingModal}
             onOk={() => {
                 if(props.wip){
+                    props.updateInstruction(tableData);
                     props.setShowSlittingModal()
                 }
                 else{
@@ -376,4 +383,4 @@ const SlittingDetailsForm = Form.create({
 
 const SlittingWidthsForm = Form.create()(SlittingWidths);
 
-export default connect(mapStateToProps, {setProcessDetails, saveSlittingInstruction, resetInstruction})(SlittingDetailsForm);
+export default connect(mapStateToProps, {setProcessDetails, saveSlittingInstruction, resetInstruction, updateInstruction})(SlittingDetailsForm);

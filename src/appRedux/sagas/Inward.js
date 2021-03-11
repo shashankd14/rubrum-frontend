@@ -318,13 +318,14 @@ function* requestSaveSlittingInstruction(action) {
 function* requestUpdateInstruction(action) {
         const ins = action.instruction.map(item => {
             let insObj = {
+                
             instructionId: item.instructionId? item.instructionId: null,
             parentInstructionId: item.parentInstructionId ?item.parentInstructionId: null,
-            processdId: item.processId? item.processId: null,
-            instructionDate: moment().format('YYYY-MM-DD HH:mm:ss'),
+            processdId: item.process.processId ? item.process.processId: null,
+            instructionDate: moment(item.instructionDate).format('YYYY-MM-DD HH:mm:ss'),
             plannedLength : item.plannedLength? item.plannedLength: null,
 		    plannedWidth : item.plannedWidth ?item.plannedWidth: null,
-		    plannedWeight : item.plannedWeight ? formItemLayout.plannedWeight: null,
+		    plannedWeight : item.plannedWeight ? item.plannedWeight: null,
 		    plannedNoOfPieces: item.plannedNoOfPieces ? item.plannedNoOfPieces: null,
             actualWeight: item.actualWeight? item.actualWeight: null,
             noOfPieces: item.noOfPieces ? item.noOfPieces : null,
@@ -343,7 +344,7 @@ function* requestUpdateInstruction(action) {
             instructionDtos:ins
         }
     try {
-      const updateInstruction= yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/instruction/update`, {method:'PUT', headers: { "Content-Type": "application/json" }, body: JSON.stringify(req)
+      const updateInstruction= yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/instruction/update', {method:'PUT', headers: { "Content-Type": "application/json" }, body: JSON.stringify(req)
         });
         yield put(updateInstructionSuccess(updateInstruction));
 
