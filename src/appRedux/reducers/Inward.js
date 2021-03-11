@@ -2,7 +2,6 @@ import {
     FETCH_INWARD_LIST_REQUEST,
     FETCH_INWARD_LIST_SUCCESS,
     FETCH_INWARD_LIST_ERROR,
-
     SET_INWARD_DETAILS,
     SUBMIT_INWARD_ENTRY,
     SUBMIT_INWARD_SUCCESS,
@@ -30,9 +29,10 @@ import {
     RESET_INSTRUCTION_FORM, FETCH_MATERIAL_GRADE_LIST_REQUEST, FETCH_MATERIAL_GRADE_LIST_SUCCESS,
 
     SET_INWARD_SELECTED_FOR_DELIVERY,
-    POST_DELIVERY_CONFORM_REQUESTED,
-    POST_DELIVERY_CONFORM_SUCCESS,
-    POST_DELIVERY_CONFORM_ERROR,
+    POST_DELIVERY_CONFIRM_REQUESTED,
+    POST_DELIVERY_CONFIRM_SUCCESS,
+    POST_DELIVERY_CONFIRM_ERROR,
+
     FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST,
     FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST_SUCCESS,
     FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST_ERROR
@@ -57,7 +57,8 @@ const INIT_STATE = {
     instructionSaveSuccess: false,
     instructionSaveError: false,
     materialGrades: {},
-    inwardListForDelivery:[],
+    inwardListForDelivery: undefined,
+    vehicleNumber: ''
 };
 
 export default (state = INIT_STATE, action) => {
@@ -242,21 +243,21 @@ export default (state = INIT_STATE, action) => {
             return {
                 ...state,
                 loading: true,
-                error:false
+                error: false
             }
         }
         case REQUEST_UPDATE_INSTRUCTION_DETAILS_SUCCESS: {
             return {
                 ...state,
                 loading: true,
-                error:false
+                error: false
             }
         }
         case REQUEST_UPDATE_INSTRUCTION_DETAILS_ERROR: {
             return {
                 ...state,
                 loading: true,
-                error:false
+                error: false
             }
         }
         case FETCH_MATERIAL_GRADE_LIST_SUCCESS:
@@ -272,32 +273,18 @@ export default (state = INIT_STATE, action) => {
                 instructionSaveError: false,
             }
         }
-        
+
         case SET_INWARD_SELECTED_FOR_DELIVERY: {
             return {
                 ...state,
-                inwardListForDelivery:action.payload
+                inwardListForDelivery: action.payload
             }
         }
-        case POST_DELIVERY_CONFORM_REQUESTED: {
-            return{
+        case POST_DELIVERY_CONFIRM_REQUESTED: {
+            return {
                 ...state,
                 loading: true,
                 error: false
-            }
-        }
-        case POST_DELIVERY_CONFORM_REQUESTED: {
-            return{
-                ...state,
-                loading: false,
-                error: false,
-            }
-        }
-        case POST_DELIVERY_CONFORM_REQUESTED: {
-            return{
-                ...state,
-                loading: false,
-                error: true
             }
         }
         default:

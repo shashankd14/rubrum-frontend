@@ -27,10 +27,10 @@ import {
     SAVE_SLITTING_DETAILS_SUCCESS,
     SAVE_SLITTING_DETAILS_ERROR,
 
-    REQUEST_UPDATE_INSTRUCTION_DETAILS, 
+    REQUEST_UPDATE_INSTRUCTION_DETAILS,
     REQUEST_UPDATE_INSTRUCTION_DETAILS_SUCCESS,
     REQUEST_UPDATE_INSTRUCTION_DETAILS_ERROR,
-   
+
 
     RESET_INSTRUCTION_FORM,
     RESET_INWARD_FORM,
@@ -40,16 +40,16 @@ import {
     FETCH_MATERIAL_GRADE_LIST_ERROR,
 
     SET_INWARD_SELECTED_FOR_DELIVERY,
-    POST_DELIVERY_CONFORM_REQUESTED,
-    POST_DELIVERY_CONFORM_SUCCESS,
-    POST_DELIVERY_CONFORM_ERROR,
+    POST_DELIVERY_CONFIRM_REQUESTED,
+    POST_DELIVERY_CONFIRM_SUCCESS,
+    POST_DELIVERY_CONFIRM_ERROR,
     FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST,
     FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST_SUCCESS,
     FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST_ERROR
 } from "../../constants/ActionTypes";
 
 export const fetchInwardList = () => ({
-  type: FETCH_INWARD_LIST_REQUEST,
+    type: FETCH_INWARD_LIST_REQUEST,
 });
 
 export const fetchInwardListSuccess = (inwardList) => ({
@@ -196,22 +196,22 @@ export const resetInwardForm = () => ({
     type: RESET_INWARD_FORM,
 })
 
-export const setInwardSelectedForDelivery = (payload) =>  ({
+export const setInwardSelectedForDelivery = (payload) => ({
     type: SET_INWARD_SELECTED_FOR_DELIVERY,
-    payload:payload
+    payload: payload
 })
 
-export const postDeliveryConform = (payload) => ({
-    type: POST_DELIVERY_CONFORM_REQUESTED,
-    payload:payload
+export const postDeliveryConfirm = (payload) => ({
+    type: POST_DELIVERY_CONFIRM_REQUESTED,
+    payload: payload
 })
 
-export const postDeliveryConformSuccess = (payload) => ({
-    type: POST_DELIVERY_CONFORM_SUCCESS,
-    payload:payload
+export const postDeliveryConfirmSuccess = (payload) => ({
+    type: POST_DELIVERY_CONFIRM_SUCCESS,
+    payload: payload
 })
 
-export const postDeliveryConformError = (error) => ({
-    type: POST_DELIVERY_CONFORM_ERROR,
-    payload:error
+export const postDeliveryConfirmError = (error) => ({
+    type: POST_DELIVERY_CONFIRM_ERROR,
+    payload: error
 })
