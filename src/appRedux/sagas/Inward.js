@@ -91,32 +91,6 @@ function* fetchInwardInstructionWIPDetails(action) {
         });
         if(fetchInwardList.status === 200) {
             const fetchInwardListResponse = yield fetchInwardList.json();
-            // const inwardResponse = [];
-            // if(fetchInwardListResponse.length > 0) {
-            //     fetchInwardListResponse.map((inward) => {
-            //         let eachInward = {...inward};
-            //         eachInward.key = inward.coilNumber;
-            //         if(inward.instruction.length > 0) {
-            //             eachInward.children = inward.instruction;
-            //             inward.instruction.map((instruction, index) => {
-            //                 eachInward.children[index].key = `${inward.coilNumber}-${instruction.instructionId}`;
-            //                 eachInward.children[index].coilNumber = instruction.instructionId;
-            //                 eachInward.children[index].party = inward.party;
-            //                 eachInward.children[index].material = inward.material;
-            //                 if(instruction.childInstructions && instruction.childInstructions.length > 0) {
-            //                     eachInward.children[index].children = instruction.childInstructions;
-            //                     eachInward.children[index].children.map((childInstruction, childIndex) => {
-            //                         eachInward.children[index].children[childIndex].key = `${inward.coilNumber}-${instruction.instructionId}-${childInstruction.instructionId}`;
-            //                         eachInward.children[index].children[childIndex].coilNumber = instruction.instructionId;
-            //                         eachInward.children[index].children[childIndex].party = inward.party;
-            //                         eachInward.children[index].children[childIndex].material = inward.material;
-            //                     })
-            //                 }
-            //             })
-            //         }
-            //         inwardResponse.push(eachInward);
-            //     });
-            // }
             yield put(getInstructionWipListSuccess(fetchInwardListResponse));
         } else
             yield put(getInstructionWipListError('error'));
@@ -400,34 +374,7 @@ function* fetchInwardInstructionDetails(action) {
         });
         if(fetchInwardInstruction.status === 200) {
             const fetchInwardPlanResponse = yield fetchInwardInstruction.json();
-            const formattedResponse = []
-            fetchInwardPlanResponse.instruction.map((instruction) => {
-                if(instruction.groupId) {
-                    // if(instruction.childInstructions.length > 0) {
-                    //     const formattedChildren = [];
-                    //     instruction.childInstructions.map((childInstruction) => {
-                    //         if(childInstruction.groupId) {
-                    //             if (formattedChildren[childInstruction.groupId]) {
-                    //                 formattedChildren[childInstruction.groupId] = [...formattedChildren[childInstruction.groupId], instruction];
-                    //             } else
-                    //                 formattedChildren[childInstruction.groupId] = [childInstruction];
-                    //         } else {
-                    //             formattedChildren.push(childInstruction);
-                    //         }
-                    //     })
-                    //     instruction['formattedChildren'] = formattedChildren;
-                    // }
-                    if(formattedResponse[instruction.groupId]) {
-                        formattedResponse[instruction.groupId] = [...formattedResponse[instruction.groupId], instruction];
-                    } else {
-                        formattedResponse[instruction.groupId] = [];
-                        formattedResponse[instruction.groupId].push(instruction);
-                    }
-                } else
-                    formattedResponse.push([instruction]);
-            })
-            fetchInwardPlanResponse.instruction = formattedResponse;
-            yield put(getInstructionByIdSuccess(fetchInwardPlanResponse));
+           yield put(getInstructionByIdSuccess(fetchInwardPlanResponse));
         } else
             yield put(getInstructionByIdError('error'));
     } catch (error) {
