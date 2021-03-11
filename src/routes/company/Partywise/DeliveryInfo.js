@@ -140,7 +140,9 @@ const DeliveryInfo = (props) => {
                 backgroundColor: "#26eb5d",
                 color: "white",
                 border: "none",
+                cursor: "pointer"
               }}
+              disabled={vehicleNo.length <1}
               onClick={handleSubmit}
             >Confirm
             </button>
