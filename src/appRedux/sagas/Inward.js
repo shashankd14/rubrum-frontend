@@ -321,7 +321,7 @@ function* requestUpdateInstruction(action) {
                 
             instructionId: item.instructionId? item.instructionId: null,
             parentInstructionId: item.parentInstructionId ?item.parentInstructionId: null,
-            processdId: item.process.processId ? item.process.processId: 1,
+            processId: item.process.processId ? item.process.processId: 1,
             instructionDate: item.instructionDate ?moment(item.instructionDate).format('YYYY-MM-DD HH:mm:ss'): null,
             plannedLength : item.plannedLength? item.plannedLength: 0,
 		    plannedWidth : item.plannedWidth ?item.plannedWidth: 0,
@@ -344,9 +344,15 @@ function* requestUpdateInstruction(action) {
             instructionDtos:ins
         }
     try {
-      const updateInstruction= yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/instruction/update', {method:'PUT', headers: { "Content-Type": "application/json" }, body: JSON.stringify(req)
+      const updateInstruction= yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/instruction/update', {
+          method:'PUT', 
+          headers: { "Content-Type": "application/json" }, 
+          body: JSON.stringify(req)
         });
-        yield put(updateInstructionSuccess(updateInstruction));
+        if(updateInstruction.status === 200) {
+            yield put(updateInstructionSuccess(updateInstruction));
+        } else
+            yield put(updateInstructionError('error'));
 
     } catch (error) {
         yield put(updateInstructionError(error));
