@@ -61,10 +61,10 @@ const CustomizerSystem = () => {
   const navStyle = useSelector(({settings}) => settings.navStyle);
   const layoutType = useSelector(({settings}) => settings.layoutType);
 
-  console.log(" in  customizer", themeColor);
+  // console.log(" in  customizer", themeColor);
 
   const handleColorChange = (filename) => {
-    console.log("filename", filename);
+    // console.log("filename", filename);
     let link = document.createElement('link');
     link.type = 'text/css';
     link.rel = 'stylesheet';
@@ -83,7 +83,7 @@ const CustomizerSystem = () => {
         }
       }
     }, 10000);
-    console.log("my link ",link);
+    // console.log("my link ",link);
     document.body.appendChild(link);
     dispatch(setThemeColor(filename));
   };

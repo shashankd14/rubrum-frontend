@@ -92,9 +92,10 @@ const DeliveryInfo = (props) => {
                         <div
                           style={{ display: "flex", flexDirection: "column" }}
                         >
-                          <p>a:</p>
-                          <p>b:</p>
-                          <p>c:</p>
+                          <p>Thickeness: {elem.actualWeight && elem.rates && elem.rates?.thicknessRate ?
+                            elem.actualWeight * elem.rates?.thicknessRate : 0}</p>
+                          <p>Process: {elem.process?.processName}</p>
+                          <p>Material: {elem.rates?.materialType?.description}</p>
                         </div>
                       }
                       title="Rate"
@@ -131,21 +132,29 @@ const DeliveryInfo = (props) => {
             />
           </div>
           <div>
-            <button
-              type="primary"
-              style={{
-                marginBottom: "10px",
-                padding: "6px 15px",
-                marginRight: "20px",
-                backgroundColor: "#26eb5d",
-                color: "white",
-                border: "none",
-                cursor: "pointer"
-              }}
-              disabled={vehicleNo.length <1}
-              onClick={handleSubmit}
-            >Confirm
-            </button>
+            {vehicleNo.length < 1 ?
+              < button
+                type="secondary"
+                style={{
+                  marginBottom: "10px",
+                  padding: "6px 15px",
+                  marginRight: "20px",
+                  color: "white",
+                  border: "none",
+                  cursor: "pointer"
+                }}>Confirm</button>
+              : <button
+                type="primary"
+                style={{
+                  marginBottom: "10px",
+                  padding: "6px 15px",
+                  marginRight: "20px",
+                  backgroundColor: "#26eb5d",
+                  color: "white",
+                  border: "none",
+                  cursor: "pointer"
+                }} onClick={handleSubmit} >Confirm</button>
+            }
             <button
               style={{ marginBottom: "10px", padding: "6px 15px" }}
               onClick={() => {
@@ -164,8 +173,9 @@ const DeliveryInfo = (props) => {
         >
           Go Back
         </button>
-      )}
-    </div>
+      )
+      }
+    </div >
   );
 };
 
