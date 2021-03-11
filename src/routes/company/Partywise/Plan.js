@@ -7,6 +7,7 @@ import { CUTTING_INSTRUCTION_PROCESS_ID, SLITTING_INSTRUCTION_PROCESS_ID } from 
 import IntlMessages from "../../../util/IntlMessages";
 import CuttingModal from "../Partywise/CuttingModal";
 import SlittingModal from "./SlittingModal";
+import { set } from "nprogress";
 
 const Plan = (props) => {
     const { instruction } = props.inward.plan;
@@ -14,25 +15,26 @@ const Plan = (props) => {
     const [showSlittingModal, setShowSlittingModal] = useState(false);
     const [cuttingCoil, setCuttingCoil] = useState(false);
     const [slittingCoil, setSlittingCoil] = useState(false);
+    const [childCoil, setChildCoil] = useState(false);
     console.log(instruction)
     const getPlannedLength= (ins) =>{
-       let length ;
+       let length =0;
        const actualLength = ins.actualLength != null ? ins.actualLength : ins.plannedLength ;
        if(ins.childInstructions.length> 0 ){
             length = ins.childInstructions.map(i => i.plannedLength);
             return length.reduce((total,num)=> total+num)
         }
-        length = actualLength - length ? actualLength - length : 0;
+        length = actualLength - length;
             return length; 
     }
     const getPlannedWeight= (ins) =>{
-        let weight ;
+        let weight =0;
         const actualWeight = ins.actualWeight != null ? ins.actualWeight : ins.plannedWeight ;
         if(ins.childInstructions.length> 0 ){
              weight = ins.childInstructions.map(i => i.plannedWeight);
              return weight.reduce((total,num)=> total+num)
          }
-         weight = actualWeight - weight ? actualWeight - weight : 0;
+         weight = actualWeight - weight ;
              return weight; 
      }
     useEffect(() => {
@@ -58,8 +60,8 @@ const Plan = (props) => {
 
     return (
         <div className="gx-full-height" style={{overflowX:"auto",overflowy:"scroll"}}>
-            {cuttingCoil && <CuttingModal showCuttingModal={showCuttingModal} setShowCuttingModal={() => setShowCuttingModal(false)} coilDetails={cuttingCoil} wip={props.wip} />}
-            {slittingCoil && <SlittingModal showSlittingModal={showSlittingModal} setShowSlittingModal={() => setShowSlittingModal(false)} wip={props.wip} coilDetails={slittingCoil} />}
+            {cuttingCoil && <CuttingModal showCuttingModal={showCuttingModal} setShowCuttingModal={() => setShowCuttingModal(false)} coilDetails={cuttingCoil} wip={props.wip} childCoil={childCoil}/>}
+            {slittingCoil && <SlittingModal showSlittingModal={showSlittingModal} setShowSlittingModal={() => setShowSlittingModal(false)} wip={props.wip} coilDetails={slittingCoil} childCoil={childCoil}/>}
             <h1><IntlMessages id="partywise.plan.label" /></h1>
             <div className="gx-full-height gx-flex-row">
                 <Col lg={7} md={7} sm={24} xs={24} className="gx-align-self-center">
@@ -81,10 +83,7 @@ const Plan = (props) => {
                             <span className="gx-coil-details-label">{props.inward.plan.fQuantity}</span>
                         </div>
                         {props.wip ? 
-                            <div><Button onClick={() => {
-                                setCuttingCoil(props.inward.plan);
-                                setShowCuttingModal(true);
-                            }}>Finish Coil</Button></div> :
+                            <div></div> :
                             <div>
                             <Button onClick={() => {
                                 setCuttingCoil(props.inward.plan);
@@ -127,11 +126,13 @@ const Plan = (props) => {
                                                                 e.stopPropagation();
                                                                 setCuttingCoil(instruction);
                                                                 setShowCuttingModal(true);
+                                                                setChildCoil(true);
                                                             }}>Finish Cutting
                                                             </Button>: props.wip ? <Button onClick={(e) => {
                                                             e.stopPropagation();
                                                             setCuttingCoil(instruction);
                                                             setShowCuttingModal(true);
+                                                            setChildCoil(true);
                                                             }}>Finish Slitting
                                                         </Button>:
                                                         <div><Button onClick={(e) => {

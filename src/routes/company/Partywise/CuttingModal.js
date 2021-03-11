@@ -21,7 +21,7 @@ const CreateCuttingDetailsForm = (props) => {
     const {getFieldDecorator} = props.form;
     const [cuts, setCuts] = useState([]);
     // const dataSource= props.wip?((props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts;
-    const [tableData, setTableData] = useState(props.wip?((props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts);
+    const [tableData, setTableData] = useState(props.wip?(props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts);
     const columns=[
         {
             title: 'Serial No',
@@ -123,7 +123,12 @@ const CreateCuttingDetailsForm = (props) => {
     }, [props.inward.process.length, props.inward.process.no])
     
   useEffect(() => {
-        const data = props.wip?((props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts
+        let data = props.wip?(props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts
+        if(props.childCoil){
+            const arrayData =[];
+            arrayData.push(data);
+            data= arrayData
+        }
         const newData = [...data];
     
     setTableData(newData);

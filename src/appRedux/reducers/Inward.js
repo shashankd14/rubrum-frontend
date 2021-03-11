@@ -2,6 +2,7 @@ import {
     FETCH_INWARD_LIST_REQUEST,
     FETCH_INWARD_LIST_SUCCESS,
     FETCH_INWARD_LIST_ERROR,
+
     SET_INWARD_DETAILS,
     SUBMIT_INWARD_ENTRY,
     SUBMIT_INWARD_SUCCESS,
@@ -35,7 +36,14 @@ import {
 
     FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST,
     FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST_SUCCESS,
-    FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST_ERROR
+    FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST_ERROR,
+
+	FETCH_INWARD_INSTRUCTION_DETAILS_REQUESTED,
+    FETCH_INWARD_INSTRUCTION_DETAILS_SUCCESS,
+    FETCH_INWARD_INSTRUCTION_DETAILS_ERROR,
+    FETCH_INWARD_INSTRUCTION_WIP_DETAILS_REQUESTED,
+    FETCH_INWARD_INSTRUCTION_WIP_DETAILS_SUCCESS,
+    FETCH_INWARD_INSTRUCTION_WIP_DETAILS_ERROR
 
 } from "../../constants/ActionTypes";
 
@@ -176,6 +184,25 @@ export default (state = INIT_STATE, action) => {
                 planError: action.error
             }
         }
+        case FETCH_INWARD_INSTRUCTION_DETAILS_REQUESTED: {
+            return {
+                ...state,
+                loading: true
+            }
+        }
+        case FETCH_INWARD_INSTRUCTION_DETAILS_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                plan: action.payload
+            }
+        }
+        case FETCH_INWARD_INSTRUCTION_DETAILS_ERROR: {
+            return {
+                ...state,
+                loading:false
+            }
+        }
         case SET_PROCESS_DETAILS: {
             return {
                 ...state,
@@ -273,11 +300,11 @@ export default (state = INIT_STATE, action) => {
                 instructionSaveError: false,
             }
         }
-
+        
         case SET_INWARD_SELECTED_FOR_DELIVERY: {
             return {
                 ...state,
-                inwardListForDelivery: action.payload
+                inwardListForDelivery:action.payload
             }
         }
         case POST_DELIVERY_CONFIRM_REQUESTED: {
@@ -285,6 +312,33 @@ export default (state = INIT_STATE, action) => {
                 ...state,
                 loading: true,
                 error: false
+            }
+        }
+        case POST_DELIVERY_CONFORM_REQUESTED: {
+            return{
+                ...state,
+                loading: false,
+                error: false,
+            }
+        }
+        case POST_DELIVERY_CONFORM_REQUESTED: {
+            return{
+                ...state,
+                loading: false,
+                error: true
+            }
+        }
+        case FETCH_INWARD_INSTRUCTION_WIP_DETAILS_REQUESTED: {
+            return {
+                ...state,
+                loading: true
+            }
+        }
+        case FETCH_INWARD_INSTRUCTION_WIP_DETAILS_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                inwardList: action.inwardList
             }
         }
         default:
