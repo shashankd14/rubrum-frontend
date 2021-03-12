@@ -24,24 +24,10 @@ function  List(props) {
         ),
     },
     {
-        title: 'Coil Number',
-        dataIndex: 'instructionId',
-        key: 'instructionId',
-        filters: [],
-        sortOrder: sortedInfo.columnKey === 'instructionId' && sortedInfo.order,
-    },
-    {
-        title: 'Customer Name',
-        dataIndex: '',
-        key: '',
-        filters: [],
-        sortOrder: sortedInfo.columnKey === '' && sortedInfo.order,
-    },
-    {
         title: 'Delivery Date',
         dataIndex: 'updatedOn',
         render(value) {
-            return moment(value).format('Do MMM YYYY');
+            return moment(value).format('DD/MM/YYYY');
         },
         key: 'updatedOn',
         filters: [],
@@ -50,39 +36,18 @@ function  List(props) {
     },
     {
         title: 'Total Quantity',
-        dataIndex: 'packingWeight',
-        key: 'packingWeight',
+        dataIndex: 'totalWeight',
+        key: 'totalWeight',
         filters: [],
-        sortOrder: sortedInfo.columnKey === 'packingWeight' && sortedInfo.order,
+        sortOrder: sortedInfo.columnKey === 'totalWeight' && sortedInfo.order,
     },
     {
         title: 'Vehicle Number',
-        dataIndex: '',
-        key: '',
+        dataIndex: 'vehicleNo',
+        key: 'vehicleNo',
         filters: [],
-        sortOrder: sortedInfo.columnKey === '' && sortedInfo.order,
-    },
-    {
-        title: 'Thickness',
-        dataIndex: '',
-        key: '',
-        filters: [],
-        sortOrder: sortedInfo.columnKey === 'instrctionId' && sortedInfo.order,
-    },
-        {
-            title: 'Weight',
-            dataIndex: '',
-            key: '',
-            filters: [],
-            sortOrder: sortedInfo.columnKey === '' && sortedInfo.order,
-        },
-        {
-            title: 'Status',
-            dataIndex: '',
-            key: '',
-            filters: [],
-            sortOrder: sortedInfo.columnKey === '' && sortedInfo.order,
-        }
+        sortOrder: sortedInfo.columnKey === 'vehicleNo' && sortedInfo.order,
+    }
     ]
 
     useEffect(() => {

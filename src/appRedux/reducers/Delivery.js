@@ -2,6 +2,9 @@ import {
     FETCH_DELIVERY_LIST_REQUEST,
     FETCH_DELIVERY_LIST_SUCCESS,
     FETCH_DELIVERY_LIST_ERROR,
+    FETCH_DELIVERY_LIST_REQUEST_BY_ID,
+    FETCH_DELIVERY_LIST_SUCCESS_BY_ID,
+    FETCH_DELIVERY_LIST_ERROR_BY_ID,
 } from "../../constants/ActionTypes";
 
 const INIT_STATE = {
@@ -26,6 +29,27 @@ export default (state = INIT_STATE, action) => {
             }
         }
         case FETCH_DELIVERY_LIST_ERROR: {
+            return {
+                ...state,
+                loading: false,
+                deliveryList: [],
+                error: true
+            }
+        }
+        case FETCH_DELIVERY_LIST_REQUEST_BY_ID: {
+            return {
+                ...state,
+                loading: true
+            }
+        }
+        case FETCH_DELIVERY_LIST_SUCCESS_BY_ID: {
+            return {
+                ...state,
+                loading: false,
+                deliveryList: action.deliveryList
+            }
+        }
+        case FETCH_DELIVERY_LIST_ERROR_BY_ID: {
             return {
                 ...state,
                 loading: false,
