@@ -85,8 +85,10 @@ function  List(props) {
         dataIndex: '',
         key: 'x',
         render: (text, record) => (
-            <span>
-                <span className="gx-link" onClick={() => props.history.push(`plan/${record.coilNumber}`)}>Finish</span>
+            <span>{record.instructionId ? <span className="gx-link"></span>:
+            <span className="gx-link" onClick={() =>  props.history.push(`plan/${record.coilNumber}`)}>Finish</span>
+            }
+                
             </span>
         ),
     },
@@ -100,6 +102,9 @@ function  List(props) {
         setSortedInfo(sorter);
         setFilteredInfo(filters)
     };
+    const handleRow = (record) => {
+        console.log(record);
+    };
 
     return (
         <Card>
@@ -108,6 +113,11 @@ function  List(props) {
                    columns={columns}
                    dataSource={filteredInwardList.filter(filteredInfo => filteredInfo.status.statusName ==='IN PROGRESS')}
                    onChange={handleChange}
+                   onRow={(record, index) => {
+                    return {
+                      onClick: (record) => {handleRow(record)}
+                    };
+                  }}
             />
         </Card>
     );

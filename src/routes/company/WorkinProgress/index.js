@@ -8,6 +8,7 @@ const WorkInProgress = ({match}) => (
         <Redirect exact from={`${match.url}/`} to={`${match.url}/list`}/>
         <Route path={`${match.url}/list`} component={asyncComponent(() => import('./List'))}/>
         <Route path={`${match.url}/plan/:coilNumber`} component={props => <Plan {...props} wip={true}/>} />
+        
     </Switch>
 );
 

@@ -27,10 +27,10 @@ import {
     SAVE_SLITTING_DETAILS_SUCCESS,
     SAVE_SLITTING_DETAILS_ERROR,
 
-    REQUEST_UPDATE_INSTRUCTION_DETAILS,
+    REQUEST_UPDATE_INSTRUCTION_DETAILS, 
     REQUEST_UPDATE_INSTRUCTION_DETAILS_SUCCESS,
     REQUEST_UPDATE_INSTRUCTION_DETAILS_ERROR,
-
+   
 
     RESET_INSTRUCTION_FORM,
     RESET_INWARD_FORM,
@@ -45,7 +45,13 @@ import {
     POST_DELIVERY_CONFIRM_ERROR,
     FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST,
     FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST_SUCCESS,
-    FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST_ERROR
+    FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST_ERROR,
+    FETCH_INWARD_INSTRUCTION_DETAILS_REQUESTED,
+    FETCH_INWARD_INSTRUCTION_DETAILS_SUCCESS,
+    FETCH_INWARD_INSTRUCTION_DETAILS_ERROR,
+    FETCH_INWARD_INSTRUCTION_WIP_DETAILS_REQUESTED,
+    FETCH_INWARD_INSTRUCTION_WIP_DETAILS_SUCCESS,
+    FETCH_INWARD_INSTRUCTION_WIP_DETAILS_ERROR
 } from "../../constants/ActionTypes";
 
 export const fetchInwardList = () => ({
@@ -196,7 +202,7 @@ export const resetInwardForm = () => ({
     type: RESET_INWARD_FORM,
 })
 
-export const setInwardSelectedForDelivery = (payload) => ({
+export const setInwardSelectedForDelivery = (payload) =>  ({
     type: SET_INWARD_SELECTED_FOR_DELIVERY,
     payload: payload
 })
@@ -214,4 +220,31 @@ export const postDeliveryConfirmSuccess = (payload) => ({
 export const postDeliveryConfirmError = (error) => ({
     type: POST_DELIVERY_CONFIRM_ERROR,
     payload: error
+})
+export const getInstructionById = (instructionId) => ({
+    type: FETCH_INWARD_INSTRUCTION_DETAILS_REQUESTED,
+    instructionId
+})
+
+export const getInstructionByIdSuccess = (payload) => ({
+    type: FETCH_INWARD_INSTRUCTION_DETAILS_SUCCESS,
+    payload
+})
+
+export const getInstructionByIdError = (error) => ({
+    type: FETCH_INWARD_INSTRUCTION_DETAILS_ERROR,
+    error
+})
+export const getInstructionWipList = () => ({
+    type: FETCH_INWARD_INSTRUCTION_WIP_DETAILS_REQUESTED
+})
+
+export const getInstructionWipListSuccess = (inwardList) => ({
+    type: FETCH_INWARD_INSTRUCTION_WIP_DETAILS_SUCCESS,
+    inwardList
+})
+
+export const getInstructionWipListError = (error) => ({
+    type: FETCH_INWARD_INSTRUCTION_WIP_DETAILS_ERROR,
+    error
 })
