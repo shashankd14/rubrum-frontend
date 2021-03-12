@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import {fetchDeliveryList} from "../../../appRedux/actions";
 import {Card, Table} from "antd";
+import moment from 'moment';
 
 function  List(props) {
 
@@ -11,26 +12,76 @@ function  List(props) {
     });
 
     const [filteredInfo, setFilteredInfo] = useState(null);
-    const columns = [{
-        title: 'Delivery ID',
-        dataIndex: 'deliveryId',
-        key: 'deliveryId',
+    const columns = [
+    {
+        title: 'Delivery Chalan Number',
+        dataIndex: '',
+        key: 'x',
+        render: (text, record) => (
+            <span>
+            <span className="gx-link" onClick={() =>  props.history.push(`delivery/${record.deliveryId}`)}>{record.deliveryId}</span>  
+            </span>
+        ),
+    },
+    {
+        title: 'Coil Number',
+        dataIndex: 'instructionId',
+        key: 'instructionId',
         filters: [],
-        sortOrder: sortedInfo.columnKey === 'deliveryId' && sortedInfo.order,
+        sortOrder: sortedInfo.columnKey === 'instructionId' && sortedInfo.order,
+    },
+    {
+        title: 'Customer Name',
+        dataIndex: '',
+        key: '',
+        filters: [],
+        sortOrder: sortedInfo.columnKey === '' && sortedInfo.order,
+    },
+    {
+        title: 'Delivery Date',
+        dataIndex: 'updatedOn',
+        render(value) {
+            return moment(value).format('Do MMM YYYY');
+        },
+        key: 'updatedOn',
+        filters: [],
+        sorter: (a, b) => a.updatedOn.length - b.updatedOn.length,
+        sortOrder: sortedInfo.columnKey === 'updatedOn' && sortedInfo.order,
+    },
+    {
+        title: 'Total Quantity',
+        dataIndex: 'packingWeight',
+        key: 'packingWeight',
+        filters: [],
+        sortOrder: sortedInfo.columnKey === 'packingWeight' && sortedInfo.order,
+    },
+    {
+        title: 'Vehicle Number',
+        dataIndex: '',
+        key: '',
+        filters: [],
+        sortOrder: sortedInfo.columnKey === '' && sortedInfo.order,
+    },
+    {
+        title: 'Thickness',
+        dataIndex: '',
+        key: '',
+        filters: [],
+        sortOrder: sortedInfo.columnKey === 'instrctionId' && sortedInfo.order,
     },
         {
-            title: 'Instruction ID',
-            dataIndex: 'instructionId',
-            key: 'instructionId',
+            title: 'Weight',
+            dataIndex: '',
+            key: '',
             filters: [],
-            sortOrder: sortedInfo.columnKey === 'instructionId' && sortedInfo.order,
+            sortOrder: sortedInfo.columnKey === '' && sortedInfo.order,
         },
         {
-            title: 'Delivery Date',
-            dataIndex: 'instructionId',
-            key: 'instructionId',
+            title: 'Status',
+            dataIndex: '',
+            key: '',
             filters: [],
-            sortOrder: sortedInfo.columnKey === 'instructionId' && sortedInfo.order,
+            sortOrder: sortedInfo.columnKey === '' && sortedInfo.order,
         }
     ]
 
