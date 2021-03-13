@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import {fetchDeliveryList} from "../../../appRedux/actions";
 import {Card, Table} from "antd";
+import moment from 'moment';
 
 function  List(props) {
 
@@ -11,27 +12,42 @@ function  List(props) {
     });
 
     const [filteredInfo, setFilteredInfo] = useState(null);
-    const columns = [{
-        title: 'Delivery ID',
-        dataIndex: 'deliveryId',
-        key: 'deliveryId',
-        filters: [],
-        sortOrder: sortedInfo.columnKey === 'deliveryId' && sortedInfo.order,
+    const columns = [
+    {
+        title: 'Delivery Chalan Number',
+        dataIndex: '',
+        key: 'x',
+        render: (text, record) => (
+            <span>
+            <span className="gx-link" onClick={() =>  props.history.push(`delivery/${record.deliveryId}`)}>{record.deliveryId}</span>  
+            </span>
+        ),
     },
-        {
-            title: 'Instruction ID',
-            dataIndex: 'instructionId',
-            key: 'instructionId',
-            filters: [],
-            sortOrder: sortedInfo.columnKey === 'instructionId' && sortedInfo.order,
+    {
+        title: 'Delivery Date',
+        dataIndex: 'updatedOn',
+        render(value) {
+            return moment(value).format('DD/MM/YYYY');
         },
-        {
-            title: 'Delivery Date',
-            dataIndex: 'instructionId',
-            key: 'instructionId',
-            filters: [],
-            sortOrder: sortedInfo.columnKey === 'instructionId' && sortedInfo.order,
-        }
+        key: 'updatedOn',
+        filters: [],
+        sorter: (a, b) => a.updatedOn.length - b.updatedOn.length,
+        sortOrder: sortedInfo.columnKey === 'updatedOn' && sortedInfo.order,
+    },
+    {
+        title: 'Total Quantity',
+        dataIndex: 'totalWeight',
+        key: 'totalWeight',
+        filters: [],
+        sortOrder: sortedInfo.columnKey === 'totalWeight' && sortedInfo.order,
+    },
+    {
+        title: 'Vehicle Number',
+        dataIndex: 'vehicleNo',
+        key: 'vehicleNo',
+        filters: [],
+        sortOrder: sortedInfo.columnKey === 'vehicleNo' && sortedInfo.order,
+    }
     ]
 
     useEffect(() => {
