@@ -163,13 +163,14 @@ const Plan = (props) => {
                                             </Card>
                                         </div>
                                     
-                                        <div style={{border:"2px solid black"}}>
-                                                
-                                            {instruction.childInstructions.map((item,index) => 
-                                                    <span style={{width:"250px", height:"50px"}} key={item.instructionId} onClick={()=> handleClick(item)}>
+                                        <div style={{border:"2px solid black"}} className ="gx-outer">
+                                            <div  className ="gx-inner">
+                                             {instruction.childInstructions.map((item,index) => 
+                                                    <span className = "item" style={{width:"250px", height:"50px"}} key={item.instructionId} onClick={()=> handleClick(item)}>
                                                         {(item.instructionId)}
                                                         </span>
                                            )}
+                                           </div>
                                         </div>
                                         
                                     </div>
