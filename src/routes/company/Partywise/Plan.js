@@ -110,11 +110,11 @@ const Plan = (props) => {
                 <div className="gx-branch lv1">
                     {instruction && instruction.length > 0 && instruction.map((group) => (
                         <>
-                            {group.length > 0 ? <Card style={{position:'relative'}} className={`gx-entry ${group[0].process.processName == 'cutting' ? 'gx-cutting-group' : 'gx-slitting-group'}`}>
+                            {group.length > 0 ? <Card style={{position:'relative'}} className={`gx-entry ${group[0].process.processName == 'Cutting' ? 'gx-cutting-group' : 'gx-slitting-group'}`}>
                                 {group.map((instruction) => (
                                    <div style={{display:"flex"}}>
                                        <div> 
-                                            <Card key={`${props.inward.plan.coilNumber}${instruction.instructionId}`} className={`${instruction.processdId == CUTTING_INSTRUCTION_PROCESS_ID ? 'gx-cutting-single' : 'gx-slitting-single'}`} size="small">
+                                            <Card key={`${props.inward.plan.coilNumber}${instruction.instructionId}`} className={`${instruction.process.processName == 'Cutting' ? 'gx-cutting-single' : 'gx-slitting-single'}`} size="small">
                                                 <img style={{ position: "absolute", right: "10.35px" }} src={require("assets/images/inward/info_icon.svg")} alt="main coil image" title="main coil image" />
                                                 <div className="gx-coil-image-bg gx-flex-row gx-align-items-center gx-justify-content-center">
                                                     {instruction.process.processName == 'Cutting' ?
