@@ -110,7 +110,7 @@ const Plan = (props) => {
                 <div className="gx-branch lv1">
                     {instruction && instruction.length > 0 && instruction.map((group) => (
                         <>
-                            {group.length > 0 ? <Card style={{position:'relative'}} className={`gx-entry ${group[0].processdId == CUTTING_INSTRUCTION_PROCESS_ID ? 'gx-cutting-group' : 'gx-slitting-group'}`}>
+                            {group.length > 0 ? <Card style={{position:'relative'}} className={`gx-entry ${group[0].process.processName == 'cutting' ? 'gx-cutting-group' : 'gx-slitting-group'}`}>
                                 {group.map((instruction) => (
                                    <div style={{display:"flex"}}>
                                        <div> 
@@ -162,8 +162,18 @@ const Plan = (props) => {
                                                 </div>
                                             </Card>
                                         </div>
-                                    
-                                        <div style={{border:"2px solid black"}} className ="gx-outer">
+                                        {/* to display the delivery item */}
+                                        {instruction.childInstructions.length === 0 && group.filter((item) => item.status.statusName === 'READY TO DELIVER').length > 0 ?<div style={{border:"2px solid black"}} className ="gx-outer">
+                                            <span>Packing:</span>
+                                            <div  className ="gx-inner">
+                                             {group.filter((item) => item.status.statusName === 'READY TO DELIVER').map((vlist, index)=> 
+                                                 <span className = "item" style={{width:"250px", height:"50px"}} key={index}>
+                                                       {vlist.instructionId}
+                                                 </span>
+                                             )}
+                                           </div>
+                                        </div>: <div></div>}
+                                        {instruction.childInstructions.length > 0 ? <div style={{border:"2px solid black"}} className ="gx-outer">
                                             <div  className ="gx-inner">
                                              {instruction.childInstructions.map((item,index) => 
                                                     <span className = "item" style={{width:"250px", height:"50px"}} key={item.instructionId} onClick={()=> handleClick(item)}>
@@ -172,7 +182,17 @@ const Plan = (props) => {
                                            )}
                                            </div>
                                         </div>
-                                        
+                                        : <div></div>}
+                                        {instruction.childInstructions.filter((item) => item.status.statusName === 'READY TO DELIVER').length > 0 ?<div style={{border:"2px solid black"}} className ="gx-outer">
+                                            <span>Packing:</span>
+                                            <div  className ="gx-inner">
+                                             {instruction.childInstructions.filter((item) => item.status.statusName === 'READY TO DELIVER').map((vlist, index)=> 
+                                                 <span className = "item" style={{width:"250px", height:"50px"}} key={index}>
+                                                       {vlist.instructionId}
+                                                 </span>
+                                             )}
+                                           </div>
+                                        </div>: <div></div>}
                                     </div>
 
                                 ))}
