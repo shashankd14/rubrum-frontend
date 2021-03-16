@@ -37,6 +37,17 @@ const Plan = (props) => {
          weight = actualWeight - weight ;
              return weight; 
      }
+     const handleClick = (item) => {
+         if(item.process.processName == 'Cutting'){
+            setCuttingCoil(item);
+            setShowCuttingModal(true);
+            setChildCoil(true);
+         }else {
+            setCuttingCoil(item);
+            setShowCuttingModal(true);
+            setChildCoil(true);
+         }
+     }
     useEffect(() => {
         props.getCoilPlanDetails(props.match.params.coilNumber);
     }, [])
@@ -154,48 +165,11 @@ const Plan = (props) => {
                                     
                                         <div style={{border:"2px solid black"}}>
                                                 
-                                            {instruction.childInstructions.map((item,index) => ( index < 3 ? 
-                                                    <div className="gx-branch-lvl2" style={{width:"250px", height:"100px"}}>
-                                                        <div key={`${props.inward.plan.coilNumber}${item.instructionId}`} className={`${item.processdId == CUTTING_INSTRUCTION_PROCESS_ID ? 'gx-cutting-single' : 'gx-slitting-single'}`} size="small">
-                                                            <div style={{display:"flex", flexDirection:"column"}}>
-                                                                <div>
-                                                                    <div style={{borderBlockColor:"white",padding:"20px"}}>
-                                                                        {item.processdId == CUTTING_INSTRUCTION_PROCESS_ID ?
-                                                                        <img src={require("assets/images/inward/cutting_icon.svg")} alt="main coil image" title="main coil image" /> :
-                                                                        <img src={require("assets/images/inward/slitting_icon.svg")} alt="main coil image" title="main coil image" />}
-                                                                    </div>
-                                                                    <p>{item.processdId == CUTTING_INSTRUCTION_PROCESS_ID ? 'Cutting' : 'Slitting'}</p>
-                                                                </div>
-                                                                    <div>
-                                                                        <div style={{ marginLeft: "8px" }}>
-                                                                            <div>
-                                                                                <p><IntlMessages id="partywise.plan.availableLength" /> : </p>
-                                                                                <span>{item.length}</span>
-                                                                            </div>
-                                                                            <div>
-                                                                                <p><IntlMessages id="partywise.plan.availableWeight" /> : </p>
-                                                                                <span>{item.weight}</span>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div>
-                                                                    <div style={{ marginLeft: "8px" }}>
-                                                                            <div>
-                                                                                <Button style={{padding:"2px"}} onClick={(e) => {
-                                                                                e.stopPropagation();
-                                                                                setCuttingCoil(item);
-                                                                                }}>Cutting</Button>
-                                                                                <Button onClick={(e) => {
-                                                                                    e.stopPropagation();
-                                                                                    setSlittingCoil(item);
-                                                                                }}>Slitting</Button>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div> 
-                                                        </div>
-                                            : null ))}
+                                            {instruction.childInstructions.map((item,index) => 
+                                                    <span style={{width:"250px", height:"50px"}} key={item.instructionId} onClick={()=> handleClick(item)}>
+                                                        {(item.instructionId)}
+                                                        </span>
+                                           )}
                                         </div>
                                         
                                     </div>
