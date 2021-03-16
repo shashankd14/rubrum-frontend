@@ -37225,7 +37225,6 @@ textarea.gx-chat-textarea {
 }
 .gx-outer {
   text-indent: 5px;
-  overflow: hidden;
 }
 
 .gx-inner {
