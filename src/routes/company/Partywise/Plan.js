@@ -43,8 +43,8 @@ const Plan = (props) => {
             setShowCuttingModal(true);
             setChildCoil(true);
          }else {
-            setCuttingCoil(item);
-            setShowCuttingModal(true);
+            setSlittingCoil(item);
+            setShowSlittingModal(true);
             setChildCoil(true);
          }
      }
