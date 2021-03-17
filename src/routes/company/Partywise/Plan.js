@@ -163,7 +163,10 @@ const Plan = (props) => {
                                             </Card>
                                         </div>
                                         {/* to display the delivery item */}
-                                        {instruction.childInstructions.length === 0 && group.filter((item) => item.status.statusName === 'READY TO DELIVER').length > 0 ?<div style={{border:"2px solid black"}} className ="gx-outer">
+                                        
+                                        {instruction.childInstructions.length === 0 && group.filter((item) => item.status.statusName === 'READY TO DELIVER').length > 0 ?
+                                        <div className="gx-branch"> <Card style={{position:'relative'}} className="gx-entry">
+                                            <div style={{border:"2px solid black"}} className ="gx-outer">
                                             <span>Packing:</span>
                                             <div  className ="gx-inner">
                                              {group.filter((item) => item.status.statusName === 'READY TO DELIVER').map((vlist, index)=> 
@@ -172,8 +175,10 @@ const Plan = (props) => {
                                                  </span>
                                              )}
                                            </div>
-                                        </div>: <div></div>}
-                                        {instruction.childInstructions.length > 0 ? <div style={{border:"2px solid black"}} className ="gx-outer">
+                                        </div></Card></div>: <div></div>}
+                                        
+                                        <div className = "gx-branch lv2">
+                                            <div> {instruction.childInstructions.length > 0 ? <Card style={{position:'relative'}} className="gx-entry">
                                             <div  className ="gx-inner">
                                              {instruction.childInstructions.map((item,index) => 
                                                     <span className = "item" style={{width:"250px", height:"50px"}} key={item.instructionId} onClick={()=> handleClick(item)}>
@@ -181,19 +186,25 @@ const Plan = (props) => {
                                                         </span>
                                            )}
                                            </div>
-                                        </div>
+                                        
+                                        </Card>
                                         : <div></div>}
-                                        {instruction.childInstructions.filter((item) => item.status.statusName === 'READY TO DELIVER').length > 0 ?<div style={{border:"2px solid black"}} className ="gx-outer">
-                                            <span>Packing:</span>
-                                            <div  className ="gx-inner">
+                                        {instruction.childInstructions.filter((item) => item.status.statusName === 'READY TO DELIVER').length > 0 ?
+                                            <Card style={{position:'relative'}} className="gx-entry">
+                                                <div style={{border:"2px solid black"}} className ="gx-outer">
+                                                <span>Packing:</span>
+                                                <div  className ="gx-inner">
                                              {instruction.childInstructions.filter((item) => item.status.statusName === 'READY TO DELIVER').map((vlist, index)=> 
                                                  <span className = "item" style={{width:"250px", height:"50px"}} key={index}>
                                                        {vlist.instructionId}
                                                  </span>
                                              )}
                                            </div>
-                                        </div>: <div></div>}
                                     </div>
+                                    </Card>
+                                    : <div></div>}</div>
+               
+                </div></div>
 
                                 ))}
                             </Card> : <></>}
