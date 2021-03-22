@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { getCoilPlanDetails } from "../../../appRedux/actions";
+import { getCoilPlanDetails,saveUnprocessedDelivery } from "../../../appRedux/actions";
 import { Button, Card, Col, Modal , Row} from "antd";
 
 import { CUTTING_INSTRUCTION_PROCESS_ID, SLITTING_INSTRUCTION_PROCESS_ID } from "../../../constants";
@@ -94,7 +94,9 @@ const Plan = (props) => {
                             <span className="gx-coil-details-label">{props.inward.plan.fQuantity}</span>
                         </div>
                         {props.wip ? 
-                            <div></div> :
+                            <div>{props.inward.plan.fpresent !== 0 ?<Button onClick={() => {
+                                props.saveUnprocessedDelivery(props.inward.plan.inwardEntryId)
+                            }}>Unprocessed</Button>: <></>}</div> :
                             <div>
                             <Button onClick={() => {
                                 setCuttingCoil(props.inward.plan);
@@ -223,5 +225,6 @@ const mapStateToProps = state => ({
 });
 
 export default connect(mapStateToProps, {
-    getCoilPlanDetails
+    getCoilPlanDetails,
+    saveUnprocessedDelivery
 })(Plan);

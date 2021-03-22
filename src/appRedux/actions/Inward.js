@@ -51,7 +51,10 @@ import {
     FETCH_INWARD_INSTRUCTION_DETAILS_ERROR,
     FETCH_INWARD_INSTRUCTION_WIP_DETAILS_REQUESTED,
     FETCH_INWARD_INSTRUCTION_WIP_DETAILS_SUCCESS,
-    FETCH_INWARD_INSTRUCTION_WIP_DETAILS_ERROR
+    FETCH_INWARD_INSTRUCTION_WIP_DETAILS_ERROR,
+    SAVE_UNPROCESSED_FOR_DELIVERY,
+    SAVE_UNPROCESSED_FOR_DELIVERY_SUCCESS,
+    SAVE_UNPROCESSED_FOR_DELIVERY_ERROR
 } from "../../constants/ActionTypes";
 
 export const fetchInwardList = () => ({
@@ -248,3 +251,18 @@ export const getInstructionWipListError = (error) => ({
     type: FETCH_INWARD_INSTRUCTION_WIP_DETAILS_ERROR,
     error
 })
+
+export const saveUnprocessedDelivery = (inwardEntryId) => ({
+    type: SAVE_UNPROCESSED_FOR_DELIVERY,
+    inwardEntryId
+});
+
+export const saveUnprocessedDeliverySuccess = (payload) => ({
+    type: SAVE_UNPROCESSED_FOR_DELIVERY_SUCCESS,
+    payload
+});
+
+export const saveUnprocessedDeliveryError = (error) => ({
+    type: SAVE_UNPROCESSED_FOR_DELIVERY_ERROR,
+    error
+});
