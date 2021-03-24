@@ -1,5 +1,5 @@
-import React, {useState} from "react";
 import Widget from "components/Widget/index";
+import React, { useState } from "react";
 
 
 const ChartCard = (props) => {
@@ -8,7 +8,7 @@ const ChartCard = (props) => {
     setHide(!isHide);
   };
 
-  const {prize, title, styleName, desc, bgColor, percent} = props.chartProperties;
+  const { prize, title, styleName, desc, bgColor, percent } = props.chartProperties;
   return (
     <Widget styleName={`gx-card-full`}>
       <div
@@ -22,12 +22,12 @@ const ChartCard = (props) => {
           {percent > 0}
           <p className="gx-mb-0 gx-fs-sm"><span
             className={`gx-font-weight-medium gx-fs-md gx-chart-${styleName}`}>{percent}
-            {percent > 0 ? <i className="icon icon-menu-up gx-fs-sm"/> : null}</span>{desc}</p>
+            {percent > 0 ? <i className="icon icon-menu-up gx-fs-sm" /> : null}</span>{desc}</p>
         </div>
         <div className="gx-fillchart-btn-close" onClick={handleToggle}><i
-          className="icon icon-close"/></div>
+          className="icon icon-close" /></div>
         <div className="gx-fillchart-btn" onClick={handleToggle}><i
-          className={`icon icon-stats gx-fs-xxxl`}/>
+          className={`icon icon-stats gx-fs-xxxl`} />
         </div>
       </div>
     </Widget>
