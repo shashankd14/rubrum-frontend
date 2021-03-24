@@ -177,7 +177,7 @@ const Plan = (props) => {
                                                  </span>
                                              )}
                                            </div>
-                                        </div></Card></div>: <div></div>}
+                                        </div></Card></div>: <></>}
                                         
                                         <div className = {instruction.childInstructions.length > 0?"gx-branch lv2":""}>
                                             {instruction.childInstructions.length > 0 ? 
@@ -190,7 +190,7 @@ const Plan = (props) => {
                                            )}
                                            </div>
                                             </Card>
-                                            : <div></div>}
+                                            : <></>}
                                            
                
                 </div>
@@ -208,7 +208,7 @@ const Plan = (props) => {
                                 </div>
                             </div>
                             </Card>
-                            : <div></div>}
+                            : <></>}
                     </div>
              </div>
             ))}
