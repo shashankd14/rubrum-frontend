@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { getCoilPlanDetails } from "../../../appRedux/actions";
+import { getCoilPlanDetails,saveUnprocessedDelivery } from "../../../appRedux/actions";
 import { Button, Card, Col, Modal , Row} from "antd";
 
 import { CUTTING_INSTRUCTION_PROCESS_ID, SLITTING_INSTRUCTION_PROCESS_ID } from "../../../constants";
@@ -36,6 +36,17 @@ const Plan = (props) => {
          }
          weight = actualWeight - weight ;
              return weight; 
+     }
+     const handleClick = (item) => {
+         if(item.process.processName == 'Cutting'){
+            setCuttingCoil(item);
+            setShowCuttingModal(true);
+            setChildCoil(true);
+         }else {
+            setSlittingCoil(item);
+            setShowSlittingModal(true);
+            setChildCoil(true);
+         }
      }
     useEffect(() => {
         props.getCoilPlanDetails(props.match.params.coilNumber);
@@ -83,7 +94,9 @@ const Plan = (props) => {
                             <span className="gx-coil-details-label">{props.inward.plan.fQuantity}</span>
                         </div>
                         {props.wip ? 
-                            <div></div> :
+                            <div>{props.inward.plan.fpresent !== 0 ?<Button onClick={() => {
+                                props.saveUnprocessedDelivery(props.inward.plan.inwardEntryId)
+                            }}>Unprocessed</Button>: <></>}</div> :
                             <div>
                             <Button onClick={() => {
                                 setCuttingCoil(props.inward.plan);
@@ -99,11 +112,11 @@ const Plan = (props) => {
                 <div className="gx-branch lv1">
                     {instruction && instruction.length > 0 && instruction.map((group) => (
                         <>
-                            {group.length > 0 ? <Card style={{position:'relative'}} className={`gx-entry ${group[0].processdId == CUTTING_INSTRUCTION_PROCESS_ID ? 'gx-cutting-group' : 'gx-slitting-group'}`}>
+                            {group.length > 0 ? <Card style={{position:'relative'}} className={`gx-entry ${group[0].process.processName == 'Cutting' ? 'gx-cutting-group' : 'gx-slitting-group'}`}>
                                 {group.map((instruction) => (
                                    <div style={{display:"flex"}}>
                                        <div> 
-                                            <Card key={`${props.inward.plan.coilNumber}${instruction.instructionId}`} className={`${instruction.processdId == CUTTING_INSTRUCTION_PROCESS_ID ? 'gx-cutting-single' : 'gx-slitting-single'}`} size="small">
+                                            <Card key={`${props.inward.plan.coilNumber}${instruction.instructionId}`} className={`${instruction.process.processName == 'Cutting' ? 'gx-cutting-single' : 'gx-slitting-single'}`} size="small">
                                                 <img style={{ position: "absolute", right: "10.35px" }} src={require("assets/images/inward/info_icon.svg")} alt="main coil image" title="main coil image" />
                                                 <div className="gx-coil-image-bg gx-flex-row gx-align-items-center gx-justify-content-center">
                                                     {instruction.process.processName == 'Cutting' ?
@@ -151,58 +164,57 @@ const Plan = (props) => {
                                                 </div>
                                             </Card>
                                         </div>
-                                    
-                                        <div style={{border:"2px solid black"}}>
-                                                
-                                            {instruction.childInstructions.map((item,index) => ( index < 3 ? 
-                                                    <div className="gx-branch-lvl2" style={{width:"250px", height:"100px"}}>
-                                                        <div key={`${props.inward.plan.coilNumber}${item.instructionId}`} className={`${item.processdId == CUTTING_INSTRUCTION_PROCESS_ID ? 'gx-cutting-single' : 'gx-slitting-single'}`} size="small">
-                                                            <div style={{display:"flex", flexDirection:"column"}}>
-                                                                <div>
-                                                                    <div style={{borderBlockColor:"white",padding:"20px"}}>
-                                                                        {item.processdId == CUTTING_INSTRUCTION_PROCESS_ID ?
-                                                                        <img src={require("assets/images/inward/cutting_icon.svg")} alt="main coil image" title="main coil image" /> :
-                                                                        <img src={require("assets/images/inward/slitting_icon.svg")} alt="main coil image" title="main coil image" />}
-                                                                    </div>
-                                                                    <p>{item.processdId == CUTTING_INSTRUCTION_PROCESS_ID ? 'Cutting' : 'Slitting'}</p>
-                                                                </div>
-                                                                    <div>
-                                                                        <div style={{ marginLeft: "8px" }}>
-                                                                            <div>
-                                                                                <p><IntlMessages id="partywise.plan.availableLength" /> : </p>
-                                                                                <span>{item.length}</span>
-                                                                            </div>
-                                                                            <div>
-                                                                                <p><IntlMessages id="partywise.plan.availableWeight" /> : </p>
-                                                                                <span>{item.weight}</span>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div>
-                                                                    <div style={{ marginLeft: "8px" }}>
-                                                                            <div>
-                                                                                <Button style={{padding:"2px"}} onClick={(e) => {
-                                                                                e.stopPropagation();
-                                                                                setCuttingCoil(item);
-                                                                                }}>Cutting</Button>
-                                                                                <Button onClick={(e) => {
-                                                                                    e.stopPropagation();
-                                                                                    setSlittingCoil(item);
-                                                                                }}>Slitting</Button>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div> 
-                                                        </div>
-                                            : null ))}
-                                        </div>
+                                        {/* to display the delivery item */}
                                         
-                                    </div>
-
-                                ))}
-                            </Card> : <></>}
-                        </>
+                                        {instruction.childInstructions.length === 0 && group.filter((item) => item.status.statusName === 'READY TO DELIVER').length > 0 ?
+                                        <div className="gx-branch"> <Card style={{position:'relative'}} className="gx-entry">
+                                            <div style={{border:"2px solid black"}} className ="gx-outer">
+                                            <span>Packing:</span>
+                                            <div  className ="gx-inner">
+                                             {group.filter((item) => item.status.statusName === 'READY TO DELIVER').map((vlist, index)=> 
+                                                 <span className = "item" style={{width:"250px", height:"50px"}} key={index}>
+                                                       {vlist.instructionId}
+                                                 </span>
+                                             )}
+                                           </div>
+                                        </div></Card></div>: <></>}
+                                        
+                                        <div className = {instruction.childInstructions.length > 0?"gx-branch lv2":""}>
+                                            {instruction.childInstructions.length > 0 ? 
+                                            <Card style={{position:'relative'}} className="gx-entry">
+                                                <div  className ="gx-inner">
+                                             {instruction.childInstructions.map((item,index) => 
+                                                    <span className = "item" style={{width:"250px", height:"50px"}} key={item.instructionId} onClick={()=> handleClick(item)}>
+                                                        {(item.instructionId)}
+                                                        </span>
+                                           )}
+                                           </div>
+                                            </Card>
+                                            : <></>}
+                                           
+               
+                </div>
+                  <div className={instruction.childInstructions.length > 0?"gx-branch lv2":""}> 
+                  {instruction.childInstructions.filter((item) => item.status.statusName === 'READY TO DELIVER').length > 0 ?
+                            <Card style={{position:'relative'}} className="gx-entry">
+                            <div style={{border:"2px solid black"}} className ="gx-outer">
+                                 <span>Packing:</span>
+                                <div  className ="gx-inner">
+                                    {instruction.childInstructions.filter((item) => item.status.statusName === 'READY TO DELIVER').map((vlist, index)=> 
+                                         <span className = "item" style={{width:"250px", height:"50px"}} key={index}>
+                                          {vlist.instructionId}
+                                         </span>
+                                     )}
+                                </div>
+                            </div>
+                            </Card>
+                            : <></>}
+                    </div>
+             </div>
+            ))}
+        </Card> : 
+        <></>}
+    </>
                     ))}
                 </div>
             </div>
@@ -217,5 +229,6 @@ const mapStateToProps = state => ({
 });
 
 export default connect(mapStateToProps, {
-    getCoilPlanDetails
+    getCoilPlanDetails,
+    saveUnprocessedDelivery
 })(Plan);

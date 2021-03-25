@@ -14,7 +14,8 @@ import {
     REQUEST_UPDATE_INSTRUCTION_DETAILS_SUCCESS,
 
     FETCH_INWARD_INSTRUCTION_DETAILS_REQUESTED,
-    FETCH_INWARD_INSTRUCTION_WIP_DETAILS_REQUESTED
+    FETCH_INWARD_INSTRUCTION_WIP_DETAILS_REQUESTED,
+    SAVE_UNPROCESSED_FOR_DELIVERY
 } from "../../constants/ActionTypes";
 
 import {
@@ -41,7 +42,9 @@ import {
     getInstructionByIdSuccess,
     getInstructionByIdError,
     getInstructionWipListSuccess,
-    getInstructionWipListError
+    getInstructionWipListError,
+    saveUnprocessedDeliverySuccess,
+    saveUnprocessedDeliveryError
 } from "../actions";
 import { CUTTING_INSTRUCTION_PROCESS_ID, SLITTING_INSTRUCTION_PROCESS_ID } from "../../constants";
 import { formItemLayout } from "../../routes/company/Partywise/CuttingModal";
@@ -393,6 +396,20 @@ function* fetchInwardInstructionDetails(action) {
         yield put(getInstructionByIdError(error));
     }
 }
+function* saveUnprocessedDelivery(action) {
+    try {
+        const fetchInwardInstruction = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/instruction/saveUnprocessedForDelivery/${action.inwardEntryId}`, {
+            method: 'POST',
+        });
+        if (fetchInwardInstruction.status === 200) {
+            const fetchInwardPlanResponse = yield fetchInwardInstruction.json();
+            yield put(saveUnprocessedDeliverySuccess(fetchInwardPlanResponse));
+        } else
+            yield put(saveUnprocessedDeliveryError('error'));
+    } catch (error) {
+        yield put(saveUnprocessedDeliveryError(error));
+    }
+}
 
 export function* watchFetchRequests() {
     yield takeLatest(FETCH_INWARD_LIST_REQUEST, fetchInwardList);
@@ -407,6 +424,7 @@ export function* watchFetchRequests() {
     yield takeLatest(POST_DELIVERY_CONFIRM_REQUESTED, postDeliveryConfirmRequest);
     yield takeLatest(FETCH_INWARD_INSTRUCTION_DETAILS_REQUESTED, fetchInwardInstructionDetails);
     yield takeLatest(FETCH_INWARD_INSTRUCTION_WIP_DETAILS_REQUESTED, fetchInwardInstructionWIPDetails);
+    yield takeLatest(SAVE_UNPROCESSED_FOR_DELIVERY, saveUnprocessedDelivery);
 }
 
 export default function* inwardSagas() {
