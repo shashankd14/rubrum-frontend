@@ -94,13 +94,13 @@ const Plan = (props) => {
                             </div>}
                     </Card>
                 </Col>
-                <Col lg={16} md={16} sm={24} xs={24} offset={1} className="gx-align-self-center gx-branch lv1">
+                <Col lg={18} md={18} sm={24} xs={24} offset={1} className="gx-align-self-center gx-branch lv1">
                     {instruction && instruction.length > 0 && instruction.map((group) => (
                         <>
                             {group.length > 0 ? <Card bordered={false} className={`gx-entry cardLevel2MainDiv`}>
                                 {group.map((instruction) => (
                                     <div style={{ display: "flex" }}>
-                                        <Col lg={10} md={10} sm={24} xs={24} offset={1} className={`gx-align-self-center cardLevel2Div ${group[0].process.processName == 'Cutting' ? 'gx-cutting-group' : 'gx-slitting-group'}`}>
+                                        <Col lg={8} md={10} sm={24} xs={24} offset={1} className={`gx-align-self-center cardLevel2Div ${group[0].process.processName == 'Cutting' ? 'gx-cutting-group' : 'gx-slitting-group'}`}>
                                             <Card key={`${props.inward.plan.coilNumber}${instruction.instructionId}`} className={`cardLevel2InsideDiv ${instruction.process.processName == 'Cutting' ? 'gx-cutting-single' : 'gx-slitting-single'}`} size="small">
                                                 <img style={{ position: "absolute", right: "10.35px" }} src={require("assets/images/inward/info_icon.svg")} alt="main coil image" title="main coil image" />
                                                 <div className="gx-coil-image-bg gx-flex-row gx-align-items-center gx-justify-content-center">
@@ -150,7 +150,7 @@ const Plan = (props) => {
                                             </Card>
                                         </Col>
                                         {instruction.childInstructions.length > 0 ?
-                                            <Col lg={16} md={16} sm={24} xs={24} offset={1} className="gx-align-self-center gx-branch-lvl2">
+                                            <Col lg={8} md={10} sm={24} xs={24} offset={1} className="gx-align-self-center gx-branch-lvl2">
                                                 <>
                                                     <Col lg={24} md={24} sm={24} xs={24} offset={1} className={`gx-align-self-center cardLevel2Div ${group[0].process.processName == 'Cutting' ? 'gx-cutting-group' : 'gx-slitting-group'}`}>
                                                         <Card key={`${props.inward.plan.coilNumber}${instruction.instructionId}`} className={`cardLevel2InsideDiv ${instruction.process.processName == 'Cutting' ? 'gx-cutting-single' : 'gx-slitting-single'}`} size="small">
@@ -206,7 +206,25 @@ const Plan = (props) => {
                                                     </Col>
 
                                                 </>
-                                            </Col> : null}
+                                            </Col> :
+                                            instruction.deliveryId !== null ?
+                                                <Col lg={7} md={7} sm={24} xs={24} className="gx-align-self-center gx-branch-lvl2">
+                                                    <>
+                                                        <Col lg={24} md={24} sm={24} xs={24} className="gx-align-self-center plan-dl-box">
+                                                            <Card key={`${props.inward.plan.coilNumber}${instruction.instructionId}`} className="cardLevel2InsideDiv gx-delivery-single" size="small">
+                                                                <img style={{ position: "absolute", right: "10.35px" }} src={require("assets/images/inward/info_icon.svg")} alt="Packaging" title="Packaging" />
+                                                                <div style={{ marginLeft: "8px" }}> <span class="inline-packaging-lbl"><IntlMessages id="partywise.plan.packaging" /></span>
+                                                                    <div className="gx-flex-row">
+                                                                        <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.deliveryId" /> : <span className="gx-coil-details-label">{instruction.deliveryId}</span></p>
+                                                                        <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.remarks" /> : <span className="gx-coil-details-label">{instruction.remarks}</span></p>
+                                                                        <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.wastage" /> : <span className="gx-coil-details-label">{instruction.wastage}</span></p>
+                                                                    </div>
+                                                                </div>
+                                                            </Card>
+                                                        </Col>
+
+                                                    </>
+                                                </Col> : null}
                                     </div>
 
                                 ))}
