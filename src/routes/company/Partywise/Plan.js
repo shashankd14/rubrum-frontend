@@ -94,7 +94,9 @@ const Plan = (props) => {
                             <span className="gx-coil-details-label">{props.inward.plan.fQuantity}</span>
                         </div>
                         {props.wip ?
-                            <div></div> :
+                            <div>{props.inward.plan.fpresent !== 0 ? <Button onClick={() => {
+                                props.saveUnprocessedDelivery(props.inward.plan.inwardEntryId)
+                            }}>Unprocessed</Button>: <></>}</div> :
                             <div>
                                 <Button onClick={() => {
                                     setCuttingCoil(props.inward.plan);
