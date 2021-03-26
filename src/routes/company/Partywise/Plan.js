@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { getCoilPlanDetails,saveUnprocessedDelivery } from "../../../appRedux/actions";
-import { Button, Card, Col, Modal , Row} from "antd";
+import { getCoilPlanDetails, saveUnprocessedDelivery } from "../../../appRedux/actions";
+import { Button, Card, Col, Modal, Row } from "antd";
 
 import { CUTTING_INSTRUCTION_PROCESS_ID, SLITTING_INSTRUCTION_PROCESS_ID } from "../../../constants";
 import IntlMessages from "../../../util/IntlMessages";
@@ -17,37 +17,37 @@ const Plan = (props) => {
     const [slittingCoil, setSlittingCoil] = useState(false);
     const [childCoil, setChildCoil] = useState(false);
     console.log(instruction)
-    const getPlannedLength= (ins) =>{
-       let length =0;
-       const actualLength = ins.actualLength != null ? ins.actualLength : ins.plannedLength ;
-       if(ins.childInstructions.length> 0 ){
+    const getPlannedLength = (ins) => {
+        let length = 0;
+        const actualLength = ins.actualLength != null ? ins.actualLength : ins.plannedLength;
+        if (ins.childInstructions.length > 0) {
             length = ins.childInstructions.map(i => i.plannedLength);
-            return length.reduce((total,num)=> total+num)
+            return length.reduce((total, num) => total + num)
         }
         length = actualLength - length;
-            return length; 
+        return length;
     }
-    const getPlannedWeight= (ins) =>{
-        let weight =0;
-        const actualWeight = ins.actualWeight != null ? ins.actualWeight : ins.plannedWeight ;
-        if(ins.childInstructions.length> 0 ){
-             weight = ins.childInstructions.map(i => i.plannedWeight);
-             return weight.reduce((total,num)=> total+num)
-         }
-         weight = actualWeight - weight ;
-             return weight; 
-     }
-     const handleClick = (item) => {
-         if(item.process.processName == 'Cutting'){
+    const getPlannedWeight = (ins) => {
+        let weight = 0;
+        const actualWeight = ins.actualWeight != null ? ins.actualWeight : ins.plannedWeight;
+        if (ins.childInstructions.length > 0) {
+            weight = ins.childInstructions.map(i => i.plannedWeight);
+            return weight.reduce((total, num) => total + num)
+        }
+        weight = actualWeight - weight;
+        return weight;
+    }
+    const handleClick = (item) => {
+        if (item.process.processName == 'Cutting') {
             setCuttingCoil(item);
             setShowCuttingModal(true);
             setChildCoil(true);
-         }else {
+        } else {
             setSlittingCoil(item);
             setShowSlittingModal(true);
             setChildCoil(true);
-         }
-     }
+        }
+    }
     useEffect(() => {
         props.getCoilPlanDetails(props.match.params.coilNumber);
     }, [])
@@ -70,9 +70,9 @@ const Plan = (props) => {
     }, [cuttingCoil])
 
     return (
-        <div className="gx-full-height" style={{overflowX:"auto",overflowy:"scroll"}}>
-            {cuttingCoil && <CuttingModal showCuttingModal={showCuttingModal} setShowCuttingModal={() => setShowCuttingModal(false)} coilDetails={cuttingCoil} wip={props.wip} childCoil={childCoil}/>}
-            {slittingCoil && <SlittingModal showSlittingModal={showSlittingModal} setShowSlittingModal={() => setShowSlittingModal(false)} wip={props.wip} coilDetails={slittingCoil} childCoil={childCoil}/>}
+        <div className="gx-full-height" style={{ overflowX: "auto", overflowy: "scroll" }}>
+            {cuttingCoil && <CuttingModal showCuttingModal={showCuttingModal} setShowCuttingModal={() => setShowCuttingModal(false)} coilDetails={cuttingCoil} wip={props.wip} childCoil={childCoil} />}
+            {slittingCoil && <SlittingModal showSlittingModal={showSlittingModal} setShowSlittingModal={() => setShowSlittingModal(false)} wip={props.wip} coilDetails={slittingCoil} childCoil={childCoil} />}
             <h1><IntlMessages id="partywise.plan.label" /></h1>
             <div className="gx-full-height gx-flex-row">
                 <Col lg={7} md={7} sm={24} xs={24} className="gx-align-self-center">
@@ -93,29 +93,29 @@ const Plan = (props) => {
                             <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.availableWeight" /> : </p>
                             <span className="gx-coil-details-label">{props.inward.plan.fQuantity}</span>
                         </div>
-                        {props.wip ? 
-                            <div>{props.inward.plan.fpresent !== 0 ?<Button onClick={() => {
+                        {props.wip ?
+                            <div>{props.inward.plan.fpresent !== 0 ? <Button onClick={() => {
                                 props.saveUnprocessedDelivery(props.inward.plan.inwardEntryId)
-                            }}>Unprocessed</Button>: <></>}</div> :
+                            }}>Unprocessed</Button> : <></>}</div> :
                             <div>
-                            <Button onClick={() => {
-                                setCuttingCoil(props.inward.plan);
-                                setShowCuttingModal(true);
-                            }}>Cutting</Button>
-                            <Button onClick={() => {
-                                setSlittingCoil(props.inward.plan);
-                                setShowSlittingModal(true)
-                            }}>Slitting</Button>
-                        </div>}
+                                <Button onClick={() => {
+                                    setCuttingCoil(props.inward.plan);
+                                    setShowCuttingModal(true);
+                                }}>Cutting</Button>
+                                <Button onClick={() => {
+                                    setSlittingCoil(props.inward.plan);
+                                    setShowSlittingModal(true)
+                                }}>Slitting</Button>
+                            </div>}
                     </Card>
                 </Col>
                 <div className="gx-branch lv1">
                     {instruction && instruction.length > 0 && instruction.map((group) => (
                         <>
-                            {group.length > 0 ? <Card style={{position:'relative'}} className={`gx-entry ${group[0].process.processName == 'Cutting' ? 'gx-cutting-group' : 'gx-slitting-group'}`}>
+                            {group.length > 0 ? <Card style={{ position: 'relative' }} className={`gx-entry ${group[0].process.processName == 'Cutting' ? 'gx-cutting-group' : 'gx-slitting-group'}`}>
                                 {group.map((instruction) => (
-                                   <div style={{display:"flex"}}>
-                                       <div> 
+                                    <div style={{ display: "flex" }}>
+                                        <div>
                                             <Card key={`${props.inward.plan.coilNumber}${instruction.instructionId}`} className={`${instruction.process.processName == 'Cutting' ? 'gx-cutting-single' : 'gx-slitting-single'}`} size="small">
                                                 <img style={{ position: "absolute", right: "10.35px" }} src={require("assets/images/inward/info_icon.svg")} alt="main coil image" title="main coil image" />
                                                 <div className="gx-coil-image-bg gx-flex-row gx-align-items-center gx-justify-content-center">
@@ -134,87 +134,87 @@ const Plan = (props) => {
                                                         <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.availableWeight" /> : </p>
                                                         <span className="gx-coil-details-label">{getPlannedWeight(instruction)}</span>
                                                     </div>
-                                                        {instruction.process.processName == 'Cutting' && props.wip ? 
-                                                            <Button onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                setCuttingCoil(instruction);
-                                                                setShowCuttingModal(true);
-                                                                setChildCoil(true);
-                                                            }}>Finish Cutting
-                                                            </Button>: props.wip ? <Button onClick={(e) => {
+                                                    {instruction.process.processName == 'Cutting' && props.wip ?
+                                                        <Button onClick={(e) => {
                                                             e.stopPropagation();
                                                             setCuttingCoil(instruction);
                                                             setShowCuttingModal(true);
                                                             setChildCoil(true);
-                                                            }}>Finish Slitting
-                                                        </Button>:
-                                                        <div><Button onClick={(e) => {
+                                                        }}>Finish Cutting
+                                                            </Button> : props.wip ? <Button onClick={(e) => {
                                                             e.stopPropagation();
                                                             setCuttingCoil(instruction);
                                                             setShowCuttingModal(true);
+                                                            setChildCoil(true);
+                                                        }}>Finish Slitting
+                                                        </Button> :
+                                                            <div><Button onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                setCuttingCoil(instruction);
+                                                                setShowCuttingModal(true);
                                                             }}>Cutting
                                                         </Button>
-                                                        <Button onClick={(e) => {
-                                                            e.stopPropagation();
-                                                                setSlittingCoil(instruction);
-                                                                setShowCuttingModal(true);
-                                                            }}>Slitting
+                                                                <Button onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    setSlittingCoil(instruction);
+                                                                    setShowCuttingModal(true);
+                                                                }}>Slitting
                                                         </Button></div>}
-                                                        
+
                                                 </div>
                                             </Card>
                                         </div>
                                         {/* to display the delivery item */}
-                                        
+
                                         {instruction.childInstructions.length === 0 && group.filter((item) => item.status.statusName === 'READY TO DELIVER').length > 0 ?
-                                        <div className="gx-branch"> <Card style={{position:'relative'}} className="gx-entry">
-                                            <div style={{border:"2px solid black"}} className ="gx-outer">
-                                            <span>Packing:</span>
-                                            <div  className ="gx-inner">
-                                             {group.filter((item) => item.status.statusName === 'READY TO DELIVER').map((vlist, index)=> 
-                                                 <span className = "item" style={{width:"250px", height:"50px"}} key={index}>
-                                                       {vlist.instructionId}
-                                                 </span>
-                                             )}
-                                           </div>
-                                        </div></Card></div>: <></>}
-                                        
-                                        <div className = {instruction.childInstructions.length > 0?"gx-branch lv2":""}>
-                                            {instruction.childInstructions.length > 0 ? 
-                                            <Card style={{position:'relative'}} className="gx-entry">
-                                                <div  className ="gx-inner">
-                                             {instruction.childInstructions.map((item,index) => 
-                                                    <span className = "item" style={{width:"250px", height:"50px"}} key={item.instructionId} onClick={()=> handleClick(item)}>
-                                                        {(item.instructionId)}
-                                                        </span>
-                                           )}
-                                           </div>
-                                            </Card>
-                                            : <></>}
-                                           
-               
-                </div>
-                  <div className={instruction.childInstructions.length > 0?"gx-branch lv2":""}> 
-                  {instruction.childInstructions.filter((item) => item.status.statusName === 'READY TO DELIVER').length > 0 ?
-                            <Card style={{position:'relative'}} className="gx-entry">
-                            <div style={{border:"2px solid black"}} className ="gx-outer">
-                                 <span>Packing:</span>
-                                <div  className ="gx-inner">
-                                    {instruction.childInstructions.filter((item) => item.status.statusName === 'READY TO DELIVER').map((vlist, index)=> 
-                                         <span className = "item" style={{width:"250px", height:"50px"}} key={index}>
-                                          {vlist.instructionId}
-                                         </span>
-                                     )}
-                                </div>
-                            </div>
-                            </Card>
-                            : <></>}
-                    </div>
-             </div>
-            ))}
-        </Card> : 
-        <></>}
-    </>
+                                            <div className="gx-branch"> <Card style={{ position: 'relative' }} className="gx-entry">
+                                                <div style={{ border: "2px solid black" }} className="gx-outer">
+                                                    <span>Packing:</span>
+                                                    <div className="gx-inner">
+                                                        {group.filter((item) => item.status.statusName === 'READY TO DELIVER').map((vlist, index) =>
+                                                            <span className="item" style={{ width: "250px", height: "50px" }} key={index}>
+                                                                {vlist.instructionId}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                </div></Card></div> : <></>}
+
+                                        <div className={instruction.childInstructions.length > 0 ? "gx-branch lv2" : ""}>
+                                            {instruction.childInstructions.length > 0 ?
+                                                <Card style={{ position: 'relative' }} className="gx-entry">
+                                                    <div className="gx-inner">
+                                                        {instruction.childInstructions.map((item, index) =>
+                                                            <span className="item" style={{ width: "250px", height: "50px" }} key={item.instructionId} onClick={() => handleClick(item)}>
+                                                                {(item.instructionId)}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                </Card>
+                                                : <></>}
+
+
+                                        </div>
+                                        <div className={instruction.childInstructions.length > 0 ? "gx-branch lv2" : ""}>
+                                            {instruction.childInstructions.filter((item) => item.status.statusName === 'READY TO DELIVER').length > 0 ?
+                                                <Card style={{ position: 'relative' }} className="gx-entry">
+                                                    <div style={{ border: "2px solid black" }} className="gx-outer">
+                                                        <span>Packing:</span>
+                                                        <div className="gx-inner">
+                                                            {instruction.childInstructions.filter((item) => item.status.statusName === 'READY TO DELIVER').map((vlist, index) =>
+                                                                <span className="item" style={{ width: "250px", height: "50px" }} key={index}>
+                                                                    {vlist.instructionId}
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </Card>
+                                                : <></>}
+                                        </div>
+                                    </div>
+                                ))}
+                            </Card> :
+                                <></>}
+                        </>
                     ))}
                 </div>
             </div>
