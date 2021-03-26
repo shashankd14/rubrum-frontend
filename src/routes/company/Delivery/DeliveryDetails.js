@@ -16,7 +16,7 @@ const DeliveryDetails = (props) => {
             <h3>Delivery Information</h3>
         </div>
        
-        {props.deliveryList.map((elem) => (
+        {props.deliveryList.length > 0 ? props.deliveryList.map((elem) => (
             <div key={elem.instructionId}
               style={{
                 border: "1px solid black",
@@ -89,7 +89,7 @@ const DeliveryDetails = (props) => {
                 </div>
               </div>
             </div>
-          ))}
+          )): <p> No Item to display for the selected delivery chalan Number</p>}
       </div>
     
 

@@ -43,7 +43,12 @@ import {
     FETCH_INWARD_INSTRUCTION_DETAILS_ERROR,
     FETCH_INWARD_INSTRUCTION_WIP_DETAILS_REQUESTED,
     FETCH_INWARD_INSTRUCTION_WIP_DETAILS_SUCCESS,
-    FETCH_INWARD_INSTRUCTION_WIP_DETAILS_ERROR
+    FETCH_INWARD_INSTRUCTION_WIP_DETAILS_ERROR,
+    SAVE_UNPROCESSED_FOR_DELIVERY,
+    SAVE_UNPROCESSED_FOR_DELIVERY_ERROR,
+    SAVE_UNPROCESSED_FOR_DELIVERY_SUCCESS,
+    FETCH_DELIVERY_LIST_REQUEST_BY_ID,
+    FETCH_DELIVERY_LIST_SUCCESS_BY_ID
 
 } from "../../constants/ActionTypes";
 
@@ -341,6 +346,38 @@ export default (state = INIT_STATE, action) => {
                 inwardList: action.inwardList
             }
         }
+        case FETCH_DELIVERY_LIST_REQUEST_BY_ID: {
+            return {
+                ...state,
+                loading: true
+            }
+        }
+        case FETCH_DELIVERY_LIST_SUCCESS_BY_ID: {
+            return {
+                ...state,
+                loading: false,
+                deliveryList: action.deliveryList
+            }
+        }
+        case SAVE_UNPROCESSED_FOR_DELIVERY: {
+            return {
+                ...state,
+                loading: true
+            }
+        }
+        case SAVE_UNPROCESSED_FOR_DELIVERY_SUCCESS: {
+            return {
+                ...state,
+                loading: false
+            }
+        }
+        case SAVE_UNPROCESSED_FOR_DELIVERY_ERROR: {
+            return {
+                ...state,
+                loading: false
+            }
+        }
+
         default:
             return state;
     }

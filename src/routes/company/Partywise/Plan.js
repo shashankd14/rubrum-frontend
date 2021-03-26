@@ -1,11 +1,13 @@
-import { Button, Card, Col } from "antd";
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { getCoilPlanDetails } from "../../../appRedux/actions";
+import { getCoilPlanDetails, saveUnprocessedDelivery } from "../../../appRedux/actions";
+import { Button, Card, Col, Modal, Row } from "antd";
+
+import { CUTTING_INSTRUCTION_PROCESS_ID, SLITTING_INSTRUCTION_PROCESS_ID } from "../../../constants";
 import IntlMessages from "../../../util/IntlMessages";
 import CuttingModal from "../Partywise/CuttingModal";
 import SlittingModal from "./SlittingModal";
-
+import { set } from "nprogress";
 
 const Plan = (props) => {
     const { instruction } = props.inward.plan;
@@ -34,6 +36,17 @@ const Plan = (props) => {
         }
         weight = actualWeight - weight;
         return weight;
+    }
+    const handleClick = (item) => {
+        if (item.process.processName == 'Cutting') {
+            setCuttingCoil(item);
+            setShowCuttingModal(true);
+            setChildCoil(true);
+        } else {
+            setSlittingCoil(item);
+            setShowSlittingModal(true);
+            setChildCoil(true);
+        }
     }
     useEffect(() => {
         props.getCoilPlanDetails(props.match.params.coilNumber);
@@ -244,5 +257,6 @@ const mapStateToProps = state => ({
 });
 
 export default connect(mapStateToProps, {
-    getCoilPlanDetails
+    getCoilPlanDetails,
+    saveUnprocessedDelivery
 })(Plan);
