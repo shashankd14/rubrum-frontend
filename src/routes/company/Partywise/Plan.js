@@ -16,7 +16,7 @@ const Plan = (props) => {
     const [cuttingCoil, setCuttingCoil] = useState(false);
     const [slittingCoil, setSlittingCoil] = useState(false);
     const [childCoil, setChildCoil] = useState(false);
-    console.log(instruction)
+    // console.log(instruction)
     const getPlannedLength = (ins) => {
         let length = 0;
         const actualLength = ins.actualLength != null ? ins.actualLength : ins.plannedLength;
@@ -53,8 +53,6 @@ const Plan = (props) => {
     }, [])
 
     useEffect(() => {
-        console.log(slittingCoil);
-
         if (slittingCoil) {
             setSlittingCoil(slittingCoil);
             setShowSlittingModal(true);
@@ -62,12 +60,37 @@ const Plan = (props) => {
     }, [slittingCoil])
 
     useEffect(() => {
-        console.log(cuttingCoil);
         if (cuttingCoil) {
             setCuttingCoil(cuttingCoil);
             setShowCuttingModal(true);
         }
-    }, [cuttingCoil])
+    }, [cuttingCoil]);
+
+    const getLength = (value, type) => {
+        let tempDelValue = 0;
+        let tempAvailValue = 0;
+        value.map((item, index) => (
+            (value.status && value.status.statusName && value.status.statusName === 'DELIVERED') ? tempDelValue += getPlannedLength(item) : tempAvailValue += getPlannedLength(item)
+        ));
+        if (type === 'Delivered') {
+            return tempDelValue;
+        } else {
+            return tempAvailValue;
+        }
+    }
+
+    const getWeight = (value, type) => {
+        let tempDelValue = 0;
+        let tempAvailValue = 0;
+        value.map((item, index) => (
+            (value.status && value.status.statusName && value.status.statusName) === 'DELIVERED' ? tempDelValue += getPlannedWeight(item) : tempAvailValue += getPlannedWeight(item)
+        ));
+        if (type === 'Delivered') {
+            return tempDelValue;
+        } else {
+            return tempAvailValue;
+        }
+    }
 
     return (
         <div className="gx-full-height" style={{ overflowX: "auto", overflowy: "scroll" }}>
@@ -180,24 +203,19 @@ const Plan = (props) => {
                                                                 {instruction.process.processName == 'Cutting' ? 'Cutting' : 'Slitting'}
                                                                 <div className="gx-flex-row">
                                                                     <div className="gx-coil-details-label"><IntlMessages id="partywise.plan.availableLength" /> : </div>
-                                                                    {instruction.childInstructions.map((item, index) => (
-                                                                        <span className="gx-coil-details-label">{getPlannedLength(item)},</span>))}
-                                                                </div>
-                                                                <div className="gx-flex-row">
-                                                                    <div className="gx-coil-details-label"><IntlMessages id="partywise.plan.deliveredWeight" /> : </div>
-                                                                    {instruction.childInstructions.map((item, index) => (
-                                                                        <span className="gx-coil-details-label">{getPlannedLength(item)},</span>
-                                                                    ))}
+                                                                    <span className="gx-coil-details-label">{getLength(instruction.childInstructions, 'Non-Delivered')}</span>
                                                                 </div>
                                                                 <div className="gx-flex-row">
                                                                     <div className="gx-coil-details-label"><IntlMessages id="partywise.plan.deliveredLength" /> : </div>
-                                                                    {instruction.childInstructions.map((item, index) => (
-                                                                        <span className="gx-coil-details-label">{getPlannedLength(item)},</span>))}
+                                                                    <span className="gx-coil-details-label">{getLength(instruction.childInstructions, 'Delivered')}</span>
                                                                 </div>
                                                                 <div className="gx-flex-row">
                                                                     <div className="gx-coil-details-label"><IntlMessages id="partywise.plan.availableWeight" /> : </div>
-                                                                    {instruction.childInstructions.map((item, index) => (
-                                                                        <span className="gx-coil-details-label">{getPlannedWeight(item)},</span>))}
+                                                                    <span className="gx-coil-details-label">{getWeight(instruction.childInstructions, 'Non-Delivered')}</span>
+                                                                </div>
+                                                                <div className="gx-flex-row">
+                                                                    <div className="gx-coil-details-label"><IntlMessages id="partywise.plan.deliveredWeight" /> : </div>
+                                                                    <span className="gx-coil-details-label">{getWeight(instruction.childInstructions, 'Delivered')}</span>
                                                                 </div>
                                                                 {instruction.process.processName == 'Cutting' && props.wip ?
                                                                     <Button onClick={(e) => {
