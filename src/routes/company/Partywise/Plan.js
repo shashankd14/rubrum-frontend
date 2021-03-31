@@ -1,13 +1,12 @@
+import { Button, Card, Col } from "antd";
+import moment from 'moment';
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { getCoilPlanDetails, saveUnprocessedDelivery } from "../../../appRedux/actions";
-import { Button, Card, Col, Modal, Row } from "antd";
-
-import { CUTTING_INSTRUCTION_PROCESS_ID, SLITTING_INSTRUCTION_PROCESS_ID } from "../../../constants";
 import IntlMessages from "../../../util/IntlMessages";
 import CuttingModal from "../Partywise/CuttingModal";
 import SlittingModal from "./SlittingModal";
-import { set } from "nprogress";
+
 
 const Plan = (props) => {
     const { instruction } = props.inward.plan;
@@ -258,6 +257,7 @@ const Plan = (props) => {
                                                                 <div style={{ marginLeft: "8px" }}> <span class="inline-packaging-lbl"><IntlMessages id="partywise.plan.packaging" /></span>
                                                                     <div>
                                                                         <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.deliveryId" /> : <span className="gx-coil-details-label">{instruction.deliveryId}</span></p>
+                                                                        <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.date" /> : <span className="gx-coil-details-label">{moment(instruction.updatedOn).format('DD/MM/YYYY')}</span></p>
                                                                         <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.remarks" /> : <span className="gx-coil-details-label">{instruction.remarks}</span></p>
                                                                         <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.wastage" /> : <span className="gx-coil-details-label">{instruction.wastage}</span></p>
                                                                     </div>
