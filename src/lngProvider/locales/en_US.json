@@ -317,9 +317,12 @@
   "inward.list.search": "Search for coil number or party name",
   "partywise.plan.label": "Coil Plan",
   "partywise.plan.availableLength": "Available Length",
+  "partywise.plan.deliveredLength": "Delivered Length",
   "partywise.plan.packaging": "Packaging",
   "partywise.plan.deliveryId": "Delivery ID",
   "partywise.plan.remarks": "Remarks",
   "partywise.plan.wastage": "Wastage",
-  "partywise.plan.availableWeight": "Available Weight"
+  "partywise.plan.availableWeight": "Available Weight",
+  "partywise.plan.deliveredWeight": "Delivered Weight",
+  "partywise.plan.date": "Date"
 }

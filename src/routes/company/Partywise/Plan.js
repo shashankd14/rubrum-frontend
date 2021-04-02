@@ -1,13 +1,12 @@
+import { Button, Card, Col } from "antd";
+import moment from 'moment';
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { getCoilPlanDetails, saveUnprocessedDelivery } from "../../../appRedux/actions";
-import { Button, Card, Col, Modal, Row } from "antd";
-
-import { CUTTING_INSTRUCTION_PROCESS_ID, SLITTING_INSTRUCTION_PROCESS_ID } from "../../../constants";
 import IntlMessages from "../../../util/IntlMessages";
 import CuttingModal from "../Partywise/CuttingModal";
 import SlittingModal from "./SlittingModal";
-import { set } from "nprogress";
+
 
 const Plan = (props) => {
     const { instruction } = props.inward.plan;
@@ -16,7 +15,7 @@ const Plan = (props) => {
     const [cuttingCoil, setCuttingCoil] = useState(false);
     const [slittingCoil, setSlittingCoil] = useState(false);
     const [childCoil, setChildCoil] = useState(false);
-    console.log(instruction)
+    // console.log(instruction)
     const getPlannedLength = (ins) => {
         let length = 0;
         const actualLength = ins.actualLength != null ? ins.actualLength : ins.plannedLength;
@@ -53,8 +52,6 @@ const Plan = (props) => {
     }, [])
 
     useEffect(() => {
-        console.log(slittingCoil);
-
         if (slittingCoil) {
             setSlittingCoil(slittingCoil);
             setShowSlittingModal(true);
@@ -62,12 +59,37 @@ const Plan = (props) => {
     }, [slittingCoil])
 
     useEffect(() => {
-        console.log(cuttingCoil);
         if (cuttingCoil) {
             setCuttingCoil(cuttingCoil);
             setShowCuttingModal(true);
         }
-    }, [cuttingCoil])
+    }, [cuttingCoil]);
+
+    const getLength = (value, type) => {
+        let tempDelValue = 0;
+        let tempAvailValue = 0;
+        value.map((item, index) => (
+            (value.status && value.status.statusName && value.status.statusName === 'DELIVERED') ? tempDelValue += getPlannedLength(item) : tempAvailValue += getPlannedLength(item)
+        ));
+        if (type === 'Delivered') {
+            return tempDelValue;
+        } else {
+            return tempAvailValue;
+        }
+    }
+
+    const getWeight = (value, type) => {
+        let tempDelValue = 0;
+        let tempAvailValue = 0;
+        value.map((item, index) => (
+            (value.status && value.status.statusName && value.status.statusName) === 'DELIVERED' ? tempDelValue += getPlannedWeight(item) : tempAvailValue += getPlannedWeight(item)
+        ));
+        if (type === 'Delivered') {
+            return tempDelValue;
+        } else {
+            return tempAvailValue;
+        }
+    }
 
     return (
         <div className="gx-full-height" style={{ overflowX: "auto", overflowy: "scroll" }}>
@@ -96,7 +118,7 @@ const Plan = (props) => {
                         {props.wip ?
                             <div>{props.inward.plan.fpresent !== 0 ? <Button onClick={() => {
                                 props.saveUnprocessedDelivery(props.inward.plan.inwardEntryId)
-                            }}>Unprocessed</Button>: <></>}</div> :
+                            }}>Unprocessed</Button> : <></>}</div> :
                             <div>
                                 <Button onClick={() => {
                                     setCuttingCoil(props.inward.plan);
@@ -115,7 +137,7 @@ const Plan = (props) => {
                             {group.length > 0 ? <Card bordered={false} className={`gx-entry cardLevel2MainDiv`}>
                                 {group.map((instruction) => (
                                     <div style={{ display: "flex" }}>
-                                        <Col lg={8} md={10} sm={24} xs={24} offset={1} className={`gx-align-self-center cardLevel2Div ${group[0].process.processName == 'Cutting' ? 'gx-cutting-group' : 'gx-slitting-group'}`}>
+                                        <Col lg={10} md={10} sm={24} xs={24} offset={1} className={`gx-align-self-center cardLevel2Div ${group[0].process.processName == 'Cutting' ? 'gx-cutting-group' : 'gx-slitting-group'}`}>
                                             <Card key={`${props.inward.plan.coilNumber}${instruction.instructionId}`} className={`cardLevel2InsideDiv ${instruction.process.processName == 'Cutting' ? 'gx-cutting-single' : 'gx-slitting-single'}`} size="small">
                                                 <img style={{ position: "absolute", right: "10.35px" }} src={require("assets/images/inward/info_icon.svg")} alt="main coil image" title="main coil image" />
                                                 <div className="gx-coil-image-bg gx-flex-row gx-align-items-center gx-justify-content-center">
@@ -165,7 +187,7 @@ const Plan = (props) => {
                                             </Card>
                                         </Col>
                                         {instruction.childInstructions.length > 0 ?
-                                            <Col lg={8} md={10} sm={24} xs={24} offset={1} className="gx-align-self-center gx-branch-lvl2">
+                                            <Col lg={13} md={13} sm={24} xs={24} offset={1} className="gx-align-self-center gx-branch-lvl2">
                                                 <>
                                                     <Col lg={24} md={24} sm={24} xs={24} offset={1} className={`gx-align-self-center cardLevel2Div ${group[0].process.processName == 'Cutting' ? 'gx-cutting-group' : 'gx-slitting-group'}`}>
                                                         <Card key={`${props.inward.plan.coilNumber}${instruction.instructionId}`} className={`cardLevel2InsideDiv ${instruction.process.processName == 'Cutting' ? 'gx-cutting-single' : 'gx-slitting-single'}`} size="small">
@@ -179,16 +201,20 @@ const Plan = (props) => {
                                                             <div style={{ marginLeft: "8px" }}>
                                                                 {instruction.process.processName == 'Cutting' ? 'Cutting' : 'Slitting'}
                                                                 <div className="gx-flex-row">
-                                                                    <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.availableLength" /> : </p>
-                                                                    {instruction.childInstructions.map((item, index) => (index < 3 ?
-                                                                        <span className="gx-coil-details-label">{getPlannedLength(instruction)},</span>
-                                                                        : null))}
+                                                                    <div className="gx-coil-details-label"><IntlMessages id="partywise.plan.availableLength" /> : </div>
+                                                                    <span className="gx-coil-details-label">{getLength(instruction.childInstructions, 'Non-Delivered')}</span>
                                                                 </div>
                                                                 <div className="gx-flex-row">
-                                                                    <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.availableWeight" /> : </p>
-                                                                    {instruction.childInstructions.map((item, index) => (index < 3 ?
-                                                                        <span className="gx-coil-details-label">{getPlannedWeight(instruction)},</span>
-                                                                        : null))}
+                                                                    <div className="gx-coil-details-label"><IntlMessages id="partywise.plan.deliveredLength" /> : </div>
+                                                                    <span className="gx-coil-details-label">{getLength(instruction.childInstructions, 'Delivered')}</span>
+                                                                </div>
+                                                                <div className="gx-flex-row">
+                                                                    <div className="gx-coil-details-label"><IntlMessages id="partywise.plan.availableWeight" /> : </div>
+                                                                    <span className="gx-coil-details-label">{getWeight(instruction.childInstructions, 'Non-Delivered')}</span>
+                                                                </div>
+                                                                <div className="gx-flex-row">
+                                                                    <div className="gx-coil-details-label"><IntlMessages id="partywise.plan.deliveredWeight" /> : </div>
+                                                                    <span className="gx-coil-details-label">{getWeight(instruction.childInstructions, 'Delivered')}</span>
                                                                 </div>
                                                                 {instruction.process.processName == 'Cutting' && props.wip ?
                                                                     <Button onClick={(e) => {
@@ -229,8 +255,9 @@ const Plan = (props) => {
                                                             <Card key={`${props.inward.plan.coilNumber}${instruction.instructionId}`} className="cardLevel2InsideDiv gx-delivery-single" size="small">
                                                                 <img style={{ position: "absolute", right: "10.35px" }} src={require("assets/images/inward/info_icon.svg")} alt="Packaging" title="Packaging" />
                                                                 <div style={{ marginLeft: "8px" }}> <span class="inline-packaging-lbl"><IntlMessages id="partywise.plan.packaging" /></span>
-                                                                    <div className="gx-flex-row">
+                                                                    <div>
                                                                         <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.deliveryId" /> : <span className="gx-coil-details-label">{instruction.deliveryId}</span></p>
+                                                                        <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.date" /> : <span className="gx-coil-details-label">{moment(instruction.updatedOn).format('DD/MM/YYYY')}</span></p>
                                                                         <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.remarks" /> : <span className="gx-coil-details-label">{instruction.remarks}</span></p>
                                                                         <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.wastage" /> : <span className="gx-coil-details-label">{instruction.wastage}</span></p>
                                                                     </div>
