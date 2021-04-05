@@ -88,13 +88,13 @@ const SlittingWidths = (props) => {
     return (
         <>
             <Form {...formItemLayoutSlitting}>
-                <label>Available length : {props.coilDetails.fLength ? props.coilDetails.fLength : props.coilDetails.length}</label>
-                <div><label>Available width : {props.coilDetails.fWidth ? props.coilDetails.fWidth : props.coilDetails.width}</label></div>
+                <label>Available length : {props.coilDetails.fLength ? props.coilDetails.fLength  : props.coilDetails.length}mm</label>
+                <div><label>Available width : {props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.coilDetails.width}mm</label></div>
 
                 <Form.Item label="Length">
                     {getFieldDecorator('length', {
                         rules: [{ required: true, message: 'Please enter Length' },
-                            {pattern: "^(([1-9]*)|(([1-9]*)\\.([0-9]*)))$", message: 'Length should be a number'},],
+                            {pattern: "^[0-9]*$", message: 'Length should be a number'},],
                     })(
                         <Input id="length" disabled={props.wip ? true : false}/>
                     )}
@@ -121,7 +121,7 @@ const SlittingWidths = (props) => {
                                 <Form.Item>
                                     {getFieldDecorator(`widths[${index}]`, {
                                         rules: [{ required: true, message: 'Please enter width' },
-                                            {pattern: "^(([1-9]*)|(([1-9]*)\\.([0-9]*)))$", message: 'Width should be a number'},],
+                                            {pattern: "^[0-9]*$", message: 'Width should be a number'},],
                                     })(
                                         <Input id="length" disabled={props.wip ? true : false}/>
                                     )}
@@ -131,7 +131,7 @@ const SlittingWidths = (props) => {
                                 <Form.Item>
                                     {getFieldDecorator(`nos[${index}]`, {
                                         rules: [{ required: true, message: 'Please enter nos' },
-                                            {pattern: "^(([1-9]*)|(([1-9]*)\\.([0-9]*)))$", message: 'Number of slits should be a number'},],
+                                            {pattern: "^[0-9]*$", message: 'Number of slits should be a number'},],
                                     })(
                                         <Input id="length" disabled={props.wip ? true : false}/>
                                     )}
@@ -141,7 +141,7 @@ const SlittingWidths = (props) => {
                                 <Form.Item>
                                     {getFieldDecorator(`weights[${index}]`, {
                                         rules: [{ required: true, message: 'Please enter weight' },
-                                            {pattern: "^(([1-9]*)|(([1-9]*)\\.([0-9]*)))$", message: 'Weight should be a number'},],
+                                            {pattern: "^[0-9]*$", message: 'Weight should be a number'},],
                                     })(
                                         <Input id="length" disabled={props.wip ? true : false}/>
                                     )}

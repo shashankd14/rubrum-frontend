@@ -36,17 +36,6 @@ const Plan = (props) => {
         weight = actualWeight - weight;
         return weight;
     }
-    const handleClick = (item) => {
-        if (item.process.processName == 'Cutting') {
-            setCuttingCoil(item);
-            setShowCuttingModal(true);
-            setChildCoil(true);
-        } else {
-            setSlittingCoil(item);
-            setShowSlittingModal(true);
-            setChildCoil(true);
-        }
-    }
     useEffect(() => {
         props.getCoilPlanDetails(props.match.params.coilNumber);
     }, [])
@@ -165,8 +154,8 @@ const Plan = (props) => {
                                                         }}>Finish Cutting
                                                             </Button> : props.wip ? <Button onClick={(e) => {
                                                             e.stopPropagation();
-                                                            setCuttingCoil(instruction);
-                                                            setShowCuttingModal(true);
+                                                            setSlittingCoil(instruction);
+                                                            setShowSlittingModal(true);
                                                             setChildCoil(true);
                                                         }}>Finish Slitting
                                                         </Button> :
@@ -179,7 +168,7 @@ const Plan = (props) => {
                                                                 <Button onClick={(e) => {
                                                                     e.stopPropagation();
                                                                     setSlittingCoil(instruction);
-                                                                    setShowCuttingModal(true);
+                                                                    setShowSlittingModal(true);
                                                                 }}>Slitting
                                                         </Button></div>}
 
@@ -225,8 +214,8 @@ const Plan = (props) => {
                                                                     }}>Finish Cutting
                                                                     </Button> : props.wip ? <Button onClick={(e) => {
                                                                         e.stopPropagation();
-                                                                        setCuttingCoil(instruction);
-                                                                        setShowCuttingModal(true);
+                                                                        setSlittingCoil(instruction);
+                                                                        setShowSlittingModal(true);
                                                                         setChildCoil(true);
                                                                     }}>Finish Slitting
                                                                         </Button> :
@@ -239,7 +228,7 @@ const Plan = (props) => {
                                                                             <Button onClick={(e) => {
                                                                                 e.stopPropagation();
                                                                                 setSlittingCoil(instruction);
-                                                                                setShowCuttingModal(true);
+                                                                                setShowSlittingModal(true);
                                                                             }}>Slitting
                                                                     </Button></div>}
                                                             </div>
