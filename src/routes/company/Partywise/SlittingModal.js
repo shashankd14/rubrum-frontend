@@ -123,7 +123,7 @@ const SlittingWidths = (props) => {
                                         rules: [{ required: true, message: 'Please enter width' },
                                             {pattern: "^[0-9]*$", message: 'Width should be a number'},],
                                     })(
-                                        <Input id="length" disabled={props.wip ? true : false}/>
+                                        <Input id="widths" disabled={props.wip ? true : false}/>
                                     )}
                                 </Form.Item>
                             </Col>
@@ -133,7 +133,7 @@ const SlittingWidths = (props) => {
                                         rules: [{ required: true, message: 'Please enter nos' },
                                             {pattern: "^[0-9]*$", message: 'Number of slits should be a number'},],
                                     })(
-                                        <Input id="length" disabled={props.wip ? true : false}/>
+                                        <Input id="nos" disabled={props.wip ? true : false}/>
                                     )}
                                 </Form.Item>
                             </Col>
@@ -143,7 +143,7 @@ const SlittingWidths = (props) => {
                                         rules: [{ required: true, message: 'Please enter weight' },
                                             {pattern: "^[0-9]*$", message: 'Weight should be a number'},],
                                     })(
-                                        <Input id="length" disabled={props.wip ? true : false}/>
+                                        <Input id="weights" disabled={props.wip ? true : false}/>
                                     )}
                                 </Form.Item>
                             </Col>
