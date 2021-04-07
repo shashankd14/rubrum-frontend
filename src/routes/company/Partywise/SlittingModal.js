@@ -43,21 +43,27 @@ const SlittingWidths = (props) => {
         props.form.validateFields((err, values) => {
             if (!err) {
                 let totalWidth = 0
+                const widthValue = props.coilDetails.fWidth ? props.coilDetails.fWidth : props.plannedWidth(props.coilDetails)
                 const slits = []
                 for(let i=0; i < values.widths.length; i++) {
-                    slits.push({name: i+1, processDate: moment().format(APPLICATION_DATE_FORMAT),
-                        length: values.length,width: values.widths[i],
-                        no: values.nos[i],
-                        weight:values.weights[i],
-                        inwardId: props.coilDetails.inwardEntryId ? props.coilDetails.inwardEntryId : '',
-                        instructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : '',
-                    })
+                    for (let j=0; j<values.nos[i];j++){
+                        let slitValue = {
+                            name: i+1, processDate: moment().format(APPLICATION_DATE_FORMAT),
+                            length: values.length,width: values.widths[i],
+                            no: j+1,
+                            weight:values.weights[i],
+                            inwardId: props.coilDetails.inwardEntryId ? props.coilDetails.inwardEntryId : '',
+                            instructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : '',
+                        }
+                        slits.push(slitValue)
+                        
+                    }
                     totalWidth += values.widths[i]*values.nos[i];
                 }
-                if(totalWidth > props.coilDetails.fWidth) {
+                if(totalWidth > widthValue) {
                     message.error('Sum of slits width is greater than width of coil.', 2);
                 } else
-                    props.setSlits(...slits);
+                    props.setSlits(slits);
             }
         });
     }
@@ -88,13 +94,13 @@ const SlittingWidths = (props) => {
     return (
         <>
             <Form {...formItemLayoutSlitting}>
-                <label>Available length : {props.coilDetails.fLength ? props.coilDetails.fLength : props.coilDetails.length}</label>
-                <div><label>Available width : {props.coilDetails.fWidth ? props.coilDetails.fWidth : props.coilDetails.width}</label></div>
+                <label>Available length :{props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails)}mm</label>
+                <div><label>Available width : {props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.plannedWidth(props.coilDetails)}mm</label></div>
 
                 <Form.Item label="Length">
                     {getFieldDecorator('length', {
                         rules: [{ required: true, message: 'Please enter Length' },
-                            {pattern: "^(([1-9]*)|(([1-9]*)\\.([0-9]*)))$", message: 'Length should be a number'},],
+                            {pattern: "^[0-9]*$", message: 'Length should be a number'},],
                     })(
                         <Input id="length" disabled={props.wip ? true : false}/>
                     )}
@@ -121,9 +127,9 @@ const SlittingWidths = (props) => {
                                 <Form.Item>
                                     {getFieldDecorator(`widths[${index}]`, {
                                         rules: [{ required: true, message: 'Please enter width' },
-                                            {pattern: "^(([1-9]*)|(([1-9]*)\\.([0-9]*)))$", message: 'Width should be a number'},],
+                                            {pattern: "^[0-9]*$", message: 'Width should be a number'},],
                                     })(
-                                        <Input id="length" disabled={props.wip ? true : false}/>
+                                        <Input id="widths" disabled={props.wip ? true : false}/>
                                     )}
                                 </Form.Item>
                             </Col>
@@ -131,9 +137,9 @@ const SlittingWidths = (props) => {
                                 <Form.Item>
                                     {getFieldDecorator(`nos[${index}]`, {
                                         rules: [{ required: true, message: 'Please enter nos' },
-                                            {pattern: "^(([1-9]*)|(([1-9]*)\\.([0-9]*)))$", message: 'Number of slits should be a number'},],
+                                            {pattern: "^[0-9]*$", message: 'Number of slits should be a number'},],
                                     })(
-                                        <Input id="length" disabled={props.wip ? true : false}/>
+                                        <Input id="nos" disabled={props.wip ? true : false}/>
                                     )}
                                 </Form.Item>
                             </Col>
@@ -141,9 +147,9 @@ const SlittingWidths = (props) => {
                                 <Form.Item>
                                     {getFieldDecorator(`weights[${index}]`, {
                                         rules: [{ required: true, message: 'Please enter weight' },
-                                            {pattern: "^(([1-9]*)|(([1-9]*)\\.([0-9]*)))$", message: 'Weight should be a number'},],
+                                            {pattern: "^[0-9]*$", message: 'Weight should be a number'},],
                                     })(
-                                        <Input id="length" disabled={props.wip ? true : false}/>
+                                        <Input id="weights" disabled={props.wip ? true : false}/>
                                     )}
                                 </Form.Item>
                             </Col>
@@ -172,7 +178,9 @@ const SlittingWidths = (props) => {
 const CreateSlittingDetailsForm = (props) => {
     const {getFieldDecorator} = props.form;
     const [cuts, setCuts] = useState([]);
+    const [length,setLength]= useState(0);
     let loading = '';
+    
     // const dataSource= props.wip?((props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions):cuts;
 const columns = [
     {
@@ -267,9 +275,25 @@ const columnsPlan=[
         dataIndex:'weight',
         key:'weight'
     },
+    {
+        title: 'Action',
+        dataIndex: '',
+        key: 'x',
+        render: (text, record, index) => (
+            <span>
+                <span className="gx-link" onClick={(e) => {onDelete(index, e); }}>Delete</span>
+            </span>
+        ),
+    },
 ];
     const [tableData, setTableData] = useState(props.wip?(props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts);
-  useEffect(() => {
+    const onDelete = (key, e) => {
+        e.preventDefault();
+        
+        const data = cuts.filter(item => cuts.indexOf(item) !== key);
+        setCuts(data);
+      }
+    useEffect(() => {
     let data = props.wip?(props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts;
     if(props.childCoil){
         const arrayData =[];
@@ -334,7 +358,7 @@ setTableData(newData);
                     <h3>Coil Details </h3>
                     <Form {...formItemLayout} className="login-form gx-pt-4">
                         <Form.Item>
-                            <SlittingWidthsForm setSlits={(slits) => setCuts([...cuts, slits])} coilDetails={props.coilDetails} wip={props.wip}/>
+                            <SlittingWidthsForm setSlits={(slits) => setCuts([...cuts,...slits])} coilDetails={props.coilDetails} wip={props.wip} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth}/>
                         </Form.Item>
 
                     </Form>
@@ -358,9 +382,9 @@ const SlittingDetailsForm = Form.create({
     },
     mapPropsToFields(props) {
         return {
-            processDate: Form.createFormField({
-                ...props.inward.process.processDate,
-                value: (props.inward.process.processDate) ? props.inward.process.processDate : '',
+            width: Form.createFormField({
+                ...props.inward.process.width,
+                value: (props.inward.process.width) ? props.inward.process.width : '',
             }),
             length: Form.createFormField({
                 ...props.inward.process.length,
