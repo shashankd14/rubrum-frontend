@@ -180,6 +180,7 @@ const CreateSlittingDetailsForm = (props) => {
     const [cuts, setCuts] = useState([]);
     const [length,setLength]= useState(0);
     let loading = '';
+    
     // const dataSource= props.wip?((props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions):cuts;
 const columns = [
     {
@@ -274,9 +275,25 @@ const columnsPlan=[
         dataIndex:'weight',
         key:'weight'
     },
+    {
+        title: 'Action',
+        dataIndex: '',
+        key: 'x',
+        render: (text, record, index) => (
+            <span>
+                <span className="gx-link" onClick={(e) => {onDelete(index, e); }}>Delete</span>
+            </span>
+        ),
+    },
 ];
     const [tableData, setTableData] = useState(props.wip?(props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts);
-  useEffect(() => {
+    const onDelete = (key, e) => {
+        e.preventDefault();
+        
+        const data = cuts.filter(item => cuts.indexOf(item) !== key);
+        setCuts(data);
+      }
+    useEffect(() => {
     let data = props.wip?(props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts;
     if(props.childCoil){
         const arrayData =[];
