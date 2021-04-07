@@ -1,8 +1,9 @@
-import {Button, Card, Col, DatePicker, Divider, Form, Input, Modal, Row, Table, Icon} from "antd";
+import {Button, Card, Col, DatePicker, Divider, Form, Input, Modal, Row, Table, Icon,Tabs} from "antd";
 import React, {useEffect, useState, useRef, useContext} from "react";
 import {connect} from "react-redux";
 import moment from "moment";
 import {setProcessDetails, saveCuttingInstruction, updateInstruction} from '../../../appRedux/actions/Inward';
+import { showMessage } from "../../../appRedux/actions";
 
 export const formItemLayout = {
     labelCol: {
@@ -17,9 +18,13 @@ export const formItemLayout = {
     },
 };
 
+
 const CreateCuttingDetailsForm = (props) => {
+    const TabPane = Tabs.TabPane;
     const {getFieldDecorator} = props.form;
     const [cuts, setCuts] = useState([]);
+    const [mode, setMode] = useState('top');
+    
     // const dataSource= props.wip?((props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts;
     const [tableData, setTableData] = useState(props.wip?(props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts);
     const columns=[
@@ -105,12 +110,27 @@ const CreateCuttingDetailsForm = (props) => {
             key:'weight'
         },
     ];
+        
+       const handleModeChange = (e) => {
+          setMode(e.target.value);
+        };
     const handleSubmit = e => {
         e.preventDefault();
-        setCuts([...cuts, {...props.inward.process,
-            inwardId: props.coilDetails.inwardEntryId ? props.coilDetails.inwardEntryId : "",
-            instructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : ""
-        }]);
+        props.form.validateFields((err, values) => {
+            if (!err) {
+                setCuts([...cuts, {...props.inward.process,
+                    inwardId: props.coilDetails.inwardEntryId ? props.coilDetails.inwardEntryId : "",
+                    instructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : ""
+                }]);
+            }
+        });
+       
+    };
+    const checkWeight = (rule, value, callback) => {
+        if (parseFloat(value) > props.inward.plan.fQuatity) {
+            return callback();
+        }
+        callback('weight must be less than actual weight');
     };
 
     useEffect(() => {
@@ -143,8 +163,9 @@ const CreateCuttingDetailsForm = (props) => {
     newData[index][key] = Number(e.target.value);
     setTableData(newData);
   };
-
   
+ 
+
     return (
         
         <Modal
@@ -165,63 +186,87 @@ const CreateCuttingDetailsForm = (props) => {
             width={1020}
             onCancel={() => props.setShowCuttingModal()}
         >
-            <Row>
-                <Col lg={12} md={12} sm={24} xs={24} className="gx-align-self-center">
-                    <h3>Coil Details </h3>
-                    <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4">
-                    <Form.Item label="Received Date" >
-                        {getFieldDecorator('processDate', {
-                            rules: [{ required: true, message: 'Please select a received date' }],
+        <Card className="gx-card" >
+       
+        <Tabs
+          defaultActiveKey="1"
+          tabPosition={mode}
+            >
+          <TabPane tab="Cutting Details" key="1">   
+        <Row>
+          <Col lg={12} md={12} sm={24} xs={24} className="gx-align-self-center">
+
+            <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4">
+                <Form.Item label="Received Date" >
+                    {getFieldDecorator('processDate', {
+                        rules: [{ required: true, message: 'Please select a received date' }],
                         })(
-                            <DatePicker
-                                placeholder="dd/mm/yy"
-                                style={{width: 200}}
-                                format="DD/MM/YYYY"
-                                className="gx-mb-3 gx-w-100"
-                                disabled={props.wip ? true : false}/>
+                        <DatePicker
+                        placeholder="dd/mm/yy"
+                        style={{width: 200}}
+                        format="DD/MM/YYYY"
+                        className="gx-mb-3 gx-w-100"
+                        disabled={props.wip ? true : false}/>
                         )}
-                    </Form.Item>
-                    <Form.Item label="Length">
-                        {getFieldDecorator('length', {
-                            rules: [{ required: true, message: 'Please enter Length' },
-                                {pattern: "^(([1-9]*)|(([1-9]*)\\.([0-9]*)))$", message: 'Length should be a number'},],
+                </Form.Item>
+                <Form.Item label="Length">
+                    {getFieldDecorator('length', {
+                        rules: [{ required: true, message: 'Please enter Length' },
+                        {pattern: "^(([1-9]*)|(([1-9]*)\\.([0-9]*)))$", message: 'Length should be a number'},],
                         })(
-                            <Input id="length" disabled={props.wip ? true : false}/>
-                        )}
-                    </Form.Item>
-                    <Form.Item label="No of cuts">
+                        <Input id="length" disabled={props.wip ? true : false}/>
+                            )}
+                </Form.Item>
+                <Form.Item label="No of cuts">
                         {getFieldDecorator('no', {
                             rules: [{ required: true, message: 'Please enter number of cuts required' },
-                                {pattern: "^(([1-9]*)|(([1-9]*)))$", message: 'Number of cuts should be a number'}],
+                            {pattern: "^(([1-9]*)|(([1-9]*)))$", message: 'Number of cuts should be a number'}],
                         })(
-                            <Input id="noOfCuts" disabled={props.wip ? true : false}/>
-                        )}
-                    </Form.Item>
-                    <Form.Item label="Weight">
-                        {getFieldDecorator('weight', {
-                            rules: [{ required: true, message: 'Please fill other details to calculate weight' },
-                                {pattern: "^(([1-9]*)|(([1-9]*)))$", message: 'Number of cuts should be a number'}],
+                        <Input id="noOfCuts" disabled={props.wip ? true : false}/>
+                            )}
+                </Form.Item>
+                <Form.Item label="Weight">
+                    {getFieldDecorator('weight', {
+                    rules: [{ required: true, message: 'Please fill other details to calculate weight' },
+                    {pattern: "^(([1-9]*)|(([1-9]*)))$"},
+                    {validator: checkWeight} ],
                         })(
-                            <Input id="weight" disabled={true}  />
+                        <Input id="weight" disabled={true} />
                         )}
-                    </Form.Item>
-                    <Row className="gx-mt-4">
-                        <Col span={24} style={{ textAlign: "center"}}>
-                            <Button type="primary" htmlType="submit" disabled={props.wip ? true : false}>
-                                Add Size<Icon type="right"/>
-                            </Button>
-                        </Col>
-                    </Row>
-                </Form>
-                </Col>
+                </Form.Item>
+                <Row className="gx-mt-4">
+                    <Col span={24} style={{ textAlign: "center"}}>
+                     <Button type="primary" htmlType="submit" disabled={props.wip ? true : false} >
+                        Add Size<Icon type="right"/>
+                    </Button>
+                    </Col>
+                </Row>
+            
+            </Form>
+        </Col>
                 <Col lg={12} md={12} sm={24} xs={24}>
-                    <Table  className="gx-table-responsive"  columns={props.wip? columns :columnsPlan} dataSource={props.wip?tableData:cuts}/>
+                <Table  className="gx-table-responsive"  columns={props.wip? columns :columnsPlan} dataSource={props.wip?tableData:cuts}/>
                 </Col>
-            </Row>
-        </Modal>
-    )
-}
 
+    </Row>
+
+          </TabPane>
+          <TabPane tab="Coil Details" key="2">
+          <Row>
+      <Col lg={12} md={12} sm={24} xs={24}>
+        <Card title="" bordered={false}>
+              <p>Coil number : {props.inward.plan.coilNumber}</p>
+              <p>Available length : {props.inward.plan.fLength}</p>
+              <p>Available Weight :{props.inward.plan.fQuantity}</p>
+              </Card>
+      </Col></Row>
+        </TabPane>
+          </Tabs>
+          </Card>
+       </Modal>
+    
+    )
+                        }
 const mapStateToProps = state => ({
     party: state.party,
     inward: state.inward,
