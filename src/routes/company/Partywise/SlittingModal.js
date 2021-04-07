@@ -46,15 +46,18 @@ const SlittingWidths = (props) => {
                 const widthValue = props.coilDetails.fWidth ? props.coilDetails.fWidth : props.plannedWidth(props.coilDetails)
                 const slits = []
                 for(let i=0; i < values.widths.length; i++) {
-                    let slitValue = {
-                        name: i+1, processDate: moment().format(APPLICATION_DATE_FORMAT),
-                        length: values.length,width: values.widths[i],
-                        no: values.nos[i],
-                        weight:values.weights[i],
-                        inwardId: props.coilDetails.inwardEntryId ? props.coilDetails.inwardEntryId : '',
-                        instructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : '',
+                    for (let j=0; j<values.nos[i];j++){
+                        let slitValue = {
+                            name: i+1, processDate: moment().format(APPLICATION_DATE_FORMAT),
+                            length: values.length,width: values.widths[i],
+                            no: j+1,
+                            weight:values.weights[i],
+                            inwardId: props.coilDetails.inwardEntryId ? props.coilDetails.inwardEntryId : '',
+                            instructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : '',
+                        }
+                        slits.push(slitValue)
+                        
                     }
-                    slits.push(slitValue)
                     totalWidth += values.widths[i]*values.nos[i];
                 }
                 if(totalWidth > widthValue) {
