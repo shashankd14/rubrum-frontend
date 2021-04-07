@@ -26,6 +26,16 @@ const Plan = (props) => {
         length = actualLength - length;
         return length;
     }
+    const getPlannedWidth = (ins) => {
+        let width = 0;
+        const actualWidth = ins.actualWidth != null ? ins.actualWidth : ins.plannedWidth;
+        if (ins.childInstructions.length > 0) {
+            width = ins.childInstructions.map(i => i.plannedWidth);
+            return width.reduce((total, num) => total + num)
+        }
+        width = actualWidth - width;
+        return width;
+    }
     const getPlannedWeight = (ins) => {
         let weight = 0;
         const actualWeight = ins.actualWeight != null ? ins.actualWeight : ins.plannedWeight;
@@ -83,7 +93,7 @@ const Plan = (props) => {
     return (
         <div className="gx-full-height" style={{ overflowX: "auto", overflowy: "scroll" }}>
             {cuttingCoil && <CuttingModal showCuttingModal={showCuttingModal} setShowCuttingModal={() => setShowCuttingModal(false)} coilDetails={cuttingCoil} wip={props.wip} childCoil={childCoil} />}
-            {slittingCoil && <SlittingModal showSlittingModal={showSlittingModal} setShowSlittingModal={() => setShowSlittingModal(false)} wip={props.wip} coilDetails={slittingCoil} childCoil={childCoil} />}
+            {slittingCoil && <SlittingModal showSlittingModal={showSlittingModal} setShowSlittingModal={() => setShowSlittingModal(false)} wip={props.wip} coilDetails={slittingCoil} childCoil={childCoil} plannedLength={getPlannedLength} plannedWidth ={getPlannedWidth}/>}
             <h1><IntlMessages id="partywise.plan.label" /></h1>
             <div className="gx-full-height gx-flex-row">
                 <Col lg={5} md={5} sm={24} xs={24} className="gx-align-self-center">

@@ -43,6 +43,7 @@ const SlittingWidths = (props) => {
         props.form.validateFields((err, values) => {
             if (!err) {
                 let totalWidth = 0
+                const widthValue = props.coilDetails.fWidth ? props.coilDetails.fWidth : props.plannedWidth(props.coilDetails)
                 const slits = []
                 for(let i=0; i < values.widths.length; i++) {
                     let slitValue = {
@@ -56,7 +57,7 @@ const SlittingWidths = (props) => {
                     slits.push(slitValue)
                     totalWidth += values.widths[i]*values.nos[i];
                 }
-                if(totalWidth > props.coilDetails.fWidth) {
+                if(totalWidth > widthValue) {
                     message.error('Sum of slits width is greater than width of coil.', 2);
                 } else
                     props.setSlits(slits);
@@ -90,8 +91,8 @@ const SlittingWidths = (props) => {
     return (
         <>
             <Form {...formItemLayoutSlitting}>
-                <label>{props.childCoil ? "Planned length" : "Available length"} : {props.coilDetails.fLength ? props.coilDetails.fLength  : props.coilDetails.plannedLength}mm</label>
-                <div><label>{props.childCoil ?"Planned width" : "Available width"} : {props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.coilDetails.plannedWidth}mm</label></div>
+                <label>Available length :{props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails)}mm</label>
+                <div><label>Available width : {props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.plannedWidth(props.coilDetails)}mm</label></div>
 
                 <Form.Item label="Length">
                     {getFieldDecorator('length', {
@@ -174,6 +175,7 @@ const SlittingWidths = (props) => {
 const CreateSlittingDetailsForm = (props) => {
     const {getFieldDecorator} = props.form;
     const [cuts, setCuts] = useState([]);
+    const [length,setLength]= useState(0);
     let loading = '';
     // const dataSource= props.wip?((props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions):cuts;
 const columns = [
@@ -336,7 +338,7 @@ setTableData(newData);
                     <h3>Coil Details </h3>
                     <Form {...formItemLayout} className="login-form gx-pt-4">
                         <Form.Item>
-                            <SlittingWidthsForm setSlits={(slits) => setCuts([...cuts,...slits])} coilDetails={props.coilDetails} wip={props.wip}/>
+                            <SlittingWidthsForm setSlits={(slits) => setCuts([...cuts,...slits])} coilDetails={props.coilDetails} wip={props.wip} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth}/>
                         </Form.Item>
 
                     </Form>
