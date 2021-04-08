@@ -62,8 +62,10 @@ const SlittingWidths = (props) => {
                 }
                 if(totalWidth > widthValue) {
                     message.error('Sum of slits width is greater than width of coil.', 2);
+                    props.form.resetFields();
                 } else
                     props.setSlits(slits);
+                    props.form.resetFields();
             }
         });
     }
