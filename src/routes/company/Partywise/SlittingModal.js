@@ -91,6 +91,9 @@ const SlittingWidths = (props) => {
         });
     }
 
+    const maxWidth = (props.coilDetails.fWidth ? props.coilDetails.fWidth : props.plannedWidth(props.coilDetails)).toString().length;
+    const maxLength = (props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.plannedWidth(props.coilDetails)).toString().length;
+    const maxWeight = (props.coilDetails.fQuantity ? props.coilDetails.fQuantity  : props.plannedWeight(props.coilDetails)).toString().length;
     return (
         <>
             <Form {...formItemLayoutSlitting}>
@@ -102,7 +105,7 @@ const SlittingWidths = (props) => {
                         rules: [{ required: true, message: 'Please enter Length' },
                             {pattern: "^[0-9]*$", message: 'Length should be a number'},],
                     })(
-                        <Input id="length" disabled={props.wip ? true : false}/>
+                        <Input id="length" maxLength={maxLength} disabled={props.wip ? true : false}/>
                     )}
                 </Form.Item>
                 <Row>
@@ -129,7 +132,7 @@ const SlittingWidths = (props) => {
                                         rules: [{ required: true, message: 'Please enter width' },
                                             {pattern: "^[0-9]*$", message: 'Width should be a number'},],
                                     })(
-                                        <Input id="widths" disabled={props.wip ? true : false}/>
+                                        <Input id="widths" maxLength={maxWidth} disabled={props.wip ? true : false}/>
                                     )}
                                 </Form.Item>
                             </Col>
@@ -149,7 +152,7 @@ const SlittingWidths = (props) => {
                                         rules: [{ required: true, message: 'Please enter weight' },
                                             {pattern: "^[0-9]*$", message: 'Weight should be a number'},],
                                     })(
-                                        <Input id="weights" disabled={props.wip ? true : false}/>
+                                        <Input id="weights" maxLength={maxWeight} disabled={props.wip ? true : false}/>
                                     )}
                                 </Form.Item>
                             </Col>
@@ -358,7 +361,7 @@ setTableData(newData);
                     <h3>Coil Details </h3>
                     <Form {...formItemLayout} className="login-form gx-pt-4">
                         <Form.Item>
-                            <SlittingWidthsForm setSlits={(slits) => setCuts([...cuts,...slits])} coilDetails={props.coilDetails} wip={props.wip} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth}/>
+                            <SlittingWidthsForm setSlits={(slits) => setCuts([...cuts,...slits])} coilDetails={props.coilDetails} wip={props.wip} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth} plannedWeight ={props.plannedWeight}/>
                         </Form.Item>
 
                     </Form>
