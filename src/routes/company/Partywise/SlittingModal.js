@@ -181,8 +181,11 @@ const SlittingWidths = (props) => {
 const CreateSlittingDetailsForm = (props) => {
     const {getFieldDecorator} = props.form;
     const [cuts, setCuts] = useState([]);
+    // const [slitsValue, setSlitsValue] = useState([])
     const [length,setLength]= useState(0);
     let loading = '';
+    let cutArray=[];
+    const [reset, setreset] = useState(true);
     
     // const dataSource= props.wip?((props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions):cuts;
 const columns = [
@@ -296,6 +299,11 @@ const columnsPlan=[
         const data = cuts.filter(item => cuts.indexOf(item) !== key);
         setCuts(data);
       }
+   useEffect(()=>{
+   const result = cuts.filter(item => item.instructionId === props.coilDetails.instructionId) 
+   let resetter = cuts.length> 0 ? result.length > 0 ? true : false : true
+   setreset(resetter);
+   },[props.coilDetails])
     useEffect(() => {
     let data = props.wip?(props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts;
     if(props.childCoil){
@@ -367,7 +375,7 @@ setTableData(newData);
                     </Form>
                 </Col>
                 <Col lg={12} md={12} sm={24} xs={24}>
-                    <Table className="gx-table-responsive" columns={props.wip?columns: columnsPlan} dataSource={props.wip?tableData:cuts}/>
+                    <Table className="gx-table-responsive" columns={props.wip?columns: columnsPlan} dataSource={props.wip?tableData:reset ?cuts : cutArray}/>
                 </Col>
             </Row>
         </Modal>
