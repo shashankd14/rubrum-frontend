@@ -37,6 +37,7 @@ let uuid = 0;
 const SlittingWidths = (props) => {
     const {getFieldDecorator, getFieldValue, getFieldProps} = props.form;
     getFieldDecorator('keys', {initialValue: [{width:0, no:0, weight:0}]});
+   
     const keys = getFieldValue('keys');
     useEffect(() => {
         getAlert();
@@ -45,6 +46,13 @@ const SlittingWidths = (props) => {
         if(props.cuts.length> 0){
             const index = 0;
             const obj = props.cuts[props.length];
+             const arr = [obj.width,obj.no, obj.weight];
+            const array = ["widths[0]","nos[0]","weights[0]"];
+            for (let i=0; i<array.length; i++){
+                props.form.setFieldsValue({
+                    [array[i]]: `${arr[i]}`
+               });
+            }
             props.form.setFieldsValue({
                 length: obj.length
             });
