@@ -35,9 +35,21 @@ export const formItemLayoutSlitting = {
 let uuid = 0;
 
 const SlittingWidths = (props) => {
-    const {getFieldDecorator, getFieldValue} = props.form;
+    const {getFieldDecorator, getFieldValue, getFieldProps} = props.form;
     getFieldDecorator('keys', {initialValue: [{width:0, no:0, weight:0}]});
     const keys = getFieldValue('keys');
+    useEffect(() => {
+        getAlert();
+      }, [props.length]);
+    const getAlert =() =>{
+        if(props.cuts.length> 0){
+            const index = 0;
+            const obj = props.cuts[props.length];
+            props.form.setFieldsValue({
+                length: obj.length
+            });
+        }
+    }
 
     const addNewSize = (e) => {
         props.form.validateFields((err, values) => {
@@ -102,7 +114,7 @@ const SlittingWidths = (props) => {
                 <label>Available length :{props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails)}mm</label>
                 <div><label>Available width : {props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.plannedWidth(props.coilDetails)}mm</label></div>
 
-                <Form.Item label="Length">
+                <Form.Item label="Length" dependencies={["length","widths[0]"]}>
                     {getFieldDecorator('length', {
                         rules: [{ required: true, message: 'Please enter Length' },
                             {pattern: "^[0-9]*$", message: 'Length should be a number'},],
@@ -129,7 +141,7 @@ const SlittingWidths = (props) => {
                         return (
                         <>
                             <Col lg={6} md={6} sm={12} xs={24}>
-                                <Form.Item>
+                                <Form.Item name="widths" >
                                     {getFieldDecorator(`widths[${index}]`, {
                                         rules: [{ required: true, message: 'Please enter width' },
                                             {pattern: "^[0-9]*$", message: 'Width should be a number'},],
@@ -139,17 +151,17 @@ const SlittingWidths = (props) => {
                                 </Form.Item>
                             </Col>
                             <Col lg={6} md={6} sm={12} xs={24}>
-                                <Form.Item>
+                                <Form.Item name="nos">
                                     {getFieldDecorator(`nos[${index}]`, {
                                         rules: [{ required: true, message: 'Please enter nos' },
                                             {pattern: "^[0-9]*$", message: 'Number of slits should be a number'},],
                                     })(
-                                        <Input id="nos" disabled={props.wip ? true : false}/>
+                                        <Input id="nos" disabled={props.wip ? true : false} {...getFieldProps('nos')}/>
                                     )}
                                 </Form.Item>
                             </Col>
                             <Col lg={6} md={6} sm={12} xs={24}>
-                                <Form.Item>
+                                <Form.Item name="weights">
                                     {getFieldDecorator(`weights[${index}]`, {
                                         rules: [{ required: true, message: 'Please enter weight' },
                                             {pattern: "^[0-9]*$", message: 'Weight should be a number'},],
@@ -183,7 +195,6 @@ const SlittingWidths = (props) => {
 const CreateSlittingDetailsForm = (props) => {
     const {getFieldDecorator} = props.form;
     const [cuts, setCuts] = useState([]);
-    // const [slitsValue, setSlitsValue] = useState([])
     const [length,setLength]= useState(0);
     let loading = '';
     let cutArray=[];
@@ -290,7 +301,9 @@ const columnsPlan=[
         render: (text, record, index) => (
             <span>
                 <span className="gx-link" onClick={(e) => {onDelete(index, e); }}>Delete</span>
+                <span className="gx-link" onClick={(e) => {onEdit(index, e); }}>Edit</span>
             </span>
+            
         ),
     },
 ];
@@ -301,6 +314,10 @@ const columnsPlan=[
         const data = cuts.filter(item => cuts.indexOf(item) !== key);
         setCuts(data);
       }
+    const onEdit = (key, e) => {
+        setLength(key);
+      }
+      
    useEffect(()=>{
    const result = cuts.filter(item => item.instructionId === props.coilDetails.instructionId) 
    let resetter = cuts.length> 0 ? result.length > 0 ? true : false : true
@@ -371,7 +388,7 @@ setTableData(newData);
                     <h3>Coil Details </h3>
                     <Form {...formItemLayout} className="login-form gx-pt-4">
                         <Form.Item>
-                            <SlittingWidthsForm setSlits={(slits) => setCuts([...cuts,...slits])} coilDetails={props.coilDetails} wip={props.wip} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth} plannedWeight ={props.plannedWeight}/>
+                            <SlittingWidthsForm setSlits={(slits) => setCuts([...cuts,...slits])} coilDetails={props.coilDetails} wip={props.wip} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth} plannedWeight ={props.plannedWeight} length={length} cuts={cuts}/>
                         </Form.Item>
 
                     </Form>
