@@ -79,7 +79,7 @@ function  List(props) {
                         >Billing</Button> :
                             <Button type="primary" icon={() => <i className="icon icon-add" />} size="medium"
                                 onClick={() => {
-                                    props.history.push('/company/delivery/billing')
+                                    props.history.push('/company/delivery/billingInfo')
                                 }
                                 }
                             >Billing</Button>}
