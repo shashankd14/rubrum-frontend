@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import {fetchDeliveryList} from "../../../appRedux/actions";
-import {Card, Table} from "antd";
+import {Button, Card, Table} from "antd";
 import moment from 'moment';
 
 function  List(props) {
@@ -12,6 +12,7 @@ function  List(props) {
     });
 
     const [filteredInfo, setFilteredInfo] = useState(null);
+    const [selectedRowKeys, setSelectedRowKeys] = useState([])
     const columns = [
     {
         title: 'Delivery Chalan Number',
@@ -58,10 +59,34 @@ function  List(props) {
         setSortedInfo(sorter);
         setFilteredInfo(filters)
     };
+    const setSelection = (record, selected, selectedRows) => {
+        setSelectedRowKeys(selectedRows)
+        // props.setInwardSelectedForDelivery(selectedRows)
+    }
+    const handleSelection = {
+        // selectedRowKey: props,
+        onSelect: setSelection, getCheckboxProps: (record) => ({
+            disabled: false
+        })
+    }
 
     return (
         <Card>
-            <Table rowSelection={[]}
+            <div className="gx-flex-row gx-flex-1">
+                <div className="gx-flex-row gx-w-50">
+                    {selectedRowKeys.length < 1 ? <Button type="primary" icon={() => <i className="icon icon-add" />} size="medium"
+                            disabled
+                        >Billing</Button> :
+                            <Button type="primary" icon={() => <i className="icon icon-add" />} size="medium"
+                                onClick={() => {
+                                    props.history.push('/company/delivery/billing')
+                                }
+                                }
+                            >Billing</Button>}
+                </div>  
+            </div>
+
+            <Table rowSelection={handleSelection}
                    className="gx-table-responsive"
                    columns={columns}
                    dataSource={props.deliveryList}
