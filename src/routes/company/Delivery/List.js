@@ -72,20 +72,7 @@ function  List(props) {
 
     return (
         <Card>
-            <div className="gx-flex-row gx-flex-1">
-                <div className="gx-flex-row gx-w-50">
-                    {selectedRowKeys.length < 1 ? <Button type="primary" icon={() => <i className="icon icon-add" />} size="medium"
-                            disabled
-                        >Billing</Button> :
-                            <Button type="primary" icon={() => <i className="icon icon-add" />} size="medium"
-                                onClick={() => {
-                                    props.history.push('/company/delivery/billingInfo')
-                                }
-                                }
-                            >Billing</Button>}
-                </div>  
-            </div>
-
+            
             <Table rowSelection={handleSelection}
                    className="gx-table-responsive"
                    columns={columns}
