@@ -58,6 +58,7 @@ const INIT_STATE = {
     success: false,
     error: false,
     inward: {},
+    inwardEntry:{},
     inwardSubmitLoading: false,
     inwardSubmitSuccess: false,
     inwardSubmitError: false,
@@ -121,7 +122,8 @@ export default (state = INIT_STATE, action) => {
         case SET_INWARD_DETAILS: {
             return {
                 ...state,
-                inward: action.inward
+                inward: action.inward,
+                inwardEntry: action.inward
             }
         }
         case SUBMIT_INWARD_ENTRY: {
@@ -220,7 +222,7 @@ export default (state = INIT_STATE, action) => {
                 inwardSubmitLoading: false,
                 inwardSubmitSuccess: false,
                 inwardSubmitError: false,
-                inward: {},
+                inward:{}
             }
         }
         case REQUEST_SAVE_CUTTING_DETAILS: {

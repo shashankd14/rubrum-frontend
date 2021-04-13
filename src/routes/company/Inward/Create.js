@@ -52,7 +52,17 @@ const CreateForm = (props) => {
         ];
         setSteps(steps);
     }, []);
-
+    useEffect(()=>{
+        if(props.inward.inwardEntry){
+            let inwardValue = props.inward.inwardEntry;
+            inwardValue.thickness = "";
+            inwardValue.batchNo ="";
+            inwardValue.coilNumber = "";
+            inwardValue.grossWeight = "";
+            inwardValue.netWeight = "";
+            props.setInwardDetails({...props.inward.inward, ...inwardValue})
+        }
+    },[])
     useEffect(() => {
         props.fetchPartyList();
         props.fetchMaterialList();
