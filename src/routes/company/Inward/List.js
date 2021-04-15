@@ -91,7 +91,7 @@ const List = (props) => {
             <span>
                 <span className="gx-link" onClick={() => props.history.push(`${record.coilNumber}`)}>View</span>
                 <Divider type="vertical"/>
-                <span className="gx-link">Edit</span>
+                <span className="gx-link" onClick={() => props.history.push(`create/${record.inwardEntryId}`)}>Edit</span>
                 <Divider type="vertical"/>
                 <span className="gx-link">Delete</span>
             </span>

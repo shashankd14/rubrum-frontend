@@ -63,6 +63,13 @@ const CreateForm = (props) => {
             props.setInwardDetails({...props.inward.inward, ...inwardValue})
         }
     },[])
+    useEffect(()=>{
+        if(props.match.params && props.match.params.inwardEntryId){
+            let inwardEntry = props.inward.inwardList.filter(item => item.inwardEntryId === Number(props.match.params.inwardEntryId) )
+            const inwardEntry1 = inwardEntry[0];
+            props.setInwardDetails({...props.inward.inward,...inwardEntry1})
+        }
+    },[])
     useEffect(() => {
         props.fetchPartyList();
         props.fetchMaterialList();
