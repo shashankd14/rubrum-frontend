@@ -313,6 +313,7 @@
   "sidebar.company.inwardList": "Inward List",
   "sidebar.company.partywiseRegister": "Partywise Register",
   "sidebar.company.deliveryItems": "Delivered Items",
+  "sidebar.company.billingInfo": "Billing Info",
   "sidebar.company.workinprogress": "Work in progress",
   "inward.list.search": "Search for coil number or party name",
   "partywise.plan.label": "Coil Plan",

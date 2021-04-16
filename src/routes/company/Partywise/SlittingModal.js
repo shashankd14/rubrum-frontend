@@ -37,11 +37,15 @@ let uuid = 0;
 const SlittingWidths = (props) => {
     const {getFieldDecorator, getFieldValue, getFieldProps} = props.form;
     getFieldDecorator('keys', {initialValue: [{width:0, no:0, weight:0}]});
-   
+    const lengthValue1 = props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails)
+    const widthValue = props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.plannedWidth(props.coilDetails);
+    const [len, setlen]= useState(lengthValue1);
+    const [width, setwidth] = useState(widthValue);
     const keys = getFieldValue('keys');
     useEffect(() => {
         getAlert();
       }, [props.length]);
+    
     const getAlert =() =>{
         if(props.cuts.length> 0){
             const index = 0;
@@ -62,8 +66,10 @@ const SlittingWidths = (props) => {
     const addNewSize = (e) => {
         props.form.validateFields((err, values) => {
             if (!err) {
-                let totalWidth = 0
+                let totalWidth = 0;
+                let totalLength = 0 ;
                 const widthValue = props.coilDetails.fWidth ? props.coilDetails.fWidth : props.plannedWidth(props.coilDetails)
+                const lengthValue = props.coilDetails.fLength ? props.coilDetails.fLength : props.plannedLength(props.coilDetails)
                 const slits = []
                 for(let i=0; i < values.widths.length; i++) {
                     for (let j=0; j<values.nos[i];j++){
@@ -82,6 +88,9 @@ const SlittingWidths = (props) => {
                 }
                 if(totalWidth > widthValue) {
                     message.error('Sum of slits width is greater than width of coil.', 2);
+                    props.form.resetFields();
+                }else if(values.length > lengthValue) {
+                    message.error('Length greater than available length', 2);
                     props.form.resetFields();
                 } else
                     props.setSlits(slits);
@@ -112,22 +121,33 @@ const SlittingWidths = (props) => {
             keys: keys.filter(key => key !== k),
         });
     }
-
-    const maxWidth = (props.coilDetails.fWidth ? props.coilDetails.fWidth : props.plannedWidth(props.coilDetails)).toString().length;
-    const maxLength = (props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.plannedWidth(props.coilDetails)).toString().length;
-    const maxWeight = (props.coilDetails.fQuantity ? props.coilDetails.fQuantity  : props.plannedWeight(props.coilDetails)).toString().length;
+    const handleChange = (e)=>{
+        if(e.target.value != e.target.defaultValue){
+        let finalLength = lengthValue1-Number(e.target.value);
+        setlen(finalLength);
+        }
+    }
+    const handleWidthChange = (e)=>{
+        if(e.target.value != e.target.defaultValue){
+        let finalLength = widthValue-Number(e.target.value);
+        setwidth(finalLength);
+        }
+    }
+    const maxWidth = parseInt(props.coilDetails.fWidth ? props.coilDetails.fWidth : props.plannedWidth(props.coilDetails)).toString().length;
+    const maxLength = parseInt((props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedWidth(props.coilDetails))).toString().length;
+    const maxWeight = parseInt((props.coilDetails.fQuantity ? props.coilDetails.fQuantity  : props.plannedWeight(props.coilDetails))).toString().length;
     return (
         <>
             <Form {...formItemLayoutSlitting}>
-                <label>Available length :{props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails)}mm</label>
-                <div><label>Available width : {props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.plannedWidth(props.coilDetails)}mm</label></div>
+                <label>Available length :{len}mm</label>
+                <div><label>Available width : {width}mm</label></div>
 
                 <Form.Item label="Length" dependencies={["length","widths[0]"]}>
                     {getFieldDecorator('length', {
                         rules: [{ required: true, message: 'Please enter Length' },
                             {pattern: "^[0-9]*$", message: 'Length should be a number'},],
                     })(
-                        <Input id="length" maxLength={maxLength} disabled={props.wip ? true : false}/>
+                        <Input id="length" maxLength={maxLength} disabled={props.wip ? true : false} onChange ={handleChange}/>
                     )}
                 </Form.Item>
                 <Row>
@@ -154,7 +174,7 @@ const SlittingWidths = (props) => {
                                         rules: [{ required: true, message: 'Please enter width' },
                                             {pattern: "^[0-9]*$", message: 'Width should be a number'},],
                                     })(
-                                        <Input id="widths" maxLength={maxWidth} disabled={props.wip ? true : false}/>
+                                        <Input id="widths" maxLength={maxWidth} disabled={props.wip ? true : false} onChange ={handleWidthChange}/>
                                     )}
                                 </Form.Item>
                             </Col>
@@ -203,7 +223,7 @@ const SlittingWidths = (props) => {
 const CreateSlittingDetailsForm = (props) => {
     const {getFieldDecorator} = props.form;
     const [cuts, setCuts] = useState([]);
-    const [length,setLength]= useState(0);
+    const [length,setLength]= useState();
     let loading = '';
     let cutArray=[];
     const [reset, setreset] = useState(true);
@@ -275,17 +295,14 @@ const columns = [
 const columnsPlan=[
     {
         title: 'Serial No',
-        dataIndex:'instructionId',
-        key: 'instructionId'
+        key: 'index',
+        render:(text, record, index) => (index + 1 )
         
     },
     {
-        title: 'Process Date',
-        dataIndex:'processDate',
-        render (value) {
-            return moment(value).format('DD/MM/YYYY');
-        },
-        key: 'instructionprocessDateDate',
+        title: 'Slitting Date',
+        render:() =>(moment(new Date()).format('DD/MM/YYYY')),
+        key: 'instructionDate',
     },
     {
         title: 'Length',
@@ -293,9 +310,9 @@ const columnsPlan=[
         key: 'length',
     },
     {
-        title: 'No of Sheets',
-        dataIndex:'no',
-        key: 'no',
+        title: 'Width',
+        dataIndex:'width',
+        key: 'width',
     },
     {
         title: 'Weight',
@@ -308,8 +325,8 @@ const columnsPlan=[
         key: 'x',
         render: (text, record, index) => (
             <span>
-                <span className="gx-link" onClick={(e) => {onDelete(index, e); }}>Delete</span>
-                <span className="gx-link" onClick={(e) => {onEdit(index, e); }}>Edit</span>
+                <span className="gx-link" onClick={(e) => {onEdit(index, e); }}><Icon type="edit" /></span>
+                <span className="gx-link" onClick={(e) => {onDelete(index, e); }}><Icon type="delete" /></span>
             </span>
             
         ),

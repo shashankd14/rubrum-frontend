@@ -9,6 +9,7 @@ const Company = ({match}) => (
         <Route path={`${match.url}/partywise-register`} component={asyncComponent(() => import('./Partywise'))}/>
         <Route path={`${match.url}/workin-progress`} component={asyncComponent(() => import('./WorkinProgress'))}/>
         <Route path={`${match.url}/deliveredItems`} component={asyncComponent(() => import('./Delivery'))}/>
+        <Route path={`${match.url}/billingInfo`} component={asyncComponent(() => import('./Delivery/BillingInfo'))}/>
     </Switch>
 );
 
