@@ -138,7 +138,6 @@ const CreateCuttingDetailsForm = (props) => {
             const onEdit=(record,index) => {
              const {form} = props;
                const data= props.record;
-               console.log(record);
                if(indexOf(data)<4 )
                         {
                             let values= {
@@ -166,19 +165,17 @@ const CreateCuttingDetailsForm = (props) => {
                     e.preventDefault();
                     props.form.validateFields((err, values) => {
                        if (!err) {
-                        console.log(cuts.filter(index => cuts.index == props.inward.process.index));
                         setCuts([...cuts, {...props.inward.process,
                          inwardId: props.coilDetails.inwardEntryId ? props.coilDetails.inwardEntryId : "",
-                         instructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : ""
-                        }]);
+                         instructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : ""}]);
                      }
-                 });
+                    });
                 props.resetInstruction();
                           
                 };
-                const checkWeight = (rule, value, callback) => {
+                 const checkWeight = (rule, value, callback) => {
                 if (parseFloat(value) > props.inward.plan.fQuantity) {
-                         return callback();
+                        return callback();
                         }
                     callback('weight must be less than actual weight');
                  };
@@ -231,7 +228,8 @@ const CreateCuttingDetailsForm = (props) => {
               
             }}
             width={1020}
-            onCancel={() => props.setShowCuttingModal()}
+            onCancel={() => 
+                props.setShowCuttingModal()}
         >
         <Card className="gx-card" >
        
@@ -259,7 +257,8 @@ const CreateCuttingDetailsForm = (props) => {
                 <Form.Item label="Length">
                     {getFieldDecorator('length', {
                         rules: [{ required: true, message: 'Please enter Length' },
-                        {pattern: "^(([0-9]*)|(([0-9]*)\\.([0-9]*)))$", message: 'Length should be a number'},],
+                        {pattern: "^(([1-9]*)|(([1-9]*)\\.([0-9]*)))$", message: 'Length should be a number'},
+                    ],
                         })(
                         <Input id="length" disabled={props.wip ? true : false}/>
                             )}
@@ -267,7 +266,8 @@ const CreateCuttingDetailsForm = (props) => {
                 <Form.Item label="No of cuts">
                         {getFieldDecorator('no', {
                             rules: [{ required: true, message: 'Please enter number of cuts required' },
-                            {pattern: "^(([0-9]*)|(([0-9]*)))$", message: 'Number of cuts should be a number'}],
+                           {pattern: "^(([1-9]*)|(([1-9]*)))$", message: 'Number of cuts should be a number'}
+                        ],
                         })(
                         <Input id="noOfCuts" disabled={props.wip ? true : false}/>
                             )}
@@ -276,7 +276,7 @@ const CreateCuttingDetailsForm = (props) => {
                     {getFieldDecorator('weight', {
                          rules: [{ required: true, message: 'Please fill other details to calculate weight' },
                             {pattern: "^(([0-9]*)|(([0-9]*)))$"},
-                            {validator: checkWeight} 
+                           {validator: checkWeight} 
                          ],
                         })(
                         <Input id="weight" disabled={true}  />
