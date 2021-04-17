@@ -24,6 +24,7 @@ const View = (props) => {
         <>
             {props.inwardSubmitLoading ? <Spin className="gx-size-100 gx-flex-row gx-justify-content-center gx-align-items-center" size="large"/> :
             <>
+            <h1>Inward Summary for {props.match.params.coilNumber? props.match.params.coilNumber:''}</h1>
                 {filteredInwardList ? <>
                 <Col span={4} style={{ textAlign: "center"}}>
                         <Button onClick={() => props.history.push('list')}>
