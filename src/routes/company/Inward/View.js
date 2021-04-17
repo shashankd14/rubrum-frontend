@@ -35,7 +35,7 @@ const View = (props) => {
                     <Row>
                         <Col span={12}>
                             <Card title="Customer Details" style={{ width: 300 }}>
-                                <p>Customer Name : {props.inward.inward.partyName}</p>
+                                {props.inward.inward.party && <p>Customer Name : {props.inward.inward.party.nPartyName}</p>}
                                 {props.inward.inward.customerId && <p>Customer Id : {props.inward.inward.customerId}</p>}
                                 {props.inward.inward.customerBatchNo && <p>Customer Batch No : {props.inward.inward.customerBatchNo}</p>}
                                 {props.inward.inward.customerInvoiceNo && <p>Customer Invoice No : {props.inward.inward.customerInvoiceNo}</p>}
@@ -46,9 +46,9 @@ const View = (props) => {
                             <Card title="Coil Details" style={{ width: 300 }}>
                                 {props.inward.inward.coilNumber && <p>Coil number : {props.inward.inward.coilNumber}</p>}
                                 {props.inward.inward.material && <p>Material Description : {props.inward.inward.material.description}</p>}
-                                {props.inward.inward && <p>Dimensions : {props.inward.inward.width} X {props.inward.inward.thickness} X {props.inward.inward.length}</p>}
-                                {props.inward.inward.netWeight && <p>Net Weight : {props.inward.inward.netWeight}</p>}
-                                {props.inward.inward.grossWeight && <p>Gross Weight : {props.inward.inward.grossWeight}</p>}
+                                {props.inward.inward && <p>Dimensions : {props.inward.inward.fWidth*props.inward.inward.fThickness*props.inward.inward.fLength}mm</p>}
+                                {props.inward.inward.netWeight && <p>Net Weight : {props.inward.inward.netWeight}kg </p>}
+                                {props.inward.inward.grossWeight && <p>Gross Weight : {props.inward.inward.grossWeight}kg</p>}
                             </Card>
                         </Col>
                     </Row>
@@ -71,7 +71,7 @@ const View = (props) => {
                                 <div>
                                 {props.inward.inward.moreFiles && props.inward.inward.moreFiles.fileList.map((file) => <p>{file.name}</p>)}
                                 </div>
-                                {props.inward.inward.remarks && <p>Remarks : {props.inward.inward.remarks}</p>}
+                                {props.inward.inward.remarks !== 'undefined' && <p>Remarks : {props.inward.inward.remarks}</p>}
                             </Card>
                         </Col>
                     </Row>
