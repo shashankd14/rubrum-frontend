@@ -9,7 +9,18 @@ const Option = Select.Option;
 const CreatePartyDetailsForm = (props) => {
     const {getFieldDecorator} = props.form;
     const [dataSource, setDataSource] = useState([]);
-
+    useEffect(() => {
+        if(props.params !=="") {
+            const { Option } = AutoComplete;
+            const options = props.party.partyList.filter(party => {
+            if (party.nPartyId===  props.inward.party.nPartyId)
+            return (<Option key={party.nPartyId} value={`${party.nPartyId}`}>
+                    {party.nPartyName}
+                </Option>)
+            });
+            setDataSource(options);
+        }
+    }, [props.party]);
     useEffect(() => {
         if(props.party.partyList.length > 0) {
 
@@ -109,7 +120,7 @@ const PartyDetailsForm = Form.create({
         return {
             partyName: Form.createFormField({
                 ...props.inward.partyName,
-                value: (props.inward.partyName) ? props.inward.partyName : '',
+                value:  props.params !== "" ? props.inward.party.nPartyName:(props.inward.partyName) ? props.inward.party.nPartyName : '',
             }),
             customerId: Form.createFormField({
                 ...props.inward.customerId,

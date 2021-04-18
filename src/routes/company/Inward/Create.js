@@ -32,22 +32,22 @@ const CreateForm = (props) => {
         const steps = [
             {
                 title: 'Customer',
-                content: <PartyDetailsForm updateStep={(step) => setCurrentStep(step)} />,
+                content: <PartyDetailsForm updateStep={(step) => setCurrentStep(step)} params={props.match.params && props.match.params.inwardEntryId ?props.match.params.inwardEntryId: ''}/>,
             },
             {
                 title: 'Coil',
-                content: <CoilDetailsForm updateStep={(step) => setCurrentStep(step)} />,
+                content: <CoilDetailsForm updateStep={(step) => setCurrentStep(step)} params={props.match.params && props.match.params.inwardEntryId ?props.match.params.inwardEntryId: ''}/>,
             },
             {
                 title: 'Invoice',
-                content: <InvoiceDetailsForm updateStep={(step) => setCurrentStep(step)}/>,
+                content: <InvoiceDetailsForm updateStep={(step) => setCurrentStep(step)} params={props.match.params && props.match.params.inwardEntryId ?props.match.params.inwardEntryId: ''}/>,
             },
             {
                 title: 'Quality',
-                content: <QualityDetailsForm updateStep={(step) => setCurrentStep(step)} />,
+                content: <QualityDetailsForm updateStep={(step) => setCurrentStep(step)} params={props.match.params && props.match.params.inwardEntryId ?props.match.params.inwardEntryId: ''}/>,
             },{
                 title: 'Summary',
-                content: <InwardEntrySummary updateStep={(step) => setCurrentStep(step)} />,
+                content: <InwardEntrySummary updateStep={(step) => setCurrentStep(step)} params={props.match.params && props.match.params.inwardEntryId ?props.match.params.inwardEntryId: ''}/>,
             },
         ];
         setSteps(steps);
@@ -104,7 +104,7 @@ const Create = Form.create({
         return {
             partyName: Form.createFormField({
                 ...props.inward.inward.partyName,
-                value: (props.inward.inward.partyName) ? props.inward.inward.partyName : '',
+                value: (props.match.params && props.match.params.inwardEntryId && props.inward.inward.party) ? props.inward.inward.party.nPartyName : (props.inward.inward.partyName) ? props.inward.inward.partyName : '',
             }),
             coilNumber: Form.createFormField({
                 ...props.inward.inward.coilNumber,
@@ -128,23 +128,23 @@ const Create = Form.create({
             }),
             materialDesc: Form.createFormField({
                 ...props.inward.inward.materialDesc,
-                value: (props.inward.inward.materialDesc) ? props.inward.inward.materialDesc : '',
+                value: props.match.params ? '' :(props.inward.inward.materialDesc) ? props.inward.inward.materialDesc : '',
             }),
             width: Form.createFormField({
                 ...props.inward.inward.width,
-                value: (props.inward.inward.width) ? props.inward.inward.width : '',
+                value:props.match.params ?props.inward.inward.fWidth: (props.inward.inward.width) ? props.inward.inward.width : '',
             }),
             thickness: Form.createFormField({
                 ...props.inward.inward.thickness,
-                value: (props.inward.inward.thickness) ? props.inward.inward.thickness : '',
+                value: props.match.params ?props.inward.inward.fThickness:(props.inward.inward.thickness) ? props.inward.inward.thickness : '',
             }),
             weight: Form.createFormField({
                 ...props.inward.inward.weight,
-                value: (props.inward.inward.weight) ? props.inward.inward.weight : '',
+                value: props.match.params ?props.inward.inward.fWeight:(props.inward.inward.weight) ? props.inward.inward.weight : '',
             }),
             length: Form.createFormField({
                 ...props.inward.inward.length,
-                value: (props.inward.inward.length) ? props.inward.inward.length : '',
+                value: props.match.params ?props.inward.inward.fLength:(props.inward.inward.length) ? props.inward.inward.length : '',
             }),
         };
     },
