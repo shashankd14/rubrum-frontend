@@ -225,6 +225,12 @@ export default (state = INIT_STATE, action) => {
                 inward:{}
             }
         }
+        case RESET_INSTRUCTION_FORM:
+            {return {
+                ...state,
+                process:{},
+            }
+        }
         case REQUEST_SAVE_CUTTING_DETAILS: {
             return {
                 ...state,
