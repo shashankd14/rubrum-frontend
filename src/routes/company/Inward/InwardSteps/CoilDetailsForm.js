@@ -75,6 +75,7 @@ const CoilDetailsForm = (props) => {
     useEffect(() => {
         if(props.inward.width && props.inward.thickness && props.inward.netWeight) {
             setLength(parseFloat(parseFloat(props.inward.grossWeight)/7.85/(parseFloat(props.inward.thickness)/props.inward.width)).toFixed(4));
+// to be fixed on netweight
         }
     }, [props.inward]);
 
@@ -110,7 +111,7 @@ const CoilDetailsForm = (props) => {
                         />
                     )}
                 </Form.Item>
-                <Form.Item label="Coil Width (in mm)">
+                <Form.Item label="Coil Width (in mts)">
                     {getFieldDecorator('width', {
                         rules: [{ required: true, message: 'Please input the coil width!' }
                         ],
