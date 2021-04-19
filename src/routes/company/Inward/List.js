@@ -7,8 +7,10 @@ import SearchBox from "../../../components/SearchBox";
 import IntlMessages from "../../../util/IntlMessages";
 import {
     fetchInwardList,
-    resetInwardForm
+    resetInwardForm,
+    deleteInwardEntryById
 } from "../../../appRedux/actions/Inward";
+import { onDeleteContact } from "../../../appRedux/actions";
 
 const List = (props) => {
 
@@ -87,18 +89,22 @@ const List = (props) => {
         title: 'Action',
         dataIndex: '',
         key: 'x',
-        render: (text, record) => (
+        render: (text, record, index) => (
             <span>
                 <span className="gx-link" onClick={() => props.history.push(`${record.coilNumber}`)}>View</span>
                 <Divider type="vertical"/>
                 <span className="gx-link" onClick={() => props.history.push(`create/${record.inwardEntryId}`)}>Edit</span>
                 <Divider type="vertical"/>
-                <span className="gx-link">Delete</span>
+                <span className="gx-link"onClick={(e) => onDelete(record, index,e)}>Delete</span>
             </span>
         ),
     },
     ];
-
+    const onDelete = (record,key, e) => {
+        e.preventDefault();
+        props.deleteInwardEntryById(record.inwardEntryId)
+        console.log(record,key)
+      }
     useEffect(() => {
         props.fetchInwardList();
     }, []);
@@ -178,5 +184,6 @@ const mapStateToProps = state => ({
 
 export default connect(mapStateToProps, {
     fetchInwardList,
-    resetInwardForm
+    resetInwardForm,
+    deleteInwardEntryById
 })(List);

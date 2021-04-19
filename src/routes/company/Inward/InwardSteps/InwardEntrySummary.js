@@ -2,7 +2,7 @@ import React, {useEffect} from "react";
 import {connect} from "react-redux";
 import moment from "moment";
 
-import {submitInwardEntry, resetInwardForm} from "../../../../appRedux/actions";
+import {submitInwardEntry, resetInwardForm,updateInward} from "../../../../appRedux/actions";
 import {Button, Card, Col, Icon, message, Row, Spin} from "antd";
 import { withRouter } from 'react-router-dom';
 
@@ -31,7 +31,7 @@ const InwardEntrySummary = (props) => {
                     <Row>
                         <Col span={12}>
                             <Card title="Customer Details" style={{ width: 300 }}>
-                                <p>Customer Name : {props.inward.partyName}</p>
+                                <p>Customer Name : {props.inward.party ? props.inward.party.nPartyName :props.inward.partyName}</p>
                                 {props.inward.customerId && <p>Customer Id : {props.inward.customerId}</p>}
                                 {props.inward.customerBatchNo && <p>Customer Batch No : {props.inward.customerBatchNo}</p>}
                                 {props.inward.customerInvoiceNo && <p>Customer Invoice No : {props.inward.customerInvoiceNo}</p>}
@@ -41,7 +41,7 @@ const InwardEntrySummary = (props) => {
                         <Col span={12}>
                             <Card title="Coil Details" style={{ width: 300 }}>
                                 <p>Coil number : {props.inward.coilNumber}</p>
-                                <p>Material Description : {props.params !== ""? props.inward.material.description : props.inward.material}</p>
+                                <p>Material Description : {props.params !== ""? props.inward.material.description : props.inward.description}</p>
                                 <p>Dimensions : {props.inward.width} X {props.inward.thickness} X {props.inward.length}</p>
                                 <p>Net Weight : {props.inward.netWeight}</p>
                                 <p>Gross Weight : {props.inward.grossWeight}</p>
@@ -60,7 +60,7 @@ const InwardEntrySummary = (props) => {
                         </Col>
                         <Col span={12}>
                             <Card title="Quality Details" style={{ width: 300 }}>
-                                <p>Grade : {props.inward.grade}</p>
+                                <p>Grade : {props.params !== ""? props.inward.materialGrade.gradeName:props.inward.grade}</p>
                                 {props.inward.testCertificateNo && <p>Test Certificate No : {props.inward.testCertificateNo}</p>}
                                 {props.inward.testFile && <p>Test File : {props.inward.testFile.fileList[0].name}</p>}
                                 {props.inward.moreFiles && <p>More attachments :</p>}
@@ -78,7 +78,7 @@ const InwardEntrySummary = (props) => {
                     </Button>
                     <Button type="primary" htmlType="submit" onClick={(e) => {
                         e.preventDefault();
-                        props.submitInwardEntry(props.inward)
+                        props.params!== ""? props.updateInward(props.inward):props.submitInwardEntry(props.inward)
                     }}>
                         Submit<Icon type="right"/>
                     </Button>
@@ -98,5 +98,6 @@ const mapStateToProps = state => ({
 
 export default withRouter(connect(mapStateToProps, {
     submitInwardEntry,
-    resetInwardForm
+    resetInwardForm,
+    updateInward
 })(InwardEntrySummary));

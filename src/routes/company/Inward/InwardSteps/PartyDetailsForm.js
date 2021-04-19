@@ -33,7 +33,10 @@ const CreatePartyDetailsForm = (props) => {
             setDataSource(options);
         }
     }, [props.party]);
-
+    const handleChange = e =>{
+        props.inward.party.nPartyName = e;
+        console.log(e);
+    }
     const handleSubmit = e => {
         e.preventDefault();
 
@@ -57,6 +60,7 @@ const CreatePartyDetailsForm = (props) => {
                                 style={{width: 200}}
                                 placeholder="enter customer name"
                                 dataSource={dataSource}
+                                onChange= {props.params !== "" ?(e) =>handleChange(e): ""}
                                 filterOption={(inputValue, option) =>
                                     option.props.children.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
                                 }
@@ -120,7 +124,7 @@ const PartyDetailsForm = Form.create({
         return {
             partyName: Form.createFormField({
                 ...props.inward.partyName,
-                value:  props.params !== "" ? props.inward.party.nPartyName:(props.inward.partyName) ? props.inward.party.nPartyName : '',
+                value: ( props.params !== "" && props.inward.party) ?props.inward.party.nPartyName :(props.inward.partyName) ? props.inward.partyName: '',
             }),
             customerId: Form.createFormField({
                 ...props.inward.customerId,

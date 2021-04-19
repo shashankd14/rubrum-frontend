@@ -54,7 +54,16 @@ import {
     FETCH_INWARD_INSTRUCTION_WIP_DETAILS_ERROR,
     SAVE_UNPROCESSED_FOR_DELIVERY,
     SAVE_UNPROCESSED_FOR_DELIVERY_SUCCESS,
-    SAVE_UNPROCESSED_FOR_DELIVERY_ERROR
+    SAVE_UNPROCESSED_FOR_DELIVERY_ERROR,
+    FETCH_INWARD_LIST_BY_ID,
+    FETCH_INWARD_LIST_BY_ID_SUCCESS,
+    FETCH_INWARD_LIST_BY_ID_ERROR,
+    UPDATE_INWARD_LIST,
+    UPDATE_INWARD_LIST_SUCCESS,
+    UPDATE_INWARD_LIST_ERROR,
+    DELETE_INWARD_LIST_BY_ID,
+    DELETE_INWARD_LIST_BY_ID_ERROR,
+    DELETE_INWARD_LIST_BY_ID_SUCCESS
 } from "../../constants/ActionTypes";
 
 export const fetchInwardList = () => ({
@@ -103,6 +112,35 @@ export const getGradeByMaterialIdSuccess = (payload) => ({
 
 export const getGradeByMaterialIdError = (error) => ({
     type: FETCH_MATERIAL_GRADE_LIST_ERROR,
+    error
+});
+
+export const fetchPartyListById = (inwardEntryId) => ({
+    type: FETCH_INWARD_LIST_BY_ID,
+    inwardEntryId
+});
+
+export const fetchPartyInwardListByIdSuccess = (payload) => ({
+    type: FETCH_INWARD_LIST_BY_ID_SUCCESS,
+    payload
+});
+
+export const fetchPartyInwardListByIdError = (error) => ({
+    type: FETCH_INWARD_LIST_BY_ID_ERROR,
+    error
+});
+export const updateInward = (inward) => ({
+    type: UPDATE_INWARD_LIST,
+    inward
+});
+
+export const updateInwardSuccess = (payload) => ({
+    type: UPDATE_INWARD_LIST_SUCCESS,
+    payload
+});
+
+export const updateInwardError = (error) => ({
+    type: UPDATE_INWARD_LIST_ERROR,
     error
 });
 
@@ -264,5 +302,19 @@ export const saveUnprocessedDeliverySuccess = (payload) => ({
 
 export const saveUnprocessedDeliveryError = (error) => ({
     type: SAVE_UNPROCESSED_FOR_DELIVERY_ERROR,
+    error
+});
+export const deleteInwardEntryById = (inwardEntryId) => ({
+    type: DELETE_INWARD_LIST_BY_ID,
+    inwardEntryId
+});
+
+export const deleteInwardEntryByIdSuccess = (payload) => ({
+    type: DELETE_INWARD_LIST_BY_ID_SUCCESS,
+    payload
+});
+
+export const deleteInwardEntryByIdError = (error) => ({
+    type: DELETE_INWARD_LIST_BY_ID_ERROR,
     error
 });

@@ -48,7 +48,13 @@ import {
     SAVE_UNPROCESSED_FOR_DELIVERY_ERROR,
     SAVE_UNPROCESSED_FOR_DELIVERY_SUCCESS,
     FETCH_DELIVERY_LIST_REQUEST_BY_ID,
-    FETCH_DELIVERY_LIST_SUCCESS_BY_ID
+    FETCH_DELIVERY_LIST_SUCCESS_BY_ID,
+    FETCH_INWARD_LIST_BY_ID_SUCCESS,
+    FETCH_INWARD_LIST_BY_ID_ERROR,
+    FETCH_INWARD_LIST_BY_ID,
+    DELETE_INWARD_LIST_BY_ID,
+    DELETE_INWARD_LIST_BY_ID_SUCCESS,
+    DELETE_INWARD_LIST_BY_ID_ERROR
 
 } from "../../constants/ActionTypes";
 
@@ -72,7 +78,8 @@ const INIT_STATE = {
     instructionSaveError: false,
     materialGrades: {},
     inwardListForDelivery: undefined,
-    vehicleNumber: ''
+    vehicleNumber: '',
+    deleteSuccess: false
 };
 
 export default (state = INIT_STATE, action) => {
@@ -300,11 +307,25 @@ export default (state = INIT_STATE, action) => {
                 error: false
             }
         }
-        case FETCH_MATERIAL_GRADE_LIST_SUCCESS:
+        case FETCH_MATERIAL_GRADE_LIST_SUCCESS:{
             return {
                 ...state,
                 materialGrades: action.payload
             }
+        }
+        case FETCH_INWARD_LIST_BY_ID:{
+            return {
+                ...state,
+                loading: true
+            }
+        }
+        case FETCH_INWARD_LIST_BY_ID_SUCCESS:{
+            return {
+                ...state,
+                loading:false,
+                inward: action.payload
+            }
+        }
         case RESET_INSTRUCTION_FORM: {
             return {
                 ...state,
@@ -385,6 +406,27 @@ export default (state = INIT_STATE, action) => {
                 loading: false
             }
         }
+        case DELETE_INWARD_LIST_BY_ID:{
+            return {
+                ...state,
+                loading: true
+            }
+        }
+        case DELETE_INWARD_LIST_BY_ID_SUCCESS:{
+            return {
+                ...state,
+                loading: false,
+                deleteSuccess:true
+            }
+        }
+        case DELETE_INWARD_LIST_BY_ID_ERROR:{
+            return {
+                ...state,
+                loading: false,
+                deleteSuccess:false
+            }
+        }
+        
 
         default:
             return state;

@@ -16,12 +16,16 @@ const CoilDetailsForm = (props) => {
         props.form.validateFields((err, values) => {
             if (!err) {
                 props.setInwardDetails({ ...props.inward, length: approxLength});
-                props.getGradeByMaterialId(props.inward.material);
+                props.getGradeByMaterialId(props.params!=="" ?props.inward.material.matId :props.inward.description);
                 props.updateStep(2);
             }
         });
     };
-
+    const handleChange = e =>{
+        
+        props.inward.material.description = e;
+        console.log(e);
+    }
     const checkCoilExists = (rule, value, callback) => {
         if (!props.inwardStatus.loading && props.inwardStatus.success && !props.inwardStatus.duplicateCoil) {
             return callback();
@@ -86,19 +90,20 @@ const CoilDetailsForm = (props) => {
                 >
                     {getFieldDecorator('coilNumber', {
                         rules: [{ required: true, message: 'Please input the coil number!' },
-                            {validator: checkCoilExists}],
+                            {validator: props.params ==="" ?checkCoilExists: ""}],
                     })(
-                        <Input id="validating" onBlur={(e) => props.checkIfCoilExists(e.target.value)} />
+                        <Input id="validating" onChange={(e) => props.checkIfCoilExists(e.target.value)} onBlur={props.params !== "" ? "" :(e) => props.checkIfCoilExists(e.target.value)} />
                     )}
                 </Form.Item>
                 <Form.Item label="Material Description">
-                    {getFieldDecorator('material', {
+                    {getFieldDecorator('description', {
                         rules: [{ required: true, message: 'Please input the material description!' }],
                     })(
                         <AutoComplete
                             style={{width: 200}}
                             placeholder="enter material"
                             dataSource={dataSource}
+                            onChange= {props.params!=="" ?(e) =>handleChange(e):""}
                             filterOption={(inputValue, option) =>
                                 option.props.children.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
                             }
@@ -186,9 +191,9 @@ const CoilDetails = Form.create({
                 ...props.inward.coilNumber,
                 value: (props.inward.coilNumber) ? props.inward.coilNumber : '',
             }),
-            material: Form.createFormField({
-                ...props.inward.material,
-                value: props.params !== "" ?props.inward.material.description :(props.inward.material) ? props.inward.material : '',
+            description: Form.createFormField({
+                ...props.inward.description,
+                value: props.params !== "" ?props.inward.material.description :(props.inward.description) ? (props.inward.description):'' ,
             }),
             width: Form.createFormField({
                 ...props.inward.width,

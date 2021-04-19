@@ -19,14 +19,35 @@ const QualityDetailsForm = (props) => {
             }
         });
     };
-
+    const handleChange = e =>{
+        
+        props.inward.materialGrade.gradeName = e;
+        console.log(e);
+    }
     useEffect(() => {
-        console.log(props.inwardDetails);
+        if (props.params !== ""){
+            const { Option } = AutoComplete;
+            const options = props.inwardDetails.materialGrades.filter(material => {
+            if (material.gradeId===  props.inward.materialGrade.gradeId)
+                return (<Option key={material.gradeId} value={`${material.gradeId}`}>
+                        {material.gradeName}
+                    </Option>)
+                });
+                setDataSource(options);
+        }   
+    }, [props.inward.materialGrade]);
+    useEffect(() => {
         if(props.inwardDetails.materialGrades.length > 0) {
-            let materialListArr = props.inwardDetails.materialGrades.map(materialGrade => ({ value: materialGrade.gradeId, text: materialGrade.gradeName }));
-            setDataSource(materialListArr);
+
+            const { Option } = AutoComplete;
+            const options = props.inwardDetails.materialGrades.map(material => (
+                <Option key={material.gradeId} value={`${material.gradeId}`}>
+                    {material.gradeName}
+                </Option>
+            ));
+            setDataSource(options);
         }
-    }, [props.inward.materialGrades]);
+    }, [props.inward.materialGrade]);
 
     return (
         <>
@@ -34,15 +55,13 @@ const QualityDetailsForm = (props) => {
         <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4">
             <Form.Item label="Grade">
                 {getFieldDecorator('grade', {
-                    rules: [{ required: false, message: 'Please select a received date' }],
+                    rules: [{ required: false, message: 'Please select grade' }],
                 })(
                     <AutoComplete
                         style={{width: 200}}
-                        onSelect={(value, option) => {
-                            // props.getGradeByMaterialId();
-                        }}
                         placeholder="enter material"
                         dataSource={dataSource}
+                        onChange= {props.params!==""?(e) =>handleChange(e):""}
                         filterOption={(inputValue, option) =>
                             option.props.children.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
                         }
@@ -118,7 +137,7 @@ const QualityDetailsForm = (props) => {
                     {props.inward.customerInvoiceNo && <p>Customer Invoice No : {props.inward.customerInvoiceNo}</p>}
                     {props.inward.purposeType && <p>Purpose Type : {props.inward.purposeType}</p>}
                     <p>Coil number : {props.inward.coilNumber}</p>
-                    <p>Material Description : {props.params !== ""? props.inward.material.description : props.inward.material}</p>
+                    <p>Material Description : {props.params !== ""? props.inward.material.description : props.inward.description}</p>
                     <p>Dimensions : {props.inward.width} X {props.inward.thickness} X {props.inward.length}</p>
                     <p>Net Weight : {props.inward.netWeight}</p>
                     <p>Gross Weight : {props.inward.grossWeight}</p>
@@ -145,7 +164,7 @@ const QualityDetails = Form.create({
         return {
             grade: Form.createFormField({
                 ...props.inward.grade,
-                value: (props.inward.grade) ? props.inward.grade : '',
+                value: props.params !== "" ?props.inward.materialGrade.gradeName:(props.inward.grade) ? props.inward.grade : '',
             }),
             testCertificateNo: Form.createFormField({
                 ...props.inward.testCertificateNo,
