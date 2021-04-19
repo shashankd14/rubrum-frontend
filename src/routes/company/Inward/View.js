@@ -47,7 +47,7 @@ const View = (props) => {
                             <Card title="Coil Details" style={{ width: 300 }}>
                                 {props.inward.inward.coilNumber && <p>Coil number : {props.inward.inward.coilNumber}</p>}
                                 {props.inward.inward.material && <p>Material Description : {props.inward.inward.material.description}</p>}
-                                {props.inward.inward && <p>Dimensions : {props.inward.inward.fWidth*props.inward.inward.fThickness*props.inward.inward.fLength}mm</p>}
+                                {props.inward.inward && <p>Dimensions : {props.inward.inward.fWidth}X{props.inward.inward.fThickness}X{props.inward.inward.fLength}mm</p>}
                                 {props.inward.inward.netWeight && <p>Net Weight : {props.inward.inward.netWeight}kg </p>}
                                 {props.inward.inward.grossWeight && <p>Gross Weight : {props.inward.inward.grossWeight}kg</p>}
                             </Card>
