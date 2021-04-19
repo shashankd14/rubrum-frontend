@@ -109,6 +109,12 @@ const List = (props) => {
     }, []);
 
     useEffect(() => {
+        if(!props.inward.loading && props.inward.success) {
+            setFilteredInwardList(props.inward.inwardList);
+        }
+    }, [props.inward.loading, props.inward.success])
+
+    useEffect(() => {
         if (searchValue) {
             const filteredData = props.inward.inwardList.filter((inward) => {
                 if (inward.coilNumber.toLowerCase().includes(searchValue.toLowerCase()) ||
@@ -229,7 +235,6 @@ const mapStateToProps = state => ({
 export default connect(mapStateToProps, {
     fetchPartyList,
     fetchInwardList,
-    getCoilsByPartyId,
     getCoilsByPartyId,
     setInwardSelectedForDelivery,
 })(List);

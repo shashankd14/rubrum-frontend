@@ -87,7 +87,8 @@ export default (state = INIT_STATE, action) => {
             return {
                 ...state,
                 loading: false,
-                inwardList: action.inwardList
+                inwardList: action.inwardList,
+                success: true
             }
         }
         case CHECK_COIL_EXISTS: {

@@ -140,6 +140,12 @@ const List = (props) => {
         console.log('dfd');
     };
 
+    useEffect(() => {
+        if(!props.inward.loading && props.inward.success) {
+            setFilteredInwardList(props.inward.inwardList);
+        }
+    }, [props.inward.loading, props.inward.success])
+
     return (
         <div>
             <h1><IntlMessages id="sidebar.company.inwardList"/></h1>
