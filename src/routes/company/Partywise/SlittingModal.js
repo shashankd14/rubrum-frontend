@@ -23,7 +23,7 @@ export const formItemLayoutSlitting = {
     labelCol: {
         xs: {span: 24},
         sm: {span: 24},
-        md: {span: 4},
+        md: {span: 7},
     },
     wrapperCol: {
         xs: {span: 24},
@@ -37,11 +37,13 @@ let uuid = 0;
 const SlittingWidths = (props) => {
     const {getFieldDecorator, getFieldValue, getFieldProps} = props.form;
     getFieldDecorator('keys', {initialValue: [{width:0, no:0, weight:0}]});
+
     const lengthValue1 = props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails)
     const widthValue = props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.plannedWidth(props.coilDetails);
     const [len, setlen]= useState(lengthValue1);
     const [width, setwidth] = useState(widthValue);
     const keys = getFieldValue('keys');
+
     useEffect(() => {
         getAlert();
       }, [props.length]);
@@ -136,10 +138,11 @@ const SlittingWidths = (props) => {
     const maxWidth = parseInt(props.coilDetails.fWidth ? props.coilDetails.fWidth : props.plannedWidth(props.coilDetails)).toString().length;
     const maxLength = parseInt((props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedWidth(props.coilDetails))).toString().length;
     const maxWeight = parseInt((props.coilDetails.fQuantity ? props.coilDetails.fQuantity  : props.plannedWeight(props.coilDetails))).toString().length;
+
     return (
         <>
             <Form {...formItemLayoutSlitting}>
-                <label>Available length :{len}mm</label>
+                <label>Available length : {len}mm</label>
                 <div><label>Available width : {width}mm</label></div>
 
                 <Form.Item label="Length" dependencies={["length","widths[0]"]}>
@@ -147,7 +150,7 @@ const SlittingWidths = (props) => {
                         rules: [{ required: true, message: 'Please enter Length' },
                             {pattern: "^[0-9]*$", message: 'Length should be a number'},],
                     })(
-                        <Input id="length" maxLength={maxLength} disabled={props.wip ? true : false} onChange ={handleChange}/>
+                        <Input id="length" disabled={props.wip ? true : false} onChange ={handleChange}/>
                     )}
                 </Form.Item>
                 <Row>
@@ -174,7 +177,7 @@ const SlittingWidths = (props) => {
                                         rules: [{ required: true, message: 'Please enter width' },
                                             {pattern: "^[0-9]*$", message: 'Width should be a number'},],
                                     })(
-                                        <Input id="widths" maxLength={maxWidth} disabled={props.wip ? true : false} onChange ={handleWidthChange}/>
+                                        <Input id="widths" disabled={props.wip ? true : false} onChange ={handleWidthChange}/>
                                     )}
                                 </Form.Item>
                             </Col>
@@ -194,7 +197,7 @@ const SlittingWidths = (props) => {
                                         rules: [{ required: true, message: 'Please enter weight' },
                                             {pattern: "^[0-9]*$", message: 'Weight should be a number'},],
                                     })(
-                                        <Input id="weights" maxLength={maxWeight} disabled={props.wip ? true : false}/>
+                                        <Input id="weights" disabled={props.wip ? true : false}/>
                                     )}
                                 </Form.Item>
                             </Col>
