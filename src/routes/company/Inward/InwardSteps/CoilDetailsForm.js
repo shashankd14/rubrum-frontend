@@ -121,9 +121,7 @@ const CoilDetailsForm = (props) => {
                 </Form.Item>
                 <Form.Item label="Coil Thickness (in mm)">
                     {getFieldDecorator('thickness', {
-                        rules: [{ required: true, message: 'Please input the coil thickness!' },
-                            {pattern: "^[1-9]*$", message: 'Coil thickness should be a number'},
-                            {validator: checkThickness}
+                        rules: [{ required: true, message: 'Please input the coil thickness!' }
                         ],
                     })(
                         <Input id="coilThickness" />
@@ -202,7 +200,7 @@ const CoilDetails = Form.create({
             }),
             thickness: Form.createFormField({
                 ...props.inward.thickness,
-                value:  (props.inward.thickness) ? props.inward.thickness : '',
+                value:  props.params !== "" ? props.inward.fThickness :(props.inward.thickness) ? props.inward.thickness : '',
             }),
             approxLength: Form.createFormField({
                 ...props.inward.approxLength,

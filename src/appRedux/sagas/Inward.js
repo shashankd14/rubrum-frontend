@@ -497,6 +497,7 @@ function* deleteInwardEntryById(action) {
     try {
         const fetchInwardInstruction = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/inwardEntry/deleteById/${action.inwardEntryId}`, {
             method: 'DELETE',
+            headers: { "Content-Type": "application/json" },
         });
         if (fetchInwardInstruction.status === 200) {
             const fetchInwardPlanResponse = yield fetchInwardInstruction.json();
