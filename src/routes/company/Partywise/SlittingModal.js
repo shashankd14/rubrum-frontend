@@ -42,6 +42,7 @@ const SlittingWidths = (props) => {
     const widthValue = props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.plannedWidth(props.coilDetails);
     const [len, setlen]= useState(lengthValue1);
     const [width, setwidth] = useState(widthValue);
+    const [twidth, settwidth]= useState(0);
     const keys = getFieldValue('keys');
 
     useEffect(() => {
@@ -87,6 +88,7 @@ const SlittingWidths = (props) => {
                         
                     }
                     totalWidth += values.widths[i]*values.nos[i];
+                    settwidth(totalWidth);
                 }
                 if(totalWidth > widthValue) {
                     message.error('Sum of slits width is greater than width of coil.', 2);
@@ -211,6 +213,11 @@ const SlittingWidths = (props) => {
                     ) }
                     )}
                 </Row>
+                <Form.Item label="Total Width">
+                        {getFieldDecorator('tWidth')(
+                            <Input id="twidth" value ={twidth} />
+                        )}
+                </Form.Item>
                 <Row className="gx-mt-4">
                     <Col span={16} style={{ textAlign: "center"}}>
                         <Button type="primary" htmlType="submit" onClick={() => addNewSize()} disabled={props.wip ? true : false}>
@@ -423,6 +430,11 @@ setTableData(newData);
                 </Col>
                 <Col lg={12} md={12} sm={24} xs={24}>
                     <Table className="gx-table-responsive" columns={props.wip?columns: columnsPlan} dataSource={props.wip?tableData:reset ?cuts : cutArray}/>
+                    <Form.Item label="Total weight">
+                        {getFieldDecorator('tWidth')(
+                            <Input id="twidth" disabled={true} />
+                        )}
+                </Form.Item>
                 </Col>
             </Row>
         </Modal>
@@ -455,6 +467,10 @@ const SlittingDetailsForm = Form.create({
             weight: Form.createFormField({
                 ...props.inward.process.weight,
                 value: (props.inward.process.weight) ? props.inward.process.weight : '',
+            }),
+            twidth: Form.createFormField({
+                ...props.inward.process.twidth,
+                value: (props.inward.process.twidth) ? props.inward.process.twidth : '',
             }),
         };
     },
