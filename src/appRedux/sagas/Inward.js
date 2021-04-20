@@ -187,55 +187,40 @@ function* updateInward(action) {
         const partyId = action.inward.partyName !== undefined ?action.inward.partyName: action.inward.party.nPartyId;
         const materialId = action.inward.description !== undefined ? action.inward.description: action.inward.material.matId;
         let data = new FormData();
-        //customer details
-        data.append('partyId', partyId);
-        data.append('customerCoilId', action.inward.customerId);
-        data.append('customerBatchId', action.inward.customerBatchNo);
-        data.append('customerInvoiceNo', action.inward.customerInvoiceNo);
-        data.append('purposeType', action.inward.purposeType);
-
-        //coil details
-        data.append('coilNumber', action.inward.coilNumber);
-        data.append('materialId', materialId);
-        data.append('width', action.inward.width !== undefined ? action.inward.width : Number(action.inward.fWidth));
-        data.append('thickness', action.inward.thickness !== undefined ? action.inward.thickness: action.inward.fThickness);
-        action.inward.length && data.append('length', action.inward.length);
-        data.append('presentWeight', action.inward.netWeight!== undefined ? action.inward.netWeight: action.inward.grossWeight);
-        data.append('grossWeight', action.inward.grossWeight);
-
-        // invoice details
-        data.append('inwardDate', moment(action.inward.receivedDate).format('YYYY-MM-DD HH:mm:ss'));
-        data.append('bathchNumber', action.inward.batchNo!== undefined ?action.inward.batchNo:null);
-        data.append('vehicleNumber', action.inward.vehicleNumber !== undefined? action.inward.vehicleNumber : null);
-        data.append('invoiceDate', moment(action.inward.invoiceDate).format('YYYY-MM-DD HH:mm:ss')!== undefined ?moment(action.inward.invoiceDate).format('YYYY-MM-DD HH:mm:ss'): null);
-        data.append('invoiceNumber', action.inward.invoiceNumber);
-
-        //quality details
-        data.append('materialGradeId', action.inward.grade !== undefined ?action.inward.grade: action.inward.materialGrade.gradeId);
-        data.append('testCertificateNumber', action.inward.testCertificateNo !== undefined ? action.inward.testCertificateNo :null);
-        data.append('remarks', action.inward.remarks !== undefined? action.inward.remarks: null);
-
-        if (action.inward.testFile) {
-            data.append('testCertificateFile', action.inward.testFile.fileList[0].originFileObj, action.inward.testFile.fileList[0].name);
-        }
-
-        data.append('statusId', 1);
-        data.append('heatnumber', '123');
-        data.append('plantname', 'test plant name');
-        // data.append('customerInvoiceDajte',  action.inward.grade);
-        data.append('createdBy', 1);
-        data.append('updatedBy', 1);
-        data.append('inwardEntryId',action.inward.inwardEntryId)
-        
+        	
+let insObj = {
+        inwardId : action.inward.inwardEntryId,
+        partyId :	partyId,
+        coilNumber : action.inward.coilNumber,
+        inwardDate : moment(action.inward.receivedDate).format('YYYY-MM-DD HH:mm:ss'),
+        vehicleNumber : action.inward.vehicleNumber !== undefined? action.inward.vehicleNumber : null,
+        invoiceDate : moment(action.inward.invoiceDate).format('YYYY-MM-DD HH:mm:ss')!== undefined ?moment(action.inward.invoiceDate).format('YYYY-MM-DD HH:mm:ss'): null,
+        invoiceNumber : action.inward.invoiceNumber,
+        purposeType : action.inward.purposeType,
+        materialId : materialId,
+        width : action.inward.width !== undefined ? action.inward.width : Number(action.inward.fWidth),
+        thickness : action.inward.thickness !== undefined ? action.inward.thickness : Number(action.inward.fThickness),
+        length : action.inward.length !== undefined ? action.inward.length : Number(action.inward.fLength),
+        statusId : "3",
+        heatnumber : "HG234-234",
+        plantname : "PB123",
+        process : "",
+        presentWeight : action.inward.weight !== undefined ? action.inward.weight : Number(action.inward.fPresent),
+        cast : "cast1",
+        materialGradeId : action.inward.grade !== undefined ?action.inward.grade: action.inward.materialGrade.gradeId,
+        createdBy : "1",
+        updatedBy : "2"
+}
+       
 
         const newInwardEntry = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/inwardEntry/update', {
             
                 method: 'PUT',
-                body:data
+                body:insObj
             
         });
         if (newInwardEntry.status == 200) {
-            yield put(updateInwardSuccess());
+            yield put(updateInwardSuccess(newInwardEntry));
         } else
             yield put(updateInwardError('error'));
     } catch (error) {
