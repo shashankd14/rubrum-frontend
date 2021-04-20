@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {connect} from 'react-redux';
-import {Button, Card, Divider, Icon, Table} from "antd";
+import {Button, Card, Divider, Icon, Table, message} from "antd";
 import moment from 'moment';
 import SearchBox from "../../../components/SearchBox";
 
@@ -8,7 +8,8 @@ import IntlMessages from "../../../util/IntlMessages";
 import {
     fetchInwardList,
     resetInwardForm,
-    deleteInwardEntryById
+    deleteInwardEntryById,
+    resetDeleteInward
 } from "../../../appRedux/actions/Inward";
 import { onDeleteContact } from "../../../appRedux/actions";
 
@@ -101,10 +102,26 @@ const List = (props) => {
     },
     ];
     const onDelete = (record,key, e) => {
+        let id = []
+        id.push(record.inwardEntryId);
         e.preventDefault();
-        props.deleteInwardEntryById(record.inwardEntryId)
+        props.deleteInwardEntryById(id)
         console.log(record,key)
       }
+      useEffect(() => {
+        if(props.inward.deleteSuccess) {
+            message.success('Successfully deleted the coil', 2).then(() => {
+                props.resetDeleteInward();
+            });
+        }
+    }, [props.inward.deleteSuccess])
+    useEffect(() => {
+        if(props.inward.deleteFail) {
+            message.success('Uanble to delete the coil', 2).then(() => {
+            props.resetDeleteInward();
+            });
+        }
+    }, [props.inward.deleteFail])
     useEffect(() => {
         props.fetchInwardList();
     }, []);
@@ -191,5 +208,6 @@ const mapStateToProps = state => ({
 export default connect(mapStateToProps, {
     fetchInwardList,
     resetInwardForm,
-    deleteInwardEntryById
+    deleteInwardEntryById,
+    resetDeleteInward
 })(List);

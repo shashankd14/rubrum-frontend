@@ -34,6 +34,7 @@ import {
 
     RESET_INSTRUCTION_FORM,
     RESET_INWARD_FORM,
+    RESET_DELETE_INWARD,
 
     FETCH_MATERIAL_GRADE_LIST_REQUEST,
     FETCH_MATERIAL_GRADE_LIST_SUCCESS,
@@ -241,6 +242,9 @@ export const resetInstruction = () => ({
 
 export const resetInwardForm = () => ({
     type: RESET_INWARD_FORM,
+})
+export const resetDeleteInward = () => ({
+    type: RESET_DELETE_INWARD,
 })
 
 export const setInwardSelectedForDelivery = (payload) =>  ({

@@ -35,7 +35,6 @@ const CreatePartyDetailsForm = (props) => {
     }, [props.party]);
     const handleChange = e =>{
         props.inward.party.nPartyName = e;
-        console.log(e);
     }
     const handleSubmit = e => {
         e.preventDefault();

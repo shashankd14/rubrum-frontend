@@ -495,13 +495,14 @@ function* saveUnprocessedDelivery(action) {
 }
 function* deleteInwardEntryById(action) {
     try {
-        const fetchInwardInstruction = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/inwardEntry/deleteById/${action.inwardEntryId}`, {
+        let data = new FormData();
+        action.inwardEntryId.map(id =>data.append('ids', id))
+        const fetchInwardInstruction = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/inwardEntry/deleteById', {
             method: 'DELETE',
-            headers: { "Content-Type": "application/json" },
+            body:data
         });
         if (fetchInwardInstruction.status === 200) {
-            const fetchInwardPlanResponse = yield fetchInwardInstruction.json();
-            yield put(deleteInwardEntryByIdSuccess(fetchInwardPlanResponse));
+            yield put(deleteInwardEntryByIdSuccess(fetchInwardInstruction));
         } else
             yield put(deleteInwardEntryByIdError('error'));
     } catch (error) {

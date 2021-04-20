@@ -18,6 +18,7 @@ import {
     FETCH_INWARD_PLAN_DETAILS_ERROR,
     SET_PROCESS_DETAILS,
     RESET_INWARD_FORM,
+    RESET_DELETE_INWARD,
     REQUEST_SAVE_SLITTING_DETAILS,
     SAVE_SLITTING_DETAILS_SUCCESS,
     SAVE_SLITTING_DETAILS_ERROR,
@@ -79,7 +80,8 @@ const INIT_STATE = {
     materialGrades: {},
     inwardListForDelivery: undefined,
     vehicleNumber: '',
-    deleteSuccess: false
+    deleteSuccess: false,
+    deleteFail: false
 };
 
 export default (state = INIT_STATE, action) => {
@@ -410,24 +412,34 @@ export default (state = INIT_STATE, action) => {
         case DELETE_INWARD_LIST_BY_ID:{
             return {
                 ...state,
-                loading: true
+                loading: true,
+                deleteSuccess:false,
+                deleteFail: false
             }
         }
         case DELETE_INWARD_LIST_BY_ID_SUCCESS:{
             return {
                 ...state,
                 loading: false,
-                deleteSuccess:true
+                deleteSuccess:true,
+                deleteFail: false
             }
         }
         case DELETE_INWARD_LIST_BY_ID_ERROR:{
             return {
                 ...state,
                 loading: false,
-                deleteSuccess:false
+                deleteSuccess:false,
+                deleteFail: true
             }
         }
-        
+        case RESET_DELETE_INWARD: {
+            return {
+                ...state,
+                deleteFail: false,
+                deleteSuccess: false
+            }
+        }
 
         default:
             return state;
