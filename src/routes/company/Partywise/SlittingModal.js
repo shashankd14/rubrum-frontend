@@ -1,4 +1,4 @@
-import {Button, Col, Form, Icon, Input, message, Modal, Row, Table} from "antd";
+import {Button, Col, Form, Icon, Input, message, Modal, Row, Table, Radio} from "antd";
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import moment from "moment";
@@ -53,6 +53,8 @@ const SlittingWidths = (props) => {
       }, [props.length]);
       useEffect(() => {
         const lengthValue1 = props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails)
+        const widthValue1 = props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.plannedWidth(props.coilDetails);
+        setwidth(widthValue1);
         setlen(lengthValue1);
     }, [props.coilDetails]);
     //   useEffect(() => {
@@ -163,6 +165,11 @@ const SlittingWidths = (props) => {
         setwidth(finalLength);
         }
     }
+    const onChange=()=>{
+        props.form.setFieldsValue({
+            length: props.plannedLength(props.coilDetails)
+        });
+    }
     const maxWidth = parseInt(props.coilDetails.fWidth ? props.coilDetails.fWidth : props.plannedWidth(props.coilDetails)).toString().length;
     const maxLength = parseInt((props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails))).toString().length;
     const maxWeight = parseInt((props.coilDetails.fQuantity ? props.coilDetails.fQuantity  : props.plannedWeight(props.coilDetails))).toString().length;
@@ -171,6 +178,19 @@ const SlittingWidths = (props) => {
         <>
             <Form {...formItemLayoutSlitting}>
                 <label>Available length : {len}mm</label>
+                <div><label>Available Width : {width}mm</label></div>
+                <Form.Item>
+                    {getFieldDecorator('Balanced', {
+                    initialValue: "",
+                    rules: [{
+                    required: false,
+                    }],
+                    })(<Radio.Group onChange={onChange}>
+                        <Radio value="balanced">Balanced</Radio> 
+                    </Radio.Group>
+                    )}
+
+                </Form.Item>
 
                 <Form.Item label="Length" dependencies={["length","widths[0]"]}>
                     {getFieldDecorator('length', {
