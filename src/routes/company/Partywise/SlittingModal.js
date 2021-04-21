@@ -51,6 +51,10 @@ const SlittingWidths = (props) => {
     useEffect(() => {
         getAlert();
       }, [props.length]);
+      useEffect(() => {
+        const lengthValue1 = props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails)
+        setlen(lengthValue1);
+    }, [props.coilDetails]);
     //   useEffect(() => {
     //     setlen(len+props.deletedLength);
     //   }, [props.deletedLength]);

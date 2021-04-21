@@ -21,7 +21,7 @@ const Plan = (props) => {
         const actualLength = ins.actualLength != null ? ins.actualLength : ins.plannedLength;
         if (ins.childInstructions.length > 0) {
             length = ins.childInstructions.map(i => i.plannedLength);
-            return length.reduce((total, num) => total + num)
+            length = length.reduce((total, num) => total + num)
         }
         length = actualLength - length;
         return length;
@@ -31,7 +31,7 @@ const Plan = (props) => {
         const actualWidth = ins.actualWidth != null ? ins.actualWidth : ins.plannedWidth;
         if (ins.childInstructions.length > 0) {
             width = ins.childInstructions.map(i => i.plannedWidth);
-            return width.reduce((total, num) => total + num)
+            width= width.reduce((total, num) => total + num)
         }
         width = actualWidth - width;
         return width;
@@ -41,7 +41,7 @@ const Plan = (props) => {
         const actualWeight = ins.actualWeight != null ? ins.actualWeight : ins.plannedWeight;
         if (ins.childInstructions.length > 0) {
             weight = ins.childInstructions.map(i => i.plannedWeight);
-            return weight.reduce((total, num) => total + num)
+            weight= weight.reduce((total, num) => total + num)
         }
         weight = actualWeight - weight;
         return weight;
