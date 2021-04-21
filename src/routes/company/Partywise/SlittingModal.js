@@ -43,7 +43,10 @@ const SlittingWidths = (props) => {
     const [len, setlen]= useState(lengthValue1);
     const [width, setwidth] = useState(widthValue);
     const [twidth, settwidth]= useState(0);
+    
     const keys = getFieldValue('keys');
+    let widthChange = 0;
+    let nosChange = 0;
 
     useEffect(() => {
         getAlert();
@@ -131,6 +134,20 @@ const SlittingWidths = (props) => {
         setlen(finalLength);
         }
     }
+    const handleBlur = (e)=>{
+        props.form.validateFields((err, values) => {
+            let width = 0;
+            let weight = 0
+            if(!err){
+                for(let i=0; i < values.widths.length; i++) {
+                    width += values.widths[i]*values.nos[i];
+                    weight +=Number(values.weights[i])*values.nos[i];
+                    settwidth(width);
+                    props.setweight(weight);
+                }
+            }
+      })
+    }
     const handleWidthChange = (e)=>{
         if(e.target.value != e.target.defaultValue){
         let finalLength = widthValue-Number(e.target.value);
@@ -152,7 +169,7 @@ const SlittingWidths = (props) => {
                         rules: [{ required: true, message: 'Please enter Length' },
                             {pattern: "^[0-9]*$", message: 'Length should be a number'},],
                     })(
-                        <Input id="length" disabled={props.wip ? true : false} onChange ={handleChange}/>
+                        <Input id="length" disabled={props.wip ? true : false} onChange ={handleChange} />
                     )}
                 </Form.Item>
                 <Row>
@@ -179,7 +196,7 @@ const SlittingWidths = (props) => {
                                         rules: [{ required: true, message: 'Please enter width' },
                                             {pattern: "^[0-9]*$", message: 'Width should be a number'},],
                                     })(
-                                        <Input id="widths" disabled={props.wip ? true : false} onChange ={handleWidthChange}/>
+                                        <Input id="widths" disabled={props.wip ? true : false} onChange ={handleWidthChange} onBlur={handleBlur}/>
                                     )}
                                 </Form.Item>
                             </Col>
@@ -189,7 +206,7 @@ const SlittingWidths = (props) => {
                                         rules: [{ required: true, message: 'Please enter nos' },
                                             {pattern: "^[0-9]*$", message: 'Number of slits should be a number'},],
                                     })(
-                                        <Input id="nos" disabled={props.wip ? true : false} {...getFieldProps('nos')}/>
+                                        <Input id="nos" disabled={props.wip ? true : false} onBlur={handleBlur} {...getFieldProps('nos')}/>
                                     )}
                                 </Form.Item>
                             </Col>
@@ -199,7 +216,7 @@ const SlittingWidths = (props) => {
                                         rules: [{ required: true, message: 'Please enter weight' },
                                             {pattern: "^[0-9]*$", message: 'Weight should be a number'},],
                                     })(
-                                        <Input id="weights" disabled={props.wip ? true : false}/>
+                                        <Input id="weights" disabled={props.wip ? true : false} onBlur={handleBlur}/>
                                     )}
                                 </Form.Item>
                             </Col>
@@ -213,10 +230,14 @@ const SlittingWidths = (props) => {
                     ) }
                     )}
                 </Row>
-                <Form.Item label="Total Width">
-                        {getFieldDecorator('tWidth')(
-                            <Input id="twidth" value ={twidth} />
-                        )}
+                <Form.Item label="Total width(mm)">
+                    {getFieldDecorator('twidth', {
+                        rules: [{ required: false}],
+                    })(
+                        <>
+                            <Input id="twidth" disabled={true} value={twidth} name="twidth" />
+                        </>
+                    )}
                 </Form.Item>
                 <Row className="gx-mt-4">
                     <Col span={16} style={{ textAlign: "center"}}>
@@ -343,6 +364,7 @@ const columnsPlan=[
     },
 ];
     const [tableData, setTableData] = useState(props.wip?(props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts);
+    const [tweight, settweight]= useState(0);
     const onDelete = (key, e) => {
         e.preventDefault();
         
@@ -423,17 +445,21 @@ setTableData(newData);
                     <h3>Coil Details </h3>
                     <Form {...formItemLayout} className="login-form gx-pt-4">
                         <Form.Item>
-                            <SlittingWidthsForm setSlits={(slits) => setCuts([...cuts,...slits])} coilDetails={props.coilDetails} wip={props.wip} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth} plannedWeight ={props.plannedWeight} length={length} cuts={cuts}/>
+                            <SlittingWidthsForm setSlits={(slits) => setCuts([...cuts,...slits])} setweight={(w) => settweight(w)} coilDetails={props.coilDetails} wip={props.wip} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth} plannedWeight ={props.plannedWeight} length={length} cuts={cuts}/>
                         </Form.Item>
 
                     </Form>
                 </Col>
                 <Col lg={12} md={12} sm={24} xs={24}>
                     <Table className="gx-table-responsive" columns={props.wip?columns: columnsPlan} dataSource={props.wip?tableData:reset ?cuts : cutArray}/>
-                    <Form.Item label="Total weight">
-                        {getFieldDecorator('tWidth')(
-                            <Input id="twidth" disabled={true} />
-                        )}
+                    <Form.Item label="Total weight(mm)">
+                    {getFieldDecorator('tweight', {
+                        rules: [{ required: false}],
+                    })(
+                        <>
+                            <Input id="tweight" disabled={true} value={tweight} name="tweight" />
+                        </>
+                    )}
                 </Form.Item>
                 </Col>
             </Row>

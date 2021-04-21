@@ -79,8 +79,8 @@ const CoilDetailsForm = (props) => {
 
     useEffect(() => {
         if(props.inward.width && props.inward.thickness && props.inward.netWeight) {
-            setLength(parseFloat(parseFloat(props.inward.grossWeight)/7.85/(parseFloat(props.inward.thickness)/props.inward.width)).toFixed(4));
-// to be fixed on netweight
+            setLength(parseFloat(parseFloat(props.inward.fPresent)/7.85/(parseFloat(props.inward.thickness)/props.inward.width)).toFixed(4));
+
         }
     }, [props.inward]);
 
@@ -213,7 +213,7 @@ const CoilDetails = Form.create({
             }),
             netWeight: Form.createFormField({
                 ...props.inward.netWeight,
-                value:  props.params !== "" ? props.inward.grossWeight :(props.inward.netWeight) ? props.inward.netWeight : '',
+                value:  props.params !== "" ? props.inward.fPresent :(props.inward.netWeight) ? props.inward.netWeight : '',
             }),
             grossWeight: Form.createFormField({
                 ...props.inward.grossWeight,
