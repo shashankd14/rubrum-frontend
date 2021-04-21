@@ -203,18 +203,18 @@ const Plan = (props) => {
                                                                     <div className="gx-coil-details-label"><IntlMessages id="partywise.plan.availableLength" /> : </div>
                                                                     <span className="gx-coil-details-label">{getLength(instruction.childInstructions, 'Non-Delivered')}</span>
                                                                 </div>
-                                                                <div className="gx-flex-row">
+                                                                {/* <div className="gx-flex-row">
                                                                     <div className="gx-coil-details-label"><IntlMessages id="partywise.plan.deliveredLength" /> : </div>
                                                                     <span className="gx-coil-details-label">{getLength(instruction.childInstructions, 'Delivered')}</span>
-                                                                </div>
+                                                                </div> */}
                                                                 <div className="gx-flex-row">
                                                                     <div className="gx-coil-details-label"><IntlMessages id="partywise.plan.availableWeight" /> : </div>
                                                                     <span className="gx-coil-details-label">{getWeight(instruction.childInstructions, 'Non-Delivered')}</span>
                                                                 </div>
-                                                                <div className="gx-flex-row">
+                                                                {/* <div className="gx-flex-row">
                                                                     <div className="gx-coil-details-label"><IntlMessages id="partywise.plan.deliveredWeight" /> : </div>
                                                                     <span className="gx-coil-details-label">{getWeight(instruction.childInstructions, 'Delivered')}</span>
-                                                                </div>
+                                                                </div> */}
                                                                 {instruction.process.processName == 'Cutting' && props.wip ?
                                                                     <Button onClick={(e) => {
                                                                         e.stopPropagation();
