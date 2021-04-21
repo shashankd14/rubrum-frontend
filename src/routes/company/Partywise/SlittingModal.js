@@ -39,9 +39,9 @@ const SlittingWidths = (props) => {
     getFieldDecorator('keys', {initialValue: [{width:0, no:0, weight:0}]});
 
     const lengthValue1 = props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails)
-    const widthValue = props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.plannedWidth(props.coilDetails);
+    const widthValue1 = props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.plannedWidth(props.coilDetails);
     const [len, setlen]= useState(lengthValue1);
-    const [width, setwidth] = useState(widthValue);
+    const [width, setwidth] = useState(widthValue1);
     const [twidth, settwidth]= useState(0);
     
     const keys = getFieldValue('keys');
@@ -51,6 +51,10 @@ const SlittingWidths = (props) => {
     useEffect(() => {
         getAlert();
       }, [props.length]);
+    //   useEffect(() => {
+    //     setlen(len+props.deletedLength);
+    //   }, [props.deletedLength]);
+     
     
     const getAlert =() =>{
         if(props.cuts.length> 0){
@@ -83,6 +87,7 @@ const SlittingWidths = (props) => {
                             name: i+1, processDate: moment().format(APPLICATION_DATE_FORMAT),
                             length: values.length,width: values.widths[i],
                             no: j+1,
+                            slitno:values.nos[i],
                             weight:values.weights[i],
                             inwardId: props.coilDetails.inwardEntryId ? props.coilDetails.inwardEntryId : '',
                             instructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : '',
@@ -150,24 +155,23 @@ const SlittingWidths = (props) => {
     }
     const handleWidthChange = (e)=>{
         if(e.target.value != e.target.defaultValue){
-        let finalLength = widthValue-Number(e.target.value);
+        let finalLength = widthValue1-Number(e.target.value);
         setwidth(finalLength);
         }
     }
     const maxWidth = parseInt(props.coilDetails.fWidth ? props.coilDetails.fWidth : props.plannedWidth(props.coilDetails)).toString().length;
-    const maxLength = parseInt((props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedWidth(props.coilDetails))).toString().length;
+    const maxLength = parseInt((props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails))).toString().length;
     const maxWeight = parseInt((props.coilDetails.fQuantity ? props.coilDetails.fQuantity  : props.plannedWeight(props.coilDetails))).toString().length;
 
     return (
         <>
             <Form {...formItemLayoutSlitting}>
                 <label>Available length : {len}mm</label>
-                <div><label>Available width : {width}mm</label></div>
 
                 <Form.Item label="Length" dependencies={["length","widths[0]"]}>
                     {getFieldDecorator('length', {
                         rules: [{ required: true, message: 'Please enter Length' },
-                            {pattern: "^[0-9]*$", message: 'Length should be a number'},],
+                            {pattern: `^[0-9]{0,${maxLength}}$`, message: 'Length greater than available length'},],
                     })(
                         <Input id="length" disabled={props.wip ? true : false} onChange ={handleChange} />
                     )}
@@ -194,7 +198,7 @@ const SlittingWidths = (props) => {
                                 <Form.Item name="widths" >
                                     {getFieldDecorator(`widths[${index}]`, {
                                         rules: [{ required: true, message: 'Please enter width' },
-                                            {pattern: "^[0-9]*$", message: 'Width should be a number'},],
+                                            {pattern: `^[0-9]{0,${maxWidth}}$`, message: 'Width greater than available width'},],
                                     })(
                                         <Input id="widths" disabled={props.wip ? true : false} onChange ={handleWidthChange} onBlur={handleBlur}/>
                                     )}
@@ -214,7 +218,7 @@ const SlittingWidths = (props) => {
                                 <Form.Item name="weights">
                                     {getFieldDecorator(`weights[${index}]`, {
                                         rules: [{ required: true, message: 'Please enter weight' },
-                                            {pattern: "^[0-9]*$", message: 'Weight should be a number'},],
+                                            {pattern: `^[0-9]{0,${maxWeight}}$`, message: 'Weight greater than available weight'},],
                                     })(
                                         <Input id="weights" disabled={props.wip ? true : false} onBlur={handleBlur}/>
                                     )}
@@ -258,8 +262,9 @@ const CreateSlittingDetailsForm = (props) => {
     let loading = '';
     let cutArray=[];
     const [reset, setreset] = useState(true);
+    // const [deletedLength, setDeletedLength]= useState(0);
     
-    // const dataSource= props.wip?((props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions):cuts;
+    
 const columns = [
     {
         title: 'Serial No',
@@ -368,7 +373,16 @@ const columnsPlan=[
     const onDelete = (key, e) => {
         e.preventDefault();
         
-        const data = cuts.filter(item => cuts.indexOf(item) !== key);
+        const data = cuts.filter(item => {
+            // for (let i= Number(item.slitno)-1;i< Number(item.slitno);i++){
+            //     if(cuts.indexOf(item) === key){
+            //         setDeletedLength(Number(item.length));
+            //     }
+            // }
+           
+            return cuts.indexOf(item) !== key
+
+        });
         setCuts(data);
       }
     const onEdit = (key, e) => {
