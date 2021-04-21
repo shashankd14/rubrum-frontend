@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import { Card, Form, Steps, Row} from "antd";
 import {connect} from "react-redux";
-import {fetchPartyList, fetchMaterialList, setInwardDetails, submitInwardEntry} from "../../../appRedux/actions";
+import {fetchPartyList, fetchMaterialList, setInwardDetails, submitInwardEntry, fetchPartyListById} from "../../../appRedux/actions";
 
 import PartyDetailsForm from "./InwardSteps/PartyDetailsForm";
 import CoilDetailsForm from "./InwardSteps/CoilDetailsForm";
@@ -27,33 +27,38 @@ const { Step } = Steps;
 const CreateForm = (props) => {
     const [currentStep, setCurrentStep] = useState(0);
     const [steps, setSteps] = useState([]);
-
+    useEffect(() => {
+        props.fetchPartyListById(props.match.params.inwardEntryId);
+        props.fetchMaterialList();
+        props.fetchPartyList();
+    }, []);
+    
     useEffect(() => {
         const steps = [
             {
                 title: 'Customer',
-                content: <PartyDetailsForm updateStep={(step) => setCurrentStep(step)} />,
+                content: <PartyDetailsForm updateStep={(step) => setCurrentStep(step)} params={props.match.params && props.match.params.inwardEntryId ?props.match.params.inwardEntryId: ''}/>,
             },
             {
                 title: 'Coil',
-                content: <CoilDetailsForm updateStep={(step) => setCurrentStep(step)} />,
+                content: <CoilDetailsForm updateStep={(step) => setCurrentStep(step)} params={props.match.params && props.match.params.inwardEntryId ?props.match.params.inwardEntryId: ''}/>,
             },
             {
                 title: 'Invoice',
-                content: <InvoiceDetailsForm updateStep={(step) => setCurrentStep(step)}/>,
+                content: <InvoiceDetailsForm updateStep={(step) => setCurrentStep(step)} params={props.match.params && props.match.params.inwardEntryId ?props.match.params.inwardEntryId: ''}/>,
             },
             {
                 title: 'Quality',
-                content: <QualityDetailsForm updateStep={(step) => setCurrentStep(step)} />,
+                content: <QualityDetailsForm updateStep={(step) => setCurrentStep(step)} params={props.match.params && props.match.params.inwardEntryId ?props.match.params.inwardEntryId: ''}/>,
             },{
                 title: 'Summary',
-                content: <InwardEntrySummary updateStep={(step) => setCurrentStep(step)} />,
+                content: <InwardEntrySummary updateStep={(step) => setCurrentStep(step)} params={props.match.params && props.match.params.inwardEntryId ?props.match.params.inwardEntryId: ''}/>,
             },
         ];
         setSteps(steps);
     }, []);
     useEffect(()=>{
-        if(props.inward.inwardEntry){
+        if(props.inward.inwardEntry && props.match.params.inwardEntryId === ""){
             let inwardValue = props.inward.inwardEntry;
             inwardValue.thickness = "";
             inwardValue.batchNo ="";
@@ -63,18 +68,8 @@ const CreateForm = (props) => {
             props.setInwardDetails({...props.inward.inward, ...inwardValue})
         }
     },[])
-    useEffect(()=>{
-        if(props.match.params && props.match.params.inwardEntryId){
-            let inwardEntry = props.inward.inwardList.filter(item => item.inwardEntryId === Number(props.match.params.inwardEntryId) )
-            const inwardEntry1 = inwardEntry[0];
-            props.setInwardDetails({...props.inward.inward,...inwardEntry1})
-        }
-    },[])
-    useEffect(() => {
-        props.fetchPartyList();
-        props.fetchMaterialList();
-    }, []);
-
+    
+    
     return (
         <Card className="gx-card" title="Inward Entry">
             <Steps current={currentStep}>
@@ -104,7 +99,7 @@ const Create = Form.create({
         return {
             partyName: Form.createFormField({
                 ...props.inward.inward.partyName,
-                value: (props.inward.inward.partyName) ? props.inward.inward.partyName : '',
+                value: (props.match.params && props.match.params.inwardEntryId && props.inward.inward.party) ? props.inward.inward.party.nPartyName : (props.inward.inward.partyName) ? props.inward.inward.partyName : '',
             }),
             coilNumber: Form.createFormField({
                 ...props.inward.inward.coilNumber,
@@ -126,25 +121,25 @@ const Create = Form.create({
                 ...props.inward.inward.invoiceDate,
                 value: (props.inward.inward.invoiceDate) ? props.inward.inward.invoiceDate : '',
             }),
-            materialDesc: Form.createFormField({
-                ...props.inward.inward.materialDesc,
-                value: (props.inward.inward.materialDesc) ? props.inward.inward.materialDesc : '',
+            description: Form.createFormField({
+                ...props.inward.inward.description,
+                value: (props.match.params && props.match.params.inwardEntryId && props.inward.inward.material)  ? props.inward.inward.material.description :(props.inward.inward.description) ? props.inward.inward.description : '',
             }),
             width: Form.createFormField({
                 ...props.inward.inward.width,
-                value: (props.inward.inward.width) ? props.inward.inward.width : '',
+                value:props.match.params ?props.inward.inward.fWidth: (props.inward.inward.width) ? props.inward.inward.width : '',
             }),
             thickness: Form.createFormField({
                 ...props.inward.inward.thickness,
-                value: (props.inward.inward.thickness) ? props.inward.inward.thickness : '',
+                value: props.match.params ?props.inward.inward.fThickness:(props.inward.inward.thickness) ? props.inward.inward.thickness : '',
             }),
             weight: Form.createFormField({
                 ...props.inward.inward.weight,
-                value: (props.inward.inward.weight) ? props.inward.inward.weight : '',
+                value: props.match.params ?props.inward.inward.fWeight:(props.inward.inward.weight) ? props.inward.inward.weight : '',
             }),
             length: Form.createFormField({
                 ...props.inward.inward.length,
-                value: (props.inward.inward.length) ? props.inward.inward.length : '',
+                value: props.match.params ?props.inward.inward.fLength:(props.inward.inward.length) ? props.inward.inward.length : '',
             }),
         };
     },
@@ -154,8 +149,10 @@ const Create = Form.create({
 })(CreateForm);
 
 export default connect(mapStateToProps, {
+    fetchPartyListById,
     fetchPartyList,
     fetchMaterialList,
     setInwardDetails,
-    submitInwardEntry,
+    submitInwardEntry
+    
 })(Create);

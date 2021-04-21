@@ -1,14 +1,17 @@
 import React, {useEffect, useState} from "react";
 import {connect} from 'react-redux';
-import {Button, Card, Divider, Icon, Table} from "antd";
+import {Button, Card, Divider, Icon, Table, message} from "antd";
 import moment from 'moment';
 import SearchBox from "../../../components/SearchBox";
 
 import IntlMessages from "../../../util/IntlMessages";
 import {
     fetchInwardList,
-    resetInwardForm
+    resetInwardForm,
+    deleteInwardEntryById,
+    resetDeleteInward
 } from "../../../appRedux/actions/Inward";
+import { onDeleteContact } from "../../../appRedux/actions";
 
 const List = (props) => {
 
@@ -87,18 +90,38 @@ const List = (props) => {
         title: 'Action',
         dataIndex: '',
         key: 'x',
-        render: (text, record) => (
+        render: (text, record, index) => (
             <span>
                 <span className="gx-link" onClick={() => props.history.push(`${record.coilNumber}`)}>View</span>
                 <Divider type="vertical"/>
                 <span className="gx-link" onClick={() => props.history.push(`create/${record.inwardEntryId}`)}>Edit</span>
                 <Divider type="vertical"/>
-                <span className="gx-link">Delete</span>
+                <span className="gx-link"onClick={(e) => onDelete(record, index,e)}>Delete</span>
             </span>
         ),
     },
     ];
-
+    const onDelete = (record,key, e) => {
+        let id = []
+        id.push(record.inwardEntryId);
+        e.preventDefault();
+        props.deleteInwardEntryById(id)
+        console.log(record,key)
+      }
+      useEffect(() => {
+        if(props.inward.deleteSuccess) {
+            message.success('Successfully deleted the coil', 2).then(() => {
+                props.resetDeleteInward();
+            });
+        }
+    }, [props.inward.deleteSuccess])
+    useEffect(() => {
+        if(props.inward.deleteFail) {
+            message.success('Uanble to delete the coil', 2).then(() => {
+            props.resetDeleteInward();
+            });
+        }
+    }, [props.inward.deleteFail])
     useEffect(() => {
         props.fetchInwardList();
     }, []);
@@ -184,5 +207,7 @@ const mapStateToProps = state => ({
 
 export default connect(mapStateToProps, {
     fetchInwardList,
-    resetInwardForm
+    resetInwardForm,
+    deleteInwardEntryById,
+    resetDeleteInward
 })(List);

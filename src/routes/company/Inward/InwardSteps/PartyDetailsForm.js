@@ -9,7 +9,18 @@ const Option = Select.Option;
 const CreatePartyDetailsForm = (props) => {
     const {getFieldDecorator} = props.form;
     const [dataSource, setDataSource] = useState([]);
-
+    useEffect(() => {
+        if(props.params !=="") {
+            const { Option } = AutoComplete;
+            const options = props.party.partyList.filter(party => {
+            if (party.nPartyId===  props.inward.party.nPartyId)
+            return (<Option key={party.nPartyId} value={`${party.nPartyId}`}>
+                    {party.nPartyName}
+                </Option>)
+            });
+            setDataSource(options);
+        }
+    }, [props.party]);
     useEffect(() => {
         if(props.party.partyList.length > 0) {
 
@@ -22,7 +33,9 @@ const CreatePartyDetailsForm = (props) => {
             setDataSource(options);
         }
     }, [props.party]);
-
+    const handleChange = e =>{
+        props.inward.party.nPartyName = e;
+    }
     const handleSubmit = e => {
         e.preventDefault();
 
@@ -46,6 +59,7 @@ const CreatePartyDetailsForm = (props) => {
                                 style={{width: 200}}
                                 placeholder="enter customer name"
                                 dataSource={dataSource}
+                                onChange= {props.params !== "" ?(e) =>handleChange(e): ""}
                                 filterOption={(inputValue, option) =>
                                     option.props.children.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
                                 }
@@ -109,7 +123,7 @@ const PartyDetailsForm = Form.create({
         return {
             partyName: Form.createFormField({
                 ...props.inward.partyName,
-                value: (props.inward.partyName) ? props.inward.partyName : '',
+                value: ( props.params !== "" && props.inward.party) ?props.inward.party.nPartyName :(props.inward.partyName) ? props.inward.partyName: '',
             }),
             customerId: Form.createFormField({
                 ...props.inward.customerId,

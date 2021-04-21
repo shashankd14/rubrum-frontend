@@ -15,13 +15,22 @@ const CoilDetailsForm = (props) => {
 
         props.form.validateFields((err, values) => {
             if (!err) {
-                props.setInwardDetails({ ...props.inward, length: approxLength});
-                props.getGradeByMaterialId(props.inward.material);
+                props.setInwardDetails({ ...props.inward, length: values.approxLength});
+                props.getGradeByMaterialId(props.params!=="" ?props.inward.material.matId :props.inward.description);
                 props.updateStep(2);
             }
         });
     };
-
+    const handleChange = (e,path) =>{
+        if(path === 'material.description'){
+        props.inward.material.description = e.target.value;
+        } else if (path === 'fWidth'){
+            props.inward.fWidth = e.target.value;
+        }
+        else if (path === 'fThickness'){
+            props.inward.fThickness = e.target.value;
+        }
+    }
     const checkCoilExists = (rule, value, callback) => {
         if (!props.inwardStatus.loading && props.inwardStatus.success && !props.inwardStatus.duplicateCoil) {
             return callback();
@@ -42,17 +51,36 @@ const CoilDetailsForm = (props) => {
         }
         callback('Thickness must be less than 100mm');
     };
-
+// for the edit flow
+    useEffect(() => {
+        if (props.params !== ""){
+            const { Option } = AutoComplete;
+            const options = props.material.materialList.filter(material => {
+            if (material.matId===  props.inward.material.matId)
+                return (<Option key={material.matId} value={`${material.matId}`}>
+                        {material.description}
+                    </Option>)
+                });
+                setDataSource(options);
+        }   
+    }, [props.material]);
+    // for the create flow
     useEffect(() => {
         if(props.material.materialList.length > 0) {
-            let materialListArr = props.material.materialList.map(material => ({ value: material.matId, text: material.description }));
-            setDataSource(materialListArr);
+            const { Option } = AutoComplete;
+            const options = props.material.materialList.map(material => (
+                <Option key={material.matId} value={`${material.matId}`}>
+                    {material.description}
+                </Option>
+            ));
+            setDataSource(options);
         }
     }, [props.material]);
 
     useEffect(() => {
         if(props.inward.width && props.inward.thickness && props.inward.netWeight) {
-            setLength(parseFloat(parseFloat(props.inward.netWeight)/(7.85/(parseFloat(props.inward.thickness)/props.inward.width))).toFixed(4));
+            setLength(parseFloat(parseFloat(props.inward.grossWeight)/7.85/(parseFloat(props.inward.thickness)/props.inward.width)).toFixed(4));
+// to be fixed on netweight
         }
     }, [props.inward]);
 
@@ -68,22 +96,20 @@ const CoilDetailsForm = (props) => {
                 >
                     {getFieldDecorator('coilNumber', {
                         rules: [{ required: true, message: 'Please input the coil number!' },
-                            {validator: checkCoilExists}],
+                            {validator: props.params ==="" ?checkCoilExists: ""}],
                     })(
-                        <Input id="validating" onBlur={(e) => props.checkIfCoilExists(e.target.value)} />
+                        <Input id="validating" onChange={(e) => props.checkIfCoilExists(e.target.value)} onBlur={props.params !== "" ? "" :(e) => props.checkIfCoilExists(e.target.value)} />
                     )}
                 </Form.Item>
                 <Form.Item label="Material Description">
-                    {getFieldDecorator('material', {
+                    {getFieldDecorator('description', {
                         rules: [{ required: true, message: 'Please input the material description!' }],
                     })(
                         <AutoComplete
                             style={{width: 200}}
-                            onSelect={(value, option) => {
-                                // props.getGradeByMaterialId();
-                            }}
                             placeholder="enter material"
                             dataSource={dataSource}
+                            onChange= {props.params!=="" ?(e) =>handleChange(e,'material.description'):""}
                             filterOption={(inputValue, option) =>
                                 option.props.children.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
                             }
@@ -95,17 +121,15 @@ const CoilDetailsForm = (props) => {
                         rules: [{ required: true, message: 'Please input the coil width!' }
                         ],
                     })(
-                        <Input id="coilWidth" />
+                        <Input id="coilWidth" onChange= {props.params!=="" ?(e) =>handleChange(e,'fWidth'):""}/>
                     )}
                 </Form.Item>
                 <Form.Item label="Coil Thickness (in mm)">
                     {getFieldDecorator('thickness', {
-                        rules: [{ required: true, message: 'Please input the coil thickness!' },
-                            {pattern: "^(([1-9]*)|(([1-9]*)\\.([0-9]*)))$", message: 'Coil thickness should be a number'},
-                            {validator: checkThickness}
+                        rules: [{ required: true, message: 'Please input the coil thickness!' }
                         ],
                     })(
-                        <Input id="coilThickness" />
+                        <Input id="coilThickness" onChange= {props.params!=="" ?(e) =>handleChange(e,'fThickness'):""}/>
                     )}
                 </Form.Item>
                 <Form.Item label="Net Weight (in kgs)">
@@ -127,7 +151,7 @@ const CoilDetailsForm = (props) => {
                         rules: [{ required: false, message: 'Please input the coil number!' }],
                     })(
                         <>
-                            <Input id="coilLength" value={approxLength} name="approxLength" />Approx
+                            <Input id="coilLength" value={props.params !=="" ?props.inward.fLength :approxLength} name="approxLength" />Approx
                         </>
                     )}
                 </Form.Item>
@@ -171,25 +195,25 @@ const CoilDetails = Form.create({
                 ...props.inward.coilNumber,
                 value: (props.inward.coilNumber) ? props.inward.coilNumber : '',
             }),
-            material: Form.createFormField({
-                ...props.inward.material,
-                value: (props.inward.material) ? props.inward.material : '',
+            description: Form.createFormField({
+                ...props.inward.description,
+                value: props.params !== "" ?props.inward.material.description :(props.inward.description) ? (props.inward.description):'' ,
             }),
             width: Form.createFormField({
                 ...props.inward.width,
-                value: (props.inward.width) ? props.inward.width : '',
+                value: props.params !== "" ? props.inward.fWidth :(props.inward.width) ? props.inward.width : '',
             }),
             thickness: Form.createFormField({
                 ...props.inward.thickness,
-                value: (props.inward.thickness) ? props.inward.thickness : '',
+                value:  props.params !== "" ? props.inward.fThickness :(props.inward.thickness) ? props.inward.thickness : '',
             }),
             approxLength: Form.createFormField({
-                ...props.inward.approxLength,
-                value: (props.inward.approxLength) ? props.inward.approxLength : '',
+                ...props.inward.length,
+                value: props.params !== "" ? props.inward.fLength: (props.inward.length) ? props.inward.length : '',
             }),
             netWeight: Form.createFormField({
                 ...props.inward.netWeight,
-                value: (props.inward.netWeight) ? props.inward.netWeight : '',
+                value:  props.params !== "" ? props.inward.grossWeight :(props.inward.netWeight) ? props.inward.netWeight : '',
             }),
             grossWeight: Form.createFormField({
                 ...props.inward.grossWeight,

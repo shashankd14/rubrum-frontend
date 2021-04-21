@@ -15,7 +15,10 @@ import {
 
     FETCH_INWARD_INSTRUCTION_DETAILS_REQUESTED,
     FETCH_INWARD_INSTRUCTION_WIP_DETAILS_REQUESTED,
-    SAVE_UNPROCESSED_FOR_DELIVERY
+    SAVE_UNPROCESSED_FOR_DELIVERY,
+    FETCH_INWARD_LIST_BY_ID,
+    UPDATE_INWARD_LIST,
+    DELETE_INWARD_LIST_BY_ID
 } from "../../constants/ActionTypes";
 
 import {
@@ -44,7 +47,13 @@ import {
     getInstructionWipListSuccess,
     getInstructionWipListError,
     saveUnprocessedDeliverySuccess,
-    saveUnprocessedDeliveryError
+    saveUnprocessedDeliveryError,
+    fetchPartyInwardListByIdSuccess,
+    fetchPartyInwardListByIdError,
+    updateInwardSuccess,
+    updateInwardError,
+    deleteInwardEntryByIdSuccess,
+    deleteInwardEntryByIdError
 } from "../actions";
 import { CUTTING_INSTRUCTION_PROCESS_ID, SLITTING_INSTRUCTION_PROCESS_ID } from "../../constants";
 import { formItemLayout } from "../../routes/company/Partywise/CuttingModal";
@@ -131,11 +140,11 @@ function* submitInward(action) {
 
         //coil details
         data.append('coilNumber', action.inward.coilNumber);
-        data.append('materialId', action.inward.material);
-        data.append('width', action.inward.width);
-        data.append('thickness', action.inward.thickness);
+        data.append('materialId', action.inward.description);
+        data.append('width', action.inward.width !== undefined ? action.inward.width : Number(action.inward.fWidth));
+        data.append('thickness', action.inward.thickness !== undefined ? action.inward.thickness: action.inward.fThickness);
         action.inward.length && data.append('length', action.inward.length);
-        data.append('presentWeight', action.inward.netWeight);
+        data.append('presentWeight', action.inward.netWeight!== undefined ? action.inward.netWeight: action.inward.grossWeight);
         data.append('grossWeight', action.inward.grossWeight);
 
         // invoice details
@@ -146,7 +155,7 @@ function* submitInward(action) {
         data.append('invoiceNumber', action.inward.invoiceNumber);
 
         //quality details
-        data.append('materialGradeId', action.inward.grade);
+        data.append('materialGradeId', action.inward.grade !== undefined ?action.inward.grade: Number(action.inward.materialGrade.gradeId));
         data.append('testCertificateNumber', action.inward.testCertificateNo);
         data.append('remarks', action.inward.remarks);
 
@@ -173,6 +182,51 @@ function* submitInward(action) {
         yield put(submitInwardError(error));
     }
 }
+function* updateInward(action) {
+    try {
+        const partyId = action.inward.partyName !== undefined ?action.inward.partyName: action.inward.party.nPartyId;
+        const materialId = action.inward.description !== undefined ? action.inward.description: action.inward.material.matId;
+        let data = new FormData();
+        	
+let insObj = {
+        inwardId : action.inward.inwardEntryId,
+        partyId :	partyId,
+        coilNumber : action.inward.coilNumber,
+        inwardDate : moment(action.inward.receivedDate).format('YYYY-MM-DD HH:mm:ss'),
+        vehicleNumber : action.inward.vehicleNumber !== undefined? action.inward.vehicleNumber : null,
+        invoiceDate : moment(action.inward.invoiceDate).format('YYYY-MM-DD HH:mm:ss')!== undefined ?moment(action.inward.invoiceDate).format('YYYY-MM-DD HH:mm:ss'): null,
+        invoiceNumber : action.inward.invoiceNumber,
+        purposeType : action.inward.purposeType,
+        materialId : materialId,
+        width : action.inward.width !== undefined ? action.inward.width : Number(action.inward.fWidth),
+        thickness : action.inward.thickness !== undefined ? action.inward.thickness : Number(action.inward.fThickness),
+        length : action.inward.length !== undefined ? action.inward.length : Number(action.inward.fLength),
+        statusId : "3",
+        heatnumber : "HG234-234",
+        plantname : "PB123",
+        process : "",
+        presentWeight : action.inward.weight !== undefined ? action.inward.weight : Number(action.inward.fPresent),
+        cast : "cast1",
+        materialGradeId : action.inward.grade !== undefined ?action.inward.grade: action.inward.materialGrade.gradeId,
+        createdBy : "1",
+        updatedBy : "2"
+}
+       
+
+        const newInwardEntry = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/inwardEntry/update', {
+            
+                method: 'PUT',
+                body:insObj
+            
+        });
+        if (newInwardEntry.status == 200) {
+            yield put(updateInwardSuccess(newInwardEntry));
+        } else
+            yield put(updateInwardError('error'));
+    } catch (error) {
+        yield put(submitInwardError(error));
+    }
+}
 
 function* fetchInwardListByParty(action) {
     try {
@@ -186,6 +240,20 @@ function* fetchInwardListByParty(action) {
             yield put(getCoilsByPartyIdError('error'));
     } catch (error) {
         yield put(getCoilsByPartyIdError(error));
+    }
+}
+function* fetchPartyListById(action) {
+    try {
+        const fetchPartyInwardList = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/inwardEntry/getById/${action.inwardEntryId}`, {
+            method: 'GET',
+        });
+        if (fetchPartyInwardList.status === 200) {
+            const fetchPartyInwardListResponse = yield fetchPartyInwardList.json();
+            yield put(fetchPartyInwardListByIdSuccess(fetchPartyInwardListResponse));
+        } else
+            yield put(fetchPartyInwardListByIdError('error'));
+    } catch (error) {
+        yield put(fetchPartyInwardListByIdError(error));
     }
 }
 
@@ -410,12 +478,30 @@ function* saveUnprocessedDelivery(action) {
         yield put(saveUnprocessedDeliveryError(error));
     }
 }
+function* deleteInwardEntryById(action) {
+    try {
+        let data = new FormData();
+        action.inwardEntryId.map(id =>data.append('ids', id))
+        const fetchInwardInstruction = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/inwardEntry/deleteById', {
+            method: 'DELETE',
+            body:data
+        });
+        if (fetchInwardInstruction.status === 200) {
+            yield put(deleteInwardEntryByIdSuccess(fetchInwardInstruction));
+        } else
+            yield put(deleteInwardEntryByIdError('error'));
+    } catch (error) {
+        yield put(deleteInwardEntryByIdError(error));
+    }
+}
+
 
 export function* watchFetchRequests() {
     yield takeLatest(FETCH_INWARD_LIST_REQUEST, fetchInwardList);
     yield takeLatest(SUBMIT_INWARD_ENTRY, submitInward);
     yield takeLatest(CHECK_COIL_EXISTS, checkCoilDuplicate);
-    yield takeLatest(FETCH_INWARD_LIST_BY_PARTY_REQUEST, fetchInwardListByParty);
+    yield takeLatest( FETCH_INWARD_LIST_BY_ID, fetchPartyListById);
+    yield takeLatest(FETCH_INWARD_LIST_BY_PARTY_REQUEST, fetchInwardListByParty);    
     yield takeLatest(FETCH_INWARD_PLAN_DETAILS_REQUESTED, fetchInwardPlanDetails);
     yield takeLatest(REQUEST_SAVE_CUTTING_DETAILS, requestSaveCuttingInstruction);
     yield takeLatest(REQUEST_SAVE_SLITTING_DETAILS, requestSaveSlittingInstruction);
@@ -425,6 +511,8 @@ export function* watchFetchRequests() {
     yield takeLatest(FETCH_INWARD_INSTRUCTION_DETAILS_REQUESTED, fetchInwardInstructionDetails);
     yield takeLatest(FETCH_INWARD_INSTRUCTION_WIP_DETAILS_REQUESTED, fetchInwardInstructionWIPDetails);
     yield takeLatest(SAVE_UNPROCESSED_FOR_DELIVERY, saveUnprocessedDelivery);
+    yield takeLatest(UPDATE_INWARD_LIST, updateInward);
+    yield takeLatest(DELETE_INWARD_LIST_BY_ID, deleteInwardEntryById);
 }
 
 export default function* inwardSagas() {
