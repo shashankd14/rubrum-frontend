@@ -61,7 +61,7 @@ const Plan = (props) => {
          }
         }
         
-        width = actualWidth - width;
+        width = actualWidth - (width+childWidth);
         return width;
     }
     const getPlannedWeight = (ins) => {
@@ -86,7 +86,7 @@ const Plan = (props) => {
          }
         }
         
-        weight = actualWeight - weight+childWeight;
+        weight = actualWeight - (weight+childWeight);
         return weight;
     }
     useEffect(() => {
