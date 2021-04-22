@@ -83,15 +83,17 @@ const SlittingWidths = (props) => {
         props.form.validateFields((err, values) => {
             if (!err) {
                 let totalWidth = 0;
-                let totalLength = 0 ;
+                let totalWeight = 0 ;
                 const widthValue = props.coilDetails.fWidth ? props.coilDetails.fWidth : props.plannedWidth(props.coilDetails)
                 const lengthValue = props.coilDetails.fLength ? props.coilDetails.fLength : props.plannedLength(props.coilDetails)
+                const weightValue = props.coilDetails.fpresent >= 0? props.coilDetails.fpresent : props.plannedWeight(props.coilDetails)
                 const slits = []
                 for(let i=0; i < values.widths.length; i++) {
                     for (let j=0; j<values.nos[i];j++){
                         let slitValue = {
                             name: i+1, processDate: moment().format(APPLICATION_DATE_FORMAT),
-                            length: values.length,width: values.widths[i],
+                            length: values.length/values.nos[i],
+                            width: values.widths[i],
                             no: j+1,
                             slitno:values.nos[i],
                             weight:values.weights[i],
@@ -102,6 +104,7 @@ const SlittingWidths = (props) => {
                         
                     }
                     totalWidth += values.widths[i]*values.nos[i];
+                    totalWeight += values.weights[i]*values.nos[i];
                     settwidth(totalWidth);
                 }
                 if(totalWidth > widthValue) {
@@ -109,6 +112,9 @@ const SlittingWidths = (props) => {
                     props.form.resetFields();
                 }else if(values.length > lengthValue) {
                     message.error('Length greater than available length', 2);
+                    props.form.resetFields();
+                }else if(totalWeight > weightValue) {
+                    message.error('Weight greater than available weight', 2);
                     props.form.resetFields();
                 } else
                     props.setSlits(slits);
