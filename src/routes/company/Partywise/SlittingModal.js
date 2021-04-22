@@ -194,16 +194,9 @@ const SlittingWidths = (props) => {
                 <label>Available length : {len}mm</label>
                 <div><label>Available Width : {width}mm</label></div>
                 <Form.Item>
-                    {getFieldDecorator('Balanced', {
-                    initialValue: "",
-                    rules: [{
-                    required: false,
-                    }],
-                    })(<Radio.Group onChange={onChange}>
-                        <Radio value="balanced">Balanced</Radio> 
-                    </Radio.Group>
-                    )}
-
+                    <Button type="primary" onClick={() => onChange()} disabled={props.wip ? true : false}>
+                            Balanced
+                    </Button>
                 </Form.Item>
 
                 <Form.Item label="Length" dependencies={["length","widths[0]"]}>
