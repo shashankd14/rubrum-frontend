@@ -18,12 +18,25 @@ const Plan = (props) => {
     // console.log(instruction)
     const getPlannedLength = (ins) => {
         let length = 0;
-        const actualLength = ins.actualLength != null ? ins.actualLength : ins.plannedLength;
-        if (ins.childInstructions.length > 0) {
+        let actualLength = 0;
+        let childLength = 0;
+        actualLength = ins.fLength ? ins.fLength : ins.actualLength != null ? ins.actualLength : ins.plannedLength;
+        if (ins.instruction && ins.instruction.length> 0){
+           let instruction = ins.instruction.flat();
+           length = instruction.map(i => i.plannedLength);
+           childLength = instruction.map(i => {
+               if (i.childInstructions && i.childInstructions.length> 0){
+                   return i.plannedLength;
+               }})
+            childLength = childLength.filter(i => i !== undefined)
+            childLength = childLength.reduce((total, num) => total + num)
+           length = length.reduce((total, num) => total + num)
+        } else {
+        if (ins.childInstructions && ins.childInstructions.length > 0) {
             length = ins.childInstructions.map(i => i.plannedLength);
-            return length.reduce((total, num) => total + num)
-        }
-        length = actualLength - length;
+            length = length.reduce((total, num) => total + num)
+        }}
+        length = actualLength - (length + childLength);
         return length;
     }
     const getPlannedWidth = (ins) => {
@@ -31,18 +44,32 @@ const Plan = (props) => {
         const actualWidth = ins.actualWidth != null ? ins.actualWidth : ins.plannedWidth;
         if (ins.childInstructions.length > 0) {
             width = ins.childInstructions.map(i => i.plannedWidth);
-            return width.reduce((total, num) => total + num)
+            width= width.reduce((total, num) => total + num)
         }
         width = actualWidth - width;
         return width;
     }
     const getPlannedWeight = (ins) => {
         let weight = 0;
-        const actualWeight = ins.actualWeight != null ? ins.actualWeight : ins.plannedWeight;
-        if (ins.childInstructions.length > 0) {
-            weight = ins.childInstructions.map(i => i.plannedWeight);
-            return weight.reduce((total, num) => total + num)
-        }
+        let childWeight = 0;
+        let actualWeight = 0;
+        actualWeight = ins.fpresent ? ins.fpresent : ins.actualWeight != null ? ins.actualWeight : ins.plannedWeight;
+        if (ins.instruction && ins.instruction.length> 0){
+            let instruction = ins.instruction.flat();
+            weight = instruction.map(i => i.plannedWeight);
+            childWeight = instruction.map(i => {
+                if (i.childInstructions && i.childInstructions.length> 0){
+                    return i.plannedWeight;
+                }})
+            childWeight = childWeight.filter(i => i !== undefined)
+            childWeight = childWeight.reduce((total, num) => total + num)
+            weight = weight.reduce((total, num) => total + num)
+         } else {
+         if (ins.childInstructions && ins.childInstructions.length > 0) {
+             weight = ins.childInstructions.map(i => i.plannedWeight);
+             weight = weight.reduce((total, num) => total + num)
+         }}
+        
         weight = actualWeight - weight;
         return weight;
     }
@@ -112,7 +139,7 @@ const Plan = (props) => {
                         </div>
                         <div className="gx-flex-row">
                             <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.availableWeight" /> : </p>
-                            <span className="gx-coil-details-label">{props.inward.plan.fQuantity}</span>
+                            <span className="gx-coil-details-label">{props.inward.plan.fpresent}</span>
                         </div>
                         {props.wip ?
                             <div>{props.inward.plan.fpresent !== 0 ? <Button onClick={() => {
@@ -203,18 +230,18 @@ const Plan = (props) => {
                                                                     <div className="gx-coil-details-label"><IntlMessages id="partywise.plan.availableLength" /> : </div>
                                                                     <span className="gx-coil-details-label">{getLength(instruction.childInstructions, 'Non-Delivered')}</span>
                                                                 </div>
-                                                                <div className="gx-flex-row">
+                                                                {/* <div className="gx-flex-row">
                                                                     <div className="gx-coil-details-label"><IntlMessages id="partywise.plan.deliveredLength" /> : </div>
                                                                     <span className="gx-coil-details-label">{getLength(instruction.childInstructions, 'Delivered')}</span>
-                                                                </div>
+                                                                </div> */}
                                                                 <div className="gx-flex-row">
                                                                     <div className="gx-coil-details-label"><IntlMessages id="partywise.plan.availableWeight" /> : </div>
                                                                     <span className="gx-coil-details-label">{getWeight(instruction.childInstructions, 'Non-Delivered')}</span>
                                                                 </div>
-                                                                <div className="gx-flex-row">
+                                                                {/* <div className="gx-flex-row">
                                                                     <div className="gx-coil-details-label"><IntlMessages id="partywise.plan.deliveredWeight" /> : </div>
                                                                     <span className="gx-coil-details-label">{getWeight(instruction.childInstructions, 'Delivered')}</span>
-                                                                </div>
+                                                                </div> */}
                                                                 {instruction.process.processName == 'Cutting' && props.wip ?
                                                                     <Button onClick={(e) => {
                                                                         e.stopPropagation();

@@ -15,7 +15,10 @@ const CoilDetailsForm = (props) => {
 
         props.form.validateFields((err, values) => {
             if (!err) {
-                props.setInwardDetails({ ...props.inward, length: values.approxLength});
+                let length = parseFloat(parseFloat(values.netWeight)/7.85/(parseFloat(values.thickness)/values.width)).toFixed(4);
+                let inward = props.inward;
+                inward.length = length
+                props.setInwardDetails({ ...props.inward, ...inward});
                 props.getGradeByMaterialId(props.params!=="" ?props.inward.material.matId :props.inward.description);
                 props.updateStep(2);
             }
@@ -79,8 +82,8 @@ const CoilDetailsForm = (props) => {
 
     useEffect(() => {
         if(props.inward.width && props.inward.thickness && props.inward.netWeight) {
-            setLength(parseFloat(parseFloat(props.inward.grossWeight)/7.85/(parseFloat(props.inward.thickness)/props.inward.width)).toFixed(4));
-// to be fixed on netweight
+            setLength(parseFloat(parseFloat(props.inward.netWeight)/7.85/(parseFloat(props.inward.thickness)/props.inward.width)).toFixed(4));
+            
         }
     }, [props.inward]);
 
@@ -213,7 +216,7 @@ const CoilDetails = Form.create({
             }),
             netWeight: Form.createFormField({
                 ...props.inward.netWeight,
-                value:  props.params !== "" ? props.inward.grossWeight :(props.inward.netWeight) ? props.inward.netWeight : '',
+                value:  props.params !== "" ? props.inward.fpresent :(props.inward.netWeight) ? props.inward.netWeight : '',
             }),
             grossWeight: Form.createFormField({
                 ...props.inward.grossWeight,
