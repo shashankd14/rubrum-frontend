@@ -29,7 +29,7 @@ const Plan = (props) => {
                    return i.plannedLength;
                }})
             childLength = childLength.filter(i => i !== undefined)
-            childLength = childLength.reduce((total, num) => total + num)
+            childLength = childLength.length > 0? childLength.reduce((total, num) => total + num) : 0
            length = length.reduce((total, num) => total + num)
         } else {
         if (ins.childInstructions && ins.childInstructions.length > 0) {
@@ -41,12 +41,27 @@ const Plan = (props) => {
     }
     const getPlannedWidth = (ins) => {
         let width = 0;
-        const actualWidth = ins.actualWidth != null ? ins.actualWidth : ins.plannedWidth;
-        if (ins.childInstructions.length > 0) {
-            width = ins.childInstructions.map(i => i.plannedWidth);
-            width= width.reduce((total, num) => total + num)
+        let actualWidth = 0;
+        let childWidth = 0;
+        actualWidth = ins.fWidth ? ins.fWidth : ins.actualWidth != null ? ins.actualWidth : ins.plannedWidth;
+        if (ins.instruction && ins.instruction.length> 0){
+            let instruction = ins.instruction.flat();
+            width = instruction.map(i => i.plannedWidth);
+            childWidth = instruction.map(i => {
+                if (i.childInstructions && i.childInstructions.length> 0){
+                    return i.plannedWidth;
+                }})
+            childWidth = childWidth.filter(i => i !== undefined)
+            childWidth = childWidth.length > 0?childWidth.reduce((total, num) => total + num): 0
+            width = width.reduce((total, num) => total + num)
+         } else {
+         if (ins.childInstructions && ins.childInstructions.length > 0) {
+             width = ins.childInstructions.map(i => i.plannedWidth);
+             width = width.reduce((total, num) => total + num)
+         }
         }
-        width = actualWidth - width;
+        
+        width = actualWidth - (width+childWidth);
         return width;
     }
     const getPlannedWeight = (ins) => {
@@ -68,9 +83,10 @@ const Plan = (props) => {
          if (ins.childInstructions && ins.childInstructions.length > 0) {
              weight = ins.childInstructions.map(i => i.plannedWeight);
              weight = weight.reduce((total, num) => total + num)
-         }}
+         }
+        }
         
-        weight = actualWeight - weight;
+        weight = actualWeight - (weight+childWeight);
         return weight;
     }
     useEffect(() => {

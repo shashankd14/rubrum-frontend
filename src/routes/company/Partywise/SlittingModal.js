@@ -38,8 +38,8 @@ const SlittingWidths = (props) => {
     const {getFieldDecorator, getFieldValue, getFieldProps} = props.form;
     getFieldDecorator('keys', {initialValue: [{width:0, no:0, weight:0}]});
 
-    const lengthValue1 = props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails)
-    const widthValue1 = props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.plannedWidth(props.coilDetails);
+    const lengthValue1 = props.coilDetails.instruction && props.coilDetails.instruction.length > 0 ? props.plannedLength(props.coilDetails) : props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails)
+    const widthValue1 = props.coilDetails.instruction && props.coilDetails.instruction.length > 0  ? props.plannedWidth(props.coilDetails):  props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.plannedWidth(props.coilDetails);
     const [len, setlen]= useState(lengthValue1);
     const [width, setwidth] = useState(widthValue1);
     const [twidth, settwidth]= useState(0);
@@ -52,8 +52,16 @@ const SlittingWidths = (props) => {
         getAlert();
       }, [props.length]);
       useEffect(() => {
-        const lengthValue1 = props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails)
-        const widthValue1 = props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.plannedWidth(props.coilDetails);
+          let lengthValue1 = 0;
+          let widthValue1 = 0;
+          if(props.coilDetails.instruction && props.coilDetails.instruction.length > 0){
+             lengthValue1 =  props.plannedLength(props.coilDetails)
+             widthValue1 = props.plannedWidth(props.coilDetails);
+          } else {
+            lengthValue1 = props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails)
+            widthValue1 = props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.plannedWidth(props.coilDetails);
+          }
+        
         setwidth(widthValue1);
         setlen(lengthValue1);
     }, [props.coilDetails]);
