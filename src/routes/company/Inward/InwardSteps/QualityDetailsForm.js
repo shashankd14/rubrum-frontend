@@ -139,7 +139,7 @@ const QualityDetailsForm = (props) => {
                     {props.inward.purposeType && <p>Purpose Type : {props.inward.purposeType}</p>}
                     <p>Coil number : {props.inward.coilNumber}</p>
                     <p>Material Description : {props.params !== ""? props.inward.material.description : props.inward.description}</p>
-                    <p>Dimensions : {props.params !==""?{dimensionEdit}:{dimension}}</p>
+                    <p>Dimensions : {props.params !==""?dimensionEdit:dimension}</p>
                     <p>Net Weight : {props.inward.netWeight}</p>
                     <p>Gross Weight : {props.inward.grossWeight}</p>
                     {/*<p>Received Date : {props.inward.receivedDate}</p>*/}
