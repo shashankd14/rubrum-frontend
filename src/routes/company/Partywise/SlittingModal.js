@@ -483,7 +483,10 @@ setTableData(newData);
                 
             }}
             width={1020}
-            onCancel={() => props.setShowSlittingModal()}
+            onCancel={() => {
+                props.form.resetFields();
+                props.setShowSlittingModal()
+            }}
         >
             <Row>
                 <Col lg={12} md={16} sm={24} xs={24} span={16} className="gx-align-self-center">
