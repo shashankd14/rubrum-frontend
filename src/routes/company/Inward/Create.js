@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import { Card, Form, Steps, Row} from "antd";
 import {connect} from "react-redux";
-import {fetchPartyList, fetchMaterialList, setInwardDetails, submitInwardEntry, fetchPartyListById} from "../../../appRedux/actions";
+import {fetchPartyList, fetchMaterialList, setInwardDetails, submitInwardEntry} from "../../../appRedux/actions";
 
 import PartyDetailsForm from "./InwardSteps/PartyDetailsForm";
 import CoilDetailsForm from "./InwardSteps/CoilDetailsForm";
@@ -28,7 +28,6 @@ const CreateForm = (props) => {
     const [currentStep, setCurrentStep] = useState(0);
     const [steps, setSteps] = useState([]);
     useEffect(() => {
-        props.fetchPartyListById(props.match.params.inwardEntryId);
         props.fetchMaterialList();
         props.fetchPartyList();
     }, []);
@@ -149,7 +148,6 @@ const Create = Form.create({
 })(CreateForm);
 
 export default connect(mapStateToProps, {
-    fetchPartyListById,
     fetchPartyList,
     fetchMaterialList,
     setInwardDetails,

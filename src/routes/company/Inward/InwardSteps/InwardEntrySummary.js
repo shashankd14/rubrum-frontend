@@ -22,7 +22,8 @@ const InwardEntrySummary = (props) => {
             }, 2000);
         }
     }, [props.inwardSubmitSuccess]);
-
+    let dimensionEdit = `${props.inward.fWidth} X ${props.inward.fThickness} X ${props.inward.fLength}`;
+    let dimension = `${props.inward.width} X ${props.inward.thickness} X ${props.inward.length}`
     return (
         <>
             {props.inwardSubmitLoading ? <Spin className="gx-size-100 gx-flex-row gx-justify-content-center gx-align-items-center" size="large"/> :
@@ -42,7 +43,7 @@ const InwardEntrySummary = (props) => {
                             <Card title="Coil Details" style={{ width: 300 }}>
                                 <p>Coil number : {props.inward.coilNumber}</p>
                                 <p>Material Description : {props.params !== ""? props.inward.material.description : props.inward.description}</p>
-                                <p>Dimensions : {props.inward.width} X {props.inward.thickness} X {props.inward.length}</p>
+                                <p>Dimensions : {props.params !== ""?dimensionEdit: dimension}</p>
                                 <p>Net Weight : {props.inward.netWeight}</p>
                                 <p>Gross Weight : {props.inward.grossWeight}</p>
                             </Card>

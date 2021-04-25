@@ -194,16 +194,9 @@ const SlittingWidths = (props) => {
                 <label>Available length : {len}mm</label>
                 <div><label>Available Width : {width}mm</label></div>
                 <Form.Item>
-                    {getFieldDecorator('Balanced', {
-                    initialValue: "",
-                    rules: [{
-                    required: false,
-                    }],
-                    })(<Radio.Group onChange={onChange}>
-                        <Radio value="balanced">Balanced</Radio> 
-                    </Radio.Group>
-                    )}
-
+                    <Button type="primary" onClick={() => onChange()} disabled={props.wip ? true : false}>
+                            Balanced
+                    </Button>
                 </Form.Item>
 
                 <Form.Item label="Length" dependencies={["length","widths[0]"]}>
@@ -490,7 +483,10 @@ setTableData(newData);
                 
             }}
             width={1020}
-            onCancel={() => props.setShowSlittingModal()}
+            onCancel={() => {
+                props.form.resetFields();
+                props.setShowSlittingModal()
+            }}
         >
             <Row>
                 <Col lg={12} md={16} sm={24} xs={24} span={16} className="gx-align-self-center">

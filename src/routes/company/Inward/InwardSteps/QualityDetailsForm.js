@@ -48,7 +48,8 @@ const QualityDetailsForm = (props) => {
             setDataSource(options);
         }
     }, [props.inward.materialGrade]);
-
+    let dimensionEdit = `${props.inward.fWidth} X ${props.inward.fThickness} X ${props.inward.fLength}`;
+    let dimension = `${props.inward.width} X ${props.inward.thickness} X ${props.inward.length}`
     return (
         <>
             <Col span={14}>
@@ -138,7 +139,7 @@ const QualityDetailsForm = (props) => {
                     {props.inward.purposeType && <p>Purpose Type : {props.inward.purposeType}</p>}
                     <p>Coil number : {props.inward.coilNumber}</p>
                     <p>Material Description : {props.params !== ""? props.inward.material.description : props.inward.description}</p>
-                    <p>Dimensions : {props.inward.width} X {props.inward.thickness} X {props.inward.length}</p>
+                    <p>Dimensions : {props.params !==""?dimensionEdit:dimension}</p>
                     <p>Net Weight : {props.inward.netWeight}</p>
                     <p>Gross Weight : {props.inward.grossWeight}</p>
                     {/*<p>Received Date : {props.inward.receivedDate}</p>*/}

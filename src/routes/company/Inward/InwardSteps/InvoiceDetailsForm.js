@@ -23,7 +23,8 @@ const InvoiceDetailsForm = (props) => {
     React.useEffect(() => {
         console.log(props.inward);
     }, [])
-
+    let dimensionEdit = `${props.inward.fWidth} X ${props.inward.fThickness} X ${props.inward.fLength}`;
+    let dimension = `${props.inward.width} X ${props.inward.thickness} X ${props.inward.length}`
     return (
         <>
             <Col span={14}>
@@ -50,14 +51,14 @@ const InvoiceDetailsForm = (props) => {
                     </Form.Item>
                     <Form.Item label="Vehicle number">
                         {getFieldDecorator('vehicleNumber', {
-                            rules: [{ required: false, message: 'Please select a received date' }],
+                            rules: [{ required: true, message: 'Please select a received date' }],
                         })(
                             <Input id="vehicleNumber" />
                         )}
                     </Form.Item>
                     <Form.Item label="Invoice number">
                         {getFieldDecorator('invoiceNumber', {
-                            rules: [{ required: false, message: 'Please select a received date' }],
+                            rules: [{ required: true, message: 'Please select a received date' }],
                         })(
                             <Input id="invoiceNumber" />
                         )}
@@ -96,7 +97,7 @@ const InvoiceDetailsForm = (props) => {
                     {props.inward.purposeType && <p>Purpose Type : {props.inward.purposeType}</p>}
                     <p>Coil number : {props.inward.coilNumber}</p>
                     <p>Material Description : {props.params !== ""? props.inward.material.description : props.inward.description}</p>
-                    <p>Dimensions : {props.inward.width} X {props.inward.thickness} X {props.inward.length}</p>
+                    <p>Dimensions : {props.params !== "" ? dimensionEdit:dimension}</p>
                     <p>Net Weight : {props.inward.netWeight}</p>
                     <p>Gross Weight : {props.inward.grossWeight}</p>
                 </Card>
