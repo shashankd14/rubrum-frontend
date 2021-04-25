@@ -36,7 +36,11 @@ const Plan = (props) => {
             length = ins.childInstructions.map(i => i.plannedLength);
             length = length.reduce((total, num) => total + num)
         }}
-        length = actualLength - (length + childLength);
+        if (actualLength > (childLength+length)){
+            length = actualLength - (length + childLength);
+        } else {
+            length = 0
+        };
         return length;
     }
     const getPlannedWidth = (ins) => {
@@ -60,8 +64,12 @@ const Plan = (props) => {
              width = width.reduce((total, num) => total + num)
          }
         }
+        if (actualWidth > (childWidth+width)){
+            width = actualWidth - (width+childWidth);
+        } else {
+            width = 0
+        }
         
-        width = actualWidth - (width+childWidth);
         return width;
     }
     const getPlannedWeight = (ins) => {
@@ -85,8 +93,12 @@ const Plan = (props) => {
              weight = weight.reduce((total, num) => total + num)
          }
         }
+        if (actualWeight > (childWeight+weight)){
+            weight = actualWeight - (weight+childWeight);
+        } else {
+            weight = 0
+        }
         
-        weight = actualWeight - (weight+childWeight);
         return weight;
     }
     useEffect(() => {

@@ -474,18 +474,17 @@ setTableData(newData);
             onOk={() => {
                 if(props.wip){
                     props.updateInstruction(tableData);
-                    props.setShowSlittingModal()
+                    props.setShowSlittingModal(false)
                 }
                 else{
                     props.saveSlittingInstruction(cuts);
-                props.setShowSlittingModal()
                 }
                 
             }}
             width={1020}
             onCancel={() => {
                 props.form.resetFields();
-                props.setShowSlittingModal()
+                props.setShowSlittingModal(false)
             }}
         >
             <Row>
@@ -499,7 +498,7 @@ setTableData(newData);
                     </Form>
                 </Col>
                 <Col lg={12} md={12} sm={24} xs={24}>
-                    <Table className="gx-table-responsive" columns={props.wip?columns: columnsPlan} dataSource={props.wip?tableData:reset ?cuts : cutArray}/>
+                    <Table className="gx-table-responsive" columns={props.wip?columns: columnsPlan} dataSource={props.wip?tableData:cuts}/>
                     <Form.Item label="Total weight(mm)">
                     {getFieldDecorator('tweight', {
                         rules: [{ required: false}],
