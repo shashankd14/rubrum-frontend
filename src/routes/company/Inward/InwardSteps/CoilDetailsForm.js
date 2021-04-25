@@ -33,6 +33,9 @@ const CoilDetailsForm = (props) => {
         else if (path === 'fThickness'){
             props.inward.fThickness = e.target.value;
         }
+        else if (path === 'fpresent'){
+            props.inward.fpresent = e.target.value;
+        }
     }
     const checkCoilExists = (rule, value, callback) => {
         if (!props.inwardStatus.loading && props.inwardStatus.success && !props.inwardStatus.duplicateCoil) {
@@ -119,7 +122,7 @@ const CoilDetailsForm = (props) => {
                         />
                     )}
                 </Form.Item>
-                <Form.Item label="Coil Width (in mts)">
+                <Form.Item label="Coil Width (in mm)">
                     {getFieldDecorator('width', {
                         rules: [{ required: true, message: 'Please input the coil width!' }
                         ],
@@ -139,7 +142,7 @@ const CoilDetailsForm = (props) => {
                     {getFieldDecorator('netWeight', {
                         rules: [{ required: true, message: 'Please input the coil net weight!' }],
                     })(
-                        <Input id="coilNetWeight" />
+                        <Input id="coilNetWeight"  onChange= {props.params!=="" ?(e) =>handleChange(e,'fpresent'):""}/>
                     )}
                 </Form.Item>
                 <Form.Item label="Gross Weight (in kgs)">

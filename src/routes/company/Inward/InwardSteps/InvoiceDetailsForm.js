@@ -51,14 +51,14 @@ const InvoiceDetailsForm = (props) => {
                     </Form.Item>
                     <Form.Item label="Vehicle number">
                         {getFieldDecorator('vehicleNumber', {
-                            rules: [{ required: false, message: 'Please select a received date' }],
+                            rules: [{ required: true, message: 'Please select a received date' }],
                         })(
                             <Input id="vehicleNumber" />
                         )}
                     </Form.Item>
                     <Form.Item label="Invoice number">
                         {getFieldDecorator('invoiceNumber', {
-                            rules: [{ required: false, message: 'Please select a received date' }],
+                            rules: [{ required: true, message: 'Please select a received date' }],
                         })(
                             <Input id="invoiceNumber" />
                         )}
