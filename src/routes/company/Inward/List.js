@@ -9,7 +9,8 @@ import {
     fetchInwardList,
     resetInwardForm,
     deleteInwardEntryById,
-    resetDeleteInward
+    resetDeleteInward,
+    fetchPartyListById
 } from "../../../appRedux/actions/Inward";
 import { onDeleteContact } from "../../../appRedux/actions";
 
@@ -94,7 +95,9 @@ const List = (props) => {
             <span>
                 <span className="gx-link" onClick={() => props.history.push(`${record.coilNumber}`)}>View</span>
                 <Divider type="vertical"/>
-                <span className="gx-link" onClick={() => props.history.push(`create/${record.inwardEntryId}`)}>Edit</span>
+                <span className="gx-link" onClick={() => {
+                    props.fetchPartyListById(record.inwardEntryId);
+                props.history.push(`create/${record.inwardEntryId}`)}}>Edit</span>
                 <Divider type="vertical"/>
                 <span className="gx-link"onClick={(e) => onDelete(record, index,e)}>Delete</span>
             </span>
@@ -209,5 +212,6 @@ export default connect(mapStateToProps, {
     fetchInwardList,
     resetInwardForm,
     deleteInwardEntryById,
+    fetchPartyListById,
     resetDeleteInward
 })(List);
