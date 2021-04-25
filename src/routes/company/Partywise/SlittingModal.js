@@ -1,4 +1,4 @@
-import {Button, Col, Form, Icon, Input, message, Modal, Row, Table, Radio} from "antd";
+import {Button, Col, Form, Icon, Input, message, Modal, Row, Table, Radio, DatePicker} from "antd";
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import moment from "moment";
@@ -61,10 +61,12 @@ const SlittingWidths = (props) => {
             lengthValue1 = props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails)
             widthValue1 = props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.plannedWidth(props.coilDetails);
           }
+        if(props.cuts && props.cuts.length === 0){
+            setwidth(widthValue1);
+            setlen(lengthValue1);
+        }
         
-        setwidth(widthValue1);
-        setlen(lengthValue1);
-    }, [props.coilDetails]);
+    }, [props.coilDetails,props.cuts]);
     //   useEffect(() => {
     //     setlen(len+props.deletedLength);
     //   }, [props.deletedLength]);
@@ -198,7 +200,19 @@ const SlittingWidths = (props) => {
                             Balanced
                     </Button>
                 </Form.Item>
-
+                <Form.Item label="Process Date" >
+                    {getFieldDecorator('processDate', {
+                        initialValue: moment(new Date(), APPLICATION_DATE_FORMAT),
+                        rules: [{ required: true, message: 'Please select a Process date' }],
+                        })(
+                        <DatePicker
+                        placeholder="dd/mm/yy"
+                        style={{width: 200}}
+                        defaultValue={moment(new Date(), APPLICATION_DATE_FORMAT)}
+                        format={APPLICATION_DATE_FORMAT}
+                        disabled={props.wip ? true : false}/>
+                        )}
+                </Form.Item>
                 <Form.Item label="Length" dependencies={["length","widths[0]"]}>
                     {getFieldDecorator('length', {
                         rules: [{ required: true, message: 'Please enter Length' },
@@ -484,6 +498,7 @@ setTableData(newData);
             width={1020}
             onCancel={() => {
                 props.form.resetFields();
+                setCuts([]);
                 props.setShowSlittingModal(false)
             }}
         >
@@ -498,7 +513,7 @@ setTableData(newData);
                     </Form>
                 </Col>
                 <Col lg={12} md={12} sm={24} xs={24}>
-                    <Table className="gx-table-responsive" columns={props.wip?columns: columnsPlan} dataSource={props.wip?tableData:cuts}/>
+                    <Table className="gx-table-responsive" columns={props.wip?columns: columnsPlan} dataSource={props.wip?tableData:reset ?cuts: cutArray}/>
                     <Form.Item label="Total weight(mm)">
                     {getFieldDecorator('tweight', {
                         rules: [{ required: false}],
