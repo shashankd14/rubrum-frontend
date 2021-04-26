@@ -124,13 +124,10 @@ const SlittingWidths = (props) => {
                 }
                 if(totalWidth > widthValue) {
                     message.error('Sum of slits width is greater than width of coil.', 2);
-                    props.form.resetFields();
                 }else if(values.length > lengthValue) {
                     message.error('Length greater than available length', 2);
-                    props.form.resetFields();
                 }else if(totalWeight > weightValue) {
                     message.error('Weight greater than available weight', 2);
-                    props.form.resetFields();
                 } else
                     props.setSlits(slits);
                     props.form.resetFields();
