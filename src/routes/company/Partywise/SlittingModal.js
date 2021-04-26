@@ -170,7 +170,6 @@ const SlittingWidths = (props) => {
                     width += values.widths[i]*values.nos[i];
                     weight +=Number(values.weights[i])*values.nos[i];
                     settwidth(width);
-                    props.setweight(weight);
                 }
             }
       })
@@ -543,6 +542,10 @@ const SlittingDetailsForm = Form.create({
             width: Form.createFormField({
                 ...props.inward.process.width,
                 value: (props.inward.process.width) ? props.inward.process.width : '',
+            }),
+            processDate: Form.createFormField({
+                ...props.inward.process.processDate,
+                value: (props.inward.process.processDate) ? props.inward.process.processDate : moment(new Date(), APPLICATION_DATE_FORMAT),
             }),
             length: Form.createFormField({
                 ...props.inward.process.length,

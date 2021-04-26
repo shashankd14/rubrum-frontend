@@ -252,7 +252,7 @@ const CreateCuttingDetailsForm = (props) => {
           <Col lg={12} md={12} sm={24} xs={24} className="gx-align-self-center">
 
             <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4">
-            <Form.Item label="Process Date" >
+                <Form.Item label="Process Date" >
                     {getFieldDecorator('processDate', {
                         initialValue: moment(new Date(), APPLICATION_DATE_FORMAT),
                         rules: [{ required: true, message: 'Please select a Process date' }],
@@ -332,7 +332,7 @@ const CuttingDetailsForm = Form.create({
         return {
             processDate: Form.createFormField({
                 ...props.inward.process.processDate,
-                value: (props.inward.process.processDate) ? props.inward.process.processDate : '',
+                value: (props.inward.process.processDate) ? props.inward.process.processDate : moment(new Date(), APPLICATION_DATE_FORMAT),
             }),
             length: Form.createFormField({
                 ...props.inward.process.length,
