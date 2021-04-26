@@ -49,7 +49,7 @@ const SlittingWidths = (props) => {
     let nosChange = 0;
 
     useEffect(() => {
-        getAlert();
+        getEditValue();
       }, [props.length]);
       useEffect(() => {
           let lengthValue1 = 0;
@@ -77,11 +77,11 @@ const SlittingWidths = (props) => {
         props.setweight(cuts)
     },[props.cuts])
     
-    const getAlert =() =>{
+    const getEditValue =() =>{
         if(props.cuts.length> 0){
             const index = 0;
             const obj = props.cuts[props.length];
-             const arr = [obj.width,obj.no, obj.weight];
+            const arr = [obj.width,obj.no, obj.weight];
             const array = ["widths[0]","nos[0]","weights[0]"];
             for (let i=0; i<array.length; i++){
                 props.form.setFieldsValue({
