@@ -70,7 +70,12 @@ const SlittingWidths = (props) => {
     //   useEffect(() => {
     //     setlen(len+props.deletedLength);
     //   }, [props.deletedLength]);
-     
+    useEffect(()=>{
+        let cuts = props.cuts.map(i => i.weight);
+        cuts = cuts.filter(i => i !== undefined)
+        cuts = cuts.length > 0? cuts.reduce((total, num) => Number(total) + Number(num)) : 0
+        props.setweight(cuts)
+    },[props.cuts])
     
     const getAlert =() =>{
         if(props.cuts.length> 0){
@@ -432,7 +437,7 @@ const columnsPlan=[
     const onEdit = (key, e) => {
         setLength(key);
       }
-      
+    
    useEffect(()=>{
    const result = cuts.filter(item => item.instructionId === props.coilDetails.instructionId) 
    let resetter = cuts.length> 0 ? result.length > 0 ? true : false : true
