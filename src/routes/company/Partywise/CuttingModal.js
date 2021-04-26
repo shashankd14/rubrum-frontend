@@ -1,4 +1,4 @@
-import {Button, Card, Col, DatePicker, Divider, Form, Input, Modal, Row, Table, Icon,Tabs} from "antd";
+import {Button, Card, Col, DatePicker, Divider, Form, Input, Modal, Row, Table, Icon,Tabs, message} from "antd";
 import React, {useEffect, useState, useRef, useContext} from "react";
 import {connect} from "react-redux";
 import moment from "moment";
@@ -25,6 +25,7 @@ export const formItemLayout = {
 const CreateCuttingDetailsForm = (props) => {
     const TabPane = Tabs.TabPane;
     const {getFieldDecorator} = props.form;
+    let loading = '';
     const [cuts, setCuts] = useState([]);
     const [mode, setMode] = useState('top');
 
@@ -199,7 +200,21 @@ const CreateCuttingDetailsForm = (props) => {
         setTableData(newData);
 
     }, [props.coilDetails]);
-  
+    useEffect(() => {
+        if(props.inward.instructionSaveLoading && !props.wip) {
+            loading = message.loading('Saving Cut Instruction..');
+        }
+    }, [props.inward.instructionSaveLoading]);
+
+    useEffect(() => {
+        if(props.inward.instructionSaveSuccess && !props.wip) {
+            loading = '';
+            message.success('Cutting instruction saved successfully', 2).then(() => {
+                props.setShowCuttingModal(false);
+                props.resetInstruction();
+            });
+        }
+    }, [props.inward.instructionSaveSuccess])
 
     const onInputChange = (key, index) => (e: React.ChangeEvent<HTMLInputElement>) => {
         const newData = [...tableData];
@@ -218,12 +233,13 @@ const CreateCuttingDetailsForm = (props) => {
                 }
                 else{
                     props.saveCuttingInstruction(cuts);
-                    props.setShowCuttingModal();
                 }
 
             }}
             width={1020}
-            onCancel={() => props.setShowCuttingModal()}
+            onCancel={() => {
+                setCuts([]);
+                props.setShowCuttingModal()}}
         >
         <Card className="gx-card" >
 
@@ -236,15 +252,16 @@ const CreateCuttingDetailsForm = (props) => {
           <Col lg={12} md={12} sm={24} xs={24} className="gx-align-self-center">
 
             <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4">
-                <Form.Item label="Process Date" >
+            <Form.Item label="Process Date" >
                     {getFieldDecorator('processDate', {
-                        rules: [{ required: true, message: 'Please select a received date' }],
+                        initialValue: moment(new Date(), APPLICATION_DATE_FORMAT),
+                        rules: [{ required: true, message: 'Please select a Process date' }],
                         })(
                         <DatePicker
                         placeholder="dd/mm/yy"
                         style={{width: 200}}
-                        format="DD/MM/YYYY"
-                        className="gx-mb-3 gx-w-100"
+                        defaultValue={moment(new Date(), APPLICATION_DATE_FORMAT)}
+                        format={APPLICATION_DATE_FORMAT}
                         disabled={props.wip ? true : false}/>
                         )}
                 </Form.Item>

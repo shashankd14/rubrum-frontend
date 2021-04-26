@@ -95,9 +95,7 @@ const List = (props) => {
             <span>
                 <span className="gx-link" onClick={() => props.history.push(`${record.coilNumber}`)}>View</span>
                 <Divider type="vertical"/>
-                <span className="gx-link" onClick={() => {
-                    props.fetchPartyListById(record.inwardEntryId);
-                props.history.push(`create/${record.inwardEntryId}`)}}>Edit</span>
+                <span className="gx-link" onClick={(e) =>onEdit(record,index,e)}>Edit</span>
                 <Divider type="vertical"/>
                 <span className="gx-link"onClick={(e) => onDelete(record, index,e)}>Delete</span>
             </span>
@@ -111,6 +109,13 @@ const List = (props) => {
         props.deleteInwardEntryById(id)
         console.log(record,key)
       }
+    const onEdit = (record,key,e)=>{
+        props.fetchPartyListById(record.inwardEntryId);
+        setTimeout(() => {
+            props.history.push(`create/${record.inwardEntryId}`)
+        }, 2000);
+                
+    }
       useEffect(() => {
         if(props.inward.deleteSuccess) {
             message.success('Successfully deleted the coil', 2).then(() => {

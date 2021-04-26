@@ -16,10 +16,10 @@ const InwardEntrySummary = (props) => {
     React.useEffect(() => {
         if(props.inwardSubmitSuccess) {
             message.success('Inward entry has been saved successfully', 2);
-            props.resetInwardForm();
             setTimeout(() => {
                 props.history.push('list');
             }, 2000);
+            props.resetInwardForm();
         }
     }, [props.inwardSubmitSuccess]);
     let dimensionEdit = `${props.inward.fWidth} X ${props.inward.fThickness} X ${props.inward.fLength}`;
