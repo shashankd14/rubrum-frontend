@@ -120,6 +120,10 @@ const SlittingWidths = (props) => {
                     }
                     totalWidth += values.widths[i]*values.nos[i];
                     totalWeight += values.weights[i]*values.nos[i];
+                    if(widthValue1> totalWidth){
+                        let widthRemain = widthValue1-totalWidth;
+                        setwidth(widthRemain);
+                    }
                     settwidth(totalWidth);
                 }
                 if(totalWidth > widthValue) {
