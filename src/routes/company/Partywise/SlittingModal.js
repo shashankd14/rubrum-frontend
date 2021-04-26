@@ -1,4 +1,4 @@
-import {Button, Col, Form, Icon, Input, message, Modal, Row, Table, Radio} from "antd";
+import {Button, Col, Form, Icon, Input, message, Modal, Row, Table, Radio, DatePicker} from "antd";
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import moment from "moment";
@@ -61,10 +61,12 @@ const SlittingWidths = (props) => {
             lengthValue1 = props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails)
             widthValue1 = props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.plannedWidth(props.coilDetails);
           }
+        if(props.cuts && props.cuts.length === 0){
+            setwidth(widthValue1);
+            setlen(lengthValue1);
+        }
         
-        setwidth(widthValue1);
-        setlen(lengthValue1);
-    }, [props.coilDetails]);
+    }, [props.coilDetails,props.cuts]);
     //   useEffect(() => {
     //     setlen(len+props.deletedLength);
     //   }, [props.deletedLength]);
@@ -168,7 +170,6 @@ const SlittingWidths = (props) => {
                     width += values.widths[i]*values.nos[i];
                     weight +=Number(values.weights[i])*values.nos[i];
                     settwidth(width);
-                    props.setweight(weight);
                 }
             }
       })
@@ -198,7 +199,19 @@ const SlittingWidths = (props) => {
                             Balanced
                     </Button>
                 </Form.Item>
-
+                <Form.Item label="Process Date" >
+                    {getFieldDecorator('processDate', {
+                        initialValue: moment(new Date(), APPLICATION_DATE_FORMAT),
+                        rules: [{ required: true, message: 'Please select a Process date' }],
+                        })(
+                        <DatePicker
+                        placeholder="dd/mm/yy"
+                        style={{width: 200}}
+                        defaultValue={moment(new Date(), APPLICATION_DATE_FORMAT)}
+                        format={APPLICATION_DATE_FORMAT}
+                        disabled={props.wip ? true : false}/>
+                        )}
+                </Form.Item>
                 <Form.Item label="Length" dependencies={["length","widths[0]"]}>
                     {getFieldDecorator('length', {
                         rules: [{ required: true, message: 'Please enter Length' },
@@ -474,18 +487,18 @@ setTableData(newData);
             onOk={() => {
                 if(props.wip){
                     props.updateInstruction(tableData);
-                    props.setShowSlittingModal()
+                    props.setShowSlittingModal(false)
                 }
                 else{
                     props.saveSlittingInstruction(cuts);
-                props.setShowSlittingModal()
                 }
                 
             }}
             width={1020}
             onCancel={() => {
                 props.form.resetFields();
-                props.setShowSlittingModal()
+                setCuts([]);
+                props.setShowSlittingModal(false)
             }}
         >
             <Row>
@@ -499,7 +512,7 @@ setTableData(newData);
                     </Form>
                 </Col>
                 <Col lg={12} md={12} sm={24} xs={24}>
-                    <Table className="gx-table-responsive" columns={props.wip?columns: columnsPlan} dataSource={props.wip?tableData:reset ?cuts : cutArray}/>
+                    <Table className="gx-table-responsive" columns={props.wip?columns: columnsPlan} dataSource={props.wip?tableData:reset ?cuts: cutArray}/>
                     <Form.Item label="Total weight(mm)">
                     {getFieldDecorator('tweight', {
                         rules: [{ required: false}],
@@ -529,6 +542,10 @@ const SlittingDetailsForm = Form.create({
             width: Form.createFormField({
                 ...props.inward.process.width,
                 value: (props.inward.process.width) ? props.inward.process.width : '',
+            }),
+            processDate: Form.createFormField({
+                ...props.inward.process.processDate,
+                value: (props.inward.process.processDate) ? props.inward.process.processDate : moment(new Date(), APPLICATION_DATE_FORMAT),
             }),
             length: Form.createFormField({
                 ...props.inward.process.length,
