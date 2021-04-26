@@ -420,6 +420,7 @@ const columnsPlan=[
 ];
     const [tableData, setTableData] = useState(props.wip?(props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts);
     const [tweight, settweight]= useState(0);
+    const [edit, setEdit] = useState([]);
     const onDelete = (key, e) => {
         e.preventDefault();
         
@@ -436,7 +437,10 @@ const columnsPlan=[
         setCuts(data);
       }
     const onEdit = (key, e) => {
+        // const data = cuts.filter(item => cuts.indexOf(item) !== key);
+        // setEdit(cuts.filter(item => cuts.indexOf(item) === key))
         setLength(key);
+        // setCuts(data)
       }
     
    useEffect(()=>{
@@ -512,7 +516,7 @@ setTableData(newData);
                     <h3>Coil Details </h3>
                     <Form {...formItemLayout} className="login-form gx-pt-4">
                         <Form.Item>
-                            <SlittingWidthsForm setSlits={(slits) => setCuts([...cuts,...slits])} setweight={(w) => settweight(w)} coilDetails={props.coilDetails} wip={props.wip} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth} plannedWeight ={props.plannedWeight} length={length} cuts={cuts}/>
+                            <SlittingWidthsForm setSlits={(slits) => setCuts([...cuts,...slits])} setweight={(w) => settweight(w)} coilDetails={props.coilDetails} wip={props.wip} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth} plannedWeight ={props.plannedWeight} length={length} cuts={cuts} edit={edit}/>
                         </Form.Item>
 
                     </Form>
