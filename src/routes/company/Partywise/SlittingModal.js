@@ -198,8 +198,26 @@ const SlittingWidths = (props) => {
     return (
         <>
             <Form {...formItemLayoutSlitting}>
-                <label>Available length : {len}mm</label>
-                <div><label>Available Width : {width}mm</label></div>
+                {/* <Form.Item label="Available Length(mm)">
+                    {getFieldDecorator('aLength', {
+                        rules: [{ required: false}],
+                    })(
+                        <>
+                            <Input id="aLength" disabled={true} value={len} name="aLength" />
+                        </>
+                    )}
+                </Form.Item>
+                <Form.Item label="Available Width(mm)">
+                    {getFieldDecorator('aWidth', {
+                        rules: [{ required: false}],
+                    })(
+                        <>
+                            <Input id="aWidth" disabled={true} value={width} name="aWidth" />
+                        </>
+                    )}
+                </Form.Item> */}
+                 <label>Available length : {len}mm</label>
+                <div><label>Available Width : {width}mm</label></div> 
                 <Form.Item>
                     <Button type="primary" onClick={() => onChange()} disabled={props.wip ? true : false}>
                             Balanced
@@ -511,10 +529,82 @@ setTableData(newData);
                 props.setShowSlittingModal(false)
             }}
         >
-            <Row>
+         <Row>
+         <Col lg={12} md={16} sm={24} xs={24} span={16} className="gx-align-self-center">
+            <h3>Coil Details </h3>
+                    <Form.Item label="Available Weight">
+                            {getFieldDecorator('aWeight', {
+                            rules: [{ required: false}],
+                            })(
+                            <>
+                                <Input id="aWeight" disabled={true} value={props.coil.fpresent} name="aWeight" />
+                            </>
+                        )}
+                    </Form.Item>
+                    <Form.Item label="Inward Weight">
+                            {getFieldDecorator('iweight', {
+                                rules: [{ required: false}],
+                            })(
+                                <>
+                                    <Input id="iweight" disabled={true} value={props.coil.fQuantity} name="iweight" />
+                                </>
+                            )}
+                    </Form.Item>
+                    <Form.Item label="Material Type">
+                            {getFieldDecorator('material', {
+                                rules: [{ required: false}],
+                            })(
+                                <>
+                                    <Input id="material" disabled={true} value={props.coil.material.description} name="material" />
+                                </>
+                            )}
+                    </Form.Item>
+                    <Form.Item label="Material Grade">
+                            {getFieldDecorator('grade', {
+                                rules: [{ required: false}],
+                            })(
+                                <>
+                                    <Input id="grade" disabled={true} value={props.coil.materialGrade.gradeName} name="grade" />
+                                </>
+                            )}
+                    </Form.Item>
+            </Col> 
+            <Col lg={12} md={12} sm={24} xs={24}>
+                <h3></h3>
+                <Form.Item label="Party Name">
+                 {getFieldDecorator('party', {
+                    rules: [{ required: false}],
+                    })(
+                      <>
+                        <Input id="party" disabled={true} value={props.coil.party.nPartyName} name="party" />
+                      </>
+                    )}
+                </Form.Item>
+                <Form.Item label="Thickness(mm)">
+                   {getFieldDecorator('thickness', {
+                      rules: [{ required: false}],
+                    })(
+                      <>
+                       <Input id="thickness" disabled={true} value={props.coil.fThickness} name="thickness" />
+                      </>
+                    )}
+                </Form.Item>
+                <Form.Item label="Width(mm)">
+                    {getFieldDecorator('width', {
+                       rules: [{ required: false}],
+                   })(
+                    <>
+                     <Input id="width" disabled={true} value={props.coil.fWidth} name="width" />
+                    </>
+                 )}
+                </Form.Item>
+            </Col>     
+        </Row>
+        <Row>
                 <Col lg={12} md={16} sm={24} xs={24} span={16} className="gx-align-self-center">
-                    <h3>Coil Details </h3>
-                    <Form {...formItemLayout} className="login-form gx-pt-4">
+                    
+                   <Form {...formItemLayout} className="login-form gx-pt-4">
+                       
                         <Form.Item>
                             <SlittingWidthsForm setSlits={(slits) => setCuts([...cuts,...slits])} setweight={(w) => settweight(w)} coilDetails={props.coilDetails} wip={props.wip} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth} plannedWeight ={props.plannedWeight} length={length} cuts={cuts} edit={edit}/>
                         </Form.Item>
