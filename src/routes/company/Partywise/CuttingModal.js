@@ -154,7 +154,11 @@ const CreateCuttingDetailsForm = (props) => {
         const data = cuts.filter(record => cuts.indexOf(record) );
         setCuts(data);
     };
-
+    const onChange=()=>{
+        props.form.setFieldsValue({
+            length: props.plannedLength(props.coilDetails)
+        });
+    }
     const handleModeChange = (e) => {
         setMode(e.target.value);
     };
@@ -252,6 +256,11 @@ const CreateCuttingDetailsForm = (props) => {
           <Col lg={12} md={12} sm={24} xs={24} className="gx-align-self-center">
 
             <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4">
+            <Form.Item>
+                    <Button type="primary" onClick={() => onChange()} disabled={props.wip ? true : false}>
+                            Balanced
+                    </Button>
+                </Form.Item>
                 <Form.Item label="Process Date" >
                     {getFieldDecorator('processDate', {
                         initialValue: moment(new Date(), APPLICATION_DATE_FORMAT),

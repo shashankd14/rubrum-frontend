@@ -147,7 +147,7 @@ const Plan = (props) => {
 
     return (
         <div className="gx-full-height" style={{ overflowX: "auto", overflowy: "scroll" }}>
-            {cuttingCoil && <CuttingModal showCuttingModal={showCuttingModal} setShowCuttingModal={() => setShowCuttingModal(false)} coilDetails={cuttingCoil} wip={props.wip} childCoil={childCoil} />}
+            {cuttingCoil && <CuttingModal showCuttingModal={showCuttingModal} setShowCuttingModal={() => setShowCuttingModal(false)} coilDetails={cuttingCoil} wip={props.wip} childCoil={childCoil} plannedLength={getPlannedLength}/>}
             {slittingCoil && <SlittingModal showSlittingModal={showSlittingModal} setShowSlittingModal={() => setShowSlittingModal(false)} wip={props.wip} coilDetails={slittingCoil} childCoil={childCoil} plannedLength={getPlannedLength} plannedWidth ={getPlannedWidth} plannedWeight={getPlannedWeight}/>}
             <h1><IntlMessages id="partywise.plan.label" /></h1>
             <div className="gx-full-height gx-flex-row">

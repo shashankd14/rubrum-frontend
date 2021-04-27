@@ -49,7 +49,7 @@ const SlittingWidths = (props) => {
     let nosChange = 0;
 
     useEffect(() => {
-        getAlert();
+        getEditValue();
       }, [props.length]);
       useEffect(() => {
           let lengthValue1 = 0;
@@ -70,13 +70,18 @@ const SlittingWidths = (props) => {
     //   useEffect(() => {
     //     setlen(len+props.deletedLength);
     //   }, [props.deletedLength]);
-     
+    useEffect(()=>{
+        let cuts = props.cuts.map(i => i.weight);
+        cuts = cuts.filter(i => i !== undefined)
+        cuts = cuts.length > 0? cuts.reduce((total, num) => Number(total) + Number(num)) : 0
+        props.setweight(cuts)
+    },[props.cuts])
     
-    const getAlert =() =>{
+    const getEditValue =() =>{
         if(props.cuts.length> 0){
             const index = 0;
             const obj = props.cuts[props.length];
-             const arr = [obj.width,obj.no, obj.weight];
+            const arr = [obj.width,obj.no, obj.weight];
             const array = ["widths[0]","nos[0]","weights[0]"];
             for (let i=0; i<array.length; i++){
                 props.form.setFieldsValue({
@@ -115,17 +120,18 @@ const SlittingWidths = (props) => {
                     }
                     totalWidth += values.widths[i]*values.nos[i];
                     totalWeight += values.weights[i]*values.nos[i];
+                    if(widthValue1> totalWidth){
+                        let widthRemain = widthValue1-totalWidth;
+                        setwidth(widthRemain);
+                    }
                     settwidth(totalWidth);
                 }
                 if(totalWidth > widthValue) {
                     message.error('Sum of slits width is greater than width of coil.', 2);
-                    props.form.resetFields();
                 }else if(values.length > lengthValue) {
                     message.error('Length greater than available length', 2);
-                    props.form.resetFields();
                 }else if(totalWeight > weightValue) {
                     message.error('Weight greater than available weight', 2);
-                    props.form.resetFields();
                 } else
                     props.setSlits(slits);
                     props.form.resetFields();
@@ -414,6 +420,7 @@ const columnsPlan=[
 ];
     const [tableData, setTableData] = useState(props.wip?(props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts);
     const [tweight, settweight]= useState(0);
+    const [edit, setEdit] = useState([]);
     const onDelete = (key, e) => {
         e.preventDefault();
         
@@ -430,9 +437,12 @@ const columnsPlan=[
         setCuts(data);
       }
     const onEdit = (key, e) => {
+        // const data = cuts.filter(item => cuts.indexOf(item) !== key);
+        // setEdit(cuts.filter(item => cuts.indexOf(item) === key))
         setLength(key);
+        // setCuts(data)
       }
-      
+    
    useEffect(()=>{
    const result = cuts.filter(item => item.instructionId === props.coilDetails.instructionId) 
    let resetter = cuts.length> 0 ? result.length > 0 ? true : false : true
@@ -506,7 +516,7 @@ setTableData(newData);
                     <h3>Coil Details </h3>
                     <Form {...formItemLayout} className="login-form gx-pt-4">
                         <Form.Item>
-                            <SlittingWidthsForm setSlits={(slits) => setCuts([...cuts,...slits])} setweight={(w) => settweight(w)} coilDetails={props.coilDetails} wip={props.wip} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth} plannedWeight ={props.plannedWeight} length={length} cuts={cuts}/>
+                            <SlittingWidthsForm setSlits={(slits) => setCuts([...cuts,...slits])} setweight={(w) => settweight(w)} coilDetails={props.coilDetails} wip={props.wip} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth} plannedWeight ={props.plannedWeight} length={length} cuts={cuts} edit={edit}/>
                         </Form.Item>
 
                     </Form>
