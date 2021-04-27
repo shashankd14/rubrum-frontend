@@ -167,21 +167,22 @@ const CreateCuttingDetailsForm = (props) => {
         e.preventDefault();
         props.form.validateFields((err, values) => {
             if (!err) {
-                setCuts([...cuts, {...props.inward.process,
-                    inwardId: props.coilDetails.inwardEntryId ? props.coilDetails.inwardEntryId : "",
-                    instructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : ""}]);
-                props.resetInstruction();
+                let totalWeight = 0;
+                totalWeight = values.weight;
+                if(totalWeight > props.inward.plan.fQuantity){
+                    message.error('Weight greater than available weight', 2);
+                }else{
+                    setCuts([...cuts, {...props.inward.process,
+                        inwardId: props.coilDetails.inwardEntryId ? props.coilDetails.inwardEntryId : "",
+                        instructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : ""}]);
+                    props.resetInstruction();
+                }
+               
             }
         });
     };
 
-    const checkWeight = (rule, value, callback) => {
-        if (parseFloat(value) > props.inward.plan.fQuantity) {
-            return callback();
-        }
-        callback('weight must be less than actual weight');
-    };
-
+    
     useEffect(() => {
         if(props.inward.process.length && props.inward.process.no) {
             if(props.coilDetails.instructionId)
@@ -317,9 +318,15 @@ const CreateCuttingDetailsForm = (props) => {
           <Row>
          <Col lg={12} md={12} sm={24} xs={24}>
          <Card title="" bordered={false}>
-              <p>Coil number : {props.inward.plan.coilNumber}</p>
-              <p>Available length : {props.inward.plan.fLength}</p>
-              <p>Available Weight :{props.inward.plan.fQuantity}</p>
+              <p>Coil number : {props.coilcoilNumber}</p>
+              <p>Available length : {props.coil.fLength}</p>
+              <p>Available Weight :{props.coil.fpresent}</p>
+              <p>Inward Weight :{props.coil.fQuantity}</p>
+              <p>Grade:{props.coil.materialGrade.gradeName}</p>
+              <p>Material :{props.coil.material.description}</p>
+              <p>Customer Name :{props.coil.party.nPartyName}</p>
+              <p>Thickness:{props.coil.fThickness}</p>
+              <p>Width :{props.coil.fWidth}</p>
               </Card>
              </Col></Row>
             </TabPane>
