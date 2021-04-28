@@ -1,4 +1,4 @@
-import {Button, Col, Form, Icon, Input, message, Modal, Row, Table, Radio, DatePicker} from "antd";
+import {Button, Col, Form, Icon, Input, message, Modal, Row, Table, Tabs, DatePicker} from "antd";
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import moment from "moment";
@@ -324,6 +324,8 @@ const SlittingWidths = (props) => {
 }
 
 const CreateSlittingDetailsForm = (props) => {
+    const TabPane = Tabs.TabPane;
+    const [mode, setMode] = useState('top');
     const {getFieldDecorator} = props.form;
     const [cuts, setCuts] = useState([]);
     const [length,setLength]= useState();
@@ -529,78 +531,28 @@ setTableData(newData);
                 props.setShowSlittingModal(false)
             }}
         >
-         <Row>
-         <Col lg={12} md={16} sm={24} xs={24} span={16} className="gx-align-self-center">
-            <h3>Coil Details </h3>
-                    <Form.Item label="Available Weight">
-                            {getFieldDecorator('aWeight', {
-                            rules: [{ required: false}],
-                            })(
-                            <>
-                                <Input id="aWeight" disabled={true} value={props.coil.fpresent} name="aWeight" />
-                            </>
-                        )}
-                    </Form.Item>
-                    <Form.Item label="Inward Weight">
-                            {getFieldDecorator('iweight', {
-                                rules: [{ required: false}],
-                            })(
-                                <>
-                                    <Input id="iweight" disabled={true} value={props.coil.fQuantity} name="iweight" />
-                                </>
-                            )}
-                    </Form.Item>
-                    <Form.Item label="Material Type">
-                            {getFieldDecorator('material', {
-                                rules: [{ required: false}],
-                            })(
-                                <>
-                                    <Input id="material" disabled={true} value={props.coil.material.description} name="material" />
-                                </>
-                            )}
-                    </Form.Item>
-                    <Form.Item label="Material Grade">
-                            {getFieldDecorator('grade', {
-                                rules: [{ required: false}],
-                            })(
-                                <>
-                                    <Input id="grade" disabled={true} value={props.coil.materialGrade.gradeName} name="grade" />
-                                </>
-                            )}
-                    </Form.Item>
-            </Col> 
-            <Col lg={12} md={12} sm={24} xs={24}>
-                <h3></h3>
-                <Form.Item label="Party Name">
-                 {getFieldDecorator('party', {
-                    rules: [{ required: false}],
-                    })(
-                      <>
-                        <Input id="party" disabled={true} value={props.coil.party.nPartyName} name="party" />
-                      </>
-                    )}
-                </Form.Item>
-                <Form.Item label="Thickness(mm)">
-                   {getFieldDecorator('thickness', {
-                      rules: [{ required: false}],
-                    })(
-                      <>
-                       <Input id="thickness" disabled={true} value={props.coil.fThickness} name="thickness" />
-                      </>
-                    )}
-                </Form.Item>
-                <Form.Item label="Width(mm)">
-                    {getFieldDecorator('width', {
-                       rules: [{ required: false}],
-                   })(
-                    <>
-                     <Input id="width" disabled={true} value={props.coil.fWidth} name="width" />
-                    </>
-                 )}
-                </Form.Item>
-            </Col>     
-        </Row>
-        <Row>
+            <Tabs
+                defaultActiveKey="1"
+                tabPosition={mode}
+            >
+                <TabPane tab="Coil Details" key="1">
+                <Row>
+                <Col lg={12} md={12} sm={24} xs={24}>   
+                    <p>Coil number : {props.coil.coilNumber}</p>
+                    <p>Available length : {props.coil.fLength}</p>
+                    <p>Available Weight :{props.coil.fpresent}</p>
+                    <p>Inward Weight :{props.coil.fQuantity}</p>
+                    <p>Grade:{props.coil.materialGrade.gradeName}</p></Col> 
+                <Col lg={12} md={12} sm={24} xs={24}>
+                    <p>Material :{props.coil.material.description}</p>
+                    <p>Customer Name :{props.coil.party.nPartyName}</p>
+                    <p>Thickness:{props.coil.fThickness}</p>
+                    <p>Width :{props.coil.fWidth}</p>
+                </Col>     
+            </Row>
+        </TabPane>
+                <TabPane tab="Slitting Instruction" key="2">
+                <Row>
                 <Col lg={12} md={16} sm={24} xs={24} span={16} className="gx-align-self-center">
                     
                    <Form {...formItemLayout} className="login-form gx-pt-4">
@@ -624,7 +576,10 @@ setTableData(newData);
                 </Form.Item>
                 </Col>
             </Row>
-        </Modal>
+        
+                </TabPane>
+            </Tabs>
+         </Modal>
     )
 }
 
