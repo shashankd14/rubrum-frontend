@@ -318,7 +318,7 @@ const CreateCuttingDetailsForm = (props) => {
           <Row>
          <Col lg={12} md={12} sm={24} xs={24}>
          <Card title="" bordered={false}>
-              <p>Coil number : {props.coilcoilNumber}</p>
+              <p>Coil number : {props.coil.coilNumber}</p>
               <p>Available length : {props.coil.fLength}</p>
               <p>Available Weight :{props.coil.fpresent}</p>
               <p>Inward Weight :{props.coil.fQuantity}</p>
