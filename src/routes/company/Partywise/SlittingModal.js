@@ -111,7 +111,7 @@ const SlittingWidths = (props) => {
                             width: values.widths[i],
                             no: j+1,
                             slitno:values.nos[i],
-                            weight:values.weights[i],
+                            weight:values.weights[i]/values.nos[i],
                             inwardId: props.coilDetails.inwardEntryId ? props.coilDetails.inwardEntryId : '',
                             instructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : '',
                         }
@@ -119,7 +119,7 @@ const SlittingWidths = (props) => {
                         
                     }
                     totalWidth += values.widths[i]*values.nos[i];
-                    totalWeight += values.weights[i]*values.nos[i];
+                    totalWeight = props.tweight+values.weights[i];
                     if(widthValue1> totalWidth){
                         let widthRemain = widthValue1-totalWidth;
                         setwidth(widthRemain);
@@ -558,7 +558,7 @@ setTableData(newData);
                    <Form {...formItemLayout} className="login-form gx-pt-4">
                        
                         <Form.Item>
-                            <SlittingWidthsForm setSlits={(slits) => setCuts([...cuts,...slits])} setweight={(w) => settweight(w)} coilDetails={props.coilDetails} wip={props.wip} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth} plannedWeight ={props.plannedWeight} length={length} cuts={cuts} edit={edit}/>
+                            <SlittingWidthsForm setSlits={(slits) => setCuts([...cuts,...slits])} setweight={(w) => settweight(w)} coilDetails={props.coilDetails} wip={props.wip} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth} plannedWeight ={props.plannedWeight} length={length} cuts={cuts} edit={edit} tweight={tweight}/>
                         </Form.Item>
 
                     </Form>
