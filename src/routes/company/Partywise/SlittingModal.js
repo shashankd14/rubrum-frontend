@@ -176,16 +176,9 @@ const SlittingWidths = (props) => {
             keys: keys.filter(key => key !== k),
         });
     }
-    // const handleChange = (e)=>{
-    //     if(e.target.value != e.target.defaultValue){
-    //     let finalLength = props.cuts.length> 0?len-Number(e.target.value): lengthValue1-Number(e.target.value);
-    //     setlen(finalLength);
-    //     }
-    // }
     const handleBlur = (e)=>{
         props.form.validateFields((err, values) => {
             let widthEntry = 0;
-            let weight = 0
             if(!err){
                 for(let i=0; i < values.widths.length; i++) {
                     widthEntry += values.widths[i]*values.nos[i];
@@ -200,12 +193,6 @@ const SlittingWidths = (props) => {
             }
       })
     }
-    // const handleWidthChange = (e)=>{
-    //     if(e.target.value != e.target.defaultValue){
-    //     let finalLength = props.cuts.length> 0?width-Number(e.target.value):widthValue1-Number(e.target.value);
-    //     setwidth(finalLength);
-    //     }
-    // }
     const onChange=()=>{
         props.form.setFieldsValue({
             length: props.plannedLength(props.coilDetails)
