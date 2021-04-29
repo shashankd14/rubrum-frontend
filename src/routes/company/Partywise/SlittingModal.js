@@ -93,7 +93,7 @@ const SlittingWidths = (props) => {
     },[props.cuts])
     
     const getEditValue =() =>{
-        if(props.cuts.length> 0){
+        if(props.cuts.length> 0 && props.length !== undefined){
             const index = 0;
             const obj = props.cuts[props.length];
             const arr = [obj.width,obj.no, obj.weight];
@@ -402,18 +402,18 @@ const columnsPlan=[
     },
     {
         title: 'Length',
-        dataIndex:'length',
-        key: 'length',
+        dataIndex:'plannedLength',
+        key: 'plannedLength',
     },
     {
         title: 'Width',
-        dataIndex:'width',
-        key: 'width',
+        dataIndex:'plannedWidth',
+        key: 'plannedWidth',
     },
     {
         title: 'Weight',
-        dataIndex:'weight',
-        key:'weight'
+        dataIndex:'plannedWeight',
+        key:'plannedWeight'
     },
     {
         title: 'Action',
@@ -459,15 +459,19 @@ const columnsPlan=[
    setreset(resetter);
    },[props.coilDetails])
     useEffect(() => {
-    let data = props.wip?(props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts;
+    let data = props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions;
     if(props.childCoil){
-        const arrayData =[];
-        arrayData.push(data);
-        data= arrayData
+      const arrayData =[];
+      arrayData.push(data);
+      data= arrayData
+    } else{
+        data = data.flat();
     }
-    const newData = [...data];
+    let newData = [...data];
+    newData = newData.filter(item => item.process.processId === 2)
 
 setTableData(newData);
+setCuts(newData);
 
 }, [props.coilDetails]);
 

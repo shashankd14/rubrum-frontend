@@ -228,12 +228,14 @@ const Plan = (props) => {
                                                                 e.stopPropagation();
                                                                 setCuttingCoil(instruction);
                                                                 setShowCuttingModal(true);
+                                                                setChildCoil(true);
                                                             }}>Cutting
                                                         </Button>
                                                                 <Button onClick={(e) => {
                                                                     e.stopPropagation();
                                                                     setSlittingCoil(instruction);
                                                                     setShowSlittingModal(true);
+                                                                    setChildCoil(true);
                                                                 }}>Slitting
                                                         </Button></div>}
 
@@ -288,12 +290,14 @@ const Plan = (props) => {
                                                                             e.stopPropagation();
                                                                             setCuttingCoil(instruction);
                                                                             setShowCuttingModal(true);
+                                                                            setChildCoil(true);
                                                                         }}>Cutting
                                                                         </Button>
                                                                             <Button onClick={(e) => {
                                                                                 e.stopPropagation();
                                                                                 setSlittingCoil(instruction);
                                                                                 setShowSlittingModal(true);
+                                                                                setChildCoil(true);
                                                                             }}>Slitting
                                                                     </Button></div>}
                                                             </div>

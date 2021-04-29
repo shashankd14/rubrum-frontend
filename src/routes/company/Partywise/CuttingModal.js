@@ -107,18 +107,18 @@ const CreateCuttingDetailsForm = (props) => {
         },
         {
             title: 'Length',
-            dataIndex:'length',
-            key: 'length',
+            dataIndex:'plannedLength',
+            key: 'plannedLength',
         },
         {
             title: 'No of Sheets',
-            dataIndex:'no',
-            key: 'no',
+            dataIndex:'plannedNoOfPieces',
+            key: 'plannedNoOfPieces',
         },
         {
             title: 'Weight',
-            dataIndex:'weight',
-            key:'weight',
+            dataIndex:'plannedWeight',
+            key:'plannedWeight',
         },
         {
             title:'Actions',
@@ -194,15 +194,19 @@ const CreateCuttingDetailsForm = (props) => {
     }, [props.inward.process.length, props.inward.process.no])
 
     useEffect(() => {
-        let data = props.wip?(props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts
+        let data = props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions
         if(props.childCoil){
             const arrayData =[];
             arrayData.push(data);
             data= arrayData
+        }else{
+            data = data.flat();
         }
-        const newData = [...data];
+        let newData = [...data];
 
         setTableData(newData);
+        newData = newData.filter(item => item.process.processId === 1)
+        setCuts(newData)
 
     }, [props.coilDetails]);
     useEffect(() => {
