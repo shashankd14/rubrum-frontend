@@ -16,32 +16,48 @@ const Plan = (props) => {
     const [slittingCoil, setSlittingCoil] = useState(false);
     const [childCoil, setChildCoil] = useState(false);
     // console.log(instruction)
+    function removeDuplicates(originalArray, prop) {
+        var newArray = [];
+        var lookupObject  = {};
+   
+        for(var i in originalArray) {
+           lookupObject[originalArray[i][prop]] = originalArray[i];
+        }
+   
+        for(i in lookupObject) {
+            newArray.push(lookupObject[i]);
+        }
+         return newArray;
+    }
     const getPlannedLength = (ins) => {
         let length = 0;
         let actualLength = 0;
         let childLength = 0;
         actualLength = ins.fLength ? ins.fLength : ins.actualLength != null ? ins.actualLength : ins.plannedLength;
-        if (ins.instruction && ins.instruction.length> 0){
-           let instruction = ins.instruction.flat();
-           length = instruction.map(i => i.plannedLength);
-           childLength = instruction.map(i => {
-               if (i.childInstructions && i.childInstructions.length> 0){
-                   return i.plannedLength;
-               }})
-            childLength = childLength.filter(i => i !== undefined)
-            childLength = childLength.length > 0? childLength.reduce((total, num) => total + num) : 0
-           length = length.reduce((total, num) => total + num)
-        } else {
-        if (ins.childInstructions && ins.childInstructions.length > 0) {
-            length = ins.childInstructions.map(i => i.plannedLength);
-            length = length.reduce((total, num) => total + num)
-        }}
-        if (actualLength > (childLength+length)){
-            length = actualLength - (length + childLength);
-        } else {
-            length = 0
-        };
-        return length;
+        
+        // if (ins.instruction && ins.instruction.length> 0){
+        //    let instruction = ins.instruction.flat();
+        //    let uniqueArray = removeDuplicates(instruction, "plannedLength");
+        // //    length = instruction.filter(i => i.plannedLength);
+        // //    childLength = instruction.map(i => {
+        // //        if (i.childInstructions && i.childInstructions.length> 0){
+        // //            return i.plannedLength;
+        // //        }})
+        // //     childLength = childLength.filter(i => i !== undefined)
+        // //     childLength = childLength.length > 0? childLength.reduce((total, num) => total + num) : 0
+        // //    length = length.reduce((total, num) => total + num)
+        // } else {
+        // if (ins.childInstructions && ins.childInstructions.length > 0) {
+        //     length = ins.childInstructions.map(i => i.plannedLength);
+
+        //     length = length.reduce((total, num) => total + num)
+        // }}
+        // if (actualLength > (childLength+length)){
+        //     length = actualLength - (length + childLength);
+        // } else {
+        //     length = 0
+        // };
+        return actualLength;
     }
     const getPlannedWidth = (ins) => {
         let width = 0;

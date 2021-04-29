@@ -98,7 +98,7 @@ const SlittingWidths = (props) => {
         if(props.cuts.length> 0 && props.length !== undefined){
             const index = 0;
             const obj = props.cuts[props.length];
-            const arr = [obj.width,obj.no, obj.weight];
+            const arr = [obj.plannedWidth,obj.plannedNoOfPieces, obj.plannedWeight];
             const array = ["widths[0]","nos[0]","weights[0]"];
             for (let i=0; i<array.length; i++){
                 props.form.setFieldsValue({
@@ -125,11 +125,11 @@ const SlittingWidths = (props) => {
                     for (let j=0; j<values.nos[i];j++){
                         let slitValue = {
                             name: i+1, processDate: moment().format(APPLICATION_DATE_FORMAT),
-                            length: values.length,
-                            width: values.widths[i],
+                            plannedLength: values.length,
+                            plannedWidth: values.widths[i],
                             no: j+1,
-                            slitno:values.nos[i],
-                            weight:values.weights[i]/values.nos[i],
+                            plannedNoOfPieces:values.nos[i],
+                            plannedWeight:values.weights[i]/values.nos[i],
                             inwardId: props.coilDetails.inwardEntryId ? props.coilDetails.inwardEntryId : '',
                             instructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : '',
                         }
