@@ -123,7 +123,7 @@ const SlittingWidths = (props) => {
                     for (let j=0; j<values.nos[i];j++){
                         let slitValue = {
                             name: i+1, processDate: moment().format(APPLICATION_DATE_FORMAT),
-                            length: values.length/values.nos[i],
+                            length: values.length,
                             width: values.widths[i],
                             no: j+1,
                             slitno:values.nos[i],
