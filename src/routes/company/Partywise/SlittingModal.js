@@ -74,7 +74,8 @@ const SlittingWidths = (props) => {
           lengthValue1 = props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails)
           widthValue1 = props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.plannedWidth(props.coilDetails);
           }
-          
+        props.widthValue(width);
+        props.lengthValue(len);
         if(props.cuts && props.cuts.length === 0){
             setwidth(widthValue1);
             setlen(lengthValue1);
@@ -91,6 +92,7 @@ const SlittingWidths = (props) => {
         cuts = cuts.length > 0? cuts.reduce((total, num) => Number(total) + Number(num)) : 0
         props.setweight(cuts)
     },[props.cuts])
+    
     
     const getEditValue =() =>{
         if(props.cuts.length> 0 && props.length !== undefined){
@@ -186,9 +188,11 @@ const SlittingWidths = (props) => {
                 settwidth(widthEntry);
                 if(lengthValue1>= (Number(values.length)+cutLength)){
                     setlen(lengthValue1-(Number(values.length)+cutLength))
+                    props.lengthValue(lengthValue1-(Number(values.length)+cutLength))
                 }
                 if(widthValue1 >= (widthEntry+cutWidth)){
                     setwidth(widthValue1- (widthEntry+cutWidth));
+                    props.widthValue(widthValue1- (widthEntry+cutWidth))
                 }
             }
       })
@@ -431,6 +435,8 @@ const columnsPlan=[
     const [tableData, setTableData] = useState(props.wip?(props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts);
     const [tweight, settweight]= useState(0);
     const [edit, setEdit] = useState([]);
+    const [lengthValue, setLengthValue] = useState();
+    const [widthValue, setWidthValue]= useState();
     const onDelete = (key, e) => {
         e.preventDefault();
         
@@ -529,30 +535,14 @@ setCuts(newData);
                 defaultActiveKey="1"
                 tabPosition={mode}
             >
-                <TabPane tab="Coil Details" key="1">
-                <Row>
-                <Col lg={12} md={12} sm={24} xs={24}>   
-                    <p>Coil number : {props.coil.coilNumber}</p>
-                    <p>Available length : {props.coil.fLength}</p>
-                    <p>Available Weight :{props.coil.fpresent}</p>
-                    <p>Inward Weight :{props.coil.fQuantity}</p>
-                    <p>Grade:{props.coil.materialGrade.gradeName}</p></Col> 
-                <Col lg={12} md={12} sm={24} xs={24}>
-                    <p>Material :{props.coil.material.description}</p>
-                    <p>Customer Name :{props.coil.party.nPartyName}</p>
-                    <p>Thickness:{props.coil.fThickness}</p>
-                    <p>Width :{props.coil.fWidth}</p>
-                </Col>     
-            </Row>
-        </TabPane>
-                <TabPane tab="Slitting Instruction" key="2">
+                <TabPane tab="Slitting Instruction" key="1">
                 <Row>
                 <Col lg={12} md={16} sm={24} xs={24} span={16} className="gx-align-self-center">
                     
                    <Form {...formItemLayout} className="login-form gx-pt-4">
                        
                         <Form.Item>
-                            <SlittingWidthsForm setSlits={(slits) => setCuts([...cuts,...slits])} setweight={(w) => settweight(w)} coilDetails={props.coilDetails} wip={props.wip} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth} plannedWeight ={props.plannedWeight} length={length} cuts={cuts} edit={edit} tweight={tweight}/>
+                            <SlittingWidthsForm setSlits={(slits) => setCuts([...cuts,...slits])} setweight={(w) => settweight(w)} coilDetails={props.coilDetails} wip={props.wip} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth} plannedWeight ={props.plannedWeight} length={length} cuts={cuts} edit={edit} tweight={tweight} lengthValue={(lengthValue) => setLengthValue(lengthValue)} widthValue={(widthValue) => setWidthValue(widthValue)}/>
                         </Form.Item>
 
                     </Form>
@@ -572,7 +562,25 @@ setCuts(newData);
             </Row>
         
                 </TabPane>
-            </Tabs>
+            
+                <TabPane tab="Coil Details" key="2">
+                <Row>
+                <Col lg={12} md={12} sm={24} xs={24}>   
+                    <p>Coil number : {props.coil.coilNumber}</p>
+                    <p>Available length(mm) : {lengthValue}</p>
+                    <p>Available Weight(kg) :{props.coil.fpresent}</p>
+                    <p>Inward Weight(kg) :{props.coil.fQuantity}</p>
+                    <p>Grade:{props.coil.materialGrade.gradeName}</p></Col> 
+                <Col lg={12} md={12} sm={24} xs={24}>
+                    <p>Material :{props.coil.material.description}</p>
+                    <p>Customer Name :{props.coil.party.nPartyName}</p>
+                    <p>Thickness(mm):{props.coil.fThickness}</p>
+                    <p>Width(mm) :{props.coil.fWidth}</p>
+                    <p>Available Width(mm): {widthValue}</p>
+                </Col>     
+            </Row>
+        </TabPane>
+                </Tabs>
          </Modal>
     )
 }
