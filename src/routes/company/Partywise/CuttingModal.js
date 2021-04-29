@@ -28,7 +28,9 @@ const CreateCuttingDetailsForm = (props) => {
     let loading = '';
     const [cuts, setCuts] = useState([]);
     const [mode, setMode] = useState('top');
-
+    const [balanced, setBalanced] = useState(true);
+    const [no, setNo]= useState();
+    
     // const dataSource= props.wip?((props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts;
     const [tableData, setTableData] = useState(props.wip?(props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts);
     const columns=[
@@ -156,7 +158,7 @@ const CreateCuttingDetailsForm = (props) => {
     };
     const onChange=()=>{
         props.form.setFieldsValue({
-            length: props.plannedLength(props.coilDetails)
+            no: no
         });
     }
     const handleModeChange = (e) => {
@@ -230,6 +232,16 @@ const CreateCuttingDetailsForm = (props) => {
         newData[index][key] = Number(e.target.value);
         setTableData(newData);
     };
+    const handleChange = (e) =>{
+        if(e.target.value !== ''){
+            setBalanced(false)
+           
+        } else{
+            setBalanced(true)
+        }
+        let length = e.target.value;
+       setNo((props.coil.fpresent)/(0.00000785 *props.coil.fWidth*props.coil.fThickness*length));
+    }
 
      return (
         <Modal
@@ -262,7 +274,7 @@ const CreateCuttingDetailsForm = (props) => {
 
             <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4">
             <Form.Item>
-                    <Button type="primary" onClick={() => onChange()} disabled={props.wip ? true : false}>
+                    <Button type="primary" onClick={onChange} disabled={props.wip ? true :balanced ? true : false}>
                             Balanced
                     </Button>
                 </Form.Item>
@@ -284,13 +296,13 @@ const CreateCuttingDetailsForm = (props) => {
                         rules: [{ required: true, message: 'Please enter Length' },
                                 {pattern: "^[0-9]*$", message: 'Length should be a number'},],
                         })(
-                        <Input id="length" disabled={props.wip ? true : false}/>
+                        <Input id="length" disabled={props.wip ? true : false} onChange={(e)=>handleChange(e)}/>
                             )}
                 </Form.Item>
                 <Form.Item label="No of cuts">
                         {getFieldDecorator('no', {
-                            rules: [{ required: true, message: 'Please enter number of cuts required' },
-                                {pattern: "^[0-9]*$", message: 'Number of cuts should be a number'}],
+                            rules: [{ required: true, message: 'Please enter number of cuts required' }
+                                ],
                         })(
                         <Input id="noOfCuts" disabled={props.wip ? true : false}/>
                             )}
