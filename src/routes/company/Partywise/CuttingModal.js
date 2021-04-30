@@ -113,18 +113,18 @@ const CreateCuttingDetailsForm = (props) => {
         },
         {
             title: 'Length',
-            dataIndex:'plannedLength',
-            key: 'plannedLength',
+            dataIndex:'length',
+            key: 'length',
         },
         {
             title: 'No of Sheets',
-            dataIndex:'plannedNoOfPieces',
-            key: 'plannedNoOfPieces',
+            dataIndex:'no',
+            key: 'no',
         },
         {
             title: 'Weight',
-            dataIndex:'plannedWeight',
-            key:'plannedWeight',
+            dataIndex:'weight',
+            key:'weight',
         },
         {
             title:'Actions',

@@ -15,7 +15,6 @@ const Plan = (props) => {
     const [cuttingCoil, setCuttingCoil] = useState(false);
     const [slittingCoil, setSlittingCoil] = useState(false);
     const [childCoil, setChildCoil] = useState(false);
-    // console.log(instruction)
     // function removeDuplicates(originalArray, prop) {
     //     var newArray = [];
     //     var lookupObject  = {};
