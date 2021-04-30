@@ -287,11 +287,7 @@ const CreateCuttingDetailsForm = (props) => {
           <Col lg={12} md={12} sm={24} xs={24} className="gx-align-self-center">
 
             <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4">
-            <Form.Item>
-                    <Button type="primary" onClick={onChange} disabled={props.wip ? true :balanced ? true : false}>
-                            Balanced
-                    </Button>
-                </Form.Item>
+            
                 <Form.Item label="Process Date" >
                     {getFieldDecorator('processDate', {
                         initialValue: moment(new Date(), APPLICATION_DATE_FORMAT),
@@ -320,6 +316,11 @@ const CreateCuttingDetailsForm = (props) => {
                         })(
                         <Input id="noOfCuts" disabled={props.wip ? true : false}/>
                             )}
+                </Form.Item>
+                <Form.Item>
+                    <Button type="primary" onClick={onChange} disabled={props.wip ? true :balanced ? true : false}>
+                            Balanced
+                    </Button>
                 </Form.Item>
                 <Form.Item label="Weight">
                     {getFieldDecorator('weight', {
