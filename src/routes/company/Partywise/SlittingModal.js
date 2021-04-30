@@ -50,7 +50,7 @@ const SlittingWidths = (props) => {
     const callBackValue =(n)=>{
         let cuts = 0;
         if(props.cuts && props.cuts.length){
-            cuts = n==='length'? props.cuts.map(i => i.length) : props.cuts.map(i => i.width);
+            cuts = n==='length'? props.cuts.map(i => i.plannedLength) : props.cuts.map(i => i.plannedWidth);
             cuts = cuts.filter(i => i !== undefined)
             cuts = cuts.length > 0? cuts.reduce((total, num) => Number(total) + Number(num)) : 0
             
@@ -87,7 +87,7 @@ const SlittingWidths = (props) => {
     //     setlen(len+props.deletedLength);
     //   }, [props.deletedLength]);
     useEffect(()=>{
-        let cuts = props.cuts.map(i => i.weight);
+        let cuts = props.cuts.map(i => i.plannedWeight);
        cuts = cuts.filter(i => i !== undefined)
         cuts = cuts.length > 0? cuts.reduce((total, num) => Number(total) + Number(num)) : 0
         props.setweight(cuts)
