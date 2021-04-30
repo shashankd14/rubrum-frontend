@@ -254,7 +254,7 @@ const CreateCuttingDetailsForm = (props) => {
             setBalanced(true)
         }
         let length = e.target.value;
-       setNo((props.coil.fpresent)/(0.00000785 *width*props.coil.fThickness*Number(length)));
+       setNo(((props.coil.fpresent)/(0.00000785 *width*props.coil.fThickness*Number(length))).toFixed(0));
     }
 
      return (
