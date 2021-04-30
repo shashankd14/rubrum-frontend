@@ -129,7 +129,7 @@ const SlittingWidths = (props) => {
                             plannedWidth: values.widths[i],
                             no: j+1,
                             plannedNoOfPieces:values.nos[i],
-                            plannedWeight:values.weights[i]/values.nos[i],
+                            plannedWeight:(values.weights[i]/values.nos[i]).toFixed(0),
                             inwardId: props.coilDetails.inwardEntryId ? props.coilDetails.inwardEntryId : '',
                             instructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : '',
                         }
@@ -365,18 +365,6 @@ const columns = [
         dataIndex:'actualWidth',
         render: (text, record, index) => (
             <Input value={text}  onChange={onInputChange("actualWidth", index)} />
-          )
-    },
-    {
-        title: 'No of Sheets',
-        dataIndex:'plannedNoOfPieces',
-        key: 'plannedNoOfPieces',
-    },
-    {
-        title: 'Actual No of Sheets',
-        dataIndex:'actualNoOfPieces',
-        render: (text, record, index) => (
-            <Input value={text}  onChange={onInputChange("actualNoOfPieces", index)} />
           )
     },
     {

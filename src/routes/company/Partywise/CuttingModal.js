@@ -113,18 +113,18 @@ const CreateCuttingDetailsForm = (props) => {
         },
         {
             title: 'Length',
-            dataIndex:'length',
-            key: 'length',
+            dataIndex:'plannedLength',
+            key: 'plannedLength',
         },
         {
             title: 'No of Sheets',
-            dataIndex:'no',
-            key: 'no',
+            dataIndex:'plannedNoOfPieces',
+            key: 'plannedNoOfPieces',
         },
         {
             title: 'Weight',
-            dataIndex:'weight',
-            key:'weight',
+            dataIndex:'plannedWeight',
+            key:'plannedWeight',
         },
         {
             title:'Actions',
@@ -179,6 +179,10 @@ const CreateCuttingDetailsForm = (props) => {
                     message.error('Weight greater than available weight', 2);
                 }else{
                     setCuts([...cuts, {...props.inward.process,
+                        plannedLength: props.inward.process.length,
+                        plannedWidth: props.inward.process.width,
+                        plannedNoOfPieces: props.inward.process.no,
+                        plannedWeight: props.inward.process.weight,
                         inwardId: props.coilDetails.inwardEntryId ? props.coilDetails.inwardEntryId : "",
                         instructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : ""}]);
                     props.resetInstruction();
@@ -250,7 +254,7 @@ const CreateCuttingDetailsForm = (props) => {
             setBalanced(true)
         }
         let length = e.target.value;
-       setNo((props.coil.fpresent)/(0.00000785 *width*props.coil.fThickness*length));
+       setNo((props.coil.fpresent)/(0.00000785 *width*props.coil.fThickness*Number(length)));
     }
 
      return (
