@@ -32,6 +32,7 @@ const CreateCuttingDetailsForm = (props) => {
     const [no, setNo]= useState();
     const lengthValue = props.coilDetails.instruction && props.coilDetails.instruction.length > 0 ? props.plannedLength(props.coilDetails) : props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails)
     const widthValue = props.coilDetails.instruction && props.coilDetails.instruction.length > 0  ? props.plannedWidth(props.coilDetails):  props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.plannedWidth(props.coilDetails);
+    const WeightValue = props.coilDetails.instruction && props.coilDetails.instruction.length > 0  ? props.plannedWeight(props.coilDetails):  props.coilDetails.fpresent ? props.coilDetails.fpresent  : props.plannedWeight(props.coilDetails);
     const [length, setlength]= useState(lengthValue);
     const [width, setwidth] = useState(widthValue);
     
@@ -352,7 +353,7 @@ const CreateCuttingDetailsForm = (props) => {
               <p>Coil number : {props.coil.coilNumber}</p>
               <p>Inward length(mm): {props.coil.fLength}</p>
               <p>Available Length(mm):{lengthValue}</p>
-              <p>Available Weight(kg) :{props.coil.fpresent}</p>
+              <p>Available Weight(kg) :{WeightValue}</p>
               <p>Inward Weight(kg) :{props.coil.fQuantity}</p>
               <p>Grade:{props.coil.materialGrade.gradeName}</p>
               <p>Material :{props.coil.material.description}</p>
