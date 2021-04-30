@@ -15,25 +15,39 @@ const Plan = (props) => {
     const [cuttingCoil, setCuttingCoil] = useState(false);
     const [slittingCoil, setSlittingCoil] = useState(false);
     const [childCoil, setChildCoil] = useState(false);
-    // console.log(instruction)
+    // function removeDuplicates(originalArray, prop) {
+    //     var newArray = [];
+    //     var lookupObject  = {};
+   
+    //     for(var i in originalArray) {
+    //        lookupObject[originalArray[i][prop]] = originalArray[i];
+    //     }
+   
+    //     for(i in lookupObject) {
+    //         newArray.push(lookupObject[i]);
+    //     }
+    //      return newArray;
+    // }
     const getPlannedLength = (ins) => {
         let length = 0;
         let actualLength = 0;
         let childLength = 0;
         actualLength = ins.fLength ? ins.fLength : ins.actualLength != null ? ins.actualLength : ins.plannedLength;
+        
         if (ins.instruction && ins.instruction.length> 0){
            let instruction = ins.instruction.flat();
-           length = instruction.map(i => i.plannedLength);
+           length = instruction.filter(i => i.plannedLength);
            childLength = instruction.map(i => {
                if (i.childInstructions && i.childInstructions.length> 0){
                    return i.plannedLength;
                }})
             childLength = childLength.filter(i => i !== undefined)
             childLength = childLength.length > 0? childLength.reduce((total, num) => total + num) : 0
-           length = length.reduce((total, num) => total + num)
+           length = length.length> 0 ?length.reduce((total, num) => total + num): 0
         } else {
         if (ins.childInstructions && ins.childInstructions.length > 0) {
             length = ins.childInstructions.map(i => i.plannedLength);
+
             length = length.reduce((total, num) => total + num)
         }}
         if (actualLength > (childLength+length)){
@@ -147,7 +161,7 @@ const Plan = (props) => {
 
     return (
         <div className="gx-full-height" style={{ overflowX: "auto", overflowy: "scroll" }}>
-            {cuttingCoil && <CuttingModal showCuttingModal={showCuttingModal} setShowCuttingModal={() => setShowCuttingModal(false)} coilDetails={cuttingCoil} wip={props.wip} childCoil={childCoil} plannedLength={getPlannedLength} coil={props.inward.plan}/>}
+            {cuttingCoil && <CuttingModal showCuttingModal={showCuttingModal} setShowCuttingModal={() => setShowCuttingModal(false)} coilDetails={cuttingCoil} wip={props.wip} childCoil={childCoil} plannedLength={getPlannedLength} plannedWidth ={getPlannedWidth} coil={props.inward.plan}/>}
             {slittingCoil && <SlittingModal showSlittingModal={showSlittingModal} setShowSlittingModal={() => setShowSlittingModal(false)} wip={props.wip} coilDetails={slittingCoil} childCoil={childCoil} plannedLength={getPlannedLength} plannedWidth ={getPlannedWidth} plannedWeight={getPlannedWeight} coil={props.inward.plan}/>}
             <h1><IntlMessages id="partywise.plan.label" /></h1>
             <div className="gx-full-height gx-flex-row">
@@ -177,10 +191,12 @@ const Plan = (props) => {
                                 <Button onClick={() => {
                                     setCuttingCoil(props.inward.plan);
                                     setShowCuttingModal(true);
+                                    setChildCoil(false)
                                 }}>Cutting</Button>
                                 <Button onClick={() => {
                                     setSlittingCoil(props.inward.plan);
                                     setShowSlittingModal(true)
+                                    setChildCoil(false)
                                 }}>Slitting</Button>
                             </div>}
                     </Card>

@@ -50,7 +50,7 @@ const SlittingWidths = (props) => {
     const callBackValue =(n)=>{
         let cuts = 0;
         if(props.cuts && props.cuts.length){
-            cuts = n==='length'? props.cuts.map(i => i.length) : props.cuts.map(i => i.width);
+            cuts = n==='length'? props.cuts.map(i => i.plannedLength) : props.cuts.map(i => i.plannedWidth);
             cuts = cuts.filter(i => i !== undefined)
             cuts = cuts.length > 0? cuts.reduce((total, num) => Number(total) + Number(num)) : 0
             
@@ -87,7 +87,7 @@ const SlittingWidths = (props) => {
     //     setlen(len+props.deletedLength);
     //   }, [props.deletedLength]);
     useEffect(()=>{
-        let cuts = props.cuts.map(i => i.weight);
+        let cuts = props.cuts.map(i => i.plannedWeight);
        cuts = cuts.filter(i => i !== undefined)
         cuts = cuts.length > 0? cuts.reduce((total, num) => Number(total) + Number(num)) : 0
         props.setweight(cuts)
@@ -98,7 +98,7 @@ const SlittingWidths = (props) => {
         if(props.cuts.length> 0 && props.length !== undefined){
             const index = 0;
             const obj = props.cuts[props.length];
-            const arr = [obj.width,obj.no, obj.weight];
+            const arr = [obj.plannedWidth,obj.plannedNoOfPieces, obj.plannedWeight];
             const array = ["widths[0]","nos[0]","weights[0]"];
             for (let i=0; i<array.length; i++){
                 props.form.setFieldsValue({
@@ -125,11 +125,11 @@ const SlittingWidths = (props) => {
                     for (let j=0; j<values.nos[i];j++){
                         let slitValue = {
                             name: i+1, processDate: moment().format(APPLICATION_DATE_FORMAT),
-                            length: values.length,
-                            width: values.widths[i],
+                            plannedLength: values.length,
+                            plannedWidth: values.widths[i],
                             no: j+1,
-                            slitno:values.nos[i],
-                            weight:values.weights[i]/values.nos[i],
+                            plannedNoOfPieces:values.nos[i],
+                            plannedWeight:values.weights[i]/values.nos[i],
                             inwardId: props.coilDetails.inwardEntryId ? props.coilDetails.inwardEntryId : '',
                             instructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : '',
                         }

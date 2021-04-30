@@ -125,7 +125,7 @@ const List = (props) => {
     }, [props.inward.deleteSuccess])
     useEffect(() => {
         if(props.inward.deleteFail) {
-            message.success('Uanble to delete the coil', 2).then(() => {
+            message.success('Unable to delete the coil', 2).then(() => {
             props.resetDeleteInward();
             });
         }

@@ -28,7 +28,13 @@ const CreateCuttingDetailsForm = (props) => {
     let loading = '';
     const [cuts, setCuts] = useState([]);
     const [mode, setMode] = useState('top');
-
+    const [balanced, setBalanced] = useState(true);
+    const [no, setNo]= useState();
+    const lengthValue = props.coilDetails.instruction && props.coilDetails.instruction.length > 0 ? props.plannedLength(props.coilDetails) : props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails)
+    const widthValue = props.coilDetails.instruction && props.coilDetails.instruction.length > 0  ? props.plannedWidth(props.coilDetails):  props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.plannedWidth(props.coilDetails);
+    const [length, setlength]= useState(lengthValue);
+    const [width, setwidth] = useState(widthValue);
+    
     // const dataSource= props.wip?((props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts;
     const [tableData, setTableData] = useState(props.wip?(props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts);
     const columns=[
@@ -107,18 +113,18 @@ const CreateCuttingDetailsForm = (props) => {
         },
         {
             title: 'Length',
-            dataIndex:'plannedLength',
-            key: 'plannedLength',
+            dataIndex:'length',
+            key: 'length',
         },
         {
             title: 'No of Sheets',
-            dataIndex:'plannedNoOfPieces',
-            key: 'plannedNoOfPieces',
+            dataIndex:'no',
+            key: 'no',
         },
         {
             title: 'Weight',
-            dataIndex:'plannedWeight',
-            key:'plannedWeight',
+            dataIndex:'weight',
+            key:'weight',
         },
         {
             title:'Actions',
@@ -156,7 +162,7 @@ const CreateCuttingDetailsForm = (props) => {
     };
     const onChange=()=>{
         props.form.setFieldsValue({
-            length: props.plannedLength(props.coilDetails)
+            no: no
         });
     }
     const handleModeChange = (e) => {
@@ -187,7 +193,7 @@ const CreateCuttingDetailsForm = (props) => {
         if(props.inward.process.length && props.inward.process.no) {
             if(props.coilDetails.instructionId)
 
-                props.setProcessDetails({...props.inward.process, weight:Math.round( 0.00000785*parseFloat(props.coilDetails.width)*parseFloat(props.inward.plan.fThickness)*parseFloat(props.inward.process.length)*parseFloat(props.inward.process.no))});
+                props.setProcessDetails({...props.inward.process, weight:Math.round( 0.00000785*parseFloat(width)*parseFloat(props.inward.plan.fThickness)*parseFloat(props.inward.process.length)*parseFloat(props.inward.process.no))});
             else
                 props.setProcessDetails({...props.inward.process, weight:Math.round( 0.00000785*parseFloat(props.inward.plan.fWidth)*parseFloat(props.inward.plan.fThickness)*parseFloat(props.inward.process.length)*parseFloat(props.inward.process.no))});
         }
@@ -206,7 +212,13 @@ const CreateCuttingDetailsForm = (props) => {
 
         setTableData(newData);
         newData = newData.filter(item => item.process.processId === 1)
-        setCuts(newData)
+        setCuts(newData);
+        // for setting length and width
+
+        const lengthValue = props.coilDetails.instruction && props.coilDetails.instruction.length > 0 ? props.plannedLength(props.coilDetails) : props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails)
+        const widthValue = props.coilDetails.instruction && props.coilDetails.instruction.length > 0  ? props.plannedWidth(props.coilDetails):  props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.plannedWidth(props.coilDetails);
+        setlength(lengthValue);
+        setwidth(widthValue)
 
     }, [props.coilDetails]);
     useEffect(() => {
@@ -230,6 +242,16 @@ const CreateCuttingDetailsForm = (props) => {
         newData[index][key] = Number(e.target.value);
         setTableData(newData);
     };
+    const handleChange = (e) =>{
+        if(e.target.value !== ''){
+            setBalanced(false)
+           
+        } else{
+            setBalanced(true)
+        }
+        let length = e.target.value;
+       setNo((props.coil.fpresent)/(0.00000785 *width*props.coil.fThickness*length));
+    }
 
      return (
         <Modal
@@ -262,7 +284,7 @@ const CreateCuttingDetailsForm = (props) => {
 
             <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4">
             <Form.Item>
-                    <Button type="primary" onClick={() => onChange()} disabled={props.wip ? true : false}>
+                    <Button type="primary" onClick={onChange} disabled={props.wip ? true :balanced ? true : false}>
                             Balanced
                     </Button>
                 </Form.Item>
@@ -284,13 +306,13 @@ const CreateCuttingDetailsForm = (props) => {
                         rules: [{ required: true, message: 'Please enter Length' },
                                 {pattern: "^[0-9]*$", message: 'Length should be a number'},],
                         })(
-                        <Input id="length" disabled={props.wip ? true : false}/>
+                        <Input id="length" disabled={props.wip ? true : false} onChange={(e)=>handleChange(e)}/>
                             )}
                 </Form.Item>
                 <Form.Item label="No of cuts">
                         {getFieldDecorator('no', {
-                            rules: [{ required: true, message: 'Please enter number of cuts required' },
-                                {pattern: "^[0-9]*$", message: 'Number of cuts should be a number'}],
+                            rules: [{ required: true, message: 'Please enter number of cuts required' }
+                                ],
                         })(
                         <Input id="noOfCuts" disabled={props.wip ? true : false}/>
                             )}
@@ -323,14 +345,16 @@ const CreateCuttingDetailsForm = (props) => {
          <Col lg={12} md={12} sm={24} xs={24}>
          <Card title="" bordered={false}>
               <p>Coil number : {props.coil.coilNumber}</p>
-              <p>Available length : {props.coil.fLength}</p>
-              <p>Available Weight :{props.coil.fpresent}</p>
-              <p>Inward Weight :{props.coil.fQuantity}</p>
+              <p>Inward length(mm): {props.coil.fLength}</p>
+              <p>Available Length(mm):{lengthValue}</p>
+              <p>Available Weight(kg) :{props.coil.fpresent}</p>
+              <p>Inward Weight(kg) :{props.coil.fQuantity}</p>
               <p>Grade:{props.coil.materialGrade.gradeName}</p>
               <p>Material :{props.coil.material.description}</p>
               <p>Customer Name :{props.coil.party.nPartyName}</p>
-              <p>Thickness:{props.coil.fThickness}</p>
-              <p>Width :{props.coil.fWidth}</p>
+              <p>Thickness(mm):{props.coil.fThickness}</p>
+              <p>Inward Width(mm) :{props.coil.fWidth}</p>
+              <p>Available Width(mm) :{width}</p>
               </Card>
              </Col></Row>
             </TabPane>
