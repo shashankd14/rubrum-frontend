@@ -203,7 +203,7 @@ const SlittingWidths = (props) => {
     }
     const onChange=()=>{
         props.form.setFieldsValue({
-            length: props.plannedLength(props.coilDetails)
+            length: len
         });
     }
     const maxWidth = parseInt(props.coilDetails.fWidth ? props.coilDetails.fWidth : props.plannedWidth(props.coilDetails)).toString().length;
