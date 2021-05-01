@@ -15,7 +15,7 @@ const CoilDetailsForm = (props) => {
 
         props.form.validateFields((err, values) => {
             if (!err) {
-                let length = parseFloat(parseFloat(values.netWeight)/7.85/(parseFloat(values.thickness)/values.width)).toFixed(4);
+                let length = (parseFloat(parseFloat(props.inward.netWeight)/(parseFloat(props.inward.thickness)* 7.85 *(props.inward.width/1000))).toFixed(4))*1000;
                 let inward = props.inward;
                 inward.length = length
                 props.setInwardDetails({ ...props.inward, ...inward});

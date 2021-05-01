@@ -29,9 +29,11 @@ const CreateCuttingDetailsForm = (props) => {
     const [cuts, setCuts] = useState([]);
     const [mode, setMode] = useState('top');
     const [balanced, setBalanced] = useState(true);
+    const [tweight, settweight]= useState(0);
     const [no, setNo]= useState();
     const lengthValue = props.coilDetails.instruction && props.coilDetails.instruction.length > 0 ? props.plannedLength(props.coilDetails) : props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails)
     const widthValue = props.coilDetails.instruction && props.coilDetails.instruction.length > 0  ? props.plannedWidth(props.coilDetails):  props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.plannedWidth(props.coilDetails);
+    const WeightValue = props.coilDetails.instruction && props.coilDetails.instruction.length > 0  ? props.plannedWeight(props.coilDetails):  props.coilDetails.fpresent ? props.coilDetails.fpresent  : props.plannedWeight(props.coilDetails);
     const [length, setlength]= useState(lengthValue);
     const [width, setwidth] = useState(widthValue);
     
@@ -113,18 +115,18 @@ const CreateCuttingDetailsForm = (props) => {
         },
         {
             title: 'Length',
-            dataIndex:'length',
-            key: 'length',
+            dataIndex:'plannedLength',
+            key: 'plannedLength',
         },
         {
             title: 'No of Sheets',
-            dataIndex:'no',
-            key: 'no',
+            dataIndex:'plannedNoOfPieces',
+            key: 'plannedNoOfPieces',
         },
         {
             title: 'Weight',
-            dataIndex:'weight',
-            key:'weight',
+            dataIndex:'plannedWeight',
+            key:'plannedWeight',
         },
         {
             title:'Actions',
@@ -179,9 +181,13 @@ const CreateCuttingDetailsForm = (props) => {
                     message.error('Weight greater than available weight', 2);
                 }else{
                     setCuts([...cuts, {...props.inward.process,
+                        plannedLength: props.inward.process.length,
+                        plannedWidth: props.inward.process.width,
+                        plannedNoOfPieces: props.inward.process.no,
+                        plannedWeight: props.inward.process.weight,
                         inwardId: props.coilDetails.inwardEntryId ? props.coilDetails.inwardEntryId : "",
                         instructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : ""}]);
-                    props.resetInstruction();
+                        props.resetInstruction();
                 }
                
             }
@@ -198,7 +204,7 @@ const CreateCuttingDetailsForm = (props) => {
                 props.setProcessDetails({...props.inward.process, weight:Math.round( 0.00000785*parseFloat(props.inward.plan.fWidth)*parseFloat(props.inward.plan.fThickness)*parseFloat(props.inward.process.length)*parseFloat(props.inward.process.no))});
         }
     }, [props.inward.process.length, props.inward.process.no])
-
+    
     useEffect(() => {
         let data = props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions
         if(props.childCoil){
@@ -226,7 +232,13 @@ const CreateCuttingDetailsForm = (props) => {
             loading = message.loading('Saving Cut Instruction..');
         }
     }, [props.inward.instructionSaveLoading]);
+    useEffect(()=>{
+        let cutsArray = cuts.map(i => i.plannedWeight);
+        cutsArray = cutsArray.filter(i => i !== undefined)
+       cutsArray = cutsArray.length > 0? cutsArray.reduce((total, num) => Number(total) + Number(num)) : 0
+        settweight(cutsArray)
 
+    },[cuts])
     useEffect(() => {
         if(props.inward.instructionSaveSuccess && !props.wip) {
             loading = '';
@@ -250,7 +262,7 @@ const CreateCuttingDetailsForm = (props) => {
             setBalanced(true)
         }
         let length = e.target.value;
-       setNo((props.coil.fpresent)/(0.00000785 *width*props.coil.fThickness*length));
+       setNo(((props.coil.fpresent)/(0.00000785 *width*props.coil.fThickness*Number(length))).toFixed(0));
     }
 
      return (
@@ -283,11 +295,7 @@ const CreateCuttingDetailsForm = (props) => {
           <Col lg={12} md={12} sm={24} xs={24} className="gx-align-self-center">
 
             <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4">
-            <Form.Item>
-                    <Button type="primary" onClick={onChange} disabled={props.wip ? true :balanced ? true : false}>
-                            Balanced
-                    </Button>
-                </Form.Item>
+            
                 <Form.Item label="Process Date" >
                     {getFieldDecorator('processDate', {
                         initialValue: moment(new Date(), APPLICATION_DATE_FORMAT),
@@ -317,6 +325,11 @@ const CreateCuttingDetailsForm = (props) => {
                         <Input id="noOfCuts" disabled={props.wip ? true : false}/>
                             )}
                 </Form.Item>
+                <Form.Item>
+                    <Button type="primary" onClick={onChange} disabled={props.wip ? true :balanced ? true : false}>
+                            Balanced
+                    </Button>
+                </Form.Item>
                 <Form.Item label="Weight">
                     {getFieldDecorator('weight', {
                             rules: [{ required: true, message: 'Please fill other details to calculate weight' },
@@ -336,6 +349,15 @@ const CreateCuttingDetailsForm = (props) => {
         </Col>
                 <Col lg={12} md={12} sm={24} xs={24}>
                 <Table  className="gx-table-responsive"  columns={props.wip? columns :columnsPlan} dataSource={props.wip?tableData:cuts}/>             
+                <Form.Item label="Total weight(mm)">
+                    {getFieldDecorator('tweight', {
+                        rules: [{ required: false}],
+                    })(
+                        <>
+                            <Input id="tweight" disabled={true} value={tweight} name="tweight" />
+                        </>
+                    )}
+                </Form.Item>
                 </Col>
     </Row>
 
@@ -347,7 +369,7 @@ const CreateCuttingDetailsForm = (props) => {
               <p>Coil number : {props.coil.coilNumber}</p>
               <p>Inward length(mm): {props.coil.fLength}</p>
               <p>Available Length(mm):{lengthValue}</p>
-              <p>Available Weight(kg) :{props.coil.fpresent}</p>
+              <p>Available Weight(kg) :{WeightValue}</p>
               <p>Inward Weight(kg) :{props.coil.fQuantity}</p>
               <p>Grade:{props.coil.materialGrade.gradeName}</p>
               <p>Material :{props.coil.material.description}</p>
