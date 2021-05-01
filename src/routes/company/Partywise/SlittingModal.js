@@ -93,7 +93,11 @@ const SlittingWidths = (props) => {
         props.setweight(cuts)
     },[props.cuts])
     
-    
+    useEffect(()=>{
+        if(props.reset){
+            props.form.resetFields();
+        }
+    },[props.reset])
     const getEditValue =() =>{
         if(props.cuts.length> 0 && props.length !== undefined){
             const index = 0;
@@ -199,7 +203,7 @@ const SlittingWidths = (props) => {
     }
     const onChange=()=>{
         props.form.setFieldsValue({
-            length: props.plannedLength(props.coilDetails)
+            length: len
         });
     }
     const maxWidth = parseInt(props.coilDetails.fWidth ? props.coilDetails.fWidth : props.plannedWidth(props.coilDetails)).toString().length;
@@ -260,7 +264,7 @@ const SlittingWidths = (props) => {
                                 <Form.Item name="widths" >
                                     {getFieldDecorator(`widths[${index}]`, {
                                         rules: [{ required: true, message: 'Please enter width' },
-                                            {pattern: `^[0-9]{0,${maxWidth}}$`, message: 'Width greater than available width'},],
+                                            {pattern: `^[+-]?[0-9]*\.[0-9]{0,1}$`, message: 'Width greater than available width'},],
                                     })(
                                         <Input id="widths" disabled={props.wip ? true : false} onBlur={handleBlur} />
                                     )}
@@ -425,6 +429,7 @@ const columnsPlan=[
     const [edit, setEdit] = useState([]);
     const [lengthValue, setLengthValue] = useState();
     const [widthValue, setWidthValue]= useState();
+    const [form, setForm]= useState(false);
     const onDelete = (key, e) => {
         e.preventDefault();
         
@@ -463,7 +468,7 @@ const columnsPlan=[
     }
     let newData = [...data];
     newData = newData.filter(item => item.process.processId === 2)
-
+    setForm(false);
 setTableData(newData);
 setCuts(newData);
 
@@ -514,8 +519,8 @@ setCuts(newData);
             }}
             width={1020}
             onCancel={() => {
-                props.form.resetFields();
                 setCuts([]);
+                setForm(true)
                 props.setShowSlittingModal(false)
             }}
         >
@@ -530,7 +535,7 @@ setCuts(newData);
                    <Form {...formItemLayout} className="login-form gx-pt-4">
                        
                         <Form.Item>
-                            <SlittingWidthsForm setSlits={(slits) => setCuts([...cuts,...slits])} setweight={(w) => settweight(w)} coilDetails={props.coilDetails} wip={props.wip} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth} plannedWeight ={props.plannedWeight} length={length} cuts={cuts} edit={edit} tweight={tweight} lengthValue={(lengthValue) => setLengthValue(lengthValue)} widthValue={(widthValue) => setWidthValue(widthValue)}/>
+                            <SlittingWidthsForm setSlits={(slits) => setCuts([...cuts,...slits])} setweight={(w) => settweight(w)} coilDetails={props.coilDetails} wip={props.wip} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth} plannedWeight ={props.plannedWeight} length={length} cuts={cuts} edit={edit} tweight={tweight} lengthValue={(lengthValue) => setLengthValue(lengthValue)} widthValue={(widthValue) => setWidthValue(widthValue)} reset={form}/>
                         </Form.Item>
 
                     </Form>
