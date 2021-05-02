@@ -308,6 +308,7 @@ function* requestSaveCuttingInstruction(action) {
             plannedLength: cutDetails.length,
             plannedWeight: cutDetails.weight,
             plannedNoOfPieces: cutDetails.no,
+            plannedWidth: cutDetails.plannedWidth,
             status: 1,
             "createdBy": "1",
             "updatedBy": "1",

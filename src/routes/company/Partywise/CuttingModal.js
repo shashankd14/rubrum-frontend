@@ -185,6 +185,7 @@ const CreateCuttingDetailsForm = (props) => {
                         plannedWidth: props.inward.process.width,
                         plannedNoOfPieces: props.inward.process.no,
                         plannedWeight: props.inward.process.weight,
+                        plannedWidth: props.coilDetails.plannedWidth,
                         inwardId: props.coilDetails.inwardEntryId ? props.coilDetails.inwardEntryId : "",
                         instructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : ""}]);
                         props.resetInstruction();
@@ -213,12 +214,13 @@ const CreateCuttingDetailsForm = (props) => {
             data= arrayData
         }else{
             data = data.flat();
+            let cutsData = [...data];
+            cutsData = cutsData.filter(item => item.process.processId === 1)
+            setCuts(cutsData);
         }
         let newData = [...data];
-
         setTableData(newData);
-        newData = newData.filter(item => item.process.processId === 1)
-        setCuts(newData);
+        
         // for setting length and width
 
         const lengthValue = props.coilDetails.instruction && props.coilDetails.instruction.length > 0 ? props.plannedLength(props.coilDetails) : props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails)
@@ -262,7 +264,7 @@ const CreateCuttingDetailsForm = (props) => {
             setBalanced(true)
         }
         let length = e.target.value;
-       setNo(((props.coil.fpresent)/(0.00000785 *width*props.coil.fThickness*Number(length))).toFixed(0));
+       setNo(((WeightValue-Number(tweight))/(0.00000785 *width*props.coil.fThickness*Number(length))).toFixed(0));
     }
 
      return (
@@ -281,6 +283,7 @@ const CreateCuttingDetailsForm = (props) => {
             }}
             width={1020}
             onCancel={() => {
+                props.form.resetFields();
                 setCuts([]);
                 props.setShowCuttingModal()}}
         >
@@ -349,7 +352,7 @@ const CreateCuttingDetailsForm = (props) => {
         </Col>
                 <Col lg={12} md={12} sm={24} xs={24}>
                 <Table  className="gx-table-responsive"  columns={props.wip? columns :columnsPlan} dataSource={props.wip?tableData:cuts}/>             
-                <Form.Item label="Total weight(mm)">
+                <Form.Item label="Total weight(kg)">
                     {getFieldDecorator('tweight', {
                         rules: [{ required: false}],
                     })(
