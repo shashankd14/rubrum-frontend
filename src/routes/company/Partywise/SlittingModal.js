@@ -99,6 +99,7 @@ const SlittingWidths = (props) => {
     useEffect(()=>{
         if(props.reset){
             props.form.resetFields();
+            settwidth(0);
         }
     },[props.reset])
     const getEditValue =() =>{
