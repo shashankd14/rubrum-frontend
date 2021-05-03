@@ -99,8 +99,8 @@ const Plan = (props) => {
                     return i.plannedWeight;
                 }})
             childWeight = childWeight.filter(i => i !== undefined)
-            childWeight = childWeight.reduce((total, num) => total + num)
-            weight = weight.reduce((total, num) => total + num)
+            childWeight = childWeight.length>0?childWeight.reduce((total, num) => total + num):0
+            weight = weight.length>0?weight.reduce((total, num) => total + num):0
          } else {
          if (ins.childInstructions && ins.childInstructions.length > 0) {
              weight = ins.childInstructions.map(i => i.plannedWeight);

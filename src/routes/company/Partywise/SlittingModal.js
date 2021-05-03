@@ -91,6 +91,9 @@ const SlittingWidths = (props) => {
        cuts = cuts.filter(i => i !== undefined)
         cuts = cuts.length > 0? cuts.reduce((total, num) => Number(total) + Number(num)) : 0
         props.setweight(cuts)
+        if(len !== 0 && width === 0){
+            setwidth(widthValue1)
+        }
     },[props.cuts])
     
     useEffect(()=>{
@@ -465,12 +468,13 @@ const columnsPlan=[
       data= arrayData
     } else{
         data = data.flat();
+        let cutsData = [...data];
+        cutsData = cutsData.filter(item => item.process.processId === 2)
+        setCuts(cutsData);
     }
     let newData = [...data];
-    newData = newData.filter(item => item.process.processId === 2)
     setForm(false);
-setTableData(newData);
-setCuts(newData);
+    setTableData(newData);
 
 }, [props.coilDetails]);
 
