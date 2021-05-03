@@ -50,7 +50,7 @@ const SlittingWidths = (props) => {
     const callBackValue =(n)=>{
         let cuts = 0;
         if(props.cuts && props.cuts.length){
-            cuts = n==='length'? props.cuts.map(i => i.plannedLength) : props.cuts.map(i => i.plannedWidth);
+            cuts = n==='length'? props.cuts.map(i => i.plannedLength/i.plannedNoOfPieces) : props.cuts.map(i => i.plannedWidth);
             cuts = cuts.filter(i => i !== undefined)
             cuts = cuts.length > 0? cuts.reduce((total, num) => Number(total) + Number(num)) : 0
             
@@ -148,16 +148,17 @@ const SlittingWidths = (props) => {
                     settwidth(totalWidth);
                     
                 }
-                if((totalWidth+cutWidth) > widthValue) {
+                if(cutLength >= lengthValue){
+                    if((totalWidth+cutWidth) > widthValue) {
                     message.error('Sum of slits width is greater than width of coil.', 2);
-                }else if((Number(values.length)+cutLength) > lengthValue) {
+                }}else if((Number(values.length)+cutLength) > lengthValue) {
                     message.error('Length greater than available length', 2);
-                   }else if(totalWeight > weightValue) {
+                }else if(totalWeight > weightValue) {
                     message.error('Weight greater than available weight', 2);
-                    } else{
-                        props.setSlits(slits);
-                        props.form.resetFields();
-                    }
+                } else{
+                    props.setSlits(slits);
+                    props.form.resetFields();
+                }
                     
             }
         });
@@ -196,7 +197,10 @@ const SlittingWidths = (props) => {
                 if(lengthValue1>= (Number(values.length)+cutLength)){
                     setlen(lengthValue1-(Number(values.length)+cutLength))
                     props.lengthValue(lengthValue1-(Number(values.length)+cutLength))
+                    setwidth(widthValue1- (widthEntry));
+                    props.widthValue(widthValue1- (widthEntry))
                 }
+                
                 if(widthValue1 >= (widthEntry+cutWidth)){
                     setwidth(widthValue1- (widthEntry+cutWidth));
                     props.widthValue(widthValue1- (widthEntry+cutWidth))
