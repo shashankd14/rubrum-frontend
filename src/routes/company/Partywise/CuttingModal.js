@@ -175,9 +175,7 @@ const CreateCuttingDetailsForm = (props) => {
         e.preventDefault();
         props.form.validateFields((err, values) => {
             if (!err) {
-                let totalWeight = 0;
-                totalWeight = values.weight;
-                if(totalWeight > props.inward.plan.fQuantity){
+                if((Number(tweight)+values.weight) > WeightValue){
                     message.error('Weight greater than available weight', 2);
                 }else{
                     setCuts([...cuts, {...props.inward.process,
@@ -200,7 +198,7 @@ const CreateCuttingDetailsForm = (props) => {
         if(props.inward.process.length && props.inward.process.no) {
             if(props.coilDetails.instructionId)
 
-                props.setProcessDetails({...props.inward.process, weight:Math.round( 0.00000785*parseFloat(width)*parseFloat(props.inward.plan.fThickness)*parseFloat(props.inward.process.length)*parseFloat(props.inward.process.no))});
+                props.setProcessDetails({...props.inward.process, weight:tweight ? WeightValue-Number(tweight):Math.round( 0.00000785*parseFloat(width)*parseFloat(props.inward.plan.fThickness)*parseFloat(props.inward.process.length)*parseFloat(props.inward.process.no))});
             else
                 props.setProcessDetails({...props.inward.process, weight:Math.round( 0.00000785*parseFloat(props.inward.plan.fWidth)*parseFloat(props.inward.plan.fThickness)*parseFloat(props.inward.process.length)*parseFloat(props.inward.process.no))});
         }
