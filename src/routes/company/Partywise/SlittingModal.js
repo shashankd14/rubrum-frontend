@@ -1,4 +1,4 @@
-import {Button, Col, Form, Icon, Input, message, Modal, Row, Table, Tabs, DatePicker} from "antd";
+import {Button, Col, Form, Icon, Input, message, Modal, Row, Table, Tabs, DatePicker, Radio} from "antd";
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import moment from "moment";
@@ -37,9 +37,13 @@ let uuid = 0;
 const SlittingWidths = (props) => {
     const {getFieldDecorator, getFieldValue, getFieldProps} = props.form;
     getFieldDecorator('keys', {initialValue: [{width:0, no:0, weight:0}]});
+    const [value, setValue] = useState(1);
+    const [targetWeight, settargetWeight]= useState(0);
+    const [availLength, setavailLength]= useState(0);
 
     const lengthValue1 = props.coilDetails.instruction && props.coilDetails.instruction.length > 0 ? props.plannedLength(props.coilDetails) : props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails)
     const widthValue1 = props.coilDetails.instruction && props.coilDetails.instruction.length > 0  ? props.plannedWidth(props.coilDetails):  props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.plannedWidth(props.coilDetails);
+    const weightValue = props.coilDetails.fpresent >= 0? props.coilDetails.fpresent : props.plannedWeight(props.coilDetails)
     const [len, setlen]= useState(lengthValue1);
     const [width, setwidth] = useState(widthValue1);
     const [twidth, settwidth]= useState(0);
@@ -214,6 +218,17 @@ const SlittingWidths = (props) => {
             length: len
         });
     }
+    const handleBlurEvent= e =>{
+        settargetWeight(weightValue/Number(e.target.value))
+        setavailLength(lengthValue1*(targetWeight/weightValue));
+    }
+    const handleChangeEvent= e =>{
+        setavailLength(lengthValue1*(targetWeight/weightValue));
+    }
+    const radioChange = e => {
+        console.log('radio checked', e.target.value);
+        setValue(e.target.value);
+      };
     const maxWidth = parseInt(props.coilDetails.fWidth ? props.coilDetails.fWidth : props.plannedWidth(props.coilDetails)).toString().length;
     const maxLength = parseInt((props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails))).toString().length;
     const maxWeight = parseInt((props.coilDetails.fQuantity ? props.coilDetails.fQuantity  : props.plannedWeight(props.coilDetails))).toString().length;
@@ -242,12 +257,32 @@ const SlittingWidths = (props) => {
                         disabled={props.wip ? true : false}/>
                         )}
                 </Form.Item>
-                <Form.Item label="Length" dependencies={["length","widths[0]"]}>
-                    {getFieldDecorator('length', {
-                        rules: [{ required: true, message: 'Please enter Length' },
-                            {pattern: `^[0-9]{0,${maxLength}}$`, message: 'Length greater than available length'},],
+                <Form.Item label="No Of Parts">
+                    {getFieldDecorator('noParts', {
+                        rules: [{ required: true, message: 'Please enter no.of Parts' }],
                     })(
-                        <Input id="length" disabled={props.wip ? true : false}  />
+                        <Input id="noParts" disabled={props.wip ? true : false}  onBlur={handleBlurEvent}/>
+                    )}
+                </Form.Item>
+                <Form.Item>
+                    <Radio.Group onChange={radioChange} value={value}>
+                        <Radio value={1}>Equal</Radio>
+                        <Radio value={2}>Unequal</Radio>
+                    </Radio.Group>
+                </Form.Item>
+                
+                <Form.Item label="Target Weight(kg)">
+                    {getFieldDecorator('targetWeight')(
+                        <>
+                            <Input id="targetWeight" disabled={value === 1?true: false} value={value===1?targetWeight:''} name="targetWeight" onChange={handleChangeEvent}/>
+                        </>
+                    )}
+                </Form.Item>
+                <Form.Item label="Length(mm)">
+                    {getFieldDecorator('length')(
+                        <>
+                            <Input id="length" disabled={true} value={availLength} name="length" />
+                        </>
                     )}
                 </Form.Item>
                 <Row>
@@ -622,6 +657,15 @@ const SlittingDetailsForm = Form.create({
                 ...props.inward.process.twidth,
                 value: (props.inward.process.twidth) ? props.inward.process.twidth : '',
             }),
+            targetWeight: Form.createFormField({
+                ...props.inward.process.targetWeight,
+                value: (props.inward.process.targetWeight) ? props.inward.process.targetWeight : '',
+            }),
+            noParts: Form.createFormField({
+                ...props.inward.process.noParts,
+                value: (props.inward.process.noParts) ? props.inward.process.noParts : '',
+            }),
+            
         };
     },
     onValuesChange(props, values) {
