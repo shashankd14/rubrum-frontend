@@ -175,9 +175,7 @@ const CreateCuttingDetailsForm = (props) => {
         e.preventDefault();
         props.form.validateFields((err, values) => {
             if (!err) {
-                let totalWeight = 0;
-                totalWeight = values.weight;
-                if(totalWeight > props.inward.plan.fQuantity){
+                if((Number(tweight)+values.weight) > WeightValue){
                     message.error('Weight greater than available weight', 2);
                 }else{
                     setCuts([...cuts, {...props.inward.process,
