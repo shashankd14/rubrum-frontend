@@ -150,7 +150,7 @@ const SlittingWidths = (props) => {
                     for (let j=0; j<values.nos[i];j++){
                         let slitValue = {
                             name: i+1, processDate: moment().format(APPLICATION_DATE_FORMAT),
-                            plannedLength: values.length,
+                            plannedLength: availLength,
                             plannedWidth: values.widths[i],
                             no: j+1,
                             plannedNoOfPieces:values.nos[i],
@@ -169,7 +169,7 @@ const SlittingWidths = (props) => {
                 if(cutLength >= lengthValue){
                     if((totalWidth+cutWidth) > widthValue) {
                     message.error('Sum of slits width is greater than width of coil.', 2);
-                }}else if((Number(values.length)+cutLength) > lengthValue) {
+                }}else if(availLength +cutLength > lengthValue) {
                     message.error('Length greater than available length', 2);
                 }else if(totalWeight > weightValue) {
                     message.error('Weight greater than available weight', 2);
@@ -207,14 +207,20 @@ const SlittingWidths = (props) => {
     const handleBlur = (e)=>{
         props.form.validateFields((err, values) => {
             let widthEntry = 0;
+            let array = [];
             if(!err){
                 for(let i=0; i < values.widths.length; i++) {
                     widthEntry += values.widths[i]*values.nos[i];
+                     array.push(`weights[${i}]`);
+                    let wValue = targetWeight*((values.widths[i]*values.nos[i]/widthValue1))
+                    props.form.setFieldsValue({
+                        [array[i]]: wValue
+                   });
                   }
                 settwidth(widthEntry);
-                if(lengthValue1>= (Number(values.length)+cutLength)){
-                    setlen(lengthValue1-(Number(values.length)+cutLength))
-                    props.lengthValue(lengthValue1-(Number(values.length)+cutLength))
+                if(lengthValue1>= (availLength+cutLength)){
+                    setlen(lengthValue1-(availLength+cutLength))
+                    props.lengthValue(lengthValue1-(availLength+cutLength))
                     setwidth(widthValue1- (widthEntry));
                     props.widthValue(widthValue1- (widthEntry))
                 }
@@ -245,11 +251,11 @@ const SlittingWidths = (props) => {
       
     const onTargetChange=  e=>{
         settargetWeight(e.target.value);
-        setavailLength(lengthValue1*(e.target.value/weightValue))
+        setavailLength((lengthValue1*(e.target.value/weightValue)).toFixed(1))
     }
     const radioChange = e => {
         if(e.target.value=== 1){
-            setavailLength(lengthValue1*(targetWeight/weightValue));
+            setavailLength((lengthValue1*(targetWeight/weightValue)).toFixed(1));
         }
         else{
             setavailLength(0);
@@ -353,11 +359,8 @@ const SlittingWidths = (props) => {
                             </Col>
                             <Col lg={6} md={6} sm={12} xs={24}>
                                 <Form.Item name="weights">
-                                    {getFieldDecorator(`weights[${index}]`, {
-                                        rules: [{ required: true, message: 'Please enter weight' },
-                                            {pattern: `^[0-9]{0,${maxWeight}}$`, message: 'Weight greater than available weight'},],
-                                    })(
-                                        <Input id="weights" disabled={props.wip ? true : false} onBlur={handleBlur}/>
+                                    {getFieldDecorator(`weights[${index}]`)(
+                                        <Input id="weights" disabled={true} />
                                     )}
                                 </Form.Item>
                             </Col>
