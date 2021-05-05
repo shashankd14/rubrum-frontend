@@ -38,7 +38,7 @@ let uuid = 0;
 const SlittingWidths = (props) => {
     const {getFieldDecorator, getFieldValue, getFieldProps} = props.form;
     getFieldDecorator('keys', {initialValue: [{width:0, no:0, weight:0}]});
-    const [value, setValue] = useState(1);
+    const [value, setValue] = useState(0);
     const [targetWeight, settargetWeight]= useState(0);
     const [availLength, setavailLength]= useState(0);
 
@@ -231,19 +231,29 @@ const SlittingWidths = (props) => {
         });
     }
     const handleBlurEvent= e =>{
-        settargetWeight(weightValue/Number(e.target.value))
-        setavailLength(lengthValue1*(targetWeight/weightValue));
+        if(value === 2){
+            settargetWeight(0);
+        }else {
+            settargetWeight(weightValue/Number(e.target.value))
+        }
     }
     function onCheckBoxChange(checkedValues) {
         setChecked(checkedValues);
         console.log('checked = ', checkedValues);
       }
       
-    const handleChangeEvent= e =>{
-        setavailLength(lengthValue1*(targetWeight/weightValue));
+    const onTargetChange=  e=>{
+        settargetWeight(e.target.value);
+        setavailLength(lengthValue1*(e.target.value/weightValue))
     }
     const radioChange = e => {
-        console.log('radio checked', e.target.value);
+        if(e.target.value=== 1){
+            setavailLength(lengthValue1*(targetWeight/weightValue));
+        }
+        else{
+            setavailLength(0);
+            settargetWeight(0);
+        }
         setValue(e.target.value);
       };
     const maxWidth = parseInt(props.coilDetails.fWidth ? props.coilDetails.fWidth : props.plannedWidth(props.coilDetails)).toString().length;
@@ -291,7 +301,7 @@ const SlittingWidths = (props) => {
                 <Form.Item label="Target Weight(kg)">
                     {getFieldDecorator('targetWeight')(
                         <>
-                            <Input id="targetWeight" disabled={value === 1?true: false} value={value===1?targetWeight:''} name="targetWeight" onChange={handleChangeEvent}/>
+                            <Input id="targetWeight" disabled={value === 1?true: false} value={targetWeight} name="targetWeight" onChange={onTargetChange}/>
                         </>
                     )}
                 </Form.Item>
