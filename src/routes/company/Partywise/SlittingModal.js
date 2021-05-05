@@ -24,7 +24,7 @@ export const formItemLayoutSlitting = {
     labelCol: {
         xs: {span: 24},
         sm: {span: 24},
-        md: {span: 7},
+        md: {span: 10},
     },
     wrapperCol: {
         xs: {span: 24},
@@ -48,7 +48,7 @@ const SlittingWidths = (props) => {
     const [len, setlen]= useState(lengthValue1);
     const [width, setwidth] = useState(widthValue1);
     const [twidth, settwidth]= useState(0);
-    const [checked, setChecked] = useState([])
+    const [checked, setChecked] = useState([]);
     
     const keys = getFieldValue('keys');
     let widthChange = 0;
@@ -108,6 +108,7 @@ const SlittingWidths = (props) => {
             settwidth(0);
         }
     },[props.reset])
+   
     const getEditValue =() =>{
         if(props.cuts.length> 0 && props.length !== undefined){
             const index = 0;
@@ -126,7 +127,7 @@ const SlittingWidths = (props) => {
     }
     const applySame=()=>{
         const slits =[];
-        for (let i=0; i<checked.length; i++){
+        for(let i=0; i<checked.length; i++){
             slits.push(...props.cuts)
         }
         return slits;
@@ -383,10 +384,10 @@ const SlittingWidths = (props) => {
                 <Checkbox.Group style={{ width: '100%' }} onChange={onCheckBoxChange} disbaled={props.cuts.length=== 0 ? true : false}>
                     <Row>
                         <Col span={8}>
-                            <Checkbox value="2">Apply for Part 2</Checkbox>
+                            <Checkbox value="2">Part 2</Checkbox>
                         </Col>
                         <Col span={8}>
-                            <Checkbox value="3">Apply for Part 3</Checkbox>
+                            <Checkbox value="3">Part 3</Checkbox>
                         </Col>
                     </Row>
                 </Checkbox.Group>
