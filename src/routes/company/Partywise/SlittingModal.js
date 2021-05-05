@@ -1,10 +1,11 @@
-import {Button, Col, Form, Icon, Input, message, Modal, Row, Table, Tabs, DatePicker, Radio} from "antd";
+import {Button, Col, Form, Icon, Input, message, Modal, Row, Table, Tabs, DatePicker, Radio, Checkbox} from "antd";
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import moment from "moment";
 
 import {APPLICATION_DATE_FORMAT} from '../../../constants';
 import {setProcessDetails, saveSlittingInstruction, resetInstruction, updateInstruction} from '../../../appRedux/actions/Inward';
+import { set } from "nprogress";
 
 export const formItemLayout = {
     labelCol: {
@@ -47,6 +48,7 @@ const SlittingWidths = (props) => {
     const [len, setlen]= useState(lengthValue1);
     const [width, setwidth] = useState(widthValue1);
     const [twidth, settwidth]= useState(0);
+    const [checked, setChecked] = useState([])
     
     const keys = getFieldValue('keys');
     let widthChange = 0;
@@ -122,7 +124,17 @@ const SlittingWidths = (props) => {
             });
         }
     }
-
+    const applySame=()=>{
+        const slits =[];
+        for (let i=0; i<checked.length; i++){
+            slits.push(...props.cuts)
+        }
+        return slits;
+    }
+    const applyData=() =>{
+        let cutsValue = applySame();
+        props.setSlits(cutsValue);
+    }
     const addNewSize = (e) => {
         props.form.validateFields((err, values) => {
             
@@ -222,6 +234,11 @@ const SlittingWidths = (props) => {
         settargetWeight(weightValue/Number(e.target.value))
         setavailLength(lengthValue1*(targetWeight/weightValue));
     }
+    function onCheckBoxChange(checkedValues) {
+        setChecked(checkedValues);
+        console.log('checked = ', checkedValues);
+      }
+      
     const handleChangeEvent= e =>{
         setavailLength(lengthValue1*(targetWeight/weightValue));
     }
@@ -351,6 +368,23 @@ const SlittingWidths = (props) => {
                             <Input id="twidth" disabled={true} value={twidth} name="twidth" />
                         </>
                     )}
+                </Form.Item>
+                <Form.Item>
+                <Checkbox.Group style={{ width: '100%' }} onChange={onCheckBoxChange} disbaled={props.cuts.length=== 0 ? true : false}>
+                    <Row>
+                        <Col span={8}>
+                            <Checkbox value="2">Apply for Part 2</Checkbox>
+                        </Col>
+                        <Col span={8}>
+                            <Checkbox value="3">Apply for Part 3</Checkbox>
+                        </Col>
+                    </Row>
+                </Checkbox.Group>
+                </Form.Item>
+                <Form.Item>
+                <Button type="primary" onClick={() => applyData()} disabled={value===2 ?  true :props.cuts.length=== 0 ? true : false}>
+                           Apply <Icon type="right"/>
+                </Button>
                 </Form.Item>
                 <Row className="gx-mt-4">
                     <Col span={16} style={{ textAlign: "center"}}>
