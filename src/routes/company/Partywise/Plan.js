@@ -117,10 +117,7 @@ const Plan = (props) => {
     }
     useEffect(() => {
         props.getCoilPlanDetails(props.match.params.coilNumber);
-    }, [])
-    useEffect(()=>{
-        props.getCoilPlanDetails(props.match.params.coilNumber);
-    },[showSlittingModal,showCuttingModal])
+    }, [showSlittingModal,showCuttingModal])
 
     useEffect(() => {
         if (slittingCoil) {
