@@ -49,10 +49,9 @@ const SlittingWidths = (props) => {
     const [width, setwidth] = useState(widthValue1);
     const [twidth, settwidth]= useState(0);
     const [checked, setChecked] = useState([]);
+    const [equalParts, setEqualParts]= useState(0);
     
     const keys = getFieldValue('keys');
-    let widthChange = 0;
-    let nosChange = 0;
     const callBackValue =(n)=>{
         let cuts = 0;
         if(props.cuts && props.cuts.length){
@@ -66,10 +65,10 @@ const SlittingWidths = (props) => {
     }
     let cutLength = callBackValue('length');
     let cutWidth = callBackValue('width');
-
+    let noParts = 0;
     useEffect(() => {
-        getEditValue();
-      }, [props.length]);
+      getEditValue();
+    }, [props.length]);
     useEffect(() => {
        let lengthValue1 = 0;
        let widthValue1 = 0;
@@ -89,9 +88,6 @@ const SlittingWidths = (props) => {
         
     }, [props.coilDetails,props.cuts]);
     
-    //   useEffect(() => {
-    //     setlen(len+props.deletedLength);
-    //   }, [props.deletedLength]);
     useEffect(()=>{
         let cuts = props.cuts.map(i => i.plannedWeight);
        cuts = cuts.filter(i => i !== undefined)
@@ -127,7 +123,7 @@ const SlittingWidths = (props) => {
     }
     const applySame=()=>{
         const slits =[];
-        for(let i=0; i<checked.length; i++){
+        for(let i=0; i<equalParts-1; i++){
             slits.push(...props.cuts)
         }
         return slits;
@@ -154,7 +150,7 @@ const SlittingWidths = (props) => {
                             plannedWidth: values.widths[i],
                             no: j+1,
                             plannedNoOfPieces:values.nos[i],
-                            plannedWeight:(values.weights[i]/values.nos[i]).toFixed(0),
+                            plannedWeight:(values.weights[i]/values.nos[i]).toFixed(2),
                             inwardId: props.coilDetails.inwardEntryId ? props.coilDetails.inwardEntryId : '',
                             instructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : '',
                         }
@@ -238,11 +234,12 @@ const SlittingWidths = (props) => {
         });
     }
     const handleBlurEvent= e =>{
+        setEqualParts(Number(e.target.value));
         if(value === 2){
             settargetWeight(0);
         }else {
-            settargetWeight(weightValue/Number(e.target.value))
-        }
+            settargetWeight(weightValue/Number(e.target.value));
+         }
     }
     function onCheckBoxChange(checkedValues) {
         setChecked(checkedValues);
@@ -291,15 +288,16 @@ const SlittingWidths = (props) => {
                         disabled={props.wip ? true : false}/>
                         )}
                 </Form.Item>
+                
                 <Form.Item label="No Of Parts">
                     {getFieldDecorator('noParts', {
-                        rules: [{ required: true, message: 'Please enter no.of Parts' }],
+                        rules: [{ required: value=== 2 && equalParts !== 0? false : true, message: 'Please enter no.of Parts' }],
                     })(
-                        <Input id="noParts" disabled={props.wip ? true : false}  onBlur={handleBlurEvent}/>
+                        <Input id="noParts" onBlur={handleBlurEvent} disabled ={value=== 2 && equalParts !== 0 ? true: false}/>
                     )}
                 </Form.Item>
                 <Form.Item>
-                    <Radio.Group onChange={radioChange} value={value}>
+                    <Radio.Group onChange={radioChange} disabled={props.cuts.length> 0 ? true: false} value={value}>
                         <Radio value={1}>Equal</Radio>
                         <Radio value={2}>Unequal</Radio>
                     </Radio.Group>
@@ -383,23 +381,8 @@ const SlittingWidths = (props) => {
                         </>
                     )}
                 </Form.Item>
+                
                 <Form.Item>
-                <Checkbox.Group style={{ width: '100%' }} onChange={onCheckBoxChange} disbaled={props.cuts.length=== 0 ? true : false}>
-                    <Row>
-                        <Col span={8}>
-                            <Checkbox value="2">Part 2</Checkbox>
-                        </Col>
-                        <Col span={8}>
-                            <Checkbox value="3">Part 3</Checkbox>
-                        </Col>
-                    </Row>
-                </Checkbox.Group>
-                </Form.Item>
-                <Form.Item>
-                <Button type="primary" onClick={() => applyData()} disabled={value===2 ?  true :props.cuts.length=== 0 ? true : false}>
-                           Apply <Icon type="right"/>
-                </Button>
-                </Form.Item>
                 <Row className="gx-mt-4">
                     <Col span={16} style={{ textAlign: "center"}}>
                         <Button type="primary" htmlType="submit" onClick={() => addNewSize()} disabled={props.wip ? true : false}>
@@ -407,7 +390,11 @@ const SlittingWidths = (props) => {
                         </Button>
                     </Col>
                 </Row>
-            </Form>
+                 <Button type="primary" onClick={() => applyData()} hidden={value=== 2? true: false} disabled={value===2 ?  true :props.cuts.length=== 0 ? true : false}>
+                           Apply to remainig {equalParts} parts <Icon type="right"/>
+                </Button>
+                </Form.Item>
+                </Form>
         </>
     )
 }
