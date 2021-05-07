@@ -123,7 +123,7 @@ const SlittingWidths = (props) => {
     }
     const applySame=()=>{
         const slits =[];
-        for(let i=0; i<checked.length; i++){
+        for(let i=0; i<equalParts-1; i++){
             slits.push(...props.cuts)
         }
         return slits;
@@ -150,7 +150,7 @@ const SlittingWidths = (props) => {
                             plannedWidth: values.widths[i],
                             no: j+1,
                             plannedNoOfPieces:values.nos[i],
-                            plannedWeight:(values.weights[i]/values.nos[i]).toFixed(0),
+                            plannedWeight:(values.weights[i]/values.nos[i]).toFixed(2),
                             inwardId: props.coilDetails.inwardEntryId ? props.coilDetails.inwardEntryId : '',
                             instructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : '',
                         }
@@ -383,10 +383,6 @@ const SlittingWidths = (props) => {
                 </Form.Item>
                 
                 <Form.Item>
-                <Button type="primary" onClick={() => applyData()} disabled={value===2 ?  true :props.cuts.length=== 0 ? true : false}>
-                           Apply to remainig {equalParts} parts <Icon type="right"/>
-                </Button>
-                </Form.Item>
                 <Row className="gx-mt-4">
                     <Col span={16} style={{ textAlign: "center"}}>
                         <Button type="primary" htmlType="submit" onClick={() => addNewSize()} disabled={props.wip ? true : false}>
@@ -394,7 +390,11 @@ const SlittingWidths = (props) => {
                         </Button>
                     </Col>
                 </Row>
-            </Form>
+                 <Button type="primary" onClick={() => applyData()} hidden={value=== 2? true: false} disabled={value===2 ?  true :props.cuts.length=== 0 ? true : false}>
+                           Apply to remainig {equalParts} parts <Icon type="right"/>
+                </Button>
+                </Form.Item>
+                </Form>
         </>
     )
 }
