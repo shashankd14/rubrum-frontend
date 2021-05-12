@@ -177,7 +177,7 @@ const CoilDetailsForm = (props) => {
             </Col>
             <Col span={10} className="gx-pt-4">
                 <Card title="Coil Details" style={{ width: 300 }}>
-                    <p>Customer Name : {props.inward.partyName}</p>
+                    <p>Customer Name : {props.params !== "" && props.inward.party ? props.inward.party.nPartyName:props.inward.partyName}</p>
                     {props.inward.customerId && <p>Customer Id : {props.inward.customerId}</p>}
                     {props.inward.customerBatchNo && <p>Customer Batch No : {props.inward.customerBatchNo}</p>}
                     {props.inward.customerInvoiceNo && <p>Customer Invoice No : {props.inward.customerInvoiceNo}</p>}

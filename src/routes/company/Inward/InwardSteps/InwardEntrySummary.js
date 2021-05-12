@@ -44,7 +44,7 @@ const InwardEntrySummary = (props) => {
                                 <p>Coil number : {props.inward.coilNumber}</p>
                                 <p>Material Description : {props.params !== ""? props.inward.material.description : props.inward.description}</p>
                                 <p>Dimensions : {props.params !== ""?dimensionEdit: dimension}</p>
-                                <p>Net Weight : {props.inward.netWeight}</p>
+                                <p>Net Weight : {props.params !== "" ? props.inward.fpresent: props.inward.netWeight}</p>
                                 <p>Gross Weight : {props.inward.grossWeight}</p>
                             </Card>
                         </Col>
