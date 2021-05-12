@@ -13,7 +13,16 @@ const InwardEntrySummary = (props) => {
         console.log(props.inward);
     }, [])
 
-    React.useEffect(() => {
+    useEffect(() => {
+        if(props.inwardUpdateSuccess) {
+            message.success('Inward entry has been updated successfully', 2);
+            setTimeout(() => {
+                props.history.push('/company/inward/list');
+            }, 2000);
+            props.resetInwardForm();
+        }
+    }, [props.inwardUpdateSuccess]);
+    useEffect(() => {
         if(props.inwardSubmitSuccess) {
             message.success('Inward entry has been saved successfully', 2);
             setTimeout(() => {
@@ -42,7 +51,7 @@ const InwardEntrySummary = (props) => {
                         <Col span={12}>
                             <Card title="Coil Details" style={{ width: 300 }}>
                                 <p>Coil number : {props.inward.coilNumber}</p>
-                                <p>Material Description : {props.params !== ""? props.inward.material.description : props.inward.description}</p>
+                                {(props.inward.material || props.inward.description) && <p>Material Description : {props.params !== ""? props.inward.material.description : props.inward.description}</p>}
                                 <p>Dimensions : {props.params !== ""?dimensionEdit: dimension}</p>
                                 <p>Net Weight : {props.params !== "" ? props.inward.fpresent: props.inward.netWeight}</p>
                                 <p>Gross Weight : {props.inward.grossWeight}</p>
@@ -61,7 +70,7 @@ const InwardEntrySummary = (props) => {
                         </Col>
                         <Col span={12}>
                             <Card title="Quality Details" style={{ width: 300 }}>
-                                <p>Grade : {props.params !== ""? props.inward.materialGrade.gradeName:props.inward.grade}</p>
+                                {(props.inward.materialGrade || props.inward.grade) && <p>Grade : {props.params !== ""? props.inward.materialGrade.gradeName:props.inward.grade}</p>}
                                 {props.inward.testCertificateNo && <p>Test Certificate No : {props.inward.testCertificateNo}</p>}
                                 {props.inward.testFile && <p>Test File : {props.inward.testFile.fileList[0].name}</p>}
                                 {props.inward.moreFiles && <p>More attachments :</p>}
@@ -95,6 +104,9 @@ const mapStateToProps = state => ({
     inwardSubmitLoading: state.inward.inwardSubmitLoading,
     inwardSubmitSuccess: state.inward.inwardSubmitSuccess,
     inwardSubmitError: state.inward.inwardSubmitError,
+    inwardUpdateLoading: state.inward.inwardUpdateLoading,
+    inwardUpdateSuccess: state.inward.inwardUpdateSuccess,
+    inwardUpdateError: state.inward.inwardUpdateError,
 });
 
 export default withRouter(connect(mapStateToProps, {

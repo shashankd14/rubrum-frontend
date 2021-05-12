@@ -55,7 +55,10 @@ import {
     FETCH_INWARD_LIST_BY_ID,
     DELETE_INWARD_LIST_BY_ID,
     DELETE_INWARD_LIST_BY_ID_SUCCESS,
-    DELETE_INWARD_LIST_BY_ID_ERROR
+    DELETE_INWARD_LIST_BY_ID_ERROR,
+    UPDATE_INWARD_LIST,
+    UPDATE_INWARD_LIST_SUCCESS,
+    UPDATE_INWARD_LIST_ERROR
 
 } from "../../constants/ActionTypes";
 
@@ -81,7 +84,11 @@ const INIT_STATE = {
     inwardListForDelivery: undefined,
     vehicleNumber: '',
     deleteSuccess: false,
-    deleteFail: false
+    deleteFail: false,
+    inwardUpdateLoading: false,
+    inwardUpdateSuccess: false,
+    inwardUpdateError: false,
+
 };
 
 export default (state = INIT_STATE, action) => {
@@ -232,7 +239,10 @@ export default (state = INIT_STATE, action) => {
                 inwardSubmitLoading: false,
                 inwardSubmitSuccess: false,
                 inwardSubmitError: false,
-                inward:{}
+                inward:{},
+                inwardUpdateoading: false,
+                inwardUpdateSuccess: false,
+                inwardUpdateError: false,
             }
         }
         case RESET_INSTRUCTION_FORM:
@@ -438,6 +448,26 @@ export default (state = INIT_STATE, action) => {
                 ...state,
                 deleteFail: false,
                 deleteSuccess: false
+            }
+        }
+        case UPDATE_INWARD_LIST: {
+            return {
+                ...state,
+                inwardUpdateLoading: true,
+            }
+        }
+        case UPDATE_INWARD_LIST_SUCCESS: {
+            return {
+                ...state,
+                inwardUpdateLoading: false,
+                inwardUpdateSuccess: true
+            }
+        }
+        case UPDATE_INWARD_LIST_ERROR: {
+            return {
+                ...state,
+                inwardUpdateLoading: false,
+                inwardUpdateError: true
             }
         }
 
