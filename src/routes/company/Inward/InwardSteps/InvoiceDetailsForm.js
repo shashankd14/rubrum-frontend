@@ -90,7 +90,7 @@ const InvoiceDetailsForm = (props) => {
             </Col>
             <Col span={10} className="gx-pt-4">
                 <Card title="Coil Details" style={{ width: 300 }}>
-                    <p>Customer Name : {props.inward.partyName}</p>
+                    <p>Customer Name : {props.params !== "" && props.inward.party? props.inward.party.nPartyName :props.inward.partyName}</p>
                     {props.inward.customerId && <p>Customer Id : {props.inward.customerId}</p>}
                     {props.inward.customerBatchNo && <p>Customer Batch No : {props.inward.customerBatchNo}</p>}
                     {props.inward.customerInvoiceNo && <p>Customer Invoice No : {props.inward.customerInvoiceNo}</p>}
@@ -98,7 +98,7 @@ const InvoiceDetailsForm = (props) => {
                     <p>Coil number : {props.inward.coilNumber}</p>
                     <p>Material Description : {props.params !== ""? props.inward.material.description : props.inward.description}</p>
                     <p>Dimensions : {props.params !== "" ? dimensionEdit:dimension}</p>
-                    <p>Net Weight : {props.inward.netWeight}</p>
+                    <p>Net Weight : {props.params !== "" ? props.inward.fpresent: props.inward.netWeight}</p>
                     <p>Gross Weight : {props.inward.grossWeight}</p>
                 </Card>
             </Col>
@@ -127,11 +127,11 @@ const InvoiceDetails = Form.create({
             }),
             vehicleNumber: Form.createFormField({
                 ...props.inward.vehicleNumber,
-                value: (props.inward.vehicleNumber) ? props.inward.vehicleNumber : '',
+                value: props.params !== "" ? props.inward.vLorryNo :(props.inward.vehicleNumber) ? props.inward.vehicleNumber : '',
             }),
             invoiceNumber: Form.createFormField({
                 ...props.inward.invoiceNumber,
-                value: (props.inward.invoiceNumber) ? props.inward.invoiceNumber : '',
+                value: props.params !== "" ? props.inward.vInvoiceNo :(props.inward.invoiceNumber) ? props.inward.invoiceNumber : '',
             }),
             invoiceDate: Form.createFormField({
                 ...props.inward.invoiceDate,

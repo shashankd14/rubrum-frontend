@@ -186,37 +186,36 @@ function* updateInward(action) {
     try {
         const partyId = action.inward.partyName !== undefined ?action.inward.partyName: action.inward.party.nPartyId;
         const materialId = action.inward.description !== undefined ? action.inward.description: action.inward.material.matId;
-        let data = new FormData();
         	
-let insObj = {
-        inwardId : action.inward.inwardEntryId,
-        partyId :	partyId,
-        coilNumber : action.inward.coilNumber,
+        let insObj = {
+    
+        inwardId : (action.inward.inwardEntryId).toString(),
+        partyId :	(partyId).toString(),
+        coilNumber : (action.inward.coilNumber).toString(),
         inwardDate : moment(action.inward.receivedDate).format('YYYY-MM-DD HH:mm:ss'),
-        vehicleNumber : action.inward.vehicleNumber !== undefined? action.inward.vehicleNumber : null,
+        vehicleNumber : action.inward.vehicleNumber !== undefined? action.inward.vehicleNumber : action.inward.vLorryNo,
         invoiceDate : moment(action.inward.invoiceDate).format('YYYY-MM-DD HH:mm:ss')!== undefined ?moment(action.inward.invoiceDate).format('YYYY-MM-DD HH:mm:ss'): null,
-        invoiceNumber : action.inward.invoiceNumber,
+        invoiceNumber : action.inward.invoiceNumber !== undefined ? action.inward.invoiceNumber: action.inward.vInvoiceNo,
         purposeType : action.inward.purposeType,
-        materialId : materialId,
-        width : action.inward.width !== undefined ? action.inward.width : Number(action.inward.fWidth),
-        thickness : action.inward.thickness !== undefined ? action.inward.thickness : Number(action.inward.fThickness),
-        length : action.inward.length !== undefined ? action.inward.length : Number(action.inward.fLength),
+        materialId : (materialId).toString(),
+        width : action.inward.width !== undefined ? action.inward.width : action.inward.fWidth,
+        thickness : action.inward.thickness !== undefined ? action.inward.thickness : action.inward.fThickness,
+        length : action.inward.length !== undefined ? action.inward.length : action.inward.fLength,
         statusId : "3",
         heatnumber : "HG234-234",
         plantname : "PB123",
         process : "",
-        presentWeight : action.inward.weight !== undefined ? action.inward.weight : Number(action.inward.fPresent),
+        presentWeight : action.inward.weight !== undefined ? action.inward.weight : action.inward.fPresent,
         cast : "cast1",
-        materialGradeId : action.inward.grade !== undefined ?action.inward.grade: action.inward.materialGrade.gradeId,
+        materialGradeId : action.inward.grade !== undefined ?action.inward.grade: (action.inward.materialGrade.gradeId).toString(),
         createdBy : "1",
         updatedBy : "2"
-}
-       
-
-        const newInwardEntry = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/inwardEntry/update', {
+        }
+const newInwardEntry = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/inwardEntry/update', {
             
                 method: 'PUT',
-                body:insObj
+                headers: { "Content-Type": "application/json" },
+                body:JSON.stringify(insObj)
             
         });
         if (newInwardEntry.status == 200) {

@@ -132,7 +132,7 @@ const QualityDetailsForm = (props) => {
             </Col>
             <Col span={10} className="gx-pt-4">
                 <Card title="Coil Details" style={{ width: 300 }}>
-                    <p>Customer Name : {props.inward.partyName}</p>
+                    <p>Customer Name : {props.params !== "" && props.inward.party ?props.inward.party.nPartyName : props.inward.partyName}</p>
                     {props.inward.customerId && <p>Customer Id : {props.inward.customerId}</p>}
                     {props.inward.customerBatchNo && <p>Customer Batch No : {props.inward.customerBatchNo}</p>}
                     {props.inward.customerInvoiceNo && <p>Customer Invoice No : {props.inward.customerInvoiceNo}</p>}
@@ -140,13 +140,11 @@ const QualityDetailsForm = (props) => {
                     <p>Coil number : {props.inward.coilNumber}</p>
                     <p>Material Description : {props.params !== ""? props.inward.material.description : props.inward.description}</p>
                     <p>Dimensions : {props.params !==""?dimensionEdit:dimension}</p>
-                    <p>Net Weight : {props.inward.netWeight}</p>
+                    <p>Net Weight : {props.params !== "" ? props.inward.fpresent:props.inward.netWeight}</p>
                     <p>Gross Weight : {props.inward.grossWeight}</p>
-                    {/*<p>Received Date : {props.inward.receivedDate}</p>*/}
                     {props.inward.batchNo && <p>Batch No : {props.inward.batchNo}</p>}
                     {props.inward.vehicleNumber && <p>Vehicle number : {props.inward.vehicleNumber}</p>}
                     {props.inward.invoiceNumber && <p>Invoice number : {props.inward.invoiceNumber}</p>}
-                    {/*{props.inward.invoiceDate && <p>Invoice date : {props.inward.invoiceDate}</p>}*/}
                 </Card>
             </Col>
             </>
