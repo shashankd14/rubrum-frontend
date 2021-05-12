@@ -127,11 +127,11 @@ const InvoiceDetails = Form.create({
             }),
             vehicleNumber: Form.createFormField({
                 ...props.inward.vehicleNumber,
-                value: (props.inward.vehicleNumber) ? props.inward.vehicleNumber : '',
+                value: props.params !== "" ? props.inward.vLorryNo :(props.inward.vehicleNumber) ? props.inward.vehicleNumber : '',
             }),
             invoiceNumber: Form.createFormField({
                 ...props.inward.invoiceNumber,
-                value: (props.inward.invoiceNumber) ? props.inward.invoiceNumber : '',
+                value: props.params !== "" ? props.inward.vInvoiceNo :(props.inward.invoiceNumber) ? props.inward.invoiceNumber : '',
             }),
             invoiceDate: Form.createFormField({
                 ...props.inward.invoiceDate,

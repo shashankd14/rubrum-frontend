@@ -10,6 +10,7 @@ const CoilDetailsForm = (props) => {
     const [dataSource, setDataSource] = useState([]);
     const [approxLength, setLength] = useState(0);
 
+    
     const handleSubmit = e => {
         e.preventDefault();
 
@@ -60,6 +61,7 @@ const CoilDetailsForm = (props) => {
 // for the edit flow
     useEffect(() => {
         if (props.params !== ""){
+            props.getGradeByMaterialId(props.inward.material.matId);
             const { Option } = AutoComplete;
             const options = props.material.materialList.filter(material => {
             if (material.matId===  props.inward.material.matId)
