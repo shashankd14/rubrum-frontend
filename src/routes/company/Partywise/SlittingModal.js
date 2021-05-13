@@ -102,7 +102,7 @@ const SlittingWidths = (props) => {
             let actualUpdate = props.cuts.map(item => {
                 if (!item.actualLength && item.actualLength !== 0) item.actualLength  =  item.plannedLength;
                 if (!item.actualWidth && item.actualWidth !== 0) item.actualWidth  =  item.plannedWidth;
-                if (!item.actualWeight && item.actualWeight !== 0) item.actualWeight  =  item.plannedWidth;
+                if (!item.actualWeight && item.actualWeight !== 0) item.actualWeight  =  item.plannedWeight;
                 if (!item.packetClassification?.classificationId) item.packetClassification = {
                     classificationId: item.plannedWidth < 20 ? 2 : 1
                 }
