@@ -2,7 +2,7 @@ import { Button, Card, Col } from "antd";
 import moment from 'moment';
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { getCoilPlanDetails, saveUnprocessedDelivery } from "../../../appRedux/actions";
+import { getCoilPlanDetails, saveUnprocessedDelivery, fetchClassificationList } from "../../../appRedux/actions";
 import IntlMessages from "../../../util/IntlMessages";
 import CuttingModal from "../Partywise/CuttingModal";
 import SlittingModal from "./SlittingModal";
@@ -117,6 +117,9 @@ const Plan = (props) => {
     }
     useEffect(() => {
         props.getCoilPlanDetails(props.match.params.coilNumber);
+        if (props.wip) {
+            props.fetchClassificationList();
+        }
     }, [showSlittingModal,showCuttingModal])
 
     useEffect(() => {
@@ -186,7 +189,11 @@ const Plan = (props) => {
                         {props.wip ?
                             <div>{props.inward.plan.fpresent !== 0 ? <Button onClick={() => {
                                 props.saveUnprocessedDelivery(props.inward.plan.inwardEntryId)
-                            }}>Unprocessed</Button> : <></>}</div> :
+                            }}>Unprocessed</Button> : <></>}<Button onClick={() => {
+                                setSlittingCoil(props.inward.plan);
+                                setShowSlittingModal(true)
+                                setChildCoil(false)
+                            }}>Finish Slitting</Button></div> :
                             <div>
                                 <Button onClick={() => {
                                     setCuttingCoil(props.inward.plan);
@@ -233,13 +240,7 @@ const Plan = (props) => {
                                                             setShowCuttingModal(true);
                                                             setChildCoil(true);
                                                         }}>Finish Cutting
-                                                            </Button> : props.wip ? <Button onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            setSlittingCoil(instruction);
-                                                            setShowSlittingModal(true);
-                                                            setChildCoil(true);
-                                                        }}>Finish Slitting
-                                                        </Button> :
+                                                            </Button> : props.wip ? <></> :
                                                             <div><Button onClick={(e) => {
                                                                 e.stopPropagation();
                                                                 setCuttingCoil(instruction);
@@ -295,13 +296,7 @@ const Plan = (props) => {
                                                                         setShowCuttingModal(true);
                                                                         setChildCoil(true);
                                                                     }}>Finish Cutting
-                                                                    </Button> : props.wip ? <Button onClick={(e) => {
-                                                                        e.stopPropagation();
-                                                                        setSlittingCoil(instruction);
-                                                                        setShowSlittingModal(true);
-                                                                        setChildCoil(true);
-                                                                    }}>Finish Slitting
-                                                                        </Button> :
+                                                                    </Button> : props.wip ? <></> :
                                                                         <div><Button onClick={(e) => {
                                                                             e.stopPropagation();
                                                                             setCuttingCoil(instruction);
@@ -357,10 +352,11 @@ const Plan = (props) => {
 
 const mapStateToProps = state => ({
     inward: state.inward,
-    party: state.party,
+    party: state.party
 });
 
 export default connect(mapStateToProps, {
     getCoilPlanDetails,
-    saveUnprocessedDelivery
+    saveUnprocessedDelivery,
+    fetchClassificationList
 })(Plan);

@@ -1,5 +1,6 @@
 import { all, put, fork, takeLatest, take, call } from "redux-saga/effects";
 import { history } from '../store/index';
+import toNumber from 'lodash';
 import moment from "moment";
 import {
     CHECK_COIL_EXISTS,
@@ -375,14 +376,17 @@ function* requestUpdateInstruction(action) {
             plannedWidth: item.plannedWidth ? item.plannedWidth : 0,
             plannedWeight: item.plannedWeight ? item.plannedWeight : 0,
             plannedNoOfPieces: item.plannedNoOfPieces ? item.plannedNoOfPieces : 0,
-            actualWeight: item.actualWeight ? item.actualWeight : 0,
+            actualWeight: toNumber(item.actualWeight) || 0,
+            actualWidth: toNumber(item.actualWidth) || 0,
+            actualLength: toNumber(item.actualLength) || 0,
             noOfPieces: item.noOfPieces ? item.noOfPieces : 0,
             actualNoOfPieces: item.actualNoOfPieces ? item.actualNoOfPieces : 0,
             wastage: item.wastage ? item.wastage : 0,
             damage: item.damage ? item.damage : 0,
             packingWeight: item.packingWeight ? item.packingWeight : 0,
             createdBy: item.createdBy ? item.createdBy : 1,
-            updatedBy: item.updatedBy ? item.updatedBy : 1
+            updatedBy: item.updatedBy ? item.updatedBy : 1,
+            packetClassificationId: item.packetClassification?.classificationId || ''
 
         }
         return insObj
