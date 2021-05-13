@@ -1,11 +1,12 @@
-import {Button, Col, Form, Icon, Input, message, Modal, Row, Table, Tabs, DatePicker, Radio, Checkbox} from "antd";
+import {Button, Col, Form, Icon, Input, message, Modal, Row, Table, Tabs, DatePicker, Radio, Select, Checkbox} from "antd";
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import moment from "moment";
-
 import {APPLICATION_DATE_FORMAT} from '../../../constants';
 import {setProcessDetails, saveSlittingInstruction, resetInstruction, updateInstruction} from '../../../appRedux/actions/Inward';
 import { set } from "nprogress";
+
+const Option = Select.Option;
 
 export const formItemLayout = {
     labelCol: {
@@ -96,6 +97,25 @@ const SlittingWidths = (props) => {
         if(len !== 0 && width === 0){
             setwidth(widthValue1)
         }
+
+        if (props.wip) {
+            let actualUpdate = props.cuts.map(item => {
+                if (!item.actualLength && item.actualLength !== 0) item.actualLength  =  item.plannedLength;
+                if (!item.actualWidth && item.actualWidth !== 0) item.actualWidth  =  item.plannedWidth;
+                if (!item.actualWeight && item.actualWeight !== 0) item.actualWeight  =  item.plannedWidth;
+                if (!item.packetClassification?.classificationId) item.packetClassification = {
+                    classificationId: item.plannedWidth < 20 ? 2 : 1
+                }
+                return item;
+            });
+            props.setTableData(actualUpdate);
+
+            let actualTotalWeight = props.cuts.map(i => i.actualWeight);
+            actualTotalWeight = actualTotalWeight.filter(i => i !== undefined);
+            actualTotalWeight = actualTotalWeight.length > 0 ? actualTotalWeight.reduce((total, num) => Number(total) + Number(num)) : 0;
+            props.totalActualweight(actualTotalWeight);
+        }
+
     },[props.cuts])
     
     useEffect(()=>{
@@ -275,7 +295,8 @@ const SlittingWidths = (props) => {
                             Balanced
                     </Button>
                 </Form.Item>
-                <Form.Item label="Process Date" >
+                {!props.wip && 
+                <><Form.Item label="Process Date" >
                     {getFieldDecorator('processDate', {
                         initialValue: moment(new Date(), APPLICATION_DATE_FORMAT),
                         rules: [{ required: true, message: 'Please select a Process date' }],
@@ -393,7 +414,7 @@ const SlittingWidths = (props) => {
                  <Button type="primary" onClick={() => applyData()} hidden={value=== 2? true: false} disabled={value===2 ?  true :props.cuts.length=== 0 ? true : false}>
                            Apply to remainig {equalParts} parts <Icon type="right"/>
                 </Button>
-                </Form.Item>
+                </Form.Item></>}
                 </Form>
         </>
     )
@@ -432,10 +453,10 @@ const columns = [
     },
     {
         title: 'Actual Length',
-        dataIndex:'actualLength',
-        render: (text, record, index) => (
-            <Input value={text}  onChange={onInputChange("actualLength", index)} />
-          )
+        dataIndex: 'actualLength',
+        render: (text, record, index) => { // addonAfter={<p>Enter valid length</p>}
+            return <Input value={record.actualLength} onChange={onInputChange("actualLength", index)} />
+        }
     },
     {
         title: 'Width',
@@ -444,10 +465,10 @@ const columns = [
     },
     {
         title: 'Actual Width',
-        dataIndex:'actualWidth',
-        render: (text, record, index) => (
-            <Input value={text}  onChange={onInputChange("actualWidth", index)} />
-          )
+        dataIndex: 'actualWidth',
+        render: (text, record, index) => {
+            return <Input value={record.actualWidth} onChange={onInputChange("actualWidth", index)} />
+        }
     },
     {
         title: 'Weight',
@@ -456,10 +477,26 @@ const columns = [
     },
     {
         title: 'Actual Weight',
-        dataIndex:'actualWeight',
-        render: (text, record, index) => (
-            <Input value={text}  onChange={onInputChange("actualWeight", index)} />
-          )
+        dataIndex: 'actualWeight',
+        render: (text, record, index) => {
+            return <Input value={record.actualWeight} onChange={onInputChange("actualWeight", index)} onBlur={() => {
+                let actualTotalWeight = cuts.map(i => i.actualWeight);
+                actualTotalWeight = actualTotalWeight.filter(i => i !== undefined);
+                actualTotalWeight = actualTotalWeight.length > 0 ? actualTotalWeight.reduce((total, num) => Number(total) + Number(num)) : 0;
+                setTotalActualWeight(actualTotalWeight);
+            }} />
+        }
+    },
+    {
+        title: 'Classification',
+        dataIndex: 'packetClassification',
+        render: (text, record, index) => {
+            return <Select style={{width: '100%'}} value={record?.packetClassification?.classificationId} onChange={onInputChange("packetClassification", index, 'select')} >
+                {props.classificationList?.map(item => {
+                    return <Option value={item.classificationId}>{item.classificationName}</Option>
+                })}
+            </Select>
+        }
     }
 ];
 const columnsPlan=[
@@ -504,6 +541,7 @@ const columnsPlan=[
 ];
     const [tableData, setTableData] = useState(props.wip?(props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts);
     const [tweight, settweight]= useState(0);
+    const [totalActualweight, setTotalActualWeight] = useState(0);
     const [edit, setEdit] = useState([]);
     const [lengthValue, setLengthValue] = useState();
     const [widthValue, setWidthValue]= useState();
@@ -553,11 +591,11 @@ const columnsPlan=[
 
 }, [props.coilDetails]);
 
-  const onInputChange = (key, index) => (
+  const onInputChange = (key, index, type) => (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const newData = [...tableData];
-    newData[index][key] = Number(e.target.value);
+    newData[index][key] = type === 'select' ? { classificationId: Number(e) } : Number(e.target.value);
     setTableData(newData);
   };
     useEffect(() => {
@@ -588,8 +626,12 @@ const columnsPlan=[
             visible={props.showSlittingModal}
             onOk={() => {
                 if(props.wip){
-                    props.updateInstruction(tableData);
-                    props.setShowSlittingModal(false)
+                    if (totalActualweight > tweight) {
+                        message.error('Actual Weight is greater than Total weight, Please modify actual weight!');
+                    } else {
+                        props.updateInstruction(tableData);
+                        props.setShowSlittingModal(false)
+                    }
                 }
                 else{
                     props.saveSlittingInstruction(cuts);
@@ -608,30 +650,65 @@ const columnsPlan=[
                 tabPosition={mode}
             >
                 <TabPane tab="Slitting Instruction" key="1">
-                <Row>
-                <Col lg={12} md={16} sm={24} xs={24} span={16} className="gx-align-self-center">
-                    
-                   <Form {...formItemLayout} className="login-form gx-pt-4">
-                       
-                        <Form.Item>
-                            <SlittingWidthsForm setSlits={(slits) => setCuts([...cuts,...slits])} setweight={(w) => settweight(w)} coilDetails={props.coilDetails} wip={props.wip} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth} plannedWeight ={props.plannedWeight} length={length} cuts={cuts} edit={edit} tweight={tweight} lengthValue={(lengthValue) => setLengthValue(lengthValue)} widthValue={(widthValue) => setWidthValue(widthValue)} reset={form}/>
-                        </Form.Item>
+                    {props.wip ? 
+                    <Row>
+                        <Col lg={24} md={24} sm={24} xs={24}>
+                            <Form {...formItemLayout} className="login-form gx-pt-4">
+                                
+                                <Form.Item>
+                                    <SlittingWidthsForm setSlits={(slits) => setCuts([...cuts,...slits])} setTableData={setTableData} setweight={(w) => settweight(w)} totalActualweight={(w) => setTotalActualWeight(w)} coilDetails={props.coilDetails} wip={props.wip} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth} plannedWeight ={props.plannedWeight} length={length} cuts={cuts} edit={edit} tweight={tweight} lengthValue={(lengthValue) => setLengthValue(lengthValue)} widthValue={(widthValue) => setWidthValue(widthValue)} reset={form}/>
+                                </Form.Item>
 
-                    </Form>
-                </Col>
-                <Col lg={12} md={12} sm={24} xs={24}>
-                    <Table className="gx-table-responsive" columns={props.wip?columns: columnsPlan} dataSource={props.wip?tableData:reset ?cuts: cutArray}/>
-                    <Form.Item label="Total weight(mm)">
-                    {getFieldDecorator('tweight', {
-                        rules: [{ required: false}],
-                    })(
-                        <>
-                            <Input id="tweight" disabled={true} value={tweight} name="tweight" />
-                        </>
-                    )}
-                </Form.Item>
-                </Col>
-            </Row>
+                            </Form>
+                                <Table className="gx-table-responsive" columns={props.wip?columns: columnsPlan} dataSource={props.wip?tableData:reset ?cuts: cutArray}/>
+                                <div className="form-wrapper">
+                                    <Form.Item className="form-item" label="Total weight(kg)">
+                                    {getFieldDecorator('tweight', {
+                                        rules: [{ required: false}],
+                                    })(
+                                        <>
+                                            <Input id="tweight" disabled={true} value={tweight} name="tweight" />
+                                        </>
+                                    )}
+                                    </Form.Item>
+
+                                    <Form.Item label="Actual weight(kg)">
+                                        {getFieldDecorator('totalActualweight', {
+                                            rules: [{ required: false }],
+                                        })(
+                                            <>
+                                                <Input id="totalActualweight" disabled={true} value={totalActualweight} name="totalActualweight" />
+                                            </>
+                                        )}
+                                    </Form.Item>
+                                </div>
+                        </Col>
+                    </Row>
+                    : 
+                    <Row>
+                        <Col lg={12} md={16} sm={24} xs={24} span={16} className="gx-align-self-center">
+                            
+                        <Form {...formItemLayout} className="login-form gx-pt-4">
+                            
+                                <Form.Item>
+                                    <SlittingWidthsForm setSlits={(slits) => setCuts([...cuts,...slits])} setweight={(w) => settweight(w)} coilDetails={props.coilDetails} wip={props.wip} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth} plannedWeight ={props.plannedWeight} length={length} cuts={cuts} edit={edit} tweight={tweight} lengthValue={(lengthValue) => setLengthValue(lengthValue)} widthValue={(widthValue) => setWidthValue(widthValue)} reset={form}/>
+                                </Form.Item>
+
+                            </Form>
+                        </Col>
+                        <Col lg={12} md={12} sm={24} xs={24}>
+                            <Table className="gx-table-responsive" columns={props.wip?columns: columnsPlan} dataSource={props.wip?tableData:reset ?cuts: cutArray}/>
+                            <Form.Item label="Total weight(kg)">
+                                {getFieldDecorator('tweight', {
+                                    rules: [{ required: false}],
+                                })(
+                                    <>
+                                        <Input id="tweight" disabled={true} value={tweight} name="tweight" />
+                                    </>
+                                )}
+                            </Form.Item>
+                        </Col>
+                    </Row>}
         
                 </TabPane>
             
@@ -660,6 +737,7 @@ const columnsPlan=[
 const mapStateToProps = state => ({
     party: state.party,
     inward: state.inward,
+    classificationList: state.packetClassification?.classificationList
 });
 
 const SlittingDetailsForm = Form.create({
@@ -691,6 +769,10 @@ const SlittingDetailsForm = Form.create({
             twidth: Form.createFormField({
                 ...props.inward.process.twidth,
                 value: (props.inward.process.twidth) ? props.inward.process.twidth : '',
+            }),
+            totalActualweight: Form.createFormField({
+                ...props.inward.process.totalActualweight,
+                value: props.inward.process.totalActualweight || '',
             }),
             targetWeight: Form.createFormField({
                 ...props.inward.process.targetWeight,

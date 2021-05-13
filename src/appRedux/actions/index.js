@@ -7,4 +7,5 @@ export * from './Inward';
 export * from './Party';
 export * from './Material';
 export * from './Delivery';
+export * from './PacketClassification';
 

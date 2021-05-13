@@ -34906,6 +34906,9 @@ textarea.gx-chat-textarea {
 .gx-login-content .ant-form-item-children {
   display: block;
 }
+.ant-form-item.form-item {
+  margin: 0
+}
 @media screen and (max-width: 575px) {
   .gx-login-content {
     padding: 20px 20px 10px;
@@ -37279,5 +37282,10 @@ textarea.gx-chat-textarea {
 }
 .plan-dl-box {
   padding: 0;
+}
+
+.form-wrapper {
+  display: flex;
+  justify-content: space-evenly;
 }
 
