@@ -622,7 +622,7 @@ const columnsPlan=[
 
     return (
         <Modal
-            title="Finish Slitting Instruction"
+            title={props.wip ? "Finish Slitting Instruction" : "Slitting Instruction"}
             visible={props.showSlittingModal}
             onOk={() => {
                 if(props.wip){

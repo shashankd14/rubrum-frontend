@@ -283,7 +283,7 @@ const CreateCuttingDetailsForm = (props) => {
 
      return (
         <Modal
-            title="Finish Cutting Instruction"
+            title={props.wip ? "Finish Cutting Instruction" : "Cutting Instruction"}
             visible={props.showCuttingModal}
             onOk={() => {
                 if(props.wip){
