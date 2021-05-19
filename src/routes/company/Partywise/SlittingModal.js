@@ -622,7 +622,7 @@ const columnsPlan=[
 
     return (
         <Modal
-            title="Slitting Instruction"
+            title="Finish Slitting Instruction"
             visible={props.showSlittingModal}
             onOk={() => {
                 if(props.wip){
@@ -658,19 +658,19 @@ const columnsPlan=[
                             </Form.Item>
                         </Form>
                         <Col lg={8} md={12} sm={24} xs={24}>
+                            <p>Coil number : {props.coil.coilNumber}</p>
+                            <p>Available Weight(kg) : {props.coil.fpresent}</p>
+                            <p>Available length(mm) : {lengthValue}</p>
+                            <p>Inward Weight(kg) : {props.coil.fQuantity}</p>
+                            <p>Grade: {props.coil.materialGrade.gradeName}</p>  
+                        </Col>     
+                                                    
+                        <Col lg={8} md={12} sm={24} xs={24}>
                             <p>Material : {props.coil.material.description}</p>
                             <p>Customer Name : {props.coil.party.nPartyName}</p>
                             <p>Thickness(mm): {props.coil.fThickness}</p>
                             <p>Width(mm) : {props.coil.fWidth}</p>
                             <p>Available Width(mm): {widthValue}</p>
-                        </Col>     
-                                                    
-                        <Col lg={8} md={12} sm={24} xs={24}>
-                            <p>Coil number : {props.coil.coilNumber}</p>
-                            <p>Available Weight(kg) : {props.coil.fpresent}</p>
-                            <p>Available length(mm) : {lengthValue}</p>
-                            <p>Inward Weight(kg) : {props.coil.fQuantity}</p>
-                            <p>Grade: {props.coil.materialGrade.gradeName}</p>
                         </Col>
 
                         <Col lg={24} md={24} sm={24} xs={24}>
@@ -725,24 +725,6 @@ const columnsPlan=[
                     </Row>}
         
                 </TabPane>
-            
-                <TabPane tab="Coil Details" key="2">
-                <Row>
-                <Col lg={12} md={12} sm={24} xs={24}>   
-                    <p>Coil number : {props.coil.coilNumber}</p>
-                    <p>Available length(mm) : {lengthValue}</p>
-                    <p>Available Weight(kg) :{props.coil.fpresent}</p>
-                    <p>Inward Weight(kg) :{props.coil.fQuantity}</p>
-                    <p>Grade:{props.coil.materialGrade.gradeName}</p></Col> 
-                <Col lg={12} md={12} sm={24} xs={24}>
-                    <p>Material :{props.coil.material.description}</p>
-                    <p>Customer Name :{props.coil.party.nPartyName}</p>
-                    <p>Thickness(mm):{props.coil.fThickness}</p>
-                    <p>Width(mm) :{props.coil.fWidth}</p>
-                    <p>Available Width(mm): {widthValue}</p>
-                </Col>     
-            </Row>
-        </TabPane>
                 </Tabs>
          </Modal>
     )
