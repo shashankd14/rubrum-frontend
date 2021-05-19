@@ -188,12 +188,19 @@ const Plan = (props) => {
                         </div>
                         {props.wip ?
                             <div>{props.inward.plan.fpresent !== 0 ? <Button onClick={() => {
-                                props.saveUnprocessedDelivery(props.inward.plan.inwardEntryId)
-                            }}>Unprocessed</Button> : <></>}<Button onClick={() => {
-                                setSlittingCoil(props.inward.plan);
-                                setShowSlittingModal(true)
-                                setChildCoil(false)
-                            }}>Finish Slitting</Button></div> :
+                                    props.saveUnprocessedDelivery(props.inward.plan.inwardEntryId)
+                                }}>Unprocessed</Button> : <></>}
+                                <Button onClick={() => {
+                                    setSlittingCoil(props.inward.plan);
+                                    setShowSlittingModal(true)
+                                    setChildCoil(false)
+                                }}>Finish Slitting</Button>
+                                <Button onClick={() => {
+                                    setCuttingCoil(props.inward.plan);
+                                    setShowCuttingModal(true);
+                                    setChildCoil(false)
+                                }}>Finish Cutting</Button>
+                            </div> :
                             <div>
                                 <Button onClick={() => {
                                     setCuttingCoil(props.inward.plan);
@@ -233,14 +240,8 @@ const Plan = (props) => {
                                                         <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.availableWeight" /> : </p>
                                                         <span className="gx-coil-details-label">{getPlannedWeight(instruction)}</span>
                                                     </div>
-                                                    {instruction.process.processName == 'Cutting' && props.wip ?
-                                                        <Button onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            setCuttingCoil(instruction);
-                                                            setShowCuttingModal(true);
-                                                            setChildCoil(true);
-                                                        }}>Finish Cutting
-                                                            </Button> : props.wip ? <></> :
+                                                    { props.wip ?
+                                                         <></> :
                                                             <div><Button onClick={(e) => {
                                                                 e.stopPropagation();
                                                                 setCuttingCoil(instruction);
@@ -289,14 +290,8 @@ const Plan = (props) => {
                                                                     <div className="gx-coil-details-label"><IntlMessages id="partywise.plan.deliveredWeight" /> : </div>
                                                                     <span className="gx-coil-details-label">{getWeight(instruction.childInstructions, 'Delivered')}</span>
                                                                 </div> */}
-                                                                {instruction.process.processName == 'Cutting' && props.wip ?
-                                                                    <Button onClick={(e) => {
-                                                                        e.stopPropagation();
-                                                                        setCuttingCoil(instruction);
-                                                                        setShowCuttingModal(true);
-                                                                        setChildCoil(true);
-                                                                    }}>Finish Cutting
-                                                                    </Button> : props.wip ? <></> :
+                                                                {props.wip ?
+                                                                     <></> :
                                                                         <div><Button onClick={(e) => {
                                                                             e.stopPropagation();
                                                                             setCuttingCoil(instruction);
