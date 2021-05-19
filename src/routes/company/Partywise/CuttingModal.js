@@ -64,7 +64,7 @@ const CreateCuttingDetailsForm = (props) => {
             title: 'Actual Length',
             dataIndex:'actualLength',
             render: (text, record, index) => (
-                <Input value={text}  onChange={onInputChange("actualLength", index)} />
+                <Input value={record.actualLength}  onChange={onInputChange("actualLength", index)} />
               )
         },
         {
@@ -76,7 +76,7 @@ const CreateCuttingDetailsForm = (props) => {
             title: 'Actual No of Sheets',
             dataIndex:'actualNoOfPieces',
             render: (text, record, index) => (
-                <Input value={text} onChange={onInputChange("actualNoOfPieces", index)} />
+                <Input value={record.actualNoOfPieces} onChange={onInputChange("actualNoOfPieces", index)} />
               )
         },
         {
@@ -88,7 +88,12 @@ const CreateCuttingDetailsForm = (props) => {
             title: 'Actual Weight',
             dataIndex:'actualWeight',
             render: (text, record, index) => (
-                <Input value={text}  onChange={onInputChange("actualWeight", index)} />
+                <Input value={record.actualWeight}  onChange={onInputChange("actualWeight", index)} onBlur={() => {
+                    let actualTotalWeight = cuts.map(i => i.actualWeight);
+                    actualTotalWeight = actualTotalWeight.filter(i => i !== undefined);
+                    actualTotalWeight = actualTotalWeight.length > 0 ? actualTotalWeight.reduce((total, num) => Number(total) + Number(num)) : 0;
+                    setTotalActualWeight(actualTotalWeight);
+                }} />
               )
         },
         {
