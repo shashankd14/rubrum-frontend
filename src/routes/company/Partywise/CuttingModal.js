@@ -391,7 +391,7 @@ const CreateCuttingDetailsForm = (props) => {
 
             <Col lg={props.wip ? 24 : 12} md={props.wip ? 24 : 12} sm={24} xs={24}>
             <Table  className="gx-table-responsive"  columns={props.wip? columns :columnsPlan} dataSource={props.wip?tableData:cuts}/>             
-            <div className='form-wrapper'>
+            {props.wip ? <div className='form-wrapper'>
                 <Form.Item label="Total weight(kg)">
                     {getFieldDecorator('tweight', {
                         rules: [{ required: false}],
@@ -410,7 +410,15 @@ const CreateCuttingDetailsForm = (props) => {
                         </>
                     )}
                 </Form.Item>
-            </div>
+            </div> : <Form.Item label="Total weight(kg)">
+                    {getFieldDecorator('tweight', {
+                        rules: [{ required: false}],
+                    })(
+                        <>
+                            <Input id="tweight" disabled={true} value={tweight} name="tweight" />
+                        </>
+                    )}
+                </Form.Item>}
             </Col>
     </Row>
 
