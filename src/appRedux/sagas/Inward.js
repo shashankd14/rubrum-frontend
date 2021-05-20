@@ -56,7 +56,7 @@ import {
     deleteInwardEntryByIdSuccess,
     deleteInwardEntryByIdError
 } from "../actions";
-import { CUTTING_INSTRUCTION_PROCESS_ID, SLITTING_INSTRUCTION_PROCESS_ID } from "../../constants";
+import { CUTTING_INSTRUCTION_PROCESS_ID, SLITTING_INSTRUCTION_PROCESS_ID, SLIT_CUT_INSTRUCTION_PROCESS_ID } from "../../constants";
 import { formItemLayout } from "../../routes/company/Partywise/CuttingModal";
 
 function* fetchInwardList() {
@@ -324,7 +324,8 @@ function* requestSaveCuttingInstruction(action) {
             body: JSON.stringify(requestBody)
         });
         if (fetchPartyInwardList.status === 200) {
-            yield put(saveCuttingInstructionSuccess(fetchPartyInwardList));
+            const fetchPartyListObj = yield fetchPartyInwardList.json()
+            yield put(saveCuttingInstructionSuccess(fetchPartyListObj));
         } else
             yield put(saveCuttingInstructionError('error'));
     } catch (error) {
@@ -357,7 +358,8 @@ function* requestSaveSlittingInstruction(action) {
             body: JSON.stringify(requestBody)
         });
         if (fetchPartyInwardList.status === 200) {
-            yield put(saveSlittingInstructionSuccess(fetchPartyInwardList));
+            const fetchPartyListObj = yield fetchPartyInwardList.json()
+            yield put(saveSlittingInstructionSuccess(fetchPartyListObj));
         } else
             yield put(saveSlittingInstructionError('error'));
     } catch (error) {

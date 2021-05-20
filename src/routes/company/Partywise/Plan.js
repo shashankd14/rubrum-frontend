@@ -1,4 +1,4 @@
-import { Button, Card, Col } from "antd";
+import { Button, Card, Col, Select } from "antd";
 import moment from 'moment';
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
@@ -15,19 +15,8 @@ const Plan = (props) => {
     const [cuttingCoil, setCuttingCoil] = useState(false);
     const [slittingCoil, setSlittingCoil] = useState(false);
     const [childCoil, setChildCoil] = useState(false);
-    // function removeDuplicates(originalArray, prop) {
-    //     var newArray = [];
-    //     var lookupObject  = {};
-   
-    //     for(var i in originalArray) {
-    //        lookupObject[originalArray[i][prop]] = originalArray[i];
-    //     }
-   
-    //     for(i in lookupObject) {
-    //         newArray.push(lookupObject[i]);
-    //     }
-    //      return newArray;
-    // }
+    const [slitCut, setSlitCut] = useState(false);
+    const { Option } = Select;
     const getPlannedLength = (ins) => {
         let length = 0;
         let actualLength = 0;
@@ -160,12 +149,27 @@ const Plan = (props) => {
         } else {
             return tempAvailValue;
         }
+
+    }
+    const handleSelectChange=(e)=>{
+        if(e === 'Slitting'){
+            setShowSlittingModal(true)
+            setSlittingCoil(props.inward.plan)
+        }else if(e==='Cutting'){
+            setShowCuttingModal(true)
+            setCuttingCoil(props.inward.plan)
+        }else if(e=== 'Slit & Cut'){
+            setSlitCut(true);
+            setSlittingCoil(props.inward.plan);
+            setShowSlittingModal(true);
+        }
     }
 
     return (
         <div className="gx-full-height" style={{ overflowX: "auto", overflowy: "scroll" }}>
-            {cuttingCoil && <CuttingModal showCuttingModal={showCuttingModal} setShowCuttingModal={setShowCuttingModal} coilDetails={cuttingCoil} wip={props.wip} childCoil={childCoil} plannedLength={getPlannedLength} plannedWidth ={getPlannedWidth} plannedWeight={getPlannedWeight} coil={props.inward.plan}/>}
-            {slittingCoil && <SlittingModal showSlittingModal={showSlittingModal} setShowSlittingModal={setShowSlittingModal} wip={props.wip} coilDetails={slittingCoil} childCoil={childCoil} plannedLength={getPlannedLength} plannedWidth ={getPlannedWidth} plannedWeight={getPlannedWeight} coil={props.inward.plan}/>}
+            {cuttingCoil && <CuttingModal showCuttingModal={showCuttingModal} setShowCuttingModal={setShowCuttingModal} coilDetails={cuttingCoil} wip={props.wip} childCoil={childCoil} plannedLength={getPlannedLength} plannedWidth ={getPlannedWidth} plannedWeight={getPlannedWeight} coil={props.inward.plan} slitCut={slitCut} />}
+            {slittingCoil && <SlittingModal showSlittingModal={showSlittingModal} setShowSlittingModal={setShowSlittingModal} wip={props.wip} coilDetails={slittingCoil} childCoil={childCoil} plannedLength={getPlannedLength} plannedWidth ={getPlannedWidth} plannedWeight={getPlannedWeight} coil={props.inward.plan} slitCut={slitCut} setShowCuttingModal={setShowCuttingModal} setCutting={(cuts)=>setCuttingCoil(cuts)}/>}
+            
             <h1><IntlMessages id="partywise.plan.label" /></h1>
             <div className="gx-full-height gx-flex-row">
                 <Col lg={5} md={5} sm={24} xs={24} className="gx-align-self-center">
@@ -195,16 +199,11 @@ const Plan = (props) => {
                                 setChildCoil(false)
                             }}>Finish Slitting</Button></div> :
                             <div>
-                                <Button onClick={() => {
-                                    setCuttingCoil(props.inward.plan);
-                                    setShowCuttingModal(true);
-                                    setChildCoil(false)
-                                }}>Cutting</Button>
-                                <Button onClick={() => {
-                                    setSlittingCoil(props.inward.plan);
-                                    setShowSlittingModal(true)
-                                    setChildCoil(false)
-                                }}>Slitting</Button>
+                             <Select defaultValue ="Select" style={{ width: 120 }} onChange={handleSelectChange}>
+                                <Option value="Slitting">Slitting</Option>
+                               <Option value="Cutting">Cutting</Option>
+                               <Option value="Slit & Cut">Slit & Cut</Option>
+                             </Select>
                             </div>}
                     </Card>
                 </Col>
@@ -241,20 +240,10 @@ const Plan = (props) => {
                                                             setChildCoil(true);
                                                         }}>Finish Cutting
                                                             </Button> : props.wip ? <></> :
-                                                            <div><Button onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                setCuttingCoil(instruction);
-                                                                setShowCuttingModal(true);
-                                                                setChildCoil(true);
-                                                            }}>Cutting
-                                                        </Button>
-                                                                <Button onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    setSlittingCoil(instruction);
-                                                                    setShowSlittingModal(true);
-                                                                    setChildCoil(true);
-                                                                }}>Slitting
-                                                        </Button></div>}
+                                                            <div><Select defaultValue ="Select" style={{ width: 120 }} onChange={handleSelectChange}>
+                                                            <Option value="Slitting">Slitting</Option>
+                                                           <Option value="Cutting">Cutting</Option>
+                                                           </Select></div>}
 
                                                 </div>
                                             </Card>
@@ -297,20 +286,11 @@ const Plan = (props) => {
                                                                         setChildCoil(true);
                                                                     }}>Finish Cutting
                                                                     </Button> : props.wip ? <></> :
-                                                                        <div><Button onClick={(e) => {
-                                                                            e.stopPropagation();
-                                                                            setCuttingCoil(instruction);
-                                                                            setShowCuttingModal(true);
-                                                                            setChildCoil(true);
-                                                                        }}>Cutting
-                                                                        </Button>
-                                                                            <Button onClick={(e) => {
-                                                                                e.stopPropagation();
-                                                                                setSlittingCoil(instruction);
-                                                                                setShowSlittingModal(true);
-                                                                                setChildCoil(true);
-                                                                            }}>Slitting
-                                                                    </Button></div>}
+                                                                        <div>
+                                                                            <Select defaultValue ="Select" style={{ width: 120 }} onChange={handleSelectChange}>
+                                                                                <Option value="Slitting">Slitting</Option>
+                                                                                <Option value="Cutting">Cutting</Option>
+                                                                            </Select></div>}
                                                             </div>
                                                         </Card>
                                                     </Col>

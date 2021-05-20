@@ -36,10 +36,13 @@ const CreateCuttingDetailsForm = (props) => {
     const WeightValue = props.coilDetails.instruction && props.coilDetails.instruction.length > 0  ? props.plannedWeight(props.coilDetails):  props.coilDetails.fpresent ? props.coilDetails.fpresent  : props.plannedWeight(props.coilDetails);
     const [length, setlength]= useState(lengthValue);
     const [width, setwidth] = useState(widthValue);
+    const [cutValue, setCutValue] = useState([]);
+    const [objValue,setObjValue]= useState();
     
     // const dataSource= props.wip?((props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts;
     const [tableData, setTableData] = useState(props.wip?(props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts);
     const columns=[
+
         {
             title: 'Serial No',
             dataIndex:'instructionId',
@@ -140,6 +143,71 @@ const CreateCuttingDetailsForm = (props) => {
               key:'action',
         }
     ];
+    const columnsSlit=[
+        {
+            title: 'Serial No',
+            dataIndex:'instructionId',
+            key: 'instructionId',
+           render : (text,record,index) => {
+                return (index+1);
+           }
+        },
+        {
+            title: 'Process Date',
+            dataIndex:'processDate',
+            render (value) {
+                return moment(value).format('DD/MM/YYYY');
+            },
+            key: 'processDate',
+        },
+        {
+            title: 'Length',
+            dataIndex:'plannedLength',
+            key: 'plannedLength',
+        },
+        {
+            title: 'No of Sheets',
+            dataIndex:'plannedNoOfPieces',
+            key: 'plannedNoOfPieces',
+        },
+        {
+            title: 'Weight',
+            dataIndex:'plannedWeight',
+            key:'plannedWeight',
+        },
+        {
+            title: 'Cut-Length',
+            dataIndex: 'plannedLength',
+            render: (text, record, index) => {
+                return <Input onChange={onInputChange("plannedLength", index)} />
+            }
+        },
+        {
+            title: 'No Of Cut Pieces',
+            dataIndex: 'plannedNoOfPieces',
+            render: (text, record, index) => {
+                return <Input onChange={onInputChange("plannedNoOfPieces", index)} />
+            }
+        },
+        {
+            title: 'Cut- Weight',
+            dataIndex: 'plannedWeight',
+            render: (text, record, index) => {
+                return <Input onChange={onInputChange("plannedWeight", index)} />
+            }
+        },
+        {
+            title:'Actions',
+            dataIndex:'actions',
+            render: (text, record,index) => (
+                <span>
+                <i className="icon icon-edit" onClick={() => {onEdit(record,index);}} /> <></>
+                <i className="icon icon-trash" onClick={(e) => {onDelete(record, e); }}/>
+                </span>
+              ),
+              key:'action',
+        }
+    ];
 
     const onEdit=(record,index) => {
         const {form} = props;
@@ -205,7 +273,10 @@ const CreateCuttingDetailsForm = (props) => {
     }, [props.inward.process.length, props.inward.process.no])
     
     useEffect(() => {
-        let data = props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions
+        if(props.slitCut){
+            setCuts(props.coilDetails)
+        }else{
+            let data = props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions
         if(props.childCoil){
             const arrayData =[];
             arrayData.push(data);
@@ -218,6 +289,7 @@ const CreateCuttingDetailsForm = (props) => {
         }
         let newData = [...data];
         setTableData(newData);
+        }
         
         // for setting length and width
 
@@ -228,10 +300,11 @@ const CreateCuttingDetailsForm = (props) => {
 
     }, [props.coilDetails]);
     useEffect(() => {
-        if(props.inward.instructionSaveLoading && !props.wip) {
+        if(props.inward.instructionSaveCuttingLoading && !props.wip) {
             loading = message.loading('Saving Cut Instruction..');
+            
         }
-    }, [props.inward.instructionSaveLoading]);
+    }, [props.inward.instructionSaveCuttingLoading]);
     useEffect(()=>{
         let cutsArray = cuts.map(i => i.plannedWeight);
         cutsArray = cutsArray.filter(i => i !== undefined)
@@ -240,19 +313,55 @@ const CreateCuttingDetailsForm = (props) => {
 
     },[cuts])
     useEffect(() => {
-        if(props.inward.instructionSaveSuccess && !props.wip) {
+        if(props.inward.instructionSaveCuttingSuccess && !props.wip) {
             loading = '';
             message.success('Cutting instruction saved successfully', 2).then(() => {
                 props.setShowCuttingModal(false);
                 props.resetInstruction();
             });
         }
-    }, [props.inward.instructionSaveSuccess])
+    }, [props.inward.instructionSaveCuttingSuccess])
 
     const onInputChange = (key, index) => (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newData = [...tableData];
-        newData[index][key] = Number(e.target.value);
-        setTableData(newData);
+        if(props.slitCut){
+            const newData = [...cuts];
+            let arrayData= [];
+            let obj ={
+                instructionId: newData[index].instructionId
+            }
+            if(key === 'plannedLength'){
+                obj.plannedLength= Number(e.target.value);
+            }else if(key === 'plannedNoOfPieces'){
+                obj.plannedNoOfPieces= Number(e.target.value);
+            }else if(key === 'plannedWeight'){
+                obj.plannedWeight= Number(e.target.value);
+            }
+            let obj1 = Object.keys(obj);
+            if(cutValue && cutValue.length> 0){
+                let cuts = cutValue.map(item =>{
+                    if(obj.instructionId === item.instructionId){
+                        obj = {...obj,...item}
+                    }else{
+                        if(obj1.length === 2){
+                            arrayData.push(item)
+                            setObjValue({...obj})
+                        }else if(obj1.length===3){
+                            setObjValue({...obj,...objValue})
+                        }
+                        obj ={...obj,...objValue}
+                    }
+                })
+            }
+            obj= {...obj,...objValue}
+            arrayData.push(obj);
+            setCutValue(arrayData);
+            
+        }else{
+            const newData = [...tableData];
+            newData[index][key] = Number(e.target.value);
+            setTableData(newData);
+        }
+        
     };
     const handleChange = (e) =>{
         if(e.target.value !== ''){
@@ -274,7 +383,9 @@ const CreateCuttingDetailsForm = (props) => {
                         props.updateInstruction(tableData);
                         props.setShowCuttingModal();
                 }
-                else{
+                else if(props.slitCut){
+                    props.saveCuttingInstruction(cutValue);
+                }else{
                     props.saveCuttingInstruction(cuts);
                 }
 
@@ -292,7 +403,7 @@ const CreateCuttingDetailsForm = (props) => {
           tabPosition={mode}
             >
           <TabPane tab="Cutting Details" key="1">
-        <Row>
+       {props.slitCut ? <Table  className="gx-table-responsive"  columns={columnsSlit} dataSource={cuts}/>  : <Row>
           <Col lg={12} md={12} sm={24} xs={24} className="gx-align-self-center">
 
             <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4">
@@ -360,7 +471,7 @@ const CreateCuttingDetailsForm = (props) => {
                     )}
                 </Form.Item>
                 </Col>
-    </Row>
+    </Row>}
 
           </TabPane>
           <TabPane tab="Coil Details" key="2">
@@ -390,6 +501,7 @@ const CreateCuttingDetailsForm = (props) => {
 const mapStateToProps = state => ({
     party: state.party,
     inward: state.inward,
+    saveCut: state.saveCut
 });
 
 const CuttingDetailsForm = Form.create({
@@ -419,5 +531,6 @@ const CuttingDetailsForm = Form.create({
         props.setProcessDetails({ ...props.inward.process, ...values});
     },
 })(CreateCuttingDetailsForm);
+
 
 export default  connect(mapStateToProps, {setProcessDetails, saveCuttingInstruction,resetInstruction, updateInstruction})(CuttingDetailsForm);
