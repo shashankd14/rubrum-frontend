@@ -303,7 +303,7 @@ function* requestSaveCuttingInstruction(action) {
     const requestBody = [];
     action.cuttingDetails.map((cutDetails) => {
         const req = {
-            processId: CUTTING_INSTRUCTION_PROCESS_ID,
+            processId: cutDetails.processId?cutDetails.processId:CUTTING_INSTRUCTION_PROCESS_ID,
             instructionDate: moment(cutDetails.processDate).format('YYYY-MM-DD HH:mm:ss'),
             plannedLength: cutDetails.length,
             plannedWeight: cutDetails.weight,
@@ -337,7 +337,7 @@ function* requestSaveSlittingInstruction(action) {
     const requestBody = [];
     action.slittingDetails.map((slitDetails) => {
         const req = {
-            processId: SLITTING_INSTRUCTION_PROCESS_ID,
+            processId: slitDetails.processId?slitDetails.processId:SLITTING_INSTRUCTION_PROCESS_ID,
             instructionDate: moment().format('YYYY-MM-DD HH:mm:ss'),
             plannedLength: slitDetails.plannedLength,
             plannedWidth: slitDetails.plannedWidth,

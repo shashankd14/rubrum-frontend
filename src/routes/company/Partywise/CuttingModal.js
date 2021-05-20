@@ -329,6 +329,7 @@ const CreateCuttingDetailsForm = (props) => {
             let obj ={
                 instructionId: newData[index].instructionId
             }
+            obj.processId = 3;
             if(key === 'plannedLength'){
                 obj.plannedLength= Number(e.target.value);
             }else if(key === 'plannedNoOfPieces'){
