@@ -9,6 +9,7 @@ import SlittingModal from "./SlittingModal";
 
 
 const Plan = (props) => {
+    const insList = ["Slitting","Cutting","Slit & Cut"];
     const { instruction } = props.inward.plan;
     const [showCuttingModal, setShowCuttingModal] = useState(false);
     const [showSlittingModal, setShowSlittingModal] = useState(false);
@@ -151,14 +152,14 @@ const Plan = (props) => {
         }
 
     }
-    const handleSelectChange=(e)=>{
-        if(e === 'Slitting'){
+    const handleSelectChange=(value)=>{
+        if(value === 'Slitting'){
             setShowSlittingModal(true)
             setSlittingCoil(props.inward.plan)
-        }else if(e==='Cutting'){
+        }else if(value==='Cutting'){
             setShowCuttingModal(true)
             setCuttingCoil(props.inward.plan)
-        }else if(e=== 'Slit & Cut'){
+        }else if(value== 'Slit & Cut'){
             setSlitCut(true);
             setSlittingCoil(props.inward.plan);
             setShowSlittingModal(true);
@@ -199,12 +200,19 @@ const Plan = (props) => {
                                 setChildCoil(false)
                             }}>Finish Slitting</Button></div> :
                             <div>
-                             <Select defaultValue ="Select" style={{ width: 120 }} onChange={handleSelectChange}>
-                                <Option value="Slitting">Slitting</Option>
-                               <Option value="Cutting">Cutting</Option>
-                               <Option value="Slit & Cut">Slit & Cut</Option>
-                             </Select>
-                            </div>}
+                                <Select
+                                showSearch
+                                style={{ width: 100 }}
+                                placeholder="Select Instruction"
+                                optionFilterProp="children"
+                                onChange={handleSelectChange}
+                                filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                        >
+                            {insList.length > 0 && insList.map((instruction) => (
+                                <Option value={instruction}>{instruction}</Option>
+                            ))}
+                        </Select>
+                    </div>}
                     </Card>
                 </Col>
                 <Col lg={18} md={18} sm={24} xs={24} offset={1} className="gx-align-self-center gx-branch lv1">
@@ -240,10 +248,18 @@ const Plan = (props) => {
                                                             setChildCoil(true);
                                                         }}>Finish Cutting
                                                             </Button> : props.wip ? <></> :
-                                                            <div><Select defaultValue ="Select" style={{ width: 120 }} onChange={handleSelectChange}>
-                                                            <Option value="Slitting">Slitting</Option>
-                                                           <Option value="Cutting">Cutting</Option>
-                                                           </Select></div>}
+                                                            <div><Select
+                                                            showSearch
+                                                            style={{ width: 100 }}
+                                                            placeholder="Select Instruction"
+                                                            optionFilterProp="children"
+                                                            onChange={handleSelectChange}
+                                                            filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                                                    >
+                                                        {insList.length > 0 && insList.map((instruction) => (
+                                                            <Option value={instruction}>{instruction}</Option>
+                                                        ))}
+                                                    </Select></div>}
 
                                                 </div>
                                             </Card>
@@ -287,9 +303,17 @@ const Plan = (props) => {
                                                                     }}>Finish Cutting
                                                                     </Button> : props.wip ? <></> :
                                                                         <div>
-                                                                            <Select defaultValue ="Select" style={{ width: 120 }} onChange={handleSelectChange}>
-                                                                                <Option value="Slitting">Slitting</Option>
-                                                                                <Option value="Cutting">Cutting</Option>
+                                                                            <Select
+                                                                                showSearch
+                                                                                style={{ width: 100 }}
+                                                                                placeholder="Select Instruction"
+                                                                                optionFilterProp="children"
+                                                                                onChange={handleSelectChange}
+                                                                                filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                                                                                >
+                                                                                {insList.length > 0 && insList.map((instruction) => (
+                                                                                    <Option value={instruction}>{instruction}</Option>
+                                                                                ))}
                                                                             </Select></div>}
                                                             </div>
                                                         </Card>

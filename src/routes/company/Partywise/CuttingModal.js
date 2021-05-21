@@ -38,6 +38,7 @@ const CreateCuttingDetailsForm = (props) => {
     const [width, setwidth] = useState(widthValue);
     const [cutValue, setCutValue] = useState([]);
     const [objValue,setObjValue]= useState();
+    const [selectedRowKeys, setSelectedRowKeys] = useState([])
     
     // const dataSource= props.wip?((props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts;
     const [tableData, setTableData] = useState(props.wip?(props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts);
@@ -186,14 +187,28 @@ const CreateCuttingDetailsForm = (props) => {
             title: 'No Of Cut Pieces',
             dataIndex: 'plannedNoOfPieces',
             render: (text, record, index) => {
-                return <Input onChange={onInputChange("plannedNoOfPieces", index)} />
+                return <Input onChange={onInputChange("plannedNoOfPieces", index)} onBlur={()=>{setTimeout(() => {
+                    if(cutValue.length>0){
+                        let cutIndex = cutValue.map(item =>{
+                            if(cutValue.indexOf(item) === index){
+                                let length = item.plannedLength;
+                                let pieces = item.plannedNoOfPieces;
+                                item.plannedWeight = Math.round( 0.00000785*parseFloat(record.plannedWidth)*parseFloat(props.inward.plan.fThickness)*parseFloat(length)*parseFloat(pieces))
+                            }
+                            return item;
+                        });
+                        setCutValue(cutIndex);
+                    }
+                }, 2000);
+                    
+                }}/>
             }
         },
         {
             title: 'Cut- Weight',
             dataIndex: 'plannedWeight',
             render: (text, record, index) => {
-                return <Input onChange={onInputChange("plannedWeight", index)} />
+                return <Input value={cutValue && cutValue[index]?.plannedWeight?cutValue[index].plannedWeight: record.plannedWeight} disabled={true}/>
             }
         },
         {
@@ -275,6 +290,7 @@ const CreateCuttingDetailsForm = (props) => {
     useEffect(() => {
         if(props.slitCut){
             setCuts(props.coilDetails)
+            
         }else{
             let data = props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions
         if(props.childCoil){
@@ -289,14 +305,15 @@ const CreateCuttingDetailsForm = (props) => {
         }
         let newData = [...data];
         setTableData(newData);
-        }
-        
-        // for setting length and width
-
         const lengthValue = props.coilDetails.instruction && props.coilDetails.instruction.length > 0 ? props.plannedLength(props.coilDetails) : props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails)
         const widthValue = props.coilDetails.instruction && props.coilDetails.instruction.length > 0  ? props.plannedWidth(props.coilDetails):  props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.plannedWidth(props.coilDetails);
         setlength(lengthValue);
         setwidth(widthValue)
+        }
+        
+        
+
+        
 
     }, [props.coilDetails]);
     useEffect(() => {
@@ -329,19 +346,32 @@ const CreateCuttingDetailsForm = (props) => {
             let obj ={
                 instructionId: newData[index].instructionId
             }
+            obj.plannedWeight=0;
             obj.processId = 3;
             if(key === 'plannedLength'){
                 obj.plannedLength= Number(e.target.value);
+                let cutIndex = cutValue.map(item =>{
+                    if(cutValue.indexOf(item) === index){
+                        item.plannedLength=Number(e.target.value) 
+                    }
+                    return item;
+                });
+                setCutValue(cutIndex)
             }else if(key === 'plannedNoOfPieces'){
                 obj.plannedNoOfPieces= Number(e.target.value);
-            }else if(key === 'plannedWeight'){
-                obj.plannedWeight= Number(e.target.value);
+                let cutIndex = cutValue.map(item =>{
+                    if(cutValue.indexOf(item) === index){
+                        item.plannedNoOfPieces=Number(e.target.value)  
+                    }
+                    return item;
+                });
+                setCutValue(cutIndex)
             }
             let obj1 = Object.keys(obj);
             if(cutValue && cutValue.length> 0){
                 let cuts = cutValue.map(item =>{
                     if(obj.instructionId === item.instructionId){
-                        obj = {...obj,...item}
+                            obj = {...obj,...item}
                     }else{
                         if(obj1.length === 2){
                             arrayData.push(item)
@@ -374,6 +404,16 @@ const CreateCuttingDetailsForm = (props) => {
         let length = e.target.value;
        setNo(((WeightValue-Number(tweight))/(0.00000785 *width*props.coil.fThickness*Number(length))).toFixed(0));
     }
+    const setSelection = (record, selected, selectedRows) => {
+        setSelectedRowKeys(selectedRows)
+        // props.setInwardSelectedForDelivery(selectedRows)
+    }
+    const handleSelection = {
+        // selectedRowKey: props,
+        onSelect: setSelection, getCheckboxProps: (record) => ({
+            disabled: false
+        })
+    }
 
      return (
         <Modal
@@ -404,7 +444,7 @@ const CreateCuttingDetailsForm = (props) => {
           tabPosition={mode}
             >
           <TabPane tab="Cutting Details" key="1">
-       {props.slitCut ? <Table  className="gx-table-responsive"  columns={columnsSlit} dataSource={cuts}/>  : <Row>
+       {props.slitCut ? <Table  rowSelection={handleSelection} className="gx-table-responsive"  columns={columnsSlit} dataSource={cuts}/>  : <Row>
           <Col lg={12} md={12} sm={24} xs={24} className="gx-align-self-center">
 
             <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4">
