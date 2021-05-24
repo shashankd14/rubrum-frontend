@@ -596,6 +596,10 @@ const columnsPlan=[
   ) => {
     const newData = [...tableData];
     newData[index][key] = type === 'select' ? { classificationId: Number(e) } : Number(e.target.value);
+    if (key === 'actualWeight') {
+        const data = (newData[index]['plannedLength']*(e.target.value/newData[index]['plannedWeight']));
+        newData[index]['actualLength'] = Number.isInteger(data) ? data : data.toFixed(1);
+    }
     setTableData(newData);
   };
     useEffect(() => {
