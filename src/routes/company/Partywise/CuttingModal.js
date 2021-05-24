@@ -315,13 +315,7 @@ const CreateCuttingDetailsForm = (props) => {
         const widthValue = props.coilDetails.instruction && props.coilDetails.instruction.length > 0  ? props.plannedWidth(props.coilDetails):  props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.plannedWidth(props.coilDetails);
         setlength(lengthValue);
         setwidth(widthValue)
-        }
-        
-        
-
-        
-
-    }, [props.coilDetails]);
+        }}, [props.coilDetails]);
     useEffect(() => {
         if(props.inward.instructionSaveCuttingLoading && !props.wip) {
             loading = message.loading('Saving Cut Instruction..');

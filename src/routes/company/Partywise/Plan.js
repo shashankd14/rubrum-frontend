@@ -17,6 +17,7 @@ const Plan = (props) => {
     const [slittingCoil, setSlittingCoil] = useState(false);
     const [childCoil, setChildCoil] = useState(false);
     const [slitCut, setSlitCut] = useState(false);
+    const [defaultValue, setdefaultValue] = useState();
     const { Option } = Select;
     const getPlannedLength = (ins) => {
         let length = 0;
@@ -208,10 +209,10 @@ const Plan = (props) => {
                             </div> :
                             <div>
                                 <Select
-                                showSearch
                                 style={{ width: 100 }}
                                 placeholder="Select Instruction"
                                 optionFilterProp="children"
+                                value= {defaultValue}
                                 onChange={handleSelectChange}
                                 filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                         >
@@ -250,7 +251,7 @@ const Plan = (props) => {
                                                     { props.wip ?
                                                          <></> :
                                                             <div><Select
-                                                            showSearch
+                                                            value= {defaultValue}
                                                             style={{ width: 100 }}
                                                             placeholder="Select Instruction"
                                                             optionFilterProp="children"
@@ -298,7 +299,7 @@ const Plan = (props) => {
                                                                 {props.wip ?
                                                                      <></> :
                                                                         <div><Select
-                                                                        showSearch
+                                                                        value= {defaultValue}
                                                                         style={{ width: 100 }}
                                                                         placeholder="Select Instruction"
                                                                         optionFilterProp="children"

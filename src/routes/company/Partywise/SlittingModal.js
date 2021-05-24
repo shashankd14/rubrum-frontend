@@ -261,11 +261,6 @@ const SlittingWidths = (props) => {
             settargetWeight(weightValue/Number(e.target.value));
          }
     }
-    function onCheckBoxChange(checkedValues) {
-        setChecked(checkedValues);
-        console.log('checked = ', checkedValues);
-      }
-      
     const onTargetChange=  e=>{
         settargetWeight(e.target.value);
         setavailLength((lengthValue1*(e.target.value/weightValue)).toFixed(1))
