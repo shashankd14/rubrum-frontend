@@ -107,7 +107,9 @@ const Plan = (props) => {
         return weight;
     }
     useEffect(() => {
-        props.getCoilPlanDetails(props.match.params.coilNumber);
+        setTimeout(() => {
+            props.getCoilPlanDetails(props.match.params.coilNumber);
+        }, 1000)
         if (props.wip) {
             props.fetchClassificationList();
         }
