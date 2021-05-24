@@ -288,13 +288,13 @@ const SlittingWidths = (props) => {
         <>
             <Form {...formItemLayoutSlitting}>
                 
-                 <label>Available length : {len}mm</label>
+                {!props.wip && <><label>Available length : {len}mm</label>
                 <div><label>Available Width : {width}mm</label></div> 
                 <Form.Item>
                     <Button type="primary" onClick={() => onChange()} disabled={props.wip ? true : false}>
                             Balanced
                     </Button>
-                </Form.Item>
+                </Form.Item></>}
                 {!props.wip && 
                 <><Form.Item label="Process Date" >
                     {getFieldDecorator('processDate', {
@@ -647,7 +647,7 @@ const columnsPlan=[
     return (
         
         <Modal
-            title="Slitting Instruction"
+            title={props.wip ? "Finish Slitting Instruction" : "Slitting Instruction"}
             visible={props.showSlittingModal}
             onOk={handleOk}
             width={1020}
@@ -674,16 +674,30 @@ const columnsPlan=[
                 <TabPane tab="Slitting Instruction" key="1">
                     {props.wip ? 
                     <Row>
-                        <Col lg={24} md={24} sm={24} xs={24}>
-                            <Form {...formItemLayout} className="login-form gx-pt-4">
-                                
-                                <Form.Item>
-                                    <SlittingWidthsForm setSlits={(slits) => setCuts([...cuts,...slits])} setTableData={setTableData} setweight={(w) => settweight(w)} totalActualweight={(w) => setTotalActualWeight(w)} coilDetails={props.coilDetails} wip={props.wip} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth} plannedWeight ={props.plannedWeight} length={length} cuts={cuts} edit={edit} tweight={tweight} lengthValue={(lengthValue) => setLengthValue(lengthValue)} widthValue={(widthValue) => setWidthValue(widthValue)} reset={form}/>
-                                </Form.Item>
+                        <Form {...formItemLayout} className="login-form gx-pt-4">
+                            <Form.Item>
+                                <SlittingWidthsForm setSlits={(slits) => setCuts([...cuts,...slits])} setTableData={setTableData} setweight={(w) => settweight(w)} totalActualweight={(w) => setTotalActualWeight(w)} coilDetails={props.coilDetails} wip={props.wip} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth} plannedWeight ={props.plannedWeight} length={length} cuts={cuts} edit={edit} tweight={tweight} lengthValue={(lengthValue) => setLengthValue(lengthValue)} widthValue={(widthValue) => setWidthValue(widthValue)} reset={form}/>
+                            </Form.Item>
+                        </Form>
+                        <Col lg={8} md={12} sm={24} xs={24}>
+                            <p>Coil number : {props.coil.coilNumber}</p>
+                            <p>Available Weight(kg) : {props.coil.fpresent}</p>
+                            <p>Available length(mm) : {lengthValue}</p>
+                            <p>Inward Weight(kg) : {props.coil.fQuantity}</p>
+                            <p>Grade: {props.coil.materialGrade.gradeName}</p>  
+                        </Col>     
+                                                    
+                        <Col lg={8} md={12} sm={24} xs={24}>
+                            <p>Material : {props.coil.material.description}</p>
+                            <p>Customer Name : {props.coil.party.nPartyName}</p>
+                            <p>Thickness(mm): {props.coil.fThickness}</p>
+                            <p>Width(mm) : {props.coil.fWidth}</p>
+                            <p>Available Width(mm): {widthValue}</p>
+                        </Col>
 
-                            </Form>
-                                <Table className="gx-table-responsive" columns={props.wip?columns: columnsPlan} dataSource={props.wip?tableData:reset ?cuts: cutArray}/>
-                                <div className="form-wrapper">
+                        <Col lg={24} md={24} sm={24} xs={24}>
+                            <Table className="gx-table-responsive" columns={props.wip?columns: columnsPlan} dataSource={props.wip?tableData:reset ?cuts: cutArray}/>
+                            <div className="form-wrapper">
                                     <Form.Item className="form-item" label="Total weight(kg)">
                                     {getFieldDecorator('tweight', {
                                         rules: [{ required: false}],
@@ -733,24 +747,6 @@ const columnsPlan=[
                     </Row>}
         
                 </TabPane>
-            
-                <TabPane tab="Coil Details" key="2">
-                <Row>
-                <Col lg={12} md={12} sm={24} xs={24}>   
-                    <p>Coil number : {props.coil.coilNumber}</p>
-                    <p>Available length(mm) : {lengthValue}</p>
-                    <p>Available Weight(kg) :{props.coil.fpresent}</p>
-                    <p>Inward Weight(kg) :{props.coil.fQuantity}</p>
-                    <p>Grade:{props.coil.materialGrade.gradeName}</p></Col> 
-                <Col lg={12} md={12} sm={24} xs={24}>
-                    <p>Material :{props.coil.material.description}</p>
-                    <p>Customer Name :{props.coil.party.nPartyName}</p>
-                    <p>Thickness(mm):{props.coil.fThickness}</p>
-                    <p>Width(mm) :{props.coil.fWidth}</p>
-                    <p>Available Width(mm): {widthValue}</p>
-                </Col>     
-            </Row>
-        </TabPane>
                 </Tabs>
          </Modal>
     )
