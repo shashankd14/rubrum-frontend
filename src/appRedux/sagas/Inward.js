@@ -19,7 +19,8 @@ import {
     SAVE_UNPROCESSED_FOR_DELIVERY,
     FETCH_INWARD_LIST_BY_ID,
     UPDATE_INWARD_LIST,
-    DELETE_INWARD_LIST_BY_ID
+    DELETE_INWARD_LIST_BY_ID,
+    DELETE_INSTRUCTION_BY_ID
 } from "../../constants/ActionTypes";
 
 import {
@@ -54,9 +55,11 @@ import {
     updateInwardSuccess,
     updateInwardError,
     deleteInwardEntryByIdSuccess,
-    deleteInwardEntryByIdError
+    deleteInwardEntryByIdError,
+    deleteInstructionByIdSuccess,
+    deleteInstructionByIdError
 } from "../actions";
-import { CUTTING_INSTRUCTION_PROCESS_ID, SLITTING_INSTRUCTION_PROCESS_ID } from "../../constants";
+import { CUTTING_INSTRUCTION_PROCESS_ID, SLITTING_INSTRUCTION_PROCESS_ID, SLIT_CUT_INSTRUCTION_PROCESS_ID } from "../../constants";
 import { formItemLayout } from "../../routes/company/Partywise/CuttingModal";
 
 function* fetchInwardList() {
@@ -303,7 +306,7 @@ function* requestSaveCuttingInstruction(action) {
     const requestBody = [];
     action.cuttingDetails.map((cutDetails) => {
         const req = {
-            processId: CUTTING_INSTRUCTION_PROCESS_ID,
+            processId: cutDetails.processId?cutDetails.processId:CUTTING_INSTRUCTION_PROCESS_ID,
             instructionDate: moment(cutDetails.processDate).format('YYYY-MM-DD HH:mm:ss'),
             plannedLength: cutDetails.length,
             plannedWeight: cutDetails.weight,
@@ -324,7 +327,8 @@ function* requestSaveCuttingInstruction(action) {
             body: JSON.stringify(requestBody)
         });
         if (fetchPartyInwardList.status === 200) {
-            yield put(saveCuttingInstructionSuccess(fetchPartyInwardList));
+            const fetchPartyListObj = yield fetchPartyInwardList.json()
+            yield put(saveCuttingInstructionSuccess(fetchPartyListObj));
         } else
             yield put(saveCuttingInstructionError('error'));
     } catch (error) {
@@ -336,7 +340,7 @@ function* requestSaveSlittingInstruction(action) {
     const requestBody = [];
     action.slittingDetails.map((slitDetails) => {
         const req = {
-            processId: SLITTING_INSTRUCTION_PROCESS_ID,
+            processId: slitDetails.processId?slitDetails.processId:SLITTING_INSTRUCTION_PROCESS_ID,
             instructionDate: moment().format('YYYY-MM-DD HH:mm:ss'),
             plannedLength: slitDetails.plannedLength,
             plannedWidth: slitDetails.plannedWidth,
@@ -357,7 +361,8 @@ function* requestSaveSlittingInstruction(action) {
             body: JSON.stringify(requestBody)
         });
         if (fetchPartyInwardList.status === 200) {
-            yield put(saveSlittingInstructionSuccess(fetchPartyInwardList));
+            const fetchPartyListObj = yield fetchPartyInwardList.json()
+            yield put(saveSlittingInstructionSuccess(fetchPartyListObj));
         } else
             yield put(saveSlittingInstructionError('error'));
     } catch (error) {
@@ -498,6 +503,20 @@ function* deleteInwardEntryById(action) {
         yield put(deleteInwardEntryByIdError(error));
     }
 }
+function* deleteInstructionById(action) {
+    try {
+        
+        const fetchInwardInstruction = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/instruction/deleteById/${action.id}`, {
+            method: 'DELETE'
+        });
+        if (fetchInwardInstruction.status === 200) {
+            yield put(deleteInstructionByIdSuccess(fetchInwardInstruction));
+        } else
+            yield put(deleteInstructionByIdError('error'));
+    } catch (error) {
+        yield put(deleteInstructionByIdError(error));
+    }
+}
 
 
 export function* watchFetchRequests() {
@@ -517,6 +536,7 @@ export function* watchFetchRequests() {
     yield takeLatest(SAVE_UNPROCESSED_FOR_DELIVERY, saveUnprocessedDelivery);
     yield takeLatest(UPDATE_INWARD_LIST, updateInward);
     yield takeLatest(DELETE_INWARD_LIST_BY_ID, deleteInwardEntryById);
+    yield takeLatest(DELETE_INSTRUCTION_BY_ID, deleteInstructionById);
 }
 
 export default function* inwardSagas() {

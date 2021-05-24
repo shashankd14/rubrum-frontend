@@ -3,7 +3,7 @@ import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import moment from "moment";
 import {APPLICATION_DATE_FORMAT} from '../../../constants';
-import {setProcessDetails, saveSlittingInstruction, resetInstruction, updateInstruction} from '../../../appRedux/actions/Inward';
+import {setProcessDetails, saveSlittingInstruction, resetInstruction, updateInstruction, deleteInstructionById} from '../../../appRedux/actions/Inward';
 import { set } from "nprogress";
 
 const Option = Select.Option;
@@ -261,11 +261,6 @@ const SlittingWidths = (props) => {
             settargetWeight(weightValue/Number(e.target.value));
          }
     }
-    function onCheckBoxChange(checkedValues) {
-        setChecked(checkedValues);
-        console.log('checked = ', checkedValues);
-      }
-      
     const onTargetChange=  e=>{
         settargetWeight(e.target.value);
         setavailLength((lengthValue1*(e.target.value/weightValue)).toFixed(1))
@@ -533,7 +528,7 @@ const columnsPlan=[
         render: (text, record, index) => (
             <span>
                 <span className="gx-link" onClick={(e) => {onEdit(index, e); }}><Icon type="edit" /></span>
-                <span className="gx-link" onClick={(e) => {onDelete(index, e); }}><Icon type="delete" /></span>
+                <span className="gx-link" onClick={(e) => {onDelete(record, index, e); }}><Icon type="delete" /></span>
             </span>
             
         ),
@@ -546,19 +541,12 @@ const columnsPlan=[
     const [lengthValue, setLengthValue] = useState();
     const [widthValue, setWidthValue]= useState();
     const [form, setForm]= useState(false);
-    const onDelete = (key, e) => {
+    const onDelete = (record, key, e) => {
         e.preventDefault();
-        
         const data = cuts.filter(item => {
-            // for (let i= Number(item.slitno)-1;i< Number(item.slitno);i++){
-            //     if(cuts.indexOf(item) === key){
-            //         setDeletedLength(Number(item.length));
-            //     }
-            // }
-           
-            return cuts.indexOf(item) !== key
-
+          return cuts.indexOf(item) !== key
         });
+        props.deleteInstructionById(record.instructionId)
         setCuts(data);
       }
     const onEdit = (key, e) => {
@@ -605,45 +593,67 @@ const columnsPlan=[
     }, [props.inward.process.length, props.inward.process.no])
 
     useEffect(() => {
-        if(props.inward.instructionSaveLoading && !props.wip) {
+        if(props.inward.instructionSaveSlittingLoading && !props.wip) {
             loading = message.loading('Saving Slit Instruction..');
+            
         }
-    }, [props.inward.instructionSaveLoading]);
+    }, [props.inward.instructionSaveSlittingLoading]);
 
     useEffect(() => {
-        if(props.inward.instructionSaveSuccess && !props.wip) {
+        if(props.inward.instructionSaveSlittingSuccess && !props.wip) {
             loading = '';
             message.success('Slitting instruction saved successfully', 2).then(() => {
+                props.setCutting(props.inward.saveSlit);
                 props.setShowSlittingModal(false);
                 props.resetInstruction();
+                
             });
         }
-    }, [props.inward.instructionSaveSuccess])
-
+    }, [props.inward.instructionSaveSlittingSuccess])
+    const handleCancel=() => {
+        setCuts([]);
+        setForm(true)
+        props.setShowSlittingModal(false)
+    }
+    const handleOk =(name) => {
+        if(props.wip){
+            if (totalActualweight > tweight) {
+                message.error('Actual Weight is greater than Total weight, Please modify actual weight!');
+            } else {
+                props.updateInstruction(tableData);
+                props.setShowSlittingModal(false)
+            }
+        }
+        else if(name === 'Slitting'){
+            props.saveSlittingInstruction(cuts);
+        } else {
+            props.saveSlittingInstruction(cuts);
+            props.setShowCuttingModal(true);
+        }
+        
+    }
     return (
+        
         <Modal
             title={props.wip ? "Finish Slitting Instruction" : "Slitting Instruction"}
             visible={props.showSlittingModal}
-            onOk={() => {
-                if(props.wip){
-                    if (totalActualweight > tweight) {
-                        message.error('Actual Weight is greater than Total weight, Please modify actual weight!');
-                    } else {
-                        props.updateInstruction(tableData);
-                        props.setShowSlittingModal(false)
-                    }
-                }
-                else{
-                    props.saveSlittingInstruction(cuts);
-                }
-                
-            }}
+            onOk={handleOk}
             width={1020}
-            onCancel={() => {
-                setCuts([]);
-                setForm(true)
-                props.setShowSlittingModal(false)
-            }}
+            onCancel={handleCancel}
+            footer={props.slitCut ? [
+                <Button key="back" onClick={handleCancel}>
+                  Cancel
+                </Button>,
+                <Button key="submit" type="primary" loading={loading} onClick={()=>handleOk('SlitCut')}>
+                  Send for Cut
+                </Button>
+              ]:[
+                <Button key="back" onClick={handleCancel}>
+                  Cancel
+                </Button>,
+                <Button key="submit" type="primary" loading={loading} onClick={()=>handleOk('Slitting')}>
+                  OK
+                </Button>]}
         >
             <Tabs
                 defaultActiveKey="1"
@@ -788,4 +798,4 @@ const SlittingDetailsForm = Form.create({
 
 const SlittingWidthsForm = Form.create()(SlittingWidths);
 
-export default connect(mapStateToProps, {setProcessDetails, saveSlittingInstruction, resetInstruction, updateInstruction})(SlittingDetailsForm);
+export default connect(mapStateToProps, {setProcessDetails, saveSlittingInstruction, resetInstruction, updateInstruction,deleteInstructionById})(SlittingDetailsForm);

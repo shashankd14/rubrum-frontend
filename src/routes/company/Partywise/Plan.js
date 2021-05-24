@@ -1,4 +1,4 @@
-import { Button, Card, Col } from "antd";
+import { Button, Card, Col, Select } from "antd";
 import moment from 'moment';
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
@@ -9,25 +9,16 @@ import SlittingModal from "./SlittingModal";
 
 
 const Plan = (props) => {
+    const insList = ["Slitting","Cutting","Slit & Cut"];
     const { instruction } = props.inward.plan;
     const [showCuttingModal, setShowCuttingModal] = useState(false);
     const [showSlittingModal, setShowSlittingModal] = useState(false);
     const [cuttingCoil, setCuttingCoil] = useState(false);
     const [slittingCoil, setSlittingCoil] = useState(false);
     const [childCoil, setChildCoil] = useState(false);
-    // function removeDuplicates(originalArray, prop) {
-    //     var newArray = [];
-    //     var lookupObject  = {};
-   
-    //     for(var i in originalArray) {
-    //        lookupObject[originalArray[i][prop]] = originalArray[i];
-    //     }
-   
-    //     for(i in lookupObject) {
-    //         newArray.push(lookupObject[i]);
-    //     }
-    //      return newArray;
-    // }
+    const [slitCut, setSlitCut] = useState(false);
+    const [defaultValue, setdefaultValue] = useState();
+    const { Option } = Select;
     const getPlannedLength = (ins) => {
         let length = 0;
         let actualLength = 0;
@@ -160,12 +151,27 @@ const Plan = (props) => {
         } else {
             return tempAvailValue;
         }
+
+    }
+    const handleSelectChange=(value)=>{
+        if(value === 'Slitting'){
+            setShowSlittingModal(true)
+            setSlittingCoil(props.inward.plan)
+        }else if(value==='Cutting'){
+            setShowCuttingModal(true)
+            setCuttingCoil(props.inward.plan)
+        }else if(value== 'Slit & Cut'){
+            setSlitCut(true);
+            setSlittingCoil(props.inward.plan);
+            setShowSlittingModal(true);
+        }
     }
 
     return (
         <div className="gx-full-height" style={{ overflowX: "auto", overflowy: "scroll" }}>
-            {cuttingCoil && <CuttingModal showCuttingModal={showCuttingModal} setShowCuttingModal={setShowCuttingModal} coilDetails={cuttingCoil} wip={props.wip} childCoil={childCoil} plannedLength={getPlannedLength} plannedWidth ={getPlannedWidth} plannedWeight={getPlannedWeight} coil={props.inward.plan}/>}
-            {slittingCoil && <SlittingModal showSlittingModal={showSlittingModal} setShowSlittingModal={setShowSlittingModal} wip={props.wip} coilDetails={slittingCoil} childCoil={childCoil} plannedLength={getPlannedLength} plannedWidth ={getPlannedWidth} plannedWeight={getPlannedWeight} coil={props.inward.plan}/>}
+            {cuttingCoil && <CuttingModal showCuttingModal={showCuttingModal} setShowCuttingModal={setShowCuttingModal} coilDetails={cuttingCoil} wip={props.wip} childCoil={childCoil} plannedLength={getPlannedLength} plannedWidth ={getPlannedWidth} plannedWeight={getPlannedWeight} coil={props.inward.plan} slitCut={slitCut} />}
+            {slittingCoil && <SlittingModal showSlittingModal={showSlittingModal} setShowSlittingModal={setShowSlittingModal} wip={props.wip} coilDetails={slittingCoil} childCoil={childCoil} plannedLength={getPlannedLength} plannedWidth ={getPlannedWidth} plannedWeight={getPlannedWeight} coil={props.inward.plan} slitCut={slitCut} setShowCuttingModal={setShowCuttingModal} setCutting={(cuts)=>setCuttingCoil(cuts)}/>}
+            
             <h1><IntlMessages id="partywise.plan.label" /></h1>
             <div className="gx-full-height gx-flex-row">
                 <Col lg={5} md={5} sm={24} xs={24} className="gx-align-self-center">
@@ -202,17 +208,19 @@ const Plan = (props) => {
                                 }}>Finish Cutting</Button>
                             </div> :
                             <div>
-                                <Button onClick={() => {
-                                    setCuttingCoil(props.inward.plan);
-                                    setShowCuttingModal(true);
-                                    setChildCoil(false)
-                                }}>Cutting</Button>
-                                <Button onClick={() => {
-                                    setSlittingCoil(props.inward.plan);
-                                    setShowSlittingModal(true)
-                                    setChildCoil(false)
-                                }}>Slitting</Button>
-                            </div>}
+                                <Select
+                                style={{ width: 100 }}
+                                placeholder="Select Instruction"
+                                optionFilterProp="children"
+                                value= {defaultValue}
+                                onChange={handleSelectChange}
+                                filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                        >
+                            {insList.length > 0 && insList.map((instruction) => (
+                                <Option value={instruction}>{instruction}</Option>
+                            ))}
+                        </Select>
+                    </div>}
                     </Card>
                 </Col>
                 <Col lg={18} md={18} sm={24} xs={24} offset={1} className="gx-align-self-center gx-branch lv1">
@@ -242,20 +250,18 @@ const Plan = (props) => {
                                                     </div>
                                                     { props.wip ?
                                                          <></> :
-                                                            <div><Button onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                setCuttingCoil(instruction);
-                                                                setShowCuttingModal(true);
-                                                                setChildCoil(true);
-                                                            }}>Cutting
-                                                        </Button>
-                                                                <Button onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    setSlittingCoil(instruction);
-                                                                    setShowSlittingModal(true);
-                                                                    setChildCoil(true);
-                                                                }}>Slitting
-                                                        </Button></div>}
+                                                            <div><Select
+                                                            value= {defaultValue}
+                                                            style={{ width: 100 }}
+                                                            placeholder="Select Instruction"
+                                                            optionFilterProp="children"
+                                                            onChange={handleSelectChange}
+                                                            filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                                                    >
+                                                        {insList.length > 0 && insList.map((instruction) => (
+                                                            <Option value={instruction}>{instruction}</Option>
+                                                        ))}
+                                                    </Select></div>}
 
                                                 </div>
                                             </Card>
@@ -292,20 +298,18 @@ const Plan = (props) => {
                                                                 </div> */}
                                                                 {props.wip ?
                                                                      <></> :
-                                                                        <div><Button onClick={(e) => {
-                                                                            e.stopPropagation();
-                                                                            setCuttingCoil(instruction);
-                                                                            setShowCuttingModal(true);
-                                                                            setChildCoil(true);
-                                                                        }}>Cutting
-                                                                        </Button>
-                                                                            <Button onClick={(e) => {
-                                                                                e.stopPropagation();
-                                                                                setSlittingCoil(instruction);
-                                                                                setShowSlittingModal(true);
-                                                                                setChildCoil(true);
-                                                                            }}>Slitting
-                                                                    </Button></div>}
+                                                                        <div><Select
+                                                                        value= {defaultValue}
+                                                                        style={{ width: 100 }}
+                                                                        placeholder="Select Instruction"
+                                                                        optionFilterProp="children"
+                                                                        onChange={handleSelectChange}
+                                                                        filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                                                                >
+                                                                    {insList.length > 0 && insList.map((instruction) => (
+                                                                        <Option value={instruction}>{instruction}</Option>
+                                                                    ))}
+                                                                </Select></div>}
                                                             </div>
                                                         </Card>
                                                     </Col>
