@@ -582,7 +582,7 @@ const columnsPlan=[
     } else{
         data = data.flat();
         let cutsData = [...data];
-        cutsData = cutsData.filter(item => item.process.processId === 2)
+        cutsData = cutsData.filter(item => item.process.processId === 2 && item.status.statusId !==3)
         setCuts(cutsData);
     }
     let newData = [...data];

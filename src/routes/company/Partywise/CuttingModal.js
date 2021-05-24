@@ -226,7 +226,7 @@ const CreateCuttingDetailsForm = (props) => {
         }else{
             data = data.flat();
             let cutsData = [...data];
-            cutsData = cutsData.filter(item => item.process.processId === 1)
+            cutsData = cutsData.filter(item => item.process.processId === 1 && item.status.statusId !== 3)
             setCuts(cutsData);
         }
         let newData = [...data];

@@ -367,7 +367,6 @@ function* requestSaveSlittingInstruction(action) {
 function* requestUpdateInstruction(action) {
     const ins = action.instruction.map(item => {
         let insObj = {
-
             instructionId: item.instructionId ? item.instructionId : null,
             parentInstructionId: item.parentInstructionId ? item.parentInstructionId : null,
             processId: item.process.processId ? item.process.processId : 1,
@@ -387,7 +386,9 @@ function* requestUpdateInstruction(action) {
             createdBy: item.createdBy ? item.createdBy : 1,
             updatedBy: item.updatedBy ? item.updatedBy : 1,
             packetClassificationId: item.packetClassification?.classificationId || ''
-
+        }
+        if (item.packetClassification?.classificationId !== 6) {
+            insObj.status = 3
         }
         return insObj
     })
