@@ -365,7 +365,7 @@ const CreateCuttingDetailsForm = (props) => {
         }
     }, [props.inward.instructionSaveCuttingSuccess])
 
-    const onInputChange = (key, index) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    const onInputChange = (key, index, type) => (e: React.ChangeEvent<HTMLInputElement>) => {
         if(props.slitCut){
             const newData = [...cuts];
             let arrayData= [];
@@ -599,11 +599,8 @@ const CreateCuttingDetailsForm = (props) => {
 const mapStateToProps = state => ({
     party: state.party,
     inward: state.inward,
-<<<<<<< HEAD
-    classificationList: state.packetClassification?.classificationList
-=======
+    classificationList: state.packetClassification?.classificationList,
     saveCut: state.saveCut
->>>>>>> master
 });
 
 const CuttingDetailsForm = Form.create({
