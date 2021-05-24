@@ -3,7 +3,7 @@ import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import moment from "moment";
 import {APPLICATION_DATE_FORMAT} from '../../../constants';
-import {setProcessDetails, saveSlittingInstruction, resetInstruction, updateInstruction} from '../../../appRedux/actions/Inward';
+import {setProcessDetails, saveSlittingInstruction, resetInstruction, updateInstruction, deleteInstructionById} from '../../../appRedux/actions/Inward';
 import { set } from "nprogress";
 
 const Option = Select.Option;
@@ -528,7 +528,7 @@ const columnsPlan=[
         render: (text, record, index) => (
             <span>
                 <span className="gx-link" onClick={(e) => {onEdit(index, e); }}><Icon type="edit" /></span>
-                <span className="gx-link" onClick={(e) => {onDelete(index, e); }}><Icon type="delete" /></span>
+                <span className="gx-link" onClick={(e) => {onDelete(record, index, e); }}><Icon type="delete" /></span>
             </span>
             
         ),
@@ -541,19 +541,12 @@ const columnsPlan=[
     const [lengthValue, setLengthValue] = useState();
     const [widthValue, setWidthValue]= useState();
     const [form, setForm]= useState(false);
-    const onDelete = (key, e) => {
+    const onDelete = (record, key, e) => {
         e.preventDefault();
-        
         const data = cuts.filter(item => {
-            // for (let i= Number(item.slitno)-1;i< Number(item.slitno);i++){
-            //     if(cuts.indexOf(item) === key){
-            //         setDeletedLength(Number(item.length));
-            //     }
-            // }
-           
-            return cuts.indexOf(item) !== key
-
+          return cuts.indexOf(item) !== key
         });
+        props.deleteInstructionById(record.instructionId)
         setCuts(data);
       }
     const onEdit = (key, e) => {
@@ -805,4 +798,4 @@ const SlittingDetailsForm = Form.create({
 
 const SlittingWidthsForm = Form.create()(SlittingWidths);
 
-export default connect(mapStateToProps, {setProcessDetails, saveSlittingInstruction, resetInstruction, updateInstruction})(SlittingDetailsForm);
+export default connect(mapStateToProps, {setProcessDetails, saveSlittingInstruction, resetInstruction, updateInstruction,deleteInstructionById})(SlittingDetailsForm);

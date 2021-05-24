@@ -2,7 +2,7 @@ import {Button, Card, Col, DatePicker, Divider, Form, Input, Modal, Row, Table, 
 import React, {useEffect, useState, useRef, useContext} from "react";
 import {connect} from "react-redux";
 import moment from "moment";
-import {setProcessDetails, saveCuttingInstruction,resetInstruction ,updateInstruction} from '../../../appRedux/actions/Inward';
+import {setProcessDetails, saveCuttingInstruction,resetInstruction ,updateInstruction, deleteInstructionById} from '../../../appRedux/actions/Inward';
 import { showMessage } from "../../../appRedux/actions";
 import {APPLICATION_DATE_FORMAT} from '../../../constants';
 import { indexOf } from "lodash-es";
@@ -249,6 +249,7 @@ const CreateCuttingDetailsForm = (props) => {
     const onDelete = (record, e) => {
         e.preventDefault();
         const data = cuts.filter(record => cuts.indexOf(record) );
+        props.deleteInstructionById(record.instructionId)
         setCuts(data);
     };
     const onChange=()=>{
@@ -620,4 +621,4 @@ const CuttingDetailsForm = Form.create({
 })(CreateCuttingDetailsForm);
 
 
-export default  connect(mapStateToProps, {setProcessDetails, saveCuttingInstruction,resetInstruction, updateInstruction})(CuttingDetailsForm);
+export default  connect(mapStateToProps, {setProcessDetails, saveCuttingInstruction,resetInstruction, updateInstruction, deleteInstructionById})(CuttingDetailsForm);

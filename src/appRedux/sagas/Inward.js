@@ -19,7 +19,8 @@ import {
     SAVE_UNPROCESSED_FOR_DELIVERY,
     FETCH_INWARD_LIST_BY_ID,
     UPDATE_INWARD_LIST,
-    DELETE_INWARD_LIST_BY_ID
+    DELETE_INWARD_LIST_BY_ID,
+    DELETE_INSTRUCTION_BY_ID
 } from "../../constants/ActionTypes";
 
 import {
@@ -54,7 +55,9 @@ import {
     updateInwardSuccess,
     updateInwardError,
     deleteInwardEntryByIdSuccess,
-    deleteInwardEntryByIdError
+    deleteInwardEntryByIdError,
+    deleteInstructionByIdSuccess,
+    deleteInstructionByIdError
 } from "../actions";
 import { CUTTING_INSTRUCTION_PROCESS_ID, SLITTING_INSTRUCTION_PROCESS_ID, SLIT_CUT_INSTRUCTION_PROCESS_ID } from "../../constants";
 import { formItemLayout } from "../../routes/company/Partywise/CuttingModal";
@@ -500,6 +503,20 @@ function* deleteInwardEntryById(action) {
         yield put(deleteInwardEntryByIdError(error));
     }
 }
+function* deleteInstructionById(action) {
+    try {
+        
+        const fetchInwardInstruction = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/instruction/deleteById/${action.id}`, {
+            method: 'DELETE'
+        });
+        if (fetchInwardInstruction.status === 200) {
+            yield put(deleteInstructionByIdSuccess(fetchInwardInstruction));
+        } else
+            yield put(deleteInstructionByIdError('error'));
+    } catch (error) {
+        yield put(deleteInstructionByIdError(error));
+    }
+}
 
 
 export function* watchFetchRequests() {
@@ -519,6 +536,7 @@ export function* watchFetchRequests() {
     yield takeLatest(SAVE_UNPROCESSED_FOR_DELIVERY, saveUnprocessedDelivery);
     yield takeLatest(UPDATE_INWARD_LIST, updateInward);
     yield takeLatest(DELETE_INWARD_LIST_BY_ID, deleteInwardEntryById);
+    yield takeLatest(DELETE_INSTRUCTION_BY_ID, deleteInstructionById);
 }
 
 export default function* inwardSagas() {

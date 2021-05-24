@@ -64,7 +64,10 @@ import {
     UPDATE_INWARD_LIST_ERROR,
     DELETE_INWARD_LIST_BY_ID,
     DELETE_INWARD_LIST_BY_ID_ERROR,
-    DELETE_INWARD_LIST_BY_ID_SUCCESS
+    DELETE_INWARD_LIST_BY_ID_SUCCESS,
+    DELETE_INSTRUCTION_BY_ID,
+    DELETE_INSTRUCTION_BY_ID_ERROR,
+    DELETE_INSTRUCTION_BY_ID_SUCCESS
 } from "../../constants/ActionTypes";
 
 export const fetchInwardList = () => ({
@@ -320,5 +323,19 @@ export const deleteInwardEntryByIdSuccess = (payload) => ({
 
 export const deleteInwardEntryByIdError = (error) => ({
     type: DELETE_INWARD_LIST_BY_ID_ERROR,
+    error
+});
+export const deleteInstructionById = (id) => ({
+    type: DELETE_INSTRUCTION_BY_ID,
+    id
+});
+
+export const deleteInstructionByIdSuccess = (payload) => ({
+    type: DELETE_INSTRUCTION_BY_ID_SUCCESS,
+    payload
+});
+
+export const deleteInstructionByIdError = (error) => ({
+    type: DELETE_INSTRUCTION_BY_ID_ERROR,
     error
 });

@@ -58,7 +58,10 @@ import {
     DELETE_INWARD_LIST_BY_ID_ERROR,
     UPDATE_INWARD_LIST,
     UPDATE_INWARD_LIST_SUCCESS,
-    UPDATE_INWARD_LIST_ERROR
+    UPDATE_INWARD_LIST_ERROR,
+    DELETE_INSTRUCTION_BY_ID,
+    DELETE_INSTRUCTION_BY_ID_SUCCESS,
+    DELETE_INSTRUCTION_BY_ID_ERROR,
 
 } from "../../constants/ActionTypes";
 
@@ -476,6 +479,24 @@ export default (state = INIT_STATE, action) => {
                 ...state,
                 inwardUpdateLoading: false,
                 inwardUpdateError: true
+            }
+        }
+        case DELETE_INSTRUCTION_BY_ID: {
+            return {
+                ...state,
+                loading: true,
+            }
+        }
+        case DELETE_INSTRUCTION_BY_ID_SUCCESS: {
+            return {
+                ...state,
+                loading: false
+            }
+        }
+        case DELETE_INSTRUCTION_BY_ID_ERROR: {
+            return {
+                ...state,
+                loading: false
             }
         }
 
