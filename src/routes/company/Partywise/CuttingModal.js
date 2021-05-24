@@ -2,7 +2,7 @@ import {Button, Card, Col, DatePicker, Divider, Form, Input, Modal, Row, Table, 
 import React, {useEffect, useState, useRef, useContext} from "react";
 import {connect, useSelector} from "react-redux";
 import moment from "moment";
-import {setProcessDetails, saveCuttingInstruction,resetInstruction ,updateInstruction} from '../../../appRedux/actions/Inward';
+import {setProcessDetails, saveCuttingInstruction,resetInstruction ,updateInstruction, deleteInstructionById} from '../../../appRedux/actions/Inward';
 import { showMessage } from "../../../appRedux/actions";
 import {APPLICATION_DATE_FORMAT} from '../../../constants';
 import { indexOf } from "lodash-es";
@@ -38,10 +38,14 @@ const CreateCuttingDetailsForm = (props) => {
     const WeightValue = props.coilDetails.instruction && props.coilDetails.instruction.length > 0  ? props.plannedWeight(props.coilDetails):  props.coilDetails.fpresent ? props.coilDetails.fpresent  : props.plannedWeight(props.coilDetails);
     const [length, setlength]= useState(lengthValue);
     const [width, setwidth] = useState(widthValue);
+    const [cutValue, setCutValue] = useState([]);
+    const [objValue,setObjValue]= useState();
+    const [selectedRowKeys, setSelectedRowKeys] = useState([])
     
     // const dataSource= props.wip?((props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts;
     const [tableData, setTableData] = useState(props.wip?(props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts);
     const columns=[
+
         {
             title: 'Serial No',
             dataIndex:'instructionId',
@@ -153,6 +157,85 @@ const CreateCuttingDetailsForm = (props) => {
               key:'action',
         }
     ];
+    const columnsSlit=[
+        {
+            title: 'Serial No',
+            dataIndex:'instructionId',
+            key: 'instructionId',
+           render : (text,record,index) => {
+                return (index+1);
+           }
+        },
+        {
+            title: 'Process Date',
+            dataIndex:'processDate',
+            render (value) {
+                return moment(value).format('DD/MM/YYYY');
+            },
+            key: 'processDate',
+        },
+        {
+            title: 'Length',
+            dataIndex:'plannedLength',
+            key: 'plannedLength',
+        },
+        {
+            title: 'No of Sheets',
+            dataIndex:'plannedNoOfPieces',
+            key: 'plannedNoOfPieces',
+        },
+        {
+            title: 'Weight',
+            dataIndex:'plannedWeight',
+            key:'plannedWeight',
+        },
+        {
+            title: 'Cut-Length',
+            dataIndex: 'plannedLength',
+            render: (text, record, index) => {
+                return <Input onChange={onInputChange("plannedLength", index)} />
+            }
+        },
+        {
+            title: 'No Of Cut Pieces',
+            dataIndex: 'plannedNoOfPieces',
+            render: (text, record, index) => {
+                return <Input onChange={onInputChange("plannedNoOfPieces", index)} onBlur={()=>{setTimeout(() => {
+                    if(cutValue.length>0){
+                        let cutIndex = cutValue.map(item =>{
+                            if(cutValue.indexOf(item) === index){
+                                let length = item.plannedLength;
+                                let pieces = item.plannedNoOfPieces;
+                                item.plannedWeight = Math.round( 0.00000785*parseFloat(record.plannedWidth)*parseFloat(props.inward.plan.fThickness)*parseFloat(length)*parseFloat(pieces))
+                            }
+                            return item;
+                        });
+                        setCutValue(cutIndex);
+                    }
+                }, 2000);
+                    
+                }}/>
+            }
+        },
+        {
+            title: 'Cut- Weight',
+            dataIndex: 'plannedWeight',
+            render: (text, record, index) => {
+                return <Input value={cutValue && cutValue[index]?.plannedWeight?cutValue[index].plannedWeight: record.plannedWeight} disabled={true}/>
+            }
+        },
+        {
+            title:'Actions',
+            dataIndex:'actions',
+            render: (text, record,index) => (
+                <span>
+                <i className="icon icon-edit" onClick={() => {onEdit(record,index);}} /> <></>
+                <i className="icon icon-trash" onClick={(e) => {onDelete(record, e); }}/>
+                </span>
+              ),
+              key:'action',
+        }
+    ];
 
     const onEdit=(record,index) => {
         const {form} = props;
@@ -173,6 +256,7 @@ const CreateCuttingDetailsForm = (props) => {
     const onDelete = (record, e) => {
         e.preventDefault();
         const data = cuts.filter(record => cuts.indexOf(record) );
+        props.deleteInstructionById(record.instructionId)
         setCuts(data);
     };
     const onChange=()=>{
@@ -218,7 +302,11 @@ const CreateCuttingDetailsForm = (props) => {
     }, [props.inward.process.length, props.inward.process.no])
     
     useEffect(() => {
-        let data = props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions
+        if(props.slitCut){
+            setCuts(props.coilDetails)
+            
+        }else{
+            let data = props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions
         if(props.childCoil){
             const arrayData =[];
             arrayData.push(data);
@@ -231,20 +319,17 @@ const CreateCuttingDetailsForm = (props) => {
         }
         let newData = [...data];
         setTableData(newData);
-        
-        // for setting length and width
-
         const lengthValue = props.coilDetails.instruction && props.coilDetails.instruction.length > 0 ? props.plannedLength(props.coilDetails) : props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails)
         const widthValue = props.coilDetails.instruction && props.coilDetails.instruction.length > 0  ? props.plannedWidth(props.coilDetails):  props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.plannedWidth(props.coilDetails);
         setlength(lengthValue);
         setwidth(widthValue)
-
-    }, [props.coilDetails]);
+        }}, [props.coilDetails]);
     useEffect(() => {
-        if(props.inward.instructionSaveLoading && !props.wip) {
+        if(props.inward.instructionSaveCuttingLoading && !props.wip) {
             loading = message.loading('Saving Cut Instruction..');
+            
         }
-    }, [props.inward.instructionSaveLoading]);
+    }, [props.inward.instructionSaveCuttingLoading]);
     useEffect(()=>{
         let cutsArray = cuts.map(i => i.plannedWeight);
         cutsArray = cutsArray.filter(i => i !== undefined)
@@ -271,24 +356,73 @@ const CreateCuttingDetailsForm = (props) => {
 
     },[cuts])
     useEffect(() => {
-        if(props.inward.instructionSaveSuccess && !props.wip) {
+        if(props.inward.instructionSaveCuttingSuccess && !props.wip) {
             loading = '';
             message.success('Cutting instruction saved successfully', 2).then(() => {
                 props.setShowCuttingModal(false);
                 props.resetInstruction();
             });
         }
-    }, [props.inward.instructionSaveSuccess])
+    }, [props.inward.instructionSaveCuttingSuccess])
 
-
-    const onInputChange = (key, index, type) => (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newData = [...tableData];
-        newData[index][key] = type === 'select' ? { classificationId: Number(e) } : Number(e.target.value);
-        if (key === 'actualWeight') {
-            const data = (newData[index]['plannedLength']*(e.target.value/newData[index]['plannedWeight']));
-            newData[index]['actualLength'] = Number.isInteger(data) ? data : data.toFixed(1);
+    const onInputChange = (key, index) => (e: React.ChangeEvent<HTMLInputElement>) => {
+        if(props.slitCut){
+            const newData = [...cuts];
+            let arrayData= [];
+            let obj ={
+                instructionId: newData[index].instructionId
+            }
+            obj.plannedWeight=0;
+            obj.processId = 3;
+            if(key === 'plannedLength'){
+                obj.plannedLength= Number(e.target.value);
+                let cutIndex = cutValue.map(item =>{
+                    if(cutValue.indexOf(item) === index){
+                        item.plannedLength=Number(e.target.value) 
+                    }
+                    return item;
+                });
+                setCutValue(cutIndex)
+            }else if(key === 'plannedNoOfPieces'){
+                obj.plannedNoOfPieces= Number(e.target.value);
+                let cutIndex = cutValue.map(item =>{
+                    if(cutValue.indexOf(item) === index){
+                        item.plannedNoOfPieces=Number(e.target.value)  
+                    }
+                    return item;
+                });
+                setCutValue(cutIndex)
+            }
+            let obj1 = Object.keys(obj);
+            if(cutValue && cutValue.length> 0){
+                let cuts = cutValue.map(item =>{
+                    if(obj.instructionId === item.instructionId){
+                            obj = {...obj,...item}
+                    }else{
+                        if(obj1.length === 2){
+                            arrayData.push(item)
+                            setObjValue({...obj})
+                        }else if(obj1.length===3){
+                            setObjValue({...obj,...objValue})
+                        }
+                        obj ={...obj,...objValue}
+                    }
+                })
+            }
+            obj= {...obj,...objValue}
+            arrayData.push(obj);
+            setCutValue(arrayData);
+            
+        }else{
+            const newData = [...tableData];
+            newData[index][key] = type === 'select' ? { classificationId: Number(e) } : Number(e.target.value);
+            if (key === 'actualWeight') {
+                const data = (newData[index]['plannedLength']*(e.target.value/newData[index]['plannedWeight']));
+                newData[index]['actualLength'] = Number.isInteger(data) ? data : data.toFixed(1);
+            }
+            setTableData(newData);
         }
-        setTableData(newData);
+        
     };
     const handleChange = (e) =>{
         if(e.target.value !== ''){
@@ -299,6 +433,16 @@ const CreateCuttingDetailsForm = (props) => {
         }
         let length = e.target.value;
        setNo(((WeightValue-Number(tweight))/(0.00000785 *width*props.coil.fThickness*Number(length))).toFixed(0));
+    }
+    const setSelection = (record, selected, selectedRows) => {
+        setSelectedRowKeys(selectedRows)
+        // props.setInwardSelectedForDelivery(selectedRows)
+    }
+    const handleSelection = {
+        // selectedRowKey: props,
+        onSelect: setSelection, getCheckboxProps: (record) => ({
+            disabled: false
+        })
     }
 
      return (
@@ -314,7 +458,9 @@ const CreateCuttingDetailsForm = (props) => {
                         props.setShowCuttingModal();
                     }
                 }
-                else{
+                else if(props.slitCut){
+                    props.saveCuttingInstruction(cutValue);
+                }else{
                     props.saveCuttingInstruction(cuts);
                 }
 
@@ -332,6 +478,7 @@ const CreateCuttingDetailsForm = (props) => {
           tabPosition={mode}
             >
           <TabPane tab="Cutting Details" key="1">
+          {props.slitCut ? <Table  rowSelection={handleSelection} className="gx-table-responsive"  columns={columnsSlit} dataSource={cuts}/>  : 
         <Row>
           {!props.wip && <Col lg={12} md={12} sm={24} xs={24} className="gx-align-self-center">
 
@@ -440,7 +587,7 @@ const CreateCuttingDetailsForm = (props) => {
                     )}
                 </Form.Item>}
             </Col>
-    </Row>
+    </Row>}
 
           </TabPane>
             </Tabs>
@@ -452,7 +599,11 @@ const CreateCuttingDetailsForm = (props) => {
 const mapStateToProps = state => ({
     party: state.party,
     inward: state.inward,
+<<<<<<< HEAD
     classificationList: state.packetClassification?.classificationList
+=======
+    saveCut: state.saveCut
+>>>>>>> master
 });
 
 const CuttingDetailsForm = Form.create({
@@ -487,4 +638,5 @@ const CuttingDetailsForm = Form.create({
     },
 })(CreateCuttingDetailsForm);
 
-export default  connect(mapStateToProps, {setProcessDetails, saveCuttingInstruction,resetInstruction, updateInstruction})(CuttingDetailsForm);
+
+export default  connect(mapStateToProps, {setProcessDetails, saveCuttingInstruction,resetInstruction, updateInstruction, deleteInstructionById})(CuttingDetailsForm);

@@ -58,7 +58,10 @@ import {
     DELETE_INWARD_LIST_BY_ID_ERROR,
     UPDATE_INWARD_LIST,
     UPDATE_INWARD_LIST_SUCCESS,
-    UPDATE_INWARD_LIST_ERROR
+    UPDATE_INWARD_LIST_ERROR,
+    DELETE_INSTRUCTION_BY_ID,
+    DELETE_INSTRUCTION_BY_ID_SUCCESS,
+    DELETE_INSTRUCTION_BY_ID_ERROR,
 
 } from "../../constants/ActionTypes";
 
@@ -77,8 +80,10 @@ const INIT_STATE = {
     planError: false,
     plan: {},
     process: {},
-    instructionSaveLoading: false,
-    instructionSaveSuccess: false,
+    instructionSaveCuttingLoading: false,
+    instructionSaveSlittingLoading: false,
+    instructionSaveSlittingSuccess: false,
+    instructionSaveCuttingSuccess: false,
     instructionSaveError: false,
     materialGrades: {},
     inwardListForDelivery: undefined,
@@ -88,6 +93,8 @@ const INIT_STATE = {
     inwardUpdateLoading: false,
     inwardUpdateSuccess: false,
     inwardUpdateError: false,
+    saveCut:[],
+    saveSlit:[]
 
 };
 
@@ -254,48 +261,50 @@ export default (state = INIT_STATE, action) => {
         case REQUEST_SAVE_CUTTING_DETAILS: {
             return {
                 ...state,
-                instructionSaveLoading: true,
-                instructionSaveSuccess: false,
+                instructionSaveCuttingLoading: true,
+                instructionSaveCuttingSuccess: false,
                 instructionSaveError: false,
             }
         }
         case SAVE_CUTTING_DETAILS_SUCCESS: {
             return {
                 ...state,
-                instructionSaveLoading: false,
-                instructionSaveSuccess: true,
+                saveCut: action.payload,
+                instructionSaveCuttingLoading: false,
+                instructionSaveCuttingSuccess: true,
                 instructionSaveError: false,
             }
         }
         case SAVE_CUTTING_DETAILS_ERROR: {
             return {
                 ...state,
-                instructionSaveLoading: false,
-                instructionSaveSuccess: false,
+                instructionSaveCuttingLoading: false,
+                instructionSaveCuttingSuccess: false,
                 instructionSaveError: true,
             }
         }
         case REQUEST_SAVE_SLITTING_DETAILS: {
             return {
                 ...state,
-                instructionSaveLoading: true,
-                instructionSaveSuccess: false,
+                instructionSaveSlittingLoading: true,
+                instructionSaveSlittingSuccess: false,
                 instructionSaveError: false,
             }
         }
         case SAVE_SLITTING_DETAILS_SUCCESS: {
             return {
                 ...state,
-                instructionSaveLoading: false,
-                instructionSaveSuccess: true,
+                saveSlit:action.payload,
+                instructionSaveSlittingLoading: false,
+                instructionSaveSlittingSuccess: true,
                 instructionSaveError: false,
             }
         }
         case SAVE_SLITTING_DETAILS_ERROR: {
             return {
                 ...state,
-                instructionSaveLoading: false,
-                instructionSaveSuccess: false,
+                instructionSaveSlittingLoading: false,
+                instructionSaveSlittingSuccess: false,
                 instructionSaveError: true,
             }
         }
@@ -342,8 +351,10 @@ export default (state = INIT_STATE, action) => {
         case RESET_INSTRUCTION_FORM: {
             return {
                 ...state,
-                instructionSaveLoading: false,
-                instructionSaveSuccess: false,
+                instructionSaveSlittingLoading: false,
+                instructionSaveCuttingLoading: false,
+                instructionSaveSlittingSuccess: false,
+                instructionSaveCuttingSuccess: false,
                 instructionSaveError: false,
             }
         }
@@ -468,6 +479,24 @@ export default (state = INIT_STATE, action) => {
                 ...state,
                 inwardUpdateLoading: false,
                 inwardUpdateError: true
+            }
+        }
+        case DELETE_INSTRUCTION_BY_ID: {
+            return {
+                ...state,
+                loading: true,
+            }
+        }
+        case DELETE_INSTRUCTION_BY_ID_SUCCESS: {
+            return {
+                ...state,
+                loading: false
+            }
+        }
+        case DELETE_INSTRUCTION_BY_ID_ERROR: {
+            return {
+                ...state,
+                loading: false
             }
         }
 
