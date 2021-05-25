@@ -1,6 +1,6 @@
-import {Button, Card, Col, DatePicker, Divider, Form, Input, Modal, Row, Table, Icon,Tabs, message} from "antd";
+import {Button, Card, Col, DatePicker, Divider, Form, Input, Modal, Row, Table, Select, Icon,Tabs, message} from "antd";
 import React, {useEffect, useState, useRef, useContext} from "react";
-import {connect} from "react-redux";
+import {connect, useSelector} from "react-redux";
 import moment from "moment";
 import {setProcessDetails, saveCuttingInstruction,resetInstruction ,updateInstruction, deleteInstructionById} from '../../../appRedux/actions/Inward';
 import { showMessage } from "../../../appRedux/actions";
@@ -8,6 +8,7 @@ import {APPLICATION_DATE_FORMAT} from '../../../constants';
 import { indexOf } from "lodash-es";
 import { sheets } from "less";
 
+const Option = Select.Option;
 
 export const formItemLayout = {
     labelCol: {
@@ -101,9 +102,15 @@ const CreateCuttingDetailsForm = (props) => {
               )
         },
         {
-             title:'Actions',
-             dataIndex:'actions',
-             key:'action',
+            title: 'Classification',
+            dataIndex: 'packetClassification',
+            render: (text, record, index) => {
+                return <Select style={{width: '100%'}} value={record?.packetClassification?.classificationId} onChange={onInputChange("packetClassification", index, 'select')} >
+                    {props.classificationList?.map(item => {
+                        return <Option value={item.classificationId}>{item.classificationName}</Option>
+                    })}
+                </Select>
+            }
         }
     ];
     const columnsPlan=[
@@ -300,6 +307,10 @@ const CreateCuttingDetailsForm = (props) => {
             
         }else{
         let data = props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions
+        const lengthValue = props.coilDetails.instruction && props.coilDetails.instruction.length > 0 ? props.plannedLength(props.coilDetails) : props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails)
+        const widthValue = props.coilDetails.instruction && props.coilDetails.instruction.length > 0  ? props.plannedWidth(props.coilDetails):  props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.plannedWidth(props.coilDetails);
+            setlength(lengthValue);
+            setwidth(widthValue)
         if(data !== undefined){
             if(props.childCoil){
                 const arrayData =[];
@@ -308,15 +319,10 @@ const CreateCuttingDetailsForm = (props) => {
             }else{
                 data = data.flat();
                 let cutsData = [...data];
-                cutsData = cutsData.filter(item => item.process.processId === 1)
+                cutsData = cutsData.filter(item => item.process.processId === 1  && item.status.statusId !== 3)
                 setCuts(cutsData);
             }
-            let newData = [...data];
-            setTableData(newData);
-            const lengthValue = props.coilDetails.instruction && props.coilDetails.instruction.length > 0 ? props.plannedLength(props.coilDetails) : props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails)
-            const widthValue = props.coilDetails.instruction && props.coilDetails.instruction.length > 0  ? props.plannedWidth(props.coilDetails):  props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.plannedWidth(props.coilDetails);
-            setlength(lengthValue);
-            setwidth(widthValue)
+            
         }
        
         }}, [props.coilDetails]);
@@ -337,6 +343,9 @@ const CreateCuttingDetailsForm = (props) => {
                 if (!item.actualNoOfPieces && item.actualNoOfPieces !== 0) item.actualNoOfPieces  =  item.plannedNoOfPieces;
                 if (!item.actualLength && item.actualLength !== 0) item.actualLength  =  item.plannedLength;
                 if (!item.actualWeight && item.actualWeight !== 0) item.actualWeight  =  item.plannedWeight;
+                if (!item.packetClassification?.classificationId) item.packetClassification = {
+                    classificationId: 1
+                }
                 return item;
             });
             setTableData(actualUpdate);
@@ -358,7 +367,7 @@ const CreateCuttingDetailsForm = (props) => {
         }
     }, [props.inward.instructionSaveCuttingSuccess])
 
-    const onInputChange = (key, index) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    const onInputChange = (key, index, type) => (e: React.ChangeEvent<HTMLInputElement>) => {
         if(props.slitCut){
             const newData = [...cuts];
             let arrayData= [];
@@ -408,7 +417,11 @@ const CreateCuttingDetailsForm = (props) => {
             
         }else{
             const newData = [...tableData];
-            newData[index][key] = Number(e.target.value);
+            newData[index][key] = type === 'select' ? { classificationId: Number(e) } : Number(e.target.value);
+            if (key === 'actualWeight') {
+                const data = (newData[index]['plannedLength']*(e.target.value/newData[index]['plannedWeight']));
+                newData[index]['actualLength'] = Number.isInteger(data) ? data : data.toFixed(1);
+            }
             setTableData(newData);
         }
         
@@ -456,9 +469,9 @@ const CreateCuttingDetailsForm = (props) => {
             }}
             width={1020}
             onCancel={() => {
-                props.form.resetFields();
                 setCuts([]);
-                props.setShowCuttingModal()}}
+                props.form.resetFields();
+                props.setShowCuttingModal(false)}}
         >
         <Card className="gx-card" >
 
@@ -588,6 +601,7 @@ const CreateCuttingDetailsForm = (props) => {
 const mapStateToProps = state => ({
     party: state.party,
     inward: state.inward,
+    classificationList: state.packetClassification?.classificationList,
     saveCut: state.saveCut
 });
 

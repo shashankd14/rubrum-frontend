@@ -570,7 +570,7 @@ const columnsPlan=[
     } else{
         data = data.flat();
         let cutsData = [...data];
-        cutsData = cutsData.filter(item => item.process.processId === 2)
+        cutsData = cutsData.filter(item => item.process.processId === 2 && item.status.statusId !==3)
         setCuts(cutsData);
     }
     let newData = [...data];
@@ -584,6 +584,10 @@ const columnsPlan=[
   ) => {
     const newData = [...tableData];
     newData[index][key] = type === 'select' ? { classificationId: Number(e) } : Number(e.target.value);
+    if (key === 'actualWeight') {
+        const data = (newData[index]['plannedLength']*(e.target.value/newData[index]['plannedWeight']));
+        newData[index]['actualLength'] = Number.isInteger(data) ? data : data.toFixed(1);
+    }
     setTableData(newData);
   };
     useEffect(() => {
