@@ -155,16 +155,16 @@ const Plan = (props) => {
         }
 
     }
-    const handleSelectChange=(value)=>{
+    const handleSelectChange=(value, n, ins)=>{
         if(value === 'Slitting'){
             setShowSlittingModal(true)
-            setSlittingCoil(props.inward.plan)
+            setSlittingCoil(ins)
         }else if(value==='Cutting'){
             setShowCuttingModal(true)
-            setCuttingCoil(props.inward.plan)
+            setCuttingCoil(ins)
         }else if(value== 'Slit & Cut'){
             setSlitCut(true);
-            setSlittingCoil(props.inward.plan);
+            setSlittingCoil(ins);
             setShowSlittingModal(true);
         }
     }
@@ -215,7 +215,7 @@ const Plan = (props) => {
                                 placeholder="Select Instruction"
                                 optionFilterProp="children"
                                 value= {defaultValue}
-                                onChange={handleSelectChange}
+                                onChange={(value)=>handleSelectChange(value, setChildCoil(false), props.inward.plan)}
                                 filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                         >
                             {insList.length > 0 && insList.map((instruction) => (
@@ -257,7 +257,7 @@ const Plan = (props) => {
                                                             style={{ width: 100 }}
                                                             placeholder="Select Instruction"
                                                             optionFilterProp="children"
-                                                            onChange={handleSelectChange}
+                                                            onChange={(value)=>handleSelectChange(value, setChildCoil(true), instruction)}
                                                             filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                                                     >
                                                         {insList.length > 0 && insList.map((instruction) => (
@@ -305,7 +305,7 @@ const Plan = (props) => {
                                                                         style={{ width: 100 }}
                                                                         placeholder="Select Instruction"
                                                                         optionFilterProp="children"
-                                                                        onChange={handleSelectChange}
+                                                                        onChange={(value)=>handleSelectChange(value, setChildCoil(true),instruction)}
                                                                         filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                                                                 >
                                                                     {insList.length > 0 && insList.map((instruction) => (
