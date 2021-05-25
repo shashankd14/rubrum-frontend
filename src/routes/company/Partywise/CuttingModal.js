@@ -416,10 +416,6 @@ const CreateCuttingDetailsForm = (props) => {
         }else{
             const newData = [...tableData];
             newData[index][key] = type === 'select' ? { classificationId: Number(e) } : Number(e.target.value);
-            if (key === 'actualWeight') {
-                const data = (newData[index]['plannedLength']*(e.target.value/newData[index]['plannedWeight']));
-                newData[index]['actualLength'] = Number.isInteger(data) ? data : data.toFixed(1);
-            }
             setTableData(newData);
         }
         
@@ -479,117 +475,137 @@ const CreateCuttingDetailsForm = (props) => {
             >
           <TabPane tab="Cutting Details" key="1">
           {props.slitCut ? <Table  rowSelection={handleSelection} className="gx-table-responsive"  columns={columnsSlit} dataSource={cuts}/>  : 
-        <Row>
-          {!props.wip && <Col lg={12} md={12} sm={24} xs={24} className="gx-align-self-center">
+                <Row>
+                {!props.wip && <Col lg={12} md={12} sm={24} xs={24} className="gx-align-self-center">
 
-                <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4">
-                
-                    <Form.Item label="Process Date" >
-                        {getFieldDecorator('processDate', {
-                            initialValue: moment(new Date(), APPLICATION_DATE_FORMAT),
-                            rules: [{ required: true, message: 'Please select a Process date' }],
-                            })(
-                            <DatePicker
-                            placeholder="dd/mm/yy"
-                            style={{width: 200}}
-                            defaultValue={moment(new Date(), APPLICATION_DATE_FORMAT)}
-                            format={APPLICATION_DATE_FORMAT}
-                            disabled={props.wip ? true : false}/>
-                            )}
-                    </Form.Item>
-                    <Form.Item label="Length">
-                        {getFieldDecorator('length', {
-                            rules: [{ required: true, message: 'Please enter Length' },
-                                    {pattern: "^[0-9]*$", message: 'Length should be a number'},],
-                            })(
-                            <Input id="length" disabled={props.wip ? true : false} onChange={(e)=>handleChange(e)}/>
-                                )}
-                    </Form.Item>
-                    <Form.Item label="No of cuts">
-                            {getFieldDecorator('no', {
-                                rules: [{ required: true, message: 'Please enter number of cuts required' }
-                                    ],
-                            })(
-                            <Input id="noOfCuts" disabled={props.wip ? true : false}/>
-                                )}
-                    </Form.Item>
-                    <Form.Item>
-                        <Button type="primary" onClick={onChange} disabled={props.wip ? true :balanced ? true : false}>
-                                Balanced
-                        </Button>
-                    </Form.Item>
-                    <Form.Item label="Weight">
-                        {getFieldDecorator('weight', {
-                                rules: [{ required: true, message: 'Please fill other details to calculate weight' },
-                                    ],
-                            })(
-                                <Input id="weight" disabled={true}  />
-                            )}
-                    </Form.Item>
-                    <Row className="gx-mt-4">
-                        <Col span={24} style={{ textAlign: "center"}}>
-                        <Button id="button" type="primary" htmlType="submit" disabled={props.wip ? true : false} value="text" >
-                        {props.inward.process.index ? "Update size" : "Add size" } <Icon type="right"/>
-                        </Button>
+                        <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4">
+                        
+                            <Form.Item label="Process Date" >
+                                {getFieldDecorator('processDate', {
+                                    initialValue: moment(new Date(), APPLICATION_DATE_FORMAT),
+                                    rules: [{ required: true, message: 'Please select a Process date' }],
+                                    })(
+                                    <DatePicker
+                                    placeholder="dd/mm/yy"
+                                    style={{width: 200}}
+                                    defaultValue={moment(new Date(), APPLICATION_DATE_FORMAT)}
+                                    format={APPLICATION_DATE_FORMAT}
+                                    disabled={props.wip ? true : false}/>
+                                    )}
+                            </Form.Item>
+                            <Form.Item label="Length">
+                                {getFieldDecorator('length', {
+                                    rules: [{ required: true, message: 'Please enter Length' },
+                                            {pattern: "^[0-9]*$", message: 'Length should be a number'},],
+                                    })(
+                                    <Input id="length" disabled={props.wip ? true : false} onChange={(e)=>handleChange(e)}/>
+                                        )}
+                            </Form.Item>
+                            <Form.Item label="No of cuts">
+                                    {getFieldDecorator('no', {
+                                        rules: [{ required: true, message: 'Please enter number of cuts required' }
+                                            ],
+                                    })(
+                                    <Input id="noOfCuts" disabled={props.wip ? true : false}/>
+                                        )}
+                            </Form.Item>
+                            <Form.Item>
+                                <Button type="primary" onClick={onChange} disabled={props.wip ? true :balanced ? true : false}>
+                                        Balanced
+                                </Button>
+                            </Form.Item>
+                            <Form.Item label="Weight">
+                                {getFieldDecorator('weight', {
+                                        rules: [{ required: true, message: 'Please fill other details to calculate weight' },
+                                            ],
+                                    })(
+                                        <Input id="weight" disabled={true}  />
+                                    )}
+                            </Form.Item>
+                            <Row className="gx-mt-4">
+                                <Col span={24} style={{ textAlign: "center"}}>
+                                <Button id="button" type="primary" htmlType="submit" disabled={props.wip ? true : false} value="text" >
+                                {props.inward.process.index ? "Update size" : "Add size" } <Icon type="right"/>
+                                </Button>
+                                </Col>
+                            </Row>
+                        </Form>
+                    </Col>}
+
+                    {props.wip && <>
+                        <Col lg={8} md={12} sm={24} xs={24}>
+                            <p>Coil number : {props.coil.coilNumber}</p>
+                            <p>Inward length(mm): {props.coil.fLength}</p>
+                            <p>Available Length(mm): {lengthValue}</p>
+                            <p>Available Weight(kg) : {WeightValue}</p>
+                            <p>Inward Weight(kg) : {props.coil.fQuantity}</p>
+                            <p>Grade: {props.coil.materialGrade.gradeName}</p>
+                        </Col>     
+                                                    
+                        <Col lg={8} md={12} sm={24} xs={24}>
+                            <p>Material : {props.coil.material.description}</p>
+                            <p>Customer Name : {props.coil.party.nPartyName}</p>
+                            <p>Thickness(mm): {props.coil.fThickness}</p>
+                            <p>Inward Width(mm) : {props.coil.fWidth}</p>
+                            <p>Available Width(mm) : {width}</p>
                         </Col>
-                    </Row>
-                </Form>
-            </Col>}
+                    
+                    </>}
 
-            {props.wip && <>
-                <Col lg={8} md={12} sm={24} xs={24}>
-                    <p>Coil number : {props.coil.coilNumber}</p>
-                    <p>Inward length(mm): {props.coil.fLength}</p>
-                    <p>Available Length(mm): {lengthValue}</p>
-                    <p>Available Weight(kg) : {WeightValue}</p>
-                    <p>Inward Weight(kg) : {props.coil.fQuantity}</p>
-                    <p>Grade: {props.coil.materialGrade.gradeName}</p>
-                </Col>     
-                                            
-                <Col lg={8} md={12} sm={24} xs={24}>
-                    <p>Material : {props.coil.material.description}</p>
-                    <p>Customer Name : {props.coil.party.nPartyName}</p>
-                    <p>Thickness(mm): {props.coil.fThickness}</p>
-                    <p>Inward Width(mm) : {props.coil.fWidth}</p>
-                    <p>Available Width(mm) : {width}</p>
-                </Col>
-            
-            </>}
-
-            <Col lg={props.wip ? 24 : 12} md={props.wip ? 24 : 12} sm={24} xs={24}>
-            <Table  className="gx-table-responsive"  columns={props.wip? columns :columnsPlan} dataSource={props.wip?tableData:cuts}/>             
-            {props.wip ? <div className='form-wrapper'>
-                <Form.Item label="Total weight(kg)">
-                    {getFieldDecorator('tweight', {
-                        rules: [{ required: false}],
-                    })(
-                        <>
-                            <Input id="tweight" disabled={true} value={tweight} name="tweight" />
-                        </>
-                    )}
-                </Form.Item>
-                <Form.Item label="Actual weight(kg)">
-                    {getFieldDecorator('totalActualweight', {
-                        rules: [{ required: false }],
-                    })(
-                        <>
-                            <Input id="totalActualweight" disabled={true} value={totalActualweight} name="totalActualweight" />
-                        </>
-                    )}
-                </Form.Item>
-            </div> : <Form.Item label="Total weight(kg)">
-                    {getFieldDecorator('tweight', {
-                        rules: [{ required: false}],
-                    })(
-                        <>
-                            <Input id="tweight" disabled={true} value={tweight} name="tweight" />
-                        </>
-                    )}
-                </Form.Item>}
-            </Col>
-    </Row>}
+                    <Col lg={props.wip ? 24 : 12} md={props.wip ? 24 : 12} sm={24} xs={24}>
+                    <Table  className="gx-table-responsive"  columns={props.wip? columns :columnsPlan} dataSource={props.wip?tableData:cuts}/>             
+                    {props.wip ? <div className='form-wrapper'>
+                        <Form.Item label="Total weight(kg)">
+                            {getFieldDecorator('tweight', {
+                                rules: [{ required: false}],
+                            })(
+                                <>
+                                    <Input id="tweight" disabled={true} value={tweight} name="tweight" />
+                                </>
+                            )}
+                        </Form.Item>
+                        <Form.Item label="Actual weight(kg)">
+                            {getFieldDecorator('totalActualweight', {
+                                rules: [{ required: false }],
+                            })(
+                                <>
+                                    <Input id="totalActualweight" disabled={true} value={totalActualweight} name="totalActualweight" />
+                                </>
+                            )}
+                        </Form.Item>
+                    </div> : <Form.Item label="Total weight(kg)">
+                            {getFieldDecorator('tweight', {
+                                rules: [{ required: false}],
+                            })(
+                                <>
+                                    <Input id="tweight" disabled={true} value={tweight} name="tweight" />
+                                </>
+                            )}
+                        </Form.Item>}
+                    </Col>
+            </Row>}
 
           </TabPane>
+
+          { !props.wip && <TabPane tab="Coil Details" key="2">
+                    <Row>
+                        <Col lg={12} md={12} sm={24} xs={24}>   
+                            <p>Coil number : {props.coil.coilNumber}</p>
+                            <p>Inward length(mm): {props.coil.fLength}</p>
+                            <p>Available Length(mm): {lengthValue}</p>
+                            <p>Available Weight(kg) : {WeightValue}</p>
+                            <p>Inward Weight(kg) : {props.coil.fQuantity}</p>
+                            <p>Grade: {props.coil.materialGrade.gradeName}</p>
+                        </Col> 
+                        <Col lg={12} md={12} sm={24} xs={24}>
+                            <p>Material : {props.coil.material.description}</p>
+                            <p>Customer Name : {props.coil.party.nPartyName}</p>
+                            <p>Thickness(mm): {props.coil.fThickness}</p>
+                            <p>Inward Width(mm) : {props.coil.fWidth}</p>
+                            <p>Available Width(mm) : {width}</p>
+                        </Col>
+                    </Row>
+                </TabPane>}
             </Tabs>
             </Card>
        </Modal>
