@@ -239,18 +239,13 @@ const CreateCuttingDetailsForm = (props) => {
 
     const onEdit=(record,index) => {
         const {form} = props;
-        const data= props.record;
-        if(indexOf(data)<4 )
-        {
-            let values= {
-                processDate: record.processDate ,
-                length:record.length,
-                no:record.no ,
-                weight:record.weight,
-                index:index
-            }
-            props.setProcessDetails(values);
-        }
+        
+            form.setFieldsValue({
+                length:record.plannedLength,
+                no:record.plannedNoOfPieces ,
+                weight:record.plannedWeight
+
+            });
     };
 
     const onDelete = (record, e) => {
