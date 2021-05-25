@@ -589,7 +589,7 @@ const columnsPlan=[
     const newData = [...tableData];
     newData[index][key] = type === 'select' ? { classificationId: Number(e) } : Number(e.target.value);
     if (key === 'actualWeight') {
-        const data = (newData[index]['plannedLength']*(e.target.value/newData[index]['plannedWeight']));
+        const data = (e.target.value / ((newData[index]['actualWidth'] / 1000) * 7.85 * props.coil.fThickness ));
         newData[index]['actualLength'] = Number.isInteger(data) ? data : data.toFixed(1);
     }
     setTableData(newData);
@@ -745,6 +745,26 @@ const columnsPlan=[
                     </Row>}
         
                 </TabPane>
+
+                { !props.wip && <TabPane tab="Coil Details" key="2">
+                    <Row>
+                        <Col lg={12} md={12} sm={24} xs={24}>   
+                            <p>Coil number : {props.coil.coilNumber}</p>
+                            <p>Available Weight(kg) : {props.coil.fpresent}</p>
+                            <p>Available length(mm) : {lengthValue}</p>
+                            <p>Inward Weight(kg) : {props.coil.fQuantity}</p>
+                            <p>Grade: {props.coil.materialGrade.gradeName}</p> 
+                        </Col> 
+                        <Col lg={12} md={12} sm={24} xs={24}>
+                            <p>Material : {props.coil.material.description}</p>
+                            <p>Customer Name : {props.coil.party.nPartyName}</p>
+                            <p>Thickness(mm): {props.coil.fThickness}</p>
+                            <p>Width(mm) : {props.coil.fWidth}</p>
+                            <p>Available Width(mm): {widthValue}</p>
+                        </Col>
+                    </Row>
+                </TabPane>}
+
                 </Tabs>
          </Modal>
     )
