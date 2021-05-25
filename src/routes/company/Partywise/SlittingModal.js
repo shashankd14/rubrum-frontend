@@ -603,7 +603,9 @@ const columnsPlan=[
         if(props.inward.instructionSaveSlittingSuccess && !props.wip) {
             loading = '';
             message.success('Slitting instruction saved successfully', 2).then(() => {
-                props.setCutting(props.inward.saveSlit);
+                if(props.slitCut){
+                    props.setCutting(props.inward.saveSlit);
+                }
                 props.setShowSlittingModal(false);
                 props.resetInstruction();
                 

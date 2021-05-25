@@ -288,9 +288,9 @@ const CreateCuttingDetailsForm = (props) => {
         if(props.inward.process.length && props.inward.process.no) {
             if(props.coilDetails.instructionId)
 
-                props.setProcessDetails({...props.inward.process, weight:tweight && balanced ? WeightValue-Number(tweight):Math.round( 0.00000785*parseFloat(width)*parseFloat(props.inward.plan.fThickness)*parseFloat(props.inward.process.length)*parseFloat(props.inward.process.no))});
+                props.setProcessDetails({...props.inward.process, weight:tweight && !balanced ? WeightValue-Number(tweight):Math.round( 0.00000785*parseFloat(width)*parseFloat(props.inward.plan.fThickness)*parseFloat(props.inward.process.length)*parseFloat(props.inward.process.no))});
             else
-                props.setProcessDetails({...props.inward.process, weight:tweight && balanced ? WeightValue-Number(tweight):Math.round( 0.00000785*parseFloat(props.inward.plan.fWidth)*parseFloat(props.inward.plan.fThickness)*parseFloat(props.inward.process.length)*parseFloat(props.inward.process.no))});
+                props.setProcessDetails({...props.inward.process, weight:tweight && !balanced ? WeightValue-Number(tweight):Math.round( 0.00000785*parseFloat(props.inward.plan.fWidth)*parseFloat(props.inward.plan.fThickness)*parseFloat(props.inward.process.length)*parseFloat(props.inward.process.no))});
         }
     }, [props.inward.process.length, props.inward.process.no])
     
@@ -299,23 +299,26 @@ const CreateCuttingDetailsForm = (props) => {
             setCuts(props.coilDetails)
             
         }else{
-            let data = props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions
-        if(props.childCoil){
-            const arrayData =[];
-            arrayData.push(data);
-            data= arrayData
-        }else{
-            data = data.flat();
-            let cutsData = [...data];
-            cutsData = cutsData.filter(item => item.process.processId === 1)
-            setCuts(cutsData);
+        let data = props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions
+        if(data !== undefined){
+            if(props.childCoil){
+                const arrayData =[];
+                arrayData.push(data);
+                data= arrayData
+            }else{
+                data = data.flat();
+                let cutsData = [...data];
+                cutsData = cutsData.filter(item => item.process.processId === 1)
+                setCuts(cutsData);
+            }
+            let newData = [...data];
+            setTableData(newData);
+            const lengthValue = props.coilDetails.instruction && props.coilDetails.instruction.length > 0 ? props.plannedLength(props.coilDetails) : props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails)
+            const widthValue = props.coilDetails.instruction && props.coilDetails.instruction.length > 0  ? props.plannedWidth(props.coilDetails):  props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.plannedWidth(props.coilDetails);
+            setlength(lengthValue);
+            setwidth(widthValue)
         }
-        let newData = [...data];
-        setTableData(newData);
-        const lengthValue = props.coilDetails.instruction && props.coilDetails.instruction.length > 0 ? props.plannedLength(props.coilDetails) : props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails)
-        const widthValue = props.coilDetails.instruction && props.coilDetails.instruction.length > 0  ? props.plannedWidth(props.coilDetails):  props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.plannedWidth(props.coilDetails);
-        setlength(lengthValue);
-        setwidth(widthValue)
+       
         }}, [props.coilDetails]);
     useEffect(() => {
         if(props.inward.instructionSaveCuttingLoading && !props.wip) {
