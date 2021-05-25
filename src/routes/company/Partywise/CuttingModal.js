@@ -239,18 +239,13 @@ const CreateCuttingDetailsForm = (props) => {
 
     const onEdit=(record,index) => {
         const {form} = props;
-        const data= props.record;
-        if(indexOf(data)<4 )
-        {
-            let values= {
-                processDate: record.processDate ,
-                length:record.length,
-                no:record.no ,
-                weight:record.weight,
-                index:index
-            }
-            props.setProcessDetails(values);
-        }
+        
+            form.setFieldsValue({
+                length:record.plannedLength,
+                no:record.plannedNoOfPieces ,
+                weight:record.plannedWeight
+
+            });
     };
 
     const onDelete = (record, e) => {
@@ -313,19 +308,18 @@ const CreateCuttingDetailsForm = (props) => {
             setwidth(widthValue)
         if(data !== undefined){
             if(props.childCoil){
-                const arrayData =[];
-                arrayData.push(data);
-                data= arrayData
+                let arrayData =data.childInstructions? data.childInstructions: [];;
+                arrayData = arrayData.length>0? arrayData.flat():[];
+                arrayData= arrayData.length>0?[...arrayData].filter(item => item.process.processId === 1 ):[]
+                setCuts(arrayData)
             }else{
                 data = data.flat();
                 let cutsData = [...data];
-                cutsData = cutsData.filter(item => item.process.processId === 1  && item.status.statusId !== 3)
+                cutsData = cutsData.filter(item => item.process.processId === 1)
                 setCuts(cutsData);
             }
-            
         }
-       
-        }}, [props.coilDetails]);
+       }}, [props.coilDetails]);
     useEffect(() => {
         if(props.inward.instructionSaveCuttingLoading && !props.wip) {
             loading = message.loading('Saving Cut Instruction..');
