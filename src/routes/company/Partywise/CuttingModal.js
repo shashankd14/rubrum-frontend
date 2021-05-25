@@ -313,10 +313,10 @@ const CreateCuttingDetailsForm = (props) => {
             setwidth(widthValue)
         if(data !== undefined){
             if(props.childCoil){
-                const arrayData =[];
-                arrayData.push(data);
-                data= arrayData.filter(item => item.process.processId === 1)
-                setCuts(data)
+                let arrayData =data.childInstructions? data.childInstructions: [];;
+                arrayData = arrayData.length>0? arrayData.flat():[];
+                arrayData= arrayData.length>0?[...arrayData].filter(item => item.process.processId === 1 ):[]
+                setCuts(arrayData)
             }else{
                 data = data.flat();
                 let cutsData = [...data];
