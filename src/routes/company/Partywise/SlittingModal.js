@@ -564,18 +564,22 @@ const columnsPlan=[
     useEffect(() => {
     let data = props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions;
     if(props.childCoil){
-      const arrayData =[];
-      arrayData.push(data);
-      data= arrayData
+      let arrayData = data.childInstructions? data.childInstructions: [];
+      arrayData = arrayData.flat();
+      arrayData= arrayData.length>0?[...arrayData].filter(item => item.process.processId === 2 ):[]
+      setCuts(arrayData)
     } else{
-        data = data.flat();
+        data = data.flat();  
         let cutsData = [...data];
-        cutsData = cutsData.filter(item => item.process.processId === 2 && item.status.statusId !==3)
+        cutsData = cutsData.filter(item => item.process.processId === 2)
         setCuts(cutsData);
     }
-    let newData = [...data];
     setForm(false);
-    setTableData(newData);
+    if(props.wip){
+     let newData = [...data];
+     setTableData(newData);
+    }
+    
 
 }, [props.coilDetails]);
 

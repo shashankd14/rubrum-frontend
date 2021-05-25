@@ -315,17 +315,16 @@ const CreateCuttingDetailsForm = (props) => {
             if(props.childCoil){
                 const arrayData =[];
                 arrayData.push(data);
-                data= arrayData
+                data= arrayData.filter(item => item.process.processId === 1)
+                setCuts(data)
             }else{
                 data = data.flat();
                 let cutsData = [...data];
-                cutsData = cutsData.filter(item => item.process.processId === 1  && item.status.statusId !== 3)
+                cutsData = cutsData.filter(item => item.process.processId === 1)
                 setCuts(cutsData);
             }
-            
         }
-       
-        }}, [props.coilDetails]);
+       }}, [props.coilDetails]);
     useEffect(() => {
         if(props.inward.instructionSaveCuttingLoading && !props.wip) {
             loading = message.loading('Saving Cut Instruction..');
