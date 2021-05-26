@@ -14,7 +14,7 @@ const CreatePartyDetailsForm = (props) => {
             const { Option } = AutoComplete;
             const options = props.party.partyList.filter(party => {
             if (party.nPartyId===  props.inward.party.nPartyId)
-            return (<Option key={party.nPartyId} value={`${party.nPartyId}`}>
+            return (<Option key={party.nPartyId} value={`${party.nPartyName}`}>
                     {party.nPartyName}
                 </Option>)
             });
@@ -26,7 +26,7 @@ const CreatePartyDetailsForm = (props) => {
 
             const { Option } = AutoComplete;
             const options = props.party.partyList.map(party => (
-                <Option key={party.nPartyId} value={`${party.nPartyId}`}>
+                <Option key={party.nPartyId} value={`${party.nPartyName}`}>
                     {party.nPartyName}
                 </Option>
             ));
