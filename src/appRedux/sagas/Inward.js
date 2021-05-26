@@ -209,7 +209,7 @@ function* updateInward(action) {
         heatnumber : "",
         plantname : "",
         process : "",
-        presentWeight : action.inward.weight !== undefined ? action.inward.weight : action.inward.fPresent,
+        presentWeight : action.inward.weight !== undefined ? action.inward.weight : action.inward.fQuantity,
         cast : "",
         materialGradeId : action.inward.grade !== undefined ?action.inward.grade: (action.inward.materialGrade.gradeId).toString(),
         createdBy : "1",

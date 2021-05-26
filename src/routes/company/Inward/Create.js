@@ -134,7 +134,7 @@ const Create = Form.create({
             }),
             weight: Form.createFormField({
                 ...props.inward.inward.weight,
-                value: props.match.params ?props.inward.inward.fWeight:(props.inward.inward.weight) ? props.inward.inward.weight : '',
+                value: props.match.params ?props.inward.inward.fQuantity:(props.inward.inward.weight) ? props.inward.inward.weight : '',
             }),
             length: Form.createFormField({
                 ...props.inward.inward.length,
