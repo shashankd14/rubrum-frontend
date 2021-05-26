@@ -40,7 +40,8 @@ const CreateCuttingDetailsForm = (props) => {
     const [width, setwidth] = useState(widthValue);
     const [cutValue, setCutValue] = useState([]);
     const [objValue,setObjValue]= useState();
-    const [selectedRowKeys, setSelectedRowKeys] = useState([])
+    const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+    const [balancedValue, setBalancedValue] = useState(false)
     
     // const dataSource= props.wip?((props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts;
     const [tableData, setTableData] = useState(props.wip?(props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts);
@@ -255,6 +256,7 @@ const CreateCuttingDetailsForm = (props) => {
         setCuts(data);
     };
     const onChange=()=>{
+        setBalancedValue(true);
         props.form.setFieldsValue({
             no: no
         });
@@ -290,9 +292,9 @@ const CreateCuttingDetailsForm = (props) => {
         if(props.inward.process.length && props.inward.process.no) {
             if(props.coilDetails.instructionId)
 
-                props.setProcessDetails({...props.inward.process, weight:tweight && !balanced ? WeightValue-Number(tweight):Math.round( 0.00000785*parseFloat(width)*parseFloat(props.inward.plan.fThickness)*parseFloat(props.inward.process.length)*parseFloat(props.inward.process.no))});
+                props.setProcessDetails({...props.inward.process, weight:tweight && balancedValue ? WeightValue-Number(tweight):Math.round( 0.00000785*parseFloat(width)*parseFloat(props.inward.plan.fThickness)*parseFloat(props.inward.process.length)*parseFloat(props.inward.process.no))});
             else
-                props.setProcessDetails({...props.inward.process, weight:tweight && !balanced ? WeightValue-Number(tweight):Math.round( 0.00000785*parseFloat(props.inward.plan.fWidth)*parseFloat(props.inward.plan.fThickness)*parseFloat(props.inward.process.length)*parseFloat(props.inward.process.no))});
+                props.setProcessDetails({...props.inward.process, weight:tweight && balancedValue ? WeightValue-Number(tweight):Math.round( 0.00000785*parseFloat(props.inward.plan.fWidth)*parseFloat(props.inward.plan.fThickness)*parseFloat(props.inward.process.length)*parseFloat(props.inward.process.no))});
         }
     }, [props.inward.process.length, props.inward.process.no])
     
