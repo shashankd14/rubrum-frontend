@@ -285,11 +285,7 @@ const SlittingWidths = (props) => {
                 
                 {!props.wip && <><label>Available length : {len}mm</label>
                 <div><label>Available Width : {width}mm</label></div> 
-                <Form.Item>
-                    <Button type="primary" onClick={() => onChange()} disabled={props.wip ? true : false}>
-                            Balanced
-                    </Button>
-                </Form.Item></>}
+                </>}
                 {!props.wip && 
                 <><Form.Item label="Process Date" >
                     {getFieldDecorator('processDate', {

@@ -463,6 +463,7 @@ const CreateCuttingDetailsForm = (props) => {
             onCancel={() => {
                 setCuts([]);
                 props.form.resetFields();
+                setBalancedValue(false)
                 props.setShowCuttingModal(false)}}
         >
         <Card className="gx-card" >
