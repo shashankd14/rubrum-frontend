@@ -63,6 +63,11 @@ const InvoiceDetailsForm = (props) => {
                             <Input id="invoiceNumber" />
                         )}
                     </Form.Item>
+                    <Form.Item label="Value of Goods">
+                        {getFieldDecorator('valueOfGoods')(
+                            <Input id="valueOfGoods" />
+                        )}
+                    </Form.Item>
                     <Form.Item label="Invoice date">
                         {getFieldDecorator('invoiceDate', {
                             initialValue: moment(new Date(), APPLICATION_DATE_FORMAT),
@@ -132,6 +137,10 @@ const InvoiceDetails = Form.create({
             invoiceNumber: Form.createFormField({
                 ...props.inward.invoiceNumber,
                 value: props.params !== "" ? props.inward.vInvoiceNo :(props.inward.invoiceNumber) ? props.inward.invoiceNumber : '',
+            }),
+            valueOfGoods: Form.createFormField({
+                ...props.inward.valueOfGoods,
+                value: props.inward.valueOfGoods,
             }),
             invoiceDate: Form.createFormField({
                 ...props.inward.invoiceDate,
