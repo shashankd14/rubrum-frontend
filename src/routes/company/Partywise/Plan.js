@@ -244,11 +244,11 @@ const Plan = (props) => {
                                                     {instruction.process.processName == 'Cutting' ? 'Cutting' : 'Slitting'}
                                                     <div className="gx-flex-row">
                                                         <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.availableLength" /> : </p>
-                                                        <span className="gx-coil-details-label">{getPlannedLength(instruction)}</span>
+                                                        <span className="gx-coil-details-label">{instruction.status.statusName==='READY TO DELIVER'? 0 :getPlannedLength(instruction)}</span>
                                                     </div>
                                                     <div className="gx-flex-row">
                                                         <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.availableWeight" /> : </p>
-                                                        <span className="gx-coil-details-label">{getPlannedWeight(instruction)}</span>
+                                                        <span className="gx-coil-details-label">{instruction.status.statusName==='READY TO DELIVER'? 0:getPlannedWeight(instruction)}</span>
                                                     </div>
                                                     { props.wip ?
                                                          <></> :
@@ -284,7 +284,7 @@ const Plan = (props) => {
                                                                 {instruction.process.processName == 'Cutting' ? 'Cutting' : 'Slitting'}
                                                                 <div className="gx-flex-row">
                                                                     <div className="gx-coil-details-label"><IntlMessages id="partywise.plan.availableLength" /> : </div>
-                                                                    <span className="gx-coil-details-label">{getLength(instruction.childInstructions, 'Non-Delivered')}</span>
+                                                                    <span className="gx-coil-details-label">{instruction.status.statusName==='READY TO DELIVER'?0: getLength(instruction.childInstructions, 'Non-Delivered')}</span>
                                                                 </div>
                                                                 {/* <div className="gx-flex-row">
                                                                     <div className="gx-coil-details-label"><IntlMessages id="partywise.plan.deliveredLength" /> : </div>
@@ -292,7 +292,7 @@ const Plan = (props) => {
                                                                 </div> */}
                                                                 <div className="gx-flex-row">
                                                                     <div className="gx-coil-details-label"><IntlMessages id="partywise.plan.availableWeight" /> : </div>
-                                                                    <span className="gx-coil-details-label">{getWeight(instruction.childInstructions, 'Non-Delivered')}</span>
+                                                                    <span className="gx-coil-details-label">{instruction.status.statusName==='READY TO DELIVER'? 0 :getWeight(instruction.childInstructions, 'Non-Delivered')}</span>
                                                                 </div>
                                                                 {/* <div className="gx-flex-row">
                                                                     <div className="gx-coil-details-label"><IntlMessages id="partywise.plan.deliveredWeight" /> : </div>
