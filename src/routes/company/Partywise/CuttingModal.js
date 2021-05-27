@@ -28,6 +28,7 @@ const CreateCuttingDetailsForm = (props) => {
     const {getFieldDecorator} = props.form;
     let loading = '';
     const [cuts, setCuts] = useState([]);
+    const [page, setPage] = useState(1);
     const [mode, setMode] = useState('top');
     const [balanced, setBalanced] = useState(true);
     const [tweight, settweight]= useState(0);
@@ -317,7 +318,7 @@ const CreateCuttingDetailsForm = (props) => {
             }else{
                 data = data.flat();
                 let cutsData = [...data];
-                cutsData = cutsData.filter(item => item.process.processId === 1)
+                cutsData = props.wip ? cutsData.filter(item => item.process.processId === 1 && item.status.statusId !==3) : cutsData.filter(item => item.process.processId === 1)
                 setCuts(cutsData);
             }
         }
@@ -413,7 +414,8 @@ const CreateCuttingDetailsForm = (props) => {
             
         }else{
             const newData = [...tableData];
-            newData[index][key] = type === 'select' ? { classificationId: Number(e) } : Number(e.target.value);
+            const newIndex = (page - 1) * 10 + index;
+            newData[newIndex][key] = type === 'select' ? { classificationId: Number(e) } : Number(e.target.value);
             setTableData(newData);
         }
         
@@ -475,7 +477,7 @@ const CreateCuttingDetailsForm = (props) => {
           <TabPane tab="Cutting Details" key="1">
           {props.slitCut ? <Table  rowSelection={handleSelection} className="gx-table-responsive"  columns={columnsSlit} dataSource={cuts}/>  : 
                 <Row>
-                {!props.wip && <Col lg={12} md={12} sm={24} xs={24} className="gx-align-self-center">
+                    {!props.wip && <Col lg={12} md={12} sm={24} xs={24} className="gx-align-self-center">
 
                         <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4">
                         
@@ -552,7 +554,15 @@ const CreateCuttingDetailsForm = (props) => {
                     </>}
 
                     <Col lg={props.wip ? 24 : 12} md={props.wip ? 24 : 12} sm={24} xs={24}>
-                    <Table  className="gx-table-responsive"  columns={props.wip? columns :columnsPlan} dataSource={props.wip?tableData:cuts}/>             
+                    <Table  className="gx-table-responsive"  
+                        columns={props.wip? columns :columnsPlan} 
+                        dataSource={props.wip?tableData:cuts}
+                        pagination={{
+                            onChange(current) {
+                              setPage(current);
+                            }
+                        }}
+                    />             
                     {props.wip ? <div className='form-wrapper'>
                         <Form.Item label="Total weight(kg)">
                             {getFieldDecorator('tweight', {
