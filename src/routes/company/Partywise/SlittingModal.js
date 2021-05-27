@@ -533,6 +533,7 @@ const columnsPlan=[
     const [tableData, setTableData] = useState(props.wip?(props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts);
     const [tweight, settweight]= useState(0);
     const [totalActualweight, setTotalActualWeight] = useState(0);
+    const [page, setPage] = useState(1);
     const [edit, setEdit] = useState([]);
     const [lengthValue, setLengthValue] = useState();
     const [widthValue, setWidthValue]= useState();
@@ -567,7 +568,7 @@ const columnsPlan=[
     } else{
         data = data.flat();  
         let cutsData = [...data];
-        cutsData = cutsData.filter(item => item.process.processId === 2)
+        cutsData = props.wip ? cutsData.filter(item => item.process.processId === 2 && item.status.statusId !==3) : cutsData.filter(item => item.process.processId === 2)
         setCuts(cutsData);
     }
     setForm(false);
@@ -583,10 +584,11 @@ const columnsPlan=[
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const newData = [...tableData];
-    newData[index][key] = type === 'select' ? { classificationId: Number(e) } : Number(e.target.value);
+    const newIndex = (page - 1) * 10 + index;
+    newData[newIndex][key] = type === 'select' ? { classificationId: Number(e) } : Number(e.target.value);
     if (key === 'actualWeight') {
-        const data = (e.target.value / ((newData[index]['actualWidth'] / 1000) * 7.85 * props.coil.fThickness ));
-        newData[index]['actualLength'] = Number.isInteger(data) ? data : data.toFixed(1);
+        const data = (e.target.value / ((newData[newIndex]['actualWidth'] / 1000) * 7.85 * props.coil.fThickness )) * 1000;
+        newData[newIndex]['actualLength'] = Number.isInteger(data) ? data : data.toFixed(1);
     }
     setTableData(newData);
   };
@@ -690,7 +692,15 @@ const columnsPlan=[
                         </Col>
 
                         <Col lg={24} md={24} sm={24} xs={24}>
-                            <Table className="gx-table-responsive" columns={props.wip?columns: columnsPlan} dataSource={props.wip?tableData:reset ?cuts: cutArray}/>
+                            <Table className="gx-table-responsive" 
+                                columns={props.wip?columns: columnsPlan} 
+                                dataSource={props.wip?tableData:reset ?cuts: cutArray}
+                                pagination={{
+                                    onChange(current) {
+                                      setPage(current);
+                                    }
+                                  }}
+                            />
                             <div className="form-wrapper">
                                     <Form.Item className="form-item" label="Total weight(kg)">
                                     {getFieldDecorator('tweight', {
