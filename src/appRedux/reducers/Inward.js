@@ -247,7 +247,7 @@ export default (state = INIT_STATE, action) => {
                 inwardSubmitSuccess: false,
                 inwardSubmitError: false,
                 inward:{},
-                inwardUpdateoading: false,
+                inwardUpdateLoading: false,
                 inwardUpdateSuccess: false,
                 inwardUpdateError: false,
             }
