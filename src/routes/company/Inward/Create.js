@@ -57,7 +57,7 @@ const CreateForm = (props) => {
         setSteps(steps);
     }, []);
     useEffect(()=>{
-        if(props.inward.inwardEntry && props.match.params.inwardEntryId === ""){
+        if(props.inward.inwardEntry && (props.match.params.inwardEntryId === "" || props.match.params.inwardEntryId === undefined)){
             let inwardValue = props.inward.inwardEntry;
             inwardValue.thickness = "";
             inwardValue.batchNo ="";
