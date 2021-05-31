@@ -244,11 +244,11 @@ const Plan = (props) => {
                                                     {instruction.process.processName == 'Cutting' ? 'Cutting' : 'Slitting'}
                                                     <div className="gx-flex-row">
                                                         <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.availableLength" /> : </p>
-                                                        <span className="gx-coil-details-label">{instruction.status.statusName==='READY TO DELIVER'? 0 :getPlannedLength(instruction)}</span>
+                                                        <span className="gx-coil-details-label">{instruction?.deliveryDetails !== null &&instruction?.deliveryDetails?.deliveryId !==null? 0 :getPlannedLength(instruction)}</span>
                                                     </div>
                                                     <div className="gx-flex-row">
                                                         <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.availableWeight" /> : </p>
-                                                        <span className="gx-coil-details-label">{instruction.status.statusName==='READY TO DELIVER'? 0:getPlannedWeight(instruction)}</span>
+                                                        <span className="gx-coil-details-label">{instruction?.deliveryDetails !== null &&instruction?.deliveryDetails?.deliveryId !==null? 0:getPlannedWeight(instruction)}</span>
                                                     </div>
                                                     { props.wip ?
                                                          <></> :
@@ -284,7 +284,7 @@ const Plan = (props) => {
                                                                 {instruction.process.processName == 'Cutting' ? 'Cutting' : 'Slitting'}
                                                                 <div className="gx-flex-row">
                                                                     <div className="gx-coil-details-label"><IntlMessages id="partywise.plan.availableLength" /> : </div>
-                                                                    <span className="gx-coil-details-label">{instruction.status.statusName==='READY TO DELIVER'?0: getLength(instruction.childInstructions, 'Non-Delivered')}</span>
+                                                                    <span className="gx-coil-details-label">{instruction?.deliveryDetails !== null &&instruction?.deliveryDetails?.deliveryId !==null?0: getLength(instruction.childInstructions, 'Non-Delivered')}</span>
                                                                 </div>
                                                                 {/* <div className="gx-flex-row">
                                                                     <div className="gx-coil-details-label"><IntlMessages id="partywise.plan.deliveredLength" /> : </div>
@@ -292,7 +292,7 @@ const Plan = (props) => {
                                                                 </div> */}
                                                                 <div className="gx-flex-row">
                                                                     <div className="gx-coil-details-label"><IntlMessages id="partywise.plan.availableWeight" /> : </div>
-                                                                    <span className="gx-coil-details-label">{instruction.status.statusName==='READY TO DELIVER'? 0 :getWeight(instruction.childInstructions, 'Non-Delivered')}</span>
+                                                                    <span className="gx-coil-details-label">{instruction?.deliveryDetails !== null &&instruction?.deliveryDetails?.deliveryId !==null? 0 :getWeight(instruction.childInstructions, 'Non-Delivered')}</span>
                                                                 </div>
                                                                 {/* <div className="gx-flex-row">
                                                                     <div className="gx-coil-details-label"><IntlMessages id="partywise.plan.deliveredWeight" /> : </div>
@@ -318,7 +318,7 @@ const Plan = (props) => {
 
                                                 </>
                                             </Col> :
-                                            instruction.deliveryId !== null ?
+                                            instruction.deliveryDetails !== null && instruction.deliveryDetails.deliveryId !== null ?
                                                 <Col lg={7} md={7} sm={24} xs={24} className="gx-align-self-center gx-branch-lvl2">
                                                     <>
                                                         <Col lg={24} md={24} sm={24} xs={24} className="gx-align-self-center plan-dl-box">
@@ -326,8 +326,9 @@ const Plan = (props) => {
                                                                 <img style={{ position: "absolute", right: "10.35px" }} src={require("assets/images/inward/info_icon.svg")} alt="Packaging" title="Packaging" />
                                                                 <div style={{ marginLeft: "8px" }}> <span class="inline-packaging-lbl"><IntlMessages id="partywise.plan.packaging" /></span>
                                                                     <div>
-                                                                        <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.deliveryId" /> : <span className="gx-coil-details-label">{instruction.deliveryId}</span></p>
+                                                                        <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.deliveryId" /> : <span className="gx-coil-details-label">{instruction.deliveryDetails?.deliveryId}</span></p>
                                                                         <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.date" /> : <span className="gx-coil-details-label">{moment(instruction.updatedOn).format('DD/MM/YYYY')}</span></p>
+                                                                        <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.deliveredWeight" /> : <span className="gx-coil-details-label">{instruction.deliveryDetails?.totalWeight}</span></p>
                                                                         <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.remarks" /> : <span className="gx-coil-details-label">{instruction.remarks}</span></p>
                                                                         <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.wastage" /> : <span className="gx-coil-details-label">{instruction.wastage}</span></p>
                                                                     </div>
