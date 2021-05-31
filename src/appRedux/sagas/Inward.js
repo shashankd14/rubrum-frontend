@@ -157,6 +157,7 @@ function* submitInward(action) {
         data.append('vehicleNumber', action.inward.vehicleNumber);
         data.append('invoiceDate', moment(action.inward.invoiceDate).format('YYYY-MM-DD HH:mm:ss'));
         data.append('invoiceNumber', action.inward.invoiceNumber);
+        data.append('valueOfGoods', action.inward.valueOfGoods);
 
         //quality details
         data.append('materialGradeId', action.inward.grade !== undefined ?action.inward.grade: Number(action.inward.materialGrade.gradeId));
@@ -200,6 +201,7 @@ function* updateInward(action) {
         vehicleNumber : action.inward.vehicleNumber !== undefined? action.inward.vehicleNumber : action.inward.vLorryNo,
         invoiceDate : moment(action.inward.invoiceDate).format('YYYY-MM-DD HH:mm:ss')!== undefined ?moment(action.inward.invoiceDate).format('YYYY-MM-DD HH:mm:ss'): null,
         invoiceNumber : action.inward.invoiceNumber !== undefined ? action.inward.invoiceNumber: action.inward.vInvoiceNo,
+        valueOfGoods : action.inward.valueOfGoods !== undefined ? action.inward.valueOfGoods: 0,
         purposeType : action.inward.purposeType,
         materialId : (materialId).toString(),
         width : action.inward.width !== undefined ? action.inward.width : action.inward.fWidth,
