@@ -49,6 +49,7 @@ const SlittingWidths = (props) => {
     const [len, setlen]= useState(lengthValue1);
     const [width, setwidth] = useState(widthValue1);
     const [twidth, settwidth]= useState(0);
+    const [oldLength, setOldLength]= useState(0);
     const [checked, setChecked] = useState([]);
     const [equalParts, setEqualParts]= useState(0);
     
@@ -162,6 +163,9 @@ const SlittingWidths = (props) => {
                 const lengthValue = props.coilDetails.fLength ? props.coilDetails.fLength : props.plannedLength(props.coilDetails)
                 const weightValue = props.coilDetails.fpresent >= 0? props.coilDetails.fpresent : props.plannedWeight(props.coilDetails)
                 const slits = []
+                if(cutLength === 0){
+                    setOldLength(Number(availLength));
+                }
                 for(let i=0; i < values.widths.length; i++) {
                     for (let j=0; j<values.nos[i];j++){
                         let slitValue = {
@@ -182,7 +186,7 @@ const SlittingWidths = (props) => {
                     settwidth(totalWidth);
                     
                 }
-                if(cutLength >= lengthValue){
+                if(oldLength >= lengthValue){
                     if((totalWidth+cutWidth) > widthValue) {
                     message.error('Sum of slits width is greater than width of coil.', 2);
                 }}else if(availLength +cutLength > lengthValue) {
