@@ -76,7 +76,7 @@ const List = (props) => {
         dataIndex: 'fThickness',
         key: 'fThickness',
         filters: [],
-        sorter: (a, b) => a.fThickness.length - b.fThickness.length,
+        sorter: (a, b) => a.fThickness - b.fThickness,
         sortOrder: sortedInfo.columnKey === 'fThickness' && sortedInfo.order,
     },
     {

@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
-import {setInwardDetails} from "../../../../appRedux/actions";
+import {setInwardDetails, checkCustomerBatchNumber} from "../../../../appRedux/actions";
 import {Form, Spin, AutoComplete, Icon, Button, Col, Row, Input, Select} from "antd";
 import {formItemLayout} from '../Create';
 
@@ -45,7 +45,12 @@ const CreatePartyDetailsForm = (props) => {
             }
         });
     };
-
+    const checkBatchNoExist = (rule, value, callback) => {
+        if (!props.inwardStatus.loading && props.inwardStatus.success && !props.inwardStatus.duplicateBatchNo) {
+            return callback();
+        }
+        callback('The coil number already exists');
+    };
     return (
         <>
             {props.party.loading && <Spin className="gx-size-100 gx-flex-row gx-justify-content-center gx-align-items-center" size="large"/>}
@@ -73,11 +78,15 @@ const CreatePartyDetailsForm = (props) => {
                                 <Input id="customerId" />
                             )}
                     </Form.Item>
-                    <Form.Item label="Customer Batch No">
+                    <Form.Item label="Customer Batch No"
+                    hasFeedback
+                    validateStatus={props.inward.customerBatchNo ? props.inwardStatus.loading ? 'validating' : !props.inwardStatus.loading && props.inwardStatus.success && !props.inwardStatus.duplicateBatchNo  ? 'success' : props.inwardStatus.error || props.inwardStatus.duplicateBatchNo ? 'error' : '' : ''}
+                    help={props.inwardStatus.loading ? 'We are checking if the Batch Number already exists' : (!props.inwardStatus.loading && props.inwardStatus.success && props.inwardStatus.duplicateBatchNo) ? "The Batch Number already exists" :  ''}>
                             {getFieldDecorator('customerBatchNo', {
-                            rules: [{ required: false, message: 'Please input the coil number!' }],
+                            rules: [{ required: false, message: 'Please input the Batch Number!' },
+                            {validator: props.params ==="" ?checkBatchNoExist: ""}],
                             })(
-                                <Input id="customerBatchNo" />
+                                <Input id="validating" onChange={(e) => props.checkCustomerBatchNumber(e.target.value)} onBlur= {(e) => props.checkCustomerBatchNumber(e.target.value)}/>
                             )}
                     </Form.Item>
                     <Form.Item label="Customer Invoice No">
@@ -114,6 +123,7 @@ const CreatePartyDetailsForm = (props) => {
 const mapStateToProps = state => ({
     party: state.party,
     inward: state.inward.inward,
+    inwardStatus: state.inward,
 });
 
 const PartyDetailsForm = Form.create({
@@ -150,4 +160,5 @@ const PartyDetailsForm = Form.create({
 
 export default connect(mapStateToProps, {
     setInwardDetails,
+    checkCustomerBatchNumber
 })(PartyDetailsForm);

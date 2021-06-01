@@ -20,7 +20,8 @@ import {
     FETCH_INWARD_LIST_BY_ID,
     UPDATE_INWARD_LIST,
     DELETE_INWARD_LIST_BY_ID,
-    DELETE_INSTRUCTION_BY_ID
+    DELETE_INSTRUCTION_BY_ID,
+    CHECK_BATCH_NO_EXIST
 } from "../../constants/ActionTypes";
 
 import {
@@ -57,7 +58,9 @@ import {
     deleteInwardEntryByIdSuccess,
     deleteInwardEntryByIdError,
     deleteInstructionByIdSuccess,
-    deleteInstructionByIdError
+    deleteInstructionByIdError,
+    checkCustomerBatchNumberSuccess,
+    checkCustomerBatchNumberError
 } from "../actions";
 import { CUTTING_INSTRUCTION_PROCESS_ID, SLITTING_INSTRUCTION_PROCESS_ID, SLIT_CUT_INSTRUCTION_PROCESS_ID } from "../../constants";
 import { formItemLayout } from "../../routes/company/Partywise/CuttingModal";
@@ -131,6 +134,20 @@ function* checkCoilDuplicate(action) {
         yield put(checkDuplicateCoilError(error));
     }
 }
+function* checkCustomerBatchNumber(action) {
+    try {
+        const checkCustomerBatchNumberResponse = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/inwardEntry/isCustomerBatchIdPresent?customerBatchId=${action.customerBatchId}`, {
+            method: 'GET'
+        });
+        if (checkCustomerBatchNumberResponse.status === 200) {
+            const checkCoilDuplicateResponse = yield checkCustomerBatchNumberResponse.json();
+            yield put(checkCustomerBatchNumberSuccess(checkCoilDuplicateResponse));
+        } else
+            yield put(checkCustomerBatchNumberError('error'));
+    } catch (error) {
+        yield put(checkCustomerBatchNumberError(error));
+    }
+}
 
 function* submitInward(action) {
     try {
@@ -157,6 +174,7 @@ function* submitInward(action) {
         data.append('vehicleNumber', action.inward.vehicleNumber);
         data.append('invoiceDate', moment(action.inward.invoiceDate).format('YYYY-MM-DD HH:mm:ss'));
         data.append('invoiceNumber', action.inward.invoiceNumber);
+        data.append('valueOfGoods', action.inward.valueOfGoods);
 
         //quality details
         data.append('materialGradeId', action.inward.grade !== undefined ?action.inward.grade: Number(action.inward.materialGrade.gradeId));
@@ -200,6 +218,7 @@ function* updateInward(action) {
         vehicleNumber : action.inward.vehicleNumber !== undefined? action.inward.vehicleNumber : action.inward.vLorryNo,
         invoiceDate : moment(action.inward.invoiceDate).format('YYYY-MM-DD HH:mm:ss')!== undefined ?moment(action.inward.invoiceDate).format('YYYY-MM-DD HH:mm:ss'): null,
         invoiceNumber : action.inward.invoiceNumber !== undefined ? action.inward.invoiceNumber: action.inward.vInvoiceNo,
+        valueOfGoods : action.inward.valueOfGoods !== undefined ? action.inward.valueOfGoods: 0,
         purposeType : action.inward.purposeType,
         materialId : (materialId).toString(),
         width : action.inward.width !== undefined ? action.inward.width : action.inward.fWidth,
@@ -538,6 +557,7 @@ export function* watchFetchRequests() {
     yield takeLatest(UPDATE_INWARD_LIST, updateInward);
     yield takeLatest(DELETE_INWARD_LIST_BY_ID, deleteInwardEntryById);
     yield takeLatest(DELETE_INSTRUCTION_BY_ID, deleteInstructionById);
+    yield takeLatest(CHECK_BATCH_NO_EXIST, checkCustomerBatchNumber);
 }
 
 export default function* inwardSagas() {
