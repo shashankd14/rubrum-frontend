@@ -67,7 +67,10 @@ import {
     DELETE_INWARD_LIST_BY_ID_SUCCESS,
     DELETE_INSTRUCTION_BY_ID,
     DELETE_INSTRUCTION_BY_ID_ERROR,
-    DELETE_INSTRUCTION_BY_ID_SUCCESS
+    DELETE_INSTRUCTION_BY_ID_SUCCESS,
+    CHECK_BATCH_NO_EXIST,
+    CHECK_BATCH_NO_EXIST_ERROR,
+    CHECK_BATCH_NO_EXIST_SUCCESS
 } from "../../constants/ActionTypes";
 
 export const fetchInwardList = () => ({
@@ -101,6 +104,20 @@ export const checkDuplicateCoilSuccess = (status) => ({
 
 export const checkDuplicateCoilError = (error) => ({
     type: CHECK_COIL_EXISTS_ERROR,
+    error
+})
+export const checkCustomerBatchNumber = (customerBatchId) => ({
+    type: CHECK_BATCH_NO_EXIST,
+    customerBatchId
+});
+
+export const checkCustomerBatchNumberSuccess = (status) => ({
+    type: CHECK_BATCH_NO_EXIST_SUCCESS,
+    status
+})
+
+export const checkCustomerBatchNumberError = (error) => ({
+    type: CHECK_BATCH_NO_EXIST_ERROR,
     error
 })
 

@@ -62,7 +62,9 @@ import {
     DELETE_INSTRUCTION_BY_ID,
     DELETE_INSTRUCTION_BY_ID_SUCCESS,
     DELETE_INSTRUCTION_BY_ID_ERROR,
-
+    CHECK_BATCH_NO_EXIST,
+    CHECK_BATCH_NO_EXIST_SUCCESS,
+    CHECK_BATCH_NO_EXIST_ERROR,
 } from "../../constants/ActionTypes";
 
 const INIT_STATE = {
@@ -129,6 +131,27 @@ export default (state = INIT_STATE, action) => {
             }
         }
         case CHECK_COIL_EXISTS_ERROR: {
+            return {
+                ...state,
+                loading: false,
+                error: true,
+            }
+        }
+        case CHECK_BATCH_NO_EXIST: {
+            return {
+                ...state,
+                loading: true,
+            }
+        }
+        case CHECK_BATCH_NO_EXIST_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                success: true,
+                duplicateBatchNo: action.status
+            }
+        }
+        case CHECK_BATCH_NO_EXIST_ERROR: {
             return {
                 ...state,
                 loading: false,
