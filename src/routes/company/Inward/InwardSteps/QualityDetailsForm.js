@@ -48,6 +48,10 @@ const QualityDetailsForm = (props) => {
             setDataSource(options);
         }
     }, [props.inward.materialGrade]);
+    const partyName =(partyList) =>{
+        partyList = partyList.find(item => item.nPartyId===Number(props.inward.partyName))
+        return partyList.nPartyName
+    }
     let dimensionEdit = `${props.inward.fWidth} X ${props.inward.fThickness} X ${props.inward.fLength}`;
     let dimension = `${props.inward.width} X ${props.inward.thickness} X ${props.inward.length}`
     return (
@@ -132,7 +136,7 @@ const QualityDetailsForm = (props) => {
             </Col>
             <Col span={10} className="gx-pt-4">
                 <Card title="Coil Details" style={{ width: 300 }}>
-                    <p>Customer Name : {props.params !== "" && props.inward.party ?props.inward.party.nPartyName : props.inward.partyName}</p>
+                    <p>Customer Name : {props.params !== "" && props.inward.party ?props.inward.party.nPartyName : partyName(props.party.partyList)}</p>
                     {props.inward.customerId && <p>Customer Id : {props.inward.customerId}</p>}
                     {props.inward.customerBatchNo && <p>Customer Batch No : {props.inward.customerBatchNo}</p>}
                     {props.inward.customerInvoiceNo && <p>Customer Invoice No : {props.inward.customerInvoiceNo}</p>}
@@ -153,7 +157,8 @@ const QualityDetailsForm = (props) => {
 
 const mapStateToProps = state => ({
     inward: state.inward.inward,
-    inwardDetails: state.inward
+    inwardDetails: state.inward,
+    party: state.party
 });
 
 const QualityDetails = Form.create({
