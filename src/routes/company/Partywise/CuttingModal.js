@@ -252,8 +252,9 @@ const CreateCuttingDetailsForm = (props) => {
 
     const onDelete = (record, e) => {
         e.preventDefault();
-        const data = cuts.filter(record => cuts.indexOf(record) );
+        const data = cuts.filter((item) => cuts.indexOf(item) !==cuts.indexOf(record))
         props.deleteInstructionById(record.instructionId)
+        setBalancedValue(false);
         setCuts(data);
     };
     const onChange=()=>{
