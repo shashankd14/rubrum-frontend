@@ -21,7 +21,8 @@ import {
     UPDATE_INWARD_LIST,
     DELETE_INWARD_LIST_BY_ID,
     DELETE_INSTRUCTION_BY_ID,
-    CHECK_BATCH_NO_EXIST
+    CHECK_BATCH_NO_EXIST,
+    INSTRUCTION_GROUP_SAVE
 } from "../../constants/ActionTypes";
 
 import {
@@ -60,7 +61,9 @@ import {
     deleteInstructionByIdSuccess,
     deleteInstructionByIdError,
     checkCustomerBatchNumberSuccess,
-    checkCustomerBatchNumberError
+    checkCustomerBatchNumberError,
+    instructionGroupsaveSuccess,
+    instructionGroupsaveError
 } from "../actions";
 import { CUTTING_INSTRUCTION_PROCESS_ID, SLITTING_INSTRUCTION_PROCESS_ID, SLIT_CUT_INSTRUCTION_PROCESS_ID } from "../../constants";
 import { formItemLayout } from "../../routes/company/Partywise/CuttingModal";
@@ -355,6 +358,31 @@ function* requestSaveCuttingInstruction(action) {
     }
 }
 
+function* instructionGroupsave(action) {
+    const requestBody = [];
+    // action.groupDetails.map((groupCut) => {
+    //     const req = {
+    //             count : groupCut.no,
+    //             instructionId:groupCut.instructionId
+    //     }
+    //     requestBody.push(req);
+    // })
+    try {
+        const groupSaveList = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/instructionGroup/save', {
+            method: 'POST',
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(action.groupDetails)
+        });
+        if (groupSaveList.status === 200) {
+            const groupSaveListObj = yield groupSaveList.json()
+            yield put(instructionGroupsaveSuccess(groupSaveListObj));
+        } else
+            yield put(instructionGroupsaveError('error'));
+    } catch (error) {
+        yield put(instructionGroupsaveError(error));
+    }
+}
+
 function* requestSaveSlittingInstruction(action) {
     const requestBody = [];
     action.slittingDetails.map((slitDetails) => {
@@ -558,6 +586,7 @@ export function* watchFetchRequests() {
     yield takeLatest(DELETE_INWARD_LIST_BY_ID, deleteInwardEntryById);
     yield takeLatest(DELETE_INSTRUCTION_BY_ID, deleteInstructionById);
     yield takeLatest(CHECK_BATCH_NO_EXIST, checkCustomerBatchNumber);
+    yield takeLatest(INSTRUCTION_GROUP_SAVE, instructionGroupsave);
 }
 
 export default function* inwardSagas() {

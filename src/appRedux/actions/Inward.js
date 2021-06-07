@@ -70,7 +70,10 @@ import {
     DELETE_INSTRUCTION_BY_ID_SUCCESS,
     CHECK_BATCH_NO_EXIST,
     CHECK_BATCH_NO_EXIST_ERROR,
-    CHECK_BATCH_NO_EXIST_SUCCESS
+    CHECK_BATCH_NO_EXIST_SUCCESS,
+    INSTRUCTION_GROUP_SAVE,
+    INSTRUCTION_GROUP_SAVE_SUCCESS,
+    INSTRUCTION_GROUP_SAVE_ERROR
 } from "../../constants/ActionTypes";
 
 export const fetchInwardList = () => ({
@@ -227,6 +230,20 @@ export const saveCuttingInstructionSuccess = (payload) => ({
 
 export const saveCuttingInstructionError = (error) => ({
     type: SAVE_CUTTING_DETAILS_ERROR,
+    error
+});
+export const instructionGroupsave = (groupDetails) => ({
+    type: INSTRUCTION_GROUP_SAVE,
+    groupDetails
+});
+
+export const instructionGroupsaveSuccess = (payload) => ({
+    type: INSTRUCTION_GROUP_SAVE_SUCCESS,
+    payload
+});
+
+export const instructionGroupsaveError = (error) => ({
+    type: INSTRUCTION_GROUP_SAVE_ERROR,
     error
 });
 

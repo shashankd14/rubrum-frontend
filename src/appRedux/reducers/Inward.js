@@ -65,6 +65,9 @@ import {
     CHECK_BATCH_NO_EXIST,
     CHECK_BATCH_NO_EXIST_SUCCESS,
     CHECK_BATCH_NO_EXIST_ERROR,
+    INSTRUCTION_GROUP_SAVE,
+    INSTRUCTION_GROUP_SAVE_SUCCESS,
+    INSTRUCTION_GROUP_SAVE_ERROR
 } from "../../constants/ActionTypes";
 
 const INIT_STATE = {
@@ -96,7 +99,8 @@ const INIT_STATE = {
     inwardUpdateSuccess: false,
     inwardUpdateError: false,
     saveCut:[],
-    saveSlit:[]
+    saveSlit:[],
+    groupId:{}
 
 };
 
@@ -304,6 +308,25 @@ export default (state = INIT_STATE, action) => {
                 instructionSaveCuttingLoading: false,
                 instructionSaveCuttingSuccess: false,
                 instructionSaveError: true,
+            }
+        }
+        case INSTRUCTION_GROUP_SAVE: {
+            return {
+                ...state,
+                loading: true
+            }
+        }
+        case INSTRUCTION_GROUP_SAVE_SUCCESS: {
+            return {
+                ...state,
+                groupId: action.payload,
+                loading : false
+            }
+        }
+        case INSTRUCTION_GROUP_SAVE_ERROR: {
+            return {
+                ...state,
+                loading: false
             }
         }
         case REQUEST_SAVE_SLITTING_DETAILS: {

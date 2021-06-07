@@ -2,7 +2,7 @@ import {Button, Card, Col, DatePicker, Divider, Form, Input, Modal, Row, Table, 
 import React, {useEffect, useState, useRef, useContext} from "react";
 import {connect, useSelector} from "react-redux";
 import moment from "moment";
-import {setProcessDetails, saveCuttingInstruction,resetInstruction ,updateInstruction, deleteInstructionById} from '../../../appRedux/actions/Inward';
+import {setProcessDetails, saveCuttingInstruction,resetInstruction ,updateInstruction, deleteInstructionById, instructionGroupsave} from '../../../appRedux/actions/Inward';
 import { showMessage } from "../../../appRedux/actions";
 import {APPLICATION_DATE_FORMAT} from '../../../constants';
 import { indexOf } from "lodash-es";
@@ -467,7 +467,8 @@ const CreateCuttingDetailsForm = (props) => {
             length:cutsLength,
             plannedWidth: cutsWidth,
             no: cutsNumerator,
-            processId: 3
+            processId: 3,
+            instructionId: props.inward.groupId.groupId
         };
         cutsValue.push(cutObj);
     }
@@ -476,6 +477,15 @@ const CreateCuttingDetailsForm = (props) => {
     }
     const getTargetLength=(e)=>{
         setCutsLength(e.target.value)
+    }
+    const bundleListClick=()=>{
+        setbundledList(true)
+        let selectedInstruction = selectedRowKeys.map(i => i.instructionId);
+        let payload= {
+            count: selectedRowKeys.length,
+            instructionId: selectedInstruction
+        }
+        props.instructionGroupsave(payload);
     }
     
      return (
@@ -508,7 +518,7 @@ const CreateCuttingDetailsForm = (props) => {
         >
         <Card className="gx-card" >
         <div>
-        <Button type="primary" onClick={()=>{setbundledList(true)}} icon={() => <i className="icon icon-add" />} size="medium"
+        <Button type="primary" onClick={bundleListClick} icon={() => <i className="icon icon-add" />} size="medium"
         disabled= {selectedRowKeys.length < 1 ? true: false}>Bundle</Button> 
         </div>
         <Tabs
@@ -680,7 +690,8 @@ const mapStateToProps = state => ({
     party: state.party,
     inward: state.inward,
     classificationList: state.packetClassification?.classificationList,
-    saveCut: state.saveCut
+    saveCut: state.saveCut,
+    groupId: state.groupId
 });
 
 const CuttingDetailsForm = Form.create({
@@ -722,4 +733,4 @@ const CuttingDetailsForm = Form.create({
 })(CreateCuttingDetailsForm);
 
 
-export default  connect(mapStateToProps, {setProcessDetails, saveCuttingInstruction,resetInstruction, updateInstruction, deleteInstructionById})(CuttingDetailsForm);
+export default  connect(mapStateToProps, {setProcessDetails, saveCuttingInstruction,resetInstruction, updateInstruction, deleteInstructionById, instructionGroupsave})(CuttingDetailsForm);
