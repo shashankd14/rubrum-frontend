@@ -490,7 +490,7 @@ function* postDeliveryConfirmRequest(payload) {
     }
 
     const req_obj = {
-        vehicleNo: payload.vehicleNo,
+        vehicleNo: payload.payload.vehicleNo,
         deliveryItemDetails: packetsData
     }
 
