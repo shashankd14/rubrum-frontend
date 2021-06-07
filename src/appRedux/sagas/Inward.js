@@ -485,12 +485,13 @@ function* postDeliveryConfirmRequest(payload) {
         let tempItem = {};
         tempItem.instructionId = item.instructionId;
         tempItem.remarks = item.remarks;
+        tempItem.weight = item.actualWeight;
         packetsData.push(tempItem);
     }
 
     const req_obj = {
         vehicleNo: payload.vehicleNo,
-        packetRemarks: packetsData
+        deliveryItemDetails: packetsData
     }
 
     try {
