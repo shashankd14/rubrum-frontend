@@ -198,14 +198,14 @@ const CreateCuttingDetailsForm = (props) => {
             title: 'Cut-Length',
             dataIndex: 'plannedLength',
             render: (text, record, index) => {
-                return <Input onChange={onInputChange("plannedLength", index)} />
+                return <Input onChange={onInputChange("plannedLength", index)} disabled={selectedRowKeys.length>0 && selectedRowKeys.some(item=> item.instructionId=== record.instructionId)}/>
             }
         },
         {
             title: 'No Of Cut Pieces',
             dataIndex: 'plannedNoOfPieces',
             render: (text, record, index) => {
-                return <Input onChange={onInputChange("plannedNoOfPieces", index)} onBlur={()=>{setTimeout(() => {
+                return <Input disabled={selectedRowKeys.length>0 && selectedRowKeys.some(item=> item.instructionId=== record.instructionId)}onChange={onInputChange("plannedNoOfPieces", index)} onBlur={()=>{setTimeout(() => {
                     if(cutValue.length>0){
                         let cutIndex = cutValue.map(item =>{
                             if(cutValue.indexOf(item) === index){
