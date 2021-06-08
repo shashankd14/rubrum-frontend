@@ -530,14 +530,14 @@ const CreateCuttingDetailsForm = (props) => {
           {props.slitCut ?  bundledList ?<><Table  rowSelection={handleSelectionBundle} className="gx-table-responsive"  columns={columnsSlit} dataSource={selectedRowKeys} pagination={false}/>
           <div style={{padding: "20px 0px 0px 0px"}}>
             <label for="tpweight">Total weight(kg):</label>
-            <input type="text" style={{'border': "1px solid #d9d9d9",'border-radius':"6px", 'margin': "0px 20px 0px 20px",'height':"25px"}} id="tpweight" name="tpweight" value ={tpweight} disabled></input>
+            <input type="text" className="bundle-input-class" id="tpweight" name="tpweight" value ={tpweight} disabled></input>
             <label for="tLength">Target length:</label>
-            <input type="text" style={{'border': "1px solid #d9d9d9",'border-radius':"6px", 'margin': "0px 20px 0px 20px",'height':"25px"}} id="tLength" name="tLength" onChange={getTargetLength}></input>
+            <input type="text" className="bundle-input-class" id="tLength" name="tLength" onChange={getTargetLength}></input>
             </div><div style={{padding: "20px 0px 0px 0px"}}>
             <label for="pNo">No of Packets :</label>
-            <input type="text" style={{'border': "1px solid #d9d9d9",'border-radius':"6px", 'margin': "0px 20px 0px 20px",'height':"25px"}} id="pNo" name="pNo" onChange={(e)=>getCuts(e)}></input>
+            <input type="text" className="bundle-input-class" id="pNo" name="pNo" onChange={(e)=>getCuts(e)}></input>
             <label for="noOfCuts">No of Cuts</label>
-            <input type="text" id="noOfCuts" style={{'border': "1px solid #d9d9d9",'border-radius':"6px", 'margin': "0px 20px 0px 20px",'height':"25px"}} name="noOfCuts" value={cutsNo.toFixed(0)}></input>
+            <input type="text" id="noOfCuts" className="bundle-input-class" name="noOfCuts" value={cutsNo.toFixed(0)}></input>
           </div>
           
           <Table  rowSelection={handleSelection} className="gx-table-responsive"  showHeader={false} columns={columnsSlit} dataSource={bundleTableData}/></>
