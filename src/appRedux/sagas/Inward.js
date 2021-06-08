@@ -21,7 +21,8 @@ import {
     UPDATE_INWARD_LIST,
     DELETE_INWARD_LIST_BY_ID,
     DELETE_INSTRUCTION_BY_ID,
-    CHECK_BATCH_NO_EXIST
+    CHECK_BATCH_NO_EXIST,
+    INSTRUCTION_GROUP_SAVE
 } from "../../constants/ActionTypes";
 
 import {
@@ -60,7 +61,9 @@ import {
     deleteInstructionByIdSuccess,
     deleteInstructionByIdError,
     checkCustomerBatchNumberSuccess,
-    checkCustomerBatchNumberError
+    checkCustomerBatchNumberError,
+    instructionGroupsaveSuccess,
+    instructionGroupsaveError
 } from "../actions";
 import { CUTTING_INSTRUCTION_PROCESS_ID, SLITTING_INSTRUCTION_PROCESS_ID, SLIT_CUT_INSTRUCTION_PROCESS_ID } from "../../constants";
 import { formItemLayout } from "../../routes/company/Partywise/CuttingModal";
@@ -335,7 +338,8 @@ function* requestSaveCuttingInstruction(action) {
             "createdBy": "1",
             "updatedBy": "1",
             inwardId: cutDetails.inwardId ? cutDetails.inwardId : "",
-            parentInstructionId: cutDetails.instructionId ? cutDetails.instructionId : ""
+            parentInstructionId: cutDetails.instructionId ? cutDetails.instructionId : "",
+            parentGroupId: cutDetails.parentGroupId ? cutDetails.parentGroupId : ""
         }
         requestBody.push(req);
     })
@@ -352,6 +356,31 @@ function* requestSaveCuttingInstruction(action) {
             yield put(saveCuttingInstructionError('error'));
     } catch (error) {
         yield put(saveCuttingInstructionError(error));
+    }
+}
+
+function* instructionGroupsave(action) {
+    const requestBody = [];
+    // action.groupDetails.map((groupCut) => {
+    //     const req = {
+    //             count : groupCut.no,
+    //             instructionId:groupCut.instructionId
+    //     }
+    //     requestBody.push(req);
+    // })
+    try {
+        const groupSaveList = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/instructionGroup/save', {
+            method: 'POST',
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(action.groupDetails)
+        });
+        if (groupSaveList.status === 200) {
+            const groupSaveListObj = yield groupSaveList.json()
+            yield put(instructionGroupsaveSuccess(groupSaveListObj));
+        } else
+            yield put(instructionGroupsaveError('error'));
+    } catch (error) {
+        yield put(instructionGroupsaveError(error));
     }
 }
 
@@ -457,12 +486,13 @@ function* postDeliveryConfirmRequest(payload) {
         let tempItem = {};
         tempItem.instructionId = item.instructionId;
         tempItem.remarks = item.remarks;
+        tempItem.weight = item.actualWeight;
         packetsData.push(tempItem);
     }
 
     const req_obj = {
-        vehicleNo: payload.vehicleNo,
-        packetRemarks: packetsData
+        vehicleNo: payload.payload.vehicleNo,
+        deliveryItemDetails: packetsData
     }
 
     try {
@@ -558,6 +588,7 @@ export function* watchFetchRequests() {
     yield takeLatest(DELETE_INWARD_LIST_BY_ID, deleteInwardEntryById);
     yield takeLatest(DELETE_INSTRUCTION_BY_ID, deleteInstructionById);
     yield takeLatest(CHECK_BATCH_NO_EXIST, checkCustomerBatchNumber);
+    yield takeLatest(INSTRUCTION_GROUP_SAVE, instructionGroupsave);
 }
 
 export default function* inwardSagas() {

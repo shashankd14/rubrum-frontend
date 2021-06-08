@@ -50,7 +50,7 @@ const List = (props) => {
         },
         key: 'dReceivedDate',
         filters: [],
-        sorter: (a, b) => a.dReceivedDate.length - b.dReceivedDate.length,
+        sorter: (a, b) => a.dReceivedDate - b.dReceivedDate,
         sortOrder: sortedInfo.columnKey === 'dReceivedDate' && sortedInfo.order,
     },
     {
@@ -84,7 +84,7 @@ const List = (props) => {
         dataIndex: 'fQuantity',
         key: 'fQuantity',
         filters: [],
-        sorter: (a, b) => a.fQuantity.length - b.fQuantity.length,
+        sorter: (a, b) => a.fQuantity - b.fQuantity,
         sortOrder: sortedInfo.columnKey === 'fQuantity' && sortedInfo.order,
     },
     {
