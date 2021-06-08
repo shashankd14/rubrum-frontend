@@ -338,7 +338,8 @@ function* requestSaveCuttingInstruction(action) {
             "createdBy": "1",
             "updatedBy": "1",
             inwardId: cutDetails.inwardId ? cutDetails.inwardId : "",
-            parentInstructionId: cutDetails.instructionId ? cutDetails.instructionId : ""
+            parentInstructionId: cutDetails.instructionId ? cutDetails.instructionId : "",
+            parentGroupId: cutDetails.parentGroupId ? cutDetails.parentGroupId : ""
         }
         requestBody.push(req);
     })

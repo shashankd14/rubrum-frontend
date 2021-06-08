@@ -468,7 +468,8 @@ const CreateCuttingDetailsForm = (props) => {
             plannedWidth: cutsWidth,
             no: cutsNumerator,
             processId: 3,
-            instructionId: props.inward.groupId.groupId
+            parentGroupId: props.inward.groupId.groupId,
+            inwardId: props.coil.inwardEntryId
         };
         cutsValue.push(cutObj);
     }
