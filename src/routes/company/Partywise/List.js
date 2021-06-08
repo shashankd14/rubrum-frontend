@@ -33,25 +33,14 @@ const List = (props) => {
         sortOrder: sortedInfo.columnKey === 'coilNumber' && sortedInfo.order,
     },
     {
-        title: 'Party Name',
-        dataIndex: 'party.nPartyName',
-        key: 'party.nPartyName',
-        filteredValue: filteredInfo ? filteredInfo["party.nPartyName"] : null,
-        onFilter: (value, record) => record.party.nPartyName == value,
-        filters: props.inward.inwardList.length > 0 ? [...new Set(props.inward.inwardList.map(item => item.party.nPartyName))].map(partyName => ({ text: partyName, value: partyName })) : [],
-        sorter: (a, b) => a.party.nPartyName.length - b.party.nPartyName.length,
-        sortOrder: sortedInfo.columnKey === 'party.nPartyName' && sortedInfo.order,
-    },
-    {
-        title: 'Inward Date',
-        dataIndex: 'dReceivedDate',
-        render(value) {
-            return moment(value).format('Do MMM YYYY');
-        },
-        key: 'dReceivedDate',
+        title: 'Customer Batch No',
+        dataIndex: 'customerBatchId',
+        key: 'customerBatchId',
+        filteredValue: filteredInfo ? filteredInfo["customerBatchId"] : null,
+        onFilter: (value, record) => record.customerBatchId == value,
         filters: [],
-        sorter: (a, b) => a.dReceivedDate - b.dReceivedDate,
-        sortOrder: sortedInfo.columnKey === 'dReceivedDate' && sortedInfo.order,
+        sorter: (a, b) => a.customerBatchId - b.customerBatchId,
+        sortOrder: sortedInfo.columnKey === 'customerBatchId' && sortedInfo.order,
     },
     {
         title: 'Material',
@@ -64,14 +53,6 @@ const List = (props) => {
         sortOrder: sortedInfo.columnKey === 'material.description' && sortedInfo.order,
     },
     {
-        title: 'Status',
-        dataIndex: 'status.statusName',
-        key: 'status.statusName',
-        filters: [],
-        sorter: (a, b) => a.status.statusName.length - b.status.statusName.length,
-        sortOrder: sortedInfo.columnKey === 'status.statusName' && sortedInfo.order,
-    },
-    {
         title: 'Thickness',
         dataIndex: 'fThickness',
         key: 'fThickness',
@@ -80,12 +61,28 @@ const List = (props) => {
         sortOrder: sortedInfo.columnKey === 'fThickness' && sortedInfo.order,
     },
     {
+        title: 'Width',
+        dataIndex: 'fWidth',
+        key: 'fWidth',
+        filters: [],
+        sorter: (a, b) => a.fWidth - b.fWidth,
+        sortOrder: sortedInfo.columnKey === 'fWidth' && sortedInfo.order,
+    },
+    {
         title: 'Weight',
         dataIndex: 'fQuantity',
         key: 'fQuantity',
         filters: [],
         sorter: (a, b) => a.fQuantity - b.fQuantity,
         sortOrder: sortedInfo.columnKey === 'fQuantity' && sortedInfo.order,
+    },
+    {
+        title: 'Status',
+        dataIndex: 'status.statusName',
+        key: 'status.statusName',
+        filters: [],
+        sorter: (a, b) => a.status.statusName.length - b.status.statusName.length,
+        sortOrder: sortedInfo.columnKey === 'status.statusName' && sortedInfo.order,
     },
     {
         title: 'Action',
@@ -102,6 +99,7 @@ const List = (props) => {
         ),
     },
     ];
+    
 
     useEffect(() => {
         props.fetchPartyList();
@@ -163,14 +161,9 @@ const List = (props) => {
     }
 
     const handleSelection = {
-        // selectedRowKey: props,
         onSelect: setSelection, getCheckboxProps: (record) => ({
             disabled: record.status.statusName !== 'READY TO DELIVER'
-        }),
-        // onChange: (selectedRowKey) => {
-        //     // props.onRowSelect(selectedRowKey);
-        //     console.log(selectedRowKey)
-        // }
+        })
     }
 
 
