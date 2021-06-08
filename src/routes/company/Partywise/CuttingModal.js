@@ -528,12 +528,12 @@ const CreateCuttingDetailsForm = (props) => {
             >
           <TabPane tab="Cutting Details" key="1">
           {props.slitCut ?  bundledList ?<><Table  rowSelection={handleSelectionBundle} className="gx-table-responsive"  columns={columnsSlit} dataSource={selectedRowKeys} pagination={false}/>
-          <div style={{padding: "20px 0px 0px 0px"}}>
+          <div style={{padding: "20px 0px 0px 25px"}}>
             <label for="tpweight">Total weight(kg):</label>
             <input type="text" className="bundle-input-class" id="tpweight" name="tpweight" value ={tpweight} disabled></input>
             <label for="tLength">Target length:</label>
             <input type="text" className="bundle-input-class" id="tLength" name="tLength" onChange={getTargetLength}></input>
-            </div><div style={{padding: "20px 0px 0px 0px"}}>
+            </div><div style={{padding: "20px 0px 0px 25px"}}>
             <label for="pNo">No of Packets :</label>
             <input type="text" className="bundle-input-class" id="pNo" name="pNo" onChange={(e)=>getCuts(e)}></input>
             <label for="noOfCuts">No of Cuts</label>
