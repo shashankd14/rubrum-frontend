@@ -70,6 +70,36 @@ const SidebarContent = () => {
               </SubMenu>
               <MenuItemGroup key="in-built-apps" className="gx-menu-group"
                              title="Company">
+
+                <SubMenu key="company/master" className="gx-menu-group" title={
+                      <span> <i className="icon icon-dasbhoard"/>
+                        <span><IntlMessages id="sidebar.master"/></span>
+                      </span>}
+                  >
+
+                  <Menu.Item key="company/master/material">
+                    <Link to="/company/master/material">
+                      <i className="icon icon-crypto"/>
+                      <span><IntlMessages id="sidebar.master.material"/></span>
+                    </Link>
+                  </Menu.Item>
+
+                  <Menu.Item key="company/master/party">
+                    <Link to="/company/master/party">
+                      <i className="icon icon-crypto"/>
+                      <span><IntlMessages id="sidebar.master.party"/></span>
+                    </Link>
+                  </Menu.Item>
+
+                  <Menu.Item key="company/master/rates">
+                    <Link to="/company/master/rates">
+                      <i className="icon icon-crypto"/>
+                      <span><IntlMessages id="sidebar.master.rates"/></span>
+                    </Link>
+                  </Menu.Item>
+                </SubMenu>
+
+
                 <Menu.Item key="company/inward">
                   <Link to="/company/inward">
                     <i className="icon icon-crypto"/>
