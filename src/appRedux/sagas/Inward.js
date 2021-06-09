@@ -418,8 +418,9 @@ function* requestSaveSlittingInstruction(action) {
     }
 }
 function* requestUpdateInstruction(action) {
+    const { number, instruction } = action.coil;
     let isCoilFinished = true;
-    const ins = action.instruction.map(item => {
+    const ins = instruction.map(item => {
         let insObj = {
             instructionId: item.instructionId ? item.instructionId : null,
             parentInstructionId: item.parentInstructionId ? item.parentInstructionId : null,
@@ -452,6 +453,9 @@ function* requestUpdateInstruction(action) {
         isFinishTask: true,
         instructionDtos: ins,
         isCoilFinished
+    }
+    if (isCoilFinished) {
+        req.coilNumber = number;
     }
     try {
         const updateInstruction = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/instruction/update', {

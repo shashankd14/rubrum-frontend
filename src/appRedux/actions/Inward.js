@@ -261,9 +261,9 @@ export const saveSlittingInstructionError = (error) => ({
     type: SAVE_SLITTING_DETAILS_ERROR,
     error
 });
-export const updateInstruction = (instruction) => ({
+export const updateInstruction = (coil) => ({
     type: REQUEST_UPDATE_INSTRUCTION_DETAILS,
-    instruction
+    coil
 });
 export const updateInstructionSuccess = (payload) => ({
     type: REQUEST_UPDATE_INSTRUCTION_DETAILS_SUCCESS,
