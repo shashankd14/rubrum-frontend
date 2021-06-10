@@ -195,41 +195,6 @@ const CreateCuttingDetailsForm = (props) => {
             key:'plannedWeight',
         },
         {
-            title: 'Cut-Length',
-            dataIndex: 'plannedLength',
-            render: (text, record, index) => {
-                return <Input onChange={onInputChange("plannedLength", index)} disabled={selectedRowKeys.length>0 && selectedRowKeys.some(item=> item.instructionId=== record.instructionId)}/>
-            }
-        },
-        {
-            title: 'No Of Cut Pieces',
-            dataIndex: 'plannedNoOfPieces',
-            render: (text, record, index) => {
-                return <Input disabled={selectedRowKeys.length>0 && selectedRowKeys.some(item=> item.instructionId=== record.instructionId)}onChange={onInputChange("plannedNoOfPieces", index)} onBlur={()=>{setTimeout(() => {
-                    if(cutValue.length>0){
-                        let cutIndex = cutValue.map(item =>{
-                            if(cutValue.indexOf(item) === index){
-                                let length = item.plannedLength;
-                                let pieces = item.plannedNoOfPieces;
-                                item.plannedWeight = Math.round( 0.00000785*parseFloat(record.plannedWidth)*parseFloat(props.inward.plan.fThickness)*parseFloat(length)*parseFloat(pieces))
-                            }
-                            return item;
-                        });
-                        setCutValue(cutIndex);
-                    }
-                }, 2000);
-                    
-                }}/>
-            }
-        },
-        {
-            title: 'Cut- Weight',
-            dataIndex: 'plannedWeight',
-            render: (text, record, index) => {
-                return <Input value={cutValue && cutValue[index]?.plannedWeight?cutValue[index].plannedWeight: record.plannedWeight} disabled={true}/>
-            }
-        },
-        {
             title:'Actions',
             dataIndex:'actions',
             render: (text, record,index) => (

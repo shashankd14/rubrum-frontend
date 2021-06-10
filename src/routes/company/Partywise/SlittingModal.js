@@ -542,6 +542,7 @@ const columnsPlan=[
     const [lengthValue, setLengthValue] = useState();
     const [widthValue, setWidthValue]= useState();
     const [form, setForm]= useState(false);
+    const [slittingDetail, setSlittingDetail] = useState([])
     const onDelete = (record, key, e) => {
         e.preventDefault();
         const data = cuts.filter(item => {
@@ -561,6 +562,7 @@ const columnsPlan=[
    const result = cuts.filter(item => item.instructionId === props.coilDetails.instructionId) 
    let resetter = cuts.length> 0 ? result.length > 0 ? true : false : true
    setreset(resetter);
+   
    },[props.coilDetails])
     useEffect(() => {
     let data = props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions;
@@ -573,6 +575,7 @@ const columnsPlan=[
         data = data.flat();  
         let cutsData = [...data];
         cutsData = props.wip ? cutsData.filter(item => item.process.processId === 2 && item.status.statusId !==3) : cutsData.filter(item => item.process.processId === 2)
+        setSlittingDetail(cutsData)
         setCuts(cutsData);
     }
     setForm(false);
@@ -642,7 +645,12 @@ const columnsPlan=[
         }
         else if(name === 'Slitting'){
             props.saveSlittingInstruction(cuts);
-        } else {
+        } else if(name === 'slittingDetail'){
+            props.setShowSlittingModal(false);
+            props.setShowCuttingModal(true);
+            props.setCutting(cuts);
+        }
+        else {
             props.saveSlittingInstruction(cuts);
             props.setShowCuttingModal(true);
         }
@@ -656,7 +664,14 @@ const columnsPlan=[
             onOk={handleOk}
             width={1020}
             onCancel={handleCancel}
-            footer={props.slitCut ? [
+            footer={props.slitCut ? slittingDetail.length === cuts.length ?[
+                <Button key="back" onClick={handleCancel}>
+                  Cancel
+                </Button>,
+                <Button key="submit" type="primary" loading={loading} onClick={()=>handleOk('slittingDetail')}>
+                  OK
+                </Button>
+              ]:[
                 <Button key="back" onClick={handleCancel}>
                   Cancel
                 </Button>,
