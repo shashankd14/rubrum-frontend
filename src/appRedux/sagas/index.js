@@ -6,6 +6,7 @@ import partySagas from "./Party";
 import materialSagas from "./Material";
 import deliverySagas from "./Delivery";
 import packetClassification from "./PacketClassification";
+import ratesSagas from './Rates';
 
 export default function* rootSaga(getState) {
   yield all([fork(authSagas)]);
@@ -15,4 +16,5 @@ export default function* rootSaga(getState) {
   yield all([fork(materialSagas)]);
   yield all([fork(deliverySagas)]);
   yield all([fork(packetClassification)]);
+  yield all([fork(ratesSagas)]);
 }

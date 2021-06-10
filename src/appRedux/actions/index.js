@@ -8,4 +8,5 @@ export * from './Party';
 export * from './Material';
 export * from './Delivery';
 export * from './PacketClassification';
+export * from './Rates';
 
