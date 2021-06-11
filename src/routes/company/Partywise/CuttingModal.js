@@ -473,7 +473,7 @@ const CreateCuttingDetailsForm = (props) => {
           <TabPane tab="Cutting Details" key="1">
           {props.slitCut ?  bundledList ?
           <Row>
-              <Col lg={14} md={16} sm={24} xs={24}>
+              <Col lg={cutValue.length > 0 ?14: 24} md={16} sm={24} xs={24}>
                 <Table  rowSelection={handleSelectionBundle} className="gx-table-responsive"  columns={columnsSlit} dataSource={selectedRowKeys} pagination={false}/>
                 <div style={{padding: "20px 0px 0px 25px"}}>
             <label for="tpweight">Total weight(kg):</label>
@@ -488,7 +488,7 @@ const CreateCuttingDetailsForm = (props) => {
                 </div>
                 <Table  rowSelection={handleSelection} className="gx-table-responsive"  showHeader={false} columns={columnsSlit} dataSource={bundleTableData}/>
             </Col>
-            {cutValue.length> 0 && <Col lg={10} md={16} sm={24} xs={24}>
+            {cutValue.length > 0 &&<Col lg={10} md={16} sm={24} xs={24}>
             <Table className="gx-table-responsive" columns={columnsSlitCut} dataSource={cutValue}/>
             </Col>}
         </Row>
