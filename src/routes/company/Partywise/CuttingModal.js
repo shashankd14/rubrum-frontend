@@ -188,8 +188,6 @@ const CreateCuttingDetailsForm = (props) => {
     const columnsSlit=[
         {
             title: 'Serial No',
-            dataIndex:'instructionId',
-            key: 'instructionId',
            render : (text,record,index) => {
                 return (index+1);
            }
@@ -376,6 +374,8 @@ const CreateCuttingDetailsForm = (props) => {
        setNo(((WeightValue-Number(tweight))/(0.00000785 *width*props.coil.fThickness*Number(length))).toFixed(0));
     }
     const setSelection = (record, selected, selectedRows) => {
+        let rowsSelected = [];
+        rowsSelected.push(selectedRowKeys);
         setSelectedRowKeys(selectedRows)
         let bundleData = cuts.filter(i => !selectedRows.includes(i));
         setbundleTableData(bundleData)
@@ -386,13 +386,13 @@ const CreateCuttingDetailsForm = (props) => {
     }
     const handleSelection = {
         onSelect: setSelection, getCheckboxProps: (record) => ({
-            disabled: false
+            disabled: record.groupId !== null
         })
     }
+    
     const handleSelectionBundle={
         onSelect: setSelection, getCheckboxProps: (record) => ({
-            disabled: false,
-            defaultChecked: selectedRowKeys.some(item=> item.instructionId=== record.instructionId)
+            disabled: false
         })
     }
     const getCuts=(e)=>{
@@ -471,7 +471,7 @@ const CreateCuttingDetailsForm = (props) => {
           tabPosition={mode}
             >
           <TabPane tab="Cutting Details" key="1">
-          {props.slitCut ?  bundledList ?
+          {props.slitCut ?  selectedRowKeys.length >0 && bundledList?
           <Row>
               <Col lg={cutValue.length > 0 ?14: 24} md={16} sm={24} xs={24}>
                 <Table  rowSelection={handleSelectionBundle} className="gx-table-responsive"  columns={columnsSlit} dataSource={selectedRowKeys} pagination={false}/>
