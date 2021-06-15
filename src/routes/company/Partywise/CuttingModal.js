@@ -49,6 +49,7 @@ const CreateCuttingDetailsForm = (props) => {
     const [cutsNo,setCutsNo]= useState(0);
     const [cutsLength, setCutsLength]= useState(0);
     const [bundleItemList, setBundleItemList] = useState([]);
+    const [restTableData, setRestTableData] = useState([]);
     const [tableData, setTableData] = useState(props.wip?(props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts);
     const columns=[
 
@@ -387,7 +388,11 @@ const CreateCuttingDetailsForm = (props) => {
     }
     const setSelection = (record, selected, selectedRows) => {
         let selectedPast = selectedRowKeys;
-        setSelectedRowKeys(selectedRows)
+        setSelectedRowKeys(selectedRows);
+        let restTableData = [];
+        if(cutValue.length > 0){
+            setRestTableData(cutValue);
+        }
         let bundleData = bundleTableData.length === 0 ?cuts.filter(i => !selectedRows.includes(i)): bundleTableData.filter(i => !selectedRows.includes(i));
         // bundleData = bundleTableData.filter(i => !selectedPast.includes(i))
         setbundleTableData(bundleData)
@@ -426,7 +431,7 @@ const CreateCuttingDetailsForm = (props) => {
         
         cutsValue.push(cutObj);
     }
-    
+    setRestTableData([...restTableData,...cutsValue])
     setCutValue(cutsValue)
     }
     const getTargetLength=(e)=>{
@@ -514,10 +519,18 @@ const CreateCuttingDetailsForm = (props) => {
                     <label for="noOfCuts">No of Cuts</label>
                     <input type="text" id="noOfCuts" className="bundle-input-class" name="noOfCuts" value={cutsNo.toFixed(0)}></input>
                 </div></>)}
-                <Table  rowSelection={handleSelection} className="gx-table-responsive"  showHeader={false} columns={columnsSlit} dataSource={bundleTableData}/>
+                <Table  rowSelection={handleSelection} className="gx-table-responsive"  showHeader={false} columns={columnsSlit} dataSource={bundleTableData} pagination={{
+                            onChange(current) {
+                              setPage(current);
+                            }
+                        }}/>
             </Col>
             {cutValue.length > 0 &&<Col lg={10} md={16} sm={24} xs={24}>
-            <Table className="gx-table-responsive" columns={columnsSlitCut} dataSource={cutValue}/>
+            <Table className="gx-table-responsive" columns={columnsSlitCut} dataSource={restTableData.length>0?restTableData: cutValue} pagination={{
+                            onChange(current) {
+                              setPage(current);
+                            }
+                        }}/>
             </Col>}
         </Row>
           :<Table  rowSelection={handleSelection} className="gx-table-responsive"  columns={columnsSlit} dataSource={cuts}/>  : 
