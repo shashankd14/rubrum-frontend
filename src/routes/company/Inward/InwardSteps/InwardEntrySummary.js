@@ -32,8 +32,9 @@ const InwardEntrySummary = (props) => {
         }
     }, [props.inwardSubmitSuccess]);
     const partyName =(partyList) =>{
-        partyList = partyList.find(item => item.nPartyId===Number(props.inward.partyName))
-        return partyList.nPartyName
+       partyList = partyList.find(item => item.nPartyId===Number(props.inward.partyName))
+       return partyList.partyName
+    
     }
     let dimensionEdit = `${props.inward.fWidth} X ${props.inward.fThickness} X ${props.inward.fLength}`;
     let dimension = `${props.inward.width} X ${props.inward.thickness} X ${props.inward.length}`
