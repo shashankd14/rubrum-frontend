@@ -386,10 +386,10 @@ const CreateCuttingDetailsForm = (props) => {
        setNo(((WeightValue-Number(tweight))/(0.00000785 *width*props.coil.fThickness*Number(length))).toFixed(0));
     }
     const setSelection = (record, selected, selectedRows) => {
-        let rowsSelected = [];
-        rowsSelected.push(selectedRowKeys);
+        let selectedPast = selectedRowKeys;
         setSelectedRowKeys(selectedRows)
-        let bundleData = cuts.filter(i => !selectedRows.includes(i));
+        let bundleData = bundleTableData.length === 0 ?cuts.filter(i => !selectedRows.includes(i)): bundleTableData.filter(i => !selectedRows.includes(i));
+        // bundleData = bundleTableData.filter(i => !selectedPast.includes(i))
         setbundleTableData(bundleData)
         // setbundledList(false);
         let weights= selectedRows.map(i => i.plannedWeight);
@@ -502,7 +502,7 @@ const CreateCuttingDetailsForm = (props) => {
                     <input type="text" id="noOfCuts" className="bundle-input-class" name="noOfCuts" value={cutsNo.toFixed(0)}></input>
                 </div></>:
                 bundleItemList.length > 0 && bundleItemList.map((item) => <>
-                <Table  rowSelection={handleSelectionBundle} className="gx-table-responsive"  columns={columnsSlit} dataSource={selectedRowKeys.filter(rowItem => rowItem.groupId === item.groupId)} pagination={false}/>
+                <Table  rowSelection={handleSelectionBundle} className="gx-table-responsive"  columns={columnsSlit} dataSource={selectedRowKeys} pagination={false}/>
                 <div style={{padding: "20px 0px 0px 25px"}}>
             <label for="tpweight">Total weight(kg):</label>
             <input type="text" className="bundle-input-class" id="tpweight" name="tpweight" value ={tpweight} disabled></input>
