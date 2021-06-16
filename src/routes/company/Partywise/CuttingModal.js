@@ -419,7 +419,7 @@ const CreateCuttingDetailsForm = (props) => {
     const getCuts=(e)=>{
         let cutsWidth = selectedRowKeys.reduce((a,c)=> c.plannedWidth)
         cutsWidth = selectedRowKeys.length ===1 ? cutsWidth.plannedWidth : cutsWidth;
-        let cutsNumerator= (Number(tpweight)/Number(e.target.value))/(props.coil.fThickness)*Number(cutsWidth)*cutsLength*7.85;
+        let cutsNumerator= (Number(tpweight)/Number(e.target.value))/(props.coil.fThickness)*(Number(cutsWidth)/1000)*(Number(cutsLength)/1000)*7.85;
         setCutsNo(cutsNumerator);
         let cutsValue = [];
         console.log(selectedPast[0]);
