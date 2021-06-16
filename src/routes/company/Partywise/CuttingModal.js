@@ -40,7 +40,6 @@ const CreateCuttingDetailsForm = (props) => {
     const [length, setlength]= useState(lengthValue);
     const [width, setwidth] = useState(widthValue);
     const [cutValue, setCutValue] = useState([]);
-    const [objValue,setObjValue]= useState();
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [balancedValue, setBalancedValue] = useState(false);
     const [bundledList, setbundledList]= useState(false);
@@ -50,6 +49,7 @@ const CreateCuttingDetailsForm = (props) => {
     const [cutsLength, setCutsLength]= useState(0);
     const [bundleItemList, setBundleItemList] = useState([]);
     const [restTableData, setRestTableData] = useState([]);
+    const [selectedPast , setSelectedPast] = useState([]);
     const [tableData, setTableData] = useState(props.wip?(props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts);
     const columns=[
 
@@ -387,9 +387,13 @@ const CreateCuttingDetailsForm = (props) => {
        setNo(((WeightValue-Number(tweight))/(0.00000785 *width*props.coil.fThickness*Number(length))).toFixed(0));
     }
     const setSelection = (record, selected, selectedRows) => {
-        let selectedPast = selectedRowKeys;
+        let selectedPastList = selectedPast.length> 0 ? selectedPast:[];
+        if(selectedRowKeys.length>0){
+            selectedPastList.push(selectedRowKeys);
+            setSelectedPast(selectedPastList);
+        }
+        
         setSelectedRowKeys(selectedRows);
-        let restTableData = [];
         if(cutValue.length > 0){
             setRestTableData(cutValue);
         }
@@ -418,6 +422,7 @@ const CreateCuttingDetailsForm = (props) => {
         let cutsNumerator= (Number(tpweight)/Number(e.target.value))/(props.coil.fThickness)*Number(cutsWidth)*cutsLength*7.85;
         setCutsNo(cutsNumerator);
         let cutsValue = [];
+        console.log(selectedPast[0]);
         for(let i=0; i <Number(e.target.value); i++) {
         let cutObj={
             weight: Number(tpweight)/Number(e.target.value),
@@ -506,8 +511,8 @@ const CreateCuttingDetailsForm = (props) => {
                     <label for="noOfCuts">No of Cuts</label>
                     <input type="text" id="noOfCuts" className="bundle-input-class" name="noOfCuts" value={cutsNo.toFixed(0)}></input>
                 </div></>:
-                bundleItemList.length > 0 && bundleItemList.map((item) => <>
-                <Table  rowSelection={handleSelectionBundle} className="gx-table-responsive"  columns={columnsSlit} dataSource={selectedRowKeys} pagination={false}/>
+                bundleItemList.length > 0 && bundleItemList.map((item,idx) => <>
+                <Table  rowSelection={handleSelectionBundle} className="gx-table-responsive"  columns={columnsSlit} dataSource={selectedPast.length > 0 ?selectedPast[idx].flat():selectedRowKeys} pagination={false}/>
                 <div style={{padding: "20px 0px 0px 25px"}}>
             <label for="tpweight">Total weight(kg):</label>
             <input type="text" className="bundle-input-class" id="tpweight" name="tpweight" value ={tpweight} disabled></input>
