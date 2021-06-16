@@ -5,7 +5,7 @@ import moment from 'moment';
 import SearchBox from "../../../components/SearchBox";
 
 import IntlMessages from "../../../util/IntlMessages";
-import { fetchPartyList } from "../../../appRedux/actions";
+import { fetchPartyList, addParty, fetchPartyListId, updateParty, resetParty } from "../../../appRedux/actions";
 import { onDeleteContact } from "../../../appRedux/actions";
 
 const FormItem = Form.Item;
@@ -31,10 +31,28 @@ const Party = (props) => {
     });
     const [filteredInfo, setFilteredInfo] = useState(null);
     const [showAddParty, setShowAddParty] = useState(false);
+    const [viewParty, setViewParty] = useState(false);
+    const [viewPartyDate, setViewPartyData] = useState({});
+    const [editParty, setEditParty] = useState(false);
     const [searchValue, setSearchValue] = useState('');
     const [filteredInwardList, setFilteredInwardList] = useState(props.party?.partyList || []);
 
-    const {getFieldDecorator} = props.form;
+    const {getFieldDecorator, getFieldValue} = props.form;
+
+    const phone = getFieldValue('phone');
+    const address = getFieldValue('address');
+    const email = getFieldValue('email');
+    const city = getFieldValue('city');
+    const state = getFieldValue('state');
+    const pincode = getFieldValue('pincode');
+    getFieldDecorator('phoneKeys', {initialValue: [0]});
+    getFieldDecorator('addressKeys', {initialValue: [0]});
+    getFieldDecorator('emailKeys', {initialValue: [0]});
+
+    const phoneKeys = getFieldValue('phoneKeys');
+    const addressKeys = getFieldValue('addressKeys');
+    const emailKeys = getFieldValue('emailKeys');
+
 
     const columns = [{
         title: 'Party Id',
@@ -48,33 +66,33 @@ const Party = (props) => {
     },
     {
         title: 'Party Name',
-        dataIndex: 'nPartyName',
-        key: 'nPartyName',
+        dataIndex: 'partyName',
+        key: 'partyName',
         filters: [],
-        sorter: (a, b) => a.nPartyName.length - b.nPartyName.length,
-        sortOrder: sortedInfo.columnKey === 'nPartyName' && sortedInfo.order,
+        sorter: (a, b) => a.partyName.length - b.partyName.length,
+        sortOrder: sortedInfo.columnKey === 'partyName' && sortedInfo.order,
     },
     {
-        title: 'Tin Number',
-        dataIndex: 'nTinNumber',
-        key: 'nTinNumber',
+        title: 'GST Number',
+        dataIndex: 'gstNumber',
+        key: 'gstNumber',
         filters: [],
-        sorter: (a, b) => a.createdOn.length - b.createdOn.length,
-        sortOrder: sortedInfo.columnKey === 'nTinNumber' && sortedInfo.order,
+        sorter: (a, b) => a.gstNumber.length - b.gstNumber.length,
+        sortOrder: sortedInfo.columnKey === 'gstNumber' && sortedInfo.order,
     },
     {
         title: 'City',
-        dataIndex: 'vCity',
-        key: 'vCity',
-        sorter: (a, b) => a.vCity.length - b.vCity.length,
-        sortOrder: sortedInfo.columnKey === 'vCity' && sortedInfo.order,
+        dataIndex: 'address1.city',
+        key: 'address1.city',
+        sorter: (a, b) => a.address1?.city?.length - b.address1?.city?.length,
+        sortOrder: sortedInfo.columnKey === 'address1.city' && sortedInfo.order,
     },
     {
         title: 'State',
-        dataIndex: 'vState',
-        key: 'vState',
-        sorter: (a, b) => a.vState.length - b.vState.length,
-        sortOrder: sortedInfo.columnKey === 'vState' && sortedInfo.order,
+        dataIndex: 'address1.state',
+        key: 'address1.state',
+        sorter: (a, b) => a.address1?.state?.length - b.address1?.state?.length,
+        sortOrder: sortedInfo.columnKey === 'address1.state' && sortedInfo.order,
     },
     {
         title: 'Action',
@@ -82,15 +100,22 @@ const Party = (props) => {
         key: 'x',
         render: (text, record, index) => (
             <span>
-                <span className="gx-link" onClick={() => {}}>View</span>
+                <span className="gx-link" onClick={(e) => onView(record, e)}>View</span>
                 <Divider type="vertical"/>
-                <span className="gx-link" onClick={() => {}}>Edit</span>
+                <span className="gx-link" onClick={(e) => onEdit(record, e)}>Edit</span>
                 <Divider type="vertical"/>
                 <span className="gx-link"onClick={() => {}}>Delete</span>
             </span>
         ),
     },
     ];
+
+    const onView = (record, e) => {
+        e.preventDefault();
+        setViewPartyData(record);
+        setViewParty(true);
+    }
+
     const onDelete = (record,key, e) => {
         let id = []
         id.push(record.inwardEntryId);
@@ -98,17 +123,22 @@ const Party = (props) => {
         props.deleteInwardEntryById(id)
         console.log(record,key)
       }
-    const onEdit = (record,key,e)=>{
-        props.fetchPartyListById(record.inwardEntryId);
+
+      const onEdit = (record,e)=>{
+        e.preventDefault();
+        props.fetchPartyListId(record.nPartyId);
+        setEditParty(true);
         setTimeout(() => {
-            props.history.push(`create/${record.inwardEntryId}`)
-        }, 2000);
+            setShowAddParty(true);
+        }, 1000);
                 
     }
 
     useEffect(() => {
-        props.fetchPartyList();
-    }, []);
+        setTimeout(() => {
+            props.fetchPartyList();
+        }, 1000);
+    }, [showAddParty]);
 
     useEffect(() => {
         const { loading, error, partyList } = props.party;
@@ -121,11 +151,11 @@ const Party = (props) => {
 
         const { party } = props;
         if(searchValue) {
-            const filteredData = party?.materialList?.filter((material) => {
-                if(material.matId.toString() === searchValue ||
-                    material.description.toLowerCase().includes(searchValue.toLowerCase()) ||
-                    material.materialGrade.includes(searchValue)) {
-                    return material;
+            const filteredData = party?.partyList?.filter(party => {
+                if(party.nPartyId?.toString() === searchValue ||
+                    party.partyName?.toLowerCase().includes(searchValue.toLowerCase()) ||
+                    party.gstNumber?.includes(searchValue)) {
+                    return party;
                 }
             });
             setFilteredInwardList(filteredData);
@@ -156,6 +186,31 @@ const Party = (props) => {
         console.log('dfd');
     };
 
+    const addNewKey = (idx, key) => {
+        const {form} = props;
+        const value = form.getFieldValue(key);
+        const nextValue = value.concat(idx+1);
+        form.setFieldsValue({
+            [key]: nextValue
+        });
+    }
+
+    const removeKey = (index, key1, key2) => {
+        const {form} = props;
+        // can use data-binding to get
+        const value1 = form.getFieldValue(key1);
+        const value2 = form.getFieldValue(key2);
+        // We need at least one passenger
+        if (value1.length === 1) {
+            return;
+        }
+        // can use data-binding to set
+        form.setFieldsValue({
+            [key1]: value1.filter((key, idx) => idx !== index),
+            [key2]: value2.filter((key, idx) => idx !== index)
+        });
+    }
+
     return (
         <div>
             <h1><IntlMessages id="sidebar.company.partyList"/></h1>
@@ -168,7 +223,11 @@ const Party = (props) => {
                     </div>
                     <div className="gx-flex-row gx-w-50">
                         <Button type="primary" icon={() => <i className="icon icon-add"/>} size="medium"
-                                onClick={() => setShowAddParty(true)}
+                                onClick={() => {
+                                    props.resetParty();
+                                    props.form.resetFields()
+                                    setShowAddParty(true)
+                                }}
                         >Add Party</Button>
                         <SearchBox styleName="gx-flex-1" placeholder="Search for coil number or party name..." value={searchValue} onChange={(e) => setSearchValue(e.target.value)}/>
                     </div>
@@ -180,99 +239,213 @@ const Party = (props) => {
                     onChange={handleChange}
                 />
                 <Modal
+                    title='Party Details'
+                    visible={viewParty}
+                    width={600}
+                    onOk={() => setViewParty(false)}
+                    onCancel={() => setViewParty(false)}
+                    
+                >
+                    <Card className="gx-card">
+                        <Row>
+                            <Col span={24}>
+                                <Card>
+                                    <p><strong>Party Name :</strong> {viewPartyDate?.partyName}</p>
+                                    {viewPartyDate?.partyNickname && <p><strong>Party Nickname :</strong> {viewPartyDate?.partyNickname}</p>}
+                                    <p><strong>Phone Number :</strong> {viewPartyDate?.phone1}</p>
+                                    {viewPartyDate?.phone2 && <p><strong>Alternate phone number 1 :</strong> {viewPartyDate?.phone2}</p>}
+                                    {viewPartyDate?.phone3 && <p><strong>Alternate phone number 2:</strong> {viewPartyDate?.phone3}</p>}
+                                    <p><strong>E-mail :</strong> {viewPartyDate?.email1}</p>
+                                    {viewPartyDate?.email2 && <p><strong>Alternate E-mail 1:</strong> {viewPartyDate?.email2}</p>}
+                                    {viewPartyDate?.email3 && <p><strong>Alternate E-mail 2:</strong> {viewPartyDate?.email3}</p>}
+                                    {viewPartyDate?.contactName && <p><strong>Contact Name :</strong> {viewPartyDate?.contactName}</p>}
+                                    {viewPartyDate?.contactNumber && <p><strong>Contact Number :</strong> {viewPartyDate?.contactNumber}</p>}
+                                    {viewPartyDate?.tanNumber && <p><strong>TAN Number :</strong> {viewPartyDate?.tanNumber}</p>}
+                                    {viewPartyDate?.panNumber && <p><strong>PAN Number :</strong> {viewPartyDate?.panNumber}</p>}
+                                    {viewPartyDate?.gstNumber && <p><strong>GST Number :</strong> {viewPartyDate?.gstNumber}</p>}
+                                    {viewPartyDate?.address1 && <>
+                                        <p><strong>Address :</strong> {viewPartyDate?.address1?.details}</p>
+                                        <p><strong>City :</strong> {viewPartyDate?.address1?.city}</p>
+                                        <p><strong>State :</strong> {viewPartyDate?.address1?.state}</p>
+                                        <p><strong>Pincode :</strong> {viewPartyDate?.address1?.pincode}</p>
+                                    </>}
+                                </Card>
+                            </Col>
+                        </Row>
+                    </Card>
+                </Modal>
+                <Modal
                     title='Add Party'
                     visible={showAddParty}
-                    onOk={() => {}}
-                    width={900}
+                    onOk={() => {
+                        if (editParty) {
+                            props.form.validateFields((err, values) => {
+                                if (!err) {
+                                  console.log('Received values of form: ', values);
+                                  const data = { values, id: props.party?.party?.nPartyId };
+                                  props.updateParty(data);
+                                  props.form.resetFields();
+                                  setShowAddParty(false);
+                                  setEditParty(false);
+                                }
+                            });
+                        } else {
+                            props.form.validateFields((err, values) => {
+                                if (!err) {
+                                  console.log('Received values of form: ', values);
+                                  props.addParty(values);
+                                  props.form.resetFields();
+                                  setShowAddParty(false);
+                                }
+                            });
+                        }
+                    }}
+                    width={800}
                     onCancel={() => {
-                        setShowAddParty(false)
+                        props.form.resetFields();
+                        setShowAddParty(false);
+                        setEditParty(false)
                     }}
                 >
                     <Card className="gx-card">
                         <Row>
                             <Col lg={24} md={24} sm={24} xs={24} className="gx-align-self-center">
                                 <Form {...formItemLayout} className="gx-pt-4">
-                                    <Form.Item label="Party Name">
+                                    <Form.Item label="Party/Customer Name">
                                         {getFieldDecorator('partyName', {
                                             rules: [{ required: true, message: 'Please input Party name!' }],
                                         })(
                                             <Input id="partyName" />
                                         )}
                                     </Form.Item>
-                                    <FormItem
-                                        {...formItemLayout}
-                                        label="Phone Number"
-                                    >
-                                        {getFieldDecorator('phone', {
-                                            rules: [{required: true, message: 'Please input your phone number!'}],
+                                    <Form.Item label="Party/Customer Nick Name">
+                                        {getFieldDecorator('partyNickname', {
+                                            rules: [{ required: false, message: 'Please input Party name!' }],
                                         })(
-                                        <Input id="phone" addonBefore={'+91'} style={{width: '100%'}}/>
-                                        )}
-                                    </FormItem>
-                                    <FormItem
-                                        {...formItemLayout}
-                                        label="Alternate Phone Number"
-                                    >
-                                        {getFieldDecorator('phone1', {
-                                            rules: [{required: true, message: 'Please input your alternate phone number!'}],
-                                        })(
-                                        <Input id="phone1" addonBefore={'+91'} style={{width: '100%'}}/>
-                                        )}
-                                    </FormItem>
-                                    <Form.Item label="Address">
-                                        {getFieldDecorator('address', {
-                                            rules: [{ required: true, message: 'Please input the Address!' }],
-                                        })(
-                                            <Input id="address" />
+                                            <Input id="partyNickname" />
                                         )}
                                     </Form.Item>
-                                    <Form.Item label="Address 1">
-                                        {getFieldDecorator('address1', {
-                                            rules: [{ required: false, message: 'Please input the Address Line 1!' }],
+                                    {phoneKeys.map((k, index) => {
+                                    const req = index ? false : true;
+                                    return (
+                                        <Form.Item  {...formItemLayout} className='phone'
+                                            label={index ? `Alternate Phone Number ${index}` : 'Phone Number'}
+                                        >
+                                            {getFieldDecorator(`phone[${index}]`, {
+                                                initialValue: phone[index],
+                                                rules: [{required: req, message: `Please input your ${index ? `Alternate Phone Number ${index}!` : 'Phone Number!'}`}],
+                                            })(
+                                            <Input id="phone1" addonBefore={'+91'} style={{width: '100%'}}/>
+                                            )}
+                                            {phoneKeys.length-1 > 0 && <i className="icon icon-trash gx-margin" onClick={() => removeKey(index, 'phoneKeys', 'phone')}/> }
+                                            {index == phoneKeys.length-1 && phoneKeys.length <=2 && <i className="icon icon-add-circle" onClick={() => addNewKey(index, 'phoneKeys')}/> }
+                                        </Form.Item>
+                                    )})}
+
+                                    <Form.Item label="Contact Name">
+                                        {getFieldDecorator('contactName', {
+                                            rules: [{ required: false, message: 'Please input Contact name!' }],
                                         })(
-                                            <Input id="address1" />
+                                            <Input id="contactName" />
                                         )}
                                     </Form.Item>
-                                    <Form.Item label="Address 2">
-                                        {getFieldDecorator('address2', {
-                                            rules: [{ required: false, message: 'Please input the Address Line 2!' }],
+                                    <Form.Item label="Contact Number">
+                                        {getFieldDecorator('contactNumber', {
+                                            rules: [{ required: false, message: 'Please input Contact number!' }],
                                         })(
-                                            <Input id="address2" />
+                                            <Input id="contactNumber" />
                                         )}
                                     </Form.Item>
-                                    <Form.Item label="City">
-                                        {getFieldDecorator('city', {
-                                            rules: [{ required: true, message: 'Please input the City!' }],
+
+                                    {addressKeys.map((k, index) => {
+                                    const req = index ? false : true;
+                                    return (
+                                        <div>
+                                        <Form.Item  {...formItemLayout} className='address'
+                                            label={index ? `Alternate address ${index}` : 'Address'}
+                                        >
+                                            {getFieldDecorator(`address[${index}]`, {
+                                                initialValue: address[index],
+                                                rules: [{required: req, message: `Please input the ${index ? `Alternative address ${index}!` : 'Address!'}`}],
+                                            })(
+                                                <Input id="address" />
+                                            )}
+                                        </Form.Item>
+                                        <Form.Item {...formItemLayout} className='address'
+                                            label='City'
+                                        >
+                                        {getFieldDecorator(`city[${index}]`, {
+                                                initialValue: city[index],
+                                                rules: [{ required: req, message: 'Please input the City!' }],
+                                            })(
+                                                <Input id="city" />
+                                            )}
+                                            
+                                        </Form.Item>
+                                        
+                                        <Form.Item {...formItemLayout} className='address'
+                                            label='State'
+                                        >
+                                        {getFieldDecorator(`state[${index}]`, {
+                                                initialValue: state[index],
+                                                rules: [{ required: req, message: 'Please input the State!' }],
+                                            })(
+                                                <Input id="state" />
+                                            )}
+                                        </Form.Item>
+                                        <Form.Item {...formItemLayout} className='address'
+                                            label='Pincode'
+                                        >
+                                        {getFieldDecorator(`pincode[${index}]`, {
+                                                initialValue: pincode[index],
+                                                rules: [{ required: req, message: 'Please input the pincode!' }],
+                                            })(
+                                                <Input id="pincode" />
+                                            )}
+                                        </Form.Item>
+                                        <div className='add-address'>
+                                            {addressKeys.length-1 > 0 && <i className="icon icon-trash gx-margin" onClick={() => removeKey(index, 'addressKeys', 'address')}/> }
+                                            {index == addressKeys.length-1 && addressKeys.length <=1 && <i className="icon icon-add-circle" onClick={() => addNewKey(index, 'addressKeys')}> Add Alternate address</i> }
+                                        </div>
+                                        </div>
+                                    )})}
+
+                                    {emailKeys.map((k, index) => {
+                                    const req = index ? false : true;
+                                    return (
+                                        <Form.Item  {...formItemLayout} className='email'
+                                            label={index ? `Alternate E-mail ${index}` : 'E-mail'}
+                                        >
+                                            {getFieldDecorator(`email[${index}]`, {
+                                                initialValue: email[index],
+                                                rules: [{required: req, message: `Please input your ${index ? `Alternate e-mail address ${index}!` : 'e-mail address!'}`}],
+                                            })(
+                                                <Input id="email" />
+                                            )}
+                                            {emailKeys.length-1 > 0 && <i className="icon icon-trash gx-margin" onClick={() => removeKey(index, 'emailKeys', 'email')}/> }
+                                            {index == emailKeys.length-1 && emailKeys.length <=2 && <i className="icon icon-add-circle" onClick={() => addNewKey(index, 'emailKeys')}/> }
+                                        </Form.Item>
+                                    )})}
+
+                                    <Form.Item label="PAN Number">
+                                        {getFieldDecorator('panNumber', {
+                                            rules: [{ required: false, message: 'Please input the PAN Number!' }],
                                         })(
-                                            <Input id="city" />
+                                            <Input id="panNumber" />
                                         )}
                                     </Form.Item>
-                                    <Form.Item label="State">
-                                        {getFieldDecorator('state', {
-                                            rules: [{ required: true, message: 'Please input the State!' }],
+                                    <Form.Item label="TAN Number">
+                                        {getFieldDecorator('tanNumber', {
+                                            rules: [{ required: false, message: 'Please input the TAN Number!' }],
                                         })(
-                                            <Input id="state" />
+                                            <Input id="tanNumber" />
                                         )}
                                     </Form.Item>
-                                    <Form.Item label="Pincode">
-                                        {getFieldDecorator('pincode', {
-                                            rules: [{ required: true, message: 'Please input the pincode!' }],
+                                    <Form.Item label="GST Number">
+                                        {getFieldDecorator('gstNumber', {
+                                            rules: [{ required: true, message: 'Please input the GST Number!' }],
                                         })(
-                                            <Input id="pincode" />
-                                        )}
-                                    </Form.Item>
-                                    <Form.Item label="E-mail">
-                                        {getFieldDecorator('email', {
-                                            rules: [{ required: true, message: 'Please input the e-mail address!' }],
-                                        })(
-                                            <Input id="email" />
-                                        )}
-                                    </Form.Item>
-                                    <Form.Item label="Tin Number">
-                                        {getFieldDecorator('tnumber', {
-                                            rules: [{ required: true, message: 'Please input the Tin Number!' }],
-                                        })(
-                                            <Input id="tnumber" />
+                                            <Input id="gstNumber" />
                                         )}
                                     </Form.Item>
                                 </Form>
@@ -289,8 +462,80 @@ const mapStateToProps = state => ({
     party: state.party
 });
 
-const addPartyForm = Form.create()(Party);
+const addPartyForm = Form.create({
+    mapPropsToFields(props) {
+        const { party } = props.party;
+        const phone = party?.phone3 ? [party?.phone1,party?.phone2,party?.phone3] : (party?.phone2 ? [party?.phone1,party?.phone2] : [party?.phone1]);
+        const email = party?.email3 ? [party?.email1,party?.email2,party?.email3] : (party?.email2 ? [party?.email1,party?.email2] : [party?.email1]);
+        const address = party?.address2?.details ? [party?.address1?.details, party?.address2?.details] : [party?.address1?.details];
+        const city = party?.address2?.city ? [party?.address1?.city, party?.address2?.city] : [party?.address1?.city];
+        const state = party?.address2?.state ? [party?.address1?.state, party?.address2?.state] : [party?.address1?.state];
+        const pincode = party?.address2?.pincode ? [party?.address1?.pincode, party?.address2?.pincode] : [party?.address1?.pincode];
+
+        return {
+            partyName: Form.createFormField({
+                ...party?.partyName,
+                value: party?.partyName|| '',
+            }),
+            partyNickname: Form.createFormField({
+                ...party?.partyNickname,
+                value: party?.partyNickname || '',
+            }),
+            phone: Form.createFormField({
+                value: phone
+            }),
+            phoneKeys: Form.createFormField({
+                value: phone,
+            }),
+            contactName: Form.createFormField({
+                ...props.party?.party?.contactName,
+                value: props.party?.party?.contactName || '',
+            }),
+            contactNumber: Form.createFormField({
+                ...props.party?.party?.contactNumber,
+                value: props.party?.party?.contactNumber || '',
+            }),
+            address: Form.createFormField({
+                value: address
+            }),
+            addressKeys: Form.createFormField({
+                value: address
+            }),
+            city: Form.createFormField({
+                value: city
+            }),
+            state: Form.createFormField({
+                value: state
+            }),
+            pincode: Form.createFormField({
+                value: pincode
+            }),
+            email: Form.createFormField({
+                value: email
+            }),
+            emailKeys: Form.createFormField({
+                value: email
+            }),
+            panNumber: Form.createFormField({
+                ...party?.panNumber,
+                value: party?.panNumber || '',
+            }),
+            tanNumber: Form.createFormField({
+                ...party?.tanNumber,
+                value: party?.tanNumber || '',
+            }),
+            gstNumber: Form.createFormField({
+                ...party?.gstNumber,
+                value: party?.gstNumber || '',
+            })
+        };
+    }
+})(Party);
 
 export default connect(mapStateToProps, {
     fetchPartyList,
+    addParty,
+    fetchPartyListId,
+    updateParty,
+    resetParty
 })(addPartyForm);

@@ -1,6 +1,15 @@
 import {all, put, fork, takeLatest} from "redux-saga/effects";
-import {FETCH_RATES_LIST_REQUEST} from "../../constants/ActionTypes";
-import {fetchRatesListSuccess, fetchRatesListError} from "../actions";
+import {FETCH_RATES_LIST_REQUEST, ADD_RATES_REQUEST, FETCH_RATES_LIST_ID_REQUEST, UPDATE_RATES_REQUEST} from "../../constants/ActionTypes";
+import {
+    fetchRatesListSuccess, 
+    fetchRatesListError,
+    addRatesError,
+    addRatesSuccess,
+    fetchRatesListByIdSuccess,
+    fetchRatesListByIdError,
+    updateRatesSuccess,
+    updateRatesError
+} from "../actions";
 
 function* fetchRatesList() {
     try {
@@ -17,9 +26,109 @@ function* fetchRatesList() {
     }
 }
 
+function* addRates(action) {
+
+    const { 
+        partyRates,
+        process,
+        materialType,
+        minThickness, 
+        maxThickness, 
+        thicknessRate, 
+        packagingCharges, 
+        laminationCharges
+    } = action.rates;
+
+    try {
+        let data = new FormData();
+        data.append('partyRates', partyRates);
+        data.append('process', process);
+        data.append('materialType', materialType);
+        data.append('minThickness', parseFloat(minThickness));
+        data.append('maxThickness', parseFloat(maxThickness));
+        data.append('thicknessRate', parseFloat(thicknessRate));
+        data.append('packagingCharges', parseFloat(packagingCharges));
+        data.append('laminationCharges', parseFloat(laminationCharges));
+
+        const addRates = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/rates/save', {
+            method: 'POST',
+            body: data
+            
+        });
+        if (addRates.status == 200) {
+            yield put(addRatesSuccess());
+        } else
+            yield put(addRatesError('error'));
+    } catch (error) {
+        yield put(addRatesError(error));
+    }
+}
+
+function* updateRates(action) {
+
+    const { 
+        values: {
+            partyRates,
+            process,
+            materialType,
+            minThickness, 
+            maxThickness, 
+            thicknessRate, 
+            packagingCharges, 
+            laminationCharges
+        },
+        id
+    } = action.rates;
+
+    try {
+        let data = new FormData();
+        data.append('rateId', id);
+        data.append('partyRates', partyRates);
+        data.append('process', process);
+        data.append('materialType', materialType);
+        data.append('minThickness', parseFloat(minThickness));
+        data.append('maxThickness', parseFloat(maxThickness));
+        data.append('thicknessRate', parseFloat(thicknessRate));
+        data.append('packagingCharges', parseFloat(packagingCharges));
+        data.append('laminationCharges', parseFloat(laminationCharges));
+
+        const updateRates = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/rates/update', {
+            method: 'PUT',
+            body: data
+            
+        });
+        if (updateRates.status == 200) {
+            yield put(updateRatesSuccess());
+        } else
+            yield put(updateRatesError('error'));
+    } catch (error) {
+        yield put(updateRatesError(error));
+    }
+}
+
+function* fetchRatesListById(action) {
+    try {
+        const fetchRatesById =  yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/rates/getById/${action.rateId}`, {
+            method: 'GET',
+        });
+        if(fetchRatesById.status === 200) {
+            const fetchRatesByIdResponse = yield fetchRatesById.json();
+            yield put(fetchRatesListByIdSuccess(fetchRatesByIdResponse));
+        } else
+            yield put(fetchRatesListByIdError('error'));
+    } catch (error) {
+        yield put(fetchRatesListByIdError(error));
+    }
+}
+
 
 export function* watchFetchRequests() {
     yield takeLatest(FETCH_RATES_LIST_REQUEST, fetchRatesList);
+    yield takeLatest(ADD_RATES_REQUEST, addRates);
+    yield takeLatest(UPDATE_RATES_REQUEST, updateRates);
+    yield takeLatest(FETCH_RATES_LIST_ID_REQUEST, fetchRatesListById);
+
+
 }
 
 export default function* ratesSagas() {

@@ -11,6 +11,7 @@ import Material from "./Material";
 import Delivery from "./Delivery";
 import packetClassification from "./PacketClassification";
 import Rates from "./Rates";
+import Process from './Process';
 
 const createRootReducer = (history) => combineReducers({
   router: connectRouter(history),
@@ -24,7 +25,8 @@ const createRootReducer = (history) => combineReducers({
   material: Material,
   deliveries: Delivery,
   packetClassification,
-  rates: Rates
+  rates: Rates,
+  process: Process
 });
 
 export default createRootReducer
