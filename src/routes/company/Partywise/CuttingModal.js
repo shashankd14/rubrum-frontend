@@ -191,7 +191,7 @@ const CreateCuttingDetailsForm = (props) => {
         {
             title: 'Serial No',
            render : (text,record,index) => {
-                return (index+1);
+                return index+1;
            }
         },
         {
@@ -526,11 +526,7 @@ const CreateCuttingDetailsForm = (props) => {
                         }}/>
             </Col>
             {cutValue.length > 0 &&<Col lg={10} md={16} sm={24} xs={24}>
-            <Table className="gx-table-responsive" columns={columnsSlitCut} dataSource={restTableData.length>0?restTableData: cutValue} pagination={{
-                            onChange(current) {
-                              setPage(current);
-                            }
-                        }}/>
+            <Table className="gx-table-responsive" columns={columnsSlitCut} dataSource={restTableData.length>0?restTableData: cutValue} />
             </Col>}
         </Row>
           :<Table  rowSelection={handleSelection} className="gx-table-responsive"  columns={columnsSlit} dataSource={cuts}/>  : 

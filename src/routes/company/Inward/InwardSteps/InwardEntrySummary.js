@@ -32,6 +32,7 @@ const InwardEntrySummary = (props) => {
         }
     }, [props.inwardSubmitSuccess]);
     const partyName =(partyList) =>{
+        
        partyList = partyList.find(item => item.nPartyId===Number(props.inward.partyName))
        return partyList.partyName
     
@@ -46,7 +47,7 @@ const InwardEntrySummary = (props) => {
                     <Row>
                         <Col span={12}>
                             <Card title="Customer Details" style={{ width: 300 }}>
-                                <p>Customer Name : {props.inward.party ? props.inward.party.nPartyName :partyName(props.party.partyList)}</p>
+                                <p>Customer Name : {props.inward.party ? props.inward.party.partyName :(props.inward && props.inward.partyName !== undefined)?partyName(props.party.partyList):""}</p>
                                 {props.inward.customerId && <p>Customer Id : {props.inward.customerId}</p>}
                                 {props.inward.customerBatchNo && <p>Customer Batch No : {props.inward.customerBatchNo}</p>}
                                 {props.inward.customerInvoiceNo && <p>Customer Invoice No : {props.inward.customerInvoiceNo}</p>}
