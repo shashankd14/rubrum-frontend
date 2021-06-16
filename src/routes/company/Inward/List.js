@@ -34,13 +34,13 @@ const List = (props) => {
     },
     {
         title: 'Party Name',
-        dataIndex: 'party.nPartyName',
-        key: 'party.nPartyName',
-        filteredValue: filteredInfo ? filteredInfo["party.nPartyName"] : null,
-        onFilter: (value, record) => record.party.nPartyName == value,
-        filters: props.inward.inwardList.length > 0 ? [...new Set(props.inward.inwardList.map(item => item.party.nPartyName))].map(partyName => ({ text: partyName, value: partyName })) : [],
-        sorter: (a, b) => a.party.nPartyName.length - b.party.nPartyName.length,
-        sortOrder: sortedInfo.columnKey === 'party.nPartyName' && sortedInfo.order,
+        dataIndex: 'party.partyName',
+        key: 'party.partyName',
+        filteredValue: filteredInfo ? filteredInfo["party.partyName"] : null,
+        onFilter: (value, record) => record.party.partyName == value,
+        filters: props.inward.inwardList.length > 0 ? [...new Set(props.inward.inwardList.map(item => item.party.partyName))].map(partyName => ({ text: partyName, value: partyName })) : [],
+        sorter: (a, b) => a.party.partyName.length - b.party.partyName.length,
+        sortOrder: sortedInfo.columnKey === 'party.partyName' && sortedInfo.order,
     },
     {
         title: 'Inward Date',
@@ -138,7 +138,7 @@ const List = (props) => {
         if(searchValue) {
             const filteredData = props.inward.inwardList.filter((inward) => {
                 if(inward.coilNumber.toLowerCase().includes(searchValue.toLowerCase()) ||
-                    inward.party.nPartyName.toLowerCase().includes(searchValue.toLowerCase()) ||
+                    inward.party.partyName.toLowerCase().includes(searchValue.toLowerCase()) ||
                     inward.vInvoiceNo.toLowerCase().includes(searchValue.toLowerCase())) {
                     return inward
                 }

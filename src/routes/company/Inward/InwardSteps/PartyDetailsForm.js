@@ -15,7 +15,7 @@ const CreatePartyDetailsForm = (props) => {
             const options = props.party.partyList.filter(party => {
             if (party.nPartyId===  props.inward.party.nPartyId)
             return (<Option key={party.nPartyId} value={`${party.nPartyId}`}>
-                    {party.nPartyName}
+                    {party.partyName}
                 </Option>)
             });
             setDataSource(options);
@@ -27,14 +27,14 @@ const CreatePartyDetailsForm = (props) => {
             const { Option } = AutoComplete;
             const options = props.party.partyList.map(party => (
                 <Option key={party.nPartyId} value={`${party.nPartyId}`}>
-                    {party.nPartyName}
+                    {party.partyName}
                 </Option>
             ));
             setDataSource(options);
         }
     }, [props.party]);
     const handleChange = e =>{
-        props.inward.party.nPartyName = e;
+        props.inward.party.partyName = e;
     }
     const handleSubmit = e => {
         e.preventDefault();
@@ -133,7 +133,7 @@ const PartyDetailsForm = Form.create({
         return {
             partyName: Form.createFormField({
                 ...props.inward.partyName,
-                value: ( props.params !== "" && props.inward.party) ?props.inward.party.nPartyName :(props.inward.partyName) ? props.inward.partyName: '',
+                value: ( props.params !== "" && props.inward.party) ?props.inward.party.partyName :(props.inward.partyName) ? props.inward.partyName: '',
             }),
             customerId: Form.createFormField({
                 ...props.inward.customerId,
