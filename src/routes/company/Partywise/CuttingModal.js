@@ -486,10 +486,10 @@ const CreateCuttingDetailsForm = (props) => {
                 props.setShowCuttingModal(false)}}
         >
         <Card className="gx-card" >
-        <div>
+        {!props.wip && <div>
         <Button type="primary" onClick={bundleListClick} icon={() => <i className="icon icon-add" />} size="medium"
         disabled= {selectedRowKeys.length < 1 ? true: false}>Bundle</Button> 
-        </div>
+        </div>}
         <Tabs
           defaultActiveKey="1"
           tabPosition={mode}
