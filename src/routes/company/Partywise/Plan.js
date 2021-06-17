@@ -208,6 +208,12 @@ const Plan = (props) => {
                                     setShowCuttingModal(true);
                                     setChildCoil(false)
                                 }}>Finish Cutting</Button>
+                                <Button onClick={() => {
+                                    setCuttingCoil(props.inward.plan);
+                                    setSlitCut(true);
+                                    setShowCuttingModal(true);
+                                    setChildCoil(false)
+                                }}>Finish Cut & Slit</Button>
                             </div> :
                             <div>
                                 <Select
