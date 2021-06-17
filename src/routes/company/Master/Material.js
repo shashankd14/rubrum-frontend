@@ -5,7 +5,7 @@ import moment from 'moment';
 import SearchBox from "../../../components/SearchBox";
 
 import IntlMessages from "../../../util/IntlMessages";
-import { fetchMaterialList, addMaterial } from "../../../appRedux/actions";
+import { fetchMaterialList, addMaterial, fetchMaterialListById, updateMaterial, resetMaterial } from "../../../appRedux/actions";
 import { onDeleteContact } from "../../../appRedux/actions";
 
 export const formItemLayout = {
@@ -28,8 +28,12 @@ const Material = (props) => {
         columnKey: 'age',
     });
     const { getFieldDecorator, getFieldValue, getFieldProps } = props.form;
-    getFieldDecorator('keys', {initialValue: [{ gradeId: 0, gradeName: '' }]});
+    const grade = getFieldValue('grade');
+    getFieldDecorator('keys', {initialValue: [0]});
     const [showAddMaterial, setShowAddMaterial] = useState(false);
+    const [viewMaterial, setViewMaterial] = useState(false);
+    const [editMaterial, setEditMaterial] = useState(false);
+    const [viewMaterialData, setViewMaterialData] = useState({});
     const [filteredInfo, setFilteredInfo] = useState(null);
     const [searchValue, setSearchValue] = useState('');
     const [filteredInwardList, setFilteredInwardList] = useState(props.material?.materialList || []);
@@ -62,8 +66,10 @@ const Material = (props) => {
         dataIndex: 'description',
         key: 'description',
         filteredValue: filteredInfo ? filteredInfo["description"] : null,
+        filters: [...new Set(props.material.materialList.map(item => item.description))].map(material => {
+            return ({ text: material || '', value: material || '' })}),
         onFilter: (value, record) => record.description == value,
-        sorter: (a, b) => a.description.length - b.description.length,
+        sorter: (a, b) => a.description?.length - b.description?.length,
         sortOrder: sortedInfo.columnKey === 'description' && sortedInfo.order,
     },
     {
@@ -76,8 +82,8 @@ const Material = (props) => {
             });
             return grade.toString();
         },
-        sorter: (a, b) => a.materialGrade.length - b.materialGrade.length,
-        sortOrder: sortedInfo.columnKey === 'description' && sortedInfo.order,
+        sorter: (a, b) => a.materialGrade?.length - b.materialGrade?.length,
+        sortOrder: sortedInfo.columnKey === 'materialGrade' && sortedInfo.order,
     },
     {
         title: 'Action',
@@ -85,15 +91,22 @@ const Material = (props) => {
         key: 'x',
         render: (text, record, index) => (
             <span>
-                <span className="gx-link" onClick={() => {}}>View</span>
+                <span className="gx-link" onClick={(e) => onView(record, e)}>View</span>
                 <Divider type="vertical"/>
-                <span className="gx-link" onClick={() => {}}>Edit</span>
+                <span className="gx-link" onClick={(e) => onEdit(record,e)}>Edit</span>
                 <Divider type="vertical"/>
                 <span className="gx-link"onClick={() => {}}>Delete</span>
             </span>
         ),
     },
     ];
+
+    const onView = (record, e) => {
+        e.preventDefault();
+        setViewMaterialData(record);
+        setViewMaterial(true);
+    }
+
     const onDelete = (record,key, e) => {
         let id = []
         id.push(record.inwardEntryId);
@@ -101,11 +114,13 @@ const Material = (props) => {
         props.deleteInwardEntryById(id)
         console.log(record,key)
       }
-    const onEdit = (record,key,e)=>{
-        props.fetchPartyListById(record.inwardEntryId);
+    const onEdit = (record,e)=>{
+        e.preventDefault();
+        props.fetchMaterialListById(record.matId);
+        setEditMaterial(true);
         setTimeout(() => {
-            props.history.push(`create/${record.inwardEntryId}`)
-        }, 2000);
+            setShowAddMaterial(true);
+        }, 1000);
                 
     }
 
@@ -122,13 +137,14 @@ const Material = (props) => {
         }
     }, [props.material]);
 
+
     useEffect(() => {
         const { material } = props;
         if(searchValue) {
             const filteredData = material?.materialList?.filter((material) => {
                 if(material.matId.toString() === searchValue ||
-                    material.description.toLowerCase().includes(searchValue.toLowerCase()) ||
-                    material.materialGrade.includes(searchValue)) {
+                    material.description?.toLowerCase().includes(searchValue.toLowerCase()) ||
+                    material.materialGrade?.includes(searchValue)) {
                     return material;
                 }
             });
@@ -163,7 +179,7 @@ const Material = (props) => {
     const addNewKey = (idx) => {
         const {form} = props;
         const keys = form.getFieldValue('keys');
-        const nextKeys = keys.concat({ gradeId: idx+1, gradeName: '' });
+        const nextKeys = keys.concat(idx+1);
         form.setFieldsValue({
             keys: nextKeys
         });
@@ -197,7 +213,11 @@ const Material = (props) => {
                     </div>
                     <div className="gx-flex-row gx-w-50">
                         <Button type="primary" icon={() => <i className="icon icon-add"/>} size="medium"
-                                onClick={() => setShowAddMaterial(true)}
+                                onClick={() => {
+                                    props.resetMaterial();
+                                    props.form.resetFields()
+                                    setShowAddMaterial(true);
+                                }}
                         >Add Material</Button>
                         <SearchBox styleName="gx-flex-1" placeholder="Search for coil number or party name..." value={searchValue} onChange={(e) => setSearchValue(e.target.value)}/>
                     </div>
@@ -210,21 +230,56 @@ const Material = (props) => {
                 />
 
                 <Modal
+                    title='Material Details'
+                    visible={viewMaterial}
+                    onCancel={() => setViewMaterial(false)}
+                    onOk={() => setViewMaterial(false)}
+                    width={600}
+                >
+                    <Card>
+                        <Row>
+                            <Col span={24}>
+                                <Card>
+                                    {viewMaterialData?.description && <p><strong>Material Type :</strong> {viewMaterialData.description}</p>}
+                                    {viewMaterialData?.materialGrade && <p><strong>Material Grade :</strong> {viewMaterialData?.materialGrade?.reduce((acc, grade, index, arr) => acc.concat(`${grade.gradeName}${index === arr.length - 1 ? '' : ','} `), '')}</p>}
+                                </Card>
+                            </Col>
+                        </Row>
+                    </Card>
+                </Modal>
+
+                <Modal
                     title='Add Material'
                     visible={showAddMaterial}
                     onOk={(e) => {
                         e.preventDefault();
-                        props.form.validateFields((err, values) => {
-                        if (!err) {
-                            console.log('Received values of form: ', values);
-                            props.addMaterial(values);
-                            setShowAddMaterial(false);
+                        if (editMaterial) {
+                            props.form.validateFields((err, values) => {
+                                if (!err) {
+                                    console.log('Received values of form: ', values);
+                                    const data = { values, id: props.material?.material?.matId };
+                                    props.updateMaterial(data);
+                                    setShowAddMaterial(false);
+                                }
+                            });
+                            props.form.resetFields();
+                        } else {
+                            props.form.validateFields((err, values) => {
+                                if (!err) {
+                                    console.log('Received values of form: ', values);
+                                    props.addMaterial(values);
+                                    setShowAddMaterial(false);
+                                }
+                            });
+                            props.form.resetFields();
                         }
-                        });
                     }}
                     width={600}
                     onCancel={() => {
-                        setShowAddMaterial(false)
+                        props.form.resetFields();
+                        setShowAddMaterial(false);
+                        setEditMaterial(false)
+
                     }}
                 >
                     <Card className="gx-card">
@@ -245,8 +300,8 @@ const Material = (props) => {
                                         return (
                                             <Form.Item label="Grade">
                                                 {getFieldDecorator(`grade[${index}]`, {
-                                                    rules: [{ required: true, message: 'Please enter grade details' }],
-                                                    initialValues: [{ gradeId: 0, gradeName: '' }]
+                                                    initialValue: grade[index],
+                                                    rules: [{ required: true, message: 'Please enter grade details' }]
                                                     })(
                                                     <Input id="grade" />
                                                 )}
@@ -256,6 +311,7 @@ const Material = (props) => {
                                         )})}
                                 </Form>
                             </Col>
+                            
                         </Row>
                     </Card>
                 </Modal>
@@ -269,26 +325,25 @@ const mapStateToProps = state => ({
 });
 
 const addMaterialForm = Form.create({
-    onFieldsChange(props, changedFields) {
-    },
     mapPropsToFields(props) {
         return {
             description: Form.createFormField({
-                ...props.material.materialList.description,
-                value: props.material?.materialList?.description || '',
+                value: props.material?.material?.description || '',
             }),
             grade: Form.createFormField({
-                ...props.material.materialList.materialGrade,
-                value: props.material?.materialList?.materialGrade || [],
+                value: props.material?.material?.materialGrade?.map(material => material.gradeName) || [],
+            }),
+            keys: Form.createFormField({
+                value: props.material?.material?.materialGrade?.map(material => material.gradeName) || [0],
             }),
         };
     },
-    // onValuesChange(props, values) {
-    //     props.setProcessDetails({ ...props.material, ...values});
-    // },
 })(Material);
 
 export default connect(mapStateToProps, {
     fetchMaterialList,
-    addMaterial
+    addMaterial,
+    fetchMaterialListById,
+    updateMaterial,
+    resetMaterial
 })(addMaterialForm);

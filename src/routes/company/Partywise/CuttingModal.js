@@ -281,7 +281,7 @@ const CreateCuttingDetailsForm = (props) => {
     }, [props.inward.process.length, props.inward.process.no])
     
     useEffect(() => {
-        if(props.slitCut){
+        if(props.slitCut && !props.wip){
             setCuts(props.coilDetails)
             
         }else{
@@ -299,7 +299,7 @@ const CreateCuttingDetailsForm = (props) => {
             }else{
                 data = data.flat();
                 let cutsData = [...data];
-                cutsData = props.wip ? cutsData.filter(item => item.process.processId === 1 && item.status.statusId !==3) : cutsData.filter(item => item.process.processId === 1)
+                cutsData = props.wip ? (props.slitCut ? cutsData.filter(item => item.process.processId === 3 && item.status.statusId !==3) : cutsData.filter(item => item.process.processId === 1 && item.status.statusId !==3)) : cutsData.filter(item => item.process.processId === 1)
                 setCuts(cutsData);
             }
         }
@@ -444,7 +444,7 @@ const CreateCuttingDetailsForm = (props) => {
      return (
        
         <Modal
-            title={props.wip ? "Finish Cutting Instruction" : "Cutting Instruction"}
+            title={props.wip ? (props.slitCut ? "Finish slit & cut Instruction" : "Finish Cutting Instruction") : "Cutting Instruction"}
             visible={props.showCuttingModal}
             onOk={() => {
                 if(props.wip){
@@ -474,16 +474,16 @@ const CreateCuttingDetailsForm = (props) => {
                 props.setShowCuttingModal(false)}}
         >
         <Card className="gx-card" >
-        <div>
+        {!props.wip && <div>
         <Button type="primary" onClick={bundleListClick} icon={() => <i className="icon icon-add" />} size="medium"
         disabled= {selectedRowKeys.length < 1 ? true: false}>Bundle</Button> 
-        </div>
+        </div>}
         <Tabs
           defaultActiveKey="1"
           tabPosition={mode}
             >
           <TabPane tab="Cutting Details" key="1">
-          {props.slitCut ?  selectedRowKeys.length >0 && bundledList?
+          {props.slitCut && !props.wip ?  selectedRowKeys.length >0 && bundledList?
           <Row>
               <Col lg={cutValue.length > 0 ?14: 24} md={16} sm={24} xs={24}>
                 {bundleItemList.length === 0 ? <>

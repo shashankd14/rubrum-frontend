@@ -9,4 +9,5 @@ export * from './Material';
 export * from './Delivery';
 export * from './PacketClassification';
 export * from './Rates';
+export * from './Process';
 

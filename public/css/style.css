@@ -37303,3 +37303,38 @@ textarea.gx-chat-textarea {
   height: 25px;
   width:20%;
 }
+
+.phone .ant-form-item-children {
+  display: inline-flex;
+  width: 90%;
+}
+
+.icon-add-circle {
+  margin: 0 10px;
+}
+
+.icon-trash {
+  margin: 0 10px;
+}
+
+.address .ant-form-item-children {
+  display: inline-flex;
+  width: 90%;
+}
+
+.email .ant-form-item-children {
+  display: inline-flex;
+  width: 90%;
+}
+
+.add-address {
+  height: 50px;
+  text-align: center;
+
+}
+
+.add-address .icon-add-circle {
+  padding: 5px;
+  border: dotted;
+  cursor: pointer;
+}
