@@ -185,6 +185,16 @@ const CreateCuttingDetailsForm = (props) => {
             title: 'Weight',
             dataIndex:'weight',
             key:'weight',
+        },
+        {
+            title:'Actions',
+            dataIndex:'actions',
+            render: (text, record,index) => (
+                <span>
+                <i className="icon icon-trash" onClick={(e) => {onDelete(record, e, 'slitCut'); }}/>
+                </span>
+              ),
+              key:'action',
         }
     ];
     const columnsSlit=[
@@ -230,12 +240,19 @@ const CreateCuttingDetailsForm = (props) => {
             });
     };
 
-    const onDelete = (record, e) => {
+    const onDelete = (record, e, type) => {
         e.preventDefault();
-        const data = cuts.filter((item) => cuts.indexOf(item) !==cuts.indexOf(record))
-        props.deleteInstructionById(record.instructionId)
-        setBalancedValue(false);
-        setCuts(data);
+        if(type === 'slitCut'){
+             const data = restTableData.filter((item) => restTableData.indexOf(item) !==restTableData.indexOf(record))
+             setRestTableData(data)
+             props.deleteInstructionById(record.parentGroupId)
+        }else{
+             const data = cuts.filter((item) => cuts.indexOf(item) !==cuts.indexOf(record))
+             setCuts(data);
+             props.deleteInstructionById(record.instructionId)
+        }
+        
+        
     };
     const onChange=()=>{
         setBalancedValue(true);
