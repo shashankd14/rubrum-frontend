@@ -380,16 +380,16 @@ const addRatesForm = Form.create({
     mapPropsToFields(props) {
         return {
             partyRates: Form.createFormField({
-                ...props.rates?.rates?.partyRates?.partyName,
-                value: props.rates?.rates?.partyRates?.partyName|| undefined,
+                ...props.rates?.rates?.partyRates?.nPartyId,
+                value: props.rates?.rates?.partyRates?.nPartyId|| 0,
             }),
             process: Form.createFormField({
-                ...props.rates?.rates?.process?.processName,
-                value: props.rates?.rates?.process?.processName || undefined,
+                ...props.rates?.rates?.process?.processId,
+                value: props.rates?.rates?.process?.processId || 0,
             }),
             materialType: Form.createFormField({
-                ...props.rates?.rates?.materialType?.description,
-                value: props.rates?.rates?.materialType?.description || undefined,
+                ...props.rates?.rates?.materialType?.matId,
+                value: props.rates?.rates?.materialType?.matId || 0,
             }),
             minThickness: Form.createFormField({
                 ...props.rates?.rates?.minThickness,

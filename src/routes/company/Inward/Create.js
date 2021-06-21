@@ -98,7 +98,7 @@ const Create = Form.create({
         return {
             partyName: Form.createFormField({
                 ...props.inward.inward.partyName,
-                value: (props.match.params && props.match.params.inwardEntryId && props.inward.inward.party) ? props.inward.inward.party.nPartyName : (props.inward.inward.partyName) ? props.inward.inward.partyName : '',
+                value: (props.match.params && props.match.params.inwardEntryId && props.inward.inward.party) ? props.inward.inward.party.partyName : (props.inward.inward.partyName) ? props.inward.inward.partyName : '',
             }),
             coilNumber: Form.createFormField({
                 ...props.inward.inward.coilNumber,
