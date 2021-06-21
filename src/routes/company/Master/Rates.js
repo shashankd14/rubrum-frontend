@@ -381,15 +381,15 @@ const addRatesForm = Form.create({
         return {
             partyRates: Form.createFormField({
                 ...props.rates?.rates?.partyRates?.nPartyId,
-                value: props.rates?.rates?.partyRates?.nPartyId|| 0,
+                value: props.rates?.rates?.partyRates?.nPartyId|| undefined,
             }),
             process: Form.createFormField({
                 ...props.rates?.rates?.process?.processId,
-                value: props.rates?.rates?.process?.processId || 0,
+                value: props.rates?.rates?.process?.processId || undefined,
             }),
             materialType: Form.createFormField({
                 ...props.rates?.rates?.materialType?.matId,
-                value: props.rates?.rates?.materialType?.matId || 0,
+                value: props.rates?.rates?.materialType?.matId || undefined,
             }),
             minThickness: Form.createFormField({
                 ...props.rates?.rates?.minThickness,
