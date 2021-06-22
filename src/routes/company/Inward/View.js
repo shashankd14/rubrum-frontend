@@ -36,7 +36,7 @@ const View = (props) => {
                     <Row>
                         <Col span={12}>
                             <Card title="Customer Details" style={{ width: 300 }}>
-                                {props.inward.inward.party && <p>Customer Name : {props.inward.inward.party.nPartyName}</p>}
+                                {props.inward.inward.party && <p>Customer Name : {props.inward.inward.party.partyName}</p>}
                                 {props.inward.inward.customerId && <p>Customer Id : {props.inward.inward.customerId}</p>}
                                 {props.inward.inward.customerBatchNo && <p>Customer Batch No : {props.inward.inward.customerBatchNo}</p>}
                                 {props.inward.inward.customerInvoiceNo && <p>Customer Invoice No : {props.inward.inward.customerInvoiceNo}</p>}

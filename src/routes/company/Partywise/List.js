@@ -116,7 +116,7 @@ const List = (props) => {
         if (searchValue) {
             const filteredData = props.inward.inwardList.filter((inward) => {
                 if (inward.coilNumber.toLowerCase().includes(searchValue.toLowerCase()) ||
-                    inward.party.nPartyName.toLowerCase().includes(searchValue.toLowerCase()) ||
+                    inward.party.partyName.toLowerCase().includes(searchValue.toLowerCase()) ||
                     inward.vInvoiceNo.toLowerCase().includes(searchValue.toLowerCase())) {
                     return inward
                 }
@@ -184,7 +184,7 @@ const List = (props) => {
                             filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                         >
                             {props.party.partyList.length > 0 && props.party.partyList.map((party) => (
-                                <Option value={party.nPartyId}>{party.nPartyName}</Option>
+                                <Option value={party.nPartyId}>{party.partyName}</Option>
                             ))}
                         </Select>
                         <Button onClick={exportSelectedData}>Export</Button>
