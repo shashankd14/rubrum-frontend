@@ -19,7 +19,7 @@ export const formItemLayout = {
     wrapperCol: {
         xs: {span: 24},
         sm: {span: 24},
-        md: {span: 16},
+        md: {span: 14},
     },
 };
 
@@ -129,14 +129,7 @@ const CreateCuttingDetailsForm = (props) => {
                 return (index+1);
            }
         },
-        {
-            title: 'Process Date',
-            dataIndex:'processDate',
-            render (value) {
-                return moment(value).format('DD/MM/YYYY');
-            },
-            key: 'processDate',
-        },
+        
         {
             title: 'Length',
             dataIndex:'plannedLength',
@@ -152,6 +145,7 @@ const CreateCuttingDetailsForm = (props) => {
             dataIndex:'plannedWeight',
             key:'plannedWeight',
         },
+        
         {
             title:'Actions',
             dataIndex:'actions',
@@ -162,6 +156,14 @@ const CreateCuttingDetailsForm = (props) => {
                 </span>
               ),
               key:'action',
+        },
+        {
+            title: 'Process Date',
+            dataIndex:'processDate',
+            render (value) {
+                return moment(value).format('DD/MM/YYYY');
+            },
+            key: 'processDate',
         }
     ];
     const columnsSlitCut=[
@@ -430,10 +432,10 @@ const CreateCuttingDetailsForm = (props) => {
             parentGroupId: props.inward.groupId.groupId,
             inwardId: props.coil.inwardEntryId
         };
-        
         cutsValue.push(cutObj);
     }
-    setRestTableData([...restTableData,...cutsValue])
+    
+    setRestTableData(restTableData.length>0 ?[...restTableData,...cutsValue]: [...cutsValue])
     setCutValue(cutsValue)
     }
     const getTargetLength=(e)=>{
@@ -477,7 +479,7 @@ const CreateCuttingDetailsForm = (props) => {
                     }
                 }
                 else if(props.slitCut){
-                    props.saveCuttingInstruction(cutValue);
+                    props.saveCuttingInstruction(restTableData);
                 }else{
                     props.saveCuttingInstruction(cuts);
                 }
@@ -491,7 +493,7 @@ const CreateCuttingDetailsForm = (props) => {
                 props.setShowCuttingModal(false)}}
         >
         <Card className="gx-card" >
-        {!props.wip && <div>
+        {!props.wip && props.slitCut && <div>
         <Button type="primary" onClick={bundleListClick} icon={() => <i className="icon icon-add" />} size="medium"
         disabled= {selectedRowKeys.length < 1 ? true: false}>Bundle</Button> 
         </div>}
@@ -536,8 +538,25 @@ const CreateCuttingDetailsForm = (props) => {
             </Col>}
         </Row>
           :<Table  rowSelection={handleSelection} className="gx-table-responsive"  columns={columnsSlit} dataSource={cuts} rowKey={record => record.instructionId}/>  : 
-                <Row>
-                    {!props.wip && <Col lg={12} md={12} sm={24} xs={24} className="gx-align-self-center">
+          <><Row>
+          <Col lg={12} md={12} sm={24} xs={24}>   
+          <p>Coil number : {props.coil.coilNumber}</p>
+              <p>Customer Name : {props.coil.party.partyName}</p>
+              {props.coil.customerBatchId && <p>Customer Batch No:{props.coil.customerBatchId}</p>}
+              <p>Material Desc: {props.coil.material.description}</p>
+              <p>Grade: {props.coil.materialGrade.gradeName}</p>
+          </Col> 
+          <Col lg={12} md={12} sm={24} xs={24}>
+          <p>Inward specs: {props.coil.fThickness}X{props.coil.fWidth}X{props.coil.fLength}/{props.coil.fQuantity}</p>
+              <p>Available Length(mm): {lengthValue}</p>
+              <p>Available Weight(kg) : {WeightValue}</p>
+              <p>Available Width(mm) : {width}</p>
+          </Col>
+      </Row>
+  
+               <Row>
+                    {!props.wip && <Col lg={10} md={12} sm={24} xs={24} className="gx-align-self-center">
+                   
 
                         <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4">
                         
@@ -572,7 +591,7 @@ const CreateCuttingDetailsForm = (props) => {
                             </Form.Item>
                             <Form.Item>
                                 <Button type="primary" onClick={onChange} disabled={props.wip ? true :balanced ? true : false}>
-                                        Balanced
+                                        Balance
                                 </Button>
                             </Form.Item>
                             <Form.Item label="Weight">
@@ -596,24 +615,23 @@ const CreateCuttingDetailsForm = (props) => {
                     {props.wip && <>
                         <Col lg={8} md={12} sm={24} xs={24}>
                             <p>Coil number : {props.coil.coilNumber}</p>
-                            <p>Inward length(mm): {props.coil.fLength}</p>
-                            <p>Available Length(mm): {lengthValue}</p>
-                            <p>Available Weight(kg) : {WeightValue}</p>
-                            <p>Inward Weight(kg) : {props.coil.fQuantity}</p>
+                            <p>Customer Name : {props.coil.party.partyName}</p>
+                            {props.coil.customerBatchId && <p>Customer Batch No:{props.coil.customerBatchId}</p>}
+                            <p>Material Desc: {props.coil.material.description}</p>
                             <p>Grade: {props.coil.materialGrade.gradeName}</p>
+                            
                         </Col>     
                                                     
                         <Col lg={8} md={12} sm={24} xs={24}>
-                            <p>Material : {props.coil.material.description}</p>
-                            <p>Customer Name : {props.coil.party.partyName}</p>
-                            <p>Thickness(mm): {props.coil.fThickness}</p>
-                            <p>Inward Width(mm) : {props.coil.fWidth}</p>
+                            <p>Inward specs: {props.coil.fThickness}X{props.coil.fWidth}X{props.coil.fLength}/{props.coil.fQuantity}</p>
+                            <p>Available Length(mm): {lengthValue}</p>
+                            <p>Available Weight(kg) : {WeightValue}</p>
                             <p>Available Width(mm) : {width}</p>
                         </Col>
                     
                     </>}
 
-                    <Col lg={props.wip ? 24 : 12} md={props.wip ? 24 : 12} sm={24} xs={24}>
+                    <Col lg={props.wip ? 24 : 14} md={props.wip ? 24 : 12} sm={24} xs={24}>
                     <Table  className="gx-table-responsive"  
                         columns={props.wip? columns :columnsPlan} 
                         dataSource={props.wip?tableData:cuts}
@@ -652,29 +670,11 @@ const CreateCuttingDetailsForm = (props) => {
                             )}
                         </Form.Item>}
                     </Col>
-            </Row>}
+            </Row></>}
 
           </TabPane>
 
-          { !props.wip && <TabPane tab="Coil Details" key="2">
-                    <Row>
-                        <Col lg={12} md={12} sm={24} xs={24}>   
-                            <p>Coil number : {props.coil.coilNumber}</p>
-                            <p>Inward length(mm): {props.coil.fLength}</p>
-                            <p>Available Length(mm): {lengthValue}</p>
-                            <p>Available Weight(kg) : {WeightValue}</p>
-                            <p>Inward Weight(kg) : {props.coil.fQuantity}</p>
-                            <p>Grade: {props.coil.materialGrade.gradeName}</p>
-                        </Col> 
-                        <Col lg={12} md={12} sm={24} xs={24}>
-                            <p>Material : {props.coil.material.description}</p>
-                            <p>Customer Name : {props.coil.party.partyName}</p>
-                            <p>Thickness(mm): {props.coil.fThickness}</p>
-                            <p>Inward Width(mm) : {props.coil.fWidth}</p>
-                            <p>Available Width(mm) : {width}</p>
-                        </Col>
-                    </Row>
-                </TabPane>}
+        
             </Tabs>
             </Card>
        </Modal>
