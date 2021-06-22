@@ -45,9 +45,10 @@ const SlittingWidths = (props) => {
 
     const lengthValue1 = props.coilDetails.instruction && props.coilDetails.instruction.length > 0 ? props.plannedLength(props.coilDetails) : props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails)
     const widthValue1 = props.coilDetails.instruction && props.coilDetails.instruction.length > 0  ? props.plannedWidth(props.coilDetails):  props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.plannedWidth(props.coilDetails);
-    const weightValue = props.coilDetails.fpresent >= 0? props.coilDetails.fpresent : props.plannedWeight(props.coilDetails)
+    const weightValue1 = props.coilDetails.fpresent >= 0? props.coilDetails.fpresent : props.plannedWeight(props.coilDetails)
     const [len, setlen]= useState(lengthValue1);
     const [width, setwidth] = useState(widthValue1);
+    const [weightValue, setWeightValue] = useState(weightValue1);
     const [twidth, settwidth]= useState(0);
     const [oldLength, setOldLength]= useState(0);
     const [checked, setChecked] = useState([]);
@@ -74,18 +75,22 @@ const SlittingWidths = (props) => {
     useEffect(() => {
        let lengthValue1 = 0;
        let widthValue1 = 0;
+       let weightValue = 0;
        if(props.coilDetails.instruction && props.coilDetails.instruction.length > 0){
          lengthValue1 =  props.plannedLength(props.coilDetails)
          widthValue1 = props.plannedWidth(props.coilDetails);
+         weightValue = props.plannedWeight(props.coilDetails);
          } else {
           lengthValue1 = props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails)
           widthValue1 = props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.plannedWidth(props.coilDetails);
+          weightValue = props.coilDetails.fpresent ? props.coilDetails.fpresent  : props.plannedWeight(props.coilDetails);
           }
         props.widthValue(width);
         props.lengthValue(len);
         if(props.cuts && props.cuts.length === 0){
             setwidth(widthValue1);
             setlen(lengthValue1);
+            setWeightValue(weightValue);
         }
         
     }, [props.coilDetails,props.cuts]);
@@ -231,11 +236,12 @@ const SlittingWidths = (props) => {
         props.form.validateFields((err, values) => {
             let widthEntry = 0;
             let array = [];
+            let wValue;
             if(!err){
                 for(let i=0; i < values.widths.length; i++) {
                     widthEntry += values.widths[i]*values.nos[i];
                      array.push(`weights[${i}]`);
-                    let wValue = targetWeight*((values.widths[i]*values.nos[i]/widthValue1))
+                    wValue = targetWeight*((values.widths[i]*values.nos[i]/widthValue1))
                     props.form.setFieldsValue({
                         [array[i]]: wValue
                    });
@@ -246,6 +252,7 @@ const SlittingWidths = (props) => {
                     props.lengthValue(lengthValue1-(availLength+cutLength))
                     setwidth(widthValue1- (widthEntry));
                     props.widthValue(widthValue1- (widthEntry))
+                    setWeightValue(weightValue1-wValue);
                 }
                 
                 if(widthValue1 >= (widthEntry+cutWidth)){
@@ -282,16 +289,14 @@ const SlittingWidths = (props) => {
         }
         setValue(e.target.value);
       };
-    const maxWidth = parseInt(props.coilDetails.fWidth ? props.coilDetails.fWidth : props.plannedWidth(props.coilDetails)).toString().length;
-    const maxLength = parseInt((props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails))).toString().length;
-    const maxWeight = parseInt((props.coilDetails.fQuantity ? props.coilDetails.fQuantity  : props.plannedWeight(props.coilDetails))).toString().length;
-
+   
     return (
         <>
             <Form {...formItemLayoutSlitting}>
                 
                 {!props.wip && <><label>Available length : {len}mm</label>
                 <div><label>Available Width : {width}mm</label></div> 
+                <div><label>Available Weight : {weightValue}mm</label></div> 
                 </>}
                 {!props.wip && 
                 <><Form.Item label="Process Date" >
@@ -505,11 +510,6 @@ const columnsPlan=[
         
     },
     {
-        title: 'Slitting Date',
-        render:() =>(moment(new Date()).format('DD/MM/YYYY')),
-        key: 'instructionDate',
-    },
-    {
         title: 'Length',
         dataIndex:'plannedLength',
         key: 'plannedLength',
@@ -536,6 +536,12 @@ const columnsPlan=[
             
         ),
     },
+    
+    {
+        title: 'Slitting Date',
+        render:() =>(moment(new Date()).format('DD/MM/YYYY')),
+        key: 'instructionDate',
+    }
 ];
     const [tableData, setTableData] = useState(props.wip?(props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts);
     const [tweight, settweight]= useState(0);
@@ -782,17 +788,16 @@ const columnsPlan=[
                     <Row>
                         <Col lg={12} md={12} sm={24} xs={24}>   
                             <p>Coil number : {props.coil.coilNumber}</p>
-                            <p>Available Weight(kg) : {props.coil.fpresent}</p>
-                            <p>Available length(mm) : {lengthValue}</p>
-                            <p>Inward Weight(kg) : {props.coil.fQuantity}</p>
-                            <p>Grade: {props.coil.materialGrade.gradeName}</p> 
+                            <p>Customer Name : {props.coil.party.partyName}</p>
+                            {props.coil.customerBatchId && <p>Customer Batch No:{props.coil.customerBatchId}</p>}
+                            <p>Material Desc: {props.coil.material.description}</p>
+                            <p>Grade: {props.coil.materialGrade.gradeName}</p>
                         </Col> 
                         <Col lg={12} md={12} sm={24} xs={24}>
-                            <p>Material : {props.coil.material.description}</p>
-                            <p>Customer Name : {props.coil.party.partyName}</p>
-                            <p>Thickness(mm): {props.coil.fThickness}</p>
-                            <p>Width(mm) : {props.coil.fWidth}</p>
-                            <p>Available Width(mm): {widthValue}</p>
+                            <p>Inward specs: {props.coil.fThickness}X{props.coil.fWidth}X{props.coil.fLength}/{props.coil.fQuantity}</p>
+                            <p>Available Length(mm): {lengthValue}</p>
+                            <p>Available Weight(kg) : {props.coil.fpresent}</p>
+                            <p>Available Width(mm) : {widthValue}</p>
                         </Col>
                     </Row>
                 </TabPane>}
