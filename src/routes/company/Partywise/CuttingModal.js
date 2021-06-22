@@ -430,10 +430,10 @@ const CreateCuttingDetailsForm = (props) => {
             parentGroupId: props.inward.groupId.groupId,
             inwardId: props.coil.inwardEntryId
         };
-        
         cutsValue.push(cutObj);
     }
-    setRestTableData([...restTableData,...cutsValue])
+    
+    setRestTableData(restTableData.length>0 ?[...restTableData,...cutsValue]: [...cutsValue])
     setCutValue(cutsValue)
     }
     const getTargetLength=(e)=>{
@@ -477,7 +477,7 @@ const CreateCuttingDetailsForm = (props) => {
                     }
                 }
                 else if(props.slitCut){
-                    props.saveCuttingInstruction(cutValue);
+                    props.saveCuttingInstruction(restTableData);
                 }else{
                     props.saveCuttingInstruction(cuts);
                 }
