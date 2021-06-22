@@ -99,7 +99,7 @@ const CoilDetailsForm = (props) => {
     }, [props.inward]);
     const partyName =(partyList) =>{
         partyList = partyList.find(item => item.nPartyId===Number(props.inward.partyName))
-        return partyList.partyName
+        return partyList?.partyName
     }
     return (
         <>
@@ -127,8 +127,9 @@ const CoilDetailsForm = (props) => {
                             placeholder="enter material"
                             dataSource={dataSource}
                             onChange= {props.params!=="" ?(e) =>handleChange(e,'material.description'):""}
-                            filterOption={(inputValue, option) =>
-                                option.props.children.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
+                            filterOption={(inputValue, option) => {
+                                return option.props.children?.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1 || false
+                            }
                             }
                         />
                     )}
@@ -186,7 +187,7 @@ const CoilDetailsForm = (props) => {
             </Col>
             <Col span={10} className="gx-pt-4">
                 <Card title="Coil Details" style={{ width: 300 }}>
-                    <p>Customer Name : {props.params !== "" && props.inward.party ? props.inward.party.partyName:partyName(props.party.partyList)}</p>
+                    <p>Customer Name : {props.params !== "" && props.inward.party ? props.inward.party?.partyName:partyName(props.party.partyList)}</p>
                     {props.inward.customerId && <p>Customer Id : {props.inward.customerId}</p>}
                     {props.inward.customerBatchNo && <p>Customer Batch No : {props.inward.customerBatchNo}</p>}
                     {props.inward.customerInvoiceNo && <p>Customer Invoice No : {props.inward.customerInvoiceNo}</p>}
