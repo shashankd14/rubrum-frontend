@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
-import {fetchDeliveryList} from "../../../appRedux/actions";
-import {Button, Card, Table} from "antd";
+import {fetchDeliveryList, fetchPartyList, getCoilsByPartyId} from "../../../appRedux/actions";
+import {Button, Card, Table, Select} from "antd";
 import moment from 'moment';
-
+const Option = Select.Option;
 function  List(props) {
 
     const [sortedInfo, setSortedInfo] = useState({
@@ -13,6 +13,8 @@ function  List(props) {
 
     const [filteredInfo, setFilteredInfo] = useState(null);
     const [selectedRowKeys, setSelectedRowKeys] = useState([])
+    const [searchValue, setSearchValue] = useState('');
+    const [deliveryList, setDeliveryList] = useState(props.deliveryList)
     const columns = [
     {
         title: 'Delivery Chalan Number',
@@ -35,8 +37,15 @@ function  List(props) {
         sorter: (a, b) => a.updatedOn.length - b.updatedOn.length,
         sortOrder: sortedInfo.columnKey === 'updatedOn' && sortedInfo.order,
     },
+    
     {
-        title: 'Total Quantity',
+        title: 'Customer Name',
+        dataIndex: '',
+        key: '',
+        filters: []
+    },
+    {
+        title: 'Quantity Delivered',
         dataIndex: 'totalWeight',
         key: 'totalWeight',
         filters: [],
@@ -53,8 +62,22 @@ function  List(props) {
 
     useEffect(() => {
         props.fetchDeliveryList();
+        props.fetchPartyList();
     }, [])
-
+    useEffect(() => {
+        if (searchValue) {
+            const filteredData = props.deliveryList.filter((inward) => {
+                if (inward.coilNumber.toLowerCase().includes(searchValue.toLowerCase()) ||
+                    inward.party.partyName.toLowerCase().includes(searchValue.toLowerCase()) ||
+                    inward.vInvoiceNo.toLowerCase().includes(searchValue.toLowerCase())) {
+                    return inward
+                }
+            });
+            setDeliveryList(filteredData);
+        } else {
+            setDeliveryList(props.deliveryList);
+        }
+    }, [searchValue])
     const handleChange = (pagination, filters, sorter) => {
         setSortedInfo(sorter);
         setFilteredInfo(filters)
@@ -69,14 +92,40 @@ function  List(props) {
             disabled: false
         })
     }
+    const handleCustomerChange = (value) => {
+        props.getCoilsByPartyId(value);
+    }
+    function handleBlur() {
+    }
+
+    function handleFocus() {
+    }
+
 
     return (
         <Card>
-            
+            <div className="gx-flex-row gx-flex-1">
+                    <div className="table-operations gx-col">
+                        <Select
+                            showSearch
+                            style={{ width: 200 }}
+                            placeholder="Select a customer"
+                            optionFilterProp="children"
+                            onChange={handleCustomerChange}
+                            onFocus={handleFocus}
+                            onBlur={handleBlur}
+                            filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                        >
+                            {props.party.partyList.length > 0 && props.party.partyList.map((party) => (
+                                <Option value={party.nPartyId}>{party.partyName}</Option>
+                            ))}
+                        </Select>
+                    </div>
+                   </div>
             <Table rowSelection={handleSelection}
                    className="gx-table-responsive"
                    columns={columns}
-                   dataSource={props.deliveryList}
+                   dataSource={deliveryList}
                    onChange={handleChange}
             />
         </Card>
@@ -85,8 +134,11 @@ function  List(props) {
 
 const mapStateToProps = state => ({
     deliveryList: state.deliveries.deliveryList,
+    party: state.party
 });
 
 export default connect(mapStateToProps, {
     fetchDeliveryList,
+    fetchPartyList,
+    getCoilsByPartyId
 })(List);
