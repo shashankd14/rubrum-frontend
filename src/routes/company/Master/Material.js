@@ -28,7 +28,6 @@ const Material = (props) => {
         columnKey: 'age',
     });
     const { getFieldDecorator, getFieldValue, getFieldProps } = props.form;
-    const grade = getFieldValue('grade');
     getFieldDecorator('keys', {initialValue: [0]});
     const [showAddMaterial, setShowAddMaterial] = useState(false);
     const [viewMaterial, setViewMaterial] = useState(false);
@@ -137,7 +136,6 @@ const Material = (props) => {
         }
     }, [props.material]);
 
-
     useEffect(() => {
         const { material } = props;
         if(searchValue) {
@@ -214,8 +212,8 @@ const Material = (props) => {
                     <div className="gx-flex-row gx-w-50">
                         <Button type="primary" icon={() => <i className="icon icon-add"/>} size="medium"
                                 onClick={() => {
+                                    props.form.resetFields();
                                     props.resetMaterial();
-                                    props.form.resetFields()
                                     setShowAddMaterial(true);
                                 }}
                         >Add Material</Button>
@@ -259,6 +257,7 @@ const Material = (props) => {
                                     console.log('Received values of form: ', values);
                                     const data = { values, id: props.material?.material?.matId };
                                     props.updateMaterial(data);
+                                    setEditMaterial(false);
                                     setShowAddMaterial(false);
                                 }
                             });
@@ -276,6 +275,7 @@ const Material = (props) => {
                     }}
                     width={600}
                     onCancel={() => {
+                        props.resetMaterial();
                         props.form.resetFields();
                         setShowAddMaterial(false);
                         setEditMaterial(false)
@@ -300,10 +300,10 @@ const Material = (props) => {
                                         return (
                                             <Form.Item label="Grade">
                                                 {getFieldDecorator(`grade[${index}]`, {
-                                                    initialValue: grade[index],
+                                                    initialValue: props.material?.material?.materialGrade?.map(material => material.gradeName)[index] || [],
                                                     rules: [{ required: true, message: 'Please enter grade details' }]
                                                     })(
-                                                    <Input id="grade" />
+                                                    <Input id="grade" {...getFieldProps}/>
                                                 )}
                                                 {keys.length-1 > 0 && <i className="icon icon-trash gx-margin" onClick={() => removeKey(index)}/> }
                                                 {index == keys.length-1 && <i className="icon icon-add-circle" onClick={() => addNewKey(index)}/> }
@@ -326,15 +326,16 @@ const mapStateToProps = state => ({
 
 const addMaterialForm = Form.create({
     mapPropsToFields(props) {
+        const grade = props.material?.material?.materialGrade?.map(material => material.gradeName);
         return {
             description: Form.createFormField({
                 value: props.material?.material?.description || '',
             }),
             grade: Form.createFormField({
-                value: props.material?.material?.materialGrade?.map(material => material.gradeName) || [],
+                value: grade || [],
             }),
             keys: Form.createFormField({
-                value: props.material?.material?.materialGrade?.map(material => material.gradeName) || [0],
+                value: grade || [0],
             }),
         };
     },
