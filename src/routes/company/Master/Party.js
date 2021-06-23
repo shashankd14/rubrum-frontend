@@ -39,12 +39,8 @@ const Party = (props) => {
 
     const {getFieldDecorator, getFieldValue} = props.form;
 
-    const phone = getFieldValue('phone');
-    const address = getFieldValue('address');
-    const email = getFieldValue('email');
-    const city = getFieldValue('city');
-    const state = getFieldValue('state');
-    const pincode = getFieldValue('pincode');
+    const { party } = props.party;
+
     getFieldDecorator('phoneKeys', {initialValue: [0]});
     getFieldDecorator('addressKeys', {initialValue: [0]});
     getFieldDecorator('emailKeys', {initialValue: [0]});
@@ -327,6 +323,7 @@ const Party = (props) => {
                                     </Form.Item>
                                     {phoneKeys.map((k, index) => {
                                     const req = index ? false : true;
+                                    const phone = party?.phone3 ? [party?.phone1,party?.phone2,party?.phone3] : (party?.phone2 ? [party?.phone1,party?.phone2] : [party?.phone1]);
                                     return (
                                         <Form.Item  {...formItemLayout} className='phone'
                                             label={index ? `Alternate Phone Number ${index}` : 'Phone Number'}
@@ -359,6 +356,10 @@ const Party = (props) => {
 
                                     {addressKeys.map((k, index) => {
                                     const req = index ? false : true;
+                                    const address = party?.address2?.details ? [party?.address1?.details, party?.address2?.details] : [party?.address1?.details];
+                                    const city = party?.address2?.city ? [party?.address1?.city, party?.address2?.city] : [party?.address1?.city];
+                                    const state = party?.address2?.state ? [party?.address1?.state, party?.address2?.state] : [party?.address1?.state];
+                                    const pincode = party?.address2?.pincode ? [party?.address1?.pincode, party?.address2?.pincode] : [party?.address1?.pincode];
                                     return (
                                         <div>
                                         <Form.Item  {...formItemLayout} className='address'
@@ -412,6 +413,7 @@ const Party = (props) => {
 
                                     {emailKeys.map((k, index) => {
                                     const req = index ? false : true;
+                                    const email = party?.email3 ? [party?.email1,party?.email2,party?.email3] : (party?.email2 ? [party?.email1,party?.email2] : [party?.email1]);
                                     return (
                                         <Form.Item  {...formItemLayout} className='email'
                                             label={index ? `Alternate E-mail ${index}` : 'E-mail'}
