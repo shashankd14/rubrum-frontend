@@ -70,11 +70,11 @@ const List = (props) => {
     },
     {
         title: 'Weight',
-        dataIndex: 'fQuantity',
-        key: 'fQuantity',
+        dataIndex: 'fpresent',
+        key: 'fpresent',
         filters: [],
-        sorter: (a, b) => a.fQuantity - b.fQuantity,
-        sortOrder: sortedInfo.columnKey === 'fQuantity' && sortedInfo.order,
+        sorter: (a, b) => a.fpresent - b.fpresent,
+        sortOrder: sortedInfo.columnKey === 'fpresent' && sortedInfo.order,
     },
     {
         title: 'Status',

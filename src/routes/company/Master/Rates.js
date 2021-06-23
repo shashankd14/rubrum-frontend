@@ -175,10 +175,6 @@ const Rates = (props) => {
         setFilteredInfo(filters)
     };
 
-    const clearFilters = () => {
-        setFilteredInfo(null);
-    };
-
     const clearAll = () => {
         setSortedInfo(null);
         setFilteredInfo(null);
@@ -200,7 +196,6 @@ const Rates = (props) => {
                     <div className="table-operations gx-col">
                         <Button onClick={deleteSelectedCoils}>Delete</Button>
                         <Button onClick={exportSelectedData}>Export</Button>
-                        <Button onClick={clearFilters}>Clear All filters</Button>
                     </div>
                     <div className="gx-flex-row gx-w-50">
                         <Button type="primary" icon={() => <i className="icon icon-add"/>} size="medium"
