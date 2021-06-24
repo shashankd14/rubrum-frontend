@@ -50,6 +50,7 @@ const CreateCuttingDetailsForm = (props) => {
     const [bundleItemList, setBundleItemList] = useState([]);
     const [restTableData, setRestTableData] = useState([]);
     const [selectedPast , setSelectedPast] = useState([]);
+    const [packetNo, setPacketNo]= useState(0);
     const [tableData, setTableData] = useState(props.wip?(props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts);
     const columns=[
 
@@ -400,18 +401,23 @@ const CreateCuttingDetailsForm = (props) => {
             disabled: record.groupId !== null
         })
     }
+    const getNoOfCuts=(e)=>{
+        let cutsWidth = selectedRowKeys.reduce((a,c)=> c.plannedWidth)
+        cutsWidth = selectedRowKeys.length ===1 ? cutsWidth.plannedWidth : cutsWidth;
+        setPacketNo(Number(e.target.value));
+        let cutsNumerator= (Number(tpweight)/Number(e.target.value))/((props.coil.fThickness)*(cutsWidth/1000)*(Number(cutsLength)/1000)*7.85);
+        setCutsNo(cutsNumerator);
+    }
     const getCuts=(e)=>{
         let cutsWidth = selectedRowKeys.reduce((a,c)=> c.plannedWidth)
         cutsWidth = selectedRowKeys.length ===1 ? cutsWidth.plannedWidth : cutsWidth;
-        let cutsNumerator= (Number(tpweight)/Number(e.target.value))/(props.coil.fThickness)*(cutsWidth/1000)*(Number(cutsLength)/1000)*7.85;
-        setCutsNo(cutsNumerator);
         let cutsValue = [];
-        for(let i=0; i <Number(e.target.value); i++) {
+        for(let i=0; i <packetNo; i++) {
         let cutObj={
-            weight: Number(tpweight)/Number(e.target.value),
+            weight: Number(tpweight)/packetNo,
             length:cutsLength,
             plannedWidth: cutsWidth,
-            no: cutsNumerator.toFixed(0),
+            no: cutsNo.toFixed(0),
             processId: 3,
             parentGroupId: props.inward.groupId.groupId,
             inwardId: props.coil.inwardEntryId
@@ -498,9 +504,11 @@ const CreateCuttingDetailsForm = (props) => {
             <input type="text" className="bundle-input-class" id="tLength" name="tLength" onChange={getTargetLength}></input>
             </div><div style={{padding: "20px 0px 0px 25px"}}>
                     <label for="pNo">No of Packets :</label>
-                    <input type="text" className="bundle-input-class" id="pNo" name="pNo" onChange={(e)=>getCuts(e)}></input>
+                    <input type="text" className="bundle-input-class" id="pNo" name="pNo" onChange={e => getNoOfCuts(e)}></input>
                     <label for="noOfCuts">No of Cuts</label>
                     <input type="text" id="noOfCuts" className="bundle-input-class" name="noOfCuts" value={cutsNo.toFixed(0)}></input>
+                </div>
+                <div style={{'padding-left': "65%"}}><Button type="primary" size="medium" onClick={getCuts}>Confirm</Button> 
                 </div></>:
                 bundleItemList.length > 0 && bundleItemList.map((item,idx) => <>
                 <Table className="gx-table-responsive"  columns={columnsSlit} dataSource={selectedPast.length > 0 ?selectedPast[idx]:selectedRowKeys} pagination={false}/>
@@ -511,9 +519,10 @@ const CreateCuttingDetailsForm = (props) => {
             <input type="text" className="bundle-input-class" id="tLength" name="tLength" onChange={getTargetLength}></input>
             </div><div style={{padding: "20px 0px 0px 25px"}}>
                     <label for="pNo">No of Packets :</label>
-                    <input type="text" className="bundle-input-class" id="pNo" name="pNo" onChange={(e)=>getCuts(e)}></input>
+                    <input type="text" className="bundle-input-class" id="pNo" name="pNo" onChange={e => getNoOfCuts(e)}></input>
                     <label for="noOfCuts">No of Cuts</label>
                     <input type="text" id="noOfCuts" className="bundle-input-class" name="noOfCuts" value={cutsNo.toFixed(0)}></input>
+                </div><div style={{'padding-left': "65%"}}><Button type="primary" size="medium" onClick={getCuts}>Confirm</Button> 
                 </div></>)}
                 <Table  rowSelection={handleSelection} className="gx-table-responsive"  showHeader={false} columns={columnsSlit} dataSource={bundleTableData} rowKey={record => record.instructionId}/>
             </Col>
