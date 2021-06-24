@@ -272,8 +272,9 @@ const SlittingWidths = (props) => {
         setavailLength((lengthValue1*(e.target.value/weightValue)).toFixed(1))
     }
     const radioChange = e => {
+        settargetWeight(weightValue/equalParts);
         if(e.target.value=== 1){
-            setavailLength((lengthValue1*(targetWeight/weightValue)).toFixed(1));
+            setavailLength((lengthValue1*((weightValue/equalParts)/weightValue)).toFixed(1));
         }
         else{
             setavailLength(0);
