@@ -241,7 +241,6 @@ const CreateCuttingDetailsForm = (props) => {
 
             });
     };
-
     const onDelete = (record, e, type) => {
         e.preventDefault();
         if(type === 'slitCut'){
@@ -253,8 +252,6 @@ const CreateCuttingDetailsForm = (props) => {
              setCuts(data);
              props.deleteInstructionById(record.instructionId)
         }
-        
-        
     };
     const onChange=()=>{
         setBalancedValue(true);
@@ -265,7 +262,6 @@ const CreateCuttingDetailsForm = (props) => {
     const handleModeChange = (e) => {
         setMode(e.target.value);
     };
-
     const handleSubmit = e => {
         e.preventDefault();
         props.form.validateFields((err, values) => {
@@ -287,8 +283,6 @@ const CreateCuttingDetailsForm = (props) => {
             }
         });
     };
-
-    
     useEffect(() => {
         if(props.inward.process.length && props.inward.process.no) {
             if(props.coilDetails.instructionId)
@@ -301,8 +295,7 @@ const CreateCuttingDetailsForm = (props) => {
     
     useEffect(() => {
         if(props.slitCut && !props.wip){
-            setCuts(props.coilDetails)
-            
+          setCuts(props.coilDetails)
         }else{
         let data = props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions
         const lengthValue = props.coilDetails.instruction && props.coilDetails.instruction.length > 0 ? props.plannedLength(props.coilDetails) : props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails)
@@ -326,8 +319,7 @@ const CreateCuttingDetailsForm = (props) => {
     useEffect(() => {
         if(props.inward.instructionSaveCuttingLoading && !props.wip) {
             loading = message.loading('Saving Cut Instruction..');
-            
-        }
+         }
     }, [props.inward.instructionSaveCuttingLoading]);
     useEffect(()=>{
         let cutsArray = cuts.map(i => i.plannedWeight);
@@ -346,13 +338,11 @@ const CreateCuttingDetailsForm = (props) => {
                 return item;
             });
             setTableData(actualUpdate);
-
             let actualTotalWeight = cuts.map(i => i.actualWeight);
             actualTotalWeight = actualTotalWeight.filter(i => i !== undefined);
             actualTotalWeight = actualTotalWeight.length > 0 ? actualTotalWeight.reduce((total, num) => Number(total) + Number(num)) : 0;
             setTotalActualWeight(actualTotalWeight);
         }
-
     },[cuts])
     useEffect(() => {
         if(props.inward.instructionSaveCuttingSuccess && !props.wip) {
@@ -376,20 +366,18 @@ const CreateCuttingDetailsForm = (props) => {
     setBundleItemList(listItem.length>0 ?[...listItem].flat():[...listItem]);
     },[props.inward.groupId])
     const onInputChange = (key, index, type) => (e: React.ChangeEvent<HTMLInputElement>) => {
-        
-            const newData = [...tableData];
-            const newIndex = (page - 1) * 10 + index;
-            newData[newIndex][key] = type === 'select' ? { classificationId: Number(e) } : Number(e.target.value);
-            setTableData(newData);
+        const newData = [...tableData];
+        const newIndex = (page - 1) * 10 + index;
+        newData[newIndex][key] = type === 'select' ? { classificationId: Number(e) } : Number(e.target.value);
+        setTableData(newData);
         
         
     };
     const handleChange = (e) =>{
         if(e.target.value !== ''){
-            setBalanced(false)
-           
+           setBalanced(false)
         } else{
-            setBalanced(true)
+           setBalanced(true)
         }
         let length = e.target.value;
        setNo(((WeightValue-Number(tweight))/(0.00000785 *width*props.coil.fThickness*Number(length))).toFixed(0));
@@ -403,8 +391,6 @@ const CreateCuttingDetailsForm = (props) => {
         if(cutValue.length > 0){
             setRestTableData(cutValue);
         }
-        
-        // setbundledList(false);
         let weights= selectedRows.map(i => i.plannedWeight);
         weights = selectedRows.length>0?weights.reduce((total, num) => total + num): 0;
         settpweight(weights);
@@ -414,9 +400,7 @@ const CreateCuttingDetailsForm = (props) => {
             disabled: record.groupId !== null
         })
     }
-    
     const getCuts=(e)=>{
-        
         let cutsWidth = selectedRowKeys.reduce((a,c)=> c.plannedWidth)
         cutsWidth = selectedRowKeys.length ===1 ? cutsWidth.plannedWidth : cutsWidth;
         let cutsNumerator= (Number(tpweight)/Number(e.target.value))/(props.coil.fThickness)*(cutsWidth/1000)*(Number(cutsLength)/1000)*7.85;
