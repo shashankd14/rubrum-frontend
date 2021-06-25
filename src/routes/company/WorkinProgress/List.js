@@ -43,7 +43,7 @@ function  List(props) {
         },
         key: 'dReceivedDate',
         filters: [],
-        sorter: (a, b) => a.dReceivedDate.length - b.dReceivedDate.length,
+        sorter: (a, b) => a.dReceivedDate - b.dReceivedDate,
         sortOrder: sortedInfo.columnKey === 'dReceivedDate' && sortedInfo.order,
     },
     {
@@ -69,7 +69,7 @@ function  List(props) {
         dataIndex: 'fThickness',
         key: 'fThickness',
         filters: [],
-        sorter: (a, b) => a.fThickness.length - b.fThickness.length,
+        sorter: (a, b) => a.fThickness - b.fThickness,
         sortOrder: sortedInfo.columnKey === 'fThickness' && sortedInfo.order,
     },
     {
@@ -77,7 +77,7 @@ function  List(props) {
         dataIndex: 'fQuantity',
         key: 'fQuantity',
         filters: [],
-        sorter: (a, b) => a.fQuantity.length - b.fQuantity.length,
+        sorter: (a, b) => a.fQuantity - b.fQuantity,
         sortOrder: sortedInfo.columnKey === 'fQuantity' && sortedInfo.order,
     },
     {
