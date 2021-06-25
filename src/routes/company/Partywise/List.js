@@ -93,7 +93,7 @@ const List = (props) => {
         sorter: (a, b) => a.fWidth - b.fWidth,
         sortOrder: sortedInfo.columnKey === 'fWidth' && sortedInfo.order,
         render: (text, record) => {
-            return record.fWidth || record.plannedWidth;
+            return record.fWidth || record.actualWidth || record.plannedWidth;
         }
     },
     {
@@ -104,7 +104,7 @@ const List = (props) => {
         sorter: (a, b) => a.fpresent - b.fpresent,
         sortOrder: sortedInfo.columnKey === 'fpresent' && sortedInfo.order,
         render: (text, record) => {
-            return record.fpresent || record.plannedWeight;
+            return record.fpresent || record.actualWeight || record.plannedWeight;
         }
     },
     {
