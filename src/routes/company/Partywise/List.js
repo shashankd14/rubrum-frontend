@@ -22,7 +22,8 @@ const List = (props) => {
     const [filteredInfo, setFilteredInfo] = useState(null);
     const [searchValue, setSearchValue] = useState('');
     const [filteredInwardList, setFilteredInwardList] = useState(props.inward.inwardList);
-    const [selectedRowKeys, setSelectedRowKeys] = useState([])
+    const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+    const [expandedRow, setExpandedRecord] = useState([]);
 
     const columns = [{
         title: 'Coil Number',
@@ -41,6 +42,18 @@ const List = (props) => {
         filters: [],
         sorter: (a, b) => a.customerBatchId - b.customerBatchId,
         sortOrder: sortedInfo.columnKey === 'customerBatchId' && sortedInfo.order,
+        render: (text, record) => {
+            if (record.customerBatchId ) return record.customerBatchId;
+            else {
+                let batchId = '';
+                expandedRow.forEach(row => {
+                    if (row.child.includes(record.instructionId)) {
+                        batchId = row.batch
+                    }
+                })
+                return batchId;
+            }
+        }
     },
     {
         title: 'Material',
@@ -59,6 +72,18 @@ const List = (props) => {
         filters: [],
         sorter: (a, b) => a.fThickness - b.fThickness,
         sortOrder: sortedInfo.columnKey === 'fThickness' && sortedInfo.order,
+        render: (text, record) => {
+            if (record.fThickness ) return record.fThickness;
+            else {
+                let thickness = '';
+                expandedRow.forEach(row => {
+                    if (row.child.includes(record.instructionId)) {
+                        thickness = row.fThickness
+                    }
+                })
+                return thickness;
+            }
+        }
     },
     {
         title: 'Width',
@@ -67,14 +92,20 @@ const List = (props) => {
         filters: [],
         sorter: (a, b) => a.fWidth - b.fWidth,
         sortOrder: sortedInfo.columnKey === 'fWidth' && sortedInfo.order,
+        render: (text, record) => {
+            return record.fWidth || record.actualWidth || record.plannedWidth;
+        }
     },
     {
-        title: 'Weight',
+        title: 'Present Weight',
         dataIndex: 'fpresent',
         key: 'fpresent',
         filters: [],
         sorter: (a, b) => a.fpresent - b.fpresent,
         sortOrder: sortedInfo.columnKey === 'fpresent' && sortedInfo.order,
+        render: (text, record) => {
+            return record.fpresent || record.actualWeight || record.plannedWeight;
+        }
     },
     {
         title: 'Status',
@@ -100,7 +131,6 @@ const List = (props) => {
     },
     ];
     
-
     useEffect(() => {
         props.fetchPartyList();
         props.fetchInwardList();
@@ -214,6 +244,16 @@ const List = (props) => {
                     columns={columns}
                     dataSource={filteredInwardList}
                     onChange={handleChange}
+                    onExpand={(expanded, record) => {
+                        const motherRecord = {
+                            key: record.key,
+                            child: record.instruction.map(r => r.instructionId),
+                            batch: record.customerBatchId,
+                            fThickness: record.fThickness
+                        };
+                        const result = expanded ? expandedRow : expandedRow.filter(row => row.key !== record.key);
+                        setExpandedRecord([...result, motherRecord])
+                    }}
                 />
             </Card>
         </div>
