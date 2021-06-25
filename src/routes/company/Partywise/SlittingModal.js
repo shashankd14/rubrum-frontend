@@ -159,19 +159,18 @@ const SlittingWidths = (props) => {
         props.setSlits(cutsValue);
     }
     const addNewSize = (e) => {
+        let wValue;
         props.form.validateFields((err, values) => {
-            
             if (!err) {
                 let totalWidth = 0;
                 let totalWeight = 0 ;
                 const widthValue = props.coilDetails.fWidth ? props.coilDetails.fWidth : props.plannedWidth(props.coilDetails)
                 const lengthValue = props.coilDetails.fLength ? props.coilDetails.fLength : props.plannedLength(props.coilDetails)
-                const weightValue = props.coilDetails.fpresent >= 0? props.coilDetails.fpresent : props.plannedWeight(props.coilDetails)
+                const weightValue1 = props.coilDetails.fpresent >= 0? props.coilDetails.fpresent : props.plannedWeight(props.coilDetails)
                 const slits = []
                 if(cutLength === 0){
                     setOldLength(Number(availLength));
-                }
-                for(let i=0; i < values.widths.length; i++) {
+                }for(let i=0; i < values.widths.length; i++) {
                     for (let j=0; j<values.nos[i];j++){
                         let slitValue = {
                             name: i+1, processDate: moment().format(APPLICATION_DATE_FORMAT),
@@ -184,32 +183,26 @@ const SlittingWidths = (props) => {
                             instructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : '',
                         }
                         slits.push(slitValue)
-                        
                     }
+                    wValue = targetWeight*((values.widths[i]*values.nos[i]/widthValue1))
                     totalWidth += values.widths[i]*values.nos[i];
                     totalWeight = props.tweight+Number(values.weights[i]);
-                    settwidth(totalWidth);
-                    
+                    settwidth(totalWidth); 
                 }
                 if(oldLength >= lengthValue){
                     if((totalWidth+cutWidth) > widthValue) {
                         message.error('Sum of slits width is greater than width of coil.', 2);
                 }}else if(availLength +cutLength > lengthValue) {
                     message.error('Length greater than available length', 2);
-                }else if(totalWeight > weightValue) {
+                }else if(totalWeight > weightValue1) {
                         message.error('Weight greater than available weight', 2);
                 }else{
+                        setWeightValue(weightValue-wValue);
                         props.setSlits(slits);
                         props.form.resetFields();
-                }
-            
-                
-                
-                    
-            }
+                }}
         });
     }
-
     const addNewKey = () => {
         const {form} = props;
         const keys = form.getFieldValue('keys');
@@ -218,7 +211,6 @@ const SlittingWidths = (props) => {
             keys: nextKeys,
         });
     }
-
     const removeKey = (k) => {
         const {form} = props;
         // can use data-binding to get
@@ -252,7 +244,7 @@ const SlittingWidths = (props) => {
                     props.lengthValue(lengthValue1-(availLength+cutLength))
                     setwidth(widthValue1- (widthEntry));
                     props.widthValue(widthValue1- (widthEntry))
-                    setWeightValue(weightValue1-wValue);
+                    
                 }
                 
                 if(widthValue1 >= (widthEntry+cutWidth)){
@@ -280,8 +272,9 @@ const SlittingWidths = (props) => {
         setavailLength((lengthValue1*(e.target.value/weightValue)).toFixed(1))
     }
     const radioChange = e => {
+        settargetWeight(weightValue/equalParts);
         if(e.target.value=== 1){
-            setavailLength((lengthValue1*(targetWeight/weightValue)).toFixed(1));
+            setavailLength((lengthValue1*((weightValue/equalParts)/weightValue)).toFixed(1));
         }
         else{
             setavailLength(0);
@@ -289,14 +282,12 @@ const SlittingWidths = (props) => {
         }
         setValue(e.target.value);
       };
-   
-    return (
+   return (
         <>
             <Form {...formItemLayoutSlitting}>
-                
                 {!props.wip && <><label>Available length : {len}mm</label>
                 <div><label>Available Width : {width}mm</label></div> 
-                <div><label>Available Weight : {weightValue}mm</label></div> 
+                <div><label>Available Weight : {weightValue}kg</label></div> 
                 </>}
                 {!props.wip && 
                 <><Form.Item label="Process Date" >
