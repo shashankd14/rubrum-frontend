@@ -249,13 +249,13 @@ const Plan = (props) => {
                                                 <div style={{ marginLeft: "8px" }}>
                                                     {instruction.parentGroupId == null ? instruction.process.processName == 'Cutting' ? 'Cutting' : 'Slitting': 'Slit & Cut'}
                                                     <div className="gx-flex-row">
-                                                        <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.availableLength" /> : </p>
-                                                        <span className="gx-coil-details-label">{instruction?.deliveryDetails !== null &&instruction?.deliveryDetails?.deliveryId !==null? 0 :getPlannedLength(instruction)}</span>
+                                                        <p className="gx-coil-details-label">Available specs :</p>
+                                                        <span className="gx-coil-details-label">{props.inward.plan.fThickness}X{getPlannedWidth(instruction)}X{instruction?.deliveryDetails !== null &&instruction?.deliveryDetails?.deliveryId !==null? 0 :getPlannedLength(instruction)}/{instruction?.deliveryDetails !== null &&instruction?.deliveryDetails?.deliveryId !==null?0:getPlannedWeight(instruction)}</span>
                                                     </div>
-                                                    <div className="gx-flex-row">
+                                                    {/* <div className="gx-flex-row">
                                                         <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.availableWeight" /> : </p>
                                                         <span className="gx-coil-details-label">{instruction?.deliveryDetails !== null &&instruction?.deliveryDetails?.deliveryId !==null? 0:getPlannedWeight(instruction)}</span>
-                                                    </div>
+                                                    </div> */}
                                                     { props.wip ?
                                                          <></> :
                                                             <div><Select
