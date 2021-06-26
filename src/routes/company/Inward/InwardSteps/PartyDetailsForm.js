@@ -75,7 +75,7 @@ const CreatePartyDetailsForm = (props) => {
                             {getFieldDecorator('customerId', {
                             rules: [{ required: false, message: 'Please input the coil number!' }],
                             })(
-                                <Input id="customerId" />
+                                <Input id="customerId" disabled/>
                             )}
                     </Form.Item>
                     <Form.Item label="Customer Batch No"
@@ -137,7 +137,7 @@ const PartyDetailsForm = Form.create({
             }),
             customerId: Form.createFormField({
                 ...props.inward.customerId,
-                value: props.params !== "" ? props.inward.customerCoilId:(props.inward.customerId) ? props.inward.customerId : '',
+                value: props.params !== "" ? props.inward.customerCoilId:(props.inward.customerId) ? props.inward.customerId : props.inward.partyName,
             }),
             customerBatchNo: Form.createFormField({
                 ...props.inward.customerBatchNo,
