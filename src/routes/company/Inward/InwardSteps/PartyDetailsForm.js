@@ -137,11 +137,11 @@ const PartyDetailsForm = Form.create({
             }),
             customerId: Form.createFormField({
                 ...props.inward.customerId,
-                value: (props.inward.customerId) ? props.inward.customerId : props.inward.partyName,
+                value: props.params !== "" ? props.inward.customerCoilId:(props.inward.customerId) ? props.inward.customerId : props.inward.partyName,
             }),
             customerBatchNo: Form.createFormField({
                 ...props.inward.customerBatchNo,
-                value: (props.inward.customerBatchNo) ? props.inward.customerBatchNo : '',
+                value: props.params !== "" ? props.inward.customerBatchId:(props.inward.customerBatchNo) ? props.inward.customerBatchNo : '',
             }),
             customerInvoiceNo: Form.createFormField({
                 ...props.inward.customerInvoiceNo,
