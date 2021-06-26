@@ -414,7 +414,7 @@ const CreateCuttingDetailsForm = (props) => {
         let cutsValue = [];
         for(let i=0; i <packetNo; i++) {
         let cutObj={
-            weight: Number(tpweight)/packetNo,
+            weight: (Number(tpweight)/packetNo).toFixed(2),
             length:cutsLength,
             plannedWidth: cutsWidth,
             no: cutsNo.toFixed(0),
