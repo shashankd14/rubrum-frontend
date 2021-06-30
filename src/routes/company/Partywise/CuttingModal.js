@@ -531,7 +531,7 @@ const CreateCuttingDetailsForm = (props) => {
             </Col>}
         </Row>
           :<Table  rowSelection={handleSelection} className="gx-table-responsive"  columns={columnsSlit} dataSource={cuts} rowKey={record => record.instructionId}/>  : 
-          <><Row>
+          <>{!props.wip && <Row>
           <Col lg={12} md={12} sm={24} xs={24}>   
           <p>Coil number : {props.coil.coilNumber}</p>
               <p>Customer Name : {props.coil.party.partyName}</p>
@@ -545,7 +545,7 @@ const CreateCuttingDetailsForm = (props) => {
               <p>Available Weight(kg) : {WeightValue}</p>
               <p>Available Width(mm) : {width}</p>
           </Col>
-      </Row>
+      </Row>}
   
                <Row>
                     {!props.wip && <Col lg={10} md={12} sm={24} xs={24} className="gx-align-self-center">
