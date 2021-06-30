@@ -176,7 +176,13 @@ const List = (props) => {
     }
 
     const handleCustomerChange = (value) => {
-        props.getCoilsByPartyId(value);
+        if (value) {
+            const filteredData = props.inward.inwardList.filter((inward) =>inward.party.nPartyId===value);
+            setFilteredInwardList(filteredData);
+        } else {
+            setFilteredInwardList(props.inward.inwardList);
+        }
+      
     }
 
     function handleBlur() {
