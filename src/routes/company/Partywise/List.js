@@ -97,6 +97,17 @@ const List = (props) => {
         }
     },
     {
+        title: 'Length',
+        dataIndex: 'fLength',
+        key: 'fLength',
+        filters: [],
+        sorter: (a, b) => a.fLength - b.fLength,
+        sortOrder: sortedInfo.columnKey === 'fLength' && sortedInfo.order,
+        render: (text, record) => {
+            return record.fLength || record.actualLength || record.plannedLength;
+        }
+    },
+    {
         title: 'Present Weight',
         dataIndex: 'fpresent',
         key: 'fpresent',
