@@ -97,6 +97,17 @@ const List = (props) => {
         }
     },
     {
+        title: 'Length',
+        dataIndex: 'fLength',
+        key: 'fLength',
+        filters: [],
+        sorter: (a, b) => a.fLength - b.fLength,
+        sortOrder: sortedInfo.columnKey === 'fLength' && sortedInfo.order,
+        render: (text, record) => {
+            return record.fLength || record.actualLength || record.plannedLength;
+        }
+    },
+    {
         title: 'Present Weight',
         dataIndex: 'fpresent',
         key: 'fpresent',
@@ -176,7 +187,13 @@ const List = (props) => {
     }
 
     const handleCustomerChange = (value) => {
-        props.getCoilsByPartyId(value);
+        if (value) {
+            const filteredData = props.inward.inwardList.filter((inward) =>inward.party.nPartyId===value);
+            setFilteredInwardList(filteredData);
+        } else {
+            setFilteredInwardList(props.inward.inwardList);
+        }
+      
     }
 
     function handleBlur() {
