@@ -574,7 +574,7 @@ const columnsPlan=[
     } else{
         data = data.flat();  
         let cutsData = [...data];
-        cutsData = props.wip ? cutsData.filter(item => item.process.processId === 2 && item.status.statusId !==3) : cutsData.filter(item => item.process.processId === 2)
+        cutsData = props.wip ? cutsData.filter(item => item.process.processId === 2 && item.status.statusId !==3 && item.groupId === null) : cutsData.filter(item => item.process.processId === 2)
         setSlittingDetail(cutsData)
         setCuts(cutsData);
     }
