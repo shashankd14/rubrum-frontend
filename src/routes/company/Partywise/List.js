@@ -21,7 +21,13 @@ const List = (props) => {
     });
     const [filteredInfo, setFilteredInfo] = useState(null);
     const [searchValue, setSearchValue] = useState('');
-    const [filteredInwardList, setFilteredInwardList] = useState(props.inward.inwardList);
+    let filter = props.inward.inwardList.map(item =>{
+        if(item.instruction.length>0){
+            item.children= item.instruction.filter(ins => ins.groupId === null)
+         }
+         return item
+     })
+    const [filteredInwardList, setFilteredInwardList] = useState(filter);
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [expandedRow, setExpandedRecord] = useState([]);
 
@@ -146,10 +152,19 @@ const List = (props) => {
         props.fetchPartyList();
         props.fetchInwardList();
     }, []);
-
+   
+const getFilterData=(list)=>{
+    let filter = list.map(item =>{
+    if(item.instruction.length>0){
+        item.children = item.instruction.filter(ins => ins.groupId === null);
+    }
+      return item
+     })
+    return filter;
+}
     useEffect(() => {
         if(!props.inward.loading && props.inward.success) {
-            setFilteredInwardList(props.inward.inwardList);
+            setFilteredInwardList(getFilterData(props.inward.inwardList));
         }
     }, [props.inward.loading, props.inward.success])
 
@@ -162,9 +177,10 @@ const List = (props) => {
                     return inward
                 }
             });
-            setFilteredInwardList(filteredData);
+            
+            setFilteredInwardList(getFilterData(filteredData));
         } else {
-            setFilteredInwardList(props.inward.inwardList);
+            setFilteredInwardList(getFilterData(props.inward.inwardList));
         }
     }, [searchValue])
 
