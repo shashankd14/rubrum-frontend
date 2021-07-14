@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import {fetchDeliveryList, fetchPartyList, getCoilsByPartyId} from "../../../appRedux/actions";
 import {Button, Card, Table, Select} from "antd";
+import SearchBox from "../../../components/SearchBox";
 import moment from 'moment';
 const Option = Select.Option;
 function  List(props) {
@@ -92,9 +93,15 @@ function  List(props) {
             disabled: false
         })
     }
-    const handleCustomerChange = (value) => {
-        props.getCoilsByPartyId(value);
-    }
+        const handleCustomerChange = (value) => {
+            if (value) {
+                const filteredData = props.deliveryList.filter((inward) =>inward.party.nPartyId===value);
+                setDeliveryList(filteredData);
+            } else {
+                setDeliveryList(props.deliveryList);
+            }
+          
+        }
     function handleBlur() {
     }
 
@@ -105,6 +112,7 @@ function  List(props) {
     return (
         <Card>
             <div className="gx-flex-row gx-flex-1">
+            <SearchBox styleName="gx-flex-1" placeholder="Search for coil number or party name..." value={searchValue} onChange={(e) => setSearchValue(e.target.value)} />
                     <div className="table-operations gx-col">
                         <Select
                             showSearch
@@ -122,6 +130,7 @@ function  List(props) {
                         </Select>
                     </div>
                    </div>
+                   
             <Table rowSelection={handleSelection}
                    className="gx-table-responsive"
                    columns={columns}
