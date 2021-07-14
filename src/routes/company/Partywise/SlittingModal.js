@@ -513,7 +513,10 @@ const columnsPlan=[
     {
         title: 'Weight',
         dataIndex:'plannedWeight',
-        key:'plannedWeight'
+        render (value) {
+            return Math.round(value);
+        },
+        key:'plannedWeight',
     },
     {
         title: 'Action',
