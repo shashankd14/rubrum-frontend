@@ -34,6 +34,7 @@ const CreateCuttingDetailsForm = (props) => {
     const [tweight, settweight]= useState(0);
     const [totalActualweight, setTotalActualWeight] = useState(0);
     const [no, setNo]= useState();
+    const [validate, setValidate]=useState(true);
     const lengthValue = props.coilDetails.instruction && props.coilDetails.instruction.length > 0 ? props.plannedLength(props.coilDetails) : props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails)
     const widthValue = props.coilDetails.instruction && props.coilDetails.instruction.length > 0  ? props.plannedWidth(props.coilDetails):  props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.plannedWidth(props.coilDetails);
     const WeightValue = props.coilDetails.instruction && props.coilDetails.instruction.length > 0  ? props.plannedWeight(props.coilDetails):  props.coilDetails.fpresent ? props.coilDetails.fpresent  : props.plannedWeight(props.coilDetails);
@@ -267,6 +268,7 @@ const CreateCuttingDetailsForm = (props) => {
         e.preventDefault();
         props.form.validateFields((err, values) => {
             if (!err) {
+                setValidate(false);
                 if((Number(tweight)+values.weight) > WeightValue){
                     message.error('Weight greater than available weight', 2);
                 }else{
@@ -281,6 +283,9 @@ const CreateCuttingDetailsForm = (props) => {
                         props.resetInstruction();
                 }
                
+            }else{
+                setValidate(true);
+                message.error('Please enter the mandatory fields(*)',2);
             }
         });
     };
@@ -449,32 +454,37 @@ const CreateCuttingDetailsForm = (props) => {
         props.instructionGroupsave(payload);
         
     }
+    const handleOk=()=>{
+        if(props.wip){
+            if (totalActualweight > tweight) {
+                message.error('Actual Weight is greater than Total weight, Please modify actual weight!');
+            } else {
+                const coil = {
+                    number: props.coil.coilNumber,
+                    instruction: tableData
+                };
+                props.updateInstruction(coil);
+                props.setShowCuttingModal();
+            }
+        }
+        else if(validate === false){
+            if(props.slitCut){
+                props.saveCuttingInstruction(restTableData);
+            }else{
+                props.saveCuttingInstruction(cuts);
+            }
+        }else {
+            message.error('Please enter the mandatory fields(*)',2);
+        }
+        
+    }
     
      return (
        
         <Modal
             title={props.wip ? (props.slitCut ? "Finish slit & cut Instruction" : "Finish Cutting Instruction") : "Cutting Instruction"}
             visible={props.showCuttingModal}
-            onOk={() => {
-                if(props.wip){
-                    if (totalActualweight > tweight) {
-                        message.error('Actual Weight is greater than Total weight, Please modify actual weight!');
-                    } else {
-                        const coil = {
-                            number: props.coil.coilNumber,
-                            instruction: tableData
-                        };
-                        props.updateInstruction(coil);
-                        props.setShowCuttingModal();
-                    }
-                }
-                else if(props.slitCut){
-                    props.saveCuttingInstruction(restTableData);
-                }else{
-                    props.saveCuttingInstruction(cuts);
-                }
-
-            }}
+            onOk={() => {handleOk()}}
             width={1020}
             onCancel={() => {
                 setCuts([]);
