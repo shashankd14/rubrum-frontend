@@ -5,6 +5,7 @@ import moment from "moment";
 import {APPLICATION_DATE_FORMAT} from '../../../constants';
 import {setProcessDetails, saveSlittingInstruction, resetInstruction, updateInstruction, deleteInstructionById} from '../../../appRedux/actions/Inward';
 import { set } from "nprogress";
+import { values } from "lodash";
 
 const Option = Select.Option;
 
@@ -42,7 +43,7 @@ const SlittingWidths = (props) => {
     const [value, setValue] = useState(0);
     const [targetWeight, settargetWeight]= useState(0);
     const [availLength, setavailLength]= useState(0);
-
+    
     const lengthValue1 = props.coilDetails.instruction && props.coilDetails.instruction.length > 0 ? props.plannedLength(props.coilDetails) : props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails)
     const widthValue1 = props.coilDetails.instruction && props.coilDetails.instruction.length > 0  ? props.plannedWidth(props.coilDetails):  props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.plannedWidth(props.coilDetails);
     const weightValue1 = props.coilDetails.fpresent >= 0? props.coilDetails.fpresent : props.plannedWeight(props.coilDetails)
@@ -72,6 +73,7 @@ const SlittingWidths = (props) => {
     useEffect(() => {
       getEditValue();
     }, [props.length]);
+   
     useEffect(() => {
        let lengthValue1 = 0;
        let widthValue1 = 0;
@@ -162,6 +164,7 @@ const SlittingWidths = (props) => {
         let wValue;
         props.form.validateFields((err, values) => {
             if (!err) {
+                props.validate(false);
                 let totalWidth = 0;
                 let totalWeight = 0 ;
                 const widthValue = props.coilDetails.fWidth ? props.coilDetails.fWidth : props.plannedWidth(props.coilDetails)
@@ -201,6 +204,9 @@ const SlittingWidths = (props) => {
                         props.setSlits(slits);
                         props.form.resetFields();
                 }}
+                else {
+                    props.validate(true);
+                }
         });
     }
     const addNewKey = () => {
@@ -312,10 +318,15 @@ const SlittingWidths = (props) => {
                     )}
                 </Form.Item>
                 <Form.Item>
-                    <Radio.Group onChange={radioChange} disabled={props.cuts.length> 0 ? true: false} value={value}>
+                {getFieldDecorator('radioParts', {
+                        rules: [{ required: true, message: 'Please select Parts' }],
+                    })(
+                        <Radio.Group id="radioParts" onChange={radioChange} disabled={props.cuts.length> 0 ? true: false} value={value}>
                         <Radio value={1}>Equal</Radio>
                         <Radio value={2}>Unequal</Radio>
                     </Radio.Group>
+                    )}
+                   
                 </Form.Item>
                 
                 <Form.Item label="Target Weight(kg)">
@@ -542,6 +553,7 @@ const columnsPlan=[
     const [totalActualweight, setTotalActualWeight] = useState(0);
     const [page, setPage] = useState(1);
     const [edit, setEdit] = useState([]);
+    const [validate, setValidate]= useState(true);
     const [lengthValue, setLengthValue] = useState();
     const [widthValue, setWidthValue]= useState();
     const [form, setForm]= useState(false);
@@ -634,6 +646,7 @@ const columnsPlan=[
         props.setShowSlittingModal(false)
     }
     const handleOk =(name) => {
+        
         if(props.wip){
             if (totalActualweight > tweight) {
                 message.error('Actual Weight is greater than Total weight, Please modify actual weight!');
@@ -646,16 +659,19 @@ const columnsPlan=[
                 props.setShowSlittingModal(false)
             }
         }
-        else if(name === 'Slitting'){
-            props.saveSlittingInstruction(cuts);
-        } else if(name === 'slittingDetail'){
-            props.setShowSlittingModal(false);
-            props.setShowCuttingModal(true);
-            props.setCutting(cuts);
-        }
-        else {
-            props.saveSlittingInstruction(cuts);
-            props.setShowCuttingModal(true);
+        if(validate === false){
+            if(name === 'Slitting'){
+                props.saveSlittingInstruction(cuts);
+            } else if(name === 'slittingDetail'){
+                props.setShowSlittingModal(false);
+                props.setShowCuttingModal(true);
+                props.setCutting(cuts);
+            } else {
+                props.saveSlittingInstruction(cuts);
+                props.setShowCuttingModal(true);
+            }
+        } else {
+            message.error('Please enter mandatory fields(*)', 2);
         }
         
     }
@@ -671,21 +687,21 @@ const columnsPlan=[
                 <Button key="back" onClick={handleCancel}>
                   Cancel
                 </Button>,
-                <Button key="submit" type="primary" loading={loading} onClick={()=>handleOk('slittingDetail')}>
+                <Button key="submit" type="primary" loading={loading} onClick={()=>{handleOk('slittingDetail')}}>
                   OK
                 </Button>
               ]:[
                 <Button key="back" onClick={handleCancel}>
                   Cancel
                 </Button>,
-                <Button key="submit" type="primary" loading={loading} onClick={()=>handleOk('SlitCut')}>
+                <Button key="submit" type="primary" loading={loading} onClick={()=>{handleOk('SlitCut')}}>
                   Send for Cut
                 </Button>
               ]:[
                 <Button key="back" onClick={handleCancel}>
                   Cancel
                 </Button>,
-                <Button key="submit" type="primary" loading={loading} onClick={()=>handleOk('Slitting')}>
+                <Button key="submit" type="primary" loading={loading} onClick={()=>{handleOk('Slitting')}}>
                   OK
                 </Button>]}
         >
@@ -757,7 +773,7 @@ const columnsPlan=[
                         <Form {...formItemLayout} className="login-form gx-pt-4">
                             
                                 <Form.Item>
-                                    <SlittingWidthsForm setSlits={(slits) => setCuts([...cuts,...slits])} setweight={(w) => settweight(w)} coilDetails={props.coilDetails} wip={props.wip} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth} plannedWeight ={props.plannedWeight} length={length} cuts={cuts} edit={edit} tweight={tweight} lengthValue={(lengthValue) => setLengthValue(lengthValue)} widthValue={(widthValue) => setWidthValue(widthValue)} reset={form}/>
+                                    <SlittingWidthsForm setSlits={(slits) => setCuts([...cuts,...slits])} setweight={(w) => settweight(w)} coilDetails={props.coilDetails} wip={props.wip} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth} plannedWeight ={props.plannedWeight} length={length} cuts={cuts} edit={edit} tweight={tweight} lengthValue={(lengthValue) => setLengthValue(lengthValue)} widthValue={(widthValue) => setWidthValue(widthValue)} reset={form} validate={(valid) => setValidate(valid)} />
                                 </Form.Item>
 
                             </Form>
