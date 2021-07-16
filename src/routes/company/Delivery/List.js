@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import {fetchDeliveryList, fetchPartyList, getCoilsByPartyId} from "../../../appRedux/actions";
-import {Button, Card, Table, Select} from "antd";
+import {Card, Table, Select, Input} from "antd";
 import SearchBox from "../../../components/SearchBox";
 import moment from 'moment';
 const Option = Select.Option;
-function  List(props) {
+function List(props) {
 
     const [sortedInfo, setSortedInfo] = useState({
         order: 'descend',
@@ -41,9 +41,23 @@ function  List(props) {
     
     {
         title: 'Customer Name',
-        dataIndex: '',
-        key: '',
+        dataIndex: 'partyName',
+        key: 'partyName',
         filters: []
+    },
+    {
+        title: 'Customer Invoice Number',
+        dataIndex:'customerInvoice',
+        render: (text, record, index) => (
+            <Input value={record.customerInvoice} onChange={onInputChange("customerInvoice", index)} />
+          )
+    },
+    {
+        title: 'Customer Invoice Date',
+        dataIndex:'customerInvoiceDate',
+        render: (text, record, index) => (
+            <Input type="date" value={record.customerInvoiceDate} onChange={onInputChange("customerInvoiceDate", index)} />
+          )
     },
     {
         title: 'Quantity Delivered',
@@ -61,17 +75,24 @@ function  List(props) {
     }
     ]
 
+    const onInputChange = (key, index, type) => (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newData = [...deliveryList];
+        newData[index][key] =  e.target.value;
+        setDeliveryList(newData);
+        
+        
+    };
     useEffect(() => {
         props.fetchDeliveryList();
         props.fetchPartyList();
     }, [])
     useEffect(() => {
         if (searchValue) {
-            const filteredData = props.deliveryList.filter((inward) => {
-                if (inward.coilNumber.toLowerCase().includes(searchValue.toLowerCase()) ||
-                    inward.party.partyName.toLowerCase().includes(searchValue.toLowerCase()) ||
-                    inward.vInvoiceNo.toLowerCase().includes(searchValue.toLowerCase())) {
-                    return inward
+            const filteredData = props.deliveryList.filter((deliveryEntry) => {
+                if (deliveryEntry.coilNumber.toLowerCase().includes(searchValue.toLowerCase()) ||
+                    deliveryEntry.partyName.toLowerCase().includes(searchValue.toLowerCase()) ||
+                    deliveryEntry.customerBatchId.toLowerCase().includes(searchValue.toLowerCase())) {
+                    return deliveryEntry
                 }
             });
             setDeliveryList(filteredData);
@@ -95,7 +116,7 @@ function  List(props) {
     }
         const handleCustomerChange = (value) => {
             if (value) {
-                const filteredData = props.deliveryList.filter((inward) =>inward.party.nPartyId===value);
+                const filteredData = props.deliveryList.filter((deliveryEntry) =>deliveryEntry.partyName===value);
                 setDeliveryList(filteredData);
             } else {
                 setDeliveryList(props.deliveryList);
@@ -107,6 +128,11 @@ function  List(props) {
 
     function handleFocus() {
     }
+    useEffect(() => {
+        if(!props.loading && props.success) {
+            setDeliveryList(props.deliveryList);
+        }
+    }, [props.loading, props.success])
 
 
     return (

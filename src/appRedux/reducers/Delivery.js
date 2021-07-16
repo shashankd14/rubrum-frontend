@@ -11,6 +11,7 @@ const INIT_STATE = {
     deliveryList: [],
     loading: false,
     error: false,
+    success:false
 };
 
 export default (state = INIT_STATE, action) => {
@@ -25,7 +26,8 @@ export default (state = INIT_STATE, action) => {
             return {
                 ...state,
                 loading: false,
-                deliveryList: action.deliveryList
+                deliveryList: action.deliveryList,
+                success:true
             }
         }
         case FETCH_DELIVERY_LIST_ERROR: {
