@@ -73,6 +73,10 @@ const SlittingWidths = (props) => {
     useEffect(() => {
       getEditValue();
     }, [props.length]);
+
+    useEffect(() => {
+       setValue(props.value);
+      }, [props.value]);
    
     useEffect(() => {
        let lengthValue1 = 0;
@@ -319,7 +323,7 @@ const SlittingWidths = (props) => {
                 </Form.Item>
                 <Form.Item>
                 {getFieldDecorator('radioParts', {
-                        rules: [{ required: true, message: 'Please select Parts' }],
+                        rules: [{ required: value === 2 && equalParts !== 0? false : true, message: 'Please select Parts' }],
                     })(
                         <Radio.Group id="radioParts" onChange={radioChange} disabled={props.cuts.length> 0 ? true: false} value={value}>
                         <Radio value={1}>Equal</Radio>
@@ -558,6 +562,7 @@ const columnsPlan=[
     const [widthValue, setWidthValue]= useState();
     const [form, setForm]= useState(false);
     const [slittingDetail, setSlittingDetail] = useState([])
+    const [value, setValue]= useState(4);
     const onDelete = (record, key, e) => {
         e.preventDefault();
         const data = cuts.filter(item => {
@@ -643,6 +648,7 @@ const columnsPlan=[
     const handleCancel=() => {
         setCuts([]);
         setForm(true)
+        setValue(0);
         props.setShowSlittingModal(false)
     }
     const handleOk =(name) => {
@@ -714,7 +720,7 @@ const columnsPlan=[
                     <Row>
                         <Form {...formItemLayout} className="login-form gx-pt-4">
                             <Form.Item>
-                                <SlittingWidthsForm setSlits={(slits) => setCuts([...cuts,...slits])} setTableData={setTableData} setweight={(w) => settweight(w)} totalActualweight={(w) => setTotalActualWeight(w)} coilDetails={props.coilDetails} wip={props.wip} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth} plannedWeight ={props.plannedWeight} length={length} cuts={cuts} edit={edit} tweight={tweight} lengthValue={(lengthValue) => setLengthValue(lengthValue)} widthValue={(widthValue) => setWidthValue(widthValue)} reset={form}/>
+                                <SlittingWidthsForm setSlits={(slits) => setCuts([...cuts,...slits])} setTableData={setTableData} setweight={(w) => settweight(w)} totalActualweight={(w) => setTotalActualWeight(w)} coilDetails={props.coilDetails} wip={props.wip} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth} plannedWeight ={props.plannedWeight} length={length} cuts={cuts} edit={edit} tweight={tweight} lengthValue={(lengthValue) => setLengthValue(lengthValue)} widthValue={(widthValue) => setWidthValue(widthValue)} reset={form} />
                             </Form.Item>
                         </Form>
                         <Col lg={8} md={12} sm={24} xs={24}>
@@ -773,7 +779,7 @@ const columnsPlan=[
                         <Form {...formItemLayout} className="login-form gx-pt-4">
                             
                                 <Form.Item>
-                                    <SlittingWidthsForm setSlits={(slits) => setCuts([...cuts,...slits])} setweight={(w) => settweight(w)} coilDetails={props.coilDetails} wip={props.wip} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth} plannedWeight ={props.plannedWeight} length={length} cuts={cuts} edit={edit} tweight={tweight} lengthValue={(lengthValue) => setLengthValue(lengthValue)} widthValue={(widthValue) => setWidthValue(widthValue)} reset={form} validate={(valid) => setValidate(valid)} />
+                                    <SlittingWidthsForm setSlits={(slits) => setCuts([...cuts,...slits])} setweight={(w) => settweight(w)} coilDetails={props.coilDetails} wip={props.wip} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth} plannedWeight ={props.plannedWeight} length={length} cuts={cuts} edit={edit} tweight={tweight} lengthValue={(lengthValue) => setLengthValue(lengthValue)} widthValue={(widthValue) => setWidthValue(widthValue)} reset={form} validate={(valid) => setValidate(valid)} value={value}/>
                                 </Form.Item>
 
                             </Form>
