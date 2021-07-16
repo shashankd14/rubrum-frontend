@@ -11,7 +11,8 @@ const INIT_STATE = {
     deliveryList: [],
     loading: false,
     error: false,
-    success:false
+    success:false,
+    deliveryById:[]
 };
 
 export default (state = INIT_STATE, action) => {
@@ -48,14 +49,15 @@ export default (state = INIT_STATE, action) => {
             return {
                 ...state,
                 loading: false,
-                deliveryList: action.deliveryList
+                deliveryById: action.deliveryList,
+                success:true
             }
         }
         case FETCH_DELIVERY_LIST_ERROR_BY_ID: {
             return {
                 ...state,
                 loading: false,
-                deliveryList: [],
+                deliveryById: [],
                 error: true
             }
         }

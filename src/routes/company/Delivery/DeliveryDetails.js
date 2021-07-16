@@ -7,16 +7,26 @@ import moment from "moment";
 
 
 const DeliveryDetails = (props) => {
+  const [deliveryById, setDeliveryById]=useState(props.delivery.deliveryById);
+  const [coil, setCoil] = useState(props.delivery.deliveryList);
   useEffect(() => {
-    props.fetchDeliveryListById(Number(props.match.params.deliveryId));
+    if(props.delivery.deliveryList.length>0){
+      let coilList =coil.filter(element => element.deliveryDetails.deliveryId == props.match.params.deliveryId);
+      setCoil(coilList[0]);
+    }
 }, [])
+useEffect(() => {
+  if(!props.delivery.loading && props.delivery.success) {
+    setDeliveryById(props.delivery.deliveryById);
+  }
+}, [props.delivery.loading, props.delivery.success])
   return (
       <div>
         <div>
             <h3>Delivery Information</h3>
         </div>
        
-        {props.deliveryList.length > 0 ? props.deliveryList.map((elem) => (
+        {deliveryById.length > 0 ? deliveryById.map((elem) => (
             <div key={elem.instructionId}
               style={{
                 border: "1px solid black",
@@ -36,54 +46,36 @@ const DeliveryDetails = (props) => {
               </div>
               <div className="flex flex-col">
                 <div style={{ marginTop: "5px" }}>
-                  <p style={{ fontWeight: "bold" }}>Coil Number - {elem.instructionId}</p>
+                  <p style={{ fontWeight: "bold" }}><b>Coil Number -</b> {coil.coilNumber} </p>
                 </div>
                 <div
                   style={{ display: "flex", justifyContent: "space-around" }}
                 >
                   <div>
                     <p style={{ marginTop: "10px" }}>
-                      Batch No:{elem.deliveryId}
+                      <b>Batch No:</b>{coil.customerBatchId} |
                     </p>
                   </div>
                   <div>
                     <p style={{ marginTop: "10px" }}>
-                      Type:{elem.type}
+                      <b>Quantity:</b>{elem.actualWeight !==null? elem.actualWeight: elem.plannedWeight} |
                     </p>
                   </div>
                   <div>
                     <p style={{ marginTop: "10px" }}>
-                      Quantity:{elem.fQuantity}
+                      <b>Coil Width:</b>{elem.actualWidth !==null ? elem.actualWidth: elem.plannedWidth} |
                     </p>
                   </div>
+                  
+                  
                   <div>
-                    <p style={{ marginTop: "10px" }}>
-                      Grade:{elem.grade}
-                    </p>
-                  </div>
-                  <div>
-                    <p style={{ marginTop: "10px" }}>
-                      Coil Width:{elem.plannedWidth}
+                    <p style={{ marginLeft: "5px", marginTop: "10px" }}>
+                      <b>Coil Length:</b>{elem.actualLength !==null ? elem.actualLength: elem.plannedLength} |
                     </p>
                   </div>
                   <div>
                     <p style={{ marginLeft: "5px", marginTop: "10px" }}>
-                      Coil Thickness:{elem.fThickness}
-                    </p>
-                  </div>
-                  <div>
-                    <p style={{ marginLeft: "5px", marginTop: "10px" }}>
-                      Coil Weight:{elem.plannedWeight}
-                    </p>
-                  </div>
-                  <div>
-                    <p style={{ marginLeft: "5px", marginTop: "10px" }}>
-                      Coil Length:{elem.plannedLength}
-                    </p>
-                  </div>
-                  <div>
-                    <p style={{ marginLeft: "5px", marginTop: "10px" }}>
-                      No Of Pieces:{elem.plannedNoOfPieces}
+                      <b>No Of Pieces:</b>{elem.actualNoOfPieces !==null ? elem.actualNoOfPieces: elem.plannedNoOfPieces} 
                     </p>
                   </div>
                 </div>
@@ -97,7 +89,7 @@ const DeliveryDetails = (props) => {
 };
 
 const mapStateToProps = state => ({
-  deliveryList: state.deliveries.deliveryList,
+  delivery: state.deliveries,
 });
 
 export default connect(mapStateToProps, {
