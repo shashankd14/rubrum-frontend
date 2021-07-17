@@ -78,9 +78,9 @@ useEffect(() => {
     tableData = props.delivery.deliveryById.map(element => {
       element.coilNumber = coil.coilNumber;
       element.customerBatchId = coil.customerBatchId;
-      // element.material = coil.material.description;
-      // element.thickness = coil.fThickness;
-      // element.grade = coil.grade.gradeName;
+      element.material = coil?.materialDto?.material;
+      element.thickness = coil?.fThickness;
+      element.grade = coil?.materialDto?.materialGradeDto.gradeName;
       return element
     })
     setDeliveryById(tableData);
