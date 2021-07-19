@@ -89,9 +89,9 @@ function List(props) {
     useEffect(() => {
         if (searchValue) {
             const filteredData = props.delivery.deliveryList.filter((deliveryEntry) => {
-                if (deliveryEntry.coilNumber.includes(searchValue) ||
-                    deliveryEntry.partyName.toLowerCase().includes(searchValue.toLowerCase()) ||
-                    deliveryEntry?.customerBatchId.toLowerCase().includes(searchValue.toLowerCase())) {
+                if (deliveryEntry?.coilNumber.includes(searchValue) ||
+                    deliveryEntry?.partyName?.toLowerCase().includes(searchValue.toLowerCase()) ||
+                    deliveryEntry?.customerBatchId?.toLowerCase().includes(searchValue.toLowerCase())) {
                     return deliveryEntry
                 }
             });
