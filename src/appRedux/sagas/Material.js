@@ -31,10 +31,12 @@ function* fetchMaterialList() {
 
 function* addMaterial(action) {
     try {
-        const { description, grade } = action.material;
+        const { description, grade, hsnCode, materialCode } = action.material;
         const materialObj = {
             material: description,
-            grade
+            grade,
+            hsnCode,
+            materialCode
         }
         const addMaterial = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/material/save', {
                 method: 'POST',
@@ -53,11 +55,13 @@ function* addMaterial(action) {
 
 function* updateMaterial(action) {
     try {
-        const { values: { description, grade }, id } = action.material;
+        const { values: { description, grade, hsnCode, materialCode }, id } = action.material;
         const materialObj = {
             materialId: id,
             material: description,
-            grade
+            grade,
+            materialCode,
+            hsnCode
         }
         const updateMaterial = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/material/update', {
                 method: 'PUT',

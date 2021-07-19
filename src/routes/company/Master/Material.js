@@ -50,6 +50,26 @@ const Material = (props) => {
         sortOrder: sortedInfo.columnKey === 'matId' && sortedInfo.order,
     },
     {
+        title: 'Material Code',
+        dataIndex: 'materialCode',
+        key: 'materialCode',
+        filters: [],
+        sorter: (a, b) => {
+            return a.materialCode - b.materialCode
+        },
+        sortOrder: sortedInfo.columnKey === 'materialCode' && sortedInfo.order,
+    },
+    {
+        title: 'HSN Code',
+        dataIndex: 'hsnCode',
+        key: 'hsnCode',
+        filters: [],
+        sorter: (a, b) => {
+            return a.hsnCode - b.hsnCode
+        },
+        sortOrder: sortedInfo.columnKey === 'hsnCode' && sortedInfo.order,
+    },
+    {
         title: 'Material Date',
         dataIndex: 'createdOn',
         render: (value) => {
@@ -217,7 +237,7 @@ const Material = (props) => {
                                     setShowAddMaterial(true);
                                 }}
                         >Add Material</Button>
-                        <SearchBox styleName="gx-flex-1" placeholder="Search for coil number or party name..." value={searchValue} onChange={(e) => setSearchValue(e.target.value)}/>
+                        <SearchBox styleName="gx-flex-1" placeholder="Search for material or material grade..." value={searchValue} onChange={(e) => setSearchValue(e.target.value)}/>
                     </div>
                 </div>
                 <Table rowSelection={[]}
@@ -309,6 +329,21 @@ const Material = (props) => {
                                                 {index == keys.length-1 && <i className="icon icon-add-circle" onClick={() => addNewKey(index)}/> }
                                             </Form.Item>
                                         )})}
+
+                                    <Form.Item label="Material Code" >
+                                        {getFieldDecorator('materialCode', {
+                                            rules: [{ required: true, message: 'Please enter material code' }],
+                                            })(
+                                            <Input id="materialCode" {...getFieldProps}/>
+                                        )}
+                                    </Form.Item>
+                                    <Form.Item label="HSN Code" >
+                                        {getFieldDecorator('hsnCode', {
+                                            rules: [{ required: true, message: 'Please enter HSN code' }],
+                                            })(
+                                            <Input id="hsnCode" {...getFieldProps}/>
+                                        )}
+                                    </Form.Item>
                                 </Form>
                             </Col>
                             
@@ -336,6 +371,12 @@ const addMaterialForm = Form.create({
             }),
             keys: Form.createFormField({
                 value: grade || [0],
+            }),
+            materialCode: Form.createFormField({
+                value: props.material?.material?.materialCode || '',
+            }),
+            hsnCode: Form.createFormField({
+                value: props.material?.material?.hsnCode || '',
             }),
         };
     },

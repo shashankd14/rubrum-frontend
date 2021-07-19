@@ -205,7 +205,7 @@ const Rates = (props) => {
                                     setShowAddRates(true)
                                 }}
                         >Add Rates</Button>
-                        <SearchBox styleName="gx-flex-1" placeholder="Search for coil number or party name..." value={searchValue} onChange={(e) => setSearchValue(e.target.value)}/>
+                        <SearchBox styleName="gx-flex-1" placeholder="Search for process name or material or party name..." value={searchValue} onChange={(e) => setSearchValue(e.target.value)}/>
                     </div>
                 </div>
                 <Table rowSelection={[]}
