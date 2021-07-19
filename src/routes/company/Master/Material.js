@@ -332,7 +332,7 @@ const Material = (props) => {
 
                                     <Form.Item label="Material Code" >
                                         {getFieldDecorator('materialCode', {
-                                            rules: [{ required: true, message: 'Please enter material code' }],
+                                            rules: [{ required: false, message: 'Please enter material code' }],
                                             })(
                                             <Input id="materialCode" {...getFieldProps}/>
                                         )}
