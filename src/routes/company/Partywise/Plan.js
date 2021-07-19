@@ -334,7 +334,7 @@ const Plan = (props) => {
                                                                     <div>
                                                                         <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.deliveryId" /> : <span className="gx-coil-details-label">{instruction.deliveryDetails?.deliveryId}</span></p>
                                                                         <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.date" /> : <span className="gx-coil-details-label">{moment(instruction.updatedOn).format('DD/MM/YYYY')}</span></p>
-                                                                        <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.deliveredWeight" /> : <span className="gx-coil-details-label">{instruction.deliveryDetails?.totalWeight}</span></p>
+                                                                        <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.deliveredWeight" /> : <span className="gx-coil-details-label">{instruction?.actualWeight}</span></p>
                                                                         <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.remarks" /> : <span className="gx-coil-details-label">{instruction.remarks}</span></p>
                                                                         <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.wastage" /> : <span className="gx-coil-details-label">{instruction.wastage}</span></p>
                                                                     </div>
