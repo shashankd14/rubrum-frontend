@@ -47,8 +47,8 @@ const DeliveryDetails = (props) => {
   },
     {
         title: 'Material',
-        dataIndex: 'description',
-        key: 'description'
+        dataIndex: 'material',
+        key: 'material'
     },
     {
       title: 'Grade',
@@ -78,7 +78,7 @@ useEffect(() => {
     tableData = props.delivery.deliveryById.map(element => {
       element.coilNumber = coil.coilNumber;
       element.customerBatchId = coil.customerBatchId;
-      element.material = coil?.materialDto?.material;
+      element.material = coil?.materialDto.material
       element.thickness = coil?.fThickness;
       element.grade = coil?.materialDto?.materialGradeDto.gradeName;
       return element
