@@ -193,9 +193,14 @@ const SlittingWidths = (props) => {
                     }
                     wValue = targetWeight*((values.widths[i]*values.nos[i]/widthValue1))
                     totalWidth += values.widths[i]*values.nos[i];
-                    totalWeight = props.tweight+Number(values.weights[i]);
+                    if(totalWeight ===0){
+                        totalWeight = props.tweight+Number(values.weights[i]);
+                    }else{
+                        totalWeight+= Number(values.weights[i]);
+                    }
+                    
                     settwidth(totalWidth); 
-                }
+                 }
                 if(oldLength >= lengthValue){
                     if((totalWidth+cutWidth) > widthValue) {
                         message.error('Sum of slits width is greater than width of coil.', 2);
@@ -204,7 +209,7 @@ const SlittingWidths = (props) => {
                 }else if(totalWeight > weightValue1) {
                         message.error('Weight greater than available weight', 2);
                 }else{
-                        setWeightValue(weightValue-wValue);
+                    setWeightValue(weightValue1-totalWeight);
                         props.setSlits(slits);
                         props.form.resetFields();
                 }}
