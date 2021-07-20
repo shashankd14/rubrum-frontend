@@ -489,28 +489,35 @@ function* requestGradesByMaterialId(action) {
 }
 
 function* postDeliveryConfirmRequest(payload) {
-    let packetsData = [];
-    for (let item of payload.payload.inwardListForDelivery) {
-        let tempItem = {};
-        tempItem.instructionId = item.instructionId;
-        tempItem.remarks = item.remarks;
-        tempItem.weight = item.actualWeight;
-        packetsData.push(tempItem);
+    let req_obj ={};
+    let requestType = '';
+    if(payload.payload?.inwardListForDelivery){
+        let packetsData = [];
+        for (let item of payload.payload.inwardListForDelivery) {
+            let tempItem = {};
+            tempItem.instructionId = item.instructionId;
+            tempItem.remarks = item.remarks;
+            tempItem.weight = item.actualWeight;
+            packetsData.push(tempItem);
+        }
+        req_obj = {
+            vehicleNo: payload.payload.vehicleNo,
+            deliveryItemDetails: packetsData
+        }
+    }else{
+        requestType= 'PUT';
+       req_obj =payload.payload
     }
-
-    const req_obj = {
-        vehicleNo: payload.payload.vehicleNo,
-        deliveryItemDetails: packetsData
-    }
-
     try {
         const postConfirm = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/delivery/save`, {
             method: 'POST', headers: { "Content-Type": "application/json" }, body: JSON.stringify(req_obj)
         });
-        if (postConfirm.status === 200) {
+        if (postConfirm.status === 200 && requestType !== 'PUT') {
             yield put(postDeliveryConfirmSuccess());
             history.push('/company/partywise-register')
-        } else
+        } else if(requestType === 'PUT'){
+            yield put(postDeliveryConfirmSuccess(postConfirm));
+        }else
             yield put(postDeliveryConfirmError('error'));
     } catch (error) {
         yield put(postDeliveryConfirmError(error));
