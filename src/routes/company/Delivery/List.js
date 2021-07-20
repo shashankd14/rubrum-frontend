@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
-import {fetchDeliveryList, fetchPartyList, fetchDeliveryListById} from "../../../appRedux/actions";
+import {fetchDeliveryList, fetchPartyList, fetchDeliveryListById, postDeliveryConfirm} from "../../../appRedux/actions";
 import {Card, Table, Select, Input} from "antd";
 import SearchBox from "../../../components/SearchBox";
 import moment from 'moment';
@@ -45,20 +45,7 @@ function List(props) {
         sorter: (a, b) => a.partyName.length - b.partyName.length,
         filters: []
     },
-    {
-        title: 'Customer Invoice Number',
-        dataIndex:'customerInvoice',
-        render: (text, record, index) => (
-            <Input value={record.customerInvoice} onChange={onInputChange("customerInvoice", index)} />
-          )
-    },
-    {
-        title: 'Customer Invoice Date',
-        dataIndex:'customerInvoiceDate',
-        render: (text, record, index) => (
-            <Input type="date" value={record.customerInvoiceDate} onChange={onInputChange("customerInvoiceDate", index)} />
-          )
-    },
+   
     {
         title: 'Quantity Delivered',
         dataIndex: 'deliveryDetails.totalWeight',
@@ -72,15 +59,43 @@ function List(props) {
         key: 'vehicleNo',
         filters: [],
         sorter: (a, b) => a.deliveryDetails.vehicleNo.length - b.deliveryDetails.vehicleNo.length
-    }
+    },
+    {
+        title: 'Customer Invoice Number',
+        dataIndex:'deliveryDetails.customerInvoiceNo',
+        render: (text, record, index) => (
+            <Input value={record.deliveryDetails.customerInvoiceNo} onChange={onInputChange("customerInvoiceNo", index)} />
+          )
+    },
+    {
+        title: 'Customer Invoice Date',
+        dataIndex:'deliveryDetails.customerInvoiceDate',
+        render: (text, record, index) => (
+            <Input type="date" value={record.deliveryDetails.customerInvoiceDate} onChange={onInputChange("customerInvoiceDate", index)} />
+          )
+    },
+    {
+        title: 'Action',
+        render: (text, record) => (
+            <span>
+                <span className="gx-link" onClick={() => handleAdd(record)}>Add</span>
+            </span>
+        ),
+    },
     ]
+    const handleAdd =(record)=>{
+        let reqObj ={
+           deliveryId: record.deliveryDetails.deliveryId,
+            customerInvoiceDate:record.customerInvoiceDate,
+            customerInvoiceNo:record.customerInvoice
+        };
+        props.postDeliveryConfirm(reqObj);
 
+    }
     const onInputChange = (key, index, type) => (e: React.ChangeEvent<HTMLInputElement>) => {
         const newData = [...deliveryList];
-        newData[index][key] =  e.target.value;
+        newData[index].deliveryDetails[key] = e.target.value;
         setDeliveryList(newData);
-        
-        
     };
     useEffect(() => {
         props.fetchDeliveryList();
@@ -152,11 +167,12 @@ function List(props) {
 
 const mapStateToProps = state => ({
     delivery: state.deliveries,
-    party: state.party,
+    party: state.party
 });
 
 export default connect(mapStateToProps, {
     fetchDeliveryList,
     fetchPartyList,
-    fetchDeliveryListById
+    fetchDeliveryListById,
+    postDeliveryConfirm
 })(List);
