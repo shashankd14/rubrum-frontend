@@ -189,8 +189,9 @@ const getFilterData=(list)=>{
         setFilteredInfo(filters)
     };
 
-    const clearFilters = () => {
+    const clearFilters = (value) => {
         setFilteredInfo(null);
+        setSearchValue('');
     };
 
     const clearAll = () => {
@@ -212,7 +213,7 @@ const getFilterData=(list)=>{
       
     }
 
-    function handleBlur() {
+    const handleBlur= ()=> {
     }
 
     function handleFocus() {
@@ -237,6 +238,7 @@ const getFilterData=(list)=>{
                 <div className="gx-flex-row gx-flex-1">
                     <div className="table-operations gx-col">
                         <Select
+                            id="select"
                             showSearch
                             style={{ width: 200 }}
                             placeholder="Select a customer"

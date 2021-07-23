@@ -106,6 +106,7 @@ const SlittingWidths = (props) => {
        cuts = cuts.filter(i => i !== undefined)
         cuts = cuts.length > 0? cuts.reduce((total, num) => Number(total) + Number(num)) : 0
         props.setweight(cuts)
+        setWeightValue(weightValue1-cuts);
         if(len !== 0 && width === 0){
             setwidth(widthValue1)
         }
@@ -321,14 +322,14 @@ const SlittingWidths = (props) => {
                 
                 <Form.Item label="No Of Parts">
                     {getFieldDecorator('noParts', {
-                        rules: [{ required: value=== 2 && equalParts !== 0? false : true, message: 'Please enter no.of Parts' }],
+                        rules: [{ required: (value=== 2 || value===1) && equalParts !== 0? false : true, message: 'Please enter no.of Parts' }],
                     })(
-                        <Input id="noParts" onBlur={handleBlurEvent} disabled ={value=== 2 && equalParts !== 0 ? true: false}/>
+                        <Input id="noParts" onBlur={handleBlurEvent} disabled ={value=== 2  && equalParts !== 0 ? true: false}/>
                     )}
                 </Form.Item>
                 <Form.Item>
                 {getFieldDecorator('radioParts', {
-                        rules: [{ required: value === 2 && equalParts !== 0? false : true, message: 'Please select Parts' }],
+                        rules: [{ required: (value === 2 ||  value === 1) && equalParts !== 0? false : true, message: 'Please select Parts' }],
                     })(
                         <Radio.Group id="radioParts" onChange={radioChange} disabled={props.cuts.length> 0 ? true: false} value={value}>
                         <Radio value={1}>Equal</Radio>
