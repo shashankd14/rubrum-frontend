@@ -52,6 +52,7 @@ const CreateCuttingDetailsForm = (props) => {
     const [restTableData, setRestTableData] = useState([]);
     const [selectedPast , setSelectedPast] = useState([]);
     const [packetNo, setPacketNo]= useState(0);
+    const [cutPayload,setCutPayload]= useState([]);
     const [tableData, setTableData] = useState(props.wip?(props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts);
     const columns=[
 
@@ -250,9 +251,10 @@ const CreateCuttingDetailsForm = (props) => {
              setRestTableData(data)
              props.deleteInstructionById(record.parentGroupId)
         }else{
+            setValidate(false);
              const data = cuts.filter((item) => cuts.indexOf(item) !==cuts.indexOf(record))
              setCuts(data);
-             props.deleteInstructionById(record.instructionId)
+            props.deleteInstructionById(record.instructionId)
         }
     };
     const onChange=()=>{
@@ -272,16 +274,19 @@ const CreateCuttingDetailsForm = (props) => {
                 if((Number(tweight)+values.weight) > WeightValue){
                     message.error('Weight greater than available weight', 2);
                 }else{
-                    setCuts([...cuts, {...props.inward.process,
+                    let slitcuts =[];
+                    slitcuts.push({...props.inward.process,
                         plannedLength: props.inward.process.length,
-                        plannedWidth: props.inward.process.width,
                         plannedNoOfPieces: props.inward.process.no,
                         plannedWeight: props.inward.process.weight,
-                        plannedWidth: props.coilDetails.plannedWidth,
+                        plannedWidth: props.coilDetails?.fWidth ? props.coilDetails.fWidth : props.coilDetails.plannedWidth,
                         inwardId: props.coilDetails.inwardEntryId ? props.coilDetails.inwardEntryId : "",
-                        instructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : ""}]);
+                        instructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : ""});
+                  setCuts([...cuts, ...slitcuts]);
+                  setCutPayload(slitcuts);
                         props.resetInstruction();
                 }
+                
                
             }else{
                 setValidate(true);
@@ -354,6 +359,7 @@ const CreateCuttingDetailsForm = (props) => {
         if(props.inward.instructionSaveCuttingSuccess && !props.wip) {
             loading = '';
             message.success('Cutting instruction saved successfully', 2).then(() => {
+                setCutPayload([]);
                 props.setShowCuttingModal(false);
                 props.resetInstruction();
             });
@@ -471,11 +477,12 @@ const CreateCuttingDetailsForm = (props) => {
             if(props.slitCut){
                 props.saveCuttingInstruction(restTableData);
             }else{
-                props.saveCuttingInstruction(cuts);
+                props.saveCuttingInstruction(cutPayload);
             }
-        }else {
-            message.error('Please enter the mandatory fields(*)',2);
         }
+        // else {
+        //     message.error('Please enter the mandatory fields(*)',2);
+        // }
         
     }
     
@@ -488,6 +495,7 @@ const CreateCuttingDetailsForm = (props) => {
             width={1020}
             onCancel={() => {
                 setCuts([]);
+                setCutPayload([]);
                 props.form.resetFields();
                 setBalancedValue(false)
                 props.setShowCuttingModal(false)}}
