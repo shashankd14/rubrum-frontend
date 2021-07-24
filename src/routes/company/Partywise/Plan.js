@@ -27,7 +27,7 @@ const Plan = (props) => {
         
         if (ins.instruction && ins.instruction.length> 0){
            let instruction = ins.instruction.flat();
-           length = instruction.filter(i => i.plannedLength);
+           length = instruction.map(i => i.plannedLength);
            childLength = instruction.map(i => {
                if (i.childInstructions && i.childInstructions.length> 0){
                    return i.plannedLength;

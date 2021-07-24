@@ -52,7 +52,6 @@ const SlittingWidths = (props) => {
     const [weightValue, setWeightValue] = useState(weightValue1);
     const [twidth, settwidth]= useState(0);
     const [oldLength, setOldLength]= useState(0);
-    const [checked, setChecked] = useState([]);
     const [equalParts, setEqualParts]= useState(0);
     
     const keys = getFieldValue('keys');
@@ -106,7 +105,7 @@ const SlittingWidths = (props) => {
        cuts = cuts.filter(i => i !== undefined)
         cuts = cuts.length > 0? cuts.reduce((total, num) => Number(total) + Number(num)) : 0
         props.setweight(cuts)
-        setWeightValue(weightValue1-cuts);
+        // setWeightValue(weightValue1-cuts);
         if(len !== 0 && width === 0){
             setwidth(widthValue1)
         }
@@ -164,6 +163,7 @@ const SlittingWidths = (props) => {
     const applyData=() =>{
         let cutsValue = applySame();
         props.setSlits(cutsValue);
+        props.setslitpayload(cutsValue)
     }
     const addNewSize = (e) => {
         let wValue;
@@ -212,6 +212,7 @@ const SlittingWidths = (props) => {
                 }else{
                     setWeightValue(weightValue1-totalWeight);
                         props.setSlits(slits);
+                        props.setslitpayload(slits)
                         props.form.resetFields();
                 }}
                 else {
@@ -440,6 +441,7 @@ const CreateSlittingDetailsForm = (props) => {
     const [mode, setMode] = useState('top');
     const {getFieldDecorator} = props.form;
     const [cuts, setCuts] = useState([]);
+    const [slitPayload, setslitpayload]= useState([]);
     const [length,setLength]= useState();
     let loading = '';
     let cutArray=[];
@@ -575,6 +577,7 @@ const columnsPlan=[
           return cuts.indexOf(item) !== key
         });
         props.deleteInstructionById(record.instructionId)
+        setValidate(false);
         setCuts(data);
       }
     const onEdit = (key, e) => {
@@ -658,7 +661,6 @@ const columnsPlan=[
         props.setShowSlittingModal(false)
     }
     const handleOk =(name) => {
-        
         if(props.wip){
             if (totalActualweight > tweight) {
                 message.error('Actual Weight is greater than Total weight, Please modify actual weight!');
@@ -673,18 +675,19 @@ const columnsPlan=[
         }
         if(validate === false){
             if(name === 'Slitting'){
-                props.saveSlittingInstruction(cuts);
+                props.saveSlittingInstruction(slitPayload);
             } else if(name === 'slittingDetail'){
                 props.setShowSlittingModal(false);
                 props.setShowCuttingModal(true);
                 props.setCutting(cuts);
             } else {
-                props.saveSlittingInstruction(cuts);
+                props.saveSlittingInstruction(slitPayload);
                 props.setShowCuttingModal(true);
             }
-        } else {
-            message.error('Please enter mandatory fields(*)', 2);
-        }
+        } 
+        // else {
+        //     message.error('Please enter mandatory fields(*)', 2);
+        // }
         
     }
     return (
@@ -726,7 +729,7 @@ const columnsPlan=[
                     <Row>
                         <Form {...formItemLayout} className="login-form gx-pt-4">
                             <Form.Item>
-                                <SlittingWidthsForm setSlits={(slits) => setCuts([...cuts,...slits])} setTableData={setTableData} setweight={(w) => settweight(w)} totalActualweight={(w) => setTotalActualWeight(w)} coilDetails={props.coilDetails} wip={props.wip} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth} plannedWeight ={props.plannedWeight} length={length} cuts={cuts} edit={edit} tweight={tweight} lengthValue={(lengthValue) => setLengthValue(lengthValue)} widthValue={(widthValue) => setWidthValue(widthValue)} reset={form} />
+                                <SlittingWidthsForm  setSlits={(slits) => setCuts([...cuts,...slits])} setTableData={setTableData} setweight={(w) => settweight(w)} totalActualweight={(w) => setTotalActualWeight(w)} coilDetails={props.coilDetails} wip={props.wip} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth} plannedWeight ={props.plannedWeight} length={length} cuts={cuts} edit={edit} tweight={tweight} lengthValue={(lengthValue) => setLengthValue(lengthValue)} widthValue={(widthValue) => setWidthValue(widthValue)} reset={form} />
                             </Form.Item>
                         </Form>
                         <Col lg={8} md={12} sm={24} xs={24}>
@@ -785,7 +788,7 @@ const columnsPlan=[
                         <Form {...formItemLayout} className="login-form gx-pt-4">
                             
                                 <Form.Item>
-                                    <SlittingWidthsForm setSlits={(slits) => setCuts([...cuts,...slits])} setweight={(w) => settweight(w)} coilDetails={props.coilDetails} wip={props.wip} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth} plannedWeight ={props.plannedWeight} length={length} cuts={cuts} edit={edit} tweight={tweight} lengthValue={(lengthValue) => setLengthValue(lengthValue)} widthValue={(widthValue) => setWidthValue(widthValue)} reset={form} validate={(valid) => setValidate(valid)} value={value}/>
+                                    <SlittingWidthsForm setslitpayload={(slits) => setslitpayload(slits)} setSlits={(slits) => setCuts([...cuts,...slits])} setweight={(w) => settweight(w)} coilDetails={props.coilDetails} wip={props.wip} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth} plannedWeight ={props.plannedWeight} length={length} cuts={cuts} edit={edit} tweight={tweight} lengthValue={(lengthValue) => setLengthValue(lengthValue)} widthValue={(widthValue) => setWidthValue(widthValue)} reset={form} validate={(valid) => setValidate(valid)} value={value}/>
                                 </Form.Item>
 
                             </Form>
