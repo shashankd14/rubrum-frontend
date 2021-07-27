@@ -284,7 +284,7 @@ const CreateCuttingDetailsForm = (props) => {
                         inwardId: props.coilDetails.inwardEntryId ? props.coilDetails.inwardEntryId : "",
                         instructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : ""});
                   setCuts([...cuts, ...slitcuts]);
-                  setCutPayload(slitcuts);
+                  setCutPayload([...cutPayload,...slitcuts]);
                         props.resetInstruction();
                 }
                 
