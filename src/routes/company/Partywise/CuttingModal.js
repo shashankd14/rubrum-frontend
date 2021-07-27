@@ -284,7 +284,7 @@ const CreateCuttingDetailsForm = (props) => {
                         inwardId: props.coilDetails.inwardEntryId ? props.coilDetails.inwardEntryId : "",
                         instructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : ""});
                   setCuts([...cuts, ...slitcuts]);
-                  setCutPayload([...cutPayload,...slitcuts]);
+                  
                         props.resetInstruction();
                 }
                 
@@ -334,6 +334,7 @@ const CreateCuttingDetailsForm = (props) => {
          }
     }, [props.inward.instructionSaveCuttingLoading]);
     useEffect(()=>{
+        setCutPayload(cuts);
         let cutsArray = cuts.map(i => i.plannedWeight);
         cutsArray = cutsArray.filter(i => i !== undefined)
        cutsArray = cutsArray.length > 0? cutsArray.reduce((total, num) => Number(total) + Number(num)) : 0
