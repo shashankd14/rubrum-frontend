@@ -478,7 +478,7 @@ const CreateCuttingDetailsForm = (props) => {
             if(props.slitCut){
                 props.saveCuttingInstruction(restTableData);
             }else{
-                if(cutPayload.length>0){
+                if(cutPayload.length>0) {
                     props.saveCuttingInstruction(cutPayload);
                 }else{
                     props.setShowCuttingModal(false);
