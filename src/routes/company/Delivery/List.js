@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import {fetchDeliveryList, fetchPartyList, fetchDeliveryListById, postDeliveryConfirm} from "../../../appRedux/actions";
-import {Card, Table, Select, Input} from "antd";
+import {Card, Table, Select, Input, Divider} from "antd";
 import SearchBox from "../../../components/SearchBox";
+import ReconcileModal from "./ReconcileModal";
 import moment from 'moment';
 const Option = Select.Option;
 function List(props) {
@@ -15,6 +16,8 @@ function List(props) {
     const [filteredInfo, setFilteredInfo] = useState(null);
     const [searchValue, setSearchValue] = useState('');
     const [deliveryList, setDeliveryList] = useState(props.delivery.deliveryList)
+    const [reconcileModal, setreconcileModal] = useState(false);
+    const [deliveryRecord, setDeliveryRecord] = useState();
     const columns = [
     {
         title: 'Delivery Chalan Number',
@@ -29,13 +32,13 @@ function List(props) {
     },
     {
         title: 'Delivery Date',
-        dataIndex: 'updatedOn',
+        dataIndex: 'deliveryDetails.updatedOn',
         render(value) {
             return moment(value).format('DD/MM/YYYY');
         },
         key: 'updatedOn',
         filters: [],
-        sorter: (a, b) => a.updatedOn - b.updatedOn
+        sorter: (a, b) => a.deliveryDetails.updatedOn - b.deliveryDetails.updatedOn
     },
     
     {
@@ -79,6 +82,8 @@ function List(props) {
         render: (text, record) => (
             <span>
                 <span className="gx-link" onClick={() => handleAdd(record)}>Add</span>
+                <Divider type="vertical" />
+                <span className="gx-link" onClick={() => {setDeliveryRecord(record);setreconcileModal(true);}}>Reconcile</span>
             </span>
         ),
     },
@@ -137,6 +142,7 @@ function List(props) {
     return (
         <Card>
             <div className="gx-flex-row gx-flex-1">
+            {reconcileModal ? <ReconcileModal showModal={reconcileModal} deliveryRecord={deliveryRecord}/>: null}
             <SearchBox styleName="gx-flex-1" placeholder="Search for coil number or party name or customer batch No..." value={searchValue} onChange={(e) => setSearchValue(e.target.value)} />
                     <div className="table-operations gx-col">
                         <Select
