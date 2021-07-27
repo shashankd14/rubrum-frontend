@@ -115,13 +115,13 @@ const List = (props) => {
     },
     {
         title: 'Present Weight',
-        dataIndex: 'fpresent',
-        key: 'fpresent',
+        dataIndex: 'inStockWeight',
+        key: 'inStockWeight',
         filters: [],
-        sorter: (a, b) => a.fpresent - b.fpresent,
-        sortOrder: sortedInfo.columnKey === 'fpresent' && sortedInfo.order,
+        sorter: (a, b) => a.inStockWeight - b.inStockWeight,
+        sortOrder: sortedInfo.columnKey === 'inStockWeight' && sortedInfo.order,
         render: (text, record) => {
-            return record.fpresent || record.actualWeight || record.plannedWeight;
+            return record.inStockWeight || record.actualWeight || record.plannedWeight;
         }
     },
     {
