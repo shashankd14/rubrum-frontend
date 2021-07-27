@@ -157,7 +157,7 @@ function* submitInward(action) {
         let data = new FormData();
         //customer details
         data.append('partyId', action.inward.partyName);
-        data.append('customerCoilId', action.inward.customerId);
+        data.append('customerCoilId', action.inward.customerId || action.inward.partyName);
         data.append('customerBatchId', action.inward.customerBatchNo);
         data.append('customerInvoiceNo', action.inward.customerInvoiceNo);
         data.append('purposeType', action.inward.purposeType);
