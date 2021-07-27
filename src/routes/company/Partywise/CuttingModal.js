@@ -254,6 +254,7 @@ const CreateCuttingDetailsForm = (props) => {
             setValidate(false);
              const data = cuts.filter((item) => cuts.indexOf(item) !==cuts.indexOf(record))
              setCuts(data);
+             setCutPayload(data);
             props.deleteInstructionById(record.instructionId)
         }
     };
@@ -477,7 +478,12 @@ const CreateCuttingDetailsForm = (props) => {
             if(props.slitCut){
                 props.saveCuttingInstruction(restTableData);
             }else{
-                props.saveCuttingInstruction(cutPayload);
+                if(cutPayload.length>0){
+                    props.saveCuttingInstruction(cutPayload);
+                }else{
+                    props.showCuttingModal(false);
+                }
+                
             }
         }
         // else {

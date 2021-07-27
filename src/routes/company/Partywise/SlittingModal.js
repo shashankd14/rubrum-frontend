@@ -578,6 +578,7 @@ const columnsPlan=[
         });
         props.deleteInstructionById(record.instructionId)
         setValidate(false);
+        setslitpayload(data);
         setCuts(data);
       }
     const onEdit = (key, e) => {
@@ -675,14 +676,24 @@ const columnsPlan=[
         }
         if(validate === false){
             if(name === 'Slitting'){
-                props.saveSlittingInstruction(slitPayload);
+                if(slitPayload.length > 0){
+                    props.saveSlittingInstruction(slitPayload);
+                }else{
+                    props.setShowSlittingModal(false);
+                }
+                
             } else if(name === 'slittingDetail'){
                 props.setShowSlittingModal(false);
                 props.setShowCuttingModal(true);
                 props.setCutting(cuts);
             } else {
-                props.saveSlittingInstruction(slitPayload);
-                props.setShowCuttingModal(true);
+                if(slitPayload.length > 0){
+                    props.saveSlittingInstruction(slitPayload);
+                    props.setShowCuttingModal(true);
+                }else{
+                    props.setShowSlittingModal(false);
+                }
+                
             }
         } 
         // else {
