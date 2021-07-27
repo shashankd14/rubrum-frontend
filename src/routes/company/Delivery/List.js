@@ -83,7 +83,7 @@ function List(props) {
             <span>
                 <span className="gx-link" onClick={() => handleAdd(record)}>Add</span>
                 <Divider type="vertical" />
-                <span className="gx-link"style={{display: "none"}} onClick={() => {setDeliveryRecord(record);setreconcileModal(true);}}>Reconcile</span>
+                <span className="gx-link" onClick={() => {setDeliveryRecord(record);setreconcileModal(true);}}>Reconcile</span>
             </span>
         ),
     },
