@@ -405,8 +405,10 @@ const CreateCuttingDetailsForm = (props) => {
     }
     const setChangeSelection=(selectedRowKeys)=>{
         setSelectedKey(selectedRowKeys);
+        console.log(selectedRowKeys);
     }
     const handleSelection = {
+        selectedRowKeys:selectedKey,
         onSelect: setSelection, 
         onChange: setChangeSelection,
         getCheckboxProps: (record) => ({
@@ -444,9 +446,10 @@ const CreateCuttingDetailsForm = (props) => {
         setCutsLength(e.target.value)
     }
     const bundleListClick=()=>{
+        setSelectedKey([]);
         setbundledList(true)
         let selectedPastList = selectedPast.length> 0 ? selectedPast:[];
-        setSelectedKey([]);
+        
         if(selectedRowKeys.length>0){
             selectedPastList.push(selectedRowKeys);
             setSelectedPast(selectedPastList);
@@ -458,8 +461,7 @@ const CreateCuttingDetailsForm = (props) => {
             count: selectedRowKeys.length,
             instructionId: selectedInstruction
         }
-        props.instructionGroupsave(payload);
-        
+        props.instructionGroupsave(payload); 
     }
     const handleOk=()=>{
         if(props.wip){
