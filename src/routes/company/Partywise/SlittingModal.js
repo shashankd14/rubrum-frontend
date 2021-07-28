@@ -78,6 +78,7 @@ const SlittingWidths = (props) => {
       }, [props.value]);
    
     useEffect(() => {
+        props.setslitpayload(props.cuts);
        let lengthValue1 = 0;
        let widthValue1 = 0;
        let weightValue = 0;
@@ -212,7 +213,6 @@ const SlittingWidths = (props) => {
                 }else{
                     setWeightValue(weightValue1-totalWeight);
                         props.setSlits(slits);
-                        props.setslitpayload(slits)
                         props.form.resetFields();
                 }}
                 else {
@@ -682,10 +682,6 @@ const columnsPlan=[
                     props.setShowSlittingModal(false);
                 }
                 
-            } else if(name === 'slittingDetail'){
-                props.setShowSlittingModal(false);
-                props.setShowCuttingModal(true);
-                props.setCutting(cuts);
             } else {
                 if(slitPayload.length > 0){
                     props.saveSlittingInstruction(slitPayload);
@@ -695,6 +691,11 @@ const columnsPlan=[
                 }
                 
             }
+        }else{ if(name === 'slittingDetail'){
+                props.setShowSlittingModal(false);
+                props.setShowCuttingModal(true);
+                props.setCutting(cuts);
+            } 
         } 
         // else {
         //     message.error('Please enter mandatory fields(*)', 2);

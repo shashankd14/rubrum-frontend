@@ -1,12 +1,9 @@
-import {Button, Card, Col, DatePicker, Divider, Form, Input, Modal, Row, Table, Select, Icon,Tabs, message} from "antd";
-import React, {useEffect, useState, useRef, useContext} from "react";
-import {connect, useSelector} from "react-redux";
+import {Button, Card, Col, DatePicker, Form, Input, Modal, Row, Table, Select, Icon,Tabs, message} from "antd";
+import React, {useEffect, useState} from "react";
+import {connect} from "react-redux";
 import moment from "moment";
 import {setProcessDetails, saveCuttingInstruction,resetInstruction ,updateInstruction, deleteInstructionById, instructionGroupsave} from '../../../appRedux/actions/Inward';
-import { showMessage } from "../../../appRedux/actions";
 import {APPLICATION_DATE_FORMAT} from '../../../constants';
-import { indexOf } from "lodash-es";
-import { sheets } from "less";
 
 const Option = Select.Option;
 
@@ -22,7 +19,6 @@ export const formItemLayout = {
         md: {span: 14},
     },
 };
-
 const CreateCuttingDetailsForm = (props) => {
     const TabPane = Tabs.TabPane;
     const {getFieldDecorator} = props.form;
@@ -53,6 +49,7 @@ const CreateCuttingDetailsForm = (props) => {
     const [selectedPast , setSelectedPast] = useState([]);
     const [packetNo, setPacketNo]= useState(0);
     const [cutPayload,setCutPayload]= useState([]);
+    const [selectedKey, setSelectedKey] = useState([]);
     const [tableData, setTableData] = useState(props.wip?(props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts);
     const columns=[
 
@@ -205,9 +202,9 @@ const CreateCuttingDetailsForm = (props) => {
     const columnsSlit=[
         {
             title: 'Serial No',
-           render : (text,record,index) => {
-                return index+1;
-           }
+            dataIndex:'instructionId',
+            key:'instructionId',
+            render:(text, record, index) => (page === 1?index + page : index+(page-1)+10)
         },
         {
             title: 'Process Date',
@@ -368,11 +365,11 @@ const CreateCuttingDetailsForm = (props) => {
         }
     }, [props.inward.instructionSaveCuttingSuccess])
     useEffect(() =>{
-        let listItem = bundleItemList.length> 0 ? bundleItemList :[];
+       let listItem = bundleItemList.length> 0 ? bundleItemList :[];
        if(listItem.length === 0 && Object.keys(props.inward.groupId).length >0){
             listItem.push(props.inward.groupId);
         } else if(listItem.length> 0){
-        let listItemValue = listItem.some(item => item.groupId == props.inward.groupId.groupId)
+        let listItemValue = listItem.some(item => item.groupId === props.inward.groupId.groupId)
         if(!listItemValue){
             listItem.push(props.inward.groupId);
        }
@@ -396,10 +393,7 @@ const CreateCuttingDetailsForm = (props) => {
         let length = e.target.value;
        setNo(((WeightValue-Number(tweight))/(0.00000785 *width*props.coil.fThickness*Number(length))).toFixed(0));
     }
-    const getBundleData =(selectedRows) =>{
-        let data = bundleTableData.filter(i => !selectedRows.includes(i));
-        return data;
-    }
+    
     const setSelection = (record, selected, selectedRows) => {
         setSelectedRowKeys(selectedRows);
         if(cutValue.length > 0){
@@ -409,8 +403,13 @@ const CreateCuttingDetailsForm = (props) => {
         weights = selectedRows.length>0?weights.reduce((total, num) => total + num): 0;
         settpweight(weights);
     }
+    const setChangeSelection=(selectedRowKeys)=>{
+        setSelectedKey(selectedRowKeys);
+    }
     const handleSelection = {
-        onSelect: setSelection, getCheckboxProps: (record) => ({
+        onSelect: setSelection, 
+        onChange: setChangeSelection,
+        getCheckboxProps: (record) => ({
             disabled: record.groupId !== null
         })
     }
@@ -447,13 +446,13 @@ const CreateCuttingDetailsForm = (props) => {
     const bundleListClick=()=>{
         setbundledList(true)
         let selectedPastList = selectedPast.length> 0 ? selectedPast:[];
+        setSelectedKey([]);
         if(selectedRowKeys.length>0){
             selectedPastList.push(selectedRowKeys);
             setSelectedPast(selectedPastList);
         }
-        let bundleData = bundleTableData.length === 0 ?cuts.filter(i => !selectedRowKeys.includes(i)): getBundleData(selectedRowKeys);
-        // bundleData = bundleTableData.filter(i => !selectedPast.includes(i))
-        setbundleTableData(bundleData)
+        let bundleData = bundleTableData.length === 0 ?cuts.filter(i => !selectedRowKeys.includes(i)): bundleTableData.filter(i => !selectedRowKeys.includes(i));;
+         setbundleTableData(bundleData)
         let selectedInstruction = selectedRowKeys.map(i => i.instructionId);
         let payload= {
             count: selectedRowKeys.length,
@@ -549,13 +548,21 @@ const CreateCuttingDetailsForm = (props) => {
                     <input type="text" id="noOfCuts" className="bundle-input-class" name="noOfCuts" value={cutsNo.toFixed(0)}></input>
                 </div><div style={{'padding-left': "65%"}}><Button type="primary" size="medium" onClick={getCuts}>Confirm</Button> 
                 </div></>)}
-                <Table  rowSelection={handleSelection} className="gx-table-responsive"  showHeader={false} columns={columnsSlit} dataSource={bundleTableData} rowKey={record => record.instructionId}/>
+                <Table  rowSelection={handleSelection} className="gx-table-responsive"  showHeader={false} columns={columnsSlit} dataSource={bundleTableData} pagination={{
+                            onChange(current) {
+                              setPage(current);
+                            }
+                        }}/>
             </Col>
             {cutValue.length > 0 &&<Col lg={10} md={16} sm={24} xs={24}>
-            <Table className="gx-table-responsive" columns={columnsSlitCut} dataSource={restTableData.length>0?restTableData: cutValue} />
+            <Table className="gx-table-responsive" columns={columnsSlitCut} dataSource={restTableData.length ?restTableData: cutValue} />
             </Col>}
         </Row>
-          :<Table  rowSelection={handleSelection} className="gx-table-responsive"  columns={columnsSlit} dataSource={cuts} rowKey={record => record.instructionId}/>  : 
+          :<Table  rowSelection={handleSelection} className="gx-table-responsive"  columns={columnsSlit} dataSource={cuts} pagination={{
+            onChange(current) {
+              setPage(current);
+            }
+        }}/>  : 
           <>{!props.wip && <Row>
           <Col lg={12} md={12} sm={24} xs={24}>   
           <p>Coil number : {props.coil.coilNumber}</p>

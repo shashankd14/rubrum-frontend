@@ -1,7 +1,6 @@
 import React, {useEffect, useState}from "react";
 import {connect} from "react-redux";
 import { Table } from 'antd';
-import { InfoCircleOutlined, CloseSquareTwoTone } from "@ant-design/icons";
 import {fetchDeliveryListById} from "../../../appRedux/actions";
 import moment from "moment";
 
@@ -68,7 +67,7 @@ const DeliveryDetails = (props) => {
     ]
   useEffect(() => {
     if(props.delivery.deliveryList.length>0){
-      let coilList =coil.filter(element => element.deliveryDetails.deliveryId == props.match.params.deliveryId);
+      let coilList =coil.filter(element => element.deliveryDetails.deliveryId === Number(props.match.params.deliveryId));
       setCoil(coilList[0]);
     }
 }, [])
