@@ -78,7 +78,7 @@ const SlittingWidths = (props) => {
       }, [props.value]);
    
     useEffect(() => {
-        props.setslitpayload(props.cuts);
+        if (!props.wip) { props.setslitpayload(props.cuts); }
        let lengthValue1 = 0;
        let widthValue1 = 0;
        let weightValue = 0;
@@ -165,7 +165,7 @@ const SlittingWidths = (props) => {
     const applyData=() =>{
         let cutsValue = applySame();
         props.setSlits(cutsValue);
-        props.setslitpayload(cutsValue)
+        if (!props.wip) { props.setslitpayload(cutsValue) }
     }
     const addNewSize = (e) => {
         let wValue;
