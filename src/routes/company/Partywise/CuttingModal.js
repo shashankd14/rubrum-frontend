@@ -36,6 +36,7 @@ const CreateCuttingDetailsForm = (props) => {
     const WeightValue = props.coilDetails.instruction && props.coilDetails.instruction.length > 0  ? props.plannedWeight(props.coilDetails):  props.coilDetails.fpresent ? props.coilDetails.fpresent  : props.plannedWeight(props.coilDetails);
     const [length, setlength]= useState(lengthValue);
     const [width, setwidth] = useState(widthValue);
+    const [weightvalue, setWeightValue] = useState(WeightValue);
     const [cutValue, setCutValue] = useState([]);
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [balancedValue, setBalancedValue] = useState(false);
@@ -336,6 +337,7 @@ const CreateCuttingDetailsForm = (props) => {
         cutsArray = cutsArray.filter(i => i !== undefined)
        cutsArray = cutsArray.length > 0? cutsArray.reduce((total, num) => Number(total) + Number(num)) : 0
         settweight(cutsArray)
+        setWeightValue(WeightValue-cutsArray);
 
         if (props.wip) {
             let actualUpdate = cuts.map(item => {
@@ -570,7 +572,7 @@ const CreateCuttingDetailsForm = (props) => {
           <Col lg={12} md={12} sm={24} xs={24}>
           <p>Inward specs: {props.coil.fThickness}X{props.coil.fWidth}X{props.coil.fLength}/{props.coil.fQuantity}</p>
               <p>Available Length(mm): {lengthValue}</p>
-              <p>Available Weight(kg) : {WeightValue}</p>
+              <p>Available Weight(kg) : {weightvalue}</p>
               <p>Available Width(mm) : {width}</p>
           </Col>
       </Row>}
@@ -646,7 +648,7 @@ const CreateCuttingDetailsForm = (props) => {
                         <Col lg={8} md={12} sm={24} xs={24}>
                             <p>Inward specs: {props.coil.fThickness}X{props.coil.fWidth}X{props.coil.fLength}/{props.coil.fQuantity}</p>
                             <p>Available Length(mm): {lengthValue}</p>
-                            <p>Available Weight(kg) : {WeightValue}</p>
+                            <p>Available Weight(kg) : {weightvalue}</p>
                             <p>Available Width(mm) : {width}</p>
                         </Col>
                     

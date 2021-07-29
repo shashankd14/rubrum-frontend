@@ -46,7 +46,7 @@ const SlittingWidths = (props) => {
     
     const lengthValue1 = props.coilDetails.instruction && props.coilDetails.instruction.length > 0 ? props.plannedLength(props.coilDetails) : props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails)
     const widthValue1 = props.coilDetails.instruction && props.coilDetails.instruction.length > 0  ? props.plannedWidth(props.coilDetails):  props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.plannedWidth(props.coilDetails);
-    const weightValue1 = props.coilDetails.fpresent >= 0? props.coilDetails.fpresent : props.plannedWeight(props.coilDetails)
+    const weightValue1 = props.coilDetails.instruction && props.coilDetails.instruction.length > 0 ? props.plannedWeight(props.coilDetails):  props.coilDetails.fpresent >=0 ? props.coilDetails.fpresent  : props.plannedWeight(props.coilDetails);
     const [len, setlen]= useState(lengthValue1);
     const [width, setwidth] = useState(widthValue1);
     const [weightValue, setWeightValue] = useState(weightValue1);
@@ -93,6 +93,14 @@ const SlittingWidths = (props) => {
           }
         props.widthValue(width);
         props.lengthValue(len);
+        let cuts = props.cuts.map(i => i.plannedWeight);
+       cuts = cuts.filter(i => i !== undefined)
+        cuts = cuts.length > 0? cuts.reduce((total, num) => Number(total) + Number(num)) : 0
+        props.setweight(cuts)
+        setWeightValue(weightValue-cuts);
+        if(len !== 0 && width === 0){
+            setwidth(widthValue1)
+        }
         if(props.cuts && props.cuts.length === 0){
             setwidth(widthValue1);
             setlen(lengthValue1);
@@ -102,14 +110,7 @@ const SlittingWidths = (props) => {
     }, [props.coilDetails,props.cuts]);
     
     useEffect(()=>{
-        let cuts = props.cuts.map(i => i.plannedWeight);
-       cuts = cuts.filter(i => i !== undefined)
-        cuts = cuts.length > 0? cuts.reduce((total, num) => Number(total) + Number(num)) : 0
-        props.setweight(cuts)
-        // setWeightValue(weightValue1-cuts);
-        if(len !== 0 && width === 0){
-            setwidth(widthValue1)
-        }
+        
 
         if (props.wip) {
             let actualUpdate = props.cuts.map(item => {
