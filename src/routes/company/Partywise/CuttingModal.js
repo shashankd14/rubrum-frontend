@@ -476,22 +476,16 @@ const CreateCuttingDetailsForm = (props) => {
                 props.setShowCuttingModal();
             }
         }
-        else if(validate === false){
-            if(props.slitCut){
-                props.saveCuttingInstruction(restTableData);
-            }else{
-                if(cutPayload.length>0) {
-                    props.saveCuttingInstruction(cutPayload);
-                }else{
-                    props.setShowCuttingModal(false);
-                }
-                
-            }
+        if(props.slitCut){
+            props.saveCuttingInstruction(restTableData);
         }
-        // else {
-        //     message.error('Please enter the mandatory fields(*)',2);
-        // }
-        
+        else if(validate === false){
+            if(cutPayload.length>0) {
+              props.saveCuttingInstruction(cutPayload);
+            }else{
+               props.setShowCuttingModal(false);
+          }
+        }
     }
     
      return (
