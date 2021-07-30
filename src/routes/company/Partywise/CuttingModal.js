@@ -33,10 +33,9 @@ const CreateCuttingDetailsForm = (props) => {
     const [validate, setValidate]=useState(true);
     const lengthValue = props.coilDetails.instruction && props.coilDetails.instruction.length > 0 ? props.plannedLength(props.coilDetails) : props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails)
     const widthValue = props.coilDetails.instruction && props.coilDetails.instruction.length > 0  ? props.plannedWidth(props.coilDetails):  props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.plannedWidth(props.coilDetails);
-    const WeightValue = props.coilDetails.instruction && props.coilDetails.instruction.length > 0  ? props.plannedWeight(props.coilDetails):  props.coilDetails.fpresent ? props.coilDetails.fpresent  : props.plannedWeight(props.coilDetails);
+    const WeightValue =  props.coilDetails.fpresent >= 0 ? props.coilDetails.fpresent  : props.plannedWeight(props.coilDetails);
     const [length, setlength]= useState(lengthValue);
     const [width, setwidth] = useState(widthValue);
-    const [weightvalue, setWeightValue] = useState(WeightValue);
     const [cutValue, setCutValue] = useState([]);
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [balancedValue, setBalancedValue] = useState(false);
@@ -144,6 +143,9 @@ const CreateCuttingDetailsForm = (props) => {
         {
             title: 'Weight',
             dataIndex:'plannedWeight',
+            render (value) {
+                return Math.round(value);
+            },
             key:'plannedWeight',
         },
         
@@ -242,6 +244,7 @@ const CreateCuttingDetailsForm = (props) => {
 
             });
     };
+   
     const onDelete = (record, e, type) => {
         e.preventDefault();
         if(type === 'slitCut'){
@@ -277,7 +280,7 @@ const CreateCuttingDetailsForm = (props) => {
                     slitcuts.push({...props.inward.process,
                         plannedLength: props.inward.process.length,
                         plannedNoOfPieces: props.inward.process.no,
-                        plannedWeight: props.inward.process.weight,
+                        plannedWeight: props.inward.process.weight.toFixed(2),
                         plannedWidth: props.coilDetails?.fWidth ? props.coilDetails.fWidth : props.coilDetails.plannedWidth,
                         inwardId: props.coilDetails.inwardEntryId ? props.coilDetails.inwardEntryId : "",
                         instructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : ""});
@@ -335,10 +338,8 @@ const CreateCuttingDetailsForm = (props) => {
         setCutPayload(cuts);
         let cutsArray = cuts.map(i => i.plannedWeight);
         cutsArray = cutsArray.filter(i => i !== undefined)
-       cutsArray = cutsArray.length > 0? cutsArray.reduce((total, num) => Number(total) + Number(num)) : 0
-        settweight(cutsArray)
-        setWeightValue(WeightValue-cutsArray);
-
+        cutsArray = cutsArray.length > 0? cutsArray.reduce((total, num) => Number(total) + Number(num)) : 0
+        settweight(cutsArray);
         if (props.wip) {
             let actualUpdate = cuts.map(item => {
                 if (!item.actualNoOfPieces && item.actualNoOfPieces !== 0) item.actualNoOfPieces  =  item.plannedNoOfPieces;
@@ -572,7 +573,7 @@ const CreateCuttingDetailsForm = (props) => {
           <Col lg={12} md={12} sm={24} xs={24}>
           <p>Inward specs: {props.coil.fThickness}X{props.coil.fWidth}X{props.coil.fLength}/{props.coil.fQuantity}</p>
               <p>Available Length(mm): {lengthValue}</p>
-              <p>Available Weight(kg) : {weightvalue}</p>
+              <p>Available Weight(kg) : {WeightValue}</p>
               <p>Available Width(mm) : {width}</p>
           </Col>
       </Row>}
@@ -648,7 +649,7 @@ const CreateCuttingDetailsForm = (props) => {
                         <Col lg={8} md={12} sm={24} xs={24}>
                             <p>Inward specs: {props.coil.fThickness}X{props.coil.fWidth}X{props.coil.fLength}/{props.coil.fQuantity}</p>
                             <p>Available Length(mm): {lengthValue}</p>
-                            <p>Available Weight(kg) : {weightvalue}</p>
+                            <p>Available Weight(kg) : {WeightValue}</p>
                             <p>Available Width(mm) : {width}</p>
                         </Col>
                     
