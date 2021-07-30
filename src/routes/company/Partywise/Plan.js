@@ -18,6 +18,7 @@ const Plan = (props) => {
     const [childCoil, setChildCoil] = useState(false);
     const [slitCut, setSlitCut] = useState(false);
     const [defaultValue, setdefaultValue] = useState();
+    const [unprocessedBtn, setUnprocessedClick] = useState(false);
     const { Option } = Select;
     const getPlannedLength = (ins) => {
         let length = 0;
@@ -113,7 +114,7 @@ const Plan = (props) => {
         if (props.wip) {
             props.fetchClassificationList();
         }
-    }, [showSlittingModal,showCuttingModal])
+    }, [showSlittingModal,showCuttingModal, props.inward.unprocessed])
 
     useEffect(() => {
         if (slittingCoil) {
@@ -128,6 +129,12 @@ const Plan = (props) => {
             setShowCuttingModal(true);
         }
     }, [cuttingCoil]);
+
+    useEffect(() => {
+        if (props.inward.unprocessed === 'error') {
+            setUnprocessedClick(false)
+        }
+    }, [props.inward.unprocessed]);
 
     const getLength = (value, type) => {
         let tempDelValue = 0;
@@ -197,8 +204,9 @@ const Plan = (props) => {
                             <span className="gx-coil-details-label">{props.inward.plan.fpresent}</span>
                         </div>
                         {props.wip ?
-                            <div>{props.inward.plan.fpresent !== 0 ? <Button onClick={() => {
-                                    props.saveUnprocessedDelivery(props.inward.plan.inwardEntryId)
+                            <div>{props.inward.plan.fpresent !== 0 && !unprocessedBtn ? <Button onClick={() => {
+                                    setUnprocessedClick(true);
+                                    setTimeout(() => props.saveUnprocessedDelivery(props.inward.plan.inwardEntryId), 1000)
                                 }}>Unprocessed</Button> : <></>}
                                 <Button onClick={() => {
                                     setSlittingCoil(props.inward.plan);
