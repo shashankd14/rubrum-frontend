@@ -113,11 +113,7 @@ const SlittingWidths = (props) => {
         }
         
     }, [props.coilDetails, props.cuts]);
-    useEffect(()=>{
-        if(props.cuts.length> 0){
-
-        }
-    },[props.coilDetails])
+    
     useEffect(()=>{
         if (props.wip) {
             let actualUpdate = props.cuts.map(item => {
