@@ -98,6 +98,12 @@ function  List(props) {
         props.fetchInwardList();
     }, []);
 
+    useEffect(() => {
+        if(!props.inward.loading && props.inward.success) {
+            setFilteredInwardList(props.inward.inwardList);
+        }
+    }, [props.inward.loading, props.inward.success])
+
     const handleChange = (pagination, filters, sorter) => {
         setSortedInfo(sorter);
         setFilteredInfo(filters)
