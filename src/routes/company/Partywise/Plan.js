@@ -25,10 +25,10 @@ const Plan = (props) => {
         let actualLength = 0;
         let childLength = 0;
         actualLength = ins.fLength ? ins.fLength : ins.actualLength != null ? ins.actualLength : ins.plannedLength;
-        if(ins.processId === 1){
         if (ins.instruction && ins.instruction.length> 0){
            let instruction = ins.instruction.flat();
            length = instruction.map(i => i.plannedLength);
+           length = [...new Set(length)];
            childLength = instruction.map(i => {
                if (i.childInstructions && i.childInstructions.length> 0){
                    return i.plannedLength;
@@ -41,7 +41,7 @@ const Plan = (props) => {
             length = ins.childInstructions.map(i => i.plannedLength);
 
             length = length.reduce((total, num) => total + num)
-        }}}
+        }}
         if (actualLength > (childLength+length)){
             length = actualLength - (length + childLength);
         } else {

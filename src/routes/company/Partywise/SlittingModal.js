@@ -58,7 +58,12 @@ const SlittingWidths = (props) => {
     const callBackValue =(n)=>{
         let cuts = 0;
         if(props.cuts && props.cuts.length){
-            cuts = n==='length'? props.cuts.map(i => i.plannedLength/i.plannedNoOfPieces) : props.cuts.map(i => i.plannedWidth);
+            if(n === 'length'){
+                cuts = props.cuts.map(i => Number(i.plannedLength));
+                cuts = [...new Set(cuts)];
+            }else{
+                cuts =  props.cuts.map(i => i.plannedWidth);
+            }
             cuts = cuts.filter(i => i !== undefined)
             cuts = cuts.length > 0? cuts.reduce((total, num) => Number(total) + Number(num)) : 0
             
@@ -83,15 +88,15 @@ const SlittingWidths = (props) => {
        let widthValue1 = 0;
        let weightValue = 0;
        if(props.coilDetails.fpresent >=0) {
-        lengthValue1 = props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails)
+         lengthValue1 = props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails)
         widthValue1 = props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.plannedWidth(props.coilDetails);
         weightValue = props.coilDetails.fpresent ? props.coilDetails.fpresent  : props.plannedWeight(props.coilDetails);
         } else{
-         lengthValue1 =  props.plannedLength(props.coilDetails)
-         widthValue1 = props.plannedWidth(props.coilDetails);
+        widthValue1 = props.plannedWidth(props.coilDetails);
          weightValue = props.plannedWeight(props.coilDetails);
+         lengthValue1 =  props.plannedLength(props.coilDetails)
          } 
-        props.widthValue(width);
+         props.widthValue(width);
         props.lengthValue(len);
         let cuts = props.cuts.map(i => i.plannedWeight);
        cuts = cuts.filter(i => i !== undefined)
@@ -103,9 +108,9 @@ const SlittingWidths = (props) => {
         if(len !== 0 && width === 0){
             setwidth(widthValue1)
         }
-        if(weightValue !== 0 && width === 0){
-            setwidth(widthValue1)
-        }
+        // if(weightValue !== 0 && width === 0){
+        //     setwidth(widthValue1)
+        // }
         if(props.cuts && props.cuts.length === 0){
             setwidth(widthValue1);
             setlen(lengthValue1);
@@ -198,7 +203,7 @@ const SlittingWidths = (props) => {
                         }
                         slits.push(slitValue)
                     }
-                    wValue = targetWeight*((values.widths[i]*values.nos[i]/width))
+                    wValue = targetWeight*((values.widths[i]*values.nos[i]/widthValue1))
                     totalWidth += values.widths[i]*values.nos[i];
                     if(totalWeight ===0){
                         totalWeight = props.tweight+Number(values.weights[i]);
@@ -212,7 +217,7 @@ const SlittingWidths = (props) => {
                 if(oldLength >= lengthValue){
                     if((totalWidth+cutWidth) > widthValue) {
                         message.error('Sum of slits width is greater than width of coil.', 2);
-                }}else if(availLength +cutLength > lengthValue) {
+                }}else if(Number(availLength) +cutLength > lengthValue) {
                     message.error('Length greater than available length', 2);
                 }else if(totalWeight > remainWeight) {
                    message.error('Weight greater than available weight', 2);
@@ -254,11 +259,12 @@ const SlittingWidths = (props) => {
             let widthEntry = 0;
             let array = [];
             let wValue;
+            let widthCheck = (widthValue1 === 0 && width !== 0 )? width: widthValue1;
             if(!err){
                 for(let i=0; i < values.widths.length; i++) {
                     widthEntry += values.widths[i]*values.nos[i];
                      array.push(`weights[${i}]`);
-                    wValue = targetWeight*((values.widths[i]*values.nos[i]/width))
+                    wValue = targetWeight*((values.widths[i]*values.nos[i])/widthCheck)
                     props.form.setFieldsValue({
                         [array[i]]: wValue
                    });
@@ -435,7 +441,7 @@ const SlittingWidths = (props) => {
                         </Button>
                     </Col>
                 </Row>
-                 <Button type="primary" onClick={() => applyData()} hidden={value=== 2? true: false} disabled={value===2 ?  true :props.cuts.length=== 0 ? true : false}>
+                 <Button type="primary" onClick={applyData} hidden={value=== 2? true: false} disabled={value===2 ?  true :props.cuts.length=== 0 ? true : false}>
                            Apply to remainig {equalParts} parts <Icon type="right"/>
                 </Button>
                 </Form.Item></>}
