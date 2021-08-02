@@ -46,7 +46,7 @@ const SlittingWidths = (props) => {
     
     const lengthValue1 = props.coilDetails.instruction && props.coilDetails.instruction.length > 0 ? props.plannedLength(props.coilDetails) : props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails)
     const widthValue1 = props.coilDetails.instruction && props.coilDetails.instruction.length > 0  ? props.plannedWidth(props.coilDetails):  props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.plannedWidth(props.coilDetails);
-    const weightValue1 = props.coilDetails.instruction && props.coilDetails.instruction.length > 0 ? props.plannedWeight(props.coilDetails):  props.coilDetails.fpresent >=0 ? props.coilDetails.fpresent  : props.plannedWeight(props.coilDetails);
+    const weightValue1 = props.coilDetails.fpresent >=0 ? props.coilDetails.fpresent  : props.plannedWeight(props.coilDetails);
     const [len, setlen]= useState(lengthValue1);
     const [width, setwidth] = useState(widthValue1);
     const [weightValue, setWeightValue] = useState(weightValue1);
@@ -78,27 +78,32 @@ const SlittingWidths = (props) => {
       }, [props.value]);
    
     useEffect(() => {
-        if (!props.wip) { props.setslitpayload(props.cuts); }
+        // if (!props.wip) { props.setslitpayload(props.cuts); }
        let lengthValue1 = 0;
        let widthValue1 = 0;
        let weightValue = 0;
-       if(props.coilDetails.instruction && props.coilDetails.instruction.length > 0){
+       if(props.coilDetails.fpresent >=0) {
+        lengthValue1 = props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails)
+        widthValue1 = props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.plannedWidth(props.coilDetails);
+        weightValue = props.coilDetails.fpresent ? props.coilDetails.fpresent  : props.plannedWeight(props.coilDetails);
+        } else{
          lengthValue1 =  props.plannedLength(props.coilDetails)
          widthValue1 = props.plannedWidth(props.coilDetails);
          weightValue = props.plannedWeight(props.coilDetails);
-         } else {
-          lengthValue1 = props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails)
-          widthValue1 = props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.plannedWidth(props.coilDetails);
-          weightValue = props.coilDetails.fpresent ? props.coilDetails.fpresent  : props.plannedWeight(props.coilDetails);
-          }
+         } 
         props.widthValue(width);
         props.lengthValue(len);
         let cuts = props.cuts.map(i => i.plannedWeight);
        cuts = cuts.filter(i => i !== undefined)
         cuts = cuts.length > 0? cuts.reduce((total, num) => Number(total) + Number(num)) : 0
         props.setweight(cuts)
-        setWeightValue(weightValue-cuts);
+        if(props.setDeleted){
+            setWeightValue(weightValue-cuts);
+        }
         if(len !== 0 && width === 0){
+            setwidth(widthValue1)
+        }
+        if(weightValue !== 0 && width === 0){
             setwidth(widthValue1)
         }
         if(props.cuts && props.cuts.length === 0){
@@ -107,11 +112,9 @@ const SlittingWidths = (props) => {
             setWeightValue(weightValue);
         }
         
-    }, [props.coilDetails,props.cuts]);
+    }, [props.coilDetails, props.cuts]);
     
     useEffect(()=>{
-        
-
         if (props.wip) {
             let actualUpdate = props.cuts.map(item => {
                 if (!item.actualLength && item.actualLength !== 0) item.actualLength  =  item.plannedLength;
@@ -166,6 +169,7 @@ const SlittingWidths = (props) => {
         let cutsValue = applySame();
         props.setSlits(cutsValue);
         if (!props.wip) { props.setslitpayload(cutsValue) }
+        setEqualParts(0);
     }
     const addNewSize = (e) => {
         let wValue;
@@ -173,7 +177,7 @@ const SlittingWidths = (props) => {
             if (!err) {
                 props.validate(false);
                 let totalWidth = 0;
-                let totalWeight = 0 ;
+                let totalWeight = props.tweight ;
                 const widthValue = props.coilDetails.fWidth ? props.coilDetails.fWidth : props.plannedWidth(props.coilDetails)
                 const lengthValue = props.coilDetails.fLength ? props.coilDetails.fLength : props.plannedLength(props.coilDetails)
                 const weightValue1 = props.coilDetails.fpresent >= 0? props.coilDetails.fpresent : props.plannedWeight(props.coilDetails)
@@ -194,7 +198,7 @@ const SlittingWidths = (props) => {
                         }
                         slits.push(slitValue)
                     }
-                    wValue = targetWeight*((values.widths[i]*values.nos[i]/widthValue1))
+                    wValue = targetWeight*((values.widths[i]*values.nos[i]/width))
                     totalWidth += values.widths[i]*values.nos[i];
                     if(totalWeight ===0){
                         totalWeight = props.tweight+Number(values.weights[i]);
@@ -204,16 +208,19 @@ const SlittingWidths = (props) => {
                     
                     settwidth(totalWidth); 
                  }
+                 let remainWeight = props.tweight + props.coilDetails.fpresent;
                 if(oldLength >= lengthValue){
                     if((totalWidth+cutWidth) > widthValue) {
                         message.error('Sum of slits width is greater than width of coil.', 2);
                 }}else if(availLength +cutLength > lengthValue) {
                     message.error('Length greater than available length', 2);
-                }else if(totalWeight > weightValue1) {
-                        message.error('Weight greater than available weight', 2);
+                }else if(totalWeight > remainWeight) {
+                   message.error('Weight greater than available weight', 2);
+                   
                 }else{
-                    setWeightValue(weightValue1-totalWeight);
+                    setWeightValue(weightValue1-(totalWeight-props.tweight));
                         props.setSlits(slits);
+                        props.setslitpayload(slits);
                         props.form.resetFields();
                 }}
                 else {
@@ -251,7 +258,7 @@ const SlittingWidths = (props) => {
                 for(let i=0; i < values.widths.length; i++) {
                     widthEntry += values.widths[i]*values.nos[i];
                      array.push(`weights[${i}]`);
-                    wValue = targetWeight*((values.widths[i]*values.nos[i]/widthValue1))
+                    wValue = targetWeight*((values.widths[i]*values.nos[i]/width))
                     props.form.setFieldsValue({
                         [array[i]]: wValue
                    });
@@ -333,7 +340,7 @@ const SlittingWidths = (props) => {
                 {getFieldDecorator('radioParts', {
                         rules: [{ required: (value === 2 ||  value === 1) && equalParts !== 0? false : true, message: 'Please select Parts' }],
                     })(
-                        <Radio.Group id="radioParts" onChange={radioChange} disabled={props.cuts.length> 0 ? true: false} value={value}>
+                        <Radio.Group id="radioParts" onChange={radioChange} disabled={props.cuts.length>0 && weightValue === 0  ? true: false} value={value}>
                         <Radio value={1}>Equal</Radio>
                         <Radio value={2}>Unequal</Radio>
                     </Radio.Group>
@@ -572,11 +579,13 @@ const columnsPlan=[
     const [form, setForm]= useState(false);
     const [slittingDetail, setSlittingDetail] = useState([])
     const [value, setValue]= useState(4);
+    const [deleteSelected, setDeletedSelected] = useState(false)
     const onDelete = (record, key, e) => {
         e.preventDefault();
         const data = cuts.filter(item => {
           return cuts.indexOf(item) !== key
         });
+        setDeletedSelected(true);
         props.deleteInstructionById(record.instructionId)
         setValidate(false);
         setslitpayload(data);
@@ -660,6 +669,8 @@ const columnsPlan=[
         setCuts([]);
         setForm(true)
         setValue(0);
+        
+        setDeletedSelected(false);
         props.setShowSlittingModal(false)
     }
     const handleOk =(name) => {
@@ -676,6 +687,7 @@ const columnsPlan=[
             }
         }
         if(validate === false){
+            setDeletedSelected(false);
             if(name === 'Slitting'){
                 if(slitPayload.length > 0){
                     props.saveSlittingInstruction(slitPayload);
@@ -696,6 +708,7 @@ const columnsPlan=[
                 props.setShowSlittingModal(false);
                 props.setShowCuttingModal(true);
                 props.setCutting(cuts);
+                setDeletedSelected(false);
             } 
         } 
         // else {
@@ -801,7 +814,7 @@ const columnsPlan=[
                         <Form {...formItemLayout} className="login-form gx-pt-4">
                             
                                 <Form.Item>
-                                    <SlittingWidthsForm setslitpayload={(slits) => setslitpayload(slits)} setSlits={(slits) => setCuts([...cuts,...slits])} setweight={(w) => settweight(w)} coilDetails={props.coilDetails} wip={props.wip} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth} plannedWeight ={props.plannedWeight} length={length} cuts={cuts} edit={edit} tweight={tweight} lengthValue={(lengthValue) => setLengthValue(lengthValue)} widthValue={(widthValue) => setWidthValue(widthValue)} reset={form} validate={(valid) => setValidate(valid)} value={value}/>
+                                    <SlittingWidthsForm setslitpayload={(slits) => setslitpayload([...slitPayload,...slits])} setSlits={(slits) => setCuts([...cuts,...slits])} setweight={(w) => settweight(w)} coilDetails={props.coilDetails} wip={props.wip} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth} plannedWeight ={props.plannedWeight} length={length} cuts={cuts} edit={edit} tweight={tweight} lengthValue={(lengthValue) => setLengthValue(lengthValue)} widthValue={(widthValue) => setWidthValue(widthValue)} reset={form} validate={(valid) => setValidate(valid)} value={value} setDeleted = {deleteSelected}/>
                                 </Form.Item>
 
                             </Form>

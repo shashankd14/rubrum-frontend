@@ -25,7 +25,7 @@ const Plan = (props) => {
         let actualLength = 0;
         let childLength = 0;
         actualLength = ins.fLength ? ins.fLength : ins.actualLength != null ? ins.actualLength : ins.plannedLength;
-        
+        if(ins.processId === 1){
         if (ins.instruction && ins.instruction.length> 0){
            let instruction = ins.instruction.flat();
            length = instruction.map(i => i.plannedLength);
@@ -41,7 +41,7 @@ const Plan = (props) => {
             length = ins.childInstructions.map(i => i.plannedLength);
 
             length = length.reduce((total, num) => total + num)
-        }}
+        }}}
         if (actualLength > (childLength+length)){
             length = actualLength - (length + childLength);
         } else {
@@ -54,21 +54,23 @@ const Plan = (props) => {
         let actualWidth = 0;
         let childWidth = 0;
         actualWidth = ins.fWidth ? ins.fWidth : ins.actualWidth != null ? ins.actualWidth : ins.plannedWidth;
-        if (ins.instruction && ins.instruction.length> 0){
-            let instruction = ins.instruction.flat();
-            width = instruction.map(i => i.plannedWidth);
-            childWidth = instruction.map(i => {
-                if (i.childInstructions && i.childInstructions.length> 0){
-                    return i.plannedWidth;
-                }})
-            childWidth = childWidth.filter(i => i !== undefined)
-            childWidth = childWidth.length > 0?childWidth.reduce((total, num) => total + num): 0
-            width = width.reduce((total, num) => total + num)
-         } else {
-         if (ins.childInstructions && ins.childInstructions.length > 0) {
-             width = ins.childInstructions.map(i => i.plannedWidth);
-             width = width.reduce((total, num) => total + num)
-         }
+        if(ins.processId !== 1){
+            if (ins.instruction && ins.instruction.length> 0){
+                let instruction = ins.instruction.flat();
+                width = instruction.map(i => i.plannedWidth);
+                childWidth = instruction.map(i => {
+                    if (i.childInstructions && i.childInstructions.length> 0){
+                        return i.plannedWidth;
+                    }})
+                childWidth = childWidth.filter(i => i !== undefined)
+                childWidth = childWidth.length > 0?childWidth.reduce((total, num) => total + num): 0
+                width = width.reduce((total, num) => total + num)
+             } else {
+             if (ins.childInstructions && ins.childInstructions.length > 0) {
+                 width = ins.childInstructions.map(i => i.plannedWidth);
+                 width = width.reduce((total, num) => total + num)
+             }
+            }
         }
         if (actualWidth > (childWidth+width)){
             width = actualWidth - (width+childWidth);
