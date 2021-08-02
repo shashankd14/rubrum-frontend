@@ -36,8 +36,9 @@ const List = (props) => {
         dataIndex: 'coilNumber',
         key: 'coilNumber',
         filters: [],
-        sorter: (a, b) => a.coilNumber.length - b.coilNumber.length,
+        sorter: (a, b) => a.coilNumber?.length - b.coilNumber?.length,
         sortOrder: sortedInfo.columnKey === 'coilNumber' && sortedInfo.order,
+        ellipsis: true
     },
     {
         title: 'Customer Batch No',
@@ -46,7 +47,7 @@ const List = (props) => {
         filteredValue: filteredInfo ? filteredInfo["customerBatchId"] : null,
         onFilter: (value, record) => record.customerBatchId == value,
         filters: [],
-        sorter: (a, b) => a.customerBatchId - b.customerBatchId,
+        sorter: (a, b) => a.customerBatchId?.length - b.customerBatchId?.length,
         sortOrder: sortedInfo.columnKey === 'customerBatchId' && sortedInfo.order,
         render: (text, record) => {
             if (record.customerBatchId ) return record.customerBatchId;
