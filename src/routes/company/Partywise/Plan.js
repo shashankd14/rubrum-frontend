@@ -1,4 +1,4 @@
-import { Button, Card, Col, Select } from "antd";
+import { Button, Card, Col, Select, Modal } from "antd";
 import moment from 'moment';
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
@@ -18,7 +18,8 @@ const Plan = (props) => {
     const [childCoil, setChildCoil] = useState(false);
     const [slitCut, setSlitCut] = useState(false);
     const [defaultValue, setdefaultValue] = useState();
-    const [unprocessedBtn, setUnprocessedClick] = useState(false);
+    const [showUnprocessedModal, setshowUnprocessedModal] = useState(false);
+    const [unprocessedOkClick, setUnprocessedOkClick] = useState(false);
     const { Option } = Select;
     const getPlannedLength = (ins) => {
         let length = 0;
@@ -108,14 +109,25 @@ const Plan = (props) => {
         
         return weight;
     }
-    useEffect(() => {
+    const getCoilData = () => {
         setTimeout(() => {
             props.getCoilPlanDetails(props.match.params.coilNumber);
         }, 1000)
+    }
+
+    useEffect(() => {
+        getCoilData();
         if (props.wip) {
             props.fetchClassificationList();
         }
-    }, [showSlittingModal,showCuttingModal, props.inward.unprocessed])
+    }, [showSlittingModal,showCuttingModal])
+
+    useEffect(() => {
+        if (unprocessedOkClick) {
+            setUnprocessedOkClick(false);
+            getCoilData();
+        }
+    }, [unprocessedOkClick])
 
     useEffect(() => {
         if (slittingCoil) {
@@ -130,12 +142,6 @@ const Plan = (props) => {
             setShowCuttingModal(true);
         }
     }, [cuttingCoil]);
-
-    useEffect(() => {
-        if (props.inward.unprocessed === 'error') {
-            setUnprocessedClick(false)
-        }
-    }, [props.inward.unprocessed]);
 
     const getLength = (value, type) => {
         let tempDelValue = 0;
@@ -183,7 +189,22 @@ const Plan = (props) => {
         <div className="gx-full-height" style={{ overflowX: "auto", overflowy: "scroll" }}>
             {cuttingCoil && <CuttingModal showCuttingModal={showCuttingModal} setShowCuttingModal={setShowCuttingModal} coilDetails={cuttingCoil} wip={props.wip} childCoil={childCoil} plannedLength={getPlannedLength} plannedWidth ={getPlannedWidth} plannedWeight={getPlannedWeight} coil={props.inward.plan} slitCut={slitCut} />}
             {slittingCoil && <SlittingModal showSlittingModal={showSlittingModal} setShowSlittingModal={setShowSlittingModal} wip={props.wip} coilDetails={slittingCoil} childCoil={childCoil} plannedLength={getPlannedLength} plannedWidth ={getPlannedWidth} plannedWeight={getPlannedWeight} coil={props.inward.plan} slitCut={slitCut} setShowCuttingModal={setShowCuttingModal} setCutting={(cuts)=>setCuttingCoil(cuts)}/>}
-            
+            <Modal 
+                title='Confirmation'
+                visible={showUnprocessedModal}
+                width={400}
+                onOk={() => {
+                    setTimeout(() => {
+                        props.saveUnprocessedDelivery(props.inward.plan.inwardEntryId);
+                        setUnprocessedOkClick(true);
+                        setshowUnprocessedModal(false);
+                    }, 1000)
+                }}
+                onCancel={() => setshowUnprocessedModal(false)}
+            >
+                <p>Are you sure to proceed Unprocessed ? </p>
+                <p>Please click OK to confirm</p>
+            </Modal>
             <h1><IntlMessages id="partywise.plan.label" /></h1>
             <div className="gx-full-height gx-flex-row">
                 <Col lg={5} md={5} sm={24} xs={24} className="gx-align-self-center">
@@ -205,10 +226,8 @@ const Plan = (props) => {
                             <span className="gx-coil-details-label">{props.inward.plan.fpresent}</span>
                         </div>
                         {props.wip ?
-                            <div>{props.inward.plan.fpresent !== 0 && !unprocessedBtn ? <Button onClick={() => {
-                                    setUnprocessedClick(true);
-                                    setTimeout(() => props.saveUnprocessedDelivery(props.inward.plan.inwardEntryId), 1000)
-                                }}>Unprocessed</Button> : <></>}
+                            <div>
+                                {props.inward.plan.fpresent !== 0 ? <Button onClick={() => setshowUnprocessedModal(true)}>Unprocessed</Button> : <></>}
                                 <Button onClick={() => {
                                     setSlittingCoil(props.inward.plan);
                                     setShowSlittingModal(true)
