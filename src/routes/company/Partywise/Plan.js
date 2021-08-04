@@ -57,9 +57,8 @@ const Plan = (props) => {
        
             if (ins.instruction && ins.instruction.length> 0){
                 let instruction = ins.instruction.flat();
-                width = instruction.map(i => i.plannedWidth);
-                width = [...new Set(width)]
-                childWidth = instruction.map(i => {
+                width = instruction.map(i => i.plannedWidth)
+            childWidth = instruction.map(i => {
                     if (i.childInstructions && i.childInstructions.length> 0){
                         return i.plannedWidth;
                     }})
