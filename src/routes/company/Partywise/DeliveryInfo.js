@@ -153,7 +153,7 @@ const DeliveryInfo = (props) => {
                   color: "white",
                   border: "none",
                   cursor: "pointer"
-                }} onClick={handleSubmit} >Confirm</button>
+                }} onClick={handleSubmit} >Confirm & Generate</button>
             }
             <button
               style={{ marginBottom: "10px", padding: "6px 15px" }}

@@ -745,12 +745,17 @@ const columnsPlan=[
                 <Button key="submit" type="primary" loading={loading} onClick={()=>{handleOk('SlitCut')}}>
                   Send for Cut
                 </Button>
-              ]:[
+              ]:cuts.length>0 ?[
                 <Button key="back" onClick={handleCancel}>
                   Cancel
                 </Button>,
                 <Button key="submit" type="primary" loading={loading} onClick={()=>{handleOk('Slitting')}}>
-                  OK
+                 Save and Generate
+                </Button>]: [<Button key="back" onClick={handleCancel}>
+                  Cancel
+                </Button>,
+                <Button key="submit" type="primary" loading={loading} onClick={()=>{handleOk('Slitting')}}>
+                 OK
                 </Button>]}
         >
             <Tabs
