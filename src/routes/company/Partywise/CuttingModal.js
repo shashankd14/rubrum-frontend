@@ -299,9 +299,9 @@ const CreateCuttingDetailsForm = (props) => {
             
             if(props.coilDetails.instructionId)
 
-                props.setProcessDetails({...props.inward.process, weight:tweight && balancedValue ? WeightValue-Number(tweight):Math.round( 0.00000785*parseFloat(width)*parseFloat(props.inward.plan.fThickness)*parseFloat(props.inward.process.length)*parseFloat(props.inward.process.no))});
+                props.setProcessDetails({...props.inward.process, weight:Number(tweight) >=0 && balancedValue ? WeightValue-Number(tweight):Math.round( 0.00000785*parseFloat(width)*parseFloat(props.inward.plan.fThickness)*parseFloat(props.inward.process.length)*parseFloat(props.inward.process.no))});
             else
-                props.setProcessDetails({...props.inward.process, weight:tweight && balancedValue ? WeightValue-Number(tweight):Math.round( 0.00000785*parseFloat(props.inward.plan.fWidth)*parseFloat(props.inward.plan.fThickness)*parseFloat(props.inward.process.length)*parseFloat(props.inward.process.no))});
+                props.setProcessDetails({...props.inward.process, weight:Number(tweight) >=0 && balancedValue ? WeightValue-Number(tweight):Math.round( 0.00000785*parseFloat(props.inward.plan.fWidth)*parseFloat(props.inward.plan.fThickness)*parseFloat(props.inward.process.length)*parseFloat(props.inward.process.no))});
         }
     }, [props.inward.process.length, props.inward.process.no])
     
@@ -489,6 +489,12 @@ const CreateCuttingDetailsForm = (props) => {
           }
         }
     }
+    const handleCancel=() => {
+        setCuts([]);
+        setCutPayload([]);
+        props.form.resetFields();
+        setBalancedValue(false)
+        props.setShowCuttingModal(false)}
     
      return (
        
@@ -497,12 +503,20 @@ const CreateCuttingDetailsForm = (props) => {
             visible={props.showCuttingModal}
             onOk={() => {handleOk()}}
             width={1020}
-            onCancel={() => {
-                setCuts([]);
-                setCutPayload([]);
-                props.form.resetFields();
-                setBalancedValue(false)
-                props.setShowCuttingModal(false)}}
+            onCancel={handleCancel}
+            footer={cuts.length>0 ?[
+                <Button key="back" onClick={handleCancel}>
+                  Cancel
+                </Button>,
+                <Button key="submit" type="primary" loading={loading} onClick={()=>{handleOk()}}>
+                 Save and Generate
+                </Button>
+              ]:[<Button key="back" onClick={handleCancel}>
+              Cancel
+            </Button>,
+            <Button key="submit" type="primary" loading={loading} onClick={()=>{handleOk()}}>
+             OK
+            </Button>]}
         >
         <Card className="gx-card" >
         {!props.wip && props.slitCut && <div>

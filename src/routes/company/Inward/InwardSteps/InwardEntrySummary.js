@@ -96,7 +96,7 @@ const InwardEntrySummary = (props) => {
                         e.preventDefault();
                         props.params!== ""? props.updateInward(props.inward):props.submitInwardEntry(props.inward)
                     }}>
-                        Submit<Icon type="right"/>
+                        Submit  & Generate<Icon type="right"/>
                     </Button>
                 </Col>
             </>
