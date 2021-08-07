@@ -262,6 +262,7 @@ const getFilterData=(list)=>{
         onSelectAll: (selected, selectedRows, changeRows) => {
             if (changeRows.length === selectedCBKeys.length) {
                 setSelectedCBKeys([]);
+                setSelectedRowData([]);
             } else {
                 changeRows.map(item => {
                     if (item.status.statusName === 'READY TO DELIVER') {
