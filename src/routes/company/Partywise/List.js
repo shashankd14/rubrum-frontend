@@ -28,8 +28,15 @@ const List = (props) => {
          return item
      })
     const [filteredInwardList, setFilteredInwardList] = useState(filter);
-    const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [expandedRow, setExpandedRecord] = useState([]);
+
+    const [selectedCBKeys, setSelectedCBKeys] = React.useState([]);
+    const [selectedRowData, setSelectedRowData] = React.useState([]);
+
+    useEffect(() => {
+        console.log('selected rows', selectedRowData, selectedCBKeys);
+        props.setInwardSelectedForDelivery(selectedRowData);
+    }, [selectedRowData]);
 
     const columns = [{
         title: 'Coil Number',
@@ -220,17 +227,54 @@ const getFilterData=(list)=>{
     function handleFocus() {
     }
 
-    const setSelection = (record, selected, selectedRows) => {
-        setSelectedRowKeys(selectedRows)
-        props.setInwardSelectedForDelivery(selectedRows)
-    }
+    const storeKey = data => {
+        if (selectedCBKeys.includes(data.key)) {
+          const newSet = selectedCBKeys;
+          const index = selectedCBKeys.indexOf(data.key);
+          newSet.splice(index, 1);
+          setSelectedCBKeys(newSet);
+          setSelectedRowData(oldData => oldData.filter(row => row.key !== data.key));
+          return;
+        } else {
+            setSelectedCBKeys(oldArr => [...oldArr, data.key]);
+            setSelectedRowData(oldData => [...oldData, data]);
+        }
+      };
 
-    const handleSelection = {
-        onSelect: setSelection, getCheckboxProps: (record) => ({
+    const getKey = data => {
+        if (data.status.statusName === 'READY TO DELIVER') {
+            storeKey(data);
+            if (data.children) {
+                data.children.map(item => getKey(item));
+            }
+        }
+      };
+
+      const rowSelection = {
+        onSelect: (record) => {
+            if (record.status.statusName === 'READY TO DELIVER') {
+                getKey(record);
+            }
+        },
+        getCheckboxProps: (record) => ({
             disabled: record.status.statusName !== 'READY TO DELIVER'
-        })
-    }
-
+        }),
+        onSelectAll: (selected, selectedRows, changeRows) => {
+            if (changeRows.length === selectedCBKeys.length) {
+                setSelectedCBKeys([]);
+                setSelectedRowData([]);
+            } else {
+                changeRows.map(item => {
+                    if (item.status.statusName === 'READY TO DELIVER') {
+                      getKey(item)
+                    }
+                });
+            }
+            console.log(selectedRows);
+          
+        },
+        selectedRowKeys: selectedCBKeys,
+      };
 
     return (
         <div>
@@ -257,15 +301,15 @@ const getFilterData=(list)=>{
                         <Button onClick={clearFilters}>Clear All filters</Button>
                     </div>
                     <div className="gx-flex-row gx-w-50">
-                        {selectedRowKeys.length < 1 ? <Button type="primary" icon={() => <i className="icon icon-add" />} size="medium"
-                            disabled
-                        >Delivery</Button> :
-                            <Button type="primary" icon={() => <i className="icon icon-add" />} size="medium"
-                                onClick={() => {
-                                    props.history.push('/company/partywise-register/delivery')
-                                }
-                                }
-                            >Delivery</Button>}
+                        <Button type="primary" 
+                            icon={() => <i className="icon icon-add" />} 
+                            size="medium"
+                            onClick={() => {
+                                props.history.push('/company/partywise-register/delivery')
+                            }}
+                            disabled={!!selectedCBKeys?.length < 1}
+                        >Delivery</Button>
+                            
                         <Button type="primary" icon={() => <i className="icon icon-add" />} size="medium"
                             onClick={() => {
 
@@ -275,11 +319,12 @@ const getFilterData=(list)=>{
                         <SearchBox styleName="gx-flex-1" placeholder="Search for coil number or party name..." value={searchValue} onChange={(e) => setSearchValue(e.target.value)} />
                     </div>
                 </div>
-                <Table rowSelection={handleSelection}
+                <Table
                     className="gx-table-responsive"
                     columns={columns}
                     dataSource={filteredInwardList}
                     onChange={handleChange}
+                    rowSelection={rowSelection}
                     onExpand={(expanded, record) => {
                         const motherRecord = {
                             key: record.key,

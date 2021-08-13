@@ -103,8 +103,7 @@ const INIT_STATE = {
     inwardUpdateError: false,
     saveCut:[],
     saveSlit:[],
-    groupId:{},
-    unprocessed: ''
+    groupId:{}
 
 };
 
@@ -471,15 +470,13 @@ export default (state = INIT_STATE, action) => {
         case SAVE_UNPROCESSED_FOR_DELIVERY_SUCCESS: {
             return {
                 ...state,
-                loading: false,
-                unprocessed: 'success'
+                loading: false
             }
         }
         case SAVE_UNPROCESSED_FOR_DELIVERY_ERROR: {
             return {
                 ...state,
-                loading: false,
-                unprocessed: 'error'
+                loading: false
             }
         }
         case DELETE_INWARD_LIST_BY_ID:{

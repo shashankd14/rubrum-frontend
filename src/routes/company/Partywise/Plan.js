@@ -1,4 +1,4 @@
-import { Button, Card, Col, Select } from "antd";
+import { Button, Card, Col, Select, Modal } from "antd";
 import moment from 'moment';
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
@@ -9,7 +9,7 @@ import SlittingModal from "./SlittingModal";
 
 
 const Plan = (props) => {
-    const insList = ["Slitting","Cutting","Slit & Cut"];
+    
     const { instruction } = props.inward.plan;
     const [showCuttingModal, setShowCuttingModal] = useState(false);
     const [showSlittingModal, setShowSlittingModal] = useState(false);
@@ -18,26 +18,27 @@ const Plan = (props) => {
     const [childCoil, setChildCoil] = useState(false);
     const [slitCut, setSlitCut] = useState(false);
     const [defaultValue, setdefaultValue] = useState();
-    const [unprocessedBtn, setUnprocessedClick] = useState(false);
+    const [showUnprocessedModal, setshowUnprocessedModal] = useState(false);
+    const [unprocessedOkClick, setUnprocessedOkClick] = useState(false);
     const { Option } = Select;
     const getPlannedLength = (ins) => {
         let length = 0;
         let actualLength = 0;
         let childLength = 0;
         actualLength = ins.fLength ? ins.fLength : ins.actualLength != null ? ins.actualLength : ins.plannedLength;
-        if (ins.instruction && ins.instruction.length> 0){
+        if (ins.instruction && ins.instruction?.length> 0){
            let instruction = ins.instruction.flat();
            length = instruction.map(i => i.plannedLength);
            length = [...new Set(length)];
            childLength = instruction.map(i => {
-               if (i.childInstructions && i.childInstructions.length> 0){
+               if (i.childInstructions && i.childInstructions?.length> 0){
                    return i.plannedLength;
                }})
             childLength = childLength.filter(i => i !== undefined)
-            childLength = childLength.length > 0? childLength.reduce((total, num) => total + num) : 0
-           length = length.length> 0 ?length.reduce((total, num) => total + num): 0
+            childLength = childLength?.length > 0? childLength.reduce((total, num) => total + num) : 0
+           length = length?.length> 0 ?length.reduce((total, num) => total + num): 0
         } else {
-        if (ins.childInstructions && ins.childInstructions.length > 0) {
+        if (ins.childInstructions && ins.childInstructions?.length > 0) {
             length = ins.childInstructions.map(i => i.plannedLength);
 
             length = length.reduce((total, num) => total + num)
@@ -55,18 +56,18 @@ const Plan = (props) => {
         let childWidth = 0;
         actualWidth = ins.fWidth ? ins.fWidth : ins.actualWidth != null ? ins.actualWidth : ins.plannedWidth;
        
-            if (ins.instruction && ins.instruction.length> 0){
+            if (ins.instruction && ins.instruction?.length> 0){
                 let instruction = ins.instruction.flat();
                 width = instruction.map(i => i.plannedWidth)
             childWidth = instruction.map(i => {
-                    if (i.childInstructions && i.childInstructions.length> 0){
+                    if (i.childInstructions && i.childInstructions?.length> 0){
                         return i.plannedWidth;
                     }})
                 childWidth = childWidth.filter(i => i !== undefined)
-                childWidth = childWidth.length > 0?childWidth.reduce((total, num) => total + num): 0
+                childWidth = childWidth?.length > 0?childWidth.reduce((total, num) => total + num): 0
                 width = width.reduce((total, num) => total + num)
              } else {
-             if (ins.childInstructions && ins.childInstructions.length > 0) {
+             if (ins.childInstructions && ins.childInstructions?.length > 0) {
                  width = ins.childInstructions.map(i => i.plannedWidth);
                  width = width.reduce((total, num) => total + num)
              }
@@ -84,18 +85,18 @@ const Plan = (props) => {
         let childWeight = 0;
         let actualWeight = 0;
         actualWeight = ins.fpresent ? ins.fpresent : ins.actualWeight != null ? ins.actualWeight : ins.plannedWeight;
-        if (ins.instruction && ins.instruction.length> 0){
+        if (ins.instruction && ins.instruction?.length> 0){
             let instruction = ins.instruction.flat();
             weight = instruction.map(i => i.plannedWeight);
             childWeight = instruction.map(i => {
-                if (i.childInstructions && i.childInstructions.length> 0){
+                if (i.childInstructions && i.childInstructions?.length> 0){
                     return i.plannedWeight;
                 }})
             childWeight = childWeight.filter(i => i !== undefined)
-            childWeight = childWeight.length>0?childWeight.reduce((total, num) => total + num):0
-            weight = weight.length>0?weight.reduce((total, num) => total + num):0
+            childWeight = childWeight?.length>0?childWeight.reduce((total, num) => total + num):0
+            weight = weight?.length>0?weight.reduce((total, num) => total + num):0
          } else {
-         if (ins.childInstructions && ins.childInstructions.length > 0) {
+         if (ins.childInstructions && ins.childInstructions?.length > 0) {
              weight = ins.childInstructions.map(i => i.plannedWeight);
              weight = weight.reduce((total, num) => total + num)
          }
@@ -108,14 +109,25 @@ const Plan = (props) => {
         
         return weight;
     }
-    useEffect(() => {
+    const getCoilData = () => {
         setTimeout(() => {
             props.getCoilPlanDetails(props.match.params.coilNumber);
         }, 1000)
+    }
+
+    useEffect(() => {
+        getCoilData();
         if (props.wip) {
             props.fetchClassificationList();
         }
-    }, [showSlittingModal,showCuttingModal, props.inward.unprocessed])
+    }, [showSlittingModal,showCuttingModal])
+
+    useEffect(() => {
+        if (unprocessedOkClick) {
+            setUnprocessedOkClick(false);
+            getCoilData();
+        }
+    }, [unprocessedOkClick])
 
     useEffect(() => {
         if (slittingCoil) {
@@ -130,12 +142,6 @@ const Plan = (props) => {
             setShowCuttingModal(true);
         }
     }, [cuttingCoil]);
-
-    useEffect(() => {
-        if (props.inward.unprocessed === 'error') {
-            setUnprocessedClick(false)
-        }
-    }, [props.inward.unprocessed]);
 
     const getLength = (value, type) => {
         let tempDelValue = 0;
@@ -178,12 +184,27 @@ const Plan = (props) => {
             setShowSlittingModal(true);
         }
     }
-
+    const insList = ["Slitting","Cutting","Slit & Cut"];
     return (
         <div className="gx-full-height" style={{ overflowX: "auto", overflowy: "scroll" }}>
             {cuttingCoil && <CuttingModal showCuttingModal={showCuttingModal} setShowCuttingModal={setShowCuttingModal} coilDetails={cuttingCoil} wip={props.wip} childCoil={childCoil} plannedLength={getPlannedLength} plannedWidth ={getPlannedWidth} plannedWeight={getPlannedWeight} coil={props.inward.plan} slitCut={slitCut} />}
             {slittingCoil && <SlittingModal showSlittingModal={showSlittingModal} setShowSlittingModal={setShowSlittingModal} wip={props.wip} coilDetails={slittingCoil} childCoil={childCoil} plannedLength={getPlannedLength} plannedWidth ={getPlannedWidth} plannedWeight={getPlannedWeight} coil={props.inward.plan} slitCut={slitCut} setShowCuttingModal={setShowCuttingModal} setCutting={(cuts)=>setCuttingCoil(cuts)}/>}
-            
+            <Modal 
+                title='Confirmation'
+                visible={showUnprocessedModal}
+                width={400}
+                onOk={() => {
+                    setTimeout(() => {
+                        props.saveUnprocessedDelivery(props.inward.plan.inwardEntryId);
+                        setUnprocessedOkClick(true);
+                        setshowUnprocessedModal(false);
+                    }, 1000)
+                }}
+                onCancel={() => setshowUnprocessedModal(false)}
+            >
+                <p>Are you sure to proceed Unprocessed ? </p>
+                <p>Please click OK to confirm</p>
+            </Modal>
             <h1><IntlMessages id="partywise.plan.label" /></h1>
             <div className="gx-full-height gx-flex-row">
                 <Col lg={5} md={5} sm={24} xs={24} className="gx-align-self-center">
@@ -205,10 +226,8 @@ const Plan = (props) => {
                             <span className="gx-coil-details-label">{props.inward.plan.fpresent}</span>
                         </div>
                         {props.wip ?
-                            <div>{props.inward.plan.fpresent !== 0 && !unprocessedBtn ? <Button onClick={() => {
-                                    setUnprocessedClick(true);
-                                    setTimeout(() => props.saveUnprocessedDelivery(props.inward.plan.inwardEntryId), 1000)
-                                }}>Unprocessed</Button> : <></>}
+                            <div>
+                                {props.inward.plan.fpresent !== 0 ? <Button onClick={() => setshowUnprocessedModal(true)}>Unprocessed</Button> : <></>}
                                 <Button onClick={() => {
                                     setSlittingCoil(props.inward.plan);
                                     setShowSlittingModal(true)
@@ -235,7 +254,7 @@ const Plan = (props) => {
                                 onChange={(value)=>handleSelectChange(value, setChildCoil(false), props.inward.plan)}
                                 filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                         >
-                            {insList.length > 0 && insList.map((instruction) => (
+                            {insList?.length > 0 && insList.map((instruction) => (
                                 <Option value={instruction}>{instruction}</Option>
                             ))}
                         </Select>
@@ -243,9 +262,9 @@ const Plan = (props) => {
                     </Card>
                 </Col>
                 <Col lg={18} md={18} sm={24} xs={24} offset={1} className="gx-align-self-center gx-branch lv1">
-                    {instruction && instruction.length > 0 && instruction.map((group) => (
+                    {instruction && instruction?.length > 0 && instruction.map((group) => (
                         <>
-                            {group.length > 0 && group.map((instruction)=> (instruction.groupId == null? <Card bordered={false} className={`gx-entry cardLevel2MainDiv`}>
+                            {group?.length > 0 && group.map((instruction)=> (instruction.groupId == null? <Card bordered={false} className={`gx-entry cardLevel2MainDiv`}>
                                 {group.map((instruction) => (<>{instruction.groupId == null ?
                                     <div style={{ display: "flex" }}>
                                         <Col lg={10} md={10} sm={24} xs={24} offset={1} className={`gx-align-self-center cardLevel2Div ${instruction.parentGroupId == null ? group[0].process.processId === 1 ? 'gx-cutting-group' : 'gx-slitting-group':'gx-slit-cut-group'}`}>
@@ -277,7 +296,7 @@ const Plan = (props) => {
                                                             onChange={(value)=>handleSelectChange(value, setChildCoil(true), instruction)}
                                                             filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                                                     >
-                                                        {insList.length > 0 && insList.map((instruction) => (
+                                                        {insList?.length > 0 && insList.map((instruction) => (
                                                             <Option value={instruction}>{instruction}</Option>
                                                         ))}
                                                     </Select></div>}
@@ -285,7 +304,7 @@ const Plan = (props) => {
                                                 </div>
                                             </Card>
                                         </Col>
-                                        {instruction.childInstructions.length > 0 ?
+                                        {instruction.childInstructions?.length > 0 ?
                                             <Col lg={13} md={13} sm={24} xs={24} offset={1} className="gx-align-self-center gx-branch-lvl2">
                                                 <>
                                                     <Col lg={24} md={24} sm={24} xs={24} offset={1} className={`gx-align-self-center cardLevel2Div ${group[0].process.processId === 1 ? 'gx-cutting-group' : 'gx-slitting-group'}`}>
@@ -325,7 +344,7 @@ const Plan = (props) => {
                                                                         onChange={(value)=>handleSelectChange(value, setChildCoil(true),instruction)}
                                                                         filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                                                                 >
-                                                                    {insList.length > 0 && insList.map((instruction) => (
+                                                                    {insList?.length > 0 && insList.map((instruction) => (
                                                                         <Option value={instruction}>{instruction}</Option>
                                                                     ))}
                                                                 </Select></div>}
