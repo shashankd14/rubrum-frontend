@@ -145,12 +145,14 @@ const List = (props) => {
         dataIndex: '',
         key: 'x',
         render: (text, record) => (
+            <span>{record.instructionId ? <span className="gx-link"></span>:
             <span>
                 <span className="gx-link" onClick={() => props.history.push(`plan/${record.coilNumber}`)}>Plan</span>
                 <Divider type="vertical" />
                 <span className="gx-link">Bill</span>
                 <Divider type="vertical" />
                 <span className="gx-link">Transfer</span>
+            </span>}
             </span>
         ),
     },
