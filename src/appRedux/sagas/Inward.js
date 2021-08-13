@@ -22,7 +22,8 @@ import {
     DELETE_INWARD_LIST_BY_ID,
     DELETE_INSTRUCTION_BY_ID,
     CHECK_BATCH_NO_EXIST,
-    INSTRUCTION_GROUP_SAVE
+    INSTRUCTION_GROUP_SAVE,
+    PDF_GENERATE_INWARD
 } from "../../constants/ActionTypes";
 
 import {
@@ -63,7 +64,9 @@ import {
     checkCustomerBatchNumberSuccess,
     checkCustomerBatchNumberError,
     instructionGroupsaveSuccess,
-    instructionGroupsaveError
+    instructionGroupsaveError,
+    pdfGenerateSuccess,
+    pdfGenerateError
 } from "../actions";
 import { CUTTING_INSTRUCTION_PROCESS_ID, SLITTING_INSTRUCTION_PROCESS_ID, SLIT_CUT_INSTRUCTION_PROCESS_ID } from "../../constants";
 import { formItemLayout } from "../../routes/company/Partywise/CuttingModal";
@@ -582,6 +585,22 @@ function* deleteInstructionById(action) {
         yield put(deleteInstructionByIdError(error));
     }
 }
+function* pdfGenerateInward(action) {
+    try {
+        const pdfGenerate = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/pdf/inward', {
+            method: 'POST',
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(action.payload)
+        });
+        if (pdfGenerate.status === 200) {
+            const pdfGenerateResponse = yield pdfGenerate.json();
+            yield put(pdfGenerateSuccess(pdfGenerateResponse));
+        } else
+            yield put(pdfGenerateError('error'));
+    } catch (error) {
+        yield put(pdfGenerateError(error));
+    }
+}
 
 
 export function* watchFetchRequests() {
@@ -604,6 +623,7 @@ export function* watchFetchRequests() {
     yield takeLatest(DELETE_INSTRUCTION_BY_ID, deleteInstructionById);
     yield takeLatest(CHECK_BATCH_NO_EXIST, checkCustomerBatchNumber);
     yield takeLatest(INSTRUCTION_GROUP_SAVE, instructionGroupsave);
+    yield takeLatest(PDF_GENERATE_INWARD, pdfGenerateInward);
 }
 
 export default function* inwardSagas() {

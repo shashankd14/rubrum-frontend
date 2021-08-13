@@ -3,7 +3,7 @@ import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import moment from "moment";
 import {APPLICATION_DATE_FORMAT} from '../../../constants';
-import {setProcessDetails, saveSlittingInstruction, resetInstruction, updateInstruction, deleteInstructionById} from '../../../appRedux/actions/Inward';
+import {setProcessDetails, saveSlittingInstruction, resetInstruction, updateInstruction, deleteInstructionById,pdfGenerateInward} from '../../../appRedux/actions/Inward';
 import { set } from "nprogress";
 import { values } from "lodash";
 
@@ -681,6 +681,10 @@ const columnsPlan=[
         props.setShowSlittingModal(false)
     }
     const handleOk =(name) => {
+        let payload={
+            inwardId: props.coilDetails.inwardEntryId,
+            processId: 2
+        }
         if(props.wip){
             if (totalActualweight > tweight) {
                 message.error('Actual Weight is greater than Total weight, Please modify actual weight!');
@@ -698,6 +702,7 @@ const columnsPlan=[
             if(name === 'Slitting'){
                 if(slitPayload.length > 0){
                     props.saveSlittingInstruction(slitPayload);
+                    props.pdfGenerateInward(payload)
                 }else{
                     props.setShowSlittingModal(false);
                 }
@@ -928,4 +933,4 @@ const SlittingDetailsForm = Form.create({
 
 const SlittingWidthsForm = Form.create()(SlittingWidths);
 
-export default connect(mapStateToProps, {setProcessDetails, saveSlittingInstruction, resetInstruction, updateInstruction,deleteInstructionById})(SlittingDetailsForm);
+export default connect(mapStateToProps, {setProcessDetails, saveSlittingInstruction, resetInstruction, updateInstruction,deleteInstructionById, pdfGenerateInward})(SlittingDetailsForm);

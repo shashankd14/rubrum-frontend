@@ -67,7 +67,10 @@ import {
     CHECK_BATCH_NO_EXIST_ERROR,
     INSTRUCTION_GROUP_SAVE,
     INSTRUCTION_GROUP_SAVE_SUCCESS,
-    INSTRUCTION_GROUP_SAVE_ERROR
+    INSTRUCTION_GROUP_SAVE_ERROR,
+    PDF_GENERATE_INWARD,
+    PDF_GENERATE_INWARD_ERROR,
+    PDF_GENERATE_INWARD_SUCCESS
 } from "../../constants/ActionTypes";
 
 const INIT_STATE = {
@@ -543,6 +546,24 @@ export default (state = INIT_STATE, action) => {
             }
         }
         case DELETE_INSTRUCTION_BY_ID_ERROR: {
+            return {
+                ...state,
+                loading: false
+            }
+        }
+        case PDF_GENERATE_INWARD: {
+            return {
+                ...state,
+                loading: true,
+            }
+        }
+        case PDF_GENERATE_INWARD_SUCCESS: {
+            return {
+                ...state,
+                loading: false
+            }
+        }
+        case PDF_GENERATE_INWARD_ERROR: {
             return {
                 ...state,
                 loading: false
