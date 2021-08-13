@@ -91,9 +91,11 @@ function* fetchInwardList() {
                                 eachInward.children[index].children = instruction.childInstructions;
                                 eachInward.children[index].children.map((childInstruction, childIndex) => {
                                     eachInward.children[index].children[childIndex].key = `${inward.coilNumber}-${instruction.instructionId}-${childInstruction.instructionId}`;
-                                    eachInward.children[index].children[childIndex].coilNumber = instruction.instructionId;
+                                    eachInward.children[index].children[childIndex].coilNumber = childInstruction.instructionId;
                                     eachInward.children[index].children[childIndex].party = inward.party;
                                     eachInward.children[index].children[childIndex].material = inward.material;
+                                    eachInward.children[index].children[childIndex].customerBatchId = inward.customerBatchId;
+                                    eachInward.children[index].children[childIndex].fThickness = inward.fThickness;
                                 })
                             }
                         })
