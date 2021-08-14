@@ -23,7 +23,8 @@ import {
     DELETE_INSTRUCTION_BY_ID,
     CHECK_BATCH_NO_EXIST,
     INSTRUCTION_GROUP_SAVE,
-    PDF_GENERATE_INWARD
+    PDF_GENERATE_INWARD,
+    PDF_GENERATE_DELIVERY
 } from "../../constants/ActionTypes";
 
 import {
@@ -66,7 +67,9 @@ import {
     instructionGroupsaveSuccess,
     instructionGroupsaveError,
     pdfGenerateSuccess,
-    pdfGenerateError
+    pdfGenerateError,
+    generateDCPdfSuccess,
+    generateDCPdfError
 } from "../actions";
 import { CUTTING_INSTRUCTION_PROCESS_ID, SLITTING_INSTRUCTION_PROCESS_ID, SLIT_CUT_INSTRUCTION_PROCESS_ID } from "../../constants";
 import { formItemLayout } from "../../routes/company/Partywise/CuttingModal";
@@ -512,7 +515,7 @@ function* postDeliveryConfirmRequest(payload) {
         }
     }else{
         requestType= 'PUT';
-       req_obj =payload.payload
+        req_obj =payload.payload
     }
     try {
         const postConfirm = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/delivery/save`, {
@@ -604,6 +607,22 @@ function* pdfGenerateInward(action) {
         yield put(pdfGenerateError(error));
     }
 }
+function* generateDCPdf(action) {
+    try {
+        const pdfGenerate = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/pdf/delivery', {
+            method: 'POST',
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(action.payload)
+        });
+        if (pdfGenerate.status === 200) {
+            const pdfGenerateResponse = yield pdfGenerate.json();
+            yield put(generateDCPdfSuccess(pdfGenerateResponse));
+        } else
+            yield put(generateDCPdfError('error'));
+    } catch (error) {
+        yield put(generateDCPdfError(error));
+    }
+}
 
 
 export function* watchFetchRequests() {
@@ -627,6 +646,7 @@ export function* watchFetchRequests() {
     yield takeLatest(CHECK_BATCH_NO_EXIST, checkCustomerBatchNumber);
     yield takeLatest(INSTRUCTION_GROUP_SAVE, instructionGroupsave);
     yield takeLatest(PDF_GENERATE_INWARD, pdfGenerateInward);
+    yield takeLatest(PDF_GENERATE_DELIVERY, generateDCPdf);
 }
 
 export default function* inwardSagas() {

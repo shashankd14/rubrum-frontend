@@ -26,11 +26,6 @@ const InwardEntrySummary = (props) => {
             setPayload({
                 inwardId: props.inwardObject.submitInward
             })
-            // message.success('Inward entry has been saved successfully', 2);
-            // setTimeout(() => {
-            //     props.history.push('list');
-            // }, 2000);
-            // props.resetInwardForm();
         }
     }, [props.inwardSubmitSuccess]);
     useEffect(() => {

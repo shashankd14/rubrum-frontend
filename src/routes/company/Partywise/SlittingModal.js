@@ -754,7 +754,13 @@ const columnsPlan=[
                 <Button key="submit" type="primary" loading={loading} onClick={()=>{handleOk('SlitCut')}}>
                   Send for Cut
                 </Button>
-              ]:cuts.length>0 ?[
+              ]:cuts.length>0 ?props.wip?[
+                <Button key="back" onClick={handleCancel}>
+                  Cancel
+                </Button>,
+                <Button key="submit" type="primary" loading={loading} onClick={()=>{handleOk('Slitting')}}>
+                 OK
+                </Button>]: [
                 <Button key="back" onClick={handleCancel}>
                   Cancel
                 </Button>,

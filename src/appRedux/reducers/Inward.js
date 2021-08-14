@@ -70,7 +70,10 @@ import {
     INSTRUCTION_GROUP_SAVE_ERROR,
     PDF_GENERATE_INWARD,
     PDF_GENERATE_INWARD_ERROR,
-    PDF_GENERATE_INWARD_SUCCESS
+    PDF_GENERATE_INWARD_SUCCESS,
+    PDF_GENERATE_DELIVERY,
+    PDF_GENERATE_DELIVERY_ERROR,
+    PDF_GENERATE_DELIVERY_SUCCESS
 } from "../../constants/ActionTypes";
 
 const INIT_STATE = {
@@ -107,7 +110,10 @@ const INIT_STATE = {
     groupId:{},
     pdfError: false,
     pdfLoading:false,
-    pdfSuccess: false
+    pdfSuccess: false,
+    dcpdfError: false,
+    dcpdfLoading:false,
+    dcpdfSuccess: false
 
 };
 
@@ -579,6 +585,27 @@ export default (state = INIT_STATE, action) => {
                 pdfLoading: false,
                 pdfSuccess: false,
                 pdfError: true
+            }
+        }
+        case PDF_GENERATE_DELIVERY: {
+            return {
+                ...state,
+                dcpdfLoading: true,
+            }
+        }
+        case PDF_GENERATE_DELIVERY_SUCCESS: {
+            return {
+                ...state,
+                dcpdfLoading: false,
+                dcpdfSuccess: true,
+            }
+        }
+        case PDF_GENERATE_DELIVERY_ERROR: {
+            return {
+                ...state,
+                dcpdfLoading: false,
+                dcpdfSuccess: false,
+                dcpdfError: true
             }
         }
 

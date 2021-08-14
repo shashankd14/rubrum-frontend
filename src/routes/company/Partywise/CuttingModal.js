@@ -516,7 +516,13 @@ const CreateCuttingDetailsForm = (props) => {
             onOk={() => {handleOk()}}
             width={1020}
             onCancel={handleCancel}
-            footer={cuts.length>0 ?[
+            footer={cuts.length>0 ?props.wip ? [
+                <Button key="back" onClick={handleCancel}>
+                  Cancel
+                </Button>,
+                <Button key="submit" type="primary" loading={loading} onClick={()=>{handleOk()}}>
+                 OK
+                </Button>]:[
                 <Button key="back" onClick={handleCancel}>
                   Cancel
                 </Button>,

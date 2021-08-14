@@ -3,14 +3,19 @@ import { connect } from "react-redux";
 import { Card, Table } from "antd";
 import { Popover } from "antd";
 import { InfoCircleOutlined, CloseSquareTwoTone } from "@ant-design/icons";
-import { postDeliveryConfirm } from "../../../appRedux/actions";
+import { postDeliveryConfirm, generateDCPdf } from "../../../appRedux/actions";
 import { Input } from "antd";
 import moment from "moment";
 
 const DeliveryInfo = (props) => {
   const [vehicleNo, setVehicleNo] = useState("");
   const [remarksList, setRemarksList] = useState([]);
-
+  const [instructionList, setInstructionList]= useState([]);
+  useEffect(()=>{
+    let insList = props.inward.inwardListForDelivery.map(i => i.instruction);
+    insList = insList.flat();
+    setInstructionList(insList.map(item => item.instructionId));
+  },[]);
   const handleRemark = (elem, id) => {
     let index = remarksList.findIndex(elem => elem.id === id)
     let newRemarksList = remarksList
@@ -23,9 +28,14 @@ const DeliveryInfo = (props) => {
       vehicleNo,
       inwardListForDelivery: props.inward.inwardListForDelivery
     }
+    const pdfPayload ={
+      instructionIds: instructionList
+    }
+    props.generateDCPdf(pdfPayload);
     props.postDeliveryConfirm(reqObj);
   };
 
+ 
   return (
     <div>
       <h1>Delivery Information</h1>
@@ -92,7 +102,7 @@ const DeliveryInfo = (props) => {
                         <div
                           style={{ display: "flex", flexDirection: "column" }}
                         >
-                          <p>Thickeness: {elem.actualWeight && elem.rates && elem.rates?.thicknessRate ?
+                          <p>Thickness: {elem.actualWeight && elem.rates && elem.rates?.thicknessRate ?
                             elem.actualWeight * elem.rates?.thicknessRate : 0}</p>
                           <p>Process: {elem.process?.processName}</p>
                           <p>Material: {elem.rates?.materialType?.description}</p>
@@ -183,4 +193,4 @@ const mapStateToProps = (state) => ({
   inward: state.inward,
 });
 
-export default connect(mapStateToProps, { postDeliveryConfirm })(DeliveryInfo);
+export default connect(mapStateToProps, { postDeliveryConfirm, generateDCPdf })(DeliveryInfo);
