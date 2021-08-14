@@ -472,6 +472,10 @@ const CreateCuttingDetailsForm = (props) => {
         props.instructionGroupsave(payload); 
     }
     const handleOk=()=>{
+        let payload={
+            inwardId: props.coilDetails.inwardEntryId,
+            processId: props.slitCut? 3: 1
+        }
         if(props.wip){
             if (totalActualweight > tweight) {
                 message.error('Actual Weight is greater than Total weight, Please modify actual weight!');
@@ -486,10 +490,12 @@ const CreateCuttingDetailsForm = (props) => {
         }
         if(props.slitCut){
             props.saveCuttingInstruction(restTableData);
+            props.pdfGenerateInward(payload)
         }
         else if(validate === false){
             if(cutPayload.length>0) {
               props.saveCuttingInstruction(cutPayload);
+              props.pdfGenerateInward(payload)
             }else{
                props.setShowCuttingModal(false);
           }
