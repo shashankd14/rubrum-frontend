@@ -329,10 +329,10 @@ const CreateCuttingDetailsForm = (props) => {
         }
        }}, [props.coilDetails]);
     useEffect(() => {
-        if(props.inward.instructionSaveCuttingLoading && !props.wip) {
-            loading = message.loading('Saving Cut Instruction..');
+        if(props.inward.instructionSaveCuttingLoading && props.inward.pdfLoading && !props.wip) {
+            loading = message.loading('Saving Cut Instruction & Generating pdf..');
          }
-    }, [props.inward.instructionSaveCuttingLoading]);
+    }, [props.inward.instructionSaveCuttingLoading,props.inward.pdfLoading]);
     useEffect(()=>{
         setCutPayload(cuts);
         let cutsArray = cuts.map(i => i.plannedWeight);
@@ -356,16 +356,22 @@ const CreateCuttingDetailsForm = (props) => {
             setTotalActualWeight(actualTotalWeight);
         }
     },[cuts])
+    useEffect(()=>{
+        if(props.inward.pdfSuccess && !props.wip) {
+            loading = message.success('PDF generated!');
+        }
+    },[props.inward.pdfSuccess])
     useEffect(() => {
-        if(props.inward.instructionSaveCuttingSuccess && !props.wip) {
+        if(props.inward.instructionSaveCuttingSuccess && props.inward.pdfSuccess && !props.wip) {
             loading = '';
-            message.success('Cutting instruction saved successfully', 2).then(() => {
+            message.success('Cutting instruction saved & PDF generated successfully', 2).then(() => {
                 setCutPayload([]);
                 props.setShowCuttingModal(false);
                 props.resetInstruction();
             });
         }
-    }, [props.inward.instructionSaveCuttingSuccess])
+    }, [props.inward.instructionSaveCuttingSuccess, props.inward.pdfSuccess])
+    
     useEffect(() =>{
        let listItem = bundleItemList.length> 0 ? bundleItemList :[];
        if(listItem.length === 0 && Object.keys(props.inward.groupId).length >0){

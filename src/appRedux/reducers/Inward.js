@@ -103,7 +103,10 @@ const INIT_STATE = {
     inwardUpdateError: false,
     saveCut:[],
     saveSlit:[],
-    groupId:{}
+    groupId:{},
+    pdfError: false,
+    pdfLoading:false,
+    pdfSuccess: false
 
 };
 
@@ -405,6 +408,9 @@ export default (state = INIT_STATE, action) => {
                 instructionSaveSlittingSuccess: false,
                 instructionSaveCuttingSuccess: false,
                 instructionSaveError: false,
+                pdfSuccess:false,
+                pdfLoading: false,
+                pdfError: false
             }
         }
         
@@ -551,19 +557,22 @@ export default (state = INIT_STATE, action) => {
         case PDF_GENERATE_INWARD: {
             return {
                 ...state,
-                loading: true,
+                pdfLoading: true,
             }
         }
         case PDF_GENERATE_INWARD_SUCCESS: {
             return {
                 ...state,
-                loading: false
+                pdfLoading: false,
+                pdfSuccess: true,
             }
         }
         case PDF_GENERATE_INWARD_ERROR: {
             return {
                 ...state,
-                loading: false
+                pdfLoading: false,
+                pdfSuccess: false,
+                pdfError: true
             }
         }
 

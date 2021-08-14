@@ -653,16 +653,20 @@ const columnsPlan=[
     }, [props.inward.process.length, props.inward.process.no])
 
     useEffect(() => {
-        if(props.inward.instructionSaveSlittingLoading && !props.wip) {
-            loading = message.loading('Saving Slit Instruction..');
+        if(props.inward.instructionSaveSlittingLoading  && props.inward.pdfLoading && !props.wip) {
+            loading = message.loading('Saving Slit Instruction & Generating pdf..');
             
         }
-    }, [props.inward.instructionSaveSlittingLoading]);
-
+    }, [props.inward.instructionSaveSlittingLoading, props.inward.pdfLoading]);
+    useEffect(()=>{
+        if(props.inward.pdfSuccess && !props.wip) {
+            loading = message.success('PDF generated!');
+        }
+    },[props.inward.pdfSuccess])
     useEffect(() => {
-        if(props.inward.instructionSaveSlittingSuccess && !props.wip) {
+        if(props.inward.instructionSaveSlittingSuccess && props.inward.pdfSuccess && !props.wip) {
             loading = '';
-            message.success('Slitting instruction saved successfully', 2).then(() => {
+            message.success('Slitting instruction saved & pdf generated successfully', 2).then(() => {
                 if(props.slitCut){
                     props.setCutting(props.inward.saveSlit);
                 }
@@ -671,7 +675,7 @@ const columnsPlan=[
                 
             });
         }
-    }, [props.inward.instructionSaveSlittingSuccess])
+    }, [props.inward.instructionSaveSlittingSuccess,props.inward.pdfSuccess])
     const handleCancel=() => {
         setCuts([]);
         setForm(true)
