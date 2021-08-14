@@ -103,6 +103,7 @@ const INIT_STATE = {
     inwardUpdateError: false,
     saveCut:[],
     saveSlit:[],
+    submitInward:'',
     groupId:{},
     pdfError: false,
     pdfLoading:false,
@@ -192,6 +193,7 @@ export default (state = INIT_STATE, action) => {
         case SUBMIT_INWARD_SUCCESS: {
             return {
                 ...state,
+                submitInward: action.inward,
                 inwardSubmitLoading: false,
                 inwardSubmitSuccess: true
             }
@@ -283,6 +285,10 @@ export default (state = INIT_STATE, action) => {
                 inwardUpdateLoading: false,
                 inwardUpdateSuccess: false,
                 inwardUpdateError: false,
+                submitInward:'',
+                pdfLoading:false,
+                pdfSuccess:false,
+                pdfError:false
             }
         }
         case RESET_INSTRUCTION_FORM:

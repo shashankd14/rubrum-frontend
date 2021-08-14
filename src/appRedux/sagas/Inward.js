@@ -205,7 +205,8 @@ function* submitInward(action) {
             body: data
         });
         if (newInwardEntry.status == 200) {
-            yield put(submitInwardSuccess());
+            let submitInwardResponse = yield newInwardEntry.json()
+            yield put(submitInwardSuccess(submitInwardResponse.inwardEntryId));
         } else
             yield put(submitInwardError('error'));
     } catch (error) {

@@ -2,7 +2,7 @@ import {Button, Card, Col, DatePicker, Form, Input, Modal, Row, Table, Select, I
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import moment from "moment";
-import {setProcessDetails, saveCuttingInstruction,resetInstruction ,updateInstruction, deleteInstructionById, instructionGroupsave} from '../../../appRedux/actions/Inward';
+import {setProcessDetails, saveCuttingInstruction,resetInstruction ,updateInstruction, deleteInstructionById, instructionGroupsave, pdfGenerateInward} from '../../../appRedux/actions/Inward';
 import {APPLICATION_DATE_FORMAT} from '../../../constants';
 
 const Option = Select.Option;
@@ -777,4 +777,4 @@ const CuttingDetailsForm = Form.create({
 })(CreateCuttingDetailsForm);
 
 
-export default  connect(mapStateToProps, {setProcessDetails, saveCuttingInstruction,resetInstruction, updateInstruction, deleteInstructionById, instructionGroupsave})(CuttingDetailsForm);
+export default  connect(mapStateToProps, {setProcessDetails, saveCuttingInstruction,resetInstruction, updateInstruction, deleteInstructionById, instructionGroupsave, pdfGenerateInward})(CuttingDetailsForm);

@@ -1,18 +1,16 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import moment from "moment";
 
-import {submitInwardEntry, resetInwardForm,updateInward} from "../../../../appRedux/actions";
+import {submitInwardEntry, resetInwardForm,updateInward, pdfGenerateInward} from "../../../../appRedux/actions";
 import {Button, Card, Col, Icon, message, Row, Spin} from "antd";
 import { withRouter } from 'react-router-dom';
 
 import {APPLICATION_DATE_FORMAT} from '../../../../constants/index';
 
 const InwardEntrySummary = (props) => {
-    useEffect(() => {
-        console.log(props.inward);
-    }, [])
-
+    const [generate, setGenerate]= useState(true);
+    const [payload, setPayload]= useState({});
     useEffect(() => {
         if(props.inwardUpdateSuccess) {
             message.success('Inward entry has been updated successfully', 2);
@@ -24,13 +22,28 @@ const InwardEntrySummary = (props) => {
     }, [props.inwardUpdateSuccess]);
     useEffect(() => {
         if(props.inwardSubmitSuccess) {
-            message.success('Inward entry has been saved successfully', 2);
+            setGenerate(false)
+            setPayload({
+                inwardId: props.inwardObject.submitInward
+            })
+            // message.success('Inward entry has been saved successfully', 2);
+            // setTimeout(() => {
+            //     props.history.push('list');
+            // }, 2000);
+            // props.resetInwardForm();
+        }
+    }, [props.inwardSubmitSuccess]);
+    useEffect(() => {
+        if(props.inwardObject.pdfSuccess) {
+           
+            message.success('Inward Saved & PDF generated successfully', 2);
             setTimeout(() => {
                 props.history.push('list');
             }, 2000);
             props.resetInwardForm();
         }
-    }, [props.inwardSubmitSuccess]);
+    }, [props.inwardObject.pdfSuccess]);
+
     const partyName =(partyList) =>{
         
        partyList = partyList.find(item => item.nPartyId===Number(props.inward.partyName))
@@ -96,9 +109,14 @@ const InwardEntrySummary = (props) => {
                         e.preventDefault();
                         props.params!== ""? props.updateInward(props.inward):props.submitInwardEntry(props.inward)
                     }}>
-                        Submit  & Generate<Icon type="right"/>
+                        Submit <Icon type="right"/>
                     </Button>
+                    <Button type="primary" disabled={generate} onClick={(e) => {
+                        e.preventDefault();
+                        props.pdfGenerateInward(payload)
+                    }}>Generate PDF</Button>
                 </Col>
+
             </>
             }
         </>
@@ -113,11 +131,13 @@ const mapStateToProps = state => ({
     inwardUpdateLoading: state.inward.inwardUpdateLoading,
     inwardUpdateSuccess: state.inward.inwardUpdateSuccess,
     inwardUpdateError: state.inward.inwardUpdateError,
-    party: state.party
+    inwardObject: state.inward,
+    party: state.party,
 });
 
 export default withRouter(connect(mapStateToProps, {
     submitInwardEntry,
     resetInwardForm,
-    updateInward
+    updateInward,
+    pdfGenerateInward
 })(InwardEntrySummary));
