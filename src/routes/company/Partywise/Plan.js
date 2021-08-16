@@ -120,6 +120,7 @@ const Plan = (props) => {
         if (props.wip) {
             props.fetchClassificationList();
         }
+        
     }, [showSlittingModal,showCuttingModal])
 
     useEffect(() => {

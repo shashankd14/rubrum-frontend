@@ -301,12 +301,12 @@ const SlittingWidths = (props) => {
     }
     const onTargetChange=  e=>{
         settargetWeight(e.target.value);
-        setavailLength((lengthValue1*(e.target.value/weightValue)).toFixed(1))
+        setavailLength((len*(e.target.value/weightValue)).toFixed(1))
     }
     const radioChange = e => {
         settargetWeight(weightValue/equalParts);
         if(e.target.value=== 1){
-            setavailLength((lengthValue1*((weightValue/equalParts)/weightValue)).toFixed(1));
+            setavailLength((len*((weightValue/equalParts)/weightValue)).toFixed(1));
         }
         else{
             setavailLength(0);
@@ -340,7 +340,7 @@ const SlittingWidths = (props) => {
                     {getFieldDecorator('noParts', {
                         rules: [{ required: (value=== 2 || value===1) && equalParts !== 0? false : true, message: 'Please enter no.of Parts' }],
                     })(
-                        <Input id="noParts" onBlur={handleBlurEvent} disabled ={value=== 2  && equalParts !== 0 ? true: false}/>
+                        <Input id="noParts" onBlur={handleBlurEvent} disabled ={props.cuts.length>0 && weightValue === 0 && value ===2? true: false}/>
                     )}
                 </Form.Item>
                 <Form.Item>
@@ -618,21 +618,21 @@ const columnsPlan=[
       arrayData = arrayData.flat();
       arrayData= arrayData.length>0?[...arrayData].filter(item => item.process.processId === 2 ):[]
       setCuts(arrayData)
+      setslitpayload([])
     } else{
         data = data.flat();  
         let cutsData = [...data];
         cutsData = props.wip ? cutsData.filter(item => item.process.processId === 2 && item.status.statusId !==3 && item.groupId === null) :props.slitCut ? cutsData.filter(item => item.process.processId === 3):cutsData.filter(item => item.process.processId === 2)
         setSlittingDetail(cutsData)
         setCuts(cutsData);
+        setslitpayload([])
     }
     setForm(false);
     if(props.wip){
      let newData = [...data];
      setTableData(newData);
     }
-    
-
-}, [props.coilDetails]);
+ }, [props.coilDetails]);
 
   const onInputChange = (key, index, type) => (
     e: React.ChangeEvent<HTMLInputElement>
