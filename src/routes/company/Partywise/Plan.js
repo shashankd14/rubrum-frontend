@@ -173,12 +173,13 @@ const Plan = (props) => {
     const handleSelectChange=(value, n, ins)=>{
         if(value === 'Slitting'){
             setSlitCut(false);
-            setShowSlittingModal(true)
             setSlittingCoil(ins)
+            setShowSlittingModal(true)
+            
         }else if(value==='Cutting'){
             setSlitCut(false);
-            setShowCuttingModal(true)
             setCuttingCoil(ins)
+            setShowCuttingModal(true)
         }else if(value === 'Slit & Cut'){
             setSlitCut(true);
             setSlittingCoil(ins);
