@@ -584,6 +584,7 @@ const columnsPlan=[
     }
 ];
     const [tableData, setTableData] = useState(props.wip?(props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts);
+    const [insData, setInstruction] = useState({});
     const [tweight, settweight]= useState(0);
     const [totalActualweight, setTotalActualWeight] = useState(0);
     const [page, setPage] = useState(1);
@@ -622,11 +623,13 @@ const columnsPlan=[
     useEffect(() => {
     let data = props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions;
     if(props.childCoil){
-      let arrayData = data.childInstructions? data.childInstructions: [];
-      arrayData = arrayData.flat();
-      arrayData= arrayData.length>0?[...arrayData].filter(item => item.process.processId === 2 ):[]
-      setCuts(arrayData)
-      setslitpayload([])
+        setInstruction(data);
+        data = data.childInstructions || [];
+        let arrayData = [...data];
+        arrayData = arrayData.flat();
+        arrayData= arrayData.length>0?[...arrayData].filter(item => item.process.processId === 2 ):[]
+        setCuts(arrayData);
+        setslitpayload([])
     } else{
         data = data.flat();  
         let cutsData = [...data];
@@ -775,8 +778,8 @@ const columnsPlan=[
                         </Form>
                         <Col lg={8} md={12} sm={24} xs={24}>
                             <p>Coil number : {props.coil.coilNumber}</p>
-                            <p>Available Weight(kg) : {props.coil.fpresent}</p>
-                            <p>Available length(mm) : {lengthValue}</p>
+                            <p>Available Weight(kg) : {props.childCoil ? insData.actualWeight : props.coil.fpresent}</p>
+                            <p>Available length(mm) : {props.childCoil ? insData.actualLength : lengthValue}</p>
                             <p>Inward Weight(kg) : {props.coil.fQuantity}</p>
                             <p>Grade: {props.coil.materialGrade.gradeName}</p>  
                         </Col>     
@@ -786,7 +789,7 @@ const columnsPlan=[
                             <p>Customer Name : {props.coil.party.partyName}</p>
                             <p>Thickness(mm): {props.coil.fThickness}</p>
                             <p>Width(mm) : {props.coil.fWidth}</p>
-                            <p>Available Width(mm): {widthValue}</p>
+                            <p>Available Width(mm): {props.childCoil ? insData.actualWidth : widthValue}</p>
                         </Col>
 
                         <Col lg={24} md={24} sm={24} xs={24}>
