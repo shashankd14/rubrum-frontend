@@ -24,6 +24,7 @@ const CreateCuttingDetailsForm = (props) => {
     const {getFieldDecorator} = props.form;
     let loading = '';
     const [cuts, setCuts] = useState([]);
+    const [insData, setInstruction] = useState({});
     const [page, setPage] = useState(1);
     const [mode, setMode] = useState('top');
     const [balanced, setBalanced] = useState(true);
@@ -316,6 +317,7 @@ const CreateCuttingDetailsForm = (props) => {
             setwidth(widthValue)
         if(data !== undefined){
             if(props.childCoil){
+                setInstruction(data);
                 let arrayData =data.childInstructions? data.childInstructions: [];;
                 arrayData = arrayData.length>0? arrayData.flat():[];
                 arrayData= arrayData.length>0?[...arrayData].filter(item => item.process.processId === 1 ):[]
@@ -661,9 +663,9 @@ const CreateCuttingDetailsForm = (props) => {
                                                     
                         <Col lg={8} md={12} sm={24} xs={24}>
                             <p>Inward specs: {props.coil.fThickness}X{props.coil.fWidth}X{props.coil.fLength}/{props.coil.fQuantity}</p>
-                            <p>Available Length(mm): {lengthValue}</p>
-                            <p>Available Weight(kg) : {WeightValue}</p>
-                            <p>Available Width(mm) : {width}</p>
+                            <p>Available Length(mm): {props.childCoil ? insData.actualLength : lengthValue}</p>
+                            <p>Available Weight(kg) : {props.childCoil ? insData.actualWeight : WeightValue}</p>
+                            <p>Available Width(mm) : {props.childCoil ? insData.actualWidth : width}</p>
                         </Col>
                     
                     </>}
