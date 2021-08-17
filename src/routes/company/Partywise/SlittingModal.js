@@ -189,7 +189,8 @@ const SlittingWidths = (props) => {
                 const slits = []
                 if(cutLength === 0){
                     setOldLength(Number(availLength));
-                }for(let i=0; i < values.widths.length; i++) {
+                }
+                for(let i=0; i < values.widths.length; i++) {
                     for (let j=0; j<values.nos[i];j++){
                         let slitValue = {
                             processId:props.slitCut ? 3 :2,
@@ -215,20 +216,27 @@ const SlittingWidths = (props) => {
                     settwidth(totalWidth); 
                  }
                  let remainWeight = props.tweight + props.coilDetails.fpresent;
-                if(oldLength >= lengthValue){
-                    if((totalWidth+cutWidth) > widthValue) {
-                        message.error('Sum of slits width is greater than width of coil.', 2);
-                }}else if(Number(availLength) +cutLength > lengthValue) {
+                 if(Number(availLength) +cutLength > lengthValue) {
                     message.error('Length greater than available length', 2);
                 }else if(totalWeight > remainWeight) {
                    message.error('Weight greater than available weight', 2);
                    
+                }else if(oldLength >= lengthValue){
+                    if((totalWidth+cutWidth) > widthValue) {
+                        message.error('Sum of slits width is greater than width of coil.', 2);
                 }else{
                     setWeightValue(weightValue1-(totalWeight-props.tweight));
                         props.setSlits(slits);
                         props.setslitpayload(slits);
                         props.form.resetFields();
                 }}
+                else{
+                    setWeightValue(weightValue1-(totalWeight-props.tweight));
+                        props.setSlits(slits);
+                        props.setslitpayload(slits);
+                        props.form.resetFields();
+                }
+            }
                 else {
                     props.validate(true);
                 }
