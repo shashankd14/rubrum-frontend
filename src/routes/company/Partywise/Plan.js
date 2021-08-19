@@ -120,6 +120,7 @@ const Plan = (props) => {
         if (props.wip) {
             props.fetchClassificationList();
         }
+        
     }, [showSlittingModal,showCuttingModal])
 
     useEffect(() => {
@@ -172,12 +173,13 @@ const Plan = (props) => {
     const handleSelectChange=(value, n, ins)=>{
         if(value === 'Slitting'){
             setSlitCut(false);
-            setShowSlittingModal(true)
             setSlittingCoil(ins)
+            setShowSlittingModal(true)
+            
         }else if(value==='Cutting'){
             setSlitCut(false);
-            setShowCuttingModal(true)
             setCuttingCoil(ins)
+            setShowCuttingModal(true)
         }else if(value === 'Slit & Cut'){
             setSlitCut(true);
             setSlittingCoil(ins);
@@ -287,7 +289,21 @@ const Plan = (props) => {
                                                         <span className="gx-coil-details-label">{instruction?.deliveryDetails !== null &&instruction?.deliveryDetails?.deliveryId !==null? 0:getPlannedWeight(instruction)}</span>
                                                     </div> */}
                                                     { props.wip ?
-                                                         <></> :
+                                                         <div>
+                                                             <Select
+                                                                value= {defaultValue}
+                                                                style={{ width: 100 }}
+                                                                placeholder="Select Instruction"
+                                                                optionFilterProp="children"
+                                                                disabled={!(instruction && instruction.childInstructions && instruction?.childInstructions.length >= 1 && instruction.status.statusId === 2) }
+                                                                onChange={(value)=>handleSelectChange(value, setChildCoil(true), instruction)}
+                                                                filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                                                             >
+                                                                {insList?.length > 0 && insList.map((instruction) => (
+                                                                    <Option value={instruction}>{instruction}</Option>
+                                                                ))}
+                                                             </Select>
+                                                         </div> :
                                                             <div><Select
                                                             value= {defaultValue}
                                                             style={{ width: 100 }}

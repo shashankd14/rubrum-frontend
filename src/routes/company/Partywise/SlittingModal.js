@@ -189,7 +189,8 @@ const SlittingWidths = (props) => {
                 const slits = []
                 if(cutLength === 0){
                     setOldLength(Number(availLength));
-                }for(let i=0; i < values.widths.length; i++) {
+                }
+                for(let i=0; i < values.widths.length; i++) {
                     for (let j=0; j<values.nos[i];j++){
                         let slitValue = {
                             processId:props.slitCut ? 3 :2,
@@ -215,20 +216,27 @@ const SlittingWidths = (props) => {
                     settwidth(totalWidth); 
                  }
                  let remainWeight = props.tweight + props.coilDetails.fpresent;
-                if(oldLength >= lengthValue){
-                    if((totalWidth+cutWidth) > widthValue) {
-                        message.error('Sum of slits width is greater than width of coil.', 2);
-                }}else if(Number(availLength) +cutLength > lengthValue) {
+                 if(Number(availLength) +cutLength > lengthValue) {
                     message.error('Length greater than available length', 2);
                 }else if(totalWeight > remainWeight) {
                    message.error('Weight greater than available weight', 2);
                    
+                }else if(oldLength >= lengthValue){
+                    if((totalWidth+cutWidth) > widthValue) {
+                        message.error('Sum of slits width is greater than width of coil.', 2);
                 }else{
                     setWeightValue(weightValue1-(totalWeight-props.tweight));
                         props.setSlits(slits);
                         props.setslitpayload(slits);
                         props.form.resetFields();
                 }}
+                else{
+                    setWeightValue(weightValue1-(totalWeight-props.tweight));
+                        props.setSlits(slits);
+                        props.setslitpayload(slits);
+                        props.form.resetFields();
+                }
+            }
                 else {
                     props.validate(true);
                 }
@@ -301,12 +309,12 @@ const SlittingWidths = (props) => {
     }
     const onTargetChange=  e=>{
         settargetWeight(e.target.value);
-        setavailLength((lengthValue1*(e.target.value/weightValue)).toFixed(1))
+        setavailLength((len*(e.target.value/weightValue)).toFixed(1))
     }
     const radioChange = e => {
         settargetWeight(weightValue/equalParts);
         if(e.target.value=== 1){
-            setavailLength((lengthValue1*((weightValue/equalParts)/weightValue)).toFixed(1));
+            setavailLength((len*((weightValue/equalParts)/weightValue)).toFixed(1));
         }
         else{
             setavailLength(0);
@@ -340,7 +348,7 @@ const SlittingWidths = (props) => {
                     {getFieldDecorator('noParts', {
                         rules: [{ required: (value=== 2 || value===1) && equalParts !== 0? false : true, message: 'Please enter no.of Parts' }],
                     })(
-                        <Input id="noParts" onBlur={handleBlurEvent} disabled ={value=== 2  && equalParts !== 0 ? true: false}/>
+                        <Input id="noParts" onBlur={handleBlurEvent} disabled ={props.cuts.length>0 && weightValue === 0 && value ===2? true: false}/>
                     )}
                 </Form.Item>
                 <Form.Item>
@@ -576,6 +584,7 @@ const columnsPlan=[
     }
 ];
     const [tableData, setTableData] = useState(props.wip?(props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts);
+    const [insData, setInstruction] = useState({});
     const [tweight, settweight]= useState(0);
     const [totalActualweight, setTotalActualWeight] = useState(0);
     const [page, setPage] = useState(1);
@@ -614,25 +623,27 @@ const columnsPlan=[
     useEffect(() => {
     let data = props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions;
     if(props.childCoil){
-      let arrayData = data.childInstructions? data.childInstructions: [];
-      arrayData = arrayData.flat();
-      arrayData= arrayData.length>0?[...arrayData].filter(item => item.process.processId === 2 ):[]
-      setCuts(arrayData)
+        setInstruction(data);
+        data = data.childInstructions || [];
+        let arrayData = [...data];
+        arrayData = arrayData.flat();
+        arrayData= arrayData.length>0?[...arrayData].filter(item => item.process.processId === 2 ):[]
+        setCuts(arrayData);
+        setslitpayload([])
     } else{
         data = data.flat();  
         let cutsData = [...data];
         cutsData = props.wip ? cutsData.filter(item => item.process.processId === 2 && item.status.statusId !==3 && item.groupId === null) :props.slitCut ? cutsData.filter(item => item.process.processId === 3):cutsData.filter(item => item.process.processId === 2)
         setSlittingDetail(cutsData)
         setCuts(cutsData);
+        setslitpayload([])
     }
     setForm(false);
     if(props.wip){
      let newData = [...data];
      setTableData(newData);
     }
-    
-
-}, [props.coilDetails]);
+ }, [props.coilDetails]);
 
   const onInputChange = (key, index, type) => (
     e: React.ChangeEvent<HTMLInputElement>
@@ -646,12 +657,7 @@ const columnsPlan=[
     }
     setTableData(newData);
   };
-    useEffect(() => {
-        if(props.inward.process.length && props.inward.process.no) {
-            props.setProcessDetails({...props.inward.process, weight: 0.00000000785*parseFloat(props.inward.plan.fWidth)*parseFloat(props.inward.plan.fThickness)*parseFloat(props.inward.process.length)*parseFloat(props.inward.process.no)});
-        }
-    }, [props.inward.process.length, props.inward.process.no])
-
+    
     useEffect(() => {
         if(props.inward.instructionSaveSlittingLoading  && props.inward.pdfLoading && !props.wip) {
             loading = message.loading('Saving Slit Instruction & Generating pdf..');
@@ -787,8 +793,8 @@ const columnsPlan=[
                         </Form>
                         <Col lg={8} md={12} sm={24} xs={24}>
                             <p>Coil number : {props.coil.coilNumber}</p>
-                            <p>Available Weight(kg) : {props.coil.fpresent}</p>
-                            <p>Available length(mm) : {lengthValue}</p>
+                            <p>Available Weight(kg) : {props.childCoil ? insData.actualWeight : props.coil.fpresent}</p>
+                            <p>Available length(mm) : {props.childCoil ? insData.actualLength : lengthValue}</p>
                             <p>Inward Weight(kg) : {props.coil.fQuantity}</p>
                             <p>Grade: {props.coil.materialGrade.gradeName}</p>  
                         </Col>     
@@ -798,7 +804,7 @@ const columnsPlan=[
                             <p>Customer Name : {props.coil.party.partyName}</p>
                             <p>Thickness(mm): {props.coil.fThickness}</p>
                             <p>Width(mm) : {props.coil.fWidth}</p>
-                            <p>Available Width(mm): {widthValue}</p>
+                            <p>Available Width(mm): {props.childCoil ? insData.actualWidth : widthValue}</p>
                         </Col>
 
                         <Col lg={24} md={24} sm={24} xs={24}>
