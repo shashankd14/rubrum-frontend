@@ -595,11 +595,19 @@ function* pdfGenerateInward(action) {
     try {
         const pdfGenerate = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/pdf/inward', {
             method: 'POST',
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+               
+              },
             body: JSON.stringify(action.payload)
         });
         if (pdfGenerate.status === 200) {
-            const pdfGenerateResponse = yield pdfGenerate.json();
+            const pdfGenerateResponse = yield pdfGenerate.text();
+            let pdfWindow = window.open("")
+               pdfWindow.document.write(
+                  "<iframe width='100%' height='600%' src='data:application/pdf;base64, " +
+                    encodeURI(pdfGenerateResponse) + "'></iframe>"
+               )                 
             yield put(pdfGenerateSuccess(pdfGenerateResponse));
         } else
             yield put(pdfGenerateError('error'));
@@ -615,7 +623,12 @@ function* generateDCPdf(action) {
             body: JSON.stringify(action.payload)
         });
         if (pdfGenerate.status === 200) {
-            const pdfGenerateResponse = yield pdfGenerate.json();
+            const pdfGenerateResponse = yield pdfGenerate.text();
+            let pdfWindow = window.open("")
+               pdfWindow.document.write(
+                  "<iframe width='100%' height='600%' src='data:application/pdf;base64, " +
+                    encodeURI(pdfGenerateResponse) + "'></iframe>"
+               )                 
             yield put(generateDCPdfSuccess(pdfGenerateResponse));
         } else
             yield put(generateDCPdfError('error'));
