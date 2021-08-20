@@ -74,9 +74,9 @@ const List = (props) => {
         dataIndex: 'material.description',
         key: 'material.description',
         filteredValue: filteredInfo ? filteredInfo["material.description"] : null,
-        onFilter: (value, record) => record.material.description == value,
-        filters: props.inward.inwardList.length > 0 ? [...new Set(props.inward.inwardList.map(item => item.material.description))].map(material => ({ text: material, value: material })) : [],
-        sorter: (a, b) => a.material.description.length - b.material.description.length,
+        onFilter: (value, record) => record.material?.description == value,
+        filters: props.inward.inwardList.length > 0 ? [...new Set(props.inward.inwardList.map(item => item.material?.description))].map(material => ({ text: material, value: material })) : [],
+        sorter: (a, b) => a.material?.description.length - b.material?.description.length,
         sortOrder: sortedInfo.columnKey === 'material.description' && sortedInfo.order,
     },
     {
@@ -227,33 +227,46 @@ const getFilterData=(list)=>{
     function handleFocus() {
     }
 
-    const storeKey = data => {
-        if (selectedCBKeys.includes(data.key)) {
-          const newSet = selectedCBKeys;
-          const index = selectedCBKeys.indexOf(data.key);
-          newSet.splice(index, 1);
-          setSelectedCBKeys(newSet);
-          setSelectedRowData(oldData => oldData.filter(row => row.key !== data.key));
-          return;
-        } else {
+    const storeKey = (data, selected) => {
+        if (selectedCBKeys.includes(data.key) && !selected) {
+            const newSet = selectedCBKeys;
+            const index = selectedCBKeys.indexOf(data.key);
+            newSet.splice(index, 1);
+            setSelectedCBKeys(newSet);
+            setSelectedRowData(oldData => oldData.filter(row => row.key !== data.key));
+            return;
+        } else if (selected && !selectedCBKeys.includes(data.key)){
             setSelectedCBKeys(oldArr => [...oldArr, data.key]);
             setSelectedRowData(oldData => [...oldData, data]);
         }
       };
 
-    const getKey = data => {
+    const getKey = (data, selected) => {
         if (data.status.statusName === 'READY TO DELIVER') {
-            storeKey(data);
-            if (data.children) {
-                data.children.map(item => getKey(item));
-            }
+                storeKey(data, selected);
+                if (data.children) {
+                    data.children.map(item => getKey(item, selected));
+                }
         }
       };
 
       const rowSelection = {
-        onSelect: (record) => {
+        onSelect: (record, selected, selectedRows) => {
             if (record.status.statusName === 'READY TO DELIVER') {
-                getKey(record);
+                if (record.key.includes('-') && !selected) {
+                    const eKeys = record.key.split('-');
+                    let removeKeys = [record.key];
+                    eKeys.forEach(key => {
+                        selectedRows.forEach(row => {
+                        if (`${row.coilNumber}` === key) {
+                            removeKeys.push(row.key);
+                        }
+                    })});
+                    removeKeys.forEach(key => {
+                        storeKey({key}, selected);
+                    })
+                }
+                else getKey(record, selected);
             }
         },
         getCheckboxProps: (record) => ({
@@ -325,10 +338,10 @@ const getFilterData=(list)=>{
                     dataSource={filteredInwardList}
                     onChange={handleChange}
                     rowSelection={rowSelection}
-                    onExpand={(expanded, record) => {
+                    onExpand={(expanded, record, data) => {
                         const motherRecord = {
                             key: record.key,
-                            child: record.instruction.map(r => r.instructionId),
+                            child: record.instruction ? record.instruction?.map(r => r.instructionId) : record.childInstructions?.map(r => r.instructionId),
                             batch: record.customerBatchId,
                             fThickness: record.fThickness
                         };
