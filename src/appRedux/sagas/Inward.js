@@ -494,11 +494,13 @@ function* postDeliveryConfirmRequest(payload) {
     if(payload.payload?.inwardListForDelivery){
         let packetsData = [];
         for (let item of payload.payload.inwardListForDelivery) {
-            let tempItem = {};
-            tempItem.instructionId = item.instructionId;
-            tempItem.remarks = item.remarks;
-            tempItem.weight = item.actualWeight;
-            packetsData.push(tempItem);
+            if (item.instructionId) {
+                let tempItem = {};
+                tempItem.instructionId = item.instructionId;
+                tempItem.remarks = item.remarks;
+                tempItem.weight = item.actualWeight;
+                packetsData.push(tempItem);
+            }
         }
         req_obj = {
             vehicleNo: payload.payload.vehicleNo,

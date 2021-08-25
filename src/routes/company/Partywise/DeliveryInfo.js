@@ -41,7 +41,7 @@ const DeliveryInfo = (props) => {
       <h1>Delivery Information</h1>
       <Card>
         {props.inward.inwardList.length > 0 ? (
-          props.inward.inwardListForDelivery.map((elem) => (
+          props.inward.inwardListForDelivery.map((elem) => elem.instructionId && (
             <div key={elem.instructionId}
               style={{
                 border: "1px solid black",
