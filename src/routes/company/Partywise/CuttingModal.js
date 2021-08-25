@@ -455,7 +455,8 @@ const CreateCuttingDetailsForm = (props) => {
     const getTargetLength=(e)=>{
         setCutsLength(e.target.value)
     }
-    const bundleListClick=()=>{
+    const bundleListClick=(e)=>{
+        e.preventDefault();
         setSelectedKey([]);
         setbundledList(true)
         let selectedPastList = selectedPast.length> 0 ? selectedPast:[];

@@ -659,10 +659,18 @@ const columnsPlan=[
   };
     
     useEffect(() => {
-        if(props.inward.instructionSaveSlittingLoading  && props.inward.pdfLoading && !props.wip) {
-            loading = message.loading('Saving Slit Instruction & Generating pdf..');
-            
+        if(props.slitCut){
+            if(props.inward.instructionSaveSlittingLoading && !props.wip) {
+                loading = message.loading('Saving Slit Instruction..');
+                
+            }
+        }else{
+            if(props.inward.instructionSaveSlittingLoading  && props.inward.pdfLoading && !props.wip) {
+                loading = message.loading('Saving Slit Instruction & Generating pdf..');
+                
+            }
         }
+       
     }, [props.inward.instructionSaveSlittingLoading, props.inward.pdfLoading]);
     useEffect(()=>{
         if(props.inward.pdfSuccess && !props.wip) {
@@ -670,17 +678,29 @@ const columnsPlan=[
         }
     },[props.inward.pdfSuccess])
     useEffect(() => {
-        if(props.inward.instructionSaveSlittingSuccess && props.inward.pdfSuccess && !props.wip) {
-            loading = '';
-            message.success('Slitting instruction saved & pdf generated successfully', 2).then(() => {
-                if(props.slitCut){
-                    props.setCutting(props.inward.saveSlit);
-                }
-                props.setShowSlittingModal(false);
-                props.resetInstruction();
-                
-            });
+        if(props.slitCut){
+            if(props.inward.instructionSaveSlittingSuccess && !props.wip) {
+                loading = '';
+                message.success('Slitting instruction saved', 2).then(() => {
+                    if(props.slitCut){
+                        props.setCutting(props.inward.saveSlit);
+                    }
+                    props.setShowSlittingModal(false);
+                    props.resetInstruction();
+                    
+                });
+            }
+        }else{
+            if(props.inward.instructionSaveSlittingSuccess && props.inward.pdfSuccess && !props.wip) {
+                loading = '';
+                message.success('Slitting instruction saved & pdf generated successfully', 2).then(() => {
+                    props.setShowSlittingModal(false);
+                    props.resetInstruction();
+                    
+                });
+            }
         }
+       
     }, [props.inward.instructionSaveSlittingSuccess,props.inward.pdfSuccess])
     const handleCancel=() => {
         setCuts([]);
@@ -712,7 +732,8 @@ const columnsPlan=[
             if(name === 'Slitting'){
                 if(slitPayload.length > 0){
                     props.saveSlittingInstruction(slitPayload);
-                    props.pdfGenerateInward(payload)
+                    props.pdfGenerateInward(payload);
+                    
                 }else{
                     props.setShowSlittingModal(false);
                 }
@@ -721,6 +742,7 @@ const columnsPlan=[
                 if(slitPayload.length > 0){
                     props.saveSlittingInstruction(slitPayload);
                     props.setShowCuttingModal(true);
+
                 }else{
                     props.setShowSlittingModal(false);
                 }
