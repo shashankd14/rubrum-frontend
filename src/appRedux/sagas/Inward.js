@@ -341,7 +341,7 @@ function* requestSaveCuttingInstruction(action) {
             "updatedBy": "1",
             inwardId: cutDetails.inwardId ? cutDetails.inwardId : "",
             parentInstructionId: cutDetails.instructionId ? cutDetails.instructionId : "",
-            parentGroupId: cutDetails.parentGroupId ? cutDetails.parentGroupId : ""
+            groupId: cutDetails.parentGroupId ? cutDetails.parentGroupId : ""
         }
         requestBody.push(req);
     })
