@@ -67,7 +67,13 @@ import {
     CHECK_BATCH_NO_EXIST_ERROR,
     INSTRUCTION_GROUP_SAVE,
     INSTRUCTION_GROUP_SAVE_SUCCESS,
-    INSTRUCTION_GROUP_SAVE_ERROR
+    INSTRUCTION_GROUP_SAVE_ERROR,
+    PDF_GENERATE_INWARD,
+    PDF_GENERATE_INWARD_ERROR,
+    PDF_GENERATE_INWARD_SUCCESS,
+    PDF_GENERATE_DELIVERY,
+    PDF_GENERATE_DELIVERY_ERROR,
+    PDF_GENERATE_DELIVERY_SUCCESS
 } from "../../constants/ActionTypes";
 
 const INIT_STATE = {
@@ -100,7 +106,14 @@ const INIT_STATE = {
     inwardUpdateError: false,
     saveCut:[],
     saveSlit:[],
-    groupId:{}
+    submitInward:'',
+    groupId:{},
+    pdfError: false,
+    pdfLoading:false,
+    pdfSuccess: false,
+    dcpdfError: false,
+    dcpdfLoading:false,
+    dcpdfSuccess: false
 
 };
 
@@ -186,6 +199,7 @@ export default (state = INIT_STATE, action) => {
         case SUBMIT_INWARD_SUCCESS: {
             return {
                 ...state,
+                submitInward: action.inward,
                 inwardSubmitLoading: false,
                 inwardSubmitSuccess: true
             }
@@ -277,6 +291,10 @@ export default (state = INIT_STATE, action) => {
                 inwardUpdateLoading: false,
                 inwardUpdateSuccess: false,
                 inwardUpdateError: false,
+                submitInward:'',
+                pdfLoading:false,
+                pdfSuccess:false,
+                pdfError:false
             }
         }
         case RESET_INSTRUCTION_FORM:
@@ -402,6 +420,9 @@ export default (state = INIT_STATE, action) => {
                 instructionSaveSlittingSuccess: false,
                 instructionSaveCuttingSuccess: false,
                 instructionSaveError: false,
+                pdfSuccess:false,
+                pdfLoading: false,
+                pdfError: false
             }
         }
         
@@ -543,6 +564,48 @@ export default (state = INIT_STATE, action) => {
             return {
                 ...state,
                 loading: false
+            }
+        }
+        case PDF_GENERATE_INWARD: {
+            return {
+                ...state,
+                pdfLoading: true,
+            }
+        }
+        case PDF_GENERATE_INWARD_SUCCESS: {
+            return {
+                ...state,
+                pdfLoading: false,
+                pdfSuccess: true,
+            }
+        }
+        case PDF_GENERATE_INWARD_ERROR: {
+            return {
+                ...state,
+                pdfLoading: false,
+                pdfSuccess: false,
+                pdfError: true
+            }
+        }
+        case PDF_GENERATE_DELIVERY: {
+            return {
+                ...state,
+                dcpdfLoading: true,
+            }
+        }
+        case PDF_GENERATE_DELIVERY_SUCCESS: {
+            return {
+                ...state,
+                dcpdfLoading: false,
+                dcpdfSuccess: true,
+            }
+        }
+        case PDF_GENERATE_DELIVERY_ERROR: {
+            return {
+                ...state,
+                dcpdfLoading: false,
+                dcpdfSuccess: false,
+                dcpdfError: true
             }
         }
 

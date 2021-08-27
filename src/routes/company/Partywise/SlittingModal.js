@@ -3,7 +3,7 @@ import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import moment from "moment";
 import {APPLICATION_DATE_FORMAT} from '../../../constants';
-import {setProcessDetails, saveSlittingInstruction, resetInstruction, updateInstruction, deleteInstructionById} from '../../../appRedux/actions/Inward';
+import {setProcessDetails, saveSlittingInstruction, resetInstruction, updateInstruction, deleteInstructionById,pdfGenerateInward} from '../../../appRedux/actions/Inward';
 import { set } from "nprogress";
 import { values } from "lodash";
 
@@ -659,25 +659,49 @@ const columnsPlan=[
   };
     
     useEffect(() => {
-        if(props.inward.instructionSaveSlittingLoading && !props.wip) {
-            loading = message.loading('Saving Slit Instruction..');
-            
-        }
-    }, [props.inward.instructionSaveSlittingLoading]);
-
-    useEffect(() => {
-        if(props.inward.instructionSaveSlittingSuccess && !props.wip) {
-            loading = '';
-            message.success('Slitting instruction saved successfully', 2).then(() => {
-                if(props.slitCut){
-                    props.setCutting(props.inward.saveSlit);
-                }
-                props.setShowSlittingModal(false);
-                props.resetInstruction();
+        if(props.slitCut){
+            if(props.inward.instructionSaveSlittingLoading && !props.wip) {
+                loading = message.loading('Saving Slit Instruction..');
                 
-            });
+            }
+        }else{
+            if(props.inward.instructionSaveSlittingLoading  && props.inward.pdfLoading && !props.inward.pdfSuccess && !props.wip) {
+                loading = message.loading('Saving Slit Instruction & Generating pdf..');
+                
+            }
         }
-    }, [props.inward.instructionSaveSlittingSuccess])
+       
+    }, [props.inward.instructionSaveSlittingLoading, props.inward.pdfLoading]);
+    // useEffect(()=>{
+    //     if(props.inward.pdfSuccess && !props.wip) {
+    //         loading = message.success('PDF generated!');
+    //     }
+    // },[props.inward.pdfSuccess])
+    useEffect(() => {
+        if(props.slitCut){
+            if(props.inward.instructionSaveSlittingSuccess && !props.wip) {
+                loading = '';
+                message.success('Slitting instruction saved', 2).then(() => {
+                    if(props.slitCut){
+                        props.setCutting(props.inward.saveSlit);
+                    }
+                    props.setShowSlittingModal(false);
+                    props.resetInstruction();
+                    
+                });
+            }
+        }else{
+            if(props.inward.instructionSaveSlittingSuccess && props.inward.pdfSuccess && !props.wip) {
+                loading = '';
+                message.success('Slitting instruction saved & pdf generated successfully', 2).then(() => {
+                    props.setShowSlittingModal(false);
+                    props.resetInstruction();
+                    
+                });
+            }
+        }
+       
+    }, [props.inward.instructionSaveSlittingSuccess,props.inward.pdfSuccess])
     const handleCancel=() => {
         setCuts([]);
         setForm(true)
@@ -687,6 +711,10 @@ const columnsPlan=[
         props.setShowSlittingModal(false)
     }
     const handleOk =(name) => {
+        let payload={
+            inwardId: props.coilDetails.inwardEntryId,
+            processId: 2
+        }
         if(props.wip){
             if (totalActualweight > tweight) {
                 message.error('Actual Weight is greater than Total weight, Please modify actual weight!');
@@ -704,6 +732,8 @@ const columnsPlan=[
             if(name === 'Slitting'){
                 if(slitPayload.length > 0){
                     props.saveSlittingInstruction(slitPayload);
+                    props.pdfGenerateInward(payload);
+                    
                 }else{
                     props.setShowSlittingModal(false);
                 }
@@ -712,6 +742,7 @@ const columnsPlan=[
                 if(slitPayload.length > 0){
                     props.saveSlittingInstruction(slitPayload);
                     props.setShowCuttingModal(true);
+
                 }else{
                     props.setShowSlittingModal(false);
                 }
@@ -751,7 +782,13 @@ const columnsPlan=[
                 <Button key="submit" type="primary" loading={loading} onClick={()=>{handleOk('SlitCut')}}>
                   Send for Cut
                 </Button>
-              ]:cuts.length>0 ?[
+              ]:cuts.length>0 ?props.wip?[
+                <Button key="back" onClick={handleCancel}>
+                  Cancel
+                </Button>,
+                <Button key="submit" type="primary" loading={loading} onClick={()=>{handleOk('Slitting')}}>
+                 OK
+                </Button>]: [
                 <Button key="back" onClick={handleCancel}>
                   Cancel
                 </Button>,
@@ -934,4 +971,4 @@ const SlittingDetailsForm = Form.create({
 
 const SlittingWidthsForm = Form.create()(SlittingWidths);
 
-export default connect(mapStateToProps, {setProcessDetails, saveSlittingInstruction, resetInstruction, updateInstruction,deleteInstructionById})(SlittingDetailsForm);
+export default connect(mapStateToProps, {setProcessDetails, saveSlittingInstruction, resetInstruction, updateInstruction,deleteInstructionById, pdfGenerateInward})(SlittingDetailsForm);

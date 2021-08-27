@@ -2,7 +2,7 @@ import {Button, Card, Col, DatePicker, Form, Input, Modal, Row, Table, Select, I
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import moment from "moment";
-import {setProcessDetails, saveCuttingInstruction,resetInstruction ,updateInstruction, deleteInstructionById, instructionGroupsave} from '../../../appRedux/actions/Inward';
+import {setProcessDetails, saveCuttingInstruction,resetInstruction ,updateInstruction, deleteInstructionById, instructionGroupsave, pdfGenerateInward} from '../../../appRedux/actions/Inward';
 import {APPLICATION_DATE_FORMAT} from '../../../constants';
 
 const Option = Select.Option;
@@ -331,10 +331,10 @@ const CreateCuttingDetailsForm = (props) => {
         }
        }}, [props.coilDetails]);
     useEffect(() => {
-        if(props.inward.instructionSaveCuttingLoading && !props.wip) {
-            loading = message.loading('Saving Cut Instruction..');
+        if(props.inward.instructionSaveCuttingLoading && props.inward.pdfLoading && !props.wip) {
+            loading = message.loading('Saving Cut Instruction & Generating pdf..');
          }
-    }, [props.inward.instructionSaveCuttingLoading]);
+    }, [props.inward.instructionSaveCuttingLoading,props.inward.pdfLoading]);
     useEffect(()=>{
         setCutPayload(cuts);
         let cutsArray = cuts.map(i => i.plannedWeight);
@@ -358,16 +358,22 @@ const CreateCuttingDetailsForm = (props) => {
             setTotalActualWeight(actualTotalWeight);
         }
     },[cuts])
+    // useEffect(()=>{
+    //     if(props.inward.pdfSuccess && !props.wip) {
+    //         loading = message.success('PDF generated!');
+    //     }
+    // },[props.inward.pdfSuccess])
     useEffect(() => {
-        if(props.inward.instructionSaveCuttingSuccess && !props.wip) {
+        if(props.inward.instructionSaveCuttingSuccess && props.inward.pdfSuccess && !props.wip) {
             loading = '';
-            message.success('Cutting instruction saved successfully', 2).then(() => {
+            message.success('Cutting instruction saved & PDF generated successfully', 2).then(() => {
                 setCutPayload([]);
                 props.setShowCuttingModal(false);
                 props.resetInstruction();
             });
         }
-    }, [props.inward.instructionSaveCuttingSuccess])
+    }, [props.inward.instructionSaveCuttingSuccess, props.inward.pdfSuccess])
+    
     useEffect(() =>{
        let listItem = bundleItemList.length> 0 ? bundleItemList :[];
        if(listItem.length === 0 && Object.keys(props.inward.groupId).length >0){
@@ -449,7 +455,8 @@ const CreateCuttingDetailsForm = (props) => {
     const getTargetLength=(e)=>{
         setCutsLength(e.target.value)
     }
-    const bundleListClick=()=>{
+    const bundleListClick=(e)=>{
+        e.preventDefault();
         setSelectedKey([]);
         setbundledList(true)
         let selectedPastList = selectedPast.length> 0 ? selectedPast:[];
@@ -468,6 +475,10 @@ const CreateCuttingDetailsForm = (props) => {
         props.instructionGroupsave(payload); 
     }
     const handleOk=()=>{
+        let payload={
+            inwardId: props.coilDetails.inwardEntryId ? props.coilDetails.inwardEntryId: props.coil.inwardEntryId,
+            processId: props.slitCut? 3: 1
+        }
         if(props.wip){
             if (totalActualweight > tweight) {
                 message.error('Actual Weight is greater than Total weight, Please modify actual weight!');
@@ -482,10 +493,12 @@ const CreateCuttingDetailsForm = (props) => {
         }
         if(props.slitCut){
             props.saveCuttingInstruction(restTableData);
+            props.pdfGenerateInward(payload)
         }
         else if(validate === false){
             if(cutPayload.length>0) {
               props.saveCuttingInstruction(cutPayload);
+              props.pdfGenerateInward(payload)
             }else{
                props.setShowCuttingModal(false);
           }
@@ -506,7 +519,13 @@ const CreateCuttingDetailsForm = (props) => {
             onOk={() => {handleOk()}}
             width={1020}
             onCancel={handleCancel}
-            footer={cuts.length>0 ?[
+            footer={cuts.length>0 ?props.wip ? [
+                <Button key="back" onClick={handleCancel}>
+                  Cancel
+                </Button>,
+                <Button key="submit" type="primary" loading={loading} onClick={()=>{handleOk()}}>
+                 OK
+                </Button>]:[
                 <Button key="back" onClick={handleCancel}>
                   Cancel
                 </Button>,
@@ -767,4 +786,4 @@ const CuttingDetailsForm = Form.create({
 })(CreateCuttingDetailsForm);
 
 
-export default  connect(mapStateToProps, {setProcessDetails, saveCuttingInstruction,resetInstruction, updateInstruction, deleteInstructionById, instructionGroupsave})(CuttingDetailsForm);
+export default  connect(mapStateToProps, {setProcessDetails, saveCuttingInstruction,resetInstruction, updateInstruction, deleteInstructionById, instructionGroupsave, pdfGenerateInward})(CuttingDetailsForm);

@@ -73,7 +73,13 @@ import {
     CHECK_BATCH_NO_EXIST_SUCCESS,
     INSTRUCTION_GROUP_SAVE,
     INSTRUCTION_GROUP_SAVE_SUCCESS,
-    INSTRUCTION_GROUP_SAVE_ERROR
+    INSTRUCTION_GROUP_SAVE_ERROR,
+    PDF_GENERATE_INWARD,
+    PDF_GENERATE_INWARD_ERROR,
+    PDF_GENERATE_INWARD_SUCCESS,
+    PDF_GENERATE_DELIVERY,
+    PDF_GENERATE_DELIVERY_SUCCESS,
+    PDF_GENERATE_DELIVERY_ERROR
 } from "../../constants/ActionTypes";
 
 export const fetchInwardList = () => ({
@@ -371,5 +377,33 @@ export const deleteInstructionByIdSuccess = (payload) => ({
 
 export const deleteInstructionByIdError = (error) => ({
     type: DELETE_INSTRUCTION_BY_ID_ERROR,
+    error
+});
+export const pdfGenerateInward = (payload) => ({
+    type: PDF_GENERATE_INWARD,
+    payload
+});
+
+export const pdfGenerateSuccess = (payload) => ({
+    type: PDF_GENERATE_INWARD_SUCCESS,
+    payload
+});
+
+export const pdfGenerateError = (error) => ({
+    type: PDF_GENERATE_INWARD_ERROR,
+    error
+});
+export const generateDCPdf = (payload) => ({
+    type: PDF_GENERATE_DELIVERY,
+    payload
+});
+
+export const generateDCPdfSuccess = (payload) => ({
+    type: PDF_GENERATE_DELIVERY_SUCCESS,
+    payload
+});
+
+export const generateDCPdfError = (error) => ({
+    type: PDF_GENERATE_DELIVERY_ERROR,
     error
 });

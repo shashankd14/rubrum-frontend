@@ -22,7 +22,9 @@ import {
     DELETE_INWARD_LIST_BY_ID,
     DELETE_INSTRUCTION_BY_ID,
     CHECK_BATCH_NO_EXIST,
-    INSTRUCTION_GROUP_SAVE
+    INSTRUCTION_GROUP_SAVE,
+    PDF_GENERATE_INWARD,
+    PDF_GENERATE_DELIVERY
 } from "../../constants/ActionTypes";
 
 import {
@@ -63,7 +65,11 @@ import {
     checkCustomerBatchNumberSuccess,
     checkCustomerBatchNumberError,
     instructionGroupsaveSuccess,
-    instructionGroupsaveError
+    instructionGroupsaveError,
+    pdfGenerateSuccess,
+    pdfGenerateError,
+    generateDCPdfSuccess,
+    generateDCPdfError
 } from "../actions";
 import { CUTTING_INSTRUCTION_PROCESS_ID, SLITTING_INSTRUCTION_PROCESS_ID, SLIT_CUT_INSTRUCTION_PROCESS_ID } from "../../constants";
 import { formItemLayout } from "../../routes/company/Partywise/CuttingModal";
@@ -202,7 +208,8 @@ function* submitInward(action) {
             body: data
         });
         if (newInwardEntry.status == 200) {
-            yield put(submitInwardSuccess());
+            let submitInwardResponse = yield newInwardEntry.json()
+            yield put(submitInwardSuccess(submitInwardResponse.inwardEntryId));
         } else
             yield put(submitInwardError('error'));
     } catch (error) {
@@ -501,7 +508,7 @@ function* postDeliveryConfirmRequest(payload) {
         }
     }else{
         requestType= 'PUT';
-       req_obj =payload.payload
+        req_obj =payload.payload
     }
     try {
         const postConfirm = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/delivery/save`, {
@@ -577,6 +584,52 @@ function* deleteInstructionById(action) {
         yield put(deleteInstructionByIdError(error));
     }
 }
+function* pdfGenerateInward(action) {
+    try {
+        const pdfGenerate = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/pdf/inward', {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+               
+              },
+            body: JSON.stringify(action.payload)
+        });
+        if (pdfGenerate.status === 200) {
+            const pdfGenerateResponse = yield pdfGenerate.json();
+            // let data ='JVBERi0xLjQKJeLjz9MKNCAwIG9iago8PC9GaWx0ZXIvRmxhdGVEZWNvZGUvTGVuZ3RoIDcxNz4+c3RyZWFtCniclVZNc9MwEL3rV+gIzCD0ZcnqrW0ME6ZN28TQA8PBJE7iEtttnMDw71lHths5hqqTg/WcfW/frlYaP6GLGFGsDcfxAkUxukNPiBIqdIB/I44/w58PiFF8jb59p3iBhMI6UDhHgbarzWElFKES1sJZ2v/X6B4VoFP/tisQC7GmnHBeq9CABC0EKSqJrjEjUgOGWAev0fKdK9CPGMAAKNG8pVOiTAgO+0+w5qYfFH8Wa60fazvl5CflnOJTCUoMNSF2H3XbBIVYFQZ1bI54IJ7hBiCvlVUoiTk4FYzwI2wb50r0YxoswVSD6/Aa8s5dk6eJyV/iWJd9CeEW4jp3MwxL2CzC6ONeNLBTEEY5dXV4SKIf02DDCBNdWYYSEfY6YSPy/xOswR5duCW4nh31QQGbQQf1q7YFFnVsLYkSz8W0cIDei2jge2ZAVXblAJaEm14H2qj8ZZp1eSIjnEIc670c/5Do7ha4zD58ZJiFOF4idnjLMOfBQVIIwhSOc/RmPLk/n47wKIrPx1ezt/FDffO1XAm33zGdSXU4JiIgITvQL7/M4pvraOpJZIYoSxxIyDHjA6QAjoOWNtu+2pV5usWTJE/xGfZha0aETTlN1vsNHhdz4sOTkkjlZr1IdvO1Dxc2n1rHk/Ilm5rWu3dE2ReLdJkV6cInE9yizLgux8WvMpunHmwJp0grT58NRQlibDtv99vHskpx/OfRcy9kQIm0bmdxFF3hWTT9Or6MfKhCE9psRzSJp5HfwAmpu0m9GV95kmAvXj2lHK6rdkrLbIMn+/wHbIZXX3go2hllnDEfRqDa6bxOduk2SzY+LCnaIRul1XybPe6ysvD0yLuje5vMfyarrFj50JhqB/QVRlloiGiMZnlaVGCzwmc+TMXbEZukO3yfZqv1zo8Jl5qyOT9ty6rquD7dYRw+c5odpPANQxtO/Ql5h/4CYsMrRQplbmRzdHJlYW0KZW5kb2JqCjEgMCBvYmoKPDwvQ29udGVudHMgNCAwIFIvVHlwZS9QYWdlL1Jlc291cmNlczw8L1Byb2NTZXQgWy9QREYgL1RleHQgL0ltYWdlQiAvSW1hZ2VDIC9JbWFnZUldL0ZvbnQ8PC9GMSAyIDAgUi9GMiAzIDAgUj4+Pj4vUGFyZW50IDUgMCBSL01lZGlhQm94WzAgMCA2MTIgNzkyXT4+CmVuZG9iago2IDAgb2JqClsxIDAgUi9YWVogMCA3NTAgMF0KZW5kb2JqCjcgMCBvYmoKPDwvTmFtZXNbKGlud2FyZC1mb3JtKSA2IDAgUl0+PgplbmRvYmoKOCAwIG9iago8PC9EZXN0cyA3IDAgUj4+CmVuZG9iago5IDAgb2JqCjw8L0ZpbHRlci9GbGF0ZURlY29kZS9MZW5ndGggNTA1Pj5zdHJlYW0KeJyVlVFP2zAQx9/9Ke5xTMLz+WI76VuBbsrGOpUFpmnaQ5emNKwBETr4+rOdhDZRpRj1of7X97s7+/5JH9lZxgSYREK2YrOMLdgjE1yQUfDCJHy2m3cMBXxlv34LWDHSYJSGiinTrLZ+RZqLyK6pt2z2N+wHu7dJE5HE0P+qbxmS4Mo2oDjFNq1UtJdbKyU3Tkdck9VIyOWB3rD1+2GKYUyrldQ80l67cCUVN9ilaOu0MdUY03Q5TEH9g/Q771c4nqKtgjGX+HoXrdxnQNP11PTY6WMphjGtJky4wNdzkQvXg7toY6oxpulymIL6B+l33q9wPIUA97EGsQb98BEBI+tKyNYM/Yb7QfsxR5LHMWQVe5fOb76l57OT7M45eYyzg9DGcxezbJpefj/kJKA8AukEeVPrqsiL8rlYwcVyV8AEQmATO2s4WgqJp0KdShHC6YgnynNCTUhMhH1AQziKOXrsbLnLNzB/COwT/bwdeFNsynxbwPxf9aeow3CVGB6Tx79MAU0IYuz7oJlFev/8UOZvrKgMV03DJMOmH2k7C08srqeXafYzELPGxTd6JrKul02tT/VyNWqW2E4bD6lbR1FAJUpEZ7CseNrBeVHvynWZW4eG0EZ3Ngt1CinRXsdVUS3rv09jWOKf8D22s222gPvjWbD/UgZdHAplbmRzdHJlYW0KZW5kb2JqCjEwIDAgb2JqCjw8L0NvbnRlbnRzIDkgMCBSL1R5cGUvUGFnZS9SZXNvdXJjZXM8PC9Qcm9jU2V0IFsvUERGIC9UZXh0IC9JbWFnZUIgL0ltYWdlQyAvSW1hZ2VJXS9Gb250PDwvRjEgMiAwIFIvRjIgMyAwIFI+Pj4+L1BhcmVudCA1IDAgUi9NZWRpYUJveFswIDAgNjEyIDc5Ml0+PgplbmRvYmoKMiAwIG9iago8PC9TdWJ0eXBlL1R5cGUxL1R5cGUvRm9udC9CYXNlRm9udC9UaW1lcy1Cb2xkL0VuY29kaW5nL1dpbkFuc2lFbmNvZGluZz4+CmVuZG9iagozIDAgb2JqCjw8L1N1YnR5cGUvVHlwZTEvVHlwZS9Gb250L0Jhc2VGb250L1RpbWVzLVJvbWFuL0VuY29kaW5nL1dpbkFuc2lFbmNvZGluZz4+CmVuZG'
+            let pdfWindow = window.open("")
+               pdfWindow.document.write(
+                  "<iframe width='100%' height='600%' src='data:application/pdf;base64, " +
+                    encodeURI(pdfGenerateResponse.encodedBase64String) + "'></iframe>"
+               )                 
+            yield put(pdfGenerateSuccess(pdfGenerateResponse));
+        } else
+            yield put(pdfGenerateError('error'));
+    } catch (error) {
+        yield put(pdfGenerateError(error));
+    }
+}
+function* generateDCPdf(action) {
+    try {
+        const pdfGenerate = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/pdf/delivery', {
+            method: 'POST',
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(action.payload)
+        });
+        if (pdfGenerate.status === 200) {
+            const pdfGenerateResponse = yield pdfGenerate.text();
+            let pdfWindow = window.open("")
+               pdfWindow.document.write(
+                  "<iframe width='100%' height='600%' src='data:application/pdf;base64, " +
+                    encodeURI(pdfGenerateResponse) + "'></iframe>"
+               )                 
+            yield put(generateDCPdfSuccess(pdfGenerateResponse));
+        } else
+            yield put(generateDCPdfError('error'));
+    } catch (error) {
+        yield put(generateDCPdfError(error));
+    }
+}
 
 
 export function* watchFetchRequests() {
@@ -599,6 +652,8 @@ export function* watchFetchRequests() {
     yield takeLatest(DELETE_INSTRUCTION_BY_ID, deleteInstructionById);
     yield takeLatest(CHECK_BATCH_NO_EXIST, checkCustomerBatchNumber);
     yield takeLatest(INSTRUCTION_GROUP_SAVE, instructionGroupsave);
+    yield takeLatest(PDF_GENERATE_INWARD, pdfGenerateInward);
+    yield takeLatest(PDF_GENERATE_DELIVERY, generateDCPdf);
 }
 
 export default function* inwardSagas() {
