@@ -695,7 +695,7 @@ const columnsPlan=[
                 });
             }
         }else{
-            if(props.inward.instructionSaveSlittingSuccess && !props.wip) {
+            if(props.inward.instructionSaveSlittingSuccess && !props.wip && !props.slitCut) {
                 let payload={
                     inwardId: props.coilDetails.inwardEntryId,
                     processId: 2

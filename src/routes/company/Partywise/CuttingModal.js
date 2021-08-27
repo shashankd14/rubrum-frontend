@@ -461,6 +461,7 @@ const CreateCuttingDetailsForm = (props) => {
         setCutsLength(e.target.value)
     }
     const bundleListClick=(e)=>{
+        e.stopPropagation();
         e.preventDefault();
         setSelectedKey([]);
         setbundledList(true)
