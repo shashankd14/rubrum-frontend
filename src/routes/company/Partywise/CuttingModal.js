@@ -358,11 +358,11 @@ const CreateCuttingDetailsForm = (props) => {
             setTotalActualWeight(actualTotalWeight);
         }
     },[cuts])
-    useEffect(()=>{
-        if(props.inward.pdfSuccess && !props.wip) {
-            loading = message.success('PDF generated!');
-        }
-    },[props.inward.pdfSuccess])
+    // useEffect(()=>{
+    //     if(props.inward.pdfSuccess && !props.wip) {
+    //         loading = message.success('PDF generated!');
+    //     }
+    // },[props.inward.pdfSuccess])
     useEffect(() => {
         if(props.inward.instructionSaveCuttingSuccess && props.inward.pdfSuccess && !props.wip) {
             loading = '';
@@ -476,7 +476,7 @@ const CreateCuttingDetailsForm = (props) => {
     }
     const handleOk=()=>{
         let payload={
-            inwardId: props.coilDetails.inwardEntryId,
+            inwardId: props.coilDetails.inwardEntryId ? props.coilDetails.inwardEntryId: props.coil.inwardEntryId,
             processId: props.slitCut? 3: 1
         }
         if(props.wip){

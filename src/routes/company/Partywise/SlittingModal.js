@@ -665,18 +665,18 @@ const columnsPlan=[
                 
             }
         }else{
-            if(props.inward.instructionSaveSlittingLoading  && props.inward.pdfLoading && !props.wip) {
+            if(props.inward.instructionSaveSlittingLoading  && props.inward.pdfLoading && !props.inward.pdfSuccess && !props.wip) {
                 loading = message.loading('Saving Slit Instruction & Generating pdf..');
                 
             }
         }
        
     }, [props.inward.instructionSaveSlittingLoading, props.inward.pdfLoading]);
-    useEffect(()=>{
-        if(props.inward.pdfSuccess && !props.wip) {
-            loading = message.success('PDF generated!');
-        }
-    },[props.inward.pdfSuccess])
+    // useEffect(()=>{
+    //     if(props.inward.pdfSuccess && !props.wip) {
+    //         loading = message.success('PDF generated!');
+    //     }
+    // },[props.inward.pdfSuccess])
     useEffect(() => {
         if(props.slitCut){
             if(props.inward.instructionSaveSlittingSuccess && !props.wip) {
