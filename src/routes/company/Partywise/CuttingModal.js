@@ -331,10 +331,10 @@ const CreateCuttingDetailsForm = (props) => {
         }
        }}, [props.coilDetails]);
     useEffect(() => {
-        if(props.inward.instructionSaveCuttingLoading && props.inward.pdfLoading && !props.wip) {
+        if(props.inward.instructionSaveCuttingLoading && !props.wip) {
             loading = message.loading('Saving Cut Instruction & Generating pdf..');
          }
-    }, [props.inward.instructionSaveCuttingLoading,props.inward.pdfLoading]);
+    }, [props.inward.instructionSaveCuttingLoading]);
     useEffect(()=>{
         setCutPayload(cuts);
         let cutsArray = cuts.map(i => i.plannedWeight);
@@ -358,21 +358,26 @@ const CreateCuttingDetailsForm = (props) => {
             setTotalActualWeight(actualTotalWeight);
         }
     },[cuts])
-    // useEffect(()=>{
-    //     if(props.inward.pdfSuccess && !props.wip) {
-    //         loading = message.success('PDF generated!');
-    //     }
-    // },[props.inward.pdfSuccess])
-    useEffect(() => {
-        if(props.inward.instructionSaveCuttingSuccess && props.inward.pdfSuccess && !props.wip) {
-            loading = '';
+    useEffect(()=>{
+        if(props.inward.pdfSuccess && !props.wip) {
             message.success('Cutting instruction saved & PDF generated successfully', 2).then(() => {
-                setCutPayload([]);
-                props.setShowCuttingModal(false);
-                props.resetInstruction();
-            });
+             setCutPayload([]);
+            props.setShowCuttingModal(false);
+            props.resetInstruction();
+    });
+ }
+},[props.inward.pdfSuccess])
+    useEffect(() => {
+        let payload={
+            inwardId: props.coilDetails.inwardEntryId ? props.coilDetails.inwardEntryId: props.coil.inwardEntryId,
+            processId: props.slitCut? 3: 1
         }
-    }, [props.inward.instructionSaveCuttingSuccess, props.inward.pdfSuccess])
+        if(props.inward.instructionSaveCuttingSuccess && !props.wip) {
+            loading = '';
+            props.pdfGenerateInward(payload)
+            
+        }
+    }, [props.inward.instructionSaveCuttingSuccess])
     
     useEffect(() =>{
        let listItem = bundleItemList.length> 0 ? bundleItemList :[];
@@ -474,11 +479,8 @@ const CreateCuttingDetailsForm = (props) => {
         }
         props.instructionGroupsave(payload); 
     }
-    const handleOk=()=>{
-        let payload={
-            inwardId: props.coilDetails.inwardEntryId ? props.coilDetails.inwardEntryId: props.coil.inwardEntryId,
-            processId: props.slitCut? 3: 1
-        }
+    const handleOk=(e)=>{
+        e.preventDefault();
         if(props.wip){
             if (totalActualweight > tweight) {
                 message.error('Actual Weight is greater than Total weight, Please modify actual weight!');
@@ -493,12 +495,10 @@ const CreateCuttingDetailsForm = (props) => {
         }
         if(props.slitCut){
             props.saveCuttingInstruction(restTableData);
-            props.pdfGenerateInward(payload)
         }
         else if(validate === false){
             if(cutPayload.length>0) {
               props.saveCuttingInstruction(cutPayload);
-              props.pdfGenerateInward(payload)
             }else{
                props.setShowCuttingModal(false);
           }
@@ -516,26 +516,26 @@ const CreateCuttingDetailsForm = (props) => {
         <Modal
             title={props.wip ? (props.slitCut ? "Finish slit & cut Instruction" : "Finish Cutting Instruction") : "Cutting Instruction"}
             visible={props.showCuttingModal}
-            onOk={() => {handleOk()}}
+            onOk={handleOk}
             width={1020}
             onCancel={handleCancel}
             footer={cuts.length>0 ?props.wip ? [
                 <Button key="back" onClick={handleCancel}>
                   Cancel
                 </Button>,
-                <Button key="submit" type="primary" loading={loading} onClick={()=>{handleOk()}}>
+                <Button key="submit" type="primary" loading={loading} onClick={handleOk}>
                  OK
                 </Button>]:[
                 <Button key="back" onClick={handleCancel}>
                   Cancel
                 </Button>,
-                <Button key="submit" type="primary" loading={loading} onClick={()=>{handleOk()}}>
+                <Button key="submit" type="primary" loading={loading} onClick={handleOk}>
                  Save and Generate
                 </Button>
               ]:[<Button key="back" onClick={handleCancel}>
               Cancel
             </Button>,
-            <Button key="submit" type="primary" loading={loading} onClick={()=>{handleOk()}}>
+            <Button key="submit" type="primary" loading={loading} onClick={handleOk}>
              OK
             </Button>]}
         >

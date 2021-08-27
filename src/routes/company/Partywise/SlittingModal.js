@@ -665,18 +665,22 @@ const columnsPlan=[
                 
             }
         }else{
-            if(props.inward.instructionSaveSlittingLoading  && props.inward.pdfLoading && !props.inward.pdfSuccess && !props.wip) {
+            if(props.inward.instructionSaveSlittingLoading && !props.inward.pdfSuccess && !props.wip) {
                 loading = message.loading('Saving Slit Instruction & Generating pdf..');
                 
             }
         }
        
-    }, [props.inward.instructionSaveSlittingLoading, props.inward.pdfLoading]);
-    // useEffect(()=>{
-    //     if(props.inward.pdfSuccess && !props.wip) {
-    //         loading = message.success('PDF generated!');
-    //     }
-    // },[props.inward.pdfSuccess])
+    }, [props.inward.instructionSaveSlittingLoading]);
+    useEffect(()=>{
+        if(props.inward.pdfSuccess && !props.wip) {
+            message.success('Slitting instruction saved & pdf generated successfully', 2).then(() => {
+                props.setShowSlittingModal(false);
+                props.resetInstruction();
+                
+            });
+        }
+    },[props.inward.pdfSuccess])
     useEffect(() => {
         if(props.slitCut){
             if(props.inward.instructionSaveSlittingSuccess && !props.wip) {
@@ -691,18 +695,19 @@ const columnsPlan=[
                 });
             }
         }else{
-            if(props.inward.instructionSaveSlittingSuccess && props.inward.pdfSuccess && !props.wip) {
-                loading = '';
-                message.success('Slitting instruction saved & pdf generated successfully', 2).then(() => {
-                    props.setShowSlittingModal(false);
-                    props.resetInstruction();
-                    
-                });
+            if(props.inward.instructionSaveSlittingSuccess && !props.wip) {
+                let payload={
+                    inwardId: props.coilDetails.inwardEntryId,
+                    processId: 2
+                }
+                props.pdfGenerateInward(payload);
+                loading = ''; 
             }
         }
        
-    }, [props.inward.instructionSaveSlittingSuccess,props.inward.pdfSuccess])
-    const handleCancel=() => {
+    }, [props.inward.instructionSaveSlittingSuccess])
+    const handleCancel=(e) => {
+        e.preventDefault();
         setCuts([]);
         setForm(true)
         setValue(0);
@@ -710,11 +715,8 @@ const columnsPlan=[
         setDeletedSelected(false);
         props.setShowSlittingModal(false)
     }
-    const handleOk =(name) => {
-        let payload={
-            inwardId: props.coilDetails.inwardEntryId,
-            processId: 2
-        }
+    const handleOk =(e,name) => {
+        e.preventDefault();
         if(props.wip){
             if (totalActualweight > tweight) {
                 message.error('Actual Weight is greater than Total weight, Please modify actual weight!');
@@ -732,7 +734,6 @@ const columnsPlan=[
             if(name === 'Slitting'){
                 if(slitPayload.length > 0){
                     props.saveSlittingInstruction(slitPayload);
-                    props.pdfGenerateInward(payload);
                     
                 }else{
                     props.setShowSlittingModal(false);
@@ -772,32 +773,32 @@ const columnsPlan=[
                 <Button key="back" onClick={handleCancel}>
                   Cancel
                 </Button>,
-                <Button key="submit" type="primary" loading={loading} onClick={()=>{handleOk('slittingDetail')}}>
+                <Button key="submit" type="primary" loading={loading} onClick={(e)=>{handleOk(e,'slittingDetail')}}>
                   OK
                 </Button>
               ]:[
                 <Button key="back" onClick={handleCancel}>
                   Cancel
                 </Button>,
-                <Button key="submit" type="primary" loading={loading} onClick={()=>{handleOk('SlitCut')}}>
+                <Button key="submit" type="primary" loading={loading} onClick={(e)=>{handleOk(e,'SlitCut')}}>
                   Send for Cut
                 </Button>
               ]:cuts.length>0 ?props.wip?[
                 <Button key="back" onClick={handleCancel}>
                   Cancel
                 </Button>,
-                <Button key="submit" type="primary" loading={loading} onClick={()=>{handleOk('Slitting')}}>
+                <Button key="submit" type="primary"  loading={loading} onClick={(e)=>{handleOk(e,'Slitting')}}>
                  OK
                 </Button>]: [
                 <Button key="back" onClick={handleCancel}>
                   Cancel
                 </Button>,
-                <Button key="submit" type="primary" loading={loading} onClick={()=>{handleOk('Slitting')}}>
+                <Button key="submit" type="primary" loading={loading} onClick={(e)=>{handleOk(e,'Slitting')}}>
                  Save and Generate
                 </Button>]: [<Button key="back" onClick={handleCancel}>
                   Cancel
                 </Button>,
-                <Button key="submit" type="primary" loading={loading} onClick={()=>{handleOk('Slitting')}}>
+                <Button key="submit" type="primary" loading={loading} onClick={(e)=>{handleOk(e,'Slitting')}}>
                  OK
                 </Button>]}
         >
