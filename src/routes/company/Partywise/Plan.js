@@ -237,6 +237,7 @@ const Plan = (props) => {
                                 }}>Finish Slitting</Button>
                                 <Button onClick={() => {
                                     setCuttingCoil(props.inward.plan);
+                                    setSlitCut(false);
                                     setShowCuttingModal(true);
                                     setChildCoil(false)
                                 }}>Finish Cutting</Button>
