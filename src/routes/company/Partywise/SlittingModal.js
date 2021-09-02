@@ -193,11 +193,12 @@ const SlittingWidths = (props) => {
                 for(let i=0; i < values.widths.length; i++) {
                     for (let j=0; j<values.nos[i];j++){
                         let slitValue = {
-                            processId:props.slitCut ? 3 :2,
+                            processId:2,
                             name: i+1, processDate: moment().format(APPLICATION_DATE_FORMAT),
                             plannedLength: availLength,
                             plannedWidth: values.widths[i],
                             no: j+1,
+                            slitAndCut:props.slitCut ? true :false,
                             plannedNoOfPieces:values.nos[i],
                             plannedWeight:(values.weights[i]/values.nos[i]).toFixed(2),
                             inwardId: props.coilDetails.inwardEntryId ? props.coilDetails.inwardEntryId : '',
@@ -633,7 +634,7 @@ const columnsPlan=[
     } else{
         data = data.flat();  
         let cutsData = [...data];
-        cutsData = props.wip ? cutsData.filter(item => item.process.processId === 2 && item.status.statusId !==3 && item.groupId === null) :props.slitCut ? cutsData.filter(item => item.process.processId === 3):cutsData.filter(item => item.process.processId === 2)
+        cutsData = props.wip ? cutsData.filter(item => item.process.processId === 2 && item.status.statusId !==3 && item.groupId === null) :props.slitCut ? cutsData.filter(item => item.slitAndCut === true ):cutsData.filter(item => item.process.processId === 2)
         setSlittingDetail(cutsData)
         setCuts(cutsData);
         setslitpayload([])

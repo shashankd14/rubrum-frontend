@@ -280,6 +280,7 @@ const CreateCuttingDetailsForm = (props) => {
                         plannedLength: props.inward.process.length,
                         plannedNoOfPieces: props.inward.process.no,
                         plannedWeight: props.inward.process.weight.toFixed(2),
+                        slitAndCut:false,
                         plannedWidth: props.coilDetails?.fWidth ? props.coilDetails.fWidth : props.coilDetails.plannedWidth,
                         inwardId: props.coilDetails.inwardEntryId ? props.coilDetails.inwardEntryId : "",
                         instructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : ""});
@@ -448,6 +449,7 @@ const CreateCuttingDetailsForm = (props) => {
             plannedWidth: cutsWidth,
             no: cutsNo.toFixed(0),
             processId: 3,
+            slitAndCut:props.slitCut ? true :false,
             parentGroupId: props.inward.groupId.groupId,
             inwardId: props.coil.inwardEntryId
         };
