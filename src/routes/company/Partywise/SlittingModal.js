@@ -719,7 +719,11 @@ const columnsPlan=[
     const handleOk =(e,name) => {
         e.preventDefault();
         if(props.wip){
-            if (totalActualweight > tweight) {
+            const isAllWip = tableData.every(item => item.packetClassification.classificationId === 6);
+            if (isAllWip) {
+                message.error('Unable to finish Instructions. All packets are classified as WIP');
+            }
+             else if (totalActualweight > tweight) {
                 message.error('Actual Weight is greater than Total weight, Please modify actual weight!');
             } else {
                 const coil = {
