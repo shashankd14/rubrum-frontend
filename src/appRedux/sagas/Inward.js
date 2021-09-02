@@ -346,6 +346,7 @@ function* requestSaveCuttingInstruction(action) {
             status: 1,
             "createdBy": "1",
             "updatedBy": "1",
+            slitAndCut: cutDetails.slitAndCut,
             inwardId: cutDetails.inwardId ? cutDetails.inwardId : "",
             parentInstructionId: cutDetails.instructionId ? cutDetails.instructionId : "",
             groupId: cutDetails.parentGroupId ? cutDetails.parentGroupId : ""
@@ -406,6 +407,7 @@ function* requestSaveSlittingInstruction(action) {
             status: 1,
             "createdBy": "1",
             "updatedBy": "1",
+            slitAndCut: slitDetails.slitAndCut,
             inwardId: slitDetails.inwardId ? slitDetails.inwardId : '',
             parentInstructionId: slitDetails.instructionId ? slitDetails.instructionId : '',
         }
