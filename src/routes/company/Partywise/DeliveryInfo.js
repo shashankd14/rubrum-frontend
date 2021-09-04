@@ -12,7 +12,9 @@ const DeliveryInfo = (props) => {
   const [remarksList, setRemarksList] = useState([]);
   const [instructionList, setInstructionList]= useState([]);
   useEffect(()=>{
-    let insList = props.inward.inwardListForDelivery.map(i => i.instruction);
+    let insList = props.inward.inwardListForDelivery.map(i => {
+      return i.instruction || i;
+    });
     insList = insList.flat();
     setInstructionList(insList.map(item => item.instructionId));
   },[]);
