@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
-import {fetchDeliveryList, fetchPartyList, fetchDeliveryListById, postDeliveryConfirm} from "../../../appRedux/actions";
-import {Card, Table, Select, Input, Divider} from "antd";
+import {fetchDeliveryList, fetchPartyList, fetchDeliveryListById, postDeliveryConfirm,deleteByDeliveryId} from "../../../appRedux/actions";
+import {Card, Table, Select, Input, Divider, message} from "antd";
 import SearchBox from "../../../components/SearchBox";
 import ReconcileModal from "./ReconcileModal";
 import moment from 'moment';
@@ -81,13 +81,23 @@ function List(props) {
         title: 'Action',
         render: (text, record) => (
             <span>
-                <span className="gx-link" onClick={() => handleAdd(record)}>Add</span>
-                <Divider type="vertical" />
+                <i className="icon icon-add-circle" onClick={() => handleAdd(record)}/>
+                <i className="icon icon-trash gx-margin" onClick={() => handleDelete(record)}/>
                 <span className="gx-link"style={{display: "none"}} onClick={() => {setDeliveryRecord(record);setreconcileModal(true);}}>Reconcile</span>
             </span>
         ),
     },
     ]
+    useEffect(() => {
+        if(props.delivery.deleteSuccess) {
+            message.success('Successfully deleted the coil', 2).then(() => {
+                props.resetDeleteInward();
+            });
+        }
+    }, [props.delivery.deleteSuccess])
+    const handleDelete=(record)=>{
+        props.deleteByDeliveryId(Number(record.deliveryDetails.deliveryId))
+    }
     const handleAdd =(record)=>{
         let reqObj ={
            deliveryId: record.deliveryDetails.deliveryId,
@@ -180,5 +190,6 @@ export default connect(mapStateToProps, {
     fetchDeliveryList,
     fetchPartyList,
     fetchDeliveryListById,
-    postDeliveryConfirm
+    postDeliveryConfirm,
+    deleteByDeliveryId
 })(List);

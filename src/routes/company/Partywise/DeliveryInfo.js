@@ -25,7 +25,8 @@ const DeliveryInfo = (props) => {
     setRemarksList(newRemarksList)
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
     const reqObj = {
       vehicleNo,
       inwardListForDelivery: props.inward.inwardListForDelivery
@@ -33,7 +34,7 @@ const DeliveryInfo = (props) => {
     const pdfPayload ={
       instructionIds: instructionList
     }
-    props.generateDCPdf(pdfPayload);
+    // props.generateDCPdf(pdfPayload);
     props.postDeliveryConfirm(reqObj);
   };
 
