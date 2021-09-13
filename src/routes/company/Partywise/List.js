@@ -33,11 +33,6 @@ const List = (props) => {
     const [selectedCBKeys, setSelectedCBKeys] = React.useState([]);
     const [selectedRowData, setSelectedRowData] = React.useState([]);
 
-    useEffect(() => {
-        console.log('selected rows', selectedRowData, selectedCBKeys);
-        props.setInwardSelectedForDelivery(selectedRowData);
-    }, [selectedRowData]);
-
     const columns = [{
         title: 'Coil Number',
         dataIndex: 'coilNumber',
@@ -320,6 +315,9 @@ const getFilterData=(list)=>{
                             icon={() => <i className="icon icon-add" />} 
                             size="medium"
                             onClick={() => {
+                                console.log('selected rows', selectedRowData, selectedCBKeys);
+                                const newList = selectedRowData.filter(item => !item.childInstructions && item.instructionId)
+                                props.setInwardSelectedForDelivery(newList);
                                 props.history.push('/company/partywise-register/delivery')
                             }}
                             disabled={!!selectedCBKeys?.length < 1}
@@ -327,7 +325,6 @@ const getFilterData=(list)=>{
                             
                         <Button type="primary" icon={() => <i className="icon icon-add" />} size="medium"
                             onClick={() => {
-
                                 props.history.push('/company/inward/create')
                             }}
                         >Add Inward</Button>
