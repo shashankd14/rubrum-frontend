@@ -74,9 +74,11 @@ import {
 import { CUTTING_INSTRUCTION_PROCESS_ID, SLITTING_INSTRUCTION_PROCESS_ID, SLIT_CUT_INSTRUCTION_PROCESS_ID } from "../../constants";
 import { formItemLayout } from "../../routes/company/Partywise/CuttingModal";
 
+const baseUrl = process.env.REACT_APP_BASE_URL;
+
 function* fetchInwardList() {
     try {
-        const fetchInwardList = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/inwardEntry/list', {
+        const fetchInwardList = yield fetch(`${baseUrl}api/inwardEntry/list`, {
             method: 'GET',
         });
         if (fetchInwardList.status === 200) {
@@ -119,7 +121,7 @@ function* fetchInwardList() {
 
 function* fetchInwardInstructionWIPDetails(action) {
     try {
-        const fetchInwardList = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/instruction/listWIP', {
+        const fetchInwardList = yield fetch(`${baseUrl}api/instruction/listWIP`, {
             method: 'GET',
         });
         if (fetchInwardList.status === 200) {
@@ -133,7 +135,7 @@ function* fetchInwardInstructionWIPDetails(action) {
 }
 function* checkCoilDuplicate(action) {
     try {
-        const checkCoilDuplicate = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/inwardEntry/isCoilPresent?coilNumber=${action.coilNumber}`, {
+        const checkCoilDuplicate = yield fetch(`${baseUrl}api/inwardEntry/isCoilPresent?coilNumber=${action.coilNumber}`, {
             method: 'GET',
         });
         if (checkCoilDuplicate.status === 200) {
@@ -147,7 +149,7 @@ function* checkCoilDuplicate(action) {
 }
 function* checkCustomerBatchNumber(action) {
     try {
-        const checkCustomerBatchNumberResponse = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/inwardEntry/isCustomerBatchIdPresent?customerBatchId=${action.customerBatchId}`, {
+        const checkCustomerBatchNumberResponse = yield fetch(`${baseUrl}api/inwardEntry/isCustomerBatchIdPresent?customerBatchId=${action.customerBatchId}`, {
             method: 'GET'
         });
         if (checkCustomerBatchNumberResponse.status === 200) {
@@ -203,7 +205,7 @@ function* submitInward(action) {
         data.append('createdBy', 1);
         data.append('updatedBy', 1);
 
-        const newInwardEntry = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/inwardEntry/addNew', {
+        const newInwardEntry = yield fetch(`${baseUrl}api/inwardEntry/addNew`, {
             method: 'POST',
             body: data
         });
@@ -246,7 +248,7 @@ function* updateInward(action) {
         createdBy : "1",
         updatedBy : "2"
         }
-const newInwardEntry = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/inwardEntry/update', {
+const newInwardEntry = yield fetch(`${baseUrl}api/inwardEntry/update`, {
             
                 method: 'PUT',
                 headers: { "Content-Type": "application/json" },
@@ -264,7 +266,7 @@ const newInwardEntry = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-sout
 
 function* fetchInwardListByParty(action) {
     try {
-        const fetchPartyInwardList = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/inwardEntry/getByPartyId/${action.partyId}`, {
+        const fetchPartyInwardList = yield fetch(`${baseUrl}api/inwardEntry/getByPartyId/${action.partyId}`, {
             method: 'GET',
         });
         if (fetchPartyInwardList.status === 200) {
@@ -278,7 +280,7 @@ function* fetchInwardListByParty(action) {
 }
 function* fetchPartyListById(action) {
     try {
-        const fetchPartyInwardList = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/inwardEntry/getById/${action.inwardEntryId}`, {
+        const fetchPartyInwardList = yield fetch(`${baseUrl}api/inwardEntry/getById/${action.inwardEntryId}`, {
             method: 'GET',
         });
         if (fetchPartyInwardList.status === 200) {
@@ -293,7 +295,7 @@ function* fetchPartyListById(action) {
 
 function* fetchInwardPlanDetails(action) {
     try {
-        const fetchInwardPlan = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/inwardEntry/getByCoilId/${action.coilNumber}`, {
+        const fetchInwardPlan = yield fetch(`${baseUrl}api/inwardEntry/getByCoilId/${action.coilNumber}`, {
             method: 'GET',
         });
         if (fetchInwardPlan.status === 200) {
@@ -354,7 +356,7 @@ function* requestSaveCuttingInstruction(action) {
         requestBody.push(req);
     })
     try {
-        const fetchPartyInwardList = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/instruction/save`, {
+        const fetchPartyInwardList = yield fetch(`${baseUrl}api/instruction/save`, {
             method: 'POST',
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(requestBody)
@@ -379,7 +381,7 @@ function* instructionGroupsave(action) {
     //     requestBody.push(req);
     // })
     try {
-        const groupSaveList = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/instructionGroup/save', {
+        const groupSaveList = yield fetch(`${baseUrl}api/instructionGroup/save`, {
             method: 'POST',
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(action.groupDetails)
@@ -414,7 +416,7 @@ function* requestSaveSlittingInstruction(action) {
         requestBody.push(req);
     })
     try {
-        const fetchPartyInwardList = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/instruction/save`, {
+        const fetchPartyInwardList = yield fetch(`${baseUrl}api/instruction/save`, {
             method: 'POST',
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(requestBody)
@@ -460,7 +462,7 @@ function* requestUpdateInstruction(action) {
         instructionDtos: filteredData
     }
     try {
-        const updateInstruction = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/instruction/update', {
+        const updateInstruction = yield fetch(`${baseUrl}api/instruction/update`, {
             method: 'PUT',
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(req)
@@ -477,7 +479,7 @@ function* requestUpdateInstruction(action) {
 
 function* requestGradesByMaterialId(action) {
     try {
-        const fetchGradesByMaterialIdList = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/materialGrade/getByMaterialId/${action.materialId}`, {
+        const fetchGradesByMaterialIdList = yield fetch(`${baseUrl}api/materialGrade/getByMaterialId/${action.materialId}`, {
             method: 'GET',
         });
         if (fetchGradesByMaterialIdList.status === 200) {
@@ -513,7 +515,7 @@ function* postDeliveryConfirmRequest(payload) {
         req_obj =payload.payload
     }
     try {
-        const postConfirm = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/delivery/save`, {
+        const postConfirm = yield fetch(`${baseUrl}api/delivery/save`, {
             method: 'POST', headers: { "Content-Type": "application/json" }, body: JSON.stringify(req_obj)
         });
         if (postConfirm.status === 200 && requestType !== 'PUT') {
@@ -530,7 +532,7 @@ function* postDeliveryConfirmRequest(payload) {
 
 function* fetchInwardInstructionDetails(action) {
     try {
-        const fetchInwardInstruction = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/instruction/getById/${action.instructionId}`, {
+        const fetchInwardInstruction = yield fetch(`${baseUrl}api/instruction/getById/${action.instructionId}`, {
             method: 'GET',
         });
         if (fetchInwardInstruction.status === 200) {
@@ -544,7 +546,7 @@ function* fetchInwardInstructionDetails(action) {
 }
 function* saveUnprocessedDelivery(action) {
     try {
-        const fetchInwardInstruction = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/instruction/saveUnprocessedForDelivery/${action.inwardEntryId}`, {
+        const fetchInwardInstruction = yield fetch(`${baseUrl}api/instruction/saveUnprocessedForDelivery/${action.inwardEntryId}`, {
             method: 'POST',
         });
         if (fetchInwardInstruction.status === 200) {
@@ -560,7 +562,7 @@ function* deleteInwardEntryById(action) {
     try {
         let data = new FormData();
         action.inwardEntryId.map(id =>data.append('ids', id))
-        const fetchInwardInstruction = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/inwardEntry/deleteById', {
+        const fetchInwardInstruction = yield fetch(`${baseUrl}api/inwardEntry/deleteById`, {
             method: 'DELETE',
             body:data
         });
@@ -575,7 +577,7 @@ function* deleteInwardEntryById(action) {
 function* deleteInstructionById(action) {
     try {
         
-        const fetchInwardInstruction = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/instruction/deleteById/${action.id}`, {
+        const fetchInwardInstruction = yield fetch(`${baseUrl}api/instruction/deleteById/${action.id}`, {
             method: 'DELETE'
         });
         if (fetchInwardInstruction.status === 200) {
@@ -588,7 +590,7 @@ function* deleteInstructionById(action) {
 }
 function* pdfGenerateInward(action) {
     try {
-        const pdfGenerate = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/pdf/inward', {
+        const pdfGenerate = yield fetch(`${baseUrl}api/pdf/inward`, {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",
@@ -613,7 +615,7 @@ function* pdfGenerateInward(action) {
 }
 function* generateDCPdf(action) {
     try {
-        const pdfGenerate = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/pdf/delivery', {
+        const pdfGenerate = yield fetch(`${baseUrl}api/pdf/delivery`, {
             method: 'POST',
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(action.payload)

@@ -11,9 +11,11 @@ import {
     updateRatesError
 } from "../actions";
 
+const baseUrl = process.env.REACT_APP_BASE_URL;
+
 function* fetchRatesList() {
     try {
-        const fetchRatesList =  yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/rates/list', {
+        const fetchRatesList =  yield fetch(`${baseUrl}api/rates/list`, {
             method: 'GET',
         });
         if(fetchRatesList.status === 200) {
@@ -50,7 +52,7 @@ function* addRates(action) {
         data.append('packagingCharges', parseFloat(packagingCharges));
         data.append('laminationCharges', parseFloat(laminationCharges));
 
-        const addRates = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/rates/save', {
+        const addRates = yield fetch(`${baseUrl}api/rates/save`, {
             method: 'POST',
             body: data
             
@@ -92,7 +94,7 @@ function* updateRates(action) {
         data.append('packagingCharges', parseFloat(packagingCharges));
         data.append('laminationCharges', parseFloat(laminationCharges));
 
-        const updateRates = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/rates/update', {
+        const updateRates = yield fetch(`${baseUrl}api/rates/update`, {
             method: 'PUT',
             body: data
             
@@ -108,7 +110,7 @@ function* updateRates(action) {
 
 function* fetchRatesListById(action) {
     try {
-        const fetchRatesById =  yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/rates/getById/${action.rateId}`, {
+        const fetchRatesById =  yield fetch(`${baseUrl}api/rates/getById/${action.rateId}`, {
             method: 'GET',
         });
         if(fetchRatesById.status === 200) {
