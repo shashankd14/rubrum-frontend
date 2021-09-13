@@ -113,7 +113,9 @@ const INIT_STATE = {
     pdfSuccess: false,
     dcpdfError: false,
     dcpdfLoading:false,
-    dcpdfSuccess: false
+    dcpdfSuccess: false,
+    deliverySuccess:false,
+    deliveryError: false
 
 };
 
@@ -297,12 +299,7 @@ export default (state = INIT_STATE, action) => {
                 pdfError:false
             }
         }
-        case RESET_INSTRUCTION_FORM:
-            {return {
-                ...state,
-                process:{},
-            }
-        }
+        
         case REQUEST_SAVE_CUTTING_DETAILS: {
             return {
                 ...state,
@@ -436,21 +433,24 @@ export default (state = INIT_STATE, action) => {
             return {
                 ...state,
                 loading: true,
-                error: false
+                deliverySuccess: false,
+                deliveryError: false
             }
         }
-        case POST_DELIVERY_CONFIRM_REQUESTED: {
+        case POST_DELIVERY_CONFIRM_ERROR: {
             return{
                 ...state,
                 loading: false,
-                error: false,
+               deliverySuccess: false,
+                deliveryError: true
             }
         }
-        case POST_DELIVERY_CONFIRM_REQUESTED: {
+        case POST_DELIVERY_CONFIRM_SUCCESS: {
             return{
                 ...state,
                 loading: false,
-                error: true
+                deliverySuccess: true,
+                deliveryError: false
             }
         }
         case FETCH_INWARD_INSTRUCTION_WIP_DETAILS_REQUESTED: {

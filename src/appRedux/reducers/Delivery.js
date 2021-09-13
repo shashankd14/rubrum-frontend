@@ -5,6 +5,9 @@ import {
     FETCH_DELIVERY_LIST_REQUEST_BY_ID,
     FETCH_DELIVERY_LIST_SUCCESS_BY_ID,
     FETCH_DELIVERY_LIST_ERROR_BY_ID,
+    DELETE_DELIVERY_BY_ID,
+    DELETE_DELIVERY_BY_ID_SUCCESS,
+    DELETE_DELIVERY_BY_ID_ERROR
 } from "../../constants/ActionTypes";
 
 const INIT_STATE = {
@@ -12,7 +15,9 @@ const INIT_STATE = {
     loading: false,
     error: false,
     success:false,
-    deliveryById:[]
+    deliveryById:[],
+    deleteSuccess:false,
+    deleteError:false
 };
 
 export default (state = INIT_STATE, action) => {
@@ -59,6 +64,30 @@ export default (state = INIT_STATE, action) => {
                 loading: false,
                 deliveryById: [],
                 error: true
+            }
+        }
+        case DELETE_DELIVERY_BY_ID: {
+            return {
+                ...state,
+                loading: true,
+                deleteSuccess:false,
+                deleteError: false
+            }
+        }
+        case DELETE_DELIVERY_BY_ID_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                deleteSuccess:true,
+                deleteError: false
+            }
+        }
+        case DELETE_DELIVERY_BY_ID_ERROR: {
+            return {
+                ...state,
+                loading: false,
+                deleteSuccess:false,
+                deleteError: true
             }
         }
         default:
