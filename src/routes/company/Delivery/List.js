@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
-import {fetchDeliveryList, fetchPartyList, fetchDeliveryListById, postDeliveryConfirm,deleteByDeliveryId} from "../../../appRedux/actions";
-import {Card, Table, Select, Input, Divider, message} from "antd";
+import {fetchDeliveryList, fetchPartyList, fetchDeliveryListById, postDeliveryConfirm,deleteByDeliveryId, resetDeleteInward} from "../../../appRedux/actions";
+import {Card, Table, Select, Input, message} from "antd";
 import SearchBox from "../../../components/SearchBox";
 import ReconcileModal from "./ReconcileModal";
 import moment from 'moment';
@@ -91,7 +91,9 @@ function List(props) {
     useEffect(() => {
         if(props.delivery.deleteSuccess) {
             message.success('Successfully deleted the coil', 2).then(() => {
+                props.fetchDeliveryList();
                 props.resetDeleteInward();
+                
             });
         }
     }, [props.delivery.deleteSuccess])
@@ -191,5 +193,6 @@ export default connect(mapStateToProps, {
     fetchPartyList,
     fetchDeliveryListById,
     postDeliveryConfirm,
-    deleteByDeliveryId
+    deleteByDeliveryId,
+    resetDeleteInward
 })(List);

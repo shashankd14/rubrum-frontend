@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { Card, Table } from "antd";
+import { Card } from "antd";
 import { Popover } from "antd";
 import { InfoCircleOutlined, CloseSquareTwoTone } from "@ant-design/icons";
 import { postDeliveryConfirm, generateDCPdf } from "../../../appRedux/actions";
@@ -18,6 +18,15 @@ const DeliveryInfo = (props) => {
     insList = insList.flat();
     setInstructionList(insList.map(item => item.instructionId));
   },[]);
+  useEffect(()=>{
+    if(props.inward.deliverySuccess){
+      const pdfPayload ={
+        instructionIds: instructionList
+      }
+      props.generateDCPdf(pdfPayload);
+    }
+
+  },[props.inward.deliverySuccess])
   const handleRemark = (elem, id) => {
     let index = remarksList.findIndex(elem => elem.id === id)
     let newRemarksList = remarksList
@@ -31,11 +40,9 @@ const DeliveryInfo = (props) => {
       vehicleNo,
       inwardListForDelivery: props.inward.inwardListForDelivery
     }
-    const pdfPayload ={
-      instructionIds: instructionList
-    }
-    // props.generateDCPdf(pdfPayload);
+   
     props.postDeliveryConfirm(reqObj);
+   
   };
 
  
@@ -55,9 +62,8 @@ const DeliveryInfo = (props) => {
 
             >
               <div style={{ padding: "10px" }}>
-                <img
+                <image
                   src={require("assets/images/inward/cutting_icon.svg")}
-                  alt="main coil image"
                   title="main coil image"
                   style={{ marginTop: "10px" }}
                 />
