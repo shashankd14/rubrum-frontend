@@ -306,6 +306,7 @@ export default (state = INIT_STATE, action) => {
                 instructionSaveCuttingLoading: true,
                 instructionSaveCuttingSuccess: false,
                 instructionSaveError: false,
+                loading: true
             }
         }
         case SAVE_CUTTING_DETAILS_SUCCESS: {
@@ -315,6 +316,7 @@ export default (state = INIT_STATE, action) => {
                 instructionSaveCuttingLoading: false,
                 instructionSaveCuttingSuccess: true,
                 instructionSaveError: false,
+                loading: false
             }
         }
         case SAVE_CUTTING_DETAILS_ERROR: {
@@ -323,6 +325,7 @@ export default (state = INIT_STATE, action) => {
                 instructionSaveCuttingLoading: false,
                 instructionSaveCuttingSuccess: false,
                 instructionSaveError: true,
+                loading: false
             }
         }
         case INSTRUCTION_GROUP_SAVE: {
@@ -350,6 +353,7 @@ export default (state = INIT_STATE, action) => {
                 instructionSaveSlittingLoading: true,
                 instructionSaveSlittingSuccess: false,
                 instructionSaveError: false,
+                loading: true
             }
         }
         case SAVE_SLITTING_DETAILS_SUCCESS: {
@@ -359,6 +363,7 @@ export default (state = INIT_STATE, action) => {
                 instructionSaveSlittingLoading: false,
                 instructionSaveSlittingSuccess: true,
                 instructionSaveError: false,
+                loading: false
             }
         }
         case SAVE_SLITTING_DETAILS_ERROR: {
@@ -367,6 +372,7 @@ export default (state = INIT_STATE, action) => {
                 instructionSaveSlittingLoading: false,
                 instructionSaveSlittingSuccess: false,
                 instructionSaveError: true,
+                loading: false
             }
         }
         case REQUEST_UPDATE_INSTRUCTION_DETAILS: {
@@ -379,7 +385,7 @@ export default (state = INIT_STATE, action) => {
         case REQUEST_UPDATE_INSTRUCTION_DETAILS_SUCCESS: {
             return {
                 ...state,
-                loading: true,
+                loading: false,
                 error: false
             }
         }
@@ -387,7 +393,7 @@ export default (state = INIT_STATE, action) => {
             return {
                 ...state,
                 loading: true,
-                error: false
+                error: true
             }
         }
         case FETCH_MATERIAL_GRADE_LIST_SUCCESS:{
