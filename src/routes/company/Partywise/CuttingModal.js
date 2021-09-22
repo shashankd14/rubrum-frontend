@@ -536,8 +536,8 @@ const CreateCuttingDetailsForm = (props) => {
                 <Button key="back" onClick={handleCancel}>
                   Cancel
                 </Button>,
-                <Button key="submit" type="primary" loading={loading} onClick={handleOk}>
-                 Save and Generate
+                <Button key="submit" type="primary" loading={loading} disabled={props.inward.loading} onClick={handleOk}>
+                 { props.inward.loading ? 'Loading...' : 'Save and Generate' }
                 </Button>
               ]:[<Button key="back" onClick={handleCancel}>
               Cancel
@@ -615,7 +615,7 @@ const CreateCuttingDetailsForm = (props) => {
           <p>Inward specs: {props.coil.fThickness}X{props.coil.fWidth}X{props.coil.fLength}/{props.coil.fQuantity}</p>
               <p>Available Length(mm): {lengthValue}</p>
               <p>Available Weight(kg) : {WeightValue}</p>
-              <p>Available Width(mm) : {width}</p>
+              <p>Available Width(mm) : {widthValue}</p>
           </Col>
       </Row>}
   

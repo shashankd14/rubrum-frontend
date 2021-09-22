@@ -327,7 +327,7 @@ const SlittingWidths = (props) => {
         <>
             <Form {...formItemLayoutSlitting}>
                 {!props.wip && <><label>Available length : {len}mm</label>
-                <div><label>Available Width : {width}mm</label></div> 
+                <div><label>Available Width : {widthValue1}mm</label></div> 
                 <div><label>Available Weight : {weightValue}kg</label></div> 
                 </>}
                 {!props.wip && 
@@ -412,7 +412,7 @@ const SlittingWidths = (props) => {
                                         rules: [{ required: true, message: 'Please enter nos' },
                                             {pattern: "^[0-9]*$", message: 'Number of slits should be a number'},],
                                     })(
-                                        <Input id="nos" disabled={props.wip ? true : false} onBlur={handleBlur} {...getFieldProps('nos')}/>
+                                        <Input id="nos" disabled={props.wip ? true : false} onBlur={handleBlur}/>
                                     )}
                                 </Form.Item>
                             </Col>
@@ -730,7 +730,7 @@ const columnsPlan=[
                     number: props.coil.coilNumber,
                     instruction: tableData
                 };
-                props.updateInstruction(coil); 
+                props.updateInstruction(coil);
                 props.setShowSlittingModal(false)
             }
         }
@@ -785,8 +785,8 @@ const columnsPlan=[
                 <Button key="back" onClick={handleCancel}>
                   Cancel
                 </Button>,
-                <Button key="submit" type="primary" loading={loading} onClick={(e)=>{handleOk(e,'SlitCut')}}>
-                  Send for Cut
+                <Button key="submit" type="primary" disabled={props.inward.loading} loading={loading} onClick={(e)=>{handleOk(e,'SlitCut')}}>
+                  { props.inward.loading ? 'Loading...' : 'Send for Cut' }
                 </Button>
               ]:cuts.length>0 ?props.wip?[
                 <Button key="back" onClick={handleCancel}>
@@ -798,8 +798,8 @@ const columnsPlan=[
                 <Button key="back" onClick={handleCancel}>
                   Cancel
                 </Button>,
-                <Button key="submit" type="primary" loading={loading} onClick={(e)=>{handleOk(e,'Slitting')}}>
-                 Save and Generate
+                <Button key="submit" type="primary" loading={loading} disabled={props.inward.loading} onClick={(e)=>{handleOk(e,'Slitting')}}>
+                 { props.inward.loading ? 'Loading...' : 'Save and Generate' }
                 </Button>]: [<Button key="back" onClick={handleCancel}>
                   Cancel
                 </Button>,
