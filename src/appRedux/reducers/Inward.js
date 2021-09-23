@@ -210,7 +210,8 @@ export default (state = INIT_STATE, action) => {
             return {
                 ...state,
                 inwardSubmitLoading: false,
-                inwardSubmitError: true
+                inwardSubmitError: true,
+                inwardSubmitSuccess: false
             }
         }
         case FETCH_INWARD_LIST_BY_PARTY_REQUEST: {

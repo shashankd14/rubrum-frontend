@@ -100,7 +100,7 @@ const InwardEntrySummary = (props) => {
                     <Button style={{ marginLeft: 8 }} onClick={() => props.updateStep(3)}>
                         <Icon type="left"/>Back
                     </Button>
-                    <Button type="primary" htmlType="submit" onClick={(e) => {
+                    <Button type="primary" htmlType="submit" disabled={props.inwardSubmitSuccess} onClick={(e) => {
                         e.preventDefault();
                         props.params!== ""? props.updateInward(props.inward):props.submitInwardEntry(props.inward)
                     }}>
