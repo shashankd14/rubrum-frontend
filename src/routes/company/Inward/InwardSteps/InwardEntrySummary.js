@@ -11,6 +11,7 @@ import {APPLICATION_DATE_FORMAT} from '../../../../constants/index';
 const InwardEntrySummary = (props) => {
     const [generate, setGenerate]= useState(true);
     const [payload, setPayload]= useState({});
+    const [isSubmit, setIsSubmit] = useState(false);
     useEffect(() => {
         if(props.inwardUpdateSuccess) {
             message.success('Inward entry has been updated successfully', 2);
@@ -25,7 +26,7 @@ const InwardEntrySummary = (props) => {
             setGenerate(false)
             setPayload({
                 inwardId: props.inwardObject.submitInward
-            })
+            });
         }
     }, [props.inwardSubmitSuccess]);
     useEffect(() => {
