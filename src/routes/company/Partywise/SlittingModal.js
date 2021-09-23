@@ -118,6 +118,11 @@ const SlittingWidths = (props) => {
         }
         
     }, [props.coilDetails, props.cuts]);
+
+    useEffect(()=> {
+        if (widthValue1 > 0)
+        setwidth(props.plannedWidth(props.coilDetails));
+    }, [widthValue1]);
     
     useEffect(()=>{
         if (props.wip) {
@@ -283,14 +288,13 @@ const SlittingWidths = (props) => {
                 if(lengthValue1>= (availLength+cutLength)){
                     setlen(lengthValue1-(availLength+cutLength))
                     props.lengthValue(lengthValue1-(availLength+cutLength))
-                    setwidth(widthValue1- (widthEntry));
-                    props.widthValue(widthValue1- (widthEntry))
+                    setwidth(width- (widthEntry));
+                    props.widthValue(width- (widthEntry))
                     
                 }
-                
-                if(widthValue1 >= (widthEntry+cutWidth)){
-                    setwidth(widthValue1- (widthEntry+cutWidth));
-                    props.widthValue(widthValue1- (widthEntry+cutWidth))
+                if(width >= (widthEntry+cutWidth)){
+                    setwidth(width- (widthEntry+cutWidth));
+                    props.widthValue(width- (widthEntry+cutWidth))
                 }
             }
       })

@@ -58,7 +58,7 @@ const Plan = (props) => {
        
             if (ins.instruction && ins.instruction?.length> 0){
                 let instruction = ins.instruction.flat();
-                width = instruction.map(i => i.plannedWidth)
+                width = instruction.map(i => i.process.processId !== 1 ? i.plannedWidth : 0)
             childWidth = instruction.map(i => {
                     if (i.childInstructions && i.childInstructions?.length> 0){
                         return i.plannedWidth;
@@ -72,12 +72,11 @@ const Plan = (props) => {
                  width = width.reduce((total, num) => total + num)
              }
             }
-        if (actualWidth > (childWidth+width)){
+        if (actualWidth >= (childWidth+width)){
             width = actualWidth - (width+childWidth);
         } else {
             width = 0
         }
-        
         return width;
     }
     const getPlannedWeight = (ins) => {
