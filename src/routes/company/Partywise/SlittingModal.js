@@ -118,11 +118,6 @@ const SlittingWidths = (props) => {
         }
         
     }, [props.coilDetails, props.cuts]);
-
-    useEffect(()=> {
-        if (widthValue1 > 0)
-        setwidth(props.plannedWidth(props.coilDetails));
-    }, [widthValue1]);
     
     useEffect(()=>{
         if (props.wip) {
@@ -227,6 +222,8 @@ const SlittingWidths = (props) => {
                 }else if(totalWeight > remainWeight) {
                    message.error('Weight greater than available weight', 2);
                    
+                }else if(totalWidth !== widthValue) {
+                    message.error('Sum of slits width is not same as width of coil.', 2);
                 }else if(oldLength >= lengthValue){
                     if((totalWidth+cutWidth) > widthValue) {
                         message.error('Sum of slits width is greater than width of coil.', 2);
@@ -331,7 +328,7 @@ const SlittingWidths = (props) => {
         <>
             <Form {...formItemLayoutSlitting}>
                 {!props.wip && <><label>Available length : {len}mm</label>
-                <div><label>Available Width : {widthValue1}mm</label></div> 
+                <div><label>Available Width : {weightValue > 0 ? props.coilDetails.fWidth : 0}mm</label></div> 
                 <div><label>Available Weight : {weightValue}kg</label></div> 
                 </>}
                 {!props.wip && 
