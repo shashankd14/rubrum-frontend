@@ -545,7 +545,7 @@ const columnsPlan=[
     {
         title: 'Serial No',
         key: 'index',
-        render:(text, record, index) => (index + 1 )
+        render:(text, record, index) => ((page-1)*10+index + 1 )
         
     },
     {
@@ -882,7 +882,11 @@ const columnsPlan=[
                             </Form>
                         </Col>
                         <Col lg={12} md={12} sm={24} xs={24}>
-                            <Table className="gx-table-responsive" columns={props.wip?columns: columnsPlan} dataSource={props.wip?tableData:reset ?cuts: cutArray}/>
+                            <Table className="gx-table-responsive" columns={props.wip?columns: columnsPlan} dataSource={props.wip?tableData:reset ?cuts: cutArray} pagination={{
+                                    onChange(current) {
+                                      setPage(current);
+                                    }
+                                  }}/>
                             <Form.Item label="Total weight(kg)">
                                 {getFieldDecorator('tweight', {
                                     rules: [{ required: false}],

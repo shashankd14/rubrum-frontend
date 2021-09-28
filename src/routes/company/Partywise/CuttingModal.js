@@ -128,7 +128,7 @@ const CreateCuttingDetailsForm = (props) => {
             dataIndex:'instructionId',
             key: 'instructionId',
            render : (text,record,index) => {
-                return (index+1);
+                return ((page-1)*10+index+1);
            }
         },
         
