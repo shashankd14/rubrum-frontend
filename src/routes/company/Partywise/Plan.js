@@ -269,8 +269,8 @@ const Plan = (props) => {
                             {group?.length > 0 && group.map((instruction)=> (instruction.groupId == null? <Card bordered={false} className={`gx-entry cardLevel2MainDiv`}>
                                 {group.map((instruction) => (<>{instruction.groupId == null ?
                                     <div style={{ display: "flex" }}>
-                                        <Col lg={10} md={10} sm={24} xs={24} offset={1} className={`gx-align-self-center cardLevel2Div ${instruction.parentGroupId == null ? group[0].process.processId === 1 ? 'gx-cutting-group' : 'gx-slitting-group':'gx-slit-cut-group'}`}>
-                                            <Card key={`${props.inward.plan.coilNumber}${instruction.instructionId}`} className={`cardLevel2InsideDiv ${instruction.parentGroupId == null ?instruction.process.processId === 1 ? 'gx-cutting-single' : 'gx-slitting-single': 'gx-slit-cut-single'}`} size="small">
+                                        <Col lg={10} md={10} sm={24} xs={24} offset={1} className={`gx-align-self-center cardLevel2Div ${instruction.parentGroupId == null ? group[0].process.processId === 1 ? 'gx-cutting-group' : (instruction.process.processId === 7 ? 'gx-unprocessed-group' : 'gx-slitting-group') : 'gx-slit-cut-group'}`}>
+                                            <Card key={`${props.inward.plan.coilNumber}${instruction.instructionId}`} className={`cardLevel2InsideDiv ${instruction.parentGroupId == null ?instruction.process.processId === 1 ? 'gx-cutting-single' : (instruction.process.processId === 7 ? 'gx-unprocessed-single' : 'gx-slitting-single') : 'gx-slit-cut-single'}`} size="small">
                                                 <img style={{ position: "absolute", right: "10.35px" }}  src={require("assets/images/inward/info_icon.svg")} alt="main coil image" title="main coil image" />
                                                 <div className="gx-coil-image-bg gx-flex-row gx-align-items-center gx-justify-content-center">
                                                     {instruction.parentGroupId == null ? instruction.process.processId === 1 ?
@@ -279,7 +279,7 @@ const Plan = (props) => {
                                                     :<img src={require("assets/images/inward/cutting_icon.svg")} alt="main coil image" title="main coil image" />}
                                                 </div>
                                                 <div style={{ marginLeft: "8px" }}>
-                                                    {instruction.parentGroupId == null ? instruction.process.processId === 1 ? 'Cutting' : 'Slitting': 'Slit & Cut'}
+                                                    {instruction.parentGroupId == null ? instruction.process.processId === 1 ? 'Cutting' : (instruction.process.processId === 7 ? 'Unprocessed' : 'Slitting') : 'Slit & Cut'}
                                                     <div className="gx-flex-row">
                                                         <p className="gx-coil-details-label">Available specs(TXWXL/W) :</p>
                                                         <span className="gx-coil-details-label">{props.inward.plan.fThickness}X{getPlannedWidth(instruction)}X{instruction?.deliveryDetails !== null &&instruction?.deliveryDetails?.deliveryId !==null? 0 :getPlannedLength(instruction)}/{instruction?.deliveryDetails !== null &&instruction?.deliveryDetails?.deliveryId !==null?0:getPlannedWeight(instruction)}</span>
@@ -323,8 +323,8 @@ const Plan = (props) => {
                                         {instruction.childInstructions?.length > 0 ?
                                             <Col lg={13} md={13} sm={24} xs={24} offset={1} className="gx-align-self-center gx-branch-lvl2">
                                                 <>
-                                                    <Col lg={24} md={24} sm={24} xs={24} offset={1} className={`gx-align-self-center cardLevel2Div ${instruction.childInstructions[0].process.processId === 1 ? 'gx-cutting-group' : 'gx-slitting-group'}`}>
-                                                        <Card key={`${props.inward.plan.coilNumber}${instruction.instructionId}`} className={`cardLevel2InsideDiv ${instruction.childInstructions[0].process.processId === 1 ? 'gx-cutting-single' : 'gx-slitting-single'}`} size="small">
+                                                    <Col lg={24} md={24} sm={24} xs={24} offset={1} className={`gx-align-self-center cardLevel2Div ${instruction.childInstructions[0].process.processId === 1 ? 'gx-cutting-group' : (instruction.process.processId === 7 ? 'gx-unprocessed-group' : 'gx-slitting-group')}`}>
+                                                        <Card key={`${props.inward.plan.coilNumber}${instruction.instructionId}`} className={`cardLevel2InsideDiv ${instruction.childInstructions[0].process.processId === 1 ? 'gx-cutting-single' : (instruction.process.processId === 7 ? 'gx-unprocessed-single' : 'gx-slitting-single')}`} size="small">
                                                             <img style={{ position: "absolute", right: "10.35px" }} src={require("assets/images/inward/info_icon.svg")} alt="main coil image" title="main coil image" />
                                                             <div className="gx-coil-image-bg gx-flex-row gx-align-items-center gx-justify-content-center">
                                                                 {instruction.childInstructions[0].process.processId === 1 ?

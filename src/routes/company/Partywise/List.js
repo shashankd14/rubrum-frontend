@@ -321,7 +321,7 @@ const getFilterData=(list)=>{
                                 props.history.push('/company/partywise-register/delivery')
                             }}
                             disabled={!!selectedCBKeys?.length < 1}
-                        >Delivery</Button>
+                        >Deliver</Button>
                             
                         <Button type="primary" icon={() => <i className="icon icon-add" />} size="medium"
                             onClick={() => {
