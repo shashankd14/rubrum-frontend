@@ -295,7 +295,7 @@ const Plan = (props) => {
                                                                 style={{ width: 100 }}
                                                                 placeholder="Select Instruction"
                                                                 optionFilterProp="children"
-                                                                disabled={!(instruction && instruction.childInstructions && instruction?.childInstructions.length >= 1 && instruction.status.statusId === 2) }
+                                                                disabled={!(instruction && instruction.childInstructions && instruction?.childInstructions.length >= 1) }
                                                                 onChange={(value)=>handleSelectChange(value, setChildCoil(true), instruction)}
                                                                 filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                                                              >
