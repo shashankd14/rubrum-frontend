@@ -228,13 +228,13 @@ const SlittingWidths = (props) => {
                     if((totalWidth+cutWidth) > widthValue) {
                         message.error('Sum of slits width is greater than width of coil.', 2);
                 }else{
-                    setWeightValue(weightValue1-(totalWeight-props.tweight));
+                    setWeightValue(remainWeight-(totalWeight));
                         props.setSlits(slits);
                         props.setslitpayload(slits);
                         props.form.resetFields();
                 }}
                 else{
-                    setWeightValue(weightValue1-(totalWeight-props.tweight));
+                    setWeightValue(remainWeight-(totalWeight));
                         props.setSlits(slits);
                         props.setslitpayload(slits);
                         props.form.resetFields();
@@ -472,7 +472,7 @@ const CreateSlittingDetailsForm = (props) => {
     let cutArray=[];
     const [reset, setreset] = useState(true);
     // const [deletedLength, setDeletedLength]= useState(0);
-    
+
     
 const columns = [
     {
@@ -914,7 +914,7 @@ const columnsPlan=[
                             <p>Inward specs: {props.coil.fThickness}X{props.coil.fWidth}X{props.coil.fLength}/{props.coil.fQuantity}</p>
                             <p>Available Length(mm): {lengthValue}</p>
                             <p>Available Weight(kg) : {props.coil.fpresent}</p>
-                            <p>Available Width(mm) : {widthValue}</p>
+                            <p>Available Width(mm) : {props.coil.fpresent > 0 ? props.coilDetails.fWidth : 0}</p>
                         </Col>
                     </Row>
                 </TabPane>}
