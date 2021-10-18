@@ -40,7 +40,7 @@ let uuid = 0;
 const SlittingWidths = (props) => {
     const {getFieldDecorator, getFieldValue, getFieldProps} = props.form;
     getFieldDecorator('keys', {initialValue: [{width:0, no:0, weight:0}]});
-    const [value, setValue] = useState(0);
+    const [value, setValue] = useState(props.value);
     const [targetWeight, settargetWeight]= useState(0);
     const [availLength, setavailLength]= useState(0);
     
@@ -350,7 +350,7 @@ const SlittingWidths = (props) => {
                     {getFieldDecorator('noParts', {
                         rules: [{ required: (value=== 2 || value===1) && equalParts !== 0? false : true, message: 'Please enter no.of Parts' }],
                     })(
-                        <Input id="noParts" onBlur={handleBlurEvent} disabled ={props.cuts.length>0 && weightValue === 0 && value ===2? true: false}/>
+                        <Input id="noParts" onBlur={handleBlurEvent} disabled ={(value == 0 || value == 4)? false: true}/>
                     )}
                 </Form.Item>
                 <Form.Item>
@@ -677,7 +677,7 @@ const columnsPlan=[
     useEffect(()=>{
         if(props.inward.pdfSuccess && !props.wip) {
             message.success('Slitting instruction saved & pdf generated successfully', 2).then(() => {
-                props.setShowSlittingModal(false);
+               props.setShowSlittingModal(false);
                 props.resetInstruction();
                 
             });
@@ -735,6 +735,7 @@ const columnsPlan=[
                 props.setShowSlittingModal(false)
             }
         }
+        setValue(0);
         if(validate === false){
             setDeletedSelected(false);
             if(name === 'Slitting'){
@@ -747,10 +748,12 @@ const columnsPlan=[
                 
             } else {
                 if(slitPayload.length > 0){
+                    setValue(0);
                     props.saveSlittingInstruction(slitPayload);
                     props.setShowCuttingModal(true);
 
                 }else{
+                    setValue(0);
                     props.setShowSlittingModal(false);
                 }
                 
