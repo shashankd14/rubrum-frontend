@@ -53,6 +53,7 @@ const SlittingWidths = (props) => {
     const [twidth, settwidth]= useState(0);
     const [oldLength, setOldLength]= useState(0);
     const [equalParts, setEqualParts]= useState(0);
+    const [slitInstructionList, setSlitInstructionList] = useState([])
     const keys = getFieldValue('keys');
     const callBackValue =(n)=>{
         let cuts = 0;
@@ -178,7 +179,7 @@ const SlittingWidths = (props) => {
     // - function to add the instruction
     const addNewSize = (e) => {
         let wValue;
-        let slitInstructionPayload =[];
+        let slitInstructionPayload =slitInstructionList.length>0 ? [...slitInstructionList]: [];
         props.form.validateFields((err, values) => {
             if (!err) {
                 props.validate(false);
@@ -248,7 +249,8 @@ const SlittingWidths = (props) => {
                         props.setSlits(slits);
                         props.setslitpayload(slits);
                         props.setSlitInstruction(slitInstructionPayload);
-                        setSlitEqualInstruction(slitInstructionPayload)
+                        setSlitInstructionList(slitInstructionPayload);
+                        setSlitEqualInstruction(slitInstructionPayload);
                         props.form.resetFields();
                 }}
                 else{
@@ -256,7 +258,8 @@ const SlittingWidths = (props) => {
                         props.setSlits(slits);
                         props.setslitpayload(slits);
                         props.setSlitInstruction(slitInstructionPayload);
-                        setSlitEqualInstruction(slitInstructionPayload)
+                        setSlitInstructionList(slitInstructionPayload);
+                        setSlitEqualInstruction(slitInstructionPayload);
                         props.form.resetFields();
                 }
             }
