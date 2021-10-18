@@ -381,7 +381,7 @@ const SlittingWidths = (props) => {
                 {getFieldDecorator('radioParts', {
                         rules: [{ required: (value === 2 ||  value === 1) && equalParts !== 0? false : true, message: 'Please select Parts' }],
                     })(
-                        <Radio.Group id="radioParts" onChange={radioChange} disabled={props.cuts.length>0 && weightValue === 0  ? true: false} value={value}>
+                        <Radio.Group id="radioParts" onChange={radioChange} disabled={(value == 0 || value == 4) && weightValue !== 0? false: true} value={value}>
                         <Radio value={1}>Equal</Radio>
                         <Radio value={2}>Unequal</Radio>
                     </Radio.Group>
@@ -723,6 +723,7 @@ const columnsPlan=[
             }
         }else{
             if(props.inward.instructionSaveSlittingSuccess && !props.wip && !props.slitCut) {
+                // props.inward.saveSlit
                 let payload={
                     inwardId: props.coilDetails.inwardEntryId,
                     processId: 2
