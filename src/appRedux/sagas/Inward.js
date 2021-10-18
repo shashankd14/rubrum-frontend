@@ -396,12 +396,12 @@ function* instructionGroupsave(action) {
 
 function* requestSaveSlittingInstruction(action) {
     try {
-        const fetchPartyInwardList = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/instruction/save/slit', {
+        const fetchPartyInwardList = yield fetch( 'http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/instruction/save/slit', {
             method: 'POST',
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(action.slittingDetails)
         });
-        if (fetchPartyInwardList.status === 200) {
+        if (fetchPartyInwardList.status === 201) {
             const fetchPartyListObj = yield fetchPartyInwardList.json()
             yield put(saveSlittingInstructionSuccess(fetchPartyListObj));
         } else

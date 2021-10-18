@@ -43,7 +43,7 @@ const SlittingWidths = (props) => {
     const [value, setValue] = useState(props.value);
     const [targetWeight, settargetWeight]= useState(0);
     const [availLength, setavailLength]= useState(0);
-    
+    const [slitEqualInstruction, setSlitEqualInstruction]= useState([])
     const lengthValue1 = props.coilDetails.instruction && props.coilDetails.instruction.length > 0 ? props.plannedLength(props.coilDetails) : props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails)
     const widthValue1 = props.coilDetails.instruction && props.coilDetails.instruction.length > 0  ? props.plannedWidth(props.coilDetails):  props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.plannedWidth(props.coilDetails);
     const weightValue1 = props.coilDetails.fpresent >=0 ? props.coilDetails.fpresent  : props.plannedWeight(props.coilDetails);
@@ -173,6 +173,7 @@ const SlittingWidths = (props) => {
     const applyData=() =>{
         let cutsValue = applySame();
         props.setSlits(cutsValue);
+        // props.setSlitInstruction(slitEqualInstruction);
         if (!props.wip) { props.setslitpayload(cutsValue) }
         setEqualParts(0);
     }
@@ -227,11 +228,11 @@ const SlittingWidths = (props) => {
                     settwidth(totalWidth); 
                  }
                  let instructionPayload ={
-                     "instructionPlanDto": instructionPlanDto,
+                     "partDetailsRequest": instructionPlanDto,
                      "instructionRequestDTOs": slits
                  }
                  slitInstructionPayload.push(instructionPayload)
-                
+                 
                  let remainWeight = props.tweight + props.coilDetails.fpresent;
                  if(Number(availLength) +cutLength > lengthValue) {
                     message.error('Length greater than available length', 2);
@@ -248,6 +249,7 @@ const SlittingWidths = (props) => {
                         props.setSlits(slits);
                         props.setslitpayload(slits);
                         props.setSlitInstruction(slitInstructionPayload);
+                        setSlitEqualInstruction(slitInstructionPayload)
                         props.form.resetFields();
                 }}
                 else{
@@ -255,6 +257,7 @@ const SlittingWidths = (props) => {
                         props.setSlits(slits);
                         props.setslitpayload(slits);
                         props.setSlitInstruction(slitInstructionPayload);
+                        setSlitEqualInstruction(slitInstructionPayload)
                         props.form.resetFields();
                 }
             }
@@ -755,6 +758,7 @@ const columnsPlan=[
             }
         }
         setValue(0);
+    //   if(slitInstruction.length === equalParts)
         if(validate === false){
             setDeletedSelected(false);
             if(name === 'Slitting'){
