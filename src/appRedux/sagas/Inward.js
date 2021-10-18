@@ -395,29 +395,11 @@ function* instructionGroupsave(action) {
 }
 
 function* requestSaveSlittingInstruction(action) {
-    const requestBody = [];
-    action.slittingDetails.map((slitDetails) => {
-        const req = {
-            processId: slitDetails.processId?slitDetails.processId:SLITTING_INSTRUCTION_PROCESS_ID,
-            instructionDate: moment().format('YYYY-MM-DD HH:mm:ss'),
-            plannedLength: slitDetails.plannedLength,
-            plannedWidth: slitDetails.plannedWidth,
-            plannedWeight: slitDetails.plannedWeight,
-            plannedNoOfPieces: slitDetails.plannedNoOfPieces,
-            status: 1,
-            "createdBy": "1",
-            "updatedBy": "1",
-            slitAndCut: slitDetails.slitAndCut,
-            inwardId: slitDetails.inwardId ? slitDetails.inwardId : '',
-            parentInstructionId: slitDetails.instructionId ? slitDetails.instructionId : '',
-        }
-        requestBody.push(req);
-    })
     try {
-        const fetchPartyInwardList = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/instruction/save`, {
+        const fetchPartyInwardList = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/instruction/save/slit', {
             method: 'POST',
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(requestBody)
+            body: JSON.stringify(action.slittingDetails)
         });
         if (fetchPartyInwardList.status === 200) {
             const fetchPartyListObj = yield fetchPartyInwardList.json()
