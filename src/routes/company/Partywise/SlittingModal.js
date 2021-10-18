@@ -53,7 +53,6 @@ const SlittingWidths = (props) => {
     const [twidth, settwidth]= useState(0);
     const [oldLength, setOldLength]= useState(0);
     const [equalParts, setEqualParts]= useState(0);
-    
     const keys = getFieldValue('keys');
     const callBackValue =(n)=>{
         let cuts = 0;
@@ -163,18 +162,27 @@ const SlittingWidths = (props) => {
             });
         }
     }
-    const applySame=()=>{
+    // const applySame=()=>{
+    //     const slits =[];
+    //     let equalInstructions= []
+    //     for(let i=0; i<equalParts-1; i++){
+    //         slits.push(...props.cuts)
+    //         equalInstructions.push(slitEqualInstruction);
+    //     }
+    //     setSlitEqualInstruction(equalInstructions)
+    //     return slits;
+    // }
+    const applyData=() =>{
         const slits =[];
+        let equalInstructions= []
         for(let i=0; i<equalParts-1; i++){
             slits.push(...props.cuts)
+            equalInstructions.push(...slitEqualInstruction);
         }
-        return slits;
-    }
-    const applyData=() =>{
-        let cutsValue = applySame();
-        props.setSlits(cutsValue);
-        // props.setSlitInstruction(slitEqualInstruction);
-        if (!props.wip) { props.setslitpayload(cutsValue) }
+        // let cutsValue = applySame();
+        props.setSlits(slits);
+        props.setSlitInstruction(equalInstructions);
+        if (!props.wip) { props.setslitpayload(slits) }
         setEqualParts(0);
     }
     const addNewSize = (e) => {
