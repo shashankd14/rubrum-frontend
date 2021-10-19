@@ -569,15 +569,27 @@ function* deleteInstructionById(action) {
     }
 }
 function* pdfGenerateInward(action) {
+    let partDetailsId = action.payload.partId;
+    let pdfGenerate
     try {
-        const pdfGenerate = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/pdf/inward', {
-            method: 'POST',
-            headers: {
-                "Content-Type": "application/json",
+    if(action.payload.type === 'slit'){
+         pdfGenerate = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/pdf/slit/${partDetailsId}`, {
+                method: 'GET',
                
-              },
-            body: JSON.stringify(action.payload)
-        });
+            });
+    }
+    else{
+        
+             pdfGenerate = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/pdf/inward', {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                   
+                  },
+                body: JSON.stringify(action.payload)
+            });
+           
+        }
         if (pdfGenerate.status === 200) {
             const pdfGenerateResponse = yield pdfGenerate.json();
             
@@ -589,7 +601,8 @@ function* pdfGenerateInward(action) {
             yield put(pdfGenerateSuccess(pdfGenerateResponse));
         } else
             yield put(pdfGenerateError('error'));
-    } catch (error) {
+    }
+     catch (error) {
         yield put(pdfGenerateError(error));
     }
 }

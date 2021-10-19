@@ -723,10 +723,10 @@ const columnsPlan=[
             }
         }else{
             if(props.inward.instructionSaveSlittingSuccess && !props.wip && !props.slitCut) {
-                // props.inward.saveSlit
+                let partId = props.inward.saveSlit[0].partDetailsId
                 let payload={
-                    inwardId: props.coilDetails.inwardEntryId,
-                    processId: 2
+                    type:'slit',
+                    partId: partId
                 }
                 props.pdfGenerateInward(payload);
                 loading = ''; 
