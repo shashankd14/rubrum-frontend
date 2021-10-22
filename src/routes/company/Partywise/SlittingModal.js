@@ -660,7 +660,7 @@ const columnsPlan=[
     } else{
         data = data.flat();  
         let cutsData = [...data];
-        cutsData = props.wip ? cutsData.filter(item => item.process.processId === 2 && item.status.statusId !==3 && item.groupId === null) :props.slitCut ? cutsData.filter(item => item.process.processId === 2 && item.slitAndCut === true ):cutsData.filter(item => item.process.processId === 2 && item.slitAndCut === false)
+        cutsData = props.wip ? cutsData.filter(item => item.process.processId === 2 && item.status.statusId !==3 && item.groupId === null) :props.slitCut ? cutsData.filter(item => item.process.processId === 2 && item.isSlitAndCut === true ):cutsData.filter(item => item.process.processId === 2 && item.isSlitAndCut === false)
         setSlittingDetail(cutsData)
         setCuts(cutsData);
         setslitpayload([])
