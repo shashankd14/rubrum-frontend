@@ -648,6 +648,7 @@ const columnsPlan=[
    
    },[props.coilDetails])
     useEffect(() => {
+        setValue(0)
     let data = props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions;
     if(props.childCoil){
         setInstruction(data);
@@ -738,7 +739,7 @@ const columnsPlan=[
         e.preventDefault();
         setCuts([]);
         setForm(true)
-        setValue(0);
+        setValue(value+1);
         
         setDeletedSelected(false);
         props.setShowSlittingModal(false)
@@ -761,7 +762,7 @@ const columnsPlan=[
                 props.setShowSlittingModal(false)
             }
         }
-        setValue(0);
+        setValue(value+1);
  if(slitInstruction.length === parts){
         if(validate === false){
             setDeletedSelected(false);
@@ -775,12 +776,12 @@ const columnsPlan=[
                 
             } else {
                 if(slitPayload.length > 0){
-                    setValue(0);
+                    setValue(value+1);
                     props.saveSlittingInstruction(slitInstruction);
                     props.setShowCuttingModal(true);
 
                 }else{
-                    setValue(0);
+                    setValue(value+1);
                     props.setShowSlittingModal(false);
                 }
                 
