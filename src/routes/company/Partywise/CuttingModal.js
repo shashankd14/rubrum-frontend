@@ -269,10 +269,17 @@ const CreateCuttingDetailsForm = (props) => {
     };
     const handleSubmit = e => {
         e.preventDefault();
+        let remainWeight
         props.form.validateFields((err, values) => {
             if (!err) {
+                if(Number(tweight) !== 0){
+                    remainWeight = WeightValue-Number(tweight);
+                }else{
+                    remainWeight = WeightValue - values.weight;
+                }
+                
                 setValidate(false);
-                if((Number(tweight)+values.weight) > WeightValue){
+                if(remainWeight > WeightValue){
                     message.error('Weight greater than available weight', 2);
                 }else{
                     let slitcuts =[];
