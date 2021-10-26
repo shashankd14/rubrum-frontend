@@ -353,7 +353,7 @@ const SlittingWidths = (props) => {
             <Form {...formItemLayoutSlitting}>
                 {!props.wip && <><label>Available length : {len}mm</label>
                 <div><label>Available Width : {weightValue > 0 ? props.coilDetails.fWidth : 0}mm</label></div> 
-                <div><label>Available Weight : {weightValue}kg</label></div> 
+                <div><label>Current Available Weight : {weightValue}kg</label></div> 
                 </>}
                 {!props.wip && 
                 <><Form.Item label="Process Date" >
