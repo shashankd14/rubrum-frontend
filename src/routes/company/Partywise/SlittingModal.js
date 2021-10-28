@@ -170,11 +170,18 @@ const SlittingWidths = (props) => {
     const applyData=() =>{
         const slits =[];
         let equalInstructions= [...slitEqualInstruction]
+        let weight = props.cuts[0].plannedWeight;
+        weight = Number(weight) * (equalParts-1);
         for(let i=0; i<equalParts-1; i++){
             slits.push(...props.cuts)
             equalInstructions.push(...slitEqualInstruction);
         }
-        props.setSlits(slits);
+        if(weight > weightValue){
+            setWeightValue(0);
+        }else{
+            setWeightValue(weightValue- weight);
+        }
+       props.setSlits(slits);
         props.setSlitInstruction(equalInstructions); // Setting payload for equal parts
         if (!props.wip) { props.setslitpayload(slits) }
         setEqualParts(0);
@@ -236,7 +243,7 @@ const SlittingWidths = (props) => {
                  }
                  slitInstructionPayload.push(instructionPayload)
                  
-                 let remainWeight = props.tweight + props.coilDetails.fpresent;
+                 let remainWeight =  props.coilDetails.fpresent - props.tweight;
                  if(Number(availLength) +cutLength > lengthValue) {
                     message.error('Length greater than available length', 2);
                 }else if(totalWeight > remainWeight) {
@@ -341,7 +348,7 @@ const SlittingWidths = (props) => {
         setavailLength((len*(e.target.value/weightValue)).toFixed(1))
     }
     const radioChange = e => {
-        settargetWeight((weightValue/equalParts).toFixed(2));
+        settargetWeight((weightValue/equalParts));
         if(e.target.value=== 1){
             setavailLength((len*((weightValue/equalParts)/weightValue)).toFixed(1));
         }
@@ -853,7 +860,7 @@ const columnsPlan=[
                     <Row>
                         <Form {...formItemLayout} className="login-form gx-pt-4">
                             <Form.Item>
-                                <SlittingWidthsForm  setSlits={(slits) => setCuts([...cuts,...slits])} setTableData={setTableData} setweight={(w) => settweight(w)} totalActualweight={(w) => setTotalActualWeight(w)} coilDetails={props.coilDetails} wip={props.wip} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth} plannedWeight ={props.plannedWeight} length={length} cuts={cuts} edit={edit} tweight={tweight} lengthValue={(lengthValue) => setLengthValue(lengthValue)} widthValue={(widthValue) => setWidthValue(widthValue)} reset={form} />
+                                <SlittingWidthsForm  setSlits={(slits) => setCuts([...cuts,...slits])} setTableData={setTableData} setweight={(w) => settweight(w.toFixed(0))} totalActualweight={(w) => setTotalActualWeight(w)} coilDetails={props.coilDetails} wip={props.wip} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth} plannedWeight ={props.plannedWeight} length={length} cuts={cuts} edit={edit} tweight={tweight} lengthValue={(lengthValue) => setLengthValue(lengthValue)} widthValue={(widthValue) => setWidthValue(widthValue)} reset={form} />
                             </Form.Item>
                         </Form>
                         <Col lg={8} md={12} sm={24} xs={24}>
