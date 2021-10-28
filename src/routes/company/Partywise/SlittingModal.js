@@ -53,7 +53,7 @@ const SlittingWidths = (props) => {
     const [twidth, settwidth]= useState(0);
     const [oldLength, setOldLength]= useState(0);
     const [equalParts, setEqualParts]= useState(0);
-    const [slitInstructionList, setSlitInstructionList] = useState([])
+    const [slitInstructionList, setSlitInstructionList] = useState(props.slitInstruction)
     const keys = getFieldValue('keys');
     const callBackValue =(n)=>{
         let cuts = 0;
@@ -74,6 +74,9 @@ const SlittingWidths = (props) => {
     let cutLength = callBackValue('length');
     let cutWidth = callBackValue('width');
     let noParts = 0;
+    useEffect(()=>{
+        setSlitInstructionList(props.slitInstruction)
+    },[props.slitInstruction])
     useEffect(() => {
       getEditValue();
     }, [props.length]);
@@ -649,6 +652,7 @@ const columnsPlan=[
    },[props.coilDetails])
     useEffect(() => {
         setValue(0)
+        setSlitInstruction([])
     let data = props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions;
     if(props.childCoil){
         setInstruction(data);
@@ -658,7 +662,7 @@ const columnsPlan=[
         arrayData= arrayData.length>0?[...arrayData].filter(item => item.process.processId === 2 ):[]
         setCuts(arrayData);
         setslitpayload([])
-        setSlitInstruction([])
+        
     } else{
         data = data.flat();  
         let cutsData = [...data];
@@ -666,7 +670,7 @@ const columnsPlan=[
         setSlittingDetail(cutsData)
         setCuts(cutsData);
         setslitpayload([])
-        setSlitInstruction([])
+        
     }
     setForm(false);
     if(props.wip){
@@ -908,7 +912,7 @@ const columnsPlan=[
                         <Form {...formItemLayout} className="login-form gx-pt-4">
                             
                                 <Form.Item>
-                                    <SlittingWidthsForm setslitpayload={(slits) => setslitpayload([...slitPayload,...slits])} setSlitInstruction={(slitInstruction) => setSlitInstruction([...slitInstruction])} setSlits={(slits) => setCuts([...cuts,...slits])} setweight={(w) => settweight(w)} coilDetails={props.coilDetails} wip={props.wip} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth} plannedWeight ={props.plannedWeight} length={length} cuts={cuts} edit={edit} tweight={tweight} lengthValue={(lengthValue) => setLengthValue(lengthValue)} widthValue={(widthValue) => setWidthValue(widthValue)} reset={form} validate={(valid) => setValidate(valid)} value={value} setDeleted = {deleteSelected} slitCut={props.slitCut} setParts ={(parts)=>setParts(parts)}/>
+                                    <SlittingWidthsForm setslitpayload={(slits) => setslitpayload([...slitPayload,...slits])} setSlitInstruction={(slitInstruction) => setSlitInstruction([...slitInstruction])} slitInstruction={slitInstruction} setSlits={(slits) => setCuts([...cuts,...slits])} setweight={(w) => settweight(w)} coilDetails={props.coilDetails} wip={props.wip} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth} plannedWeight ={props.plannedWeight} length={length} cuts={cuts} edit={edit} tweight={tweight} lengthValue={(lengthValue) => setLengthValue(lengthValue)} widthValue={(widthValue) => setWidthValue(widthValue)} reset={form} validate={(valid) => setValidate(valid)} value={value} setDeleted = {deleteSelected} slitCut={props.slitCut} setParts ={(parts)=>setParts(parts)}/>
                                 </Form.Item>
 
                             </Form>
