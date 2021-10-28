@@ -476,7 +476,7 @@ const SlittingWidths = (props) => {
                         </Button>
                     </Col>
                 </Row>
-                 <Button type="primary" onClick={applyData} hidden={value=== 2? true: false} disabled={value===2 ?  true :props.cuts.length=== 0 ? true : false}>
+                 <Button type="primary" onClick={applyData} hidden={value=== 1? false: true} disabled={value===1 ? props.cuts.length=== 0 ? true : false :true}>
                            Apply to remainig {equalParts} parts <Icon type="right"/>
                 </Button>
                 </Form.Item></>}
@@ -739,7 +739,7 @@ const columnsPlan=[
         e.preventDefault();
         setCuts([]);
         setForm(true)
-        setValue(value+1);
+        setValue(value+3);
         
         setDeletedSelected(false);
         props.setShowSlittingModal(false)
@@ -762,40 +762,40 @@ const columnsPlan=[
                 props.setShowSlittingModal(false)
             }
         }
-        setValue(value+1);
- if(slitInstruction.length === parts){
+        
         if(validate === false){
-            setDeletedSelected(false);
-            if(name === 'Slitting'){
-                if(slitPayload.length > 0){
-                    props.saveSlittingInstruction(slitInstruction);
+            if(slitInstruction.length === parts){
+                setValue(value+3);
+                setDeletedSelected(false);
+                if(name === 'Slitting'){
+                    if(slitPayload.length > 0){
+                        props.saveSlittingInstruction(slitInstruction);
+                        
+                    }else{
+                        props.setShowSlittingModal(false);
+                    }
                     
-                }else{
-                    props.setShowSlittingModal(false);
-                }
-                
-            } else {
+                } else{
                 if(slitPayload.length > 0){
-                    setValue(value+1);
-                    props.saveSlittingInstruction(slitInstruction);
-                    props.setShowCuttingModal(true);
-
-                }else{
-                    setValue(value+1);
-                    props.setShowSlittingModal(false);
+                 props.saveSlittingInstruction(slitInstruction);
+                 props.setShowCuttingModal(true);
+                } else{
+                 props.setShowSlittingModal(false);
                 }
-                
-            }
-        }else{ if(name === 'slittingDetail'){
+             }
+        }else{
+            message.error('Please enter value for all parts');
+        }
+        }else{ 
+            if(name === 'slittingDetail'){
+                setValue(value+3);
                 props.setShowSlittingModal(false);
                 props.setShowCuttingModal(true);
                 props.setCutting(cuts);
                 setDeletedSelected(false);
             } 
         } 
-    }else{
-        message.error('Please enter instruction for all the parts');
-    }
+    
     }
     return (
         
