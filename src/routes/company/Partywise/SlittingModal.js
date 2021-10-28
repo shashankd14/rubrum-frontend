@@ -474,12 +474,12 @@ const SlittingWidths = (props) => {
                 <Form.Item>
                 <Row className="gx-mt-4">
                     <Col span={16} style={{ textAlign: "center"}}>
-                        <Button type="primary" htmlType="submit" onClick={() => addNewSize()} disabled={props.wip ? true : false}>
+                        <Button type="primary" htmlType="submit" onClick={() => addNewSize()} disabled={props.wip ? true : (slitInstructionList.length === equalParts || equalParts === 0)? true: false}>
                             Add Size<Icon type="right"/>
                         </Button>
                     </Col>
                 </Row>
-                 <Button type="primary" onClick={applyData} hidden={value=== 1? false: true} disabled={value===1 && equalParts !== 0 ? (props.cuts.length=== 0 ?  true : false) :true}>
+                 <Button type="primary" onClick={applyData} hidden={value=== 1 && equalParts > 1? false: true} disabled={value===1 && equalParts !== 0 ? (props.cuts.length=== 0 ?  true : false) :true}>
                            Apply to remainig {equalParts} parts <Icon type="right"/>
                 </Button>
                 </Form.Item></>}
