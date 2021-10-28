@@ -424,7 +424,11 @@ const CreateCuttingDetailsForm = (props) => {
            setBalanced(true)
         }
         let length = e.target.value;
-       setNo(((WeightValue-Number(tweight))/(0.00000785 *width*props.coil.fThickness*Number(length))).toFixed(0));
+        let numerator = props.coilDetails.fpresent;
+        if (WeightValue === props.coilDetails.inStockWeight) {
+            numerator = WeightValue - Number(tweight);
+        }
+       setNo((numerator/(0.00000785 *width*props.coil.fThickness*Number(length))).toFixed(0));
     }
     
     const setSelection = (record, selected, selectedRows) => {
