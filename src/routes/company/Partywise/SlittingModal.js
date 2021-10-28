@@ -333,7 +333,7 @@ const SlittingWidths = (props) => {
         if(value === 2){
             settargetWeight(0);
         }else {
-            settargetWeight(weightValue/Number(e.target.value));
+            settargetWeight((weightValue/Number(e.target.value)).toFixed(2));
          }
     }
     const onTargetChange=  e=>{
@@ -341,7 +341,7 @@ const SlittingWidths = (props) => {
         setavailLength((len*(e.target.value/weightValue)).toFixed(1))
     }
     const radioChange = e => {
-        settargetWeight(weightValue/equalParts);
+        settargetWeight((weightValue/equalParts).toFixed(2));
         if(e.target.value=== 1){
             setavailLength((len*((weightValue/equalParts)/weightValue)).toFixed(1));
         }
@@ -912,7 +912,7 @@ const columnsPlan=[
                         <Form {...formItemLayout} className="login-form gx-pt-4">
                             
                                 <Form.Item>
-                                    <SlittingWidthsForm setslitpayload={(slits) => setslitpayload([...slitPayload,...slits])} setSlitInstruction={(slitInstruction) => setSlitInstruction([...slitInstruction])} slitInstruction={slitInstruction} setSlits={(slits) => setCuts([...cuts,...slits])} setweight={(w) => settweight(w)} coilDetails={props.coilDetails} wip={props.wip} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth} plannedWeight ={props.plannedWeight} length={length} cuts={cuts} edit={edit} tweight={tweight} lengthValue={(lengthValue) => setLengthValue(lengthValue)} widthValue={(widthValue) => setWidthValue(widthValue)} reset={form} validate={(valid) => setValidate(valid)} value={value} setDeleted = {deleteSelected} slitCut={props.slitCut} setParts ={(parts)=>setParts(parts)}/>
+                                    <SlittingWidthsForm setslitpayload={(slits) => setslitpayload([...slitPayload,...slits])} setSlitInstruction={(slitInstruction) => setSlitInstruction([...slitInstruction])} slitInstruction={slitInstruction} setSlits={(slits) => setCuts([...cuts,...slits])} setweight={(w) => settweight(w)} coilDetails={props.coilDetails} wip={props.wip} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth} plannedWeight ={props.plannedWeight} length={length} cuts={cuts} edit={edit} tweight={tweight} lengthValue={(lengthValue) => setLengthValue(lengthValue.toFixed(1))} widthValue={(widthValue) => setWidthValue(widthValue)} reset={form} validate={(valid) => setValidate(valid)} value={value} setDeleted = {deleteSelected} slitCut={props.slitCut} setParts ={(parts)=>setParts(parts)}/>
                                 </Form.Item>
 
                             </Form>
