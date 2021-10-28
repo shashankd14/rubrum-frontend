@@ -790,7 +790,7 @@ const columnsPlan=[
                 }
              }
         }else{
-            message.error('Please enter value for all parts');
+            message.error('Please enter instructions for all parts');
         }
         }else{ 
             if(name === 'slittingDetail'){
