@@ -607,7 +607,9 @@ const columnsPlan=[
         render: (text, record, index) => (
             <span>
                 <span className="gx-link" onClick={(e) => {onEdit(index, e); }}><Icon type="edit" /></span>
-                <span className="gx-link" onClick={(e) => {onDelete(record, index, e); }}><Icon type="delete" /></span>
+                <span className="gx-link" onClick={(e) => {
+                    setDeleteRecord({ e, record, key: index });
+                    setshowDeleteModal(true); }}><Icon type="delete" /></span>
             </span>
             
         ),
@@ -631,9 +633,11 @@ const columnsPlan=[
     const [form, setForm]= useState(false);
     const [slittingDetail, setSlittingDetail] = useState([])
     const [value, setValue]= useState(4);
-    const [deleteSelected, setDeletedSelected] = useState(false)
     const [parts, setParts]=useState(0);
-    const onDelete = (record, key, e) => {
+    const [deleteSelected, setDeletedSelected] = useState(false)
+    const [showDeleteModal, setshowDeleteModal] = useState(false);
+    const [deleteRecord, setDeleteRecord] = useState({});
+    const onDelete = ({ record, key, e }) => {
         e.preventDefault();
         const data = cuts.filter(item => {
           return cuts.indexOf(item) !== key
@@ -643,6 +647,7 @@ const columnsPlan=[
         setValidate(false);
         setslitpayload(data);
         setCuts(data);
+        setshowDeleteModal(false);
       }
     const onEdit = (key, e) => {
         // const data = cuts.filter(item => cuts.indexOf(item) !== key);
@@ -941,6 +946,19 @@ const columnsPlan=[
                             </Form.Item>
                         </Col>
                     </Row>}
+
+                    <Modal 
+                        title='Confirmation'
+                        visible={showDeleteModal}
+                        width={400}
+                        onOk={() => {
+                            onDelete(deleteRecord);
+                        }}
+                        onCancel={() => setshowDeleteModal(false)}
+                    >
+                        <p>Are you sure to proceed for delete ? </p>
+                        <p>Please click OK to confirm</p>
+                    </Modal>
         
                 </TabPane>
 

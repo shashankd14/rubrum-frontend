@@ -23,6 +23,8 @@ const CreateCuttingDetailsForm = (props) => {
     const TabPane = Tabs.TabPane;
     const {getFieldDecorator} = props.form;
     let loading = '';
+    const [showDeleteModal, setshowDeleteModal] = useState(false);
+    const [deleteRecord, setDeleteRecord] = useState({});
     const [cuts, setCuts] = useState([]);
     const [insData, setInstruction] = useState({});
     const [page, setPage] = useState(1);
@@ -154,7 +156,10 @@ const CreateCuttingDetailsForm = (props) => {
             render: (text, record,index) => (
                 <span>
                 <i className="icon icon-edit" onClick={() => {onEdit(record,index);}} /> <></>
-                <i className="icon icon-trash" onClick={(e) => {onDelete(record, e); }}/>
+                <i className="icon icon-trash" onClick={(e) => {
+                    setDeleteRecord({ e, record, type: '' });
+                    setshowDeleteModal(true); 
+                    }}/>
                 </span>
               ),
               key:'action',
@@ -195,7 +200,10 @@ const CreateCuttingDetailsForm = (props) => {
             dataIndex:'actions',
             render: (text, record,index) => (
                 <span>
-                <i className="icon icon-trash" onClick={(e) => {onDelete(record, e, 'slitCut'); }}/>
+                <i className="icon icon-trash" onClick={(e) => {
+                    setDeleteRecord({ e, record, type: 'slitCut' });
+                    setshowDeleteModal(true); 
+                    }}/>
                 </span>
               ),
               key:'action',
@@ -244,18 +252,20 @@ const CreateCuttingDetailsForm = (props) => {
             });
     };
    
-    const onDelete = (record, e, type) => {
+    const onDelete = ({ record, e, type }) => {
         e.preventDefault();
         if(type === 'slitCut'){
              const data = restTableData.filter((item) => restTableData.indexOf(item) !==restTableData.indexOf(record))
              setRestTableData(data)
-             props.deleteInstructionById(record.parentGroupId)
+             props.deleteInstructionById(record.parentGroupId);
+             setshowDeleteModal(false);
         }else{
             setValidate(false);
              const data = cuts.filter((item) => cuts.indexOf(item) !==cuts.indexOf(record))
              setCuts(data);
              setCutPayload(data);
-            props.deleteInstructionById(record.instructionId)
+            props.deleteInstructionById(record.instructionId);
+            setshowDeleteModal(false);
         }
     };
     const onChange=()=>{
@@ -743,6 +753,19 @@ const CreateCuttingDetailsForm = (props) => {
                         </Form.Item>}
                     </Col>
             </Row></>}
+
+            <Modal 
+                title='Confirmation'
+                visible={showDeleteModal}
+                width={400}
+                onOk={() => {
+                    onDelete(deleteRecord);
+                }}
+                onCancel={() => setshowDeleteModal(false)}
+            >
+                <p>Are you sure to proceed for delete ? </p>
+                <p>Please click OK to confirm</p>
+            </Modal>
 
           </TabPane>
 

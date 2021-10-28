@@ -336,22 +336,24 @@ function* fetchInwardPlanDetails(action) {
 function* requestSaveCuttingInstruction(action) {
     const requestBody = [];
     action.cuttingDetails.map((cutDetails) => {
-        const req = {
-            processId: cutDetails.processId?cutDetails.processId:CUTTING_INSTRUCTION_PROCESS_ID,
-            instructionDate: moment(cutDetails.processDate).format('YYYY-MM-DD HH:mm:ss'),
-            plannedLength: cutDetails.length,
-            plannedWeight: cutDetails.weight,
-            plannedNoOfPieces: cutDetails.no,
-            plannedWidth: cutDetails.plannedWidth,
-            status: 1,
-            "createdBy": "1",
-            "updatedBy": "1",
-            slitAndCut: cutDetails.slitAndCut,
-            inwardId: cutDetails.inwardId ? cutDetails.inwardId : "",
-            parentInstructionId: cutDetails.instructionId ? cutDetails.instructionId : "",
-            groupId: cutDetails.parentGroupId ? cutDetails.parentGroupId : ""
+        if (cutDetails.inwardId && cutDetails.length && cutDetails.no) {
+            const req = {
+                processId: cutDetails.processId?cutDetails.processId:CUTTING_INSTRUCTION_PROCESS_ID,
+                instructionDate: moment(cutDetails.processDate).format('YYYY-MM-DD HH:mm:ss'),
+                plannedLength: cutDetails.length,
+                plannedWeight: cutDetails.weight,
+                plannedNoOfPieces: cutDetails.no,
+                plannedWidth: cutDetails.plannedWidth,
+                status: 1,
+                "createdBy": "1",
+                "updatedBy": "1",
+                slitAndCut: cutDetails.slitAndCut,
+                inwardId: cutDetails.inwardId || "",
+                parentInstructionId: cutDetails.instructionId ? cutDetails.instructionId : "",
+                groupId: cutDetails.parentGroupId ? cutDetails.parentGroupId : ""
+            }
+            requestBody.push(req);
         }
-        requestBody.push(req);
     })
     try {
         const fetchPartyInwardList = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/instruction/save`, {
