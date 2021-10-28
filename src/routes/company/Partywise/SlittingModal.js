@@ -476,7 +476,7 @@ const SlittingWidths = (props) => {
                         </Button>
                     </Col>
                 </Row>
-                 <Button type="primary" onClick={applyData} hidden={value=== 1? false: true} disabled={value===1 ? props.cuts.length=== 0 ? true : false :true}>
+                 <Button type="primary" onClick={applyData} hidden={value=== 1? false: true} disabled={value===1 && equalParts !== 0 ? (props.cuts.length=== 0 ?  true : false) :true}>
                            Apply to remainig {equalParts} parts <Icon type="right"/>
                 </Button>
                 </Form.Item></>}
@@ -658,6 +658,7 @@ const columnsPlan=[
         arrayData= arrayData.length>0?[...arrayData].filter(item => item.process.processId === 2 ):[]
         setCuts(arrayData);
         setslitpayload([])
+        setSlitInstruction([])
     } else{
         data = data.flat();  
         let cutsData = [...data];
@@ -665,6 +666,7 @@ const columnsPlan=[
         setSlittingDetail(cutsData)
         setCuts(cutsData);
         setslitpayload([])
+        setSlitInstruction([])
     }
     setForm(false);
     if(props.wip){
