@@ -28,7 +28,9 @@ const Plan = (props) => {
         actualLength = ins.fLength ? ins.fLength : ins.actualLength != null ? ins.actualLength : ins.plannedLength;
         if (ins.instruction && ins.instruction?.length> 0){
            let instruction = ins.instruction.flat();
-           length = instruction.map(i => i.plannedLength);
+           length = instruction.map(i => {
+                return i.process.processId === 1 ?  i.plannedLength * i.plannedNoOfPieces :  i.plannedLength;
+           });
            length = [...new Set(length)];
            childLength = instruction.map(i => {
                if (i.childInstructions && i.childInstructions?.length> 0){
