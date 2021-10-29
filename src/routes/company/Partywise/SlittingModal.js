@@ -194,7 +194,7 @@ const SlittingWidths = (props) => {
             if (!err) {
                 props.validate(false);
                 let totalWidth = 0;
-                let totalWeight = props.tweight ;
+                let totalWeight = Number(props.tweight) ;
                 const widthValue = props.coilDetails.fWidth ? props.coilDetails.fWidth : props.plannedWidth(props.coilDetails)
                 const lengthValue = props.coilDetails.fLength ? props.coilDetails.fLength : props.plannedLength(props.coilDetails)
                 const weightValue1 = props.coilDetails.fpresent >= 0? props.coilDetails.fpresent : props.plannedWeight(props.coilDetails)
@@ -230,9 +230,10 @@ const SlittingWidths = (props) => {
                     wValue = targetWeight*((values.widths[i]*values.nos[i]/widthValue1))
                     totalWidth += values.widths[i]*values.nos[i];
                     if(totalWeight ===0){
-                        totalWeight = props.tweight+Number(values.weights[i]);
+                        totalWeight = Number(props.tweight)+Number(values.weights[i]);
                     }else{
                         totalWeight+= Number(values.weights[i]);
+                        totalWeight = totalWeight - Number(props.tweight);
                     }
                     
                     settwidth(totalWidth); 
@@ -243,7 +244,7 @@ const SlittingWidths = (props) => {
                  }
                  slitInstructionPayload.push(instructionPayload)
                  
-                 let remainWeight =  props.coilDetails.fpresent - props.tweight;
+                 let remainWeight =  props.coilDetails.fpresent - Number(props.tweight);
                  if(Number(availLength) +cutLength > lengthValue) {
                     message.error('Length greater than available length', 2);
                 }else if(totalWeight > remainWeight) {
