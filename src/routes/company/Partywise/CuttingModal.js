@@ -326,7 +326,7 @@ const CreateCuttingDetailsForm = (props) => {
     
     useEffect(() => {
         if(props.slitCut && !props.wip){
-          setCuts(props.coilDetails)
+          setCuts(props.coilDetails.flat())
         }else{
         let data = props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions
         const lengthValue = props.coilDetails.instruction && props.coilDetails.instruction.length > 0 ? props.plannedLength(props.coilDetails) : props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails)

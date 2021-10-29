@@ -215,7 +215,7 @@ const SlittingWidths = (props) => {
                             instructionDate: moment().format('YYYY-MM-DD HH:mm:ss'),
                             plannedLength: availLength,
                             plannedWidth: values.widths[i],
-                            slitAndCut:props.slitCut ? true :false,
+                            isSlitAndCut:props.slitCut ? true :false,
                             plannedNoOfPieces:values.nos[i],
                             status: 1,
                             createdBy: "1",
@@ -739,7 +739,11 @@ const columnsPlan=[
                 loading = '';
                 message.success('Slitting instruction saved', 2).then(() => {
                     if(props.slitCut){
-                        props.setCutting(props.inward.saveSlit);
+                        let cuts = props.inward.saveSlit.map(slit => {
+                            let instruction = [...slit.instructions]
+                            return instruction;
+                        })
+                        props.setCutting(cuts);
                     }
                     props.setShowSlittingModal(false);
                     props.resetInstruction();
