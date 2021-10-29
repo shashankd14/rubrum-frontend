@@ -245,7 +245,7 @@ const SlittingWidths = (props) => {
                  slitInstructionPayload.push(instructionPayload)
                  
                  let remainWeight =  props.coilDetails.fpresent - Number(props.tweight);
-                 if(Number(availLength) +cutLength > lengthValue) {
+                 if(Number(availLength)  > lengthValue-cutLength) {
                     message.error('Length greater than available length', 2);
                 }else if(totalWeight > remainWeight) {
                    message.error('Weight greater than available weight', 2);
@@ -345,13 +345,18 @@ const SlittingWidths = (props) => {
          }
     }
     const onTargetChange=  e=>{
+        let weight = props.coilDetails?.fQuantity ? props.coilDetails.fQuantity : props.plannedWeight(props.coilDetails);
+        let length = props.coilDetails?.fLength ? props.coilDetails.fLength : props.plannedLength(props.coilDetails);
         settargetWeight(e.target.value);
-        setavailLength((len*(e.target.value/weightValue)).toFixed(1))
+        setavailLength((length*(e.target.value/weight)).toFixed(1))
     }
     const radioChange = e => {
+        let weight = props.coilDetails?.fQuantity ? props.coilDetails.fQuantity : props.plannedWeight(props.coilDetails);
+        let length = props.coilDetails?.fLength ? props.coilDetails.fLength : props.plannedLength(props.coilDetails);
+        
         settargetWeight((weightValue/equalParts));
         if(e.target.value=== 1){
-            setavailLength((len*((weightValue/equalParts)/weightValue)).toFixed(1));
+            setavailLength((length*((weightValue/equalParts)/weight)).toFixed(1));
         }
         else{
             setavailLength(0);
