@@ -215,7 +215,7 @@ const SlittingWidths = (props) => {
                             instructionDate: moment().format('YYYY-MM-DD HH:mm:ss'),
                             plannedLength: availLength,
                             plannedWidth: values.widths[i],
-                            slitAndCut:props.slitCut ? true :false,
+                            isSlitAndCut:props.slitCut ? true :false,
                             plannedNoOfPieces:values.nos[i],
                             status: 1,
                             createdBy: "1",
@@ -243,9 +243,9 @@ const SlittingWidths = (props) => {
                      "instructionRequestDTOs": slits
                  }
                  slitInstructionPayload.push(instructionPayload)
-                 
-                 let remainWeight =  props.coilDetails.fpresent - Number(props.tweight);
-                 if(Number(availLength) +cutLength > lengthValue) {
+                 let fpresent = props.coilDetails.fpresent === props.coilDetails.fQuantity ? props.coilDetails.fpresent: props.coilDetails.fQuantity;
+                 let remainWeight = fpresent - Number(props.tweight);
+                 if(Number(availLength)  > lengthValue-cutLength) {
                     message.error('Length greater than available length', 2);
                 }else if(totalWeight > remainWeight) {
                    message.error('Weight greater than available weight', 2);
@@ -345,13 +345,18 @@ const SlittingWidths = (props) => {
          }
     }
     const onTargetChange=  e=>{
+        let weight = props.coilDetails?.fQuantity ? props.coilDetails.fQuantity : props.plannedWeight(props.coilDetails);
+        let length = props.coilDetails?.fLength ? props.coilDetails.fLength : props.plannedLength(props.coilDetails);
         settargetWeight(e.target.value);
-        setavailLength((len*(e.target.value/weightValue)).toFixed(1))
+        setavailLength((length*(e.target.value/weight)).toFixed(0))
     }
     const radioChange = e => {
+        let weight = props.coilDetails?.fQuantity ? props.coilDetails.fQuantity : props.plannedWeight(props.coilDetails);
+        let length = props.coilDetails?.fLength ? props.coilDetails.fLength : props.plannedLength(props.coilDetails);
+        
         settargetWeight((weightValue/equalParts));
         if(e.target.value=== 1){
-            setavailLength((len*((weightValue/equalParts)/weightValue)).toFixed(1));
+            setavailLength((length*((weightValue/equalParts)/weight)).toFixed(0));
         }
         else{
             setavailLength(0);
@@ -734,7 +739,11 @@ const columnsPlan=[
                 loading = '';
                 message.success('Slitting instruction saved', 2).then(() => {
                     if(props.slitCut){
-                        props.setCutting(props.inward.saveSlit);
+                        let cuts = props.inward.saveSlit.map(slit => {
+                            let instruction = [...slit.instructions]
+                            return instruction;
+                        })
+                        props.setCutting(cuts);
                     }
                     props.setShowSlittingModal(false);
                     props.resetInstruction();
