@@ -315,12 +315,13 @@ const CreateCuttingDetailsForm = (props) => {
     };
     useEffect(() => {
         if(props.inward.process.length && props.inward.process.no) {
-            
+            let weight = cuts.map(i => !i.instructionId ? i.weight : 0);
+            weight = cuts.length > 0 ? weight.reduce((total, num) => total + num) : 0;
             if(props.coilDetails.instructionId)
 
-                props.setProcessDetails({...props.inward.process, weight:Number(tweight) >=0 && balancedValue ? WeightValue-Number(tweight):Math.round( 0.00000785*parseFloat(width)*parseFloat(props.inward.plan.fThickness)*parseFloat(props.inward.process.length)*parseFloat(props.inward.process.no))});
+                props.setProcessDetails({...props.inward.process, weight:Number(tweight) >=0 && balancedValue ? WeightValue-Number(weight):Math.round( 0.00000785*parseFloat(width)*parseFloat(props.inward.plan.fThickness)*parseFloat(props.inward.process.length)*parseFloat(props.inward.process.no))});
             else
-                props.setProcessDetails({...props.inward.process, weight:Number(tweight) >=0 && balancedValue ? WeightValue-Number(tweight):Math.round( 0.00000785*parseFloat(props.inward.plan.fWidth)*parseFloat(props.inward.plan.fThickness)*parseFloat(props.inward.process.length)*parseFloat(props.inward.process.no))});
+                props.setProcessDetails({...props.inward.process, weight:Number(tweight) >=0 && balancedValue ? WeightValue-Number(weight):Math.round( 0.00000785*parseFloat(props.inward.plan.fWidth)*parseFloat(props.inward.plan.fThickness)*parseFloat(props.inward.process.length)*parseFloat(props.inward.process.no))});
         }
     }, [props.inward.process.length, props.inward.process.no])
     
@@ -425,8 +426,10 @@ const CreateCuttingDetailsForm = (props) => {
         }
         let length = e.target.value;
         let numerator = props.coilDetails.fpresent;
-        if (WeightValue === props.coilDetails.inStockWeight) {
-            numerator = WeightValue - Number(tweight);
+        let weight = cuts.map(i => !i.instructionId ? i.weight : 0);
+        weight = cuts.length > 0 ? weight.reduce((total, num) => total + num) : 0;
+        if (weight) {
+            numerator = props.coilDetails.fpresent - Number(weight);
         }
        setNo((numerator/(0.00000785 *width*props.coil.fThickness*Number(length))).toFixed(0));
     }
