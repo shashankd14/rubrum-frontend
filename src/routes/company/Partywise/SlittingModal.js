@@ -243,8 +243,7 @@ const SlittingWidths = (props) => {
                      "instructionRequestDTOs": slits
                  }
                  slitInstructionPayload.push(instructionPayload)
-                 let fpresent = props.coilDetails.fpresent === props.coilDetails.fQuantity ? props.coilDetails.fpresent: props.coilDetails.fQuantity;
-                 let remainWeight = fpresent - Number(props.tweight);
+                 let remainWeight = props.coilDetails.fpresent - Number(props.tweight);
                  if(Number(availLength)  > lengthValue-cutLength) {
                     message.error('Length greater than available length', 2);
                 }else if(totalWeight > remainWeight) {
