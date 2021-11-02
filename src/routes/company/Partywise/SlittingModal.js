@@ -803,12 +803,12 @@ const columnsPlan=[
                     }
                     
                 } else{
-                if(slitPayload.length > 0){
-                 props.saveSlittingInstruction(slitInstruction);
-                 props.setShowCuttingModal(true);
-                } else{
-                 props.setShowSlittingModal(false);
-                }
+                    if(slitPayload.length > 0){
+                    props.saveSlittingInstruction(slitInstruction);
+                    props.setShowCuttingModal(true);
+                    } else{
+                    props.setShowSlittingModal(false);
+                    }
              }
         }else{
             message.error('Please enter instructions for all parts');
