@@ -367,7 +367,7 @@ const SlittingWidths = (props) => {
         <>
             <Form {...formItemLayoutSlitting}>
                 {!props.wip && <><label>Available length : {len}mm</label>
-                <div><label>Available Width : {weightValue > 0 ? props.coilDetails.fWidth : 0}mm</label></div> 
+                <div><label>Available Width : {weightValue > 0 ? (props.coilDetails.fWidth || props.coilDetails.plannedWidth) : 0}mm</label></div> 
                 <div><label>Current Available Weight : {weightValue}kg</label></div> 
                 </>}
                 {!props.wip && 
@@ -984,7 +984,7 @@ const columnsPlan=[
                             <p>Inward specs: {props.coil.fThickness}X{props.coil.fWidth}X{props.coil.fLength}/{props.coil.fQuantity}</p>
                             <p>Available Length(mm): {lengthValue}</p>
                             <p>Available Weight(kg) : {props.coil.fpresent}</p>
-                            <p>Available Width(mm) : {props.coil.fpresent > 0 ? props.coilDetails.fWidth : 0}</p>
+                            <p>Available Width((mm) : {props.coil.fpresent > 0 ? (props.coilDetails.fWidth || props.coilDetails.plannedWidth ) : 0}</p>
                         </Col>
                     </Row>
                 </TabPane>}
