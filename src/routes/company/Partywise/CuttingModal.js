@@ -37,7 +37,7 @@ const CreateCuttingDetailsForm = (props) => {
     const lengthValue = props.coilDetails.instruction && props.coilDetails.instruction.length > 0 ? props.plannedLength(props.coilDetails) : props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails)
     const widthValue = props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.plannedWidth(props.coilDetails);
     const WeightValue =  props.coilDetails.fpresent >= 0 ? props.coilDetails.fpresent  : props.plannedWeight(props.coilDetails);
-    let widthCheck = lengthValue !== 0 && WeightValue !== 0 ? props.coilDetails.fWidth : widthValue;
+    let widthCheck = lengthValue !== 0 && WeightValue !== 0 ? (props.coilDetails.fWidth || props.coilDetails.plannedWidth) : widthValue;
     const [length, setlength]= useState(lengthValue);
     const [width, setwidth] = useState(widthCheck);
     const [cutValue, setCutValue] = useState([]);
@@ -440,11 +440,11 @@ const CreateCuttingDetailsForm = (props) => {
            setBalanced(true)
         }
         let length = e.target.value;
-        let numerator = props.coilDetails.fpresent;
+        let numerator = props.coilDetails.fpresent || props.coilDetails.plannedWeight;
         let weight = cuts.map(i => !i.instructionId ? i.weight : 0);
         weight = cuts.length > 0 ? weight.reduce((total, num) => total + num) : 0;
         if (weight) {
-            numerator = props.coilDetails.fpresent - Number(weight);
+            numerator = numerator - Number(weight);
         }
        setNo((numerator/(0.00000785 *width*props.coil.fThickness*Number(length))).toFixed(0));
     }
