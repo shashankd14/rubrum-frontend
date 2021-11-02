@@ -54,7 +54,6 @@ const CreateCuttingDetailsForm = (props) => {
     const [packetNo, setPacketNo]= useState(0);
     const [cutPayload,setCutPayload]= useState([]);
     const [selectedKey, setSelectedKey] = useState([]);
-    const [saveInstruction, setSaveInstruction] = useState([]);
     const [tableData, setTableData] = useState(props.wip?(props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts);
     const columns=[
 
@@ -184,17 +183,17 @@ const CreateCuttingDetailsForm = (props) => {
         {
             title: 'Length',
             dataIndex:'length',
-            key: 'plannedLength',
+            key: 'length',
         },
         {
             title: 'No of Cuts',
             dataIndex:'no',
-            key: 'plannedNoOfPieces',
+            key: 'no',
         },
         {
             title: 'Weight',
             dataIndex:'weight',
-            key:'plannedWeight',
+            key:'weight',
         },
         {
             title:'Actions',
@@ -288,11 +287,6 @@ const CreateCuttingDetailsForm = (props) => {
                 }else{
                     remainWeight = WeightValue - values.weight;
                 }
-                let instructionPlanDto = {
-                    "createdBy": "1",
-                    "updatedBy":"1",
-                }
-                
                 
                 setValidate(false);
                 if(remainWeight > WeightValue){
@@ -300,28 +294,19 @@ const CreateCuttingDetailsForm = (props) => {
                 }else{
                     let slitcuts =[];
                     slitcuts.push({...props.inward.process,
-                        processId: 1,
-                        instructionDate: moment().format('YYYY-MM-DD HH:mm:ss'),
                         plannedLength: props.inward.process.length,
                         plannedNoOfPieces: props.inward.process.no,
                         plannedWeight: props.inward.process.weight.toFixed(2),
-                        isSlitAndCut:false,
-                        status: 1,
-                        createdBy: "1",
-                        updatedBy:"1",
+                        slitAndCut:false,
                         plannedWidth: props.coilDetails?.fWidth ? props.coilDetails.fWidth : props.coilDetails.plannedWidth,
                         inwardId: props.coilDetails.inwardEntryId ? props.coilDetails.inwardEntryId : "",
-                        parentInstructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : ""});
+                        instructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : ""});
                   setCuts([...cuts, ...slitcuts]);
-                  let instructionPayload ={
-                    "partDetailsRequest": instructionPlanDto,
-                    "instructionRequestDTOs": slitcuts
-                }
-                    setSaveInstruction(instructionPayload);
-                    props.resetInstruction();
+                  
+                        props.resetInstruction();
                 }
                 
-                
+               
             }else{
                 setValidate(true);
                 message.error('Please enter the mandatory fields(*)',2);
@@ -544,7 +529,7 @@ const CreateCuttingDetailsForm = (props) => {
         }
         else if(validate === false){
             if(cutPayload.length>0) {
-              props.saveCuttingInstruction(saveInstruction);
+              props.saveCuttingInstruction(cutPayload);
             }else{
                props.setShowCuttingModal(false);
           }
