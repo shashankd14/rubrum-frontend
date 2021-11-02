@@ -194,7 +194,7 @@ const SlittingWidths = (props) => {
             if (!err) {
                 props.validate(false);
                 let totalWidth = 0;
-                let totalWeight = Number(props.tweight) ;
+                let totalWeight = equalParts >1 ? Number(props.tweight): 0 ;
                 const widthValue = props.coilDetails.fWidth ? props.coilDetails.fWidth : props.plannedWidth(props.coilDetails)
                 const lengthValue = props.coilDetails.fLength ? props.coilDetails.fLength : props.plannedLength(props.coilDetails)
                 const weightValue1 = props.coilDetails.fpresent >= 0? props.coilDetails.fpresent : props.plannedWeight(props.coilDetails)
@@ -229,12 +229,7 @@ const SlittingWidths = (props) => {
                     }
                     wValue = targetWeight*((values.widths[i]*values.nos[i]/widthValue1))
                     totalWidth += values.widths[i]*values.nos[i];
-                    if(totalWeight ===0){
-                        totalWeight = Number(props.tweight)+Number(values.weights[i]);
-                    }else{
-                        totalWeight+= Number(values.weights[i]);
-                        totalWeight = totalWeight - Number(props.tweight);
-                    }
+                    totalWeight+= Number(values.weights[i]);
                     
                     settwidth(totalWidth); 
                  }
@@ -243,7 +238,7 @@ const SlittingWidths = (props) => {
                      "instructionRequestDTOs": slits
                  }
                  slitInstructionPayload.push(instructionPayload)
-                 let remainWeight = props.coilDetails.fpresent - Number(props.tweight);
+                 let remainWeight = (props.coilDetails.fpresent || props.coilDetails.plannedWeight);
                  if(Number(availLength)  > lengthValue-cutLength) {
                     message.error('Length greater than available length', 2);
                 }else if(totalWeight > remainWeight) {
@@ -803,12 +798,12 @@ const columnsPlan=[
                     }
                     
                 } else{
-                if(slitPayload.length > 0){
-                 props.saveSlittingInstruction(slitInstruction);
-                 props.setShowCuttingModal(true);
-                } else{
-                 props.setShowSlittingModal(false);
-                }
+                    if(slitPayload.length > 0){
+                    props.saveSlittingInstruction(slitInstruction);
+                    props.setShowCuttingModal(true);
+                    } else{
+                    props.setShowSlittingModal(false);
+                    }
              }
         }else{
             message.error('Please enter instructions for all parts');
