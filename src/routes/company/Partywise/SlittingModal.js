@@ -832,7 +832,7 @@ const columnsPlan=[
                   Cancel
                 </Button>,
                 <Button key="submit" type="primary" loading={loading} onClick={(e)=>{handleOk(e,'slittingDetail')}}>
-                  OK
+                  Proceed to Cut
                 </Button>
               ]:[
                 <Button key="back" onClick={handleCancel}>

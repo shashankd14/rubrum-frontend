@@ -334,32 +334,11 @@ function* fetchInwardPlanDetails(action) {
 }
 
 function* requestSaveCuttingInstruction(action) {
-    const requestBody = [];
-    action.cuttingDetails.map((cutDetails) => {
-        if (cutDetails.inwardId && cutDetails.length && cutDetails.no) {
-            const req = {
-                processId: cutDetails.processId?cutDetails.processId:CUTTING_INSTRUCTION_PROCESS_ID,
-                instructionDate: moment(cutDetails.processDate).format('YYYY-MM-DD HH:mm:ss'),
-                plannedLength: cutDetails.length,
-                plannedWeight: cutDetails.weight,
-                plannedNoOfPieces: cutDetails.no,
-                plannedWidth: cutDetails.plannedWidth,
-                status: 1,
-                "createdBy": "1",
-                "updatedBy": "1",
-                slitAndCut: cutDetails.slitAndCut,
-                inwardId: cutDetails.inwardId || "",
-                parentInstructionId: cutDetails.instructionId ? cutDetails.instructionId : "",
-                groupId: cutDetails.parentGroupId ? cutDetails.parentGroupId : ""
-            }
-            requestBody.push(req);
-        }
-    })
     try {
-        const fetchPartyInwardList = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/instruction/save`, {
+        const fetchPartyInwardList = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/instruction/save/cut', {
             method: 'POST',
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(requestBody)
+            body: JSON.stringify(action.cuttingDetails)
         });
         if (fetchPartyInwardList.status === 200) {
             const fetchPartyListObj = yield fetchPartyInwardList.json()

@@ -54,6 +54,7 @@ const CreateCuttingDetailsForm = (props) => {
     const [packetNo, setPacketNo]= useState(0);
     const [cutPayload,setCutPayload]= useState([]);
     const [selectedKey, setSelectedKey] = useState([]);
+    const [saveInstruction, setSaveInstruction] = useState([]);
     const [tableData, setTableData] = useState(props.wip?(props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts);
     const columns=[
 
@@ -182,18 +183,18 @@ const CreateCuttingDetailsForm = (props) => {
         },
         {
             title: 'Length',
-            dataIndex:'length',
-            key: 'length',
+            dataIndex:'plannedLength',
+            key: 'plannedLength',
         },
         {
             title: 'No of Cuts',
-            dataIndex:'no',
-            key: 'no',
+            dataIndex:'plannedNoOfPieces',
+            key: 'plannedNoOfPieces',
         },
         {
             title: 'Weight',
-            dataIndex:'weight',
-            key:'weight',
+            dataIndex:'plannedWeight',
+            key:'plannedWeight',
         },
         {
             title:'Actions',
@@ -279,6 +280,7 @@ const CreateCuttingDetailsForm = (props) => {
     };
     const handleSubmit = e => {
         e.preventDefault();
+        let instructionRequestDTOs =[];
         let remainWeight
         props.form.validateFields((err, values) => {
             if (!err) {
@@ -287,26 +289,44 @@ const CreateCuttingDetailsForm = (props) => {
                 }else{
                     remainWeight = WeightValue - values.weight;
                 }
+                let instructionPlanDto = {
+                    "createdBy": "1",
+                    "updatedBy":"1",
+                }
                 
                 setValidate(false);
                 if(remainWeight > WeightValue){
                     message.error('Weight greater than available weight', 2);
                 }else{
                     let slitcuts =[];
-                    slitcuts.push({...props.inward.process,
+                    slitcuts.push(
+                    {
+                        processId:1,
+                        instructionDate: moment().format('YYYY-MM-DD HH:mm:ss'),
                         plannedLength: props.inward.process.length,
                         plannedNoOfPieces: props.inward.process.no,
                         plannedWeight: props.inward.process.weight.toFixed(2),
-                        slitAndCut:false,
+                        isSlitAndCut:false,
+                        status: 1,
+                        createdBy: "1",
+                        updatedBy: "1",
                         plannedWidth: props.coilDetails?.fWidth ? props.coilDetails.fWidth : props.coilDetails.plannedWidth,
                         inwardId: props.coilDetails.inwardEntryId ? props.coilDetails.inwardEntryId : "",
-                        instructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : ""});
-                  setCuts([...cuts, ...slitcuts]);
-                  
-                        props.resetInstruction();
-                }
-                
-               
+                        parentInstructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : "",
+                        groupId:""
+                    });
+                       instructionRequestDTOs.push(slitcuts);
+                        let instructionPayload ={
+                            "partDetailsRequest": instructionPlanDto,
+                            instructionRequestDTOs
+                        };
+                        let payload =[];
+                        payload.push(instructionPayload)
+                       setCuts([...cuts, ...slitcuts]);
+                       props.resetInstruction();
+                       setSaveInstruction(payload);
+                        
+                } 
             }else{
                 setValidate(true);
                 message.error('Please enter the mandatory fields(*)',2);
@@ -387,10 +407,12 @@ const CreateCuttingDetailsForm = (props) => {
  }
 },[props.inward.pdfSuccess])
     useEffect(() => {
+        let partId = props.inward.saveCut[0].partDetailsId
         let payload={
-            inwardId: props.coilDetails.inwardEntryId ? props.coilDetails.inwardEntryId: props.coil.inwardEntryId,
-            processId: props.slitCut? 3: 1
-        }
+                    type:'cut',
+                    partId: partId
+                }
+        
         if(props.inward.instructionSaveCuttingSuccess && !props.wip) {
             loading = '';
             props.pdfGenerateInward(payload)
@@ -466,20 +488,34 @@ const CreateCuttingDetailsForm = (props) => {
         let cutsWidth = selectedRowKeys.reduce((a,c)=> c.plannedWidth)
         cutsWidth = selectedRowKeys.length ===1 ? cutsWidth.plannedWidth : cutsWidth;
         let cutsValue = [];
+        let instructionPlanDto = {
+            "createdBy": "1",
+            "updatedBy":"1",
+        }
         for(let i=0; i <packetNo; i++) {
-        let cutObj={
-            weight: (Number(tpweight)/packetNo).toFixed(2),
-            length:cutsLength,
-            plannedWidth: cutsWidth,
-            no: cutsNo.toFixed(0),
-            processId: 3,
-            slitAndCut:props.slitCut ? true :false,
-            parentGroupId: props.inward.groupId.groupId,
-            inwardId: props.coil.inwardEntryId
-        };
+            let cutObj={
+                    processId:3,
+                    instructionDate: moment().format('YYYY-MM-DD HH:mm:ss'),
+                    plannedLength:cutsLength,
+                    plannedNoOfPieces: cutsNo.toFixed(0),
+                    plannedWeight: (Number(tpweight)/packetNo).toFixed(2),
+                    isSlitAndCut:false,
+                    status: 1,
+                    createdBy: "1",
+                    updatedBy: "1",
+                    plannedWidth: cutsWidth,
+                    inwardId: props.coil.inwardEntryId,
+                    parentInstructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : "",
+                    groupId:props.inward.groupId.groupId
+           };
         cutsValue.push(cutObj);
     }
-    
+    let instructionPayload ={
+        "partDetailsRequest": instructionPlanDto,
+        instructionRequestDTOs: cutsValue
+    };let payload =[];
+    payload.push(instructionPayload)
+    setSaveInstruction(payload);
     setRestTableData(restTableData.length>0 ?[...restTableData,...cutsValue]: [...cutsValue])
     setCutValue(cutsValue)
     }
@@ -524,12 +560,13 @@ const CreateCuttingDetailsForm = (props) => {
                 props.setShowCuttingModal();
             }
         }
+       
         if(props.slitCut){
-            props.saveCuttingInstruction(restTableData);
+            props.saveCuttingInstruction(saveInstruction);
         }
         else if(validate === false){
             if(cutPayload.length>0) {
-              props.saveCuttingInstruction(cutPayload);
+              props.saveCuttingInstruction(saveInstruction);
             }else{
                props.setShowCuttingModal(false);
           }
