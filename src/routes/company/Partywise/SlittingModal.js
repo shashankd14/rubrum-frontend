@@ -748,7 +748,6 @@ const columnsPlan=[
             if(props.inward.instructionSaveSlittingSuccess && !props.wip && !props.slitCut) {
                 let partId = props.inward.saveSlit[0].partDetailsId
                 let payload={
-                    type:'slit',
                     partId: partId
                 }
                 props.pdfGenerateInward(payload);

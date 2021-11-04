@@ -409,7 +409,6 @@ const CreateCuttingDetailsForm = (props) => {
     useEffect(() => {
         let partId = props.inward.saveCut[0].partDetailsId
         let payload={
-                    type:'cut',
                     partId: partId
                 }
         

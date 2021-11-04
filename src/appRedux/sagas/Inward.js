@@ -553,25 +553,12 @@ function* pdfGenerateInward(action) {
     let partDetailsId = action.payload.partId;
     let pdfGenerate
     try {
-    if(action.payload.type === 'slit'){
-         pdfGenerate = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/pdf/slit/${partDetailsId}`, {
+         pdfGenerate = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/pdf/${partDetailsId}`, {
                 method: 'GET',
                
             });
-    }
-    else{
-        
-             pdfGenerate = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/pdf/inward', {
-                method: 'POST',
-                headers: {
-                    "Content-Type": "application/json",
-                   
-                  },
-                body: JSON.stringify(action.payload)
-            });
-           
-        }
-        if (pdfGenerate.status === 200) {
+    
+    if (pdfGenerate.status === 200) {
             const pdfGenerateResponse = yield pdfGenerate.json();
             
             let pdfWindow = window.open("")
