@@ -489,22 +489,31 @@ const CreateCuttingDetailsForm = (props) => {
     const bundleListClick=(e)=>{
         e.stopPropagation();
         e.preventDefault();
-        setSelectedKey([]);
-        setbundledList(true)
-        let selectedPastList = selectedPast.length> 0 ? selectedPast:[];
-        
-        if(selectedRowKeys.length>0){
-            selectedPastList.push(selectedRowKeys);
-            setSelectedPast(selectedPastList);
+        const newArray = selectedRowKeys.map(row => row.plannedWidth);
+        const isSameWidth = newArray.every(arr => arr === newArray[0]);
+        if (isSameWidth) {
+            setSelectedKey([]);
+            setbundledList(true)
+            let selectedPastList = selectedPast.length> 0 ? selectedPast:[];
+            
+            if(selectedRowKeys.length>0){
+                selectedPastList.push(selectedRowKeys);
+                setSelectedPast(selectedPastList);
+            }
+            let bundleData = bundleTableData.length === 0 ?cuts.filter(i => !selectedRowKeys.includes(i)): bundleTableData.filter(i => !selectedRowKeys.includes(i));;
+            setbundleTableData(bundleData)
+            let selectedInstruction = selectedRowKeys.map(i => i.instructionId);
+            let payload= {
+                count: selectedRowKeys.length,
+                instructionId: selectedInstruction
+            }
+            props.instructionGroupsave(payload);
+        } else {
+            Modal.error({
+                title: 'Invalid attempt',
+                content: 'Instructions with different width cannot be bundled. Please check!',
+              });
         }
-        let bundleData = bundleTableData.length === 0 ?cuts.filter(i => !selectedRowKeys.includes(i)): bundleTableData.filter(i => !selectedRowKeys.includes(i));;
-         setbundleTableData(bundleData)
-        let selectedInstruction = selectedRowKeys.map(i => i.instructionId);
-        let payload= {
-            count: selectedRowKeys.length,
-            instructionId: selectedInstruction
-        }
-        props.instructionGroupsave(payload); 
     }
     const handleOk=(e)=>{
         e.preventDefault();
