@@ -257,9 +257,9 @@ const CreateCuttingDetailsForm = (props) => {
     const onDelete = ({ record, e, type }) => {
         e.preventDefault();
         if(type === 'slitCut'){
-             const data = restTableData.filter((item) => restTableData.indexOf(item) !==restTableData.indexOf(record))
+             const data = restTableData.filter((item) => item.instructionId !== record.instructionId)
              setRestTableData(data)
-             props.deleteInstructionById(record.parentGroupId);
+             props.deleteInstructionById(record.instructionId);
              setshowDeleteModal(false);
         }else{
             setValidate(false);
@@ -337,6 +337,11 @@ const CreateCuttingDetailsForm = (props) => {
             }
         });
     };
+    useEffect(()=>{
+        if(props.slitCut && !props.wip){
+            setCuts(props.coilDetails.flat())
+          }
+    },[])
     useEffect(() => {
         if(props.inward.process.length && props.inward.process.no) {
             let weight = cuts.map(i => !i.instructionId ? i.weight : 0);
