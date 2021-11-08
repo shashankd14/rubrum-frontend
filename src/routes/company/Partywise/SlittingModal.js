@@ -748,7 +748,6 @@ const columnsPlan=[
             if(props.inward.instructionSaveSlittingSuccess && !props.wip && !props.slitCut) {
                 let partId = props.inward.saveSlit[0].partDetailsId
                 let payload={
-                    type:'slit',
                     partId: partId
                 }
                 props.pdfGenerateInward(payload);
@@ -832,7 +831,7 @@ const columnsPlan=[
                   Cancel
                 </Button>,
                 <Button key="submit" type="primary" loading={loading} onClick={(e)=>{handleOk(e,'slittingDetail')}}>
-                  OK
+                  Proceed to Cut
                 </Button>
               ]:[
                 <Button key="back" onClick={handleCancel}>
