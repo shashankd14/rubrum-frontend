@@ -55,6 +55,7 @@ const CreateCuttingDetailsForm = (props) => {
     const [cutPayload,setCutPayload]= useState([]);
     const [selectedKey, setSelectedKey] = useState([]);
     const [saveInstruction, setSaveInstruction] = useState([]);
+    const [saveCut, setSaveCut] = useState([]);
     const [tableData, setTableData] = useState(props.wip?(props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts);
     const columns=[
 
@@ -290,6 +291,8 @@ const CreateCuttingDetailsForm = (props) => {
                     remainWeight = WeightValue - values.weight;
                 }
                 let instructionPlanDto = {
+                    "targetWeight":"",
+                    "length":"",
                     "createdBy": "1",
                     "updatedBy":"1",
                 }
@@ -315,7 +318,8 @@ const CreateCuttingDetailsForm = (props) => {
                         parentInstructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : "",
                         groupId:""
                     });
-                       instructionRequestDTOs.push(slitcuts);
+                    setSaveCut(saveCut.length >0 ? [...slitcuts,...saveCut]: [...slitcuts]);
+                     instructionRequestDTOs.push(...slitcuts,...saveCut);
                         let instructionPayload ={
                             "partDetailsRequest": instructionPlanDto,
                             instructionRequestDTOs
@@ -571,10 +575,12 @@ const CreateCuttingDetailsForm = (props) => {
        
         if(props.slitCut){
             props.saveCuttingInstruction(saveInstruction);
+            setSaveCut([])
         }
         else if(validate === false){
             if(cutPayload.length>0) {
               props.saveCuttingInstruction(saveInstruction);
+              setSaveCut([])
             }else{
                props.setShowCuttingModal(false);
           }
@@ -583,6 +589,7 @@ const CreateCuttingDetailsForm = (props) => {
     const handleCancel=() => {
         setCuts([]);
         setCutPayload([]);
+        setSaveCut([])
         props.form.resetFields();
         setBalancedValue(false)
         props.setShowCuttingModal(false)}
