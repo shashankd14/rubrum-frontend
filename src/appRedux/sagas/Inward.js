@@ -340,7 +340,7 @@ function* requestSaveCuttingInstruction(action) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(action.cuttingDetails)
         });
-        if (fetchPartyInwardList.status === 200) {
+        if (fetchPartyInwardList.status === 201) {
             const fetchPartyListObj = yield fetchPartyInwardList.json()
             yield put(saveCuttingInstructionSuccess(fetchPartyListObj));
         } else
