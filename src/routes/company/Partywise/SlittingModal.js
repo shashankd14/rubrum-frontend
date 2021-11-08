@@ -733,11 +733,7 @@ const columnsPlan=[
                 loading = '';
                 message.success('Slitting instruction saved', 2).then(() => {
                     if(props.slitCut){
-                        let cuts = props.inward.saveSlit.map(slit => {
-                            let instruction = [...slit.instructions]
-                            return instruction;
-                        })
-                        props.setCutting(cuts);
+                       props.setCutting([...cuts]);
                     }
                     props.setShowSlittingModal(false);
                     props.resetInstruction();
@@ -797,19 +793,29 @@ const columnsPlan=[
                     }
                     
                 } else{
-                    if(slitPayload.length > 0){
-                    props.saveSlittingInstruction(slitInstruction);
-                    props.setShowCuttingModal(true);
+                    if(name === 'SlitCut'){
+                        if(slitPayload.length > 0){
+                            props.saveSlittingInstruction(slitInstruction);
+                         }
                     } else{
-                    props.setShowSlittingModal(false);
+                         props.setShowSlittingModal(false);
                     }
-             }
-        }else{
-            message.error('Please enter instructions for all parts');
-        }
+                }
+             } else{
+                if(name === 'slittingDetail'){
+                    setValue(value+3);
+                     props.setShowSlittingModal(false);
+                     props.setShowCuttingModal(true);
+                     props.setCutting(cuts);
+                     setDeletedSelected(false);
+                 } else{
+                    message.error('Please enter instructions for all parts');
+                 }
+           
+            }
         }else{ 
             if(name === 'slittingDetail'){
-                setValue(value+3);
+               setValue(value+3);
                 props.setShowSlittingModal(false);
                 props.setShowCuttingModal(true);
                 props.setCutting(cuts);
