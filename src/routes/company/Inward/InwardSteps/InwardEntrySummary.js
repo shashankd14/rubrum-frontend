@@ -24,7 +24,10 @@ const InwardEntrySummary = (props) => {
         if(props.inwardSubmitSuccess) {
             setGenerate(false)
             setPayload({
-                inwardId: props.inwardObject.submitInward
+                payloadObj:{
+                    inwardId: props.inwardObject.submitInward
+                },
+                type:'inward'
             });
         }
     }, [props.inwardSubmitSuccess]);
