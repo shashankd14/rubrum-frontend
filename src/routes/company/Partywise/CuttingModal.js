@@ -417,7 +417,7 @@ const CreateCuttingDetailsForm = (props) => {
 },[props.inward.pdfSuccess])
     useEffect(() => {
         if(props.inward.instructionSaveCuttingSuccess && !props.wip) {
-            let partId = props.inward?.saveSlit[0]?.partDetailsId
+            let partId = props.slitCut? props.inward.saveSlit[0].partDetailsId: props.inward.saveCut[0].partDetailsId
             let payload={
                     partId: partId
                 }
