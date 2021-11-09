@@ -553,11 +553,25 @@ function* pdfGenerateInward(action) {
     let partDetailsId = action.payload.partId;
     let pdfGenerate
     try {
-         pdfGenerate = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/pdf/${partDetailsId}`, {
-                method: 'GET',
-               
+        // inward pdf
+        if(action.payload.type === 'inward'){
+            pdfGenerate = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/pdf/inward', {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+
+                  },
+                body: JSON.stringify(action.payload.payloadObj)
             });
-    
+        }else {
+            // process pdf
+        pdfGenerate = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/pdf/${partDetailsId}`, {
+            method: 'GET',
+           
+        });
+
+       }
+        
     if (pdfGenerate.status === 200) {
             const pdfGenerateResponse = yield pdfGenerate.json();
             
