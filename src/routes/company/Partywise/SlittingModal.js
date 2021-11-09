@@ -220,7 +220,7 @@ const SlittingWidths = (props) => {
                             status: 1,
                             createdBy: "1",
                             updatedBy:"1",
-                            groupId:"",
+                            groupId: null,
                             plannedWeight:(values.weights[i]/values.nos[i]).toFixed(2),
                             inwardId: props.coilDetails.inwardEntryId ? props.coilDetails.inwardEntryId : '',
                             parentInstructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : '',
