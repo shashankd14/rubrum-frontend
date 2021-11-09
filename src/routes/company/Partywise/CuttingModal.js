@@ -470,7 +470,7 @@ const CreateCuttingDetailsForm = (props) => {
             setRestTableData(cutValue);
         }
         let weights= selectedRows.map(i => i.plannedWeight);
-        weights = selectedRows.length>0?weights.reduce((total, num) => total + num): 0;
+        weights = selectedRows.length>0?weights.reduce((total, num) => total + Number(num)): 0;
         settpweight(weights);
     }
     const setChangeSelection=(selectedRowKeys)=>{
