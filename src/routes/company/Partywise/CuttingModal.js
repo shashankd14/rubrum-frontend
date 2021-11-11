@@ -337,11 +337,7 @@ const CreateCuttingDetailsForm = (props) => {
             }
         });
     };
-    useEffect(()=>{
-        if(props.slitCut && !props.wip){
-            setCuts(props.coilDetails.flat())
-          }
-    },[])
+   
     useEffect(() => {
         if(props.inward.process.length && props.inward.process.no) {
             let weight = cuts.map(i => !i.instructionId ? i.weight : 0);

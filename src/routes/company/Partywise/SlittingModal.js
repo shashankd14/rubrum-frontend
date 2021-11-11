@@ -733,7 +733,13 @@ const columnsPlan=[
                 loading = '';
                 message.success('Slitting instruction saved', 2).then(() => {
                     if(props.slitCut){
-                       props.setCutting([...cuts]);
+                        let cutList = props.inward.saveSlit.map(slit => {
+                            return [...slit.instructions]
+                        })
+                        let coilList = props.coilDetails.instruction.flat();
+                        cutList = cutList.flat(); 
+                        cutList = [...coilList,...cutList]
+                       props.setCutting([...new Set(cutList)]);
                     }
                     props.setShowSlittingModal(false);
                     props.resetInstruction();
