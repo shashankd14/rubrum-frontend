@@ -329,8 +329,8 @@ const CreateCuttingDetailsForm = (props) => {
                        setCuts([...cuts, ...slitcuts]);
                        props.resetInstruction();
                        setSaveInstruction(payload);
-                        
-                } 
+                       props.setProcessDetails({});
+                }
             }else{
                 setValidate(true);
                 message.error('Please enter the mandatory fields(*)',2);
@@ -451,7 +451,7 @@ const CreateCuttingDetailsForm = (props) => {
            setBalanced(true)
         }
         let length = e.target.value;
-        let numerator = props.coilDetails.fpresent || props.coilDetails.plannedWeight;
+        let numerator = props.coilDetails.fpresent || props.coilDetails.plannedWeight || 0;
         let weight = cuts.map(i => !i.instructionId ? i.weight : 0);
         weight = cuts.length > 0 ? weight.reduce((total, num) => total + num) : 0;
         if (weight) {
@@ -592,6 +592,7 @@ const CreateCuttingDetailsForm = (props) => {
         setCutPayload([]);
         setSaveCut([])
         props.form.resetFields();
+        props.setProcessDetails({});
         setBalancedValue(false)
         props.setShowCuttingModal(false)}
     
@@ -710,7 +711,6 @@ const CreateCuttingDetailsForm = (props) => {
                                     <DatePicker
                                     placeholder="dd/mm/yy"
                                     style={{width: 200}}
-                                    defaultValue={moment(new Date(), APPLICATION_DATE_FORMAT)}
                                     format={APPLICATION_DATE_FORMAT}
                                     disabled={props.wip ? true : false}/>
                                     )}
@@ -718,7 +718,7 @@ const CreateCuttingDetailsForm = (props) => {
                             <Form.Item label="Length">
                                 {getFieldDecorator('length', {
                                     rules: [{ required: true, message: 'Please enter Length' },
-                                            {pattern: "^[0-9]*$", message: 'Length should be a number'},],
+                                            {pattern: "^[0-9]*$", message: 'Length should be a number'},]
                                     })(
                                     <Input id="length" disabled={props.wip ? true : false} onChange={(e)=>handleChange(e)}/>
                                         )}
@@ -726,7 +726,7 @@ const CreateCuttingDetailsForm = (props) => {
                             <Form.Item label="No of cuts">
                                     {getFieldDecorator('no', {
                                         rules: [{ required: true, message: 'Please enter number of cuts required' }
-                                            ],
+                                            ]
                                     })(
                                     <Input id="noOfCuts" disabled={props.wip ? true : false}/>
                                         )}
@@ -738,8 +738,7 @@ const CreateCuttingDetailsForm = (props) => {
                             </Form.Item>
                             <Form.Item label="Weight">
                                 {getFieldDecorator('weight', {
-                                        rules: [{ required: true, message: 'Please fill other details to calculate weight' },
-                                            ],
+                                        rules: [{ required: true, message: 'Please fill other details to calculate weight' }]
                                     })(
                                         <Input id="weight" disabled={true}  />
                                     )}
@@ -879,7 +878,7 @@ const CuttingDetailsForm = Form.create({
     },
     onValuesChange(props, values) {
         props.setProcessDetails({ ...props.inward.process, ...values});
-    },
+    }
 })(CreateCuttingDetailsForm);
 
 
