@@ -23,6 +23,7 @@ const CreateCuttingDetailsForm = (props) => {
     const TabPane = Tabs.TabPane;
     const {getFieldDecorator} = props.form;
     let loading = '';
+    let index = 0;
     const [showDeleteModal, setshowDeleteModal] = useState(false);
     const [deleteRecord, setDeleteRecord] = useState({});
     const [cuts, setCuts] = useState([]);
@@ -214,9 +215,8 @@ const CreateCuttingDetailsForm = (props) => {
     const columnsSlit=[
         {
             title: 'Serial No',
-            dataIndex:'instructionId',
-            key:'instructionId',
-            render:(text, record, index) => (page === 1?index + page : index+(page-1)+10)
+            key:'index',
+            render:(text, record, index) => (page === 1?index + page : (index+1)+(page-1)*10)
         },
         {
             title: 'Process Date',
@@ -337,7 +337,6 @@ const CreateCuttingDetailsForm = (props) => {
             }
         });
     };
-   
     useEffect(() => {
         if(props.inward.process.length && props.inward.process.no) {
             let weight = cuts.map(i => !i.instructionId ? i.weight : 0);
@@ -352,7 +351,20 @@ const CreateCuttingDetailsForm = (props) => {
     
     useEffect(() => {
         if(props.slitCut && !props.wip){
-          setCuts(props.coilDetails.flat())
+        let cutTableData = props.coilDetails.flat();
+        let tableList =[];
+        for(let i=0;i< cutTableData.length;i++){
+            let tableObj = {
+                ...cutTableData[i],
+                key: i,
+                processDate: cutTableData[i].processDate,
+                plannedLength: cutTableData[i].plannedLength,
+                plannedWidth: cutTableData[i].plannedWidth,
+                plannedWeight: cutTableData[i].plannedWeight
+            }
+            tableList.push(tableObj)
+        }
+       setCuts(tableList)
         }else{
         let data = props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions
         const lengthValue = props.coilDetails.instruction && props.coilDetails.instruction.length > 0 ? props.plannedLength(props.coilDetails) : props.coilDetails.fLength ? props.coilDetails.fLength  : props.plannedLength(props.coilDetails)
@@ -373,7 +385,7 @@ const CreateCuttingDetailsForm = (props) => {
                 setCuts(cutsData);
             }
         }
-       }}, [props.coilDetails]);
+       }}, [props.coilDetails, page]);
     useEffect(() => {
         if(props.inward.instructionSaveCuttingLoading && !props.wip) {
             loading = message.loading('Saving Cut Instruction & Generating pdf..');
@@ -461,7 +473,7 @@ const CreateCuttingDetailsForm = (props) => {
     }
     
     const setSelection = (record, selected, selectedRows) => {
-        setSelectedRowKeys(selectedRows);
+         setSelectedRowKeys(selectedRows);
         if(cutValue.length > 0){
             setRestTableData(cutValue);
         }
@@ -469,14 +481,14 @@ const CreateCuttingDetailsForm = (props) => {
         weights = selectedRows.length>0?weights.reduce((total, num) => total + Number(num)): 0;
         settpweight(weights);
     }
-    const setChangeSelection=(selectedRowKeys)=>{
-        setSelectedKey(selectedRowKeys);
-        console.log(selectedRowKeys);
-    }
+    // const setChangeSelection=(record, selectedRowKeys)=>{
+    //     setSelectedKey(selectedRowKeys);
+    //     console.log(selectedRowKeys);
+    // }
     const handleSelection = {
-        selectedRowKeys:selectedKey,
+        //  selectedRowKeys:selectedKey,
         onSelect: setSelection, 
-        onChange: setChangeSelection,
+        // onChange: setChangeSelection,
         getCheckboxProps: (record) => ({
             disabled: record.groupId !== null
         })
