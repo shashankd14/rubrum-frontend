@@ -385,7 +385,7 @@ const CreateCuttingDetailsForm = (props) => {
                 setCuts(cutsData);
             }
         }
-       }}, [props.coilDetails, page]);
+       }}, [props.coilDetails]);
     useEffect(() => {
         if(props.inward.instructionSaveCuttingLoading && !props.wip) {
             loading = message.loading('Saving Cut Instruction & Generating pdf..');
