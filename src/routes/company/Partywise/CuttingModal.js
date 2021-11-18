@@ -425,7 +425,7 @@ const CreateCuttingDetailsForm = (props) => {
 },[props.inward.pdfSuccess])
     useEffect(() => {
         if(props.inward.instructionSaveCuttingSuccess && !props.wip) {
-            let partId = props.slitCut? props.inward.saveSlit[0].partDetailsId: props.inward.saveCut[0].partDetailsId
+            let partId = props.inward.saveCut[0].partDetailsId
             let payload={
                     partId: partId
                 }
@@ -529,7 +529,8 @@ const CreateCuttingDetailsForm = (props) => {
     let instructionPayload ={
         "partDetailsRequest": instructionPlanDto,
         instructionRequestDTOs: cutsValue
-    };let payload =[];
+    };
+    let payload =saveInstruction.length >0 ? [...saveInstruction] :[];
     payload.push(instructionPayload)
     setSaveInstruction(payload);
     setRestTableData(restTableData.length>0 ?[...restTableData,...cutsValue]: [...cutsValue])
