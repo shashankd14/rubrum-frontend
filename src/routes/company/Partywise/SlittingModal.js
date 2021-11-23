@@ -1,4 +1,4 @@
-import {Button, Col, Form, Icon, Input, message, Modal, Row, Table, Tabs, DatePicker, Radio, Select, Checkbox} from "antd";
+import {Button, Col, Form, Icon, Input, message, Modal, Row, Table, Tabs, DatePicker, Radio, Select, Collapse} from "antd";
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import moment from "moment";
@@ -7,6 +7,7 @@ import {setProcessDetails, saveSlittingInstruction, resetInstruction, updateInst
 import { set } from "nprogress";
 import { values } from "lodash";
 
+const { Panel } = Collapse;
 const Option = Select.Option;
 
 export const formItemLayout = {
@@ -200,6 +201,7 @@ const SlittingWidths = (props) => {
                 const lengthValue = props.coilDetails.fLength ? props.coilDetails.fLength : props.plannedLength(props.coilDetails)
                 const weightValue1 = props.coilDetails.fpresent >= 0? props.coilDetails.fpresent : props.plannedWeight(props.coilDetails)
                 const slits = [];
+                let slitArray = [];
                 let uniqId = '';
                 if(cutLength === 0){
                     setOldLength(Number(availLength));
@@ -237,6 +239,7 @@ const SlittingWidths = (props) => {
                     instructionPlanDto.deleteUniqId = uniqId;
                     settwidth(totalWidth); 
                  }
+                 slitArray.push(slits);
                  let instructionPayload ={
                      "partDetailsRequest": instructionPlanDto,
                      "instructionRequestDTOs": slits
@@ -256,6 +259,7 @@ const SlittingWidths = (props) => {
                         message.error('Sum of slits width is greater than width of coil.', 2);
                 }else{
                     setWeightValue(remainWeight-(totalWeight));
+                        props.setPanelList(slitArray);
                         props.setSlits(slits);
                         props.setslitpayload(slits);
                         props.setSlitInstruction(slitInstructionPayload);
@@ -263,8 +267,10 @@ const SlittingWidths = (props) => {
                         props.setSlitEqualInstruction(slitInstructionPayload);
                         props.form.resetFields();
                 }}
+                
                 else{
                     setWeightValue(remainWeight-(totalWeight));
+                        props.setPanelList(slitArray)
                         props.setSlits(slits);
                         props.setslitpayload(slits);
                         props.setSlitInstruction(slitInstructionPayload);
@@ -642,6 +648,7 @@ const columnsPlan=[
     const [deleteSelected, setDeletedSelected] = useState(false)
     const [showDeleteModal, setshowDeleteModal] = useState(false);
     const [deleteRecord, setDeleteRecord] = useState({});
+    const [panelList, setPanelList]= useState([]);
     const onDelete = ({ record, key, e }) => {
         e.preventDefault();
         const data = cuts.filter(item => {
@@ -688,6 +695,7 @@ const columnsPlan=[
         setValue(0)
         setSlitInstruction([])
     let data = props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions;
+   
     if(props.childCoil){
         setInstruction(data);
         data = data.childInstructions || [];
@@ -698,7 +706,15 @@ const columnsPlan=[
         setslitpayload([])
         
     } else{
-        data = data.flat();  
+        data = data.flat();
+        let partIdList = data.map(item => item.partId);
+        partIdList = [...new Set(partIdList)];
+        let list1 = []
+        for(let i=0; i< partIdList.length;i++){
+            let mapList = data.filter(list => list.partId === partIdList[i])
+            list1.push(mapList)
+        }
+        setPanelList(list1);  
         let cutsData = [...data];
         cutsData = props.wip ? cutsData.filter(item => item.process.processId === 2 && item.status.statusId !==3 && item.groupId === null) :props.slitCut ? cutsData.filter(item => item.process.processId === 2 && item.isSlitAndCut === true ):cutsData.filter(item => item.process.processId === 2 && item.isSlitAndCut === false)
         setSlittingDetail(cutsData)
@@ -961,17 +977,54 @@ const columnsPlan=[
                         <Form {...formItemLayout} className="login-form gx-pt-4">
                             
                                 <Form.Item>
-                                    <SlittingWidthsForm setSlitEqualInstruction={setSlitEqualInstruction} setSlitInstructionList={setSlitInstructionList} slitEqualInstruction={slitEqualInstruction} slitInstructionList={slitInstructionList} setslitpayload={(slits) => setslitpayload([...slitPayload,...slits])} setSlitInstruction={(slitInstruction) => setSlitInstruction([...slitInstruction])} slitInstruction={slitInstruction} setSlits={(slits) => setCuts([...cuts,...slits])} setweight={(w) => settweight(w)} coilDetails={props.coilDetails} wip={props.wip} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth} plannedWeight ={props.plannedWeight} length={length} cuts={cuts} edit={edit} tweight={tweight} lengthValue={(lengthValue) => setLengthValue(lengthValue.toFixed(1))} widthValue={(widthValue) => setWidthValue(widthValue)} reset={form} validate={(valid) => setValidate(valid)} value={value} setDeleted = {deleteSelected} slitCut={props.slitCut} setParts ={(parts)=>setParts(parts)}/>
+                                    <SlittingWidthsForm 
+                                        setSlitEqualInstruction={setSlitEqualInstruction} 
+                                        setSlitInstructionList={setSlitInstructionList} 
+                                        slitEqualInstruction={slitEqualInstruction} 
+                                        slitInstructionList={slitInstructionList} 
+                                        setslitpayload={(slits) => setslitpayload([...slitPayload,...slits])} 
+                                        setSlitInstruction={(slitInstruction) => setSlitInstruction([...slitInstruction])} 
+                                        slitInstruction={slitInstruction} 
+                                        setSlits={(slits) => setCuts([...cuts,...slits])} 
+                                        setweight={(w) => settweight(w)} 
+                                        coilDetails={props.coilDetails} 
+                                        wip={props.wip} 
+                                        plannedLength={props.plannedLength} 
+                                        plannedWidth ={props.plannedWidth} 
+                                        plannedWeight ={props.plannedWeight} 
+                                        length={length} 
+                                        cuts={cuts} 
+                                        edit={edit} 
+                                        tweight={tweight} 
+                                        lengthValue={(lengthValue) => setLengthValue(lengthValue.toFixed(1))} 
+                                        widthValue={(widthValue) => setWidthValue(widthValue)} 
+                                        reset={form} 
+                                        validate={(valid) => setValidate(valid)} 
+                                        value={value} 
+                                        setDeleted = {deleteSelected} 
+                                        slitCut={props.slitCut} 
+                                        setParts ={(parts)=>setParts(parts)}
+                                        setPanelList={(list) => setPanelList([...panelList,...list])}/>
                                 </Form.Item>
 
                             </Form>
                         </Col>
                         <Col lg={12} md={12} sm={24} xs={24}>
-                            <Table className="gx-table-responsive" columns={props.wip?columns: columnsPlan} dataSource={props.wip?tableData:reset ?cuts: cutArray} pagination={{
-                                    onChange(current) {
-                                      setPage(current);
-                                    }
-                                  }}/>
+                        {panelList.map((item,index) =>
+                            (<Collapse accordion>
+                            <Panel header={index+1} key="1">
+                            <Table className="gx-table-responsive" columns={props.wip?columns: columnsPlan} dataSource={props.wip?tableData:reset ?item: cutArray} pagination={{
+                                   onChange(current) {
+                                     setPage(current);
+                                   }
+                                 }}/>
+                           </Panel>
+   
+                       </Collapse>)
+                        )}
+                        
+                            
+                            
                             <Form.Item label="Total weight(kg)">
                                 {getFieldDecorator('tweight', {
                                     rules: [{ required: false}],
