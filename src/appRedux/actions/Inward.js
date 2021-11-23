@@ -35,6 +35,7 @@ import {
     RESET_INSTRUCTION_FORM,
     RESET_INWARD_FORM,
     RESET_DELETE_INWARD,
+    REST_ISDELETED,
 
     FETCH_MATERIAL_GRADE_LIST_REQUEST,
     FETCH_MATERIAL_GRADE_LIST_SUCCESS,
@@ -68,6 +69,7 @@ import {
     DELETE_INSTRUCTION_BY_ID,
     DELETE_INSTRUCTION_BY_ID_ERROR,
     DELETE_INSTRUCTION_BY_ID_SUCCESS,
+    DELETE_INSTRUCTION_BY_ID_SUCCESS_SLIT,
     CHECK_BATCH_NO_EXIST,
     CHECK_BATCH_NO_EXIST_ERROR,
     CHECK_BATCH_NO_EXIST_SUCCESS,
@@ -290,6 +292,10 @@ export const resetDeleteInward = () => ({
     type: RESET_DELETE_INWARD,
 })
 
+export const resetIsDeleted = () => ({
+    type: REST_ISDELETED,
+})
+
 export const setInwardSelectedForDelivery = (payload) =>  ({
     type: SET_INWARD_SELECTED_FOR_DELIVERY,
     payload: payload
@@ -365,15 +371,20 @@ export const deleteInwardEntryByIdError = (error) => ({
     type: DELETE_INWARD_LIST_BY_ID_ERROR,
     error
 });
-export const deleteInstructionById = (id) => ({
+export const deleteInstructionById = (payload, param) => ({
     type: DELETE_INSTRUCTION_BY_ID,
-    id
+    payload,
+    param
 });
 
-export const deleteInstructionByIdSuccess = (payload) => ({
-    type: DELETE_INSTRUCTION_BY_ID_SUCCESS,
-    payload
-});
+export const deleteInstructionByIdSuccess = (payload, process) => 
+    process === 'slit' ? ({
+        type: DELETE_INSTRUCTION_BY_ID_SUCCESS_SLIT,
+        payload
+    }) : ({
+        type: DELETE_INSTRUCTION_BY_ID_SUCCESS,
+        payload
+    });
 
 export const deleteInstructionByIdError = (error) => ({
     type: DELETE_INSTRUCTION_BY_ID_ERROR,
