@@ -3,7 +3,7 @@ import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import moment from "moment";
 import {APPLICATION_DATE_FORMAT} from '../../../constants';
-import {setProcessDetails, saveSlittingInstruction, resetInstruction, updateInstruction, deleteInstructionById,pdfGenerateInward} from '../../../appRedux/actions/Inward';
+import {setProcessDetails, saveSlittingInstruction, resetInstruction, updateInstruction, deleteInstructionById,pdfGenerateInward, resetIsDeleted } from '../../../appRedux/actions/Inward';
 import { set } from "nprogress";
 import { values } from "lodash";
 
@@ -200,7 +200,6 @@ const SlittingWidths = (props) => {
                 const lengthValue = props.coilDetails.fLength ? props.coilDetails.fLength : props.plannedLength(props.coilDetails)
                 const weightValue1 = props.coilDetails.fpresent >= 0? props.coilDetails.fpresent : props.plannedWeight(props.coilDetails)
                 const slits = [];
-                let uniqId = '';
                 if(cutLength === 0){
                     setOldLength(Number(availLength));
                 }
@@ -226,15 +225,14 @@ const SlittingWidths = (props) => {
                             plannedWeight:(values.weights[i]/values.nos[i]).toFixed(2),
                             inwardId: props.coilDetails.inwardEntryId ? props.coilDetails.inwardEntryId : '',
                             parentInstructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : '',
-                            deleteUniqId: `${values.weights[i]/values.nos[i]}-${unsavedDeleteId}`
+                            deleteUniqId: unsavedDeleteId
                         }
                         slits.push(slitValue);
-                        uniqId = `${values.weights[i]/values.nos[i]}-${unsavedDeleteId}`;
                     }
                     wValue = targetWeight*((values.widths[i]*values.nos[i]/widthValue1))
                     totalWidth += values.widths[i]*values.nos[i];
                     totalWeight+= Number(values.weights[i]);
-                    instructionPlanDto.deleteUniqId = uniqId;
+                    instructionPlanDto.deleteUniqId = unsavedDeleteId;
                     settwidth(totalWidth); 
                  }
                  let instructionPayload ={
@@ -644,32 +642,41 @@ const columnsPlan=[
     const [deleteRecord, setDeleteRecord] = useState({});
     const onDelete = ({ record, key, e }) => {
         e.preventDefault();
-        const data = cuts.filter(item => {
-            if (item.deleteUniqId) {
-                return item.deleteUniqId !== record.deleteUniqId;
-            } else {
-                return cuts.indexOf(item) !== key;
-            }
-        });
+
         setDeletedSelected(true);
-        if (record.instructionId) {
-            props.deleteInstructionById(record.instructionId)
+        if (record.isSlitAndCut && record.groupId) {
+            message.error('Unable to delete! As part instruction is already bundled');
+        }
+        else if (record.instructionId && record.partId) {
+            const payload = {
+                partId: record.partId
+            }
+            props.deleteInstructionById(payload, 'slit');
+            setshowDeleteModal(false);
+            props.setShowSlittingModal(false);
         } else {
+            const data = cuts.filter(item => {
+                if (item.deleteUniqId) {
+                    return item.deleteUniqId !== record.deleteUniqId;
+                } else {
+                    return cuts.indexOf(item) !== key;
+                }
+            });
             let payload = [];
             slitInstructionList.forEach(part => {
-                payload = cuts.filter(item => {
-                        if (part.deleteUniqId) {
-                            return part.deleteUniqId !== item.deleteUniqId
-                        }
-                });
+                const id = part.partDetailsRequest.deleteUniqId
+                if (id && id !== record.deleteUniqId) {
+                    payload.push(part);
+                }
             });
             setSlitInstructionList(payload);
+            setSlitInstruction(payload);
             setSlitEqualInstruction(payload);
+            setValidate(false);
+            setslitpayload(data);
+            setCuts(data);
+            setshowDeleteModal(false);
         }
-        setValidate(false);
-        setslitpayload(data);
-        setCuts(data);
-        setshowDeleteModal(false);
       }
     const onEdit = (key, e) => {
         // const data = cuts.filter(item => cuts.indexOf(item) !== key);
@@ -679,10 +686,11 @@ const columnsPlan=[
       }
     
    useEffect(()=>{
-   const result = cuts.filter(item => item.instructionId === props.coilDetails.instructionId) 
-   let resetter = cuts.length> 0 ? result.length > 0 ? true : false : true
-   setreset(resetter);
-   
+       if (!props.inward.isDeleted) {
+            const result = cuts.filter(item => item.instructionId === props.coilDetails.instructionId) 
+            let resetter = cuts.length> 0 ? result.length > 0 ? true : false : true
+            setreset(resetter);
+       }
    },[props.coilDetails])
     useEffect(() => {
         setValue(0)
@@ -711,6 +719,7 @@ const columnsPlan=[
      let newData = [...data];
      setTableData(newData);
     }
+    props.resetIsDeleted(false);
  }, [props.coilDetails]);
 
   const onInputChange = (key, index, type) => (
@@ -743,6 +752,7 @@ const columnsPlan=[
     useEffect(()=>{
         if(props.inward.pdfSuccess && !props.wip) {
             message.success('Slitting instruction saved & pdf generated successfully', 2).then(() => {
+               props.resetIsDeleted(false);
                props.setShowSlittingModal(false);
                 props.resetInstruction();
                 
@@ -763,6 +773,7 @@ const columnsPlan=[
                         cutList = [...coilList,...cutList]
                        props.setCutting([...new Set(cutList)]);
                     }
+                    props.resetIsDeleted(false);
                     props.setShowSlittingModal(false);
                     props.resetInstruction();
                     
@@ -782,10 +793,10 @@ const columnsPlan=[
     }, [props.inward.instructionSaveSlittingSuccess])
     const handleCancel=(e) => {
         e.preventDefault();
+        props.resetIsDeleted(false);
         setCuts([]);
         setForm(true)
         setValue(value+3);
-        
         setDeletedSelected(false);
         props.setShowSlittingModal(false)
     }
@@ -817,6 +828,7 @@ const columnsPlan=[
                         props.saveSlittingInstruction(slitInstruction);
                         
                     }else{
+                        props.resetIsDeleted(false);
                         props.setShowSlittingModal(false);
                     }
                     
@@ -826,12 +838,14 @@ const columnsPlan=[
                             props.saveSlittingInstruction(slitInstruction);
                          }
                     } else{
+                         props.resetIsDeleted(false);
                          props.setShowSlittingModal(false);
                     }
                 }
              } else{
                 if(name === 'slittingDetail'){
                     setValue(value+3);
+                    props.resetIsDeleted(false);
                      props.setShowSlittingModal(false);
                      props.setShowCuttingModal(true);
                      props.setCutting(cuts);
@@ -844,13 +858,14 @@ const columnsPlan=[
         }else{ 
             if(name === 'slittingDetail'){
                setValue(value+3);
+               props.resetIsDeleted(false);
                 props.setShowSlittingModal(false);
                 props.setShowCuttingModal(true);
                 props.setCutting(cuts);
                 setDeletedSelected(false);
             } 
         } 
-    
+        
     }
     return (
         
@@ -1080,4 +1095,4 @@ const SlittingDetailsForm = Form.create({
 
 const SlittingWidthsForm = Form.create()(SlittingWidths);
 
-export default connect(mapStateToProps, {setProcessDetails, saveSlittingInstruction, resetInstruction, updateInstruction,deleteInstructionById, pdfGenerateInward})(SlittingDetailsForm);
+export default connect(mapStateToProps, {setProcessDetails, saveSlittingInstruction, resetInstruction, updateInstruction,deleteInstructionById, pdfGenerateInward, resetIsDeleted })(SlittingDetailsForm);

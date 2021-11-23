@@ -256,18 +256,21 @@ const CreateCuttingDetailsForm = (props) => {
    
     const onDelete = ({ record, e, type }) => {
         e.preventDefault();
+        const payload = {
+            instructionId: record.instructionId
+         }
+         if (record.instructionId) {
+            props.deleteInstructionById(payload, 'cut');
+         }
         if(type === 'slitCut'){
-             const data = restTableData.filter((item) => item.instructionId !== record.instructionId)
-             setRestTableData(data)
-             props.deleteInstructionById(record.instructionId);
+             setRestTableData([]);
              setshowDeleteModal(false);
         }else{
             setValidate(false);
              const data = cuts.filter((item) => cuts.indexOf(item) !==cuts.indexOf(record))
              setCuts(data);
              setCutPayload(data);
-            props.deleteInstructionById(record.instructionId);
-            setshowDeleteModal(false);
+             setshowDeleteModal(false);
         }
     };
     const onChange=()=>{
@@ -425,7 +428,7 @@ const CreateCuttingDetailsForm = (props) => {
 },[props.inward.pdfSuccess])
     useEffect(() => {
         if(props.inward.instructionSaveCuttingSuccess && !props.wip) {
-            let partId = props.slitCut? props.inward.saveSlit[0].partDetailsId: props.inward.saveCut[0].partDetailsId
+            let partId = props.slitCut? props.inward.saveSlit[0]?.partDetailsId: props.inward.saveCut[0]?.partDetailsId
             let payload={
                     partId: partId
                 }
@@ -650,7 +653,11 @@ const CreateCuttingDetailsForm = (props) => {
           <Row>
               <Col lg={cutValue.length > 0 ?14: 24} md={16} sm={24} xs={24}>
                 {bundleItemList.length === 0 ? <>
-                <Table className="gx-table-responsive"  columns={columnsSlit} dataSource={selectedRowKeys} pagination={false}/>
+                <Table className="gx-table-responsive"  columns={columnsSlit} dataSource={selectedRowKeys} pagination={{
+            onChange(current) {
+              setPage(current);
+            }
+        }}/>
                 <div style={{padding: "20px 0px 0px 25px"}}>
             <label for="tpweight">Total weight(kg):</label>
             <input type="text" className="bundle-input-class" id="tpweight" name="tpweight" value ={tpweight} disabled></input>
@@ -665,7 +672,7 @@ const CreateCuttingDetailsForm = (props) => {
                 <div style={{'padding-left': "65%"}}><Button type="primary" size="medium" onClick={getCuts}>Confirm</Button> 
                 </div></>:
                 bundleItemList.length > 0 && bundleItemList.map((item,idx) => <>
-                <Table className="gx-table-responsive"  columns={columnsSlit} dataSource={selectedPast.length > 0 ?selectedPast[idx]:selectedRowKeys} pagination={false}/>
+                <Table rowSelection={[]} className="gx-table-responsive"  columns={columnsSlit} dataSource={selectedPast.length > 0 ?selectedPast[idx]:selectedRowKeys} pagination={false}/>
                 <div style={{padding: "20px 0px 0px 25px"}}>
             <label for="tpweight">Total weight(kg):</label>
             <input type="text" className="bundle-input-class" id="tpweight" name="tpweight" value ={tpweight} disabled></input>
