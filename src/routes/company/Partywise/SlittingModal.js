@@ -310,21 +310,22 @@ const SlittingWidths = (props) => {
             keys: keys.filter(key => key !== k),
         });
     }
-    const handleBlur = (e)=>{
+    const handleBlur = (e, i)=>{
         props.form.validateFields((err, values) => {
             let widthEntry = 0;
             let array = [];
             let wValue;
             let widthCheck = (widthValue1 === 0 && width !== 0 )? width: widthValue1;
             if(!err){
-                for(let i=0; i < values.widths.length; i++) {
-                    widthEntry += values.widths[i]*values.nos[i];
-                     array.push(`weights[${i}]`);
-                    wValue = targetWeight*((values.widths[i]*values.nos[i])/widthCheck)
-                    props.form.setFieldsValue({
-                        [array[i]]: wValue
-                   });
-                  }
+                for(let i=0; i< values.widths.length; i++){
+                    array.push(`weights[${i}]`);
+                    widthEntry += Number(values.widths[i])*Number(values.nos[i]);
+                }
+                
+                wValue = Number(targetWeight)*((Number(values.widths[i])*Number(values.nos[i]))/widthCheck)
+                props.form.setFieldsValue({
+                  [array[i]]: wValue
+                });
                 settwidth(widthEntry);
                 if(lengthValue1>= (availLength+cutLength)){
                     // setlen(lengthValue1-(availLength+cutLength))
@@ -453,7 +454,7 @@ const SlittingWidths = (props) => {
                                         rules: [{ required: true, message: 'Please enter width' },
                                             {pattern: `^[+-]?[0-9]*\.[0-9]{0,1}$`, message: 'Width greater than available width'},],
                                     })(
-                                        <Input id="widths" disabled={props.wip ? true : false} onBlur={handleBlur} />
+                                        <Input id="widths" disabled={props.wip ? true : false} onBlur={(e) =>handleBlur(e, index)} />
                                     )}
                                 </Form.Item>
                             </Col>
@@ -463,7 +464,7 @@ const SlittingWidths = (props) => {
                                         rules: [{ required: true, message: 'Please enter nos' },
                                             {pattern: "^[0-9]*$", message: 'Number of slits should be a number'},],
                                     })(
-                                        <Input id="nos" disabled={props.wip ? true : false} onBlur={handleBlur}/>
+                                        <Input id="nos" disabled={props.wip ? true : false} onBlur={(e)=>handleBlur(e,index)}/>
                                     )}
                                 </Form.Item>
                             </Col>
