@@ -355,6 +355,8 @@ const CreateCuttingDetailsForm = (props) => {
     
     useEffect(() => {
         if(props.slitCut && !props.wip){
+        let cutList = props.coil.instruction.flat();
+        cutList = cutList.filter(item => item.process.processId === 3);
         let cutTableData = props.coilDetails.flat();
         cutTableData = cutTableData.filter(item => item.isSlitAndCut === true)
         let tableList =[];
@@ -370,6 +372,7 @@ const CreateCuttingDetailsForm = (props) => {
             tableList.push(tableObj)
         }
        setCuts(tableList)
+       setCutValue(cutList);
         }else{
         let data = props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions
         const lengthValue =  props.coilDetails.availableLength ? props.coilDetails.availableLength  : props.plannedLength(props.coilDetails)
@@ -496,6 +499,11 @@ const CreateCuttingDetailsForm = (props) => {
         // onChange: setChangeSelection,
         getCheckboxProps: (record) => ({
             disabled: record.groupId !== null
+        })
+    }
+    const handleRowSelection ={
+        getCheckboxProps: (record)=> ({
+            disabled: bundledList
         })
     }
     const getNoOfCuts=(e)=>{
@@ -656,37 +664,45 @@ const CreateCuttingDetailsForm = (props) => {
           <Row>
               <Col lg={cutValue.length > 0 ?14: 24} md={16} sm={24} xs={24}>
                 {bundleItemList.length === 0 ? <>
-                <Table className="gx-table-responsive"  columns={columnsSlit} dataSource={selectedRowKeys} pagination={{
-            onChange(current) {
-              setPage(current);
+                <Table className="gx-table-responsive"  
+                    rowSelection={handleRowSelection}
+                    columns={columnsSlit} 
+                    dataSource={selectedRowKeys} 
+                    pagination={{
+                    onChange(current) {
+                    setPage(current);
             }
         }}/>
                 <div style={{padding: "20px 0px 0px 25px"}}>
-            <label for="tpweight">Total weight(kg):</label>
-            <input type="text" className="bundle-input-class" id="tpweight" name="tpweight" value ={tpweight} disabled></input>
-            <label for="tLength">Target length(mm):</label>
-            <input type="text" className="bundle-input-class" id="tLength" name="tLength" onChange={getTargetLength}></input>
-            </div><div style={{padding: "20px 0px 0px 25px"}}>
-                    <label for="pNo">No of Packets :</label>
+                     <label for="pNo">Number of Packets:</label>
                     <input type="text" className="bundle-input-class" id="pNo" name="pNo" onChange={e => getNoOfCuts(e)}></input>
-                    <label for="noOfCuts">No of Cuts</label>
+                    <label for="tpweight">Total weight(kg):</label>
+                     <input type="text" className="bundle-input-class" id="tpweight" name="tpweight" value ={tpweight} disabled></input>
+                     
+                </div>
+                <div style={{padding: "20px 0px 0px 25px"}}>
+                    <label for="tLength">Target length(mm):</label>
+                    <input type="text" className="bundle-input-class" id="tLength" name="tLength" onChange={getTargetLength}></input>
+                    <label for="noOfCuts">Number of Cuts :</label>
                     <input type="text" id="noOfCuts" className="bundle-input-class" name="noOfCuts" value={cutsNo.toFixed(0)}></input>
                 </div>
-                <div style={{'padding-left': "65%"}}><Button type="primary" size="medium" onClick={getCuts}>Confirm</Button> 
+                <div style={{'padding-left': "72%","margin-top":"10px"}}><Button type="primary" size="medium" onClick={getCuts}>Confirm</Button> 
                 </div></>:
                 bundleItemList.length > 0 && bundleItemList.map((item,idx) => <>
-                <Table rowSelection={[]} className="gx-table-responsive"  columns={columnsSlit} dataSource={selectedPast.length > 0 ?selectedPast[idx]:selectedRowKeys} pagination={false}/>
+                <Table rowSelection={handleRowSelection} className="gx-table-responsive"  columns={columnsSlit} dataSource={selectedPast.length > 0 ?selectedPast[idx]:selectedRowKeys} pagination={false}/>
                 <div style={{padding: "20px 0px 0px 25px"}}>
-            <label for="tpweight">Total weight(kg):</label>
-            <input type="text" className="bundle-input-class" id="tpweight" name="tpweight" value ={tpweight} disabled></input>
-            <label for="tLength">Target length(mm):</label>
-            <input type="text" className="bundle-input-class" id="tLength" name="tLength" onChange={getTargetLength}></input>
-            </div><div style={{padding: "20px 0px 0px 25px"}}>
-                    <label for="pNo">No of Packets :</label>
+                    <label for="pNo">Number of Packets:</label>
                     <input type="text" className="bundle-input-class" id="pNo" name="pNo" onChange={e => getNoOfCuts(e)}></input>
-                    <label for="noOfCuts">No of Cuts</label>
+                    <label for="tpweight">Total weight(kg):</label>
+                    <input type="text" className="bundle-input-class" id="tpweight" name="tpweight" value ={tpweight} disabled></input>
+                    
+                </div>
+                <div style={{padding: "20px 0px 0px 25px"}}>
+                     <label for="tLength">Target length(mm):</label>
+                    <input type="text" className="bundle-input-class" id="tLength" name="tLength" onChange={getTargetLength}></input>
+                    <label for="noOfCuts">Number of Cuts :</label>
                     <input type="text" id="noOfCuts" className="bundle-input-class" name="noOfCuts" value={cutsNo.toFixed(0)}></input>
-                </div><div style={{'padding-left': "65%"}}><Button type="primary" size="medium" onClick={getCuts}>Confirm</Button> 
+                </div><div style={{'padding-left': "72%","margin-top":"10px"}}><Button type="primary" size="medium" onClick={getCuts}>Confirm</Button> 
                 </div></>)}
                 <Table  rowSelection={handleSelection} className="gx-table-responsive"  showHeader={false} columns={columnsSlit} dataSource={bundleTableData} pagination={{
                             onChange(current) {
@@ -698,11 +714,20 @@ const CreateCuttingDetailsForm = (props) => {
             <Table className="gx-table-responsive" columns={columnsSlitCut} dataSource={restTableData.length ?restTableData: cutValue} />
             </Col>}
         </Row>
-          :<Table  rowSelection={handleSelection} className="gx-table-responsive"  columns={columnsSlit} dataSource={cuts} pagination={{
-            onChange(current) {
+          :
+          <><Table  
+          rowSelection={handleSelection} 
+          className="gx-table-responsive"  
+          columns={columnsSlit} 
+          dataSource={cuts} 
+          pagination={{
+              onChange(current) {
               setPage(current);
             }
-        }}/>  : 
+        }}/>
+        {cutValue.length > 0 &&<Col lg={10} md={16} sm={24} xs={24}>
+            <Table className="gx-table-responsive" columns={columnsSlitCut} dataSource={restTableData.length ?restTableData: cutValue} />
+            </Col>}  </>: 
           <>{!props.wip && <Row>
           <Col lg={12} md={12} sm={24} xs={24}>   
           <p>Coil number : {props.coil.coilNumber}</p>
