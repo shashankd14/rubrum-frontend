@@ -261,6 +261,9 @@ const CreateCuttingDetailsForm = (props) => {
          }
          if (record.instructionId) {
             props.deleteInstructionById(payload, 'cut');
+            props.form.setFieldsValue({
+                no: 0
+            });
          }
         if(type === 'slitCut'){
              setRestTableData([]);
@@ -271,6 +274,9 @@ const CreateCuttingDetailsForm = (props) => {
              setCuts(data);
              setCutPayload(data);
              setshowDeleteModal(false);
+             props.form.setFieldsValue({
+                no: 0
+            });
         }
     };
     const onChange=()=>{
@@ -342,7 +348,7 @@ const CreateCuttingDetailsForm = (props) => {
     };
     useEffect(() => {
         if(props.inward.process.length && props.inward.process.no) {
-            let weight = cuts.map(i => !i.instructionId ? i.weight : 0);
+            let weight = cuts.map(i => !i.instructionId ? i.plannedWeight : 0);
             weight = cuts.length > 0 ? weight.reduce((total, num) => total + num) : 0;
             if(props.coilDetails.instructionId)
 
@@ -467,7 +473,7 @@ const CreateCuttingDetailsForm = (props) => {
         }
         let length = e.target.value;
         let numerator = props.coilDetails.fpresent || props.coilDetails.plannedWeight || 0;
-        let weight = cuts.map(i => !i.instructionId ? i.weight : 0);
+        let weight = cuts.map(i => !i.instructionId ? i.plannedWeight : 0);
         weight = cuts.length > 0 ? weight.reduce((total, num) => total + num) : 0;
         if (weight) {
             numerator = numerator - Number(weight);
@@ -747,7 +753,7 @@ const CreateCuttingDetailsForm = (props) => {
                                         rules: [{ required: true, message: 'Please enter number of cuts required' }
                                             ]
                                     })(
-                                    <Input id="noOfCuts" disabled={props.wip ? true : false}/>
+                                    <Input id="noOfCuts" disabled={props.wip ? true : false} />
                                         )}
                             </Form.Item>
                             <Form.Item>
