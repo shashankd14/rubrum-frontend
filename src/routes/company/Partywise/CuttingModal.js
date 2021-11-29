@@ -674,15 +674,15 @@ const CreateCuttingDetailsForm = (props) => {
             }
         }}/>
                 <div style={{padding: "20px 0px 0px 25px"}}>
-                     <label for="pNo">Number of Packets:</label>
-                    <input type="text" className="bundle-input-class" id="pNo" name="pNo" onChange={e => getNoOfCuts(e)}></input>
+                    <label for="tLength">Target length(mm):</label>
+                    <input type="text" className="bundle-input-class" id="tLength" name="tLength" onChange={getTargetLength}></input>
                     <label for="tpweight">Total weight(kg):</label>
                      <input type="text" className="bundle-input-class" id="tpweight" name="tpweight" value ={tpweight} disabled></input>
                      
                 </div>
                 <div style={{padding: "20px 0px 0px 25px"}}>
-                    <label for="tLength">Target length(mm):</label>
-                    <input type="text" className="bundle-input-class" id="tLength" name="tLength" onChange={getTargetLength}></input>
+                    <label for="pNo">Number of Packets :</label>
+                    <input type="text" className="bundle-input-class" id="pNo" name="pNo" onChange={e => getNoOfCuts(e)}></input>
                     <label for="noOfCuts">Number of Cuts :</label>
                     <input type="text" id="noOfCuts" className="bundle-input-class" name="noOfCuts" value={cutsNo.toFixed(0)}></input>
                 </div>
@@ -691,15 +691,15 @@ const CreateCuttingDetailsForm = (props) => {
                 bundleItemList.length > 0 && bundleItemList.map((item,idx) => <>
                 <Table rowSelection={handleRowSelection} className="gx-table-responsive"  columns={columnsSlit} dataSource={selectedPast.length > 0 ?selectedPast[idx]:selectedRowKeys} pagination={false}/>
                 <div style={{padding: "20px 0px 0px 25px"}}>
-                    <label for="pNo">Number of Packets:</label>
-                    <input type="text" className="bundle-input-class" id="pNo" name="pNo" onChange={e => getNoOfCuts(e)}></input>
+                     <label for="tLength">Target length(mm):</label>
+                    <input type="text" className="bundle-input-class" id="tLength" name="tLength" onChange={getTargetLength}></input>
                     <label for="tpweight">Total weight(kg):</label>
                     <input type="text" className="bundle-input-class" id="tpweight" name="tpweight" value ={tpweight} disabled></input>
                     
                 </div>
                 <div style={{padding: "20px 0px 0px 25px"}}>
-                     <label for="tLength">Target length(mm):</label>
-                    <input type="text" className="bundle-input-class" id="tLength" name="tLength" onChange={getTargetLength}></input>
+                    <label for="pNo">Number of Packets :</label>
+                    <input type="text" className="bundle-input-class" id="pNo" name="pNo" onChange={e => getNoOfCuts(e)}></input>
                     <label for="noOfCuts">Number of Cuts :</label>
                     <input type="text" id="noOfCuts" className="bundle-input-class" name="noOfCuts" value={cutsNo.toFixed(0)}></input>
                 </div><div style={{'padding-left': "72%","margin-top":"10px"}}><Button type="primary" size="medium" onClick={getCuts}>Confirm</Button> 
