@@ -39,6 +39,7 @@ const CreateCuttingDetailsForm = (props) => {
     const widthValue = props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.plannedWidth(props.coilDetails);
     const WeightValue =  props.coilDetails.fpresent >= 0 ? props.coilDetails.fpresent  : props.plannedWeight(props.coilDetails);
     let widthCheck = lengthValue !== 0 && WeightValue !== 0 ? (props.coilDetails.fWidth || props.coilDetails.plannedWidth) : widthValue;
+    const [currentWeight, setcurrentWeight] = useState(WeightValue);
     const [length, setlength]= useState(lengthValue);
     const [width, setwidth] = useState(widthCheck);
     const [cutValue, setCutValue] = useState([]);
@@ -261,6 +262,8 @@ const CreateCuttingDetailsForm = (props) => {
             instructionId: record.instructionId
          }
          if (record.instructionId) {
+             setlength(length+ Number(record.plannedLength));
+             setcurrentWeight( currentWeight + Number(record.plannedWeight));
             props.deleteInstructionById(payload, 'cut');
             const data = cutValue.filter(item => item.partId !== record.partId);
             setRestTableData(data);
@@ -276,6 +279,8 @@ const CreateCuttingDetailsForm = (props) => {
              setshowDeleteModal(false);
         }else{
             setValidate(false);
+            setlength(length+ Number(record.plannedLength));
+            setcurrentWeight( currentWeight + Number(record.plannedWeight));
              const data = cuts.filter((item) => cuts.indexOf(item) !==cuts.indexOf(record))
              setCuts(data);
              setCutPayload(data);
@@ -301,9 +306,9 @@ const CreateCuttingDetailsForm = (props) => {
         props.form.validateFields((err, values) => {
             if (!err) {
                 if(Number(tweight) !== 0){
-                    remainWeight = WeightValue-Number(tweight);
+                    remainWeight = currentWeight-Number(tweight);
                 }else{
-                    remainWeight = WeightValue - values.weight;
+                    remainWeight = currentWeight - values.weight;
                 }
                 let instructionPlanDto = {
                     "targetWeight":"",
@@ -333,6 +338,7 @@ const CreateCuttingDetailsForm = (props) => {
                         parentInstructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : "",
                         groupId:""
                     });
+                    setcurrentWeight(remainWeight);
                     setlength(length - props.inward.process.length);
                     setSaveCut(saveCut.length >0 ? [...slitcuts,...saveCut]: [...slitcuts]);
                      instructionRequestDTOs.push(...slitcuts,...saveCut);
@@ -754,7 +760,7 @@ const CreateCuttingDetailsForm = (props) => {
           <Col lg={12} md={12} sm={24} xs={24}>
           <p>Inward specs: {props.coil.fThickness}X{props.coil.fWidth}X{props.coil.fLength}/{props.coil.fQuantity}</p>
               <p>Available Length(mm): {length}</p>
-              <p>Available Weight(kg) : {WeightValue}</p>
+              <p>Available Weight(kg) : {currentWeight}</p>
               <p>Available Width(mm) : {widthValue}</p>
           </Col>
       </Row>}
@@ -828,7 +834,7 @@ const CreateCuttingDetailsForm = (props) => {
                         <Col lg={8} md={12} sm={24} xs={24}>
                             <p>Inward specs: {props.coil.fThickness}X{props.coil.fWidth}X{props.coil.fLength}/{props.coil.fQuantity}</p>
                             <p>Available Length(mm): {props.childCoil ? insData.actualLength : length}</p>
-                            <p>Available Weight(kg) : {props.childCoil ? insData.actualWeight : WeightValue}</p>
+                            <p>Available Weight(kg) : {props.childCoil ? insData.actualWeight : currentWeight}</p>
                             <p>Available Width(mm) : {props.childCoil ? insData.actualWidth : width}</p>
                         </Col>
                     
