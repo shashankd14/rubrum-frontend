@@ -57,6 +57,7 @@ const CreateCuttingDetailsForm = (props) => {
     const [selectedKey, setSelectedKey] = useState([]);
     const [saveInstruction, setSaveInstruction] = useState([]);
     const [saveCut, setSaveCut] = useState([]);
+    const [unsavedDeleteId, setUnsavedDeleteId] = useState(0);
     const [tableData, setTableData] = useState(props.wip?(props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts);
     const columns=[
 
@@ -261,12 +262,17 @@ const CreateCuttingDetailsForm = (props) => {
          }
          if (record.instructionId) {
             props.deleteInstructionById(payload, 'cut');
+            const data = cutValue.filter(item => item.partId !== record.partId);
+            setRestTableData(data);
+            setCutValue(data);
             props.form.setFieldsValue({
                 no: 0
             });
          }
         if(type === 'slitCut'){
-             setRestTableData([]);
+            const data = cutValue.filter(item => item.deleteUniqId !== record.deleteUniqId);
+             setRestTableData(data);
+             setCutValue(data);
              setshowDeleteModal(false);
         }else{
             setValidate(false);
@@ -541,16 +547,19 @@ const CreateCuttingDetailsForm = (props) => {
                     plannedWidth: cutsWidth,
                     inwardId: props.coil.inwardEntryId,
                     parentInstructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : "",
-                    groupId:props.inward.groupId.groupId
+                    groupId:props.inward.groupId.groupId,
+                    deleteUniqId: unsavedDeleteId
            };
         cutsValue.push(cutObj);
     }
+    instructionPlanDto.deleteUniqId = unsavedDeleteId;
     let instructionPayload ={
         "partDetailsRequest": instructionPlanDto,
         instructionRequestDTOs: cutsValue
     };
     let payload =saveInstruction.length >0 ? [...saveInstruction] :[];
-    payload.push(instructionPayload)
+    payload.push(instructionPayload);
+    setUnsavedDeleteId(prev => prev + 1);
     setSaveInstruction(payload);
     setRestTableData(restTableData.length>0 ?[...restTableData,...cutsValue]: [...cutsValue])
     setCutValue(cutsValue)
