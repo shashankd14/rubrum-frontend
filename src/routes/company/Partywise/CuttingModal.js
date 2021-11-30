@@ -255,6 +255,10 @@ const CreateCuttingDetailsForm = (props) => {
 
             });
     };
+
+    const resetSaveInstruction = (record) => {
+        setSaveInstruction(prev => prev.filter(item => item.deleteUniqId !== record.deleteUniqId));
+    }
    
     const onDelete = ({ record, e, type }) => {
         e.preventDefault();
@@ -274,6 +278,7 @@ const CreateCuttingDetailsForm = (props) => {
          }
         if(type === 'slitCut'){
             const data = cutValue.filter(item => item.deleteUniqId !== record.deleteUniqId);
+             resetSaveInstruction(record);
              setRestTableData(data);
              setCutValue(data);
              setshowDeleteModal(false);
@@ -391,6 +396,7 @@ const CreateCuttingDetailsForm = (props) => {
         }
        setCuts(tableList)
        setCutValue(cutList);
+       setRestTableData([]);
         }else{
         let data = props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions
         const lengthValue =  props.coilDetails.availableLength ? props.coilDetails.availableLength  : props.plannedLength(props.coilDetails)
@@ -561,13 +567,14 @@ const CreateCuttingDetailsForm = (props) => {
     instructionPlanDto.deleteUniqId = unsavedDeleteId;
     let instructionPayload ={
         "partDetailsRequest": instructionPlanDto,
-        instructionRequestDTOs: cutsValue
+        instructionRequestDTOs: cutsValue,
+        deleteUniqId: unsavedDeleteId
     };
     let payload =saveInstruction.length >0 ? [...saveInstruction] :[];
     payload.push(instructionPayload);
     setUnsavedDeleteId(prev => prev + 1);
     setSaveInstruction(payload);
-    setRestTableData(restTableData.length>0 ?[...restTableData,...cutsValue]: [...cutsValue])
+    setRestTableData(cutValue.length>0 ?[...cutValue,...cutsValue]: [...cutsValue])
     setCutValue(cutsValue)
     }
     const getTargetLength=(e)=>{
