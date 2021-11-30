@@ -529,7 +529,7 @@ const CreateCuttingDetailsForm = (props) => {
         cutsWidth = selectedRowKeys.length ===1 ? cutsWidth.plannedWidth : cutsWidth;
         setPacketNo(Number(e.target.value));
         let cutsNumerator= (Number(tpweight)/Number(e.target.value))/((props.coil.fThickness)*(cutsWidth/1000)*(Number(cutsLength)/1000)*7.85);
-        setCutsNo(cutsNumerator);
+        setCutsNo(cutsNumerator === Infinity ? 0 : cutsNumerator);
     }
     const getCuts=(e)=>{
         let cutsWidth = selectedRowKeys.reduce((a,c)=> c.plannedWidth)
@@ -571,7 +571,11 @@ const CreateCuttingDetailsForm = (props) => {
     setCutValue(cutsValue)
     }
     const getTargetLength=(e)=>{
-        setCutsLength(e.target.value)
+        setCutsLength(e.target.value);
+        let cutsWidth = selectedRowKeys.reduce((a,c)=> c.plannedWidth)
+        cutsWidth = selectedRowKeys.length ===1 ? cutsWidth.plannedWidth : cutsWidth;
+        let cutsNumerator= (Number(tpweight)/Number(packetNo))/((props.coil.fThickness)*(cutsWidth/1000)*(Number(e.target.value)/1000)*7.85);
+        setCutsNo(cutsNumerator === Infinity ? 0 : cutsNumerator);
     }
     const bundleListClick=(e)=>{
         e.stopPropagation();

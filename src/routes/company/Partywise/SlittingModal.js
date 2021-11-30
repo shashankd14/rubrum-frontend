@@ -671,7 +671,7 @@ const columnsPlan=[
             props.setShowSlittingModal(false);
         } else {
             const data = cuts.filter(item => {
-                if (item.deleteUniqId) {
+                if (item.deleteUniqId || item.deleteUniqId === 0) {
                     return item.deleteUniqId !== record.deleteUniqId;
                 } else {
                     return cuts.indexOf(item) !== key;
@@ -689,6 +689,7 @@ const columnsPlan=[
             setSlitEqualInstruction(payload);
             setValidate(false);
             setslitpayload(data);
+            setPanelList([data]);
             setCuts(data);
             setshowDeleteModal(false);
         }
@@ -1034,7 +1035,7 @@ const columnsPlan=[
                             </Form>
                         </Col>
                         <Col lg={12} md={12} sm={24} xs={24}>
-                        {panelList.map((item,index) =>
+                        {panelList.length > 0 && panelList.map((item,index) =>
                             (<Collapse accordion>
                             <Panel header={index+1} key="1">
                             <Table className="gx-table-responsive" columns={props.wip?columns: columnsPlan} dataSource={props.wip?tableData:reset ?item: cutArray} pagination={{
