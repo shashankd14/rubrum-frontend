@@ -370,8 +370,8 @@ const CreateCuttingDetailsForm = (props) => {
     };
     useEffect(() => {
         if(props.inward.process.length && props.inward.process.no) {
-            let weight = cuts.map(i => !i.instructionId ? i.plannedWeight : 0);
-            weight = cuts.length > 0 ? weight.reduce((total, num) => total + num) : 0;
+            let weight = cuts.map(i => !i.instructionId ? Number(i.plannedWeight) : 0);
+            weight = cuts.length > 0 ? weight.reduce((total, num) => total + Number(num)) : 0;
             if(props.coilDetails.instructionId)
 
                 props.setProcessDetails({...props.inward.process, weight:Number(tweight) >=0 && balancedValue ? WeightValue-Number(weight):Math.round( 0.00000785*parseFloat(width)*parseFloat(props.inward.plan.fThickness)*parseFloat(props.inward.process.length)*parseFloat(props.inward.process.no))});
@@ -500,8 +500,8 @@ const CreateCuttingDetailsForm = (props) => {
         }
         let length = e.target.value;
         let numerator = props.coilDetails.fpresent || props.coilDetails.plannedWeight || 0;
-        let weight = cuts.map(i => !i.instructionId ? i.plannedWeight : 0);
-        weight = cuts.length > 0 ? weight.reduce((total, num) => total + num) : 0;
+        let weight = cuts.map(i => !i.instructionId ? Number(i.plannedWeight) : 0);
+        weight = cuts.length > 0 ? weight.reduce((total, num) => total + Number(num)) : 0;
         if (weight) {
             numerator = numerator - Number(weight);
         }
