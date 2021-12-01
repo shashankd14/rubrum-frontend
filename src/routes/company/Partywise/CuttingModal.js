@@ -281,7 +281,8 @@ const CreateCuttingDetailsForm = (props) => {
              setshowDeleteModal(false);
         }else{
             setValidate(false);
-             const data = cuts.filter((item) => cuts.indexOf(item) !==cuts.indexOf(record))
+             const data = cuts.filter((item) => cuts.indexOf(item) !==cuts.indexOf(record));
+             setSaveInstruction(prev => [{ ...prev[0], instructionRequestDTOs: prev[0].instructionRequestDTOs?.filter(item => item.deleteUniqId !== record.deleteUniqId)}]);
              setCuts(data);
              setCutPayload(data);
              setshowDeleteModal(false);
@@ -336,19 +337,22 @@ const CreateCuttingDetailsForm = (props) => {
                         plannedWidth: props.coilDetails?.fWidth ? props.coilDetails.fWidth : props.coilDetails.plannedWidth,
                         inwardId: props.coilDetails.inwardEntryId ? props.coilDetails.inwardEntryId : "",
                         parentInstructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : "",
-                        groupId:""
+                        groupId:"",
+                        deleteUniqId: unsavedDeleteId
                     });
                     setlength(length - props.inward.process.length);
                     setSaveCut(saveCut.length >0 ? [...slitcuts,...saveCut]: [...slitcuts]);
                      instructionRequestDTOs.push(...slitcuts,...saveCut);
                         let instructionPayload ={
                             "partDetailsRequest": instructionPlanDto,
-                            instructionRequestDTOs
+                            instructionRequestDTOs,
+                            deleteUniqId: unsavedDeleteId
                         };
                         let payload =[];
                         payload.push(instructionPayload)
                        setCuts([...cuts, ...slitcuts]);
                        props.resetInstruction();
+                       setUnsavedDeleteId(prev => prev + 1);
                        setSaveInstruction(payload);
                        props.setProcessDetails({});
                 }
