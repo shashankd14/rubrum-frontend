@@ -255,6 +255,10 @@ const CreateCuttingDetailsForm = (props) => {
 
             });
     };
+
+    const resetSaveInstruction = (record) => {
+        setSaveInstruction(prev => prev.filter(item => item.deleteUniqId !== record.deleteUniqId));
+    }
    
     const onDelete = ({ record, e, type }) => {
         e.preventDefault();
@@ -274,11 +278,13 @@ const CreateCuttingDetailsForm = (props) => {
          }
         if(type === 'slitCut'){
             const data = cutValue.filter(item => item.deleteUniqId !== record.deleteUniqId);
+             resetSaveInstruction(record);
              setRestTableData(data);
              setCutValue(data);
              setshowDeleteModal(false);
         }else{
             setValidate(false);
+            setSaveInstruction(prev => [{ ...prev[0], instructionRequestDTOs: prev[0].instructionRequestDTOs?.filter(item => item.deleteUniqId !== record.deleteUniqId)}]);
             setlength(length+ Number(record.plannedLength));
             setcurrentWeight( currentWeight + Number(record.plannedWeight));
              const data = cuts.filter((item) => cuts.indexOf(item) !==cuts.indexOf(record))
@@ -336,7 +342,8 @@ const CreateCuttingDetailsForm = (props) => {
                         plannedWidth: props.coilDetails?.fWidth ? props.coilDetails.fWidth : props.coilDetails.plannedWidth,
                         inwardId: props.coilDetails.inwardEntryId ? props.coilDetails.inwardEntryId : "",
                         parentInstructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : "",
-                        groupId:""
+                        groupId:"",
+                        deleteUniqId: unsavedDeleteId
                     });
                     setcurrentWeight(remainWeight);
                     setlength(length - props.inward.process.length);
@@ -344,12 +351,14 @@ const CreateCuttingDetailsForm = (props) => {
                      instructionRequestDTOs.push(...slitcuts,...saveCut);
                         let instructionPayload ={
                             "partDetailsRequest": instructionPlanDto,
-                            instructionRequestDTOs
+                            instructionRequestDTOs,
+                            deleteUniqId: unsavedDeleteId
                         };
                         let payload =[];
                         payload.push(instructionPayload)
                        setCuts([...cuts, ...slitcuts]);
                        props.resetInstruction();
+                       setUnsavedDeleteId(prev => prev + 1);
                        setSaveInstruction(payload);
                        props.setProcessDetails({});
                 }
@@ -391,6 +400,7 @@ const CreateCuttingDetailsForm = (props) => {
         }
        setCuts(tableList)
        setCutValue(cutList);
+       setRestTableData([]);
         }else{
         let data = props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions
         const lengthValue =  props.coilDetails.availableLength ? props.coilDetails.availableLength  : props.plannedLength(props.coilDetails)
@@ -529,7 +539,7 @@ const CreateCuttingDetailsForm = (props) => {
         cutsWidth = selectedRowKeys.length ===1 ? cutsWidth.plannedWidth : cutsWidth;
         setPacketNo(Number(e.target.value));
         let cutsNumerator= (Number(tpweight)/Number(e.target.value))/((props.coil.fThickness)*(cutsWidth/1000)*(Number(cutsLength)/1000)*7.85);
-        setCutsNo(cutsNumerator);
+        setCutsNo(cutsNumerator === Infinity ? 0 : cutsNumerator);
     }
     const getCuts=(e)=>{
         let cutsWidth = selectedRowKeys.reduce((a,c)=> c.plannedWidth)
@@ -561,17 +571,22 @@ const CreateCuttingDetailsForm = (props) => {
     instructionPlanDto.deleteUniqId = unsavedDeleteId;
     let instructionPayload ={
         "partDetailsRequest": instructionPlanDto,
-        instructionRequestDTOs: cutsValue
+        instructionRequestDTOs: cutsValue,
+        deleteUniqId: unsavedDeleteId
     };
     let payload =saveInstruction.length >0 ? [...saveInstruction] :[];
     payload.push(instructionPayload);
     setUnsavedDeleteId(prev => prev + 1);
     setSaveInstruction(payload);
-    setRestTableData(restTableData.length>0 ?[...restTableData,...cutsValue]: [...cutsValue])
+    setRestTableData(cutValue.length>0 ?[...cutValue,...cutsValue]: [...cutsValue])
     setCutValue(cutsValue)
     }
     const getTargetLength=(e)=>{
-        setCutsLength(e.target.value)
+        setCutsLength(e.target.value);
+        let cutsWidth = selectedRowKeys.reduce((a,c)=> c.plannedWidth)
+        cutsWidth = selectedRowKeys.length ===1 ? cutsWidth.plannedWidth : cutsWidth;
+        let cutsNumerator= (Number(tpweight)/Number(packetNo))/((props.coil.fThickness)*(cutsWidth/1000)*(Number(e.target.value)/1000)*7.85);
+        setCutsNo(cutsNumerator === Infinity ? 0 : cutsNumerator);
     }
     const bundleListClick=(e)=>{
         e.stopPropagation();
