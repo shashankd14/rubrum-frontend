@@ -39,6 +39,7 @@ const CreateCuttingDetailsForm = (props) => {
     const widthValue = props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.plannedWidth(props.coilDetails);
     const WeightValue =  props.coilDetails.fpresent >= 0 ? props.coilDetails.fpresent  : props.plannedWeight(props.coilDetails);
     let widthCheck = lengthValue !== 0 && WeightValue !== 0 ? (props.coilDetails.fWidth || props.coilDetails.plannedWidth) : widthValue;
+    const [currentWeight, setcurrentWeight] = useState(WeightValue);
     const [length, setlength]= useState(lengthValue);
     const [width, setwidth] = useState(widthCheck);
     const [cutValue, setCutValue] = useState([]);
@@ -265,6 +266,8 @@ const CreateCuttingDetailsForm = (props) => {
             instructionId: record.instructionId
          }
          if (record.instructionId) {
+             setlength(length+ Number(record.plannedLength));
+             setcurrentWeight( currentWeight + Number(record.plannedWeight));
             props.deleteInstructionById(payload, 'cut');
             const data = cutValue.filter(item => item.partId !== record.partId);
             setRestTableData(data);
@@ -281,8 +284,10 @@ const CreateCuttingDetailsForm = (props) => {
              setshowDeleteModal(false);
         }else{
             setValidate(false);
-             const data = cuts.filter((item) => cuts.indexOf(item) !==cuts.indexOf(record));
-             setSaveInstruction(prev => [{ ...prev[0], instructionRequestDTOs: prev[0].instructionRequestDTOs?.filter(item => item.deleteUniqId !== record.deleteUniqId)}]);
+            setSaveInstruction(prev => [{ ...prev[0], instructionRequestDTOs: prev[0].instructionRequestDTOs?.filter(item => item.deleteUniqId !== record.deleteUniqId)}]);
+            setlength(length+ Number(record.plannedLength));
+            setcurrentWeight( currentWeight + Number(record.plannedWeight));
+             const data = cuts.filter((item) => cuts.indexOf(item) !==cuts.indexOf(record))
              setCuts(data);
              setCutPayload(data);
              setshowDeleteModal(false);
@@ -307,9 +312,9 @@ const CreateCuttingDetailsForm = (props) => {
         props.form.validateFields((err, values) => {
             if (!err) {
                 if(Number(tweight) !== 0){
-                    remainWeight = WeightValue-Number(tweight);
+                    remainWeight = currentWeight-Number(tweight);
                 }else{
-                    remainWeight = WeightValue - values.weight;
+                    remainWeight = currentWeight - values.weight;
                 }
                 let instructionPlanDto = {
                     "targetWeight":"",
@@ -340,6 +345,7 @@ const CreateCuttingDetailsForm = (props) => {
                         groupId:"",
                         deleteUniqId: unsavedDeleteId
                     });
+                    setcurrentWeight(remainWeight);
                     setlength(length - props.inward.process.length);
                     setSaveCut(saveCut.length >0 ? [...slitcuts,...saveCut]: [...slitcuts]);
                      instructionRequestDTOs.push(...slitcuts,...saveCut);
@@ -704,15 +710,15 @@ const CreateCuttingDetailsForm = (props) => {
             }
         }}/>
                 <div style={{padding: "20px 0px 0px 25px"}}>
-                     <label for="pNo">Number of Packets:</label>
-                    <input type="text" className="bundle-input-class" id="pNo" name="pNo" onChange={e => getNoOfCuts(e)}></input>
+                    <label for="tLength">Target length(mm):</label>
+                    <input type="text" className="bundle-input-class" id="tLength" name="tLength" onChange={getTargetLength}></input>
                     <label for="tpweight">Total weight(kg):</label>
                      <input type="text" className="bundle-input-class" id="tpweight" name="tpweight" value ={tpweight} disabled></input>
                      
                 </div>
                 <div style={{padding: "20px 0px 0px 25px"}}>
-                    <label for="tLength">Target length(mm):</label>
-                    <input type="text" className="bundle-input-class" id="tLength" name="tLength" onChange={getTargetLength}></input>
+                    <label for="pNo">Number of Packets :</label>
+                    <input type="text" className="bundle-input-class" id="pNo" name="pNo" onChange={e => getNoOfCuts(e)}></input>
                     <label for="noOfCuts">Number of Cuts :</label>
                     <input type="text" id="noOfCuts" className="bundle-input-class" name="noOfCuts" value={cutsNo.toFixed(0)}></input>
                 </div>
@@ -721,15 +727,15 @@ const CreateCuttingDetailsForm = (props) => {
                 bundleItemList.length > 0 && bundleItemList.map((item,idx) => <>
                 <Table rowSelection={handleRowSelection} className="gx-table-responsive"  columns={columnsSlit} dataSource={selectedPast.length > 0 ?selectedPast[idx]:selectedRowKeys} pagination={false}/>
                 <div style={{padding: "20px 0px 0px 25px"}}>
-                    <label for="pNo">Number of Packets:</label>
-                    <input type="text" className="bundle-input-class" id="pNo" name="pNo" onChange={e => getNoOfCuts(e)}></input>
+                     <label for="tLength">Target length(mm):</label>
+                    <input type="text" className="bundle-input-class" id="tLength" name="tLength" onChange={getTargetLength}></input>
                     <label for="tpweight">Total weight(kg):</label>
                     <input type="text" className="bundle-input-class" id="tpweight" name="tpweight" value ={tpweight} disabled></input>
                     
                 </div>
                 <div style={{padding: "20px 0px 0px 25px"}}>
-                     <label for="tLength">Target length(mm):</label>
-                    <input type="text" className="bundle-input-class" id="tLength" name="tLength" onChange={getTargetLength}></input>
+                    <label for="pNo">Number of Packets :</label>
+                    <input type="text" className="bundle-input-class" id="pNo" name="pNo" onChange={e => getNoOfCuts(e)}></input>
                     <label for="noOfCuts">Number of Cuts :</label>
                     <input type="text" id="noOfCuts" className="bundle-input-class" name="noOfCuts" value={cutsNo.toFixed(0)}></input>
                 </div><div style={{'padding-left': "72%","margin-top":"10px"}}><Button type="primary" size="medium" onClick={getCuts}>Confirm</Button> 
@@ -769,7 +775,7 @@ const CreateCuttingDetailsForm = (props) => {
           <Col lg={12} md={12} sm={24} xs={24}>
           <p>Inward specs: {props.coil.fThickness}X{props.coil.fWidth}X{props.coil.fLength}/{props.coil.fQuantity}</p>
               <p>Available Length(mm): {length}</p>
-              <p>Available Weight(kg) : {WeightValue}</p>
+              <p>Available Weight(kg) : {currentWeight}</p>
               <p>Available Width(mm) : {widthValue}</p>
           </Col>
       </Row>}
@@ -843,7 +849,7 @@ const CreateCuttingDetailsForm = (props) => {
                         <Col lg={8} md={12} sm={24} xs={24}>
                             <p>Inward specs: {props.coil.fThickness}X{props.coil.fWidth}X{props.coil.fLength}/{props.coil.fQuantity}</p>
                             <p>Available Length(mm): {props.childCoil ? insData.actualLength : length}</p>
-                            <p>Available Weight(kg) : {props.childCoil ? insData.actualWeight : WeightValue}</p>
+                            <p>Available Weight(kg) : {props.childCoil ? insData.actualWeight : currentWeight}</p>
                             <p>Available Width(mm) : {props.childCoil ? insData.actualWidth : width}</p>
                         </Col>
                     
