@@ -123,7 +123,9 @@ const SlittingWidths = (props) => {
         }
         
     }, [props.coilDetails, props.cuts]);
-    
+    useEffect(() =>{
+        setWeightValue(props.coilDetails.fpresent)
+    },[props.coilDetails.fpresent])
     useEffect(()=>{
         if (props.wip) {
             let actualUpdate = props.cuts.map(item => {
