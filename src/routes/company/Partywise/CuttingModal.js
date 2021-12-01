@@ -311,11 +311,11 @@ const CreateCuttingDetailsForm = (props) => {
         let remainWeight
         props.form.validateFields((err, values) => {
             if (!err) {
-                if(Number(tweight) !== 0){
-                    remainWeight = currentWeight-Number(tweight);
-                }else{
-                    remainWeight = currentWeight - values.weight;
-                }
+                // if(Number(tweight) !== 0){
+                //     remainWeight = currentWeight-Number(tweight);
+                // }else{
+                    remainWeight = currentWeight - (values.weight);
+                // }
                 let instructionPlanDto = {
                     "targetWeight":"",
                     "length":"",
@@ -324,7 +324,7 @@ const CreateCuttingDetailsForm = (props) => {
                 }
                 
                 setValidate(false);
-                if(remainWeight > WeightValue){
+                if(values.weight > currentWeight){
                     message.error('Weight greater than available weight', 2);
                 }else{
                     let slitcuts =[];
