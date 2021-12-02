@@ -288,7 +288,7 @@ const CreateCuttingDetailsForm = (props) => {
             setSaveInstruction(prev => {
                 return prev.length > 0 ? [{ ...prev[0], instructionRequestDTOs: prev[0]?.instructionRequestDTOs?.filter(item => item.deleteUniqId !== record.deleteUniqId)}] : []
             });
-            setlength(length+ Number(record.plannedLength));
+            setlength(length+ (Number(record.plannedLength)*Number(record.plannedNoOfPieces)));
             setcurrentWeight( currentWeight + Number(record.plannedWeight));
              const data = cuts.filter((item) => cuts.indexOf(item) !==cuts.indexOf(record))
              setCuts(data);
