@@ -266,7 +266,7 @@ const CreateCuttingDetailsForm = (props) => {
             instructionId: record.instructionId
          }
          if (record.instructionId) {
-             setlength(length+ Number(record.plannedLength));
+             setlength(length+ (Number(record.plannedLength)*Number(record.plannedNoOfPieces)));
              setcurrentWeight( currentWeight + Number(record.plannedWeight));
             props.deleteInstructionById(payload, 'cut');
             const data = cutValue.filter(item => item.partId !== record.partId);
@@ -285,7 +285,7 @@ const CreateCuttingDetailsForm = (props) => {
         }else{
             setValidate(false);
             setSaveInstruction(prev => [{ ...prev[0], instructionRequestDTOs: prev[0].instructionRequestDTOs?.filter(item => item.deleteUniqId !== record.deleteUniqId)}]);
-            setlength(length+ Number(record.plannedLength));
+            setlength(length+ (Number(record.plannedLength)*Number(record.plannedNoOfPieces)));
             setcurrentWeight( currentWeight + Number(record.plannedWeight));
              const data = cuts.filter((item) => cuts.indexOf(item) !==cuts.indexOf(record))
              setCuts(data);
@@ -346,7 +346,7 @@ const CreateCuttingDetailsForm = (props) => {
                         deleteUniqId: unsavedDeleteId
                     });
                     setcurrentWeight(remainWeight);
-                    setlength(length - props.inward.process.length);
+                    setlength(length - (props.inward.process.length*(props.inward.process.no)));
                     setSaveCut(saveCut.length >0 ? [...slitcuts,...saveCut]: [...slitcuts]);
                      instructionRequestDTOs.push(...slitcuts,...saveCut);
                         let instructionPayload ={
