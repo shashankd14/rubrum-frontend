@@ -201,16 +201,18 @@ const SlittingWidths = (props) => {
             if (!err) {
                 props.validate(false);
                 let totalWidth = 0;
-                let totalWeight = equalParts >1 ? Number(props.tweight): 0 ;
+                let totalWeight =  props.slitInstructionList.length?props.slitInstructionList.map(i => [...i.instructionRequestDTOs]):0
+                totalWeight = totalWeight.length?totalWeight.flat().map(i => i.plannedWeight* i.plannedNoOfPieces ):0;
+                totalWeight = totalWeight.length?totalWeight.reduce((sum,total) => sum+ total): 0;
                 const widthValue = props.coilDetails.fWidth ? props.coilDetails.fWidth : props.plannedWidth(props.coilDetails)
                 const lengthValue = props.coilDetails.availableLength ? props.coilDetails.availableLength : props.plannedLength(props.coilDetails)
                 const weightValue1 = props.coilDetails.fpresent >= 0? props.coilDetails.fpresent : props.plannedWeight(props.coilDetails)
                 const slits = [];
                 let slitArray = [];
                 let uniqId = '';
-                if(cutLength === 0){
-                    setOldLength(Number(availLength));
-                }
+                // if(cutLength === 0){
+                //     setOldLength(Number(availLength));
+                // }
                 let instructionPlanDto = {
                         "targetWeight": targetWeight,
                         "length": availLength,
@@ -262,22 +264,21 @@ const SlittingWidths = (props) => {
                    
                 }else if(totalWidth !== widthValue) {
                     message.error('Sum of slits width is not same as width of coil.', 2);
-                }else if(oldLength >= lengthValue){
-                    if((totalWidth+cutWidth) > widthValue) {
+                }else if((totalWidth) > widthValue) {
                         message.error('Sum of slits width is greater than width of coil.', 2);
-                }else{
-                    setWeightValue(remainWeight-(totalWeight));
-                    setlen(lengthValue - sumLength)
-                        props.setPanelList(slitArray);
-                        props.setSlits(slits);
-                        props.setslitpayload(slits);
-                        props.setSlitInstruction(slitInstructionPayload);
-                        props.setSlitInstructionList(slitInstructionPayload);
-                        props.setSlitEqualInstruction(slitInstructionPayload);
-                        props.form.resetFields();
-                }}
+                // }else{
+                //     setWeightValue(remainWeight-(totalWeight));
+                //     setlen(lengthValue - sumLength)
+                //         props.setPanelList(slitArray);
+                //         props.setSlits(slits);
+                //         props.setslitpayload(slits);
+                //         props.setSlitInstruction(slitInstructionPayload);
+                //         props.setSlitInstructionList(slitInstructionPayload);
+                //         props.setSlitEqualInstruction(slitInstructionPayload);
+                //         props.form.resetFields();
+                // }}
                 
-                else{
+                 } else{
                     setWeightValue(remainWeight-(totalWeight));
                     setlen(lengthValue - sumLength)
                         props.setPanelList(slitArray)

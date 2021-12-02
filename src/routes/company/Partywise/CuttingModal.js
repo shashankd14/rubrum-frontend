@@ -46,9 +46,10 @@ const CreateCuttingDetailsForm = (props) => {
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [balancedValue, setBalancedValue] = useState(false);
     const [bundledList, setbundledList]= useState(false);
-    const [tpweight, settpweight]= useState();
+    const [tpweight, settpweight]= useState([]);
+    const [weightIndex, setWeightIndex] = useState();
     const [bundleTableData, setbundleTableData] = useState([]);
-    const [cutsNo,setCutsNo]= useState(0);
+    const [cutsNo,setCutsNo]= useState([]);
     const [cutsLength, setCutsLength]= useState(0);
     const [bundleItemList, setBundleItemList] = useState([]);
     const [restTableData, setRestTableData] = useState([]);
@@ -287,7 +288,7 @@ const CreateCuttingDetailsForm = (props) => {
             setSaveInstruction(prev => {
                 return prev.length > 0 ? [{ ...prev[0], instructionRequestDTOs: prev[0]?.instructionRequestDTOs?.filter(item => item.deleteUniqId !== record.deleteUniqId)}] : []
             });
-            setlength(length+ Number(record.plannedLength));
+            setlength(length+ (Number(record.plannedLength)*Number(record.plannedNoOfPieces)));
             setcurrentWeight( currentWeight + Number(record.plannedWeight));
              const data = cuts.filter((item) => cuts.indexOf(item) !==cuts.indexOf(record))
              setCuts(data);
@@ -520,12 +521,8 @@ const CreateCuttingDetailsForm = (props) => {
         }
         let weights= selectedRows.map(i => i.plannedWeight);
         weights = selectedRows.length>0?weights.reduce((total, num) => total + Number(num)): 0;
-        settpweight(weights);
+        setWeightIndex(weights); // set value to fetch index on bundle click
     }
-    // const setChangeSelection=(record, selectedRowKeys)=>{
-    //     setSelectedKey(selectedRowKeys);
-    //     console.log(selectedRowKeys);
-    // }
     const handleSelection = {
         //  selectedRowKeys:selectedKey,
         onSelect: setSelection, 
@@ -539,12 +536,16 @@ const CreateCuttingDetailsForm = (props) => {
             disabled: bundledList
         })
     }
-    const getNoOfCuts=(e)=>{
+    const getNoOfCuts=(e, idx)=>{
         let cutsWidth = selectedRowKeys.reduce((a,c)=> c.plannedWidth)
         cutsWidth = selectedRowKeys.length ===1 ? cutsWidth.plannedWidth : cutsWidth;
         setPacketNo(Number(e.target.value));
-        let cutsNumerator= (Number(tpweight)/Number(e.target.value))/((props.coil.fThickness)*(cutsWidth/1000)*(Number(cutsLength)/1000)*7.85);
-        setCutsNo(cutsNumerator === Infinity ? 0 : cutsNumerator);
+        let cutsNumerator= (Number(tpweight[idx])/Number(e.target.value))/((props.coil.fThickness)*(cutsWidth/1000)*(Number(cutsLength)/1000)*7.85);
+        let cutsNumber =[]
+        if(cutsNumerator !== Infinity){
+            cutsNumber[idx]=cutsNumerator
+        }
+        setCutsNo(cutsNumber);
     }
     const getCuts=(e)=>{
         let cutsWidth = selectedRowKeys.reduce((a,c)=> c.plannedWidth)
@@ -552,6 +553,7 @@ const CreateCuttingDetailsForm = (props) => {
         let cutsValue = [];
         let instructionPlanDto = {
             "createdBy": "1",
+
             "updatedBy":"1",
         }
         for(let i=0; i <packetNo; i++) {
@@ -559,8 +561,8 @@ const CreateCuttingDetailsForm = (props) => {
                     processId:3,
                     instructionDate: moment().format('YYYY-MM-DD HH:mm:ss'),
                     plannedLength:cutsLength,
-                    plannedNoOfPieces: cutsNo.toFixed(0),
-                    plannedWeight: (Number(tpweight)/packetNo).toFixed(2),
+                    plannedNoOfPieces: cutsNo[0]?.toFixed(0),
+                    plannedWeight: (Number(tpweight[0])/packetNo).toFixed(2),
                     isSlitAndCut:false,
                     status: 1,
                     createdBy: "1",
@@ -586,18 +588,23 @@ const CreateCuttingDetailsForm = (props) => {
     setRestTableData(cutValue.length>0 ?[...cutValue,...cutsValue]: [...cutsValue])
     setCutValue(cutsValue)
     }
-    const getTargetLength=(e)=>{
+    const getTargetLength=(e, idx)=>{
         setCutsLength(e.target.value);
         let cutsWidth = selectedRowKeys.reduce((a,c)=> c.plannedWidth)
         cutsWidth = selectedRowKeys.length ===1 ? cutsWidth.plannedWidth : cutsWidth;
-        let cutsNumerator= (Number(tpweight)/Number(packetNo))/((props.coil.fThickness)*(cutsWidth/1000)*(Number(e.target.value)/1000)*7.85);
-        setCutsNo(cutsNumerator === Infinity ? 0 : cutsNumerator);
+        let cutsNumerator= (Number(tpweight[idx])/Number(packetNo))/((props.coil.fThickness)*(cutsWidth/1000)*(Number(e.target.value)/1000)*7.85);
+        let cutsNumber = [];
+        if(cutsNumerator !== Infinity){
+            cutsNumber[idx]=cutsNumerator;
+        }
+        setCutsNo(cutsNumber);
     }
     const bundleListClick=(e)=>{
         e.stopPropagation();
         e.preventDefault();
         const newArray = selectedRowKeys.map(row => row.plannedWidth);
         const isSameWidth = newArray.every(arr => arr === newArray[0]);
+        //Restricting bundle selection with same width
         if (isSameWidth) {
             setSelectedKey([]);
             setbundledList(true)
@@ -613,6 +620,17 @@ const CreateCuttingDetailsForm = (props) => {
             let payload= {
                 count: selectedRowKeys.length,
                 instructionId: selectedInstruction
+            }
+            // indexing total weight of selected instruction
+            if(tpweight.length === 0 && selectedRowKeys.length){
+                let weights = [];
+                weights[0]= weightIndex
+                settpweight(weights)
+            }else{
+                let weights = tpweight;
+                let index = tpweight.length;
+                weights[index] = weightIndex;
+                settpweight(weights)
             }
             props.instructionGroupsave(payload);
         } else {
@@ -716,16 +734,16 @@ const CreateCuttingDetailsForm = (props) => {
         }}/>
                 <div style={{padding: "20px 0px 0px 25px"}}>
                     <label for="tLength">Target length(mm):</label>
-                    <input type="text" className="bundle-input-class" id="tLength" name="tLength" onChange={getTargetLength}></input>
+                    <input type="text" className="bundle-input-class" id="tLength" name="tLength" onChange={(e)=>getTargetLength(e, 0)}></input>
                     <label for="tpweight">Total weight(kg):</label>
-                     <input type="text" className="bundle-input-class" id="tpweight" name="tpweight" value ={tpweight} disabled></input>
+                     <input type="text" className="bundle-input-class" id="tpweight" name="tpweight" value ={tpweight[0]} disabled></input>
                      
                 </div>
                 <div style={{padding: "20px 0px 0px 25px"}}>
                     <label for="pNo">Number of Packets :</label>
-                    <input type="text" className="bundle-input-class" id="pNo" name="pNo" onChange={e => getNoOfCuts(e)}></input>
+                    <input type="text" className="bundle-input-class" id="pNo" name="pNo" onChange={e => getNoOfCuts(e,0)}></input>
                     <label for="noOfCuts">Number of Cuts :</label>
-                    <input type="text" id="noOfCuts" className="bundle-input-class" name="noOfCuts" value={cutsNo.toFixed(0)}></input>
+                    <input type="text" id="noOfCuts" className="bundle-input-class" name="noOfCuts" value={cutsNo.length ?cutsNo[0].toFixed(0):0}></input>
                 </div>
                 <div style={{'padding-left': "72%","margin-top":"10px"}}><Button type="primary" size="medium" onClick={getCuts}>Confirm</Button> 
                 </div></>:
@@ -733,16 +751,16 @@ const CreateCuttingDetailsForm = (props) => {
                 <Table rowSelection={handleRowSelection} className="gx-table-responsive"  columns={columnsSlit} dataSource={selectedPast.length > 0 ?selectedPast[idx]:selectedRowKeys} pagination={false}/>
                 <div style={{padding: "20px 0px 0px 25px"}}>
                      <label for="tLength">Target length(mm):</label>
-                    <input type="text" className="bundle-input-class" id="tLength" name="tLength" onChange={getTargetLength}></input>
+                    <input type="text" className="bundle-input-class" id="tLength" name="tLength" onChange={(e)=>getTargetLength(e,idx)}></input>
                     <label for="tpweight">Total weight(kg):</label>
-                    <input type="text" className="bundle-input-class" id="tpweight" name="tpweight" value ={tpweight} disabled></input>
+                    <input type="text" className="bundle-input-class" id="tpweight" name="tpweight" value ={tpweight[idx]} disabled></input>
                     
                 </div>
                 <div style={{padding: "20px 0px 0px 25px"}}>
                     <label for="pNo">Number of Packets :</label>
-                    <input type="text" className="bundle-input-class" id="pNo" name="pNo" onChange={e => getNoOfCuts(e)}></input>
+                    <input type="text" className="bundle-input-class" id="pNo" name="pNo" onChange={e => getNoOfCuts(e, idx)}></input>
                     <label for="noOfCuts">Number of Cuts :</label>
-                    <input type="text" id="noOfCuts" className="bundle-input-class" name="noOfCuts" value={cutsNo.toFixed(0)}></input>
+                    <input type="text" id="noOfCuts" className="bundle-input-class" name="noOfCuts" value={cutsNo.length?cutsNo[idx]?.toFixed(0):0}></input>
                 </div><div style={{'padding-left': "72%","margin-top":"10px"}}><Button type="primary" size="medium" onClick={getCuts}>Confirm</Button> 
                 </div></>)}
                 <Table  rowSelection={handleSelection} className="gx-table-responsive"  showHeader={false} columns={columnsSlit} dataSource={bundleTableData} pagination={{
