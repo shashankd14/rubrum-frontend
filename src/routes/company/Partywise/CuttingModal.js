@@ -266,7 +266,7 @@ const CreateCuttingDetailsForm = (props) => {
             instructionId: record.instructionId
          }
          if (record.instructionId) {
-             setlength(length+ Number(record.plannedLength));
+             setlength(length+ (Number(record.plannedLength)*Number(record.plannedNoOfPieces)));
              setcurrentWeight( currentWeight + Number(record.plannedWeight));
             props.deleteInstructionById(payload, 'cut');
             const data = cutValue.filter(item => item.partId !== record.partId);
@@ -316,7 +316,7 @@ const CreateCuttingDetailsForm = (props) => {
                 // if(Number(tweight) !== 0){
                 //     remainWeight = currentWeight-Number(tweight);
                 // }else{
-                    remainWeight = currentWeight - (values.weight);
+                    
                 // }
                 let instructionPlanDto = {
                     "targetWeight":"",
@@ -328,7 +328,10 @@ const CreateCuttingDetailsForm = (props) => {
                 setValidate(false);
                 if(values.weight > currentWeight){
                     message.error('Weight greater than available weight', 2);
+                }else if(length < (props.inward.process.length*(props.inward.process.no))){
+                    message.error('Length greater than available length', 2);
                 }else{
+                    remainWeight = currentWeight - (values.weight);
                     let slitcuts =[];
                     slitcuts.push(
                     {
@@ -348,7 +351,7 @@ const CreateCuttingDetailsForm = (props) => {
                         deleteUniqId: unsavedDeleteId
                     });
                     setcurrentWeight(remainWeight);
-                    setlength(length - props.inward.process.length);
+                    setlength(length - (props.inward.process.length*(props.inward.process.no)));
                     setSaveCut(saveCut.length >0 ? [...slitcuts,...saveCut]: [...slitcuts]);
                      instructionRequestDTOs.push(...slitcuts,...saveCut);
                         let instructionPayload ={

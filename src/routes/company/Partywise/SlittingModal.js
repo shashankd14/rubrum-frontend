@@ -173,12 +173,14 @@ const SlittingWidths = (props) => {
     // - function to apply same data for remaining equals parts
     const applyData=() =>{
         const slits =[];
-        let equalInstructions= [...props.slitEqualInstruction]
+        let equalPanelList = [];
+     let equalInstructions= [...props.slitEqualInstruction]
         let weight = props.cuts[0].plannedWeight;
         weight = Number(weight) * (equalParts-1);
         for(let i=0; i<equalParts-1; i++){
             slits.push(...props.cuts)
             equalInstructions.push(...props.slitEqualInstruction);
+            equalPanelList.push(props.slitEqualInstruction);
         }
         if(weight > weightValue){
             setWeightValue(0);
@@ -187,6 +189,7 @@ const SlittingWidths = (props) => {
         }
        props.setSlits(slits);
         props.setSlitInstruction(equalInstructions); // Setting payload for equal parts
+        props.setPanelList(equalPanelList);
         if (!props.wip) { props.setslitpayload(slits) }
         setEqualParts(0);
     }
@@ -252,7 +255,7 @@ const SlittingWidths = (props) => {
                  slitInstructionPayload.push(instructionPayload);
                  setUnsavedDeleteId(prev => prev + 1);
                  let remainWeight = (props.coilDetails.fpresent || props.coilDetails.plannedWeight);
-                 if(Number(availLength)  > lengthValue-cutLength) {
+                 if(Number(availLength)  > lengthValue) {
                     message.error('Length greater than available length', 2);
                 }else if(totalWeight > remainWeight) {
                    message.error('Weight greater than available weight', 2);
