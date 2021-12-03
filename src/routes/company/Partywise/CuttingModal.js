@@ -354,10 +354,10 @@ const CreateCuttingDetailsForm = (props) => {
                     setcurrentWeight(remainWeight);
                     setlength(length - (props.inward.process.length*(props.inward.process.no)));
                     setSaveCutting(saveCutting.length >0 ? [...slitcuts,...saveCutting]: [...slitcuts]);
-                     instructionRequestDTOs.push(saveCutting.length >0 ? [...slitcuts,...saveCutting]: [...slitcuts]);
+                    //  instructionRequestDTOs.push(saveCutting.length >0 ? [...slitcuts,...saveCutting]: [...slitcuts]);
                         let instructionPayload ={
                             "partDetailsRequest": instructionPlanDto,
-                            instructionRequestDTOs,
+                            instructionRequestDTOs:saveCutting.length >0 ? [...slitcuts,...saveCutting]: [...slitcuts],
                             deleteUniqId: unsavedDeleteId
                         };
                         let payload =[];
