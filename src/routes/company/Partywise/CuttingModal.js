@@ -58,7 +58,7 @@ const CreateCuttingDetailsForm = (props) => {
     const [cutPayload,setCutPayload]= useState([]);
     const [selectedKey, setSelectedKey] = useState([]);
     const [saveInstruction, setSaveInstruction] = useState([]);
-    const [saveCut, setSaveCut] = useState([]);
+    const [saveCutting, setSaveCutting] = useState([]);
     const [unsavedDeleteId, setUnsavedDeleteId] = useState(0);
     const [tableData, setTableData] = useState(props.wip?(props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts);
     const columns=[
@@ -353,8 +353,8 @@ const CreateCuttingDetailsForm = (props) => {
                     });
                     setcurrentWeight(remainWeight);
                     setlength(length - (props.inward.process.length*(props.inward.process.no)));
-                    setSaveCut(saveCut.length >0 ? [...slitcuts,...saveCut]: [...slitcuts]);
-                     instructionRequestDTOs.push(...slitcuts,...saveCut);
+                    setSaveCutting(saveCutting.length >0 ? [...slitcuts,...saveCutting]: [...slitcuts]);
+                     instructionRequestDTOs.push(saveCutting.length >0 ? [...slitcuts,...saveCutting]: [...slitcuts]);
                         let instructionPayload ={
                             "partDetailsRequest": instructionPlanDto,
                             instructionRequestDTOs,
@@ -516,10 +516,7 @@ const CreateCuttingDetailsForm = (props) => {
     
     const setSelection = (record, selected, selectedRows) => {
          setSelectedRowKeys(selectedRows);
-        if(cutValue.length > 0){
-            setRestTableData(cutValue);
-        }
-        let weights= selectedRows.map(i => i.plannedWeight);
+       let weights= selectedRows.map(i => i.plannedWeight);
         weights = selectedRows.length>0?weights.reduce((total, num) => total + Number(num)): 0;
         setWeightIndex(weights); // set value to fetch index on bundle click
     }
@@ -547,7 +544,7 @@ const CreateCuttingDetailsForm = (props) => {
         }
         setCutsNo(cutsNumber);
     }
-    const getCuts=(e)=>{
+    const getCuts=(e, idx)=>{
         let cutsWidth = selectedRowKeys.reduce((a,c)=> c.plannedWidth)
         cutsWidth = selectedRowKeys.length ===1 ? cutsWidth.plannedWidth : cutsWidth;
         let cutsValue = [];
@@ -561,8 +558,8 @@ const CreateCuttingDetailsForm = (props) => {
                     processId:3,
                     instructionDate: moment().format('YYYY-MM-DD HH:mm:ss'),
                     plannedLength:cutsLength,
-                    plannedNoOfPieces: cutsNo[0]?.toFixed(0),
-                    plannedWeight: (Number(tpweight[0])/packetNo).toFixed(2),
+                    plannedNoOfPieces: cutsNo[idx]?.toFixed(0),
+                    plannedWeight: (Number(tpweight[idx])/packetNo).toFixed(2),
                     isSlitAndCut:false,
                     status: 1,
                     createdBy: "1",
@@ -585,7 +582,7 @@ const CreateCuttingDetailsForm = (props) => {
     payload.push(instructionPayload);
     setUnsavedDeleteId(prev => prev + 1);
     setSaveInstruction(payload);
-    setRestTableData(cutValue.length>0 ?[...cutValue,...cutsValue]: [...cutsValue])
+    setRestTableData(cutValue.length>0 ?restTableData.length ? [...restTableData,...cutsValue]:[...cutValue,...cutsValue]: [...cutsValue])
     setCutValue(cutsValue)
     }
     const getTargetLength=(e, idx)=>{
@@ -661,12 +658,12 @@ const CreateCuttingDetailsForm = (props) => {
        
         if(props.slitCut){
             props.saveCuttingInstruction(saveInstruction);
-            setSaveCut([])
+            setSaveCutting([])
         }
         else if(validate === false){
             if(cutPayload.length>0) {
               props.saveCuttingInstruction(saveInstruction);
-              setSaveCut([])
+              setSaveCutting([])
             }else{
                props.setShowCuttingModal(false);
           }
@@ -675,7 +672,7 @@ const CreateCuttingDetailsForm = (props) => {
     const handleCancel=() => {
         setCuts([]);
         setCutPayload([]);
-        setSaveCut([])
+        setSaveCutting([])
         props.form.resetFields();
         props.setProcessDetails({});
         setBalancedValue(false)
@@ -745,7 +742,7 @@ const CreateCuttingDetailsForm = (props) => {
                     <label for="noOfCuts">Number of Cuts :</label>
                     <input type="text" id="noOfCuts" className="bundle-input-class" name="noOfCuts" value={cutsNo.length ?cutsNo[0].toFixed(0):0}></input>
                 </div>
-                <div style={{'padding-left': "72%","margin-top":"10px"}}><Button type="primary" size="medium" onClick={getCuts}>Confirm</Button> 
+                <div style={{'padding-left': "72%","margin-top":"10px"}}><Button type="primary" size="medium" onClick={(e) =>getCuts(e,0)}>Confirm</Button> 
                 </div></>:
                 bundleItemList.length > 0 && bundleItemList.map((item,idx) => <>
                 <Table rowSelection={handleRowSelection} className="gx-table-responsive"  columns={columnsSlit} dataSource={selectedPast.length > 0 ?selectedPast[idx]:selectedRowKeys} pagination={false}/>
@@ -761,7 +758,7 @@ const CreateCuttingDetailsForm = (props) => {
                     <input type="text" className="bundle-input-class" id="pNo" name="pNo" onChange={e => getNoOfCuts(e, idx)}></input>
                     <label for="noOfCuts">Number of Cuts :</label>
                     <input type="text" id="noOfCuts" className="bundle-input-class" name="noOfCuts" value={cutsNo.length?cutsNo[idx]?.toFixed(0):0}></input>
-                </div><div style={{'padding-left': "72%","margin-top":"10px"}}><Button type="primary" size="medium" onClick={getCuts}>Confirm</Button> 
+                </div><div style={{'padding-left': "72%","margin-top":"10px"}}><Button type="primary" size="medium" onClick={(e) =>getCuts(e,idx)}>Confirm</Button> 
                 </div></>)}
                 <Table  rowSelection={handleSelection} className="gx-table-responsive"  showHeader={false} columns={columnsSlit} dataSource={bundleTableData} pagination={{
                             onChange(current) {
