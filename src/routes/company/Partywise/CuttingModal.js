@@ -58,7 +58,7 @@ const CreateCuttingDetailsForm = (props) => {
     const [cutPayload,setCutPayload]= useState([]);
     const [selectedKey, setSelectedKey] = useState([]);
     const [saveInstruction, setSaveInstruction] = useState([]);
-    const [saveCut, setSaveCut] = useState([]);
+    const [saveCutting, setSaveCutting] = useState([]);
     const [unsavedDeleteId, setUnsavedDeleteId] = useState(0);
     const [tableData, setTableData] = useState(props.wip?(props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts);
     const columns=[
@@ -353,8 +353,8 @@ const CreateCuttingDetailsForm = (props) => {
                     });
                     setcurrentWeight(remainWeight);
                     setlength(length - (props.inward.process.length*(props.inward.process.no)));
-                    setSaveCut(saveCut.length >0 ? [...slitcuts,...saveCut]: [...slitcuts]);
-                     instructionRequestDTOs.push(...slitcuts,...saveCut);
+                    setSaveCutting(saveCutting.length >0 ? [...slitcuts,...saveCutting]: [...slitcuts]);
+                     instructionRequestDTOs.push(saveCutting.length >0 ? [...slitcuts,...saveCutting]: [...slitcuts]);
                         let instructionPayload ={
                             "partDetailsRequest": instructionPlanDto,
                             instructionRequestDTOs,
@@ -658,12 +658,12 @@ const CreateCuttingDetailsForm = (props) => {
        
         if(props.slitCut){
             props.saveCuttingInstruction(saveInstruction);
-            setSaveCut([])
+            setSaveCutting([])
         }
         else if(validate === false){
             if(cutPayload.length>0) {
               props.saveCuttingInstruction(saveInstruction);
-              setSaveCut([])
+              setSaveCutting([])
             }else{
                props.setShowCuttingModal(false);
           }
@@ -672,7 +672,7 @@ const CreateCuttingDetailsForm = (props) => {
     const handleCancel=() => {
         setCuts([]);
         setCutPayload([]);
-        setSaveCut([])
+        setSaveCutting([])
         props.form.resetFields();
         props.setProcessDetails({});
         setBalancedValue(false)
