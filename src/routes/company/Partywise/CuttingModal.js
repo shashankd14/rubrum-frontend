@@ -276,14 +276,15 @@ const CreateCuttingDetailsForm = (props) => {
             props.form.setFieldsValue({
                 no: 0
             });
+            setshowDeleteModal(false);
          }
-        if(type === 'slitCut'){
+        else if(type === 'slitCut'){
             const data = cutValue.filter(item => item.deleteUniqId !== record.deleteUniqId);
              resetSaveInstruction(record);
              setRestTableData(data);
              setCutValue(data);
              setshowDeleteModal(false);
-        }else{
+        } else{
             setValidate(false);
             setSaveInstruction(prev => {
                 return prev.length > 0 ? [{ ...prev[0], instructionRequestDTOs: prev[0]?.instructionRequestDTOs?.filter(item => item.deleteUniqId !== record.deleteUniqId)}] : []
@@ -495,8 +496,6 @@ const CreateCuttingDetailsForm = (props) => {
         const newIndex = (page - 1) * 10 + index;
         newData[newIndex][key] = type === 'select' ? { classificationId: Number(e) } : Number(e.target.value);
         setTableData(newData);
-        
-        
     };
     const handleChange = (e) =>{
         if(e.target.value !== ''){
