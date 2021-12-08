@@ -467,12 +467,23 @@ const CreateCuttingDetailsForm = (props) => {
  }
 },[props.inward.pdfSuccess])
     useEffect(() => {
+        let payload ={}
         if(props.inward.instructionSaveCuttingSuccess && !props.wip) {
-            let partId = props.inward.saveCut[0].partDetailsId
-            let payload={
+            if(props.slitCut && props.inward?.saveCut.length > 1){
+                let instructions = props.inward?.saveCut.map(cut  => cut.instructions)
+                instructions =instructions.flat();
+                instructions = instructions.map(ins  => ins.parentGroupId);
+                payload={
+                    partDetailsId: props.inward.saveCut[0].partDetailsId,
+                    groupIds:[...new Set(instructions)]
+                }
+            }else{
+                let partId = props.inward.saveCut[0].partDetailsId
+                payload={
                     partId: partId
                 }
         
+            }
             loading = '';
             props.pdfGenerateInward(payload)
             
