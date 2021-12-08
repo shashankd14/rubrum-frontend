@@ -474,9 +474,14 @@ const CreateCuttingDetailsForm = (props) => {
                 instructions =instructions.flat();
                 instructions = instructions.map(ins  => ins.parentGroupId);
                 payload={
-                    partDetailsId: props.inward.saveCut[0].partDetailsId,
-                    groupIds:[...new Set(instructions)]
+                    payloadObj:{
+                        partDetailsId: props.inward.saveCut[0].partDetailsId,
+                        groupIds:[...new Set(instructions)]
+                    },
+                    type:'slitCut'
                 }
+
+                   
             }else{
                 let partId = props.inward.saveCut[0].partDetailsId
                 payload={

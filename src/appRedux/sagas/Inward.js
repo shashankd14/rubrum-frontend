@@ -566,7 +566,17 @@ function* pdfGenerateInward(action) {
                   },
                 body: JSON.stringify(action.payload.payloadObj)
             });
-        }else {
+        }else if(action.payload.type === 'slitCut'){
+            pdfGenerate = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/pdf', {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+
+                  },
+                body: JSON.stringify(action.payload.payloadObj)
+            });
+        } 
+        else{
             // process pdf
         pdfGenerate = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/pdf/${partDetailsId}`, {
             method: 'GET',
