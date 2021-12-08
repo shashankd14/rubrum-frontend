@@ -815,7 +815,8 @@ const columnsPlan=[
             if(props.inward.instructionSaveSlittingSuccess && !props.wip && !props.slitCut) {
                 let partId = props.inward.saveSlit[0].partDetailsId
                 let payload={
-                    partId: partId
+                    groupIds: null,
+                    partDetailsId: partId
                 }
                 props.pdfGenerateInward(payload);
                 loading = ''; 
