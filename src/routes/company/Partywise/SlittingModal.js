@@ -149,6 +149,8 @@ const SlittingWidths = (props) => {
     
     useEffect(()=>{
         if(props.reset){
+            settargetWeight(0);
+            setavailLength(0);
             props.form.resetFields();
             settwidth(0);
         }
@@ -286,6 +288,8 @@ const SlittingWidths = (props) => {
                         props.setSlitInstruction(slitInstructionPayload);
                         props.setSlitInstructionList(slitInstructionPayload);
                         props.setSlitEqualInstruction(slitInstructionPayload);
+                        settargetWeight(0);
+                        setavailLength(0);
                         props.form.resetFields();
                 }
             }
