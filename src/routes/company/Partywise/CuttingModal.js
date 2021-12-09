@@ -270,17 +270,24 @@ const CreateCuttingDetailsForm = (props) => {
              setlength(length+ (Number(record.plannedLength)*Number(record.plannedNoOfPieces)));
              setcurrentWeight( currentWeight + Number(record.plannedWeight));
             props.deleteInstructionById(payload, 'cut');
-            const data = cutValue.filter(item => item.partId !== record.partId);
-            setRestTableData(data);
-            setCutValue(data);
-            const res = cuts.find(data => data.groupId === record.parentGroupId);
-            setBundleItemList(prev => {
-                return restTableData.length > 0 ? prev.filter(item => item.groupId !== record.parentGroupId) : [];
-            })
-            setbundleTableData(prev => {
-                const updated = prev.filter(item => item.groupId !== res?.groupId);
-                return res ? [res, ...updated] : prev
-            });
+            
+            if (props.slitCut) {
+                const data = cutValue.filter(item => item.partId !== record.partId);
+                setRestTableData(data);
+                setCutValue(data);
+                const res = cuts.find(data => data.groupId === record.parentGroupId);
+                setBundleItemList(prev => {
+                    return restTableData.length > 0 ? prev.filter(item => item.groupId !== record.parentGroupId) : [];
+                })
+                setbundleTableData(prev => {
+                    const updated = prev.filter(item => item.groupId !== res?.groupId);
+                    return res ? [res, ...updated] : prev
+                });
+            } else {
+                const data = cuts.filter(item => item.instructionId !== record.instructionId)
+                setCuts(data);
+            }
+            
             props.form.setFieldsValue({
                 no: 0
             });
