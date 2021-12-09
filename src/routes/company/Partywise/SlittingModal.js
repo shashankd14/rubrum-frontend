@@ -149,6 +149,8 @@ const SlittingWidths = (props) => {
     
     useEffect(()=>{
         if(props.reset){
+            settargetWeight(0);
+            setavailLength(0);
             props.form.resetFields();
             settwidth(0);
         }
