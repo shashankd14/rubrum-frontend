@@ -278,7 +278,7 @@ const CreateCuttingDetailsForm = (props) => {
                 return restTableData.length > 0 ? prev.filter(item => item.groupId !== record.parentGroupId) : [];
             })
             setbundleTableData(prev => {
-                const updated = prev.filter(item => item.groupId !== res.groupId);
+                const updated = prev.filter(item => item.groupId !== res?.groupId);
                 return res ? [res, ...updated] : prev
             });
             props.form.setFieldsValue({
