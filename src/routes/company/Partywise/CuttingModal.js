@@ -270,9 +270,24 @@ const CreateCuttingDetailsForm = (props) => {
              setlength(length+ (Number(record.plannedLength)*Number(record.plannedNoOfPieces)));
              setcurrentWeight( currentWeight + Number(record.plannedWeight));
             props.deleteInstructionById(payload, 'cut');
-            const data = cutValue.filter(item => item.partId !== record.partId);
-            setRestTableData(data);
-            setCutValue(data);
+            
+            if (props.slitCut) {
+                const data = cutValue.filter(item => item.partId !== record.partId);
+                setRestTableData(data);
+                setCutValue(data);
+                const res = cuts.find(data => data.groupId === record.parentGroupId);
+                setBundleItemList(prev => {
+                    return restTableData.length > 0 ? prev.filter(item => item.groupId !== record.parentGroupId) : [];
+                })
+                setbundleTableData(prev => {
+                    const updated = prev.filter(item => item.groupId !== res?.groupId);
+                    return res ? [res, ...updated] : prev
+                });
+            } else {
+                const data = cuts.filter(item => item.instructionId !== record.instructionId)
+                setCuts(data);
+            }
+            
             props.form.setFieldsValue({
                 no: 0
             });
@@ -284,7 +299,7 @@ const CreateCuttingDetailsForm = (props) => {
              setRestTableData(data);
              setCutValue(data);
              setshowDeleteModal(false);
-        } else{
+        } else {
             setValidate(false);
             setSaveInstruction(prev => {
                 return prev.length > 0 ? [{ ...prev[0], instructionRequestDTOs: prev[0]?.instructionRequestDTOs?.filter(item => item.deleteUniqId !== record.deleteUniqId)}] : []
@@ -375,6 +390,7 @@ const CreateCuttingDetailsForm = (props) => {
             }
         });
     };
+    
     useEffect(() => {
         if(props.inward.process.length && props.inward.process.no) {
             let weight = cuts.map(i => !i.instructionId ? Number(i.plannedWeight) : 0);
@@ -537,9 +553,12 @@ const CreateCuttingDetailsForm = (props) => {
         //  selectedRowKeys:selectedKey,
         onSelect: setSelection, 
         // onChange: setChangeSelection,
-        getCheckboxProps: (record) => ({
-            disabled: record.groupId !== null
-        })
+        getCheckboxProps: (record) => {
+            const bundledIds = bundleItemList.map(item => item.groupId);
+            return {
+                disabled: record.groupId !== null && bundledIds.includes(record.groupId)
+            }
+        }
     }
     const handleRowSelection ={
         getCheckboxProps: (record)=> ({
@@ -753,7 +772,7 @@ const CreateCuttingDetailsForm = (props) => {
                     <label for="pNo">Number of Packets :</label>
                     <input type="text" className="bundle-input-class" id="pNo" name="pNo" onChange={e => getNoOfCuts(e,0)}></input>
                     <label for="noOfCuts">Number of Cuts :</label>
-                    <input type="text" id="noOfCuts" className="bundle-input-class" name="noOfCuts" value={cutsNo.length ?cutsNo[0].toFixed(0):0}></input>
+                    <input type="text" id="noOfCuts" className="bundle-input-class" name="noOfCuts" value={cutsNo.length ?cutsNo[0]?.toFixed(0):0}></input>
                 </div>
                 <div style={{'padding-left': "72%","margin-top":"10px"}}><Button type="primary" size="medium" onClick={(e) =>getCuts(e,0)}>Confirm</Button> 
                 </div></>:
