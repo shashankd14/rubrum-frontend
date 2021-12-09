@@ -201,8 +201,7 @@ const SlittingWidths = (props) => {
             if (!err) {
                 props.validate(false);
                 let totalWidth = 0;
-                let totalWeight =  props.slitInstructionList.length?props.slitInstructionList.map(i => [...i.instructionRequestDTOs]):0
-                totalWeight = totalWeight.length?totalWeight.flat().map(i => i.plannedWeight* i.plannedNoOfPieces ):0;
+                let totalWeight =  props.slitInstructionList.length?props.slitInstructionList.map(i => Number(i.partDetailsRequest.targetWeight)):0
                 totalWeight = totalWeight.length?totalWeight.reduce((sum,total) => sum+ total): 0;
                 const widthValue = props.coilDetails.fWidth ? props.coilDetails.fWidth : props.plannedWidth(props.coilDetails)
                 const lengthValue = props.coilDetails.availableLength ? props.coilDetails.availableLength : props.plannedLength(props.coilDetails)
