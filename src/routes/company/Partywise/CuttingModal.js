@@ -60,6 +60,7 @@ const CreateCuttingDetailsForm = (props) => {
     const [saveInstruction, setSaveInstruction] = useState([]);
     const [saveCutting, setSaveCutting] = useState([]);
     const [unsavedDeleteId, setUnsavedDeleteId] = useState(0);
+    const [pdfPayload, setPdfPayload]= useState(false);
     const [tableData, setTableData] = useState(props.wip?(props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts);
     const columns=[
 
@@ -407,6 +408,7 @@ const CreateCuttingDetailsForm = (props) => {
         if(props.slitCut && !props.wip){
         let cutList = props.coil.instruction.flat();
         cutList = cutList.filter(item => item.process.processId === 3);
+        setPdfPayload(cutList.length > 0 ? true : false);
         let cutTableData = props.coilDetails.flat();
         cutTableData = cutTableData.filter(item => item.isSlitAndCut === true)
         let tableList =[];
@@ -423,6 +425,7 @@ const CreateCuttingDetailsForm = (props) => {
         }
        setCuts(tableList)
        setCutValue(cutList);
+
        setRestTableData([]);
         }else{
         let data = props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions
@@ -491,7 +494,7 @@ const CreateCuttingDetailsForm = (props) => {
                 instructions = instructions.map(ins  => ins.parentGroupId);
                 payload={
                         partDetailsId: props.inward.saveCut[0].partDetailsId,
-                        groupIds:[...new Set(instructions)]
+                        groupIds: pdfPayload ?[...new Set(instructions)]:null
                 }
 
                    
@@ -690,11 +693,13 @@ const CreateCuttingDetailsForm = (props) => {
        
         if(props.slitCut){
             props.saveCuttingInstruction(saveInstruction);
+            setSaveInstruction([]);
             setSaveCutting([])
         }
         else if(validate === false){
             if(cutPayload.length>0) {
               props.saveCuttingInstruction(saveInstruction);
+              setSaveInstruction([]);
               setSaveCutting([])
             }else{
                props.setShowCuttingModal(false);
