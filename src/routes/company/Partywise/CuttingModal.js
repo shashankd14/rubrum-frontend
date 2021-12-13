@@ -37,9 +37,9 @@ const CreateCuttingDetailsForm = (props) => {
     const [validate, setValidate]=useState(true);
     const lengthValue =  props.coilDetails.availableLength >=0 ? props.coilDetails.availableLength  : props.plannedLength(props.coilDetails)
     const widthValue = props.coilDetails.fWidth ? props.coilDetails.fWidth  : props.plannedWidth(props.coilDetails);
-    const WeightValue =  props.coilDetails.fpresent >= 0 ? props.coilDetails.fpresent  : props.plannedWeight(props.coilDetails);
+     const WeightValue =  props.coilDetails.fpresent >= 0 ? props.coilDetails.fpresent  : props.plannedWeight(props.coilDetails);
     let widthCheck = lengthValue !== 0 && WeightValue !== 0 ? (props.coilDetails.fWidth || props.coilDetails.plannedWidth) : widthValue;
-    const [currentWeight, setcurrentWeight] = useState(WeightValue);
+    const [currentWeight, setcurrentWeight] = useState(props.coilDetails.fpresent >= 0 ? props.coilDetails.fpresent  : props.plannedWeight(props.coilDetails));
     const [length, setlength]= useState(lengthValue);
     const [width, setwidth] = useState(widthCheck);
     const [cutValue, setCutValue] = useState([]);
@@ -403,7 +403,9 @@ const CreateCuttingDetailsForm = (props) => {
                 props.setProcessDetails({...props.inward.process, weight:Number(tweight) >=0 && balancedValue ? WeightValue-Number(weight):Math.round( 0.00000785*parseFloat(props.inward.plan.fWidth)*parseFloat(props.inward.plan.fThickness)*parseFloat(props.inward.process.length)*parseFloat(props.inward.process.no))});
         }
     }, [props.inward.process.length, props.inward.process.no])
-    
+    useEffect(() =>{
+        setcurrentWeight(props.coilDetails.fpresent)
+    },[props.coilDetails.fpresent])
     useEffect(() => {
         if(props.slitCut && !props.wip){
         let cutList = props.coil.instruction.flat();
