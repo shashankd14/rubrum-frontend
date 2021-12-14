@@ -276,14 +276,19 @@ const CreateCuttingDetailsForm = (props) => {
                 const data = cutValue.filter(item => item.partId !== record.partId);
                 setRestTableData(data);
                 setCutValue(data);
-                const res = cuts.find(data => data.groupId === record.parentGroupId);
-                setBundleItemList(prev => {
-                    return restTableData.length > 0 ? prev.filter(item => item.groupId !== record.parentGroupId) : [];
+                const res = cuts.filter(data => data.groupId === record.parentGroupId);
+                res.map(item => {
+                    item.groupId = null;
+                    return item;
                 })
-                setbundleTableData(prev => {
-                    const updated = prev.filter(item => item.groupId !== res?.groupId);
-                    return res ? [res, ...updated] : prev
-                });
+                setBundleItemList(prev => prev.filter(item => item.groupId !== record.parentGroupId));
+                if (cuts.length !== bundleTableData.length) {
+                    setbundleTableData(prev => {
+                        const updated = prev.filter(item => item.groupId !== res?.groupId);
+                        return res?.length ? [...updated, ...res] : prev
+                    });
+                    setbundledList(false);
+                }
             } else {
                 const data = cuts.filter(item => item.instructionId !== record.instructionId)
                 setCuts(data);
@@ -559,9 +564,8 @@ const CreateCuttingDetailsForm = (props) => {
         onSelect: setSelection, 
         // onChange: setChangeSelection,
         getCheckboxProps: (record) => {
-            const bundledIds = bundleItemList.map(item => item.groupId);
             return {
-                disabled: record.groupId !== null && bundledIds.includes(record.groupId)
+                disabled: record.groupId !== null
             }
         }
     }
