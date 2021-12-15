@@ -432,7 +432,7 @@ const CreateCuttingDetailsForm = (props) => {
         }
        setCuts(tableList)
        setCutValue(cutList);
-
+       setbundleTableData(bundleTableData.length >0 ? tableList: [])
        setRestTableData([]);
         }else{
         let data = props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions
