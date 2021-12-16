@@ -282,12 +282,15 @@ const CreateCuttingDetailsForm = (props) => {
                     return item;
                 })
                 setBundleItemList(prev => prev.filter(item => item.groupId !== record.parentGroupId));
+                setbundledList(false)
                 if (cuts.length !== bundleTableData.length) {
                     setbundleTableData(prev => {
                         const updated = prev.filter(item => item.groupId !== res?.groupId);
                         return res?.length ? [...updated, ...res] : prev
                     });
-                    setbundledList(false);
+                }else{
+                    setSelectedRowKeys([]);
+                    setSelectedPast([]);
                 }
             } else {
                 const data = cuts.filter(item => item.instructionId !== record.instructionId)
