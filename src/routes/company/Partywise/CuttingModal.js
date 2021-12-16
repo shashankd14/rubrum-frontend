@@ -291,6 +291,8 @@ const CreateCuttingDetailsForm = (props) => {
                 }else{
                     setSelectedRowKeys([]);
                     setSelectedPast([]);
+                    settpweight([]);
+                    setCutsNo([]);
                 }
             } else {
                 const data = cuts.filter(item => item.instructionId !== record.instructionId)
