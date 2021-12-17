@@ -203,6 +203,11 @@ const CreateCuttingDetailsForm = (props) => {
             key:'plannedWeight',
         },
         {
+            title: 'Width',
+            dataIndex:'plannedWidth',
+            key: 'plannedWidth',
+        },
+        {
             title:'Actions',
             dataIndex:'actions',
             render: (text, record,index) => (
