@@ -24,6 +24,7 @@ const CreateCuttingDetailsForm = (props) => {
     const {getFieldDecorator} = props.form;
     let loading = '';
     let index = 0;
+    const [confirmClicks, setConfirmClicks] = useState([]);
     const [showDeleteModal, setshowDeleteModal] = useState(false);
     const [deleteRecord, setDeleteRecord] = useState({});
     const [cuts, setCuts] = useState([]);
@@ -314,6 +315,7 @@ const CreateCuttingDetailsForm = (props) => {
              resetSaveInstruction(record);
              setRestTableData(data);
              setCutValue(data);
+             setConfirmClicks(data.map(item => item.index));
              setshowDeleteModal(false);
         } else {
             setValidate(false);
@@ -595,6 +597,10 @@ const CreateCuttingDetailsForm = (props) => {
         }
         setCutsNo(cutsNumber);
     }
+
+    const getConfirmDisabled = (idx) => {
+        return confirmClicks.includes(idx);
+    }
     const getCuts=(e, idx)=>{
         let cutsWidth = selectedRowKeys.reduce((a,c)=> c.plannedWidth)
         cutsWidth = selectedRowKeys.length ===1 ? cutsWidth.plannedWidth : cutsWidth;
@@ -619,10 +625,11 @@ const CreateCuttingDetailsForm = (props) => {
                     inwardId: props.coil.inwardEntryId,
                     parentInstructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : "",
                     groupId:props.inward.groupId.groupId,
-                    deleteUniqId: unsavedDeleteId
+                    deleteUniqId: unsavedDeleteId,
+                    index: idx
            };
-        cutsValue.push(cutObj);
-    }
+            cutsValue.push(cutObj);
+        }
     instructionPlanDto.deleteUniqId = unsavedDeleteId;
     let instructionPayload ={
         "partDetailsRequest": instructionPlanDto,
@@ -634,7 +641,8 @@ const CreateCuttingDetailsForm = (props) => {
     setUnsavedDeleteId(prev => prev + 1);
     setSaveInstruction(payload);
     setRestTableData(cutValue.length>0 ?restTableData.length ? [...restTableData,...cutsValue]:[...cutValue,...cutsValue]: [...cutsValue])
-    setCutValue(cutsValue)
+    setCutValue(cutsValue);
+    setConfirmClicks(prev => [...prev, idx]);
     }
     const getTargetLength=(e, idx)=>{
         setCutsLength(e.target.value);
@@ -811,7 +819,9 @@ const CreateCuttingDetailsForm = (props) => {
                     <input type="text" className="bundle-input-class" id="pNo" name="pNo" onChange={e => getNoOfCuts(e, idx)}></input>
                     <label for="noOfCuts">Number of Cuts :</label>
                     <input type="text" id="noOfCuts" className="bundle-input-class" name="noOfCuts" value={cutsNo.length?cutsNo[idx]?.toFixed(0):0}></input>
-                </div><div style={{'padding-left': "72%","margin-top":"10px"}}><Button type="primary" size="medium" onClick={(e) =>getCuts(e,idx)}>Confirm</Button> 
+                </div><div style={{'padding-left': "72%","margin-top":"10px"}}><Button type="primary" size="medium" disabled={
+                    getConfirmDisabled(idx)
+                } onClick={(e) => getCuts(e,idx)}>Confirm</Button> 
                 </div></>)}
                 <Table  rowSelection={handleSelection} className="gx-table-responsive"  showHeader={false} columns={columnsSlit} dataSource={bundleTableData} pagination={{
                             onChange(current) {
