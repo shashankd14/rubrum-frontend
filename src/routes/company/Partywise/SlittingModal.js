@@ -267,18 +267,6 @@ const SlittingWidths = (props) => {
                     message.error('Sum of slits width is not same as width of coil.', 2);
                 }else if((totalWidth) > widthValue) {
                         message.error('Sum of slits width is greater than width of coil.', 2);
-                // }else{
-                //     setWeightValue(remainWeight-(totalWeight));
-                //     setlen(lengthValue - sumLength)
-                //         props.setPanelList(slitArray);
-                //         props.setSlits(slits);
-                //         props.setslitpayload(slits);
-                //         props.setSlitInstruction(slitInstructionPayload);
-                //         props.setSlitInstructionList(slitInstructionPayload);
-                //         props.setSlitEqualInstruction(slitInstructionPayload);
-                //         props.form.resetFields();
-                // }}
-                
                  } else{
                     setWeightValue(remainWeight-(totalWeight));
                     setlen(lengthValue - sumLength)
