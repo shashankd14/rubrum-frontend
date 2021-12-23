@@ -61,7 +61,7 @@ const CreateCuttingDetailsForm = (props) => {
     const [saveInstruction, setSaveInstruction] = useState([]);
     const [saveCutting, setSaveCutting] = useState([]);
     const [unsavedDeleteId, setUnsavedDeleteId] = useState(0);
-    const [pdfPayload, setPdfPayload]= useState(false);
+    const [slitPartId, setSlitPartId] = useState('');
     const [tableData, setTableData] = useState(props.wip?(props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts);
     const columns=[
 
@@ -427,7 +427,6 @@ const CreateCuttingDetailsForm = (props) => {
         if(props.slitCut && !props.wip){
         let cutList = props.coil.instruction.flat();
         cutList = cutList.filter(item => item.process.processId === 3);
-        setPdfPayload(cutList.length > 0 ? true : false);
         let cutTableData = props.coilDetails.flat();
         cutTableData = cutTableData.filter(item => item.isSlitAndCut === true)
         let tableList =[];
@@ -508,13 +507,15 @@ const CreateCuttingDetailsForm = (props) => {
         let payload ={}
         if(props.inward.instructionSaveCuttingSuccess && !props.wip) {
             if(props.slitCut){
+                let partId = props.inward?.saveSlit[0]?.partDetailsId
                 let instructions = props.inward?.saveCut.map(cut  => cut.instructions)
                 instructions =instructions.flat();
                 instructions = instructions.map(ins  => ins.parentGroupId);
                 payload={
-                        partDetailsId: props.inward.saveCut[0].partDetailsId,
-                        groupIds: pdfPayload ?[...new Set(instructions)]:null
+                        partDetailsId: slitPartId !== partId ? partId: null ,
+                        groupIds: [...new Set(instructions)]
                 }
+                setSlitPartId(partId);
 
                    
             }else{
@@ -716,9 +717,23 @@ const CreateCuttingDetailsForm = (props) => {
         }
        
         if(props.slitCut){
-            props.saveCuttingInstruction(saveInstruction);
-            setSaveInstruction([]);
-            setSaveCutting([])
+            if(saveInstruction.length === 0 && props.inward?.saveSlit[0].partDetailsId !== slitPartId){
+                let partId = props.inward?.saveSlit[0].partDetailsId
+                let payload={
+                    groupIds: null,
+                    partDetailsId: partId
+                }
+                setSlitPartId(partId);
+                props.pdfGenerateInward(payload)
+            }else if(saveInstruction.length === 0 && props.inward?.saveSlit[0].partDetailsId === slitPartId){
+                message.error("Please enter the cut instructions for existing slits or the new slit to proceed with pdf generation")
+            }
+            else{
+                props.saveCuttingInstruction(saveInstruction);
+                setSaveInstruction([]);
+                setSaveCutting([])
+            }
+           
         }
         else if(validate === false){
             if(cutPayload.length>0) {
