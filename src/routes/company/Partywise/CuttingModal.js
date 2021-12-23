@@ -60,7 +60,6 @@ const CreateCuttingDetailsForm = (props) => {
     const [saveInstruction, setSaveInstruction] = useState([]);
     const [saveCutting, setSaveCutting] = useState([]);
     const [unsavedDeleteId, setUnsavedDeleteId] = useState(0);
-    const [pdfPayload, setPdfPayload]= useState(false);
     const [slitPartId, setSlitPartId] = useState('');
     const [tableData, setTableData] = useState(props.wip?(props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts);
     const columns=[
@@ -423,7 +422,6 @@ const CreateCuttingDetailsForm = (props) => {
         cutList = cutList.filter(item => item.process.processId === 3);
         let cutTableData = props.coilDetails.flat();
         cutTableData = cutTableData.filter(item => item.isSlitAndCut === true)
-        // setPdfPayload(cutTableData.length !== cuts.length  ? true : false);
         let tableList =[];
         for(let i=0;i< cutTableData.length;i++){
             let tableObj = {
