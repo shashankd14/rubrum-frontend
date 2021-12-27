@@ -182,7 +182,7 @@ const SlittingWidths = (props) => {
         for(let i=0; i<equalParts-1; i++){
             slits.push(...props.cuts)
             equalInstructions.push(...props.slitEqualInstruction);
-            equalPanelList.push(props.slitEqualInstruction);
+            equalPanelList.push(slits);
         }
         if(weight > weightValue){
             setWeightValue(0);
