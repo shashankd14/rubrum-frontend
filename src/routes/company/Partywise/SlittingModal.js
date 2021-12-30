@@ -54,7 +54,7 @@ const SlittingWidths = (props) => {
     const [twidth, settwidth]= useState(0);
     const [oldLength, setOldLength]= useState(0);
     const [equalParts, setEqualParts]= useState(0);
-    
+    const [equalPartsDisplay, setEqualPartsDisplay]=useState(0);
     const [unsavedDeleteId, setUnsavedDeleteId] = useState(0);
     const keys = getFieldValue('keys');
     const callBackValue =(n)=>{
@@ -178,8 +178,8 @@ const SlittingWidths = (props) => {
         let equalPanelList = [];
      let equalInstructions= [...props.slitEqualInstruction]
         let weight = props.cuts[0].plannedWeight;
-        weight = Number(weight) * (equalParts-1);
-        for(let i=0; i<equalParts-1; i++){
+        weight = Number(weight) * (equalPartsDisplay);
+        for(let i=0; i<equalPartsDisplay; i++){
             slits.push(...props.cuts)
             equalInstructions.push(...props.slitEqualInstruction);
             equalPanelList.push(slits);
@@ -194,6 +194,7 @@ const SlittingWidths = (props) => {
         props.setPanelList(equalPanelList);
         if (!props.wip) { props.setslitpayload(slits) }
         setEqualParts(0);
+        setEqualPartsDisplay(0);
     }
     // - function to add the instruction
     const addNewSize = (e) => {
@@ -276,8 +277,9 @@ const SlittingWidths = (props) => {
                         props.setSlitInstruction(slitInstructionPayload);
                         props.setSlitInstructionList(slitInstructionPayload);
                         props.setSlitEqualInstruction(slitInstructionPayload);
-                        settargetWeight(0);
-                        setavailLength(0);
+                        settargetWeight(value ===1 ?targetWeight: 0);
+                        setavailLength(value ===1 ?availLength: 0);
+                        setEqualPartsDisplay(value === 1?equalParts > slitInstructionPayload.length? equalParts - slitInstructionPayload.length :0: 0)
                         props.form.resetFields();
                 }
             }
@@ -345,6 +347,7 @@ const SlittingWidths = (props) => {
     }
     const handleBlurEvent= e =>{
         setEqualParts(Number(e.target.value));
+        setEqualPartsDisplay(Number(e.target.value));
         props.setParts(Number(e.target.value));
         if(value === 2){
             settargetWeight(0);
@@ -396,14 +399,14 @@ const SlittingWidths = (props) => {
                 
                 <Form.Item label="No Of Parts">
                     {getFieldDecorator('noParts', {
-                        rules: [{ required: (value=== 2 || value===1) && equalParts !== 0? false : true, message: 'Please enter no.of Parts' }],
+                        rules: [{ required: (value=== 2 || value===1) && equalPartsDisplay !== 0? false : true, message: 'Please enter no.of Parts' }],
                     })(
                         <Input id="noParts" onBlur={handleBlurEvent} disabled ={(value == 0 || value == 4)? false: true}/>
                     )}
                 </Form.Item>
                 <Form.Item>
                 {getFieldDecorator('radioParts', {
-                        rules: [{ required: (value === 2 ||  value === 1) && equalParts !== 0? false : true, message: 'Please select Parts' }],
+                        rules: [{ required: (value === 2 ||  value === 1) && equalPartsDisplay !== 0? false : true, message: 'Please select Parts' }],
                     })(
                         <Radio.Group id="radioParts" onChange={radioChange} disabled={(value == 0 || value == 4) && weightValue !== 0? false: true} value={value}>
                         <Radio value={1}>Equal</Radio>
@@ -495,13 +498,13 @@ const SlittingWidths = (props) => {
                 <Form.Item>
                 <Row className="gx-mt-4">
                     <Col span={16} style={{ textAlign: "center"}}>
-                        <Button type="primary" htmlType="submit" onClick={() => addNewSize()} disabled={props.wip ? true : (props.slitInstructionList.length === equalParts || equalParts === 0)? true: false}>
+                        <Button type="primary" htmlType="submit" onClick={() => addNewSize()} disabled={props.wip ? true : (props.slitInstructionList.length === equalParts || equalPartsDisplay === 0)? true: false}>
                             Add Size<Icon type="right"/>
                         </Button>
                     </Col>
                 </Row>
-                 <Button type="primary" onClick={applyData} hidden={value=== 1 && equalParts > 1? false: true} disabled={value===1 && equalParts !== 0 ? (props.cuts.length=== 0 ?  true : false) :true}>
-                           Apply to remainig {equalParts} parts <Icon type="right"/>
+                 <Button type="primary" onClick={applyData} hidden={value=== 1 && equalParts > 1 && props.slitInstructionList.length !== equalParts? false: true} disabled={value===1 && equalPartsDisplay !== 0 ? (props.cuts.length=== 0 ?  true : false) :true}>
+                           Apply to remainig {equalPartsDisplay} parts <Icon type="right"/>
                 </Button>
                 </Form.Item></>}
                 </Form>
