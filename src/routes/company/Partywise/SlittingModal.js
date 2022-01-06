@@ -399,14 +399,14 @@ const SlittingWidths = (props) => {
                 
                 <Form.Item label="No Of Parts">
                     {getFieldDecorator('noParts', {
-                        rules: [{ required: (value=== 2 || value===1) && equalPartsDisplay !== 0? false : true, message: 'Please enter no.of Parts' }],
+                        rules: [{ required: (value=== 2 || value===1) && equalParts !== 0? false : true, message: 'Please enter no.of Parts' }],
                     })(
                         <Input id="noParts" onBlur={handleBlurEvent} disabled ={(value == 0 || value == 4)? false: true}/>
                     )}
                 </Form.Item>
                 <Form.Item>
                 {getFieldDecorator('radioParts', {
-                        rules: [{ required: (value === 2 ||  value === 1) && equalPartsDisplay !== 0? false : true, message: 'Please select Parts' }],
+                        rules: [{ required: (value === 2 ||  value === 1) && equalParts !== 0? false : true, message: 'Please select Parts' }],
                     })(
                         <Radio.Group id="radioParts" onChange={radioChange} disabled={(value == 0 || value == 4) && weightValue !== 0? false: true} value={value}>
                         <Radio value={1}>Equal</Radio>
@@ -498,7 +498,7 @@ const SlittingWidths = (props) => {
                 <Form.Item>
                 <Row className="gx-mt-4">
                     <Col span={16} style={{ textAlign: "center"}}>
-                        <Button type="primary" htmlType="submit" onClick={() => addNewSize()} disabled={props.wip ? true : (props.slitInstructionList.length === equalParts || equalPartsDisplay === 0)? true: false}>
+                        <Button type="primary" htmlType="submit" onClick={() => addNewSize()} disabled={props.wip ? true : (props.slitInstructionList.length === equalParts)? true: false}>
                             Add Size<Icon type="right"/>
                         </Button>
                     </Col>
