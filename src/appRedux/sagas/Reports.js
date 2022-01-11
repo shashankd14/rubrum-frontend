@@ -10,7 +10,7 @@ import {
 
 function* sendReport(action) {
     try {
-        const sendReport = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/reports', {
+        const sendReport = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/report', {
                 method: 'POST',
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(action.data) 

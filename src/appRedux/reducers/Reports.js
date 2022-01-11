@@ -14,7 +14,8 @@ export default (state = INIT_STATE, action) => {
         case SEND_REPORT_REQUEST: {
             return {
                 ...state,
-                loading: true
+                loading: true,
+                success: false
             }
         }
         case SEND_REPORT_SUCCESS: {
