@@ -56,6 +56,7 @@ const Reports = (props) => {
                     ...values,
                     fromDate: `${values.fromDate.format('YYYY-MM-DD')}`,
                     toDate: `${values.toDate.format('YYYY-MM-DD')}`,
+                    partyId: Number(values.partyId)
                 }
                 console.log('date', payload);
                 props.sendReportRequest(payload);
