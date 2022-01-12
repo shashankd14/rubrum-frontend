@@ -1,7 +1,8 @@
 import {
     SEND_REPORT_REQUEST,
     SEND_REPORT_SUCCESS,
-    SEND_REPORT_ERROR
+    SEND_REPORT_ERROR,
+    RESET_REPORT_SUCCESS
 } from "../../constants/ActionTypes";
 
 const INIT_STATE = {
@@ -29,6 +30,13 @@ export default (state = INIT_STATE, action) => {
             return {
                 ...state,
                 loading: false,
+                success: false
+            }
+        }
+
+        case RESET_REPORT_SUCCESS: {
+            return {
+                ...state,
                 success: false
             }
         }
