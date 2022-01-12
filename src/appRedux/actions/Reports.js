@@ -1,7 +1,8 @@
 import {
     SEND_REPORT_REQUEST,
     SEND_REPORT_SUCCESS,
-    SEND_REPORT_ERROR
+    SEND_REPORT_ERROR,
+    RESET_REPORT_SUCCESS
 } from "../../constants/ActionTypes";
 
 export const sendReportRequest = data => ({
@@ -17,3 +18,7 @@ export const sendReportError = error => ({
     type: SEND_REPORT_ERROR,
     error
 });
+
+export const resetSendReportSuccess = () => ({
+    type: RESET_REPORT_SUCCESS
+})
