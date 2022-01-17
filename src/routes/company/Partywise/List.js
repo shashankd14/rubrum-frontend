@@ -179,6 +179,8 @@ const getFilterData=(list)=>{
             const filteredData = props.inward.inwardList.filter((inward) => {
                 if (inward.coilNumber.toLowerCase().includes(searchValue.toLowerCase()) ||
                     inward.party.partyName.toLowerCase().includes(searchValue.toLowerCase()) ||
+                    inward.customerBatchId.toLowerCase().includes(searchValue.toLowerCase()) ||
+                    inward.inStockWeight === Number(searchValue) ||
                     inward.vInvoiceNo.toLowerCase().includes(searchValue.toLowerCase())) {
                     return inward
                 }
