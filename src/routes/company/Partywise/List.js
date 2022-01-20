@@ -21,6 +21,7 @@ const List = (props) => {
     });
     const [filteredInfo, setFilteredInfo] = useState(null);
     const [searchValue, setSearchValue] = useState('');
+    const [customerValue, setCustomerValue] = useState('');
     let filter = props.inward.inwardList.map(item =>{
         if(item.instruction.length>0){
             item.children= item.instruction.filter(ins => ins.groupId === null)
@@ -178,6 +179,8 @@ const getFilterData=(list)=>{
             const filteredData = props.inward.inwardList.filter((inward) => {
                 if (inward.coilNumber.toLowerCase().includes(searchValue.toLowerCase()) ||
                     inward.party.partyName.toLowerCase().includes(searchValue.toLowerCase()) ||
+                    inward.customerBatchId?.toLowerCase().includes(searchValue?.toLowerCase()) ||
+                    inward.inStockWeight === Number(searchValue) ||
                     inward.vInvoiceNo.toLowerCase().includes(searchValue.toLowerCase())) {
                     return inward
                 }
@@ -195,8 +198,10 @@ const getFilterData=(list)=>{
     };
 
     const clearFilters = (value) => {
+        setCustomerValue('');
         setFilteredInfo(null);
         setSearchValue('');
+        setFilteredInwardList(props.inward.inwardList);
     };
 
     const clearAll = () => {
@@ -212,7 +217,9 @@ const getFilterData=(list)=>{
         if (value) {
             const filteredData = props.inward.inwardList.filter((inward) =>inward.party.nPartyId===value);
             setFilteredInwardList(filteredData);
+            setCustomerValue(value);
         } else {
+            setCustomerValue('');
             setFilteredInwardList(props.inward.inwardList);
         }
       
@@ -299,6 +306,7 @@ const getFilterData=(list)=>{
                             placeholder="Select a customer"
                             optionFilterProp="children"
                             onChange={handleCustomerChange}
+                            value={customerValue}
                             onFocus={handleFocus}
                             onBlur={handleBlur}
                             filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}

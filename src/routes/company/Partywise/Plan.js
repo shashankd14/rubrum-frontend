@@ -1,4 +1,4 @@
-import { Button, Card, Col, Select, Modal } from "antd";
+import { Button, Card, Col, Select, Modal, message } from "antd";
 import moment from 'moment';
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
@@ -20,6 +20,7 @@ const Plan = (props) => {
     const [defaultValue, setdefaultValue] = useState();
     const [showUnprocessedModal, setshowUnprocessedModal] = useState(false);
     const [unprocessedOkClick, setUnprocessedOkClick] = useState(false);
+    const [reshowModal, setReshowModal] = useState(false);
     const { Option } = Select;
     const getPlannedLength = (ins) => {
         let length = 0;
@@ -28,7 +29,9 @@ const Plan = (props) => {
         actualLength = ins.fLength ? ins.fLength : ins.actualLength != null ? ins.actualLength : ins.plannedLength;
         if (ins.instruction && ins.instruction?.length> 0){
            let instruction = ins.instruction.flat();
-           length = instruction.map(i => i.plannedLength);
+           length = instruction.map(i => {
+                return i.process.processId === 1 ?  i.plannedLength * i.plannedNoOfPieces :  i.plannedLength;
+           });
            length = [...new Set(length)];
            childLength = instruction.map(i => {
                if (i.childInstructions && i.childInstructions?.length> 0){
@@ -142,6 +145,16 @@ const Plan = (props) => {
             setShowCuttingModal(true);
         }
     }, [cuttingCoil]);
+
+    useEffect(() => {
+        if (props.inward.plan?.instruction?.length !== slittingCoil?.instruction?.length && props.inward.isDeleted) {
+            message.loading('Deleting part of slit instructions....', 1);
+            setTimeout(() => {
+                setSlittingCoil(props.inward.plan);
+                message.success('Deleted successfully!!', 2);
+            }, 1000);
+        }
+    }, [props.inward.plan])
 
     const getLength = (value, type) => {
         let tempDelValue = 0;

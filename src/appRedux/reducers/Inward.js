@@ -19,6 +19,7 @@ import {
     SET_PROCESS_DETAILS,
     RESET_INWARD_FORM,
     RESET_DELETE_INWARD,
+    REST_ISDELETED,
     REQUEST_SAVE_SLITTING_DETAILS,
     SAVE_SLITTING_DETAILS_SUCCESS,
     SAVE_SLITTING_DETAILS_ERROR,
@@ -61,6 +62,7 @@ import {
     UPDATE_INWARD_LIST_ERROR,
     DELETE_INSTRUCTION_BY_ID,
     DELETE_INSTRUCTION_BY_ID_SUCCESS,
+    DELETE_INSTRUCTION_BY_ID_SUCCESS_SLIT,
     DELETE_INSTRUCTION_BY_ID_ERROR,
     CHECK_BATCH_NO_EXIST,
     CHECK_BATCH_NO_EXIST_SUCCESS,
@@ -115,7 +117,8 @@ const INIT_STATE = {
     dcpdfLoading:false,
     dcpdfSuccess: false,
     deliverySuccess:false,
-    deliveryError: false
+    deliveryError: false,
+    isDeleted: false
 
 };
 
@@ -561,6 +564,19 @@ export default (state = INIT_STATE, action) => {
                 loading: true,
             }
         }
+        case REST_ISDELETED: {
+            return {
+                ...state,
+                isDeleted: false
+            }
+        }
+        case DELETE_INSTRUCTION_BY_ID_SUCCESS_SLIT: {
+            return {
+                ...state,
+                loading: false,
+                isDeleted: true
+            }
+        }
         case DELETE_INSTRUCTION_BY_ID_SUCCESS: {
             return {
                 ...state,
@@ -570,7 +586,8 @@ export default (state = INIT_STATE, action) => {
         case DELETE_INSTRUCTION_BY_ID_ERROR: {
             return {
                 ...state,
-                loading: false
+                loading: false,
+                isDeleted: false
             }
         }
         case PDF_GENERATE_INWARD: {

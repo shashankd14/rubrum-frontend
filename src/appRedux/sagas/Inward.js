@@ -334,32 +334,13 @@ function* fetchInwardPlanDetails(action) {
 }
 
 function* requestSaveCuttingInstruction(action) {
-    const requestBody = [];
-    action.cuttingDetails.map((cutDetails) => {
-        const req = {
-            processId: cutDetails.processId?cutDetails.processId:CUTTING_INSTRUCTION_PROCESS_ID,
-            instructionDate: moment(cutDetails.processDate).format('YYYY-MM-DD HH:mm:ss'),
-            plannedLength: cutDetails.length,
-            plannedWeight: cutDetails.weight,
-            plannedNoOfPieces: cutDetails.no,
-            plannedWidth: cutDetails.plannedWidth,
-            status: 1,
-            "createdBy": "1",
-            "updatedBy": "1",
-            slitAndCut: cutDetails.slitAndCut,
-            inwardId: cutDetails.inwardId ? cutDetails.inwardId : "",
-            parentInstructionId: cutDetails.instructionId ? cutDetails.instructionId : "",
-            groupId: cutDetails.parentGroupId ? cutDetails.parentGroupId : ""
-        }
-        requestBody.push(req);
-    })
     try {
-        const fetchPartyInwardList = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/instruction/save`, {
+        const fetchPartyInwardList = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/instruction/save', {
             method: 'POST',
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(requestBody)
+            body: JSON.stringify(action.cuttingDetails)
         });
-        if (fetchPartyInwardList.status === 200) {
+        if (fetchPartyInwardList.status === 201) {
             const fetchPartyListObj = yield fetchPartyInwardList.json()
             yield put(saveCuttingInstructionSuccess(fetchPartyListObj));
         } else
@@ -395,31 +376,13 @@ function* instructionGroupsave(action) {
 }
 
 function* requestSaveSlittingInstruction(action) {
-    const requestBody = [];
-    action.slittingDetails.map((slitDetails) => {
-        const req = {
-            processId: slitDetails.processId?slitDetails.processId:SLITTING_INSTRUCTION_PROCESS_ID,
-            instructionDate: moment().format('YYYY-MM-DD HH:mm:ss'),
-            plannedLength: slitDetails.plannedLength,
-            plannedWidth: slitDetails.plannedWidth,
-            plannedWeight: slitDetails.plannedWeight,
-            plannedNoOfPieces: slitDetails.plannedNoOfPieces,
-            status: 1,
-            "createdBy": "1",
-            "updatedBy": "1",
-            slitAndCut: slitDetails.slitAndCut,
-            inwardId: slitDetails.inwardId ? slitDetails.inwardId : '',
-            parentInstructionId: slitDetails.instructionId ? slitDetails.instructionId : '',
-        }
-        requestBody.push(req);
-    })
     try {
-        const fetchPartyInwardList = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/instruction/save`, {
+        const fetchPartyInwardList = yield fetch( 'http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/instruction/save', {
             method: 'POST',
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(requestBody)
+            body: JSON.stringify(action.slittingDetails)
         });
-        if (fetchPartyInwardList.status === 200) {
+        if (fetchPartyInwardList.status === 201) {
             const fetchPartyListObj = yield fetchPartyInwardList.json()
             yield put(saveSlittingInstructionSuccess(fetchPartyListObj));
         } else
@@ -574,12 +537,15 @@ function* deleteInwardEntryById(action) {
 }
 function* deleteInstructionById(action) {
     try {
-        
-        const fetchInwardInstruction = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/instruction/deleteById/${action.id}`, {
-            method: 'DELETE'
+        const fetchInwardInstruction = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/instruction/${action.param}`, {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(action.payload)
         });
         if (fetchInwardInstruction.status === 200) {
-            yield put(deleteInstructionByIdSuccess(fetchInwardInstruction));
+            yield put(deleteInstructionByIdSuccess(fetchInwardInstruction, action.param));
         } else
             yield put(deleteInstructionByIdError('error'));
     } catch (error) {
@@ -587,16 +553,39 @@ function* deleteInstructionById(action) {
     }
 }
 function* pdfGenerateInward(action) {
+    let partDetailsId = action.payload.partId;
+    let pdfGenerate
     try {
-        const pdfGenerate = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/pdf/inward', {
-            method: 'POST',
-            headers: {
-                "Content-Type": "application/json",
-               
-              },
-            body: JSON.stringify(action.payload)
-        });
-        if (pdfGenerate.status === 200) {
+        // inward pdf
+        if(action.payload.type === 'inward'){
+            pdfGenerate = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/pdf/inward', {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+
+                  },
+                body: JSON.stringify(action.payload.payloadObj)
+            });
+        }else {
+            pdfGenerate = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/pdf', {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+
+                  },
+                body: JSON.stringify(action.payload)
+            });
+        } 
+    //     else{
+    //         // process pdf
+    //     pdfGenerate = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/pdf/${partDetailsId}`, {
+    //         method: 'GET',
+           
+    //     });
+
+    //    }
+        
+    if (pdfGenerate.status === 200) {
             const pdfGenerateResponse = yield pdfGenerate.json();
             
             let pdfWindow = window.open("")
@@ -607,7 +596,8 @@ function* pdfGenerateInward(action) {
             yield put(pdfGenerateSuccess(pdfGenerateResponse));
         } else
             yield put(pdfGenerateError('error'));
-    } catch (error) {
+    }
+     catch (error) {
         yield put(pdfGenerateError(error));
     }
 }
