@@ -97,6 +97,13 @@ const SidebarContent = () => {
                       <span><IntlMessages id="sidebar.master.rates"/></span>
                     </Link>
                   </Menu.Item>
+
+                  <Menu.Item key="company/master/quality">
+                    <Link to="/company/master/quality">
+                      <i className="icon icon-crypto"/>
+                      <span><IntlMessages id="sidebar.master.quality"/></span>
+                    </Link>
+                  </Menu.Item>
                 </SubMenu>
 
 

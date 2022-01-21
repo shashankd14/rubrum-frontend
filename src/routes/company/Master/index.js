@@ -8,6 +8,8 @@ const Delivery = ({ match }) => (
         <Route path={`${match.url}/material`} component={asyncComponent(() => import('./Material'))}/>
         <Route path={`${match.url}/party`} component={asyncComponent(() => import('./Party'))} />
         <Route path={`${match.url}/rates`} component={asyncComponent(() => import('./Rates'))} />
+        <Route exact path={`${match.url}/quality`} component={asyncComponent(() => import('./Quality'))} />
+        <Route exact path={`${match.url}/quality/createTemplate`} component={asyncComponent(() => import('./CreateTemplate'))} />
     </Switch>
 );
 
