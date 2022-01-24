@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import {Button, Card, Divider, Icon, Table} from "antd";
 import moment from 'moment';
+import SearchBox from "../../../components/SearchBox";
 import {fetchWorkInProgressList} from "../../../appRedux/actions";
 import {
     fetchInwardList,
@@ -17,6 +18,16 @@ function  List(props) {
     const [filteredInfo, setFilteredInfo] = useState(null);
     const [searchValue, setSearchValue] = useState('');
     const [filteredInwardList, setFilteredInwardList] = useState(props.inward.inwardList);
+       
+const getFilterData=(list)=>{
+    let filter = list.map(item =>{
+    if(item.instruction.length>0){
+        item.children = item.instruction.filter(filteredInfo => filteredInfo.status.statusName ==='IN PROGRESS');
+    }
+      return item
+     })
+    return filter;
+}
     const columns = [{
         title: 'Coil Number',
         dataIndex: 'coilNumber',
@@ -104,6 +115,23 @@ function  List(props) {
         }
     }, [props.inward.loading, props.inward.success])
 
+    useEffect(() => {
+        if (searchValue) {
+            const filteredData = props.inward.inwardList.filter((inward) => {
+                if (inward.coilNumber.toLowerCase().includes(searchValue.toLowerCase()) ||
+                    inward.party.partyName.toLowerCase().includes(searchValue.toLowerCase()) ||
+                    inward.customerBatchId?.toLowerCase().includes(searchValue?.toLowerCase()) ||
+                    inward.inStockWeight === Number(searchValue) ||
+                    inward.vInvoiceNo.toLowerCase().includes(searchValue.toLowerCase())) {
+                    return inward
+                }
+            });
+            
+            setFilteredInwardList(getFilterData(filteredData));
+        } else {
+            setFilteredInwardList(getFilterData(props.inward.inwardList));
+        }
+    }, [searchValue])
     const handleChange = (pagination, filters, sorter) => {
         setSortedInfo(sorter);
         setFilteredInfo(filters)
@@ -114,6 +142,10 @@ function  List(props) {
 
     return (
         <Card>
+            <div style={{width: "50%" ,float: "right","margin-bottom":"10px"}}className="gx-flex-row gx-flex-1 wip-search">
+            <SearchBox styleName="gx-flex-1" placeholder="Search for coil number or party name..." value={searchValue} onChange={(e) => setSearchValue(e.target.value)} />
+             
+            </div>
             <Table rowSelection={[]}
                    className="gx-table-responsive"
                    columns={columns}
