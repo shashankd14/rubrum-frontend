@@ -481,7 +481,7 @@ function* postDeliveryConfirmRequest(payload) {
         });
         if (postConfirm.status === 200 && requestType !== 'PUT') {
             yield put(postDeliveryConfirmSuccess());
-            history.push('/company/partywise-register')
+           
         } else if(requestType === 'PUT'){
             yield put(postDeliveryConfirmSuccess(postConfirm));
         }else
