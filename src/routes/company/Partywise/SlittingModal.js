@@ -133,7 +133,7 @@ const SlittingWidths = (props) => {
                 if (!item.actualWidth && item.actualWidth !== 0) item.actualWidth  =  item.plannedWidth;
                 if (!item.actualWeight && item.actualWeight !== 0) item.actualWeight  =  item.plannedWeight;
                 if (!item.packetClassification?.classificationId) item.packetClassification = {
-                    classificationId: item.plannedWidth < 20 ? 2 : 1
+                    classificationId: item.plannedWidth < 20 ? 2 : 6
                 }
                 return item;
             });

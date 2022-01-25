@@ -483,7 +483,7 @@ const CreateCuttingDetailsForm = (props) => {
                 if (!item.actualLength && item.actualLength !== 0) item.actualLength  =  item.plannedLength;
                 if (!item.actualWeight && item.actualWeight !== 0) item.actualWeight  =  item.plannedWeight;
                 if (!item.packetClassification?.classificationId) item.packetClassification = {
-                    classificationId: 1
+                    classificationId: 6
                 }
                 return item;
             });
