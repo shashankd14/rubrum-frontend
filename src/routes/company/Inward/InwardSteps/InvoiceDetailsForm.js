@@ -20,9 +20,20 @@ const InvoiceDetailsForm = (props) => {
         });
     };
 
+    const handleChange = (e, path) => {
+        const { value } = e.target;
+        props.inward[path] = value || '';
+    }
+
     React.useEffect(() => {
+        if (props.params !== '') {
+            props.inward.batchNo = props.inward.batchNumber;
+            props.inward.vehicleNumber = props.inward.vLorryNo;
+            props.inward.invoiceNumber = props.inward.vInvoiceNo;
+        }
         console.log(props.inward);
-    }, [])
+    }, [props.params])
+
     const partyName =(partyList) =>{
         partyList = partyList.find(item => item.nPartyId===Number(props.inward?.partyName))
         return partyList.partyName
@@ -55,16 +66,16 @@ const InvoiceDetailsForm = (props) => {
                     </Form.Item>
                     <Form.Item label="Vehicle number">
                         {getFieldDecorator('vehicleNumber', {
-                            rules: [{ required: true, message: 'Please enter Vehicle Number' }],
+                            rules: [{ required: true, message: 'Please enter Vehicle Number' }]
                         })(
-                            <Input id="vehicleNumber" />
+                            <Input id="vehicleNumber" onChange={(e) => handleChange(e, 'vehicleNumber')} />
                         )}
                     </Form.Item>
                     <Form.Item label="Invoice number">
                         {getFieldDecorator('invoiceNumber', {
-                            rules: [{ required: true, message: 'Please enter invoice Number' }],
+                            rules: [{ required: true, message: 'Please enter invoice Number' }]
                         })(
-                            <Input id="invoiceNumber" />
+                            <Input id="invoiceNumber" onChange={(e) => handleChange(e, 'invoiceNumber')}/>
                         )}
                     </Form.Item>
                     <Form.Item label="Value of Goods">
@@ -133,15 +144,15 @@ const InvoiceDetails = Form.create({
             }),
             batchNo: Form.createFormField({
                 ...props.inward.batchNo,
-                value: (props.inward.batchNo) ? props.inward.batchNo : '',
+                value:  props.inward.batchNo || '',
             }),
             vehicleNumber: Form.createFormField({
                 ...props.inward.vehicleNumber,
-                value: props.params !== "" ? props.inward.vLorryNo :(props.inward.vehicleNumber) ? props.inward.vehicleNumber : '',
+                value: props.inward.vehicleNumber || '',
             }),
             invoiceNumber: Form.createFormField({
                 ...props.inward.invoiceNumber,
-                value: props.params !== "" ? props.inward.vInvoiceNo :(props.inward.invoiceNumber) ? props.inward.invoiceNumber : '',
+                value: props.inward.invoiceNumber || '',
             }),
             valueOfGoods: Form.createFormField({
                 ...props.inward.valueOfGoods,
