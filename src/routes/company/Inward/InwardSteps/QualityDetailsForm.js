@@ -177,7 +177,7 @@ const QualityDetails = Form.create({
             }),
             testCertificateNo: Form.createFormField({
                 ...props.inward.testCertificateNo,
-                value: (props.inward.testCertificateNo) ? props.inward.testCertificateNo : props.inward.testCertificateNumber,
+                value: (props.inward.testCertificateNo) ? props.inward.testCertificateNo : props.inward.testCertificateNumber || '',
             }),
             remarks: Form.createFormField({
                 ...props.inward.remarks,
