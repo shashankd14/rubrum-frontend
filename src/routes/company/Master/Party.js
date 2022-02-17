@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {connect} from 'react-redux';
-import {Button, Card, Divider, Table, Modal, Row, Col, Form, Input} from "antd";
+import {Button, Card, Divider, Table, Modal, Row, Col, Form, Input, Select} from "antd";
 import moment from 'moment';
 import SearchBox from "../../../components/SearchBox";
 
@@ -25,6 +25,7 @@ export const formItemLayout = {
 
 const Party = (props) => {
 
+    const Option = Select.Option;
     const [sortedInfo, setSortedInfo] = useState({
         order: 'descend',
         columnKey: 'age',
@@ -40,7 +41,11 @@ const Party = (props) => {
     const {getFieldDecorator, getFieldValue} = props.form;
 
     const { party } = props.party;
-
+    //Todo
+    const options=["test","test1","test2"]
+    const children=[]
+    options.map((i,idx)=>(children.push(<Option key={idx}>{i}</Option>)))
+    
     getFieldDecorator('phoneKeys', {initialValue: [0]});
     getFieldDecorator('addressKeys', {initialValue: [0]});
     getFieldDecorator('emailKeys', {initialValue: [0]});
@@ -201,6 +206,9 @@ const Party = (props) => {
             [key1]: value1.filter((key, idx) => idx !== index),
             [key2]: value2.filter((key, idx) => idx !== index)
         });
+    }
+    const handleSelectChange=(e)=>{
+        console.log(e)
     }
 
     return (
@@ -445,6 +453,21 @@ const Party = (props) => {
                                             <Input id="gstNumber" />
                                         )}
                                     </Form.Item>
+                                    <Form.Item label="Tags">
+                                        {getFieldDecorator('tags', {
+                                            rules: [{ required: true, message: 'Please enter Tags!' }],
+                                        })(
+                                            <Select
+                                             id="tags"
+                                             mode="multiple"
+                                             allowClear
+                                             style={{ width: '100%' }}
+                                             placeholder="Please select"
+                                             onChange={handleSelectChange}
+                                             >{children}</Select>
+                                        )}
+                                    </Form.Item>
+
                                 </Form>
                             </Col>
                         </Row>
