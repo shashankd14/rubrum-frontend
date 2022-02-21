@@ -5,8 +5,7 @@ import moment from 'moment';
 import SearchBox from "../../../components/SearchBox";
 
 import IntlMessages from "../../../util/IntlMessages";
-import { fetchRatesList, fetchPartyList, fetchMaterialList, fetchProcessList, addRates, fetchRatesListById, updateRates, resetRates} from "../../../appRedux/actions";
-import { onDeleteContact } from "../../../appRedux/actions";
+import { fetchClassificationList,addPacketClassification} from "../../../appRedux/actions";
 
 const Option = Select.Option;
 
@@ -30,21 +29,17 @@ const Tags = (props) => {
         order: 'descend',
         columnKey: 'age',
     });
-    const [filteredInfo, setFilteredInfo] = useState(null);
     const [searchValue, setSearchValue] = useState('');
     const [showAddTags, setShowAddTags] = useState(false);
-    const [viewMaterial, setViewMaterial] = useState(false);
     const [tagsName, setTagName] = useState("");
-    const [viewMaterialData, setViewMaterialData] = useState({});
-    const [filteredInwardList, setFilteredInwardList] = useState(props.rates?.ratesList || []);
-    const [tagsList, setTagsList] =useState([])
+    const [tagsList, setTagsList] =useState(props?.classificationList || [])
 
     const { getFieldDecorator } = props.form;
 
     const columns = [{
         title: 'Tag Name',
-        dataIndex: 'tagName',
-        key: 'tagName',
+        dataIndex: 'classificationName',
+        key: 'classificationName',
         filters: []
     },
     {
@@ -60,51 +55,57 @@ const Tags = (props) => {
     ];
     const onEdit = (record,e)=>{
         e.preventDefault();
-        setTagName(record.tagName)
+        setTagName(record.classificationName)
         setShowAddTags(true)
-        
-        //todo
                 
     }
     const addTags=()=> {
-         let tagsList=[]
-         tagsList.push({tagName:tagsName})
-            props.form.resetFields();
-            setTagsList(tagsList)
-            setShowAddTags(false)
-    
+        props.form.validateFields((err, values) => {
+            if (!err) {
+                let payload=[];
+                payload.push(values)
+              console.log('Received values of form: ', values);
+              props.addPacketClassification(payload);
+              props.form.resetFields();
+              setShowAddTags(false);
+            }
+        });
     }
     
  const handleTagsChange =(e)=>{
     setTagName(e.target.value)
    
 }
+useEffect(()=>{
+    props.fetchClassificationList();
+},[showAddTags])
+useEffect(()=>{
+    setTagsList(props.classificationList)
+},[props?.classificationList])
 
-    useEffect(() => {
+    // useEffect(() => {
 
-        const { rates } = props;
-        if(searchValue) {
-            const filteredData = rates?.ratesList?.filter((rate) => {
-                if(rate?.rateId?.toString() === searchValue ||
-                    rate?.partyRates?.partyName?.toLowerCase().includes(searchValue.toLowerCase()) ||
-                    rate?.process?.processName.toLowerCase().includes(searchValue)) {
-                    return rate;
-                }
-            });
-            setFilteredInwardList(filteredData);
-        } else {
-            setFilteredInwardList(rates.ratesList);
-        }
-    }, [searchValue])
+    //     const { classificationList } = props;
+    //     if(searchValue) {
+    //         const filteredData = classificationList.filter((tag) => {
+    //             if( tag?.classificationName.toLowerCase().includes(searchValue.toLowerCase())){
+    //                 return tag;
+    //             }
+    //         });
+    //         setFilteredInwardList(filteredData);
+    //     } else {
+    //         setFilteredInwardList(classificationList);
+    //     }
+    // }, [searchValue])
     const handleChange = (pagination, filters, sorter) => {
         setSortedInfo(sorter);
-        setFilteredInfo(filters)
+        // setFilteredInfo(filters)
     };
 
-    const clearAll = () => {
-        setSortedInfo(null);
-        setFilteredInfo(null);
-    };
+    // const clearAll = () => {
+    //     setSortedInfo(null);
+    //     setFilteredInfo(null);
+    // };
 
 
     return (
@@ -115,8 +116,8 @@ const Tags = (props) => {
                     <div className="gx-flex-row gx-w-50">
                         <Button type="primary" icon={() => <i className="icon icon-add"/>} size="medium"
                                 onClick={()=> setShowAddTags(true)}
-                        >Add Tags</Button>
-                        <SearchBox styleName="gx-flex-1" placeholder="Search for process name or party name..." value={searchValue} onChange={(e) => setSearchValue(e.target.value)}/>
+                        >Add Tag</Button>
+                        {/* <SearchBox styleName="gx-flex-1" placeholder="Search for process name or party name..." value={searchValue} onChange={(e) => setSearchValue(e.target.value)}/> */}
                     </div>
                 </div>
                 <Table rowSelection={[]}
@@ -142,11 +143,11 @@ const Tags = (props) => {
                             <Col lg={24} md={24} sm={24} xs={24} className="gx-align-self-center">
                                 <Form {...formItemLayout} className="gx-pt-4">
                                     
-                                    <Form.Item label="Tags Name" >
-                                        {getFieldDecorator('tagsName', {
+                                    <Form.Item label="Tag Name" >
+                                        {getFieldDecorator('classificationName', {
                                             rules: [{ required: true, message: 'Please enter Tags name!' }],
                                             })(
-                                                <Input id="tagsName" value={tagsName} onChange={handleTagsChange}/>
+                                                <Input id="classificationName" value={tagsName} onChange={handleTagsChange}/>
                                         )}
                                     </Form.Item>
                                     
@@ -162,30 +163,22 @@ const Tags = (props) => {
 }
 
 const mapStateToProps = state => ({
-    rates: state.rates,
-    material: state.material,
-    party: state.party,
-    process: state.process
+    classificationList: state.packetClassification?.classificationList,
 });
 
 const addTagsForm = Form.create({
     mapPropsToFields(props) {
+        const { classificationList } = props.classificationList;
         return {
             tags: Form.createFormField({
-                ...props.rates?.rates?.partyRates?.nPartyId,
-                value: props.rates?.rates?.partyRates?.nPartyId|| undefined,
+                ...classificationList?.classificationName,
+                value: classificationList?.classificationName || '',
             })
         };
     }
 })(Tags);
 
 export default connect(mapStateToProps, {
-    fetchRatesList,
-    fetchPartyList,
-    fetchMaterialList,
-    fetchProcessList,
-    addRates,
-    fetchRatesListById,
-    updateRates,
-    resetRates
+    addPacketClassification,
+    fetchClassificationList
 })(addTagsForm);
