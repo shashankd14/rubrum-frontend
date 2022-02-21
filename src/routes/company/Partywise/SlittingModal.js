@@ -56,7 +56,7 @@ const SlittingWidths = (props) => {
     const [equalParts, setEqualParts]= useState(0);
     const [equalPartsDisplay, setEqualPartsDisplay]=useState(0);
     const [unsavedDeleteId, setUnsavedDeleteId] = useState(0);
-    const [tagsName, setTagsName] = useState("")
+    // const [tagsName, setTagsName] = useState("")
     const keys = getFieldValue('keys');
     const callBackValue =(n)=>{
         let cuts = 0;
@@ -289,9 +289,9 @@ const SlittingWidths = (props) => {
                 }
         });
     }
-    const handleTagsChange=(e)=>{
-        setTagsName(e.target.value)
-    }
+    // const handleTagsChange=(e)=>{
+    //     setTagsName(e.target.value)
+    // }
     const addNewKey = () => {
         const {form} = props;
         const keys = form.getFieldValue('keys');
@@ -498,7 +498,7 @@ const SlittingWidths = (props) => {
                         </>
                     )}
                 </Form.Item>
-                <Form.Item label="Tags">
+                {/* <Form.Item label="Tags">
                     {getFieldDecorator('tags', {
                         rules: [{ required: false}],
                     })(
@@ -510,7 +510,7 @@ const SlittingWidths = (props) => {
             </Select>
                         </>
                     )}
-                </Form.Item>
+                </Form.Item> */}
                 {/*  */}
                 <Form.Item>
                 <Row className="gx-mt-4">
@@ -1048,7 +1048,8 @@ const columnsPlan=[
                                         slitCut={props.slitCut} 
                                         setParts ={(parts)=>setParts(parts)}
                                         setPanelList={(list) => setPanelList([...panelList,...list])}
-                                        party={props?.coil.party?.tags}/>
+                                        // party={props?.coil.party?.tags}
+                                        />
                                 </Form.Item>
 
                             </Form>
