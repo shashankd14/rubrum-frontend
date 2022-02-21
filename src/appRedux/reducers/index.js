@@ -9,7 +9,7 @@ import Inward from "./Inward";
 import Party from "./Party";
 import Material from "./Material";
 import Delivery from "./Delivery";
-import packetClassification from "./PacketClassification";
+import PacketClassification from "./PacketClassification";
 import Rates from "./Rates";
 import Process from './Process';
 import Reports from './Reports';
@@ -25,7 +25,7 @@ const createRootReducer = (history) => combineReducers({
   party: Party,
   material: Material,
   deliveries: Delivery,
-  packetClassification,
+  packetClassification: PacketClassification,
   rates: Rates,
   process: Process,
   reports: Reports
