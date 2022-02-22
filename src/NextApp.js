@@ -1,5 +1,6 @@
 import React from "react";
-import { Provider } from 'react-redux'
+import { Provider } from 'react-redux' 
+import { HashRouter } from 'react-router-dom'
 import { ConnectedRouter } from 'connected-react-router'
 import {Route, Switch} from "react-router-dom";
 import "assets/vendors/style";
@@ -12,9 +13,11 @@ const store = configureStore(/* provide initial state if any */);
 const NextApp = () =>
   <Provider store={store}>
     <ConnectedRouter history={history}>
+      <HashRouter>
       <Switch>
         <Route path="/" component={App}/>
       </Switch>
+      </HashRouter>
     </ConnectedRouter>
   </Provider>;
 

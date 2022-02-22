@@ -124,6 +124,12 @@ const SidebarContent = () => {
                     <span><IntlMessages id="sidebar.company.workinprogress"/></span>
                   </Link>
                 </Menu.Item>
+                <Menu.Item key="company/reports">
+                  <Link to="/company/reports">
+                    <i className="icon icon-crypto"/>
+                    <span><IntlMessages id="sidebar.company.reports"/></span>
+                  </Link>
+                </Menu.Item>
                 <Menu.Item key="company/billingInfo">
                   <Link to="/company/billingInfo">
                     <i className="icon icon-crypto"/>

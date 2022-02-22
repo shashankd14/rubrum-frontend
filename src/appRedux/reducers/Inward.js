@@ -19,6 +19,7 @@ import {
     SET_PROCESS_DETAILS,
     RESET_INWARD_FORM,
     RESET_DELETE_INWARD,
+    REST_ISDELETED,
     REQUEST_SAVE_SLITTING_DETAILS,
     SAVE_SLITTING_DETAILS_SUCCESS,
     SAVE_SLITTING_DETAILS_ERROR,
@@ -61,6 +62,7 @@ import {
     UPDATE_INWARD_LIST_ERROR,
     DELETE_INSTRUCTION_BY_ID,
     DELETE_INSTRUCTION_BY_ID_SUCCESS,
+    DELETE_INSTRUCTION_BY_ID_SUCCESS_SLIT,
     DELETE_INSTRUCTION_BY_ID_ERROR,
     CHECK_BATCH_NO_EXIST,
     CHECK_BATCH_NO_EXIST_SUCCESS,
@@ -113,7 +115,10 @@ const INIT_STATE = {
     pdfSuccess: false,
     dcpdfError: false,
     dcpdfLoading:false,
-    dcpdfSuccess: false
+    dcpdfSuccess: false,
+    deliverySuccess:false,
+    deliveryError: false,
+    isDeleted: false
 
 };
 
@@ -208,7 +213,8 @@ export default (state = INIT_STATE, action) => {
             return {
                 ...state,
                 inwardSubmitLoading: false,
-                inwardSubmitError: true
+                inwardSubmitError: true,
+                inwardSubmitSuccess: false
             }
         }
         case FETCH_INWARD_LIST_BY_PARTY_REQUEST: {
@@ -297,18 +303,14 @@ export default (state = INIT_STATE, action) => {
                 pdfError:false
             }
         }
-        case RESET_INSTRUCTION_FORM:
-            {return {
-                ...state,
-                process:{},
-            }
-        }
+        
         case REQUEST_SAVE_CUTTING_DETAILS: {
             return {
                 ...state,
                 instructionSaveCuttingLoading: true,
                 instructionSaveCuttingSuccess: false,
                 instructionSaveError: false,
+                loading: true
             }
         }
         case SAVE_CUTTING_DETAILS_SUCCESS: {
@@ -318,6 +320,7 @@ export default (state = INIT_STATE, action) => {
                 instructionSaveCuttingLoading: false,
                 instructionSaveCuttingSuccess: true,
                 instructionSaveError: false,
+                loading: false
             }
         }
         case SAVE_CUTTING_DETAILS_ERROR: {
@@ -326,6 +329,7 @@ export default (state = INIT_STATE, action) => {
                 instructionSaveCuttingLoading: false,
                 instructionSaveCuttingSuccess: false,
                 instructionSaveError: true,
+                loading: false
             }
         }
         case INSTRUCTION_GROUP_SAVE: {
@@ -353,6 +357,7 @@ export default (state = INIT_STATE, action) => {
                 instructionSaveSlittingLoading: true,
                 instructionSaveSlittingSuccess: false,
                 instructionSaveError: false,
+                loading: true
             }
         }
         case SAVE_SLITTING_DETAILS_SUCCESS: {
@@ -362,6 +367,7 @@ export default (state = INIT_STATE, action) => {
                 instructionSaveSlittingLoading: false,
                 instructionSaveSlittingSuccess: true,
                 instructionSaveError: false,
+                loading: false
             }
         }
         case SAVE_SLITTING_DETAILS_ERROR: {
@@ -370,6 +376,7 @@ export default (state = INIT_STATE, action) => {
                 instructionSaveSlittingLoading: false,
                 instructionSaveSlittingSuccess: false,
                 instructionSaveError: true,
+                loading: false
             }
         }
         case REQUEST_UPDATE_INSTRUCTION_DETAILS: {
@@ -382,7 +389,7 @@ export default (state = INIT_STATE, action) => {
         case REQUEST_UPDATE_INSTRUCTION_DETAILS_SUCCESS: {
             return {
                 ...state,
-                loading: true,
+                loading: false,
                 error: false
             }
         }
@@ -390,7 +397,7 @@ export default (state = INIT_STATE, action) => {
             return {
                 ...state,
                 loading: true,
-                error: false
+                error: true
             }
         }
         case FETCH_MATERIAL_GRADE_LIST_SUCCESS:{
@@ -436,21 +443,24 @@ export default (state = INIT_STATE, action) => {
             return {
                 ...state,
                 loading: true,
-                error: false
+                deliverySuccess: false,
+                deliveryError: false
             }
         }
-        case POST_DELIVERY_CONFIRM_REQUESTED: {
+        case POST_DELIVERY_CONFIRM_ERROR: {
             return{
                 ...state,
                 loading: false,
-                error: false,
+               deliverySuccess: false,
+                deliveryError: true
             }
         }
-        case POST_DELIVERY_CONFIRM_REQUESTED: {
+        case POST_DELIVERY_CONFIRM_SUCCESS: {
             return{
                 ...state,
                 loading: false,
-                error: true
+                deliverySuccess: true,
+                deliveryError: false
             }
         }
         case FETCH_INWARD_INSTRUCTION_WIP_DETAILS_REQUESTED: {
@@ -554,6 +564,19 @@ export default (state = INIT_STATE, action) => {
                 loading: true,
             }
         }
+        case REST_ISDELETED: {
+            return {
+                ...state,
+                isDeleted: false
+            }
+        }
+        case DELETE_INSTRUCTION_BY_ID_SUCCESS_SLIT: {
+            return {
+                ...state,
+                loading: false,
+                isDeleted: true
+            }
+        }
         case DELETE_INSTRUCTION_BY_ID_SUCCESS: {
             return {
                 ...state,
@@ -563,7 +586,8 @@ export default (state = INIT_STATE, action) => {
         case DELETE_INSTRUCTION_BY_ID_ERROR: {
             return {
                 ...state,
-                loading: false
+                loading: false,
+                isDeleted: false
             }
         }
         case PDF_GENERATE_INWARD: {
