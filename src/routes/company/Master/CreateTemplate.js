@@ -1,9 +1,13 @@
 import React, {useEffect, useState} from "react";
-import {Button, Card, Divider, Table, Modal, Row, Col, Form, Input, Icon, Tabs} from "antd";
-import CreateForm from './CreateField';
+import {connect} from 'react-redux';
+import { Card, Row, Steps } from "antd";
+import InwardStageForm from './TemplateStageSteps/InwardStageForm';
+import PreProcessingStageForm from './TemplateStageSteps/PreProcessingStageForm';
+import ProcessingStageForm from './TemplateStageSteps/ProcessingStageForm';
+import PreDispatchStageForm from './TemplateStageSteps/PreDispatchStageForm';
+import PostDispatchStageForm from './TemplateStageSteps/PostDispatchStageForm';
 
-const FormItem = Form.Item;
-const TabPane = Tabs.TabPane;
+const { Step } = Steps;
 let uuid = 0;
 export const formItemLayout = {
     labelCol: {
@@ -18,62 +22,54 @@ export const formItemLayout = {
     },
 };
 
-const formItemLayoutWithOutLabel = {
-    wrapperCol: {
-      xs: {span: 24, offset: 0},
-      sm: {span: 20, offset: 4},
-    },
-  };
-
-
-
 const CreateTemplate = (props) => {
 
-    const [formItemsObj, setFormItemsObj] = useState({});
-    const [formObj, setFormObj] = useState(formItemsObj);
-    const [showAddParameter, setshowAddParameter] = useState(false);
+    const [currentStep, setCurrentStep] = useState(0);
+    const [steps, setSteps] = useState([]);
 
     useEffect(() => {
-        setFormObj(prev => { 
-            console.log('formItemsObj', formItemsObj);
-            return {...prev, ...formItemsObj} 
-        }); // updated
-        setTimeout(() => console.log('formObj', formObj), 10000);
-    }, [formItemsObj]);
+        const steps = [
+            {
+                title: 'Inward',
+                content: <InwardStageForm updateStep={(step) => setCurrentStep(step)} params={props.match.params}/>,
+            },
+            {
+                title: 'Pre Processing',
+                content: <PreProcessingStageForm updateStep={(step) => setCurrentStep(step)} params={props.match.params}/>,
+            },
+            {
+                title: 'Processing',
+                content: <ProcessingStageForm updateStep={(step) => setCurrentStep(step)} params={props.match.params}/>,
+            },
+            {
+                title: 'Pre Dispatch',
+                content: <PreDispatchStageForm updateStep={(step) => setCurrentStep(step)} params={props.match.params}/>,
+            },{
+                title: 'Post Dispatch',
+                content: <PostDispatchStageForm updateStep={(step) => setCurrentStep(step)} params={props.match.params}/>,
+            },
+        ];
+        setSteps(steps);
+    }, []);
 
-    console.log('out', formItemsObj);
-
-   return <Card className="gx-card">
-   <Row>
-       <Col lg={24} md={24} sm={24} xs={24} className="gx-align-self-center">
-           <Tabs defaultActiveKey="1">
-               <TabPane tab="Inward" key="1">
-                   <Button type="primary" icon={() => <i className="icon icon-add"/>} size="medium"
-                           onClick={() => {
-                               setshowAddParameter(true);
-                           }}
-                   >Create Form</Button>
-                   <Form>
-                       {formObj && formObj.keys && formObj.keys.map((value, index) => {
-                           const field = formObj[value];
-                           return (
-                               <FormItem>
-                                   <Input type={field.type} value={field.value} max={field.max} min={field.min} defaultValue={field.default}>
-                                   </Input>
-                               </FormItem>
-                           )
-                       })}
-                   </Form>
-               </TabPane>
-               <TabPane tab="Pre" key="2">{
-               
-               }</TabPane>
-           </Tabs>
-       </Col>
-   </Row>
-   <CreateForm setshowAddParameter={setshowAddParameter} showAddParameter={showAddParameter} setFormItemsObj={setFormItemsObj} />
-
-</Card>
+   return (
+        <Card className="gx-card" title="Create Template">
+            <Steps current={currentStep}>
+                <Step title="Inward" onClick={() => setCurrentStep(0)}/>
+                <Step title="Pre Processing" onClick={() => setCurrentStep(1)} />
+                <Step title="Processing" onClick={() => setCurrentStep(2)} />
+                <Step title="Pre Dispatch" onClick={() => setCurrentStep(3)} />
+                <Step title="Post Dispatch" onClick={() => setCurrentStep(4)} />
+            </Steps>
+            <Row className="gx-justify-content-center">
+                {steps.length > 0 && steps[currentStep].content}
+            </Row>
+        </Card>
+   );
 };
 
-export default CreateTemplate;
+const mapStateToProps = state => ({
+    formFields: state.quality.formFields
+});
+
+export default connect(mapStateToProps)(CreateTemplate);

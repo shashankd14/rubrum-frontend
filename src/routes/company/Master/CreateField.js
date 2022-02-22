@@ -1,5 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {Button, Card, Divider, Table, Modal, Row, Col, Form, Input, Icon, Tabs} from "antd";
+import { createFormFields } from '../../../appRedux/actions';
+import {useDispatch, useSelector} from "react-redux";
 
 const FormItem = Form.Item;
 const TabPane = Tabs.TabPane;
@@ -13,7 +15,7 @@ export const formItemLayout = {
     wrapperCol: {
         xs: {span: 24},
         sm: {span: 24},
-        md: {span: 16},
+        md: {span: 24},
     },
 };
 
@@ -26,6 +28,7 @@ const formItemLayoutWithOutLabel = {
 
 const CreateField = (props) => {
     const { setshowAddParameter, showAddParameter } = props;
+    const dispatch = useDispatch();
   
     const [selectType, setSelectType] = useState({});
   
@@ -40,14 +43,55 @@ const CreateField = (props) => {
     }
     
   
-    const getNumberFields = (index) => {
+    const getNumberFields = index => {
         return (
-            <>
-                <input name='min' placeholder='enter minimum value' value={selectType[index].min} onChange={(e) => numberChange(e, index)}></input>
-                <input name='max' placeholder='enter maximum value' value={selectType[index].max} onChange={(e) => numberChange(e, index)}></input>
-                <input name='default' placeholder='enter default value' value={selectType[index].default} onChange={(e) => numberChange(e, index)}></input>
-            </>
+            <div>
+              <div style={{ display: "flex", marginBottom: 10 }}>
+                <label style={{ width: '25%' }}> Minimum value :</label>
+                <input style={{ width: '60%', marginLeft: '10px' }} className="ant-input" name='min' placeholder='enter minimum value' value={selectType[index].min} onChange={(e) => numberChange(e, index)}></input>
+              </div>
+              <div style={{ display: "flex", marginBottom: 10 }}>
+                <label style={{ width: '25%' }}> Maximum value :</label>
+                <input style={{ width: '60%', marginLeft: '10px' }} className="ant-input" name='max' placeholder='enter maximum value' value={selectType[index].max} onChange={(e) => numberChange(e, index)}></input>
+              </div>
+              <div style={{ display: "flex", marginBottom: 10 }}>
+                <label style={{ width: '25%' }}> Default value :</label>
+                <input style={{ width: '60%', marginLeft: '10px' }} className="ant-input" name='default' placeholder='enter default value' value={selectType[index].default} onChange={(e) => numberChange(e, index)}></input>
+              </div>
+            </div>
         )
+    };
+
+    const getTextFields = index => {
+      return (
+        <div style={{ display: "flex", marginBottom: 10 }}>
+          <label style={{ width: '25%' }}> Default value :</label>
+          <input style={{ width: '60%', marginLeft: '10px' }} className="ant-input" name='default' placeholder='enter default value' value={selectType[index].default} onChange={e => numberChange(e, index)} ></input>
+        </div>
+      )
+    };
+
+    const getRadioFields = index => {
+      return (
+        <div>
+          <div style={{ display: "flex", marginBottom: 10 }}>
+            <label style={{ width: '25%' }}> Enter options :</label>
+            <input style={{ width: '60%', marginLeft: '10px' }} className="ant-input" name='options' placeholder='enter options comma seperated' value={selectType[index].options} onChange={e => numberChange(e, index)}></input>
+          </div>
+          <div style={{ display: "flex", marginBottom: 10 }}>
+            <label style={{ width: '25%' }}> Default value :</label>
+            <input style={{ width: '60%', marginLeft: '10px' }} className="ant-input" name='default' placeholder='enter default value' value={selectType[index].default} onChange={e => numberChange(e, index)}></input>
+          </div>
+        </div>
+      );
+    };
+
+    const getTextAreaFields = index => {
+      return (
+        <>
+          <input name='default' placeholder='enter default value' value={selectType[index].default} onChange={e => numberChange(e, index)}></input>
+        </>
+      )
     }
   
     const generateFieldsByType = (obj = {}, index) => {
@@ -57,7 +101,10 @@ const CreateField = (props) => {
             case 'number':
                 return getNumberFields(index);
             case 'radio':
-                return () => {};
+                return getRadioFields(index);
+            case 'text':
+            case 'textArea':
+                return getTextFields(index);
             default:
                 break;
         }
@@ -72,26 +119,33 @@ const CreateField = (props) => {
           required={false}
           key={k}
         >
+          <div style={{ display: "flex", marginBottom: 10 }}>
+          <label style={{ width: '25%' }}>Paramter Name :</label>
           <input type='text' placeholder="Paramter Name" value={selectType[k]?.value} onChange={(e) => {
               e.preventDefault();
               var val = e.target.value;
               console.log(val);
               setSelectType(prev => { 
                   return {...prev, [k]: { ...prev[k], value: val } }; });
-          }} style={{width: '50%', marginRight: 8}}/>
-          <select value={selectType[k]?.type} style={{width: '50%', marginRight: 8}} onChange={(e) => {
-              var val = e.target.value;
-              setSelectType(prev => { 
-                return {...prev, [k]: { ...prev[k], type: val } }; });
-          }}>
-              <option disabled selected>Select Paramter type</option>
-              <option>text</option>
-              <option>number</option>
-              <option>textArea</option>
-              <option>radio</option>
-              <option>checkbox</option>
-              <option>select</option>
-          </select>
+          }} className="ant-input" style={{ width: '60%', marginLeft: '10px' }} />
+          </div>
+          <div style={{ display: "flex", marginBottom: 10 }}>
+            <label style={{ width: '25%' }}>Paramter Type :</label>
+            <select className="ant-input" value={selectType[k]?.type} style={{width: '60%', marginLeft: '10px' }} onChange={(e) => {
+                var val = e.target.value;
+                setSelectType(prev => { 
+                  return {...prev, [k]: { ...prev[k], type: val } }; });
+            }}>
+                <option disabled selected>Select Paramter type</option>
+                <option>text</option>
+                <option>number</option>
+                <option>textArea</option>
+                <option>radio</option>
+                <option>checkbox</option>
+                <option>select</option>
+                <option>calendar</option>
+            </select>
+          </div>
           {generateFieldsByType(selectType, k)}
           {keys.length > 1 ? (
             <Icon
@@ -117,6 +171,12 @@ const CreateField = (props) => {
         // can use data-binding to set
         form.setFieldsValue({
           keys: keys.filter(key => key !== k),
+        });
+        setSelectType(prev => {
+          delete prev[k];
+          return {
+            ...prev
+          }
         });
       };
   
@@ -160,7 +220,8 @@ const CreateField = (props) => {
                         <FormItem {...formItemLayoutWithOutLabel}>
                             <Button type="primary" onClick={() => {
                                 console.log(selectType); //
-                                props.setFormItemsObj(selectType); // calling
+                                // props.setFormItemsObj(selectType); // calling
+                                dispatch(createFormFields(selectType));
                                 setshowAddParameter(false)
                             }}>Submit</Button>
                         </FormItem>
@@ -172,5 +233,5 @@ const CreateField = (props) => {
     )
   };
   
-  const CreateForm = Form.create()(CreateField);
-  export default CreateForm;
+const CreateForm = Form.create()(CreateField);
+export default CreateForm;
