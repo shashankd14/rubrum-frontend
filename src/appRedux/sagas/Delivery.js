@@ -37,7 +37,7 @@ function* fetchDeliveryListById(action) {
 function* deleteByDeliveryId(action) {
     try {
         
-        const deleteDelivery = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/delivery/deleteById/${action.id}`, {
+        const deleteDelivery = yield fetch(`${baseUrl}api/delivery/deleteById/${action.id}`, {
             method: 'DELETE'
         });
         if (deleteDelivery.status === 200) {
