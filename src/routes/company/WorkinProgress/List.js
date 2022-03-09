@@ -92,6 +92,11 @@ const getFilterData=(list)=>{
         sortOrder: sortedInfo.columnKey === 'fQuantity' && sortedInfo.order,
     },
     {
+        title:"Tags",
+        dataIndex:"packetClassification.classificationName",
+        key:"packetClassification.classificationName"
+    },
+    {
         title: 'Action',
         dataIndex: '',
         key: 'x',

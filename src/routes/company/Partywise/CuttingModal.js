@@ -62,6 +62,7 @@ const CreateCuttingDetailsForm = (props) => {
     const [saveCutting, setSaveCutting] = useState([]);
     const [unsavedDeleteId, setUnsavedDeleteId] = useState(0);
     const [slitPartId, setSlitPartId] = useState('');
+    const [tagsName, setTagsName] = useState("")
     const [tableData, setTableData] = useState(props.wip?(props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts);
     const columns=[
 
@@ -157,7 +158,11 @@ const CreateCuttingDetailsForm = (props) => {
             dataIndex:'plannedWeight',
             key:'plannedWeight',
         },
-        
+        {
+            title:'Tags',
+            dataIndex:'packetClassification.classificationName'|| 'packetClassificationId',
+            key:'packetClassification.classificationName'|| 'packetClassificationId'
+        },
         {
             title:'Actions',
             dataIndex:'actions',
@@ -259,9 +264,9 @@ const CreateCuttingDetailsForm = (props) => {
             form.setFieldsValue({
                 length:record.plannedLength,
                 no:record.plannedNoOfPieces ,
-                weight:record.plannedWeight
-
+                weight:record.plannedWeight,
             });
+            setTagsName(record.packetClassification.classificationId)
     };
 
     const resetSaveInstruction = (record) => {
@@ -383,7 +388,8 @@ const CreateCuttingDetailsForm = (props) => {
                         inwardId: props.coilDetails.inwardEntryId ? props.coilDetails.inwardEntryId : "",
                         parentInstructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : "",
                         groupId:"",
-                        deleteUniqId: unsavedDeleteId
+                        deleteUniqId: unsavedDeleteId,
+                        packetClassificationId: values?.tags || 1
                     });
                     setcurrentWeight(remainWeight);
                     setlength(length - (props.inward.process.length*(props.inward.process.no)));
@@ -745,6 +751,9 @@ const CreateCuttingDetailsForm = (props) => {
           }
         }
     }
+    const handleTagsChange=(e)=>{
+        setTagsName(e.target.value)
+    }
     const handleCancel=() => {
         setCuts([]);
         setCutPayload([]);
@@ -912,6 +921,19 @@ const CreateCuttingDetailsForm = (props) => {
                                     <Input id="noOfCuts" disabled={props.wip ? true : false} />
                                         )}
                             </Form.Item>
+                            <Form.Item label="Tags">
+                    {getFieldDecorator('tags', {
+                        rules: [{ required: false}],
+                    })(
+                        <>
+                     <Select style={{width: '100%'}} value={tagsName} onChange={handleTagsChange} >
+                {props?.coilDetails.packetClassification?.map(item => {
+                    return <Option value={item}>{item}</Option>
+                })}
+            </Select>
+                        </>
+                    )}
+                </Form.Item>
                             <Form.Item>
                                 <Button type="primary" onClick={onChange} disabled={props.wip ? true :balanced ? true : false}>
                                         Balance

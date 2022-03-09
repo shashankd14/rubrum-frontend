@@ -137,6 +137,11 @@ const List = (props) => {
         sortOrder: sortedInfo.columnKey === 'status.statusName' && sortedInfo.order,
     },
     {
+        title:"Tags",
+        dataIndex:"packetClassification.classificationName",
+        key:"packetClassification.classificationName"
+    },
+    {
         title: 'Action',
         dataIndex: '',
         key: 'x',
