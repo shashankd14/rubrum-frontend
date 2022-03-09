@@ -56,6 +56,7 @@ const SlittingWidths = (props) => {
     const [equalParts, setEqualParts]= useState(0);
     const [equalPartsDisplay, setEqualPartsDisplay]=useState(0);
     const [unsavedDeleteId, setUnsavedDeleteId] = useState(0);
+    // const [tagsName, setTagsName] = useState("")
     const keys = getFieldValue('keys');
     const callBackValue =(n)=>{
         let cuts = 0;
@@ -133,7 +134,7 @@ const SlittingWidths = (props) => {
                 if (!item.actualWidth && item.actualWidth !== 0) item.actualWidth  =  item.plannedWidth;
                 if (!item.actualWeight && item.actualWeight !== 0) item.actualWeight  =  item.plannedWeight;
                 if (!item.packetClassification?.classificationId) item.packetClassification = {
-                    classificationId: item.plannedWidth < 20 ? 2 : 1
+                    classificationId: item.plannedWidth < 20 ? 2 : 6
                 }
                 return item;
             });
@@ -288,6 +289,9 @@ const SlittingWidths = (props) => {
                 }
         });
     }
+    // const handleTagsChange=(e)=>{
+    //     setTagsName(e.target.value)
+    // }
     const addNewKey = () => {
         const {form} = props;
         const keys = form.getFieldValue('keys');
@@ -494,7 +498,20 @@ const SlittingWidths = (props) => {
                         </>
                     )}
                 </Form.Item>
-                
+                {/* <Form.Item label="Tags">
+                    {getFieldDecorator('tags', {
+                        rules: [{ required: false}],
+                    })(
+                        <>
+                     <Select style={{width: '100%'}} value={tagsName} onChange={handleTagsChange} >
+                {props?.party?.map(item => {
+                    return <Option value={item}>{item}</Option>
+                })}
+            </Select>
+                        </>
+                    )}
+                </Form.Item> */}
+                {/*  */}
                 <Form.Item>
                 <Row className="gx-mt-4">
                     <Col span={16} style={{ textAlign: "center"}}>
@@ -1030,7 +1047,9 @@ const columnsPlan=[
                                         setDeleted = {deleteSelected} 
                                         slitCut={props.slitCut} 
                                         setParts ={(parts)=>setParts(parts)}
-                                        setPanelList={(list) => setPanelList([...panelList,...list])}/>
+                                        setPanelList={(list) => setPanelList([...panelList,...list])}
+                                        // party={props?.coil.party?.tags}
+                                        />
                                 </Form.Item>
 
                             </Form>

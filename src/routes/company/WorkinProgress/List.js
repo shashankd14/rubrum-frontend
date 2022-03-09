@@ -142,7 +142,7 @@ const getFilterData=(list)=>{
 
     return (
         <Card>
-            <div style={{width: "50%" ,float: "right","margin-bottom":"10px"}}className="gx-flex-row gx-flex-1 wip-search">
+            <div style={{width: "50%" ,"margin-bottom":"10px"}}className="gx-flex-row gx-flex-1 wip-search">
             <SearchBox styleName="gx-flex-1" placeholder="Search for coil number or party name..." value={searchValue} onChange={(e) => setSearchValue(e.target.value)} />
              
             </div>

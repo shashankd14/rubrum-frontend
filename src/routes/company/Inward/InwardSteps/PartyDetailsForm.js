@@ -13,7 +13,7 @@ const CreatePartyDetailsForm = (props) => {
         if(props.params !=="") {
             const { Option } = AutoComplete;
             const options = props.party.partyList.filter(party => {
-            if (party.nPartyId===  props.inward.party.nPartyId)
+            if (party?.nPartyId===  props.inward.party?.nPartyId)
             return (<Option key={party.nPartyId} value={`${party.nPartyId}`}>
                     {party.partyName}
                 </Option>)
@@ -33,6 +33,13 @@ const CreatePartyDetailsForm = (props) => {
             setDataSource(options);
         }
     }, [props.party]);
+
+    useEffect(() => {
+        if (props.params !== '') {
+            props.inward.customerId = props.inward.party?.nPartyId || '';
+            props.inward.customerBatchNo = props.inward.customerBatchId;
+        }
+    }, [props.params])
     const handleChange = e =>{
         props.inward.party.partyName = e;
     }
@@ -137,7 +144,7 @@ const PartyDetailsForm = Form.create({
             }),
             customerId: Form.createFormField({
                 ...props.inward.customerId,
-                value: props.params !== "" ? props.inward.customerCoilId:(props.inward.customerId) ? props.inward.customerId : props.inward.partyName,
+                value: props.params !== "" ? props.inward.party?.nPartyId:(props.inward.customerId) ? props.inward.customerId : props.inward.partyName,
             }),
             customerBatchNo: Form.createFormField({
                 ...props.inward.customerBatchNo,
