@@ -56,7 +56,7 @@ const SlittingWidths = (props) => {
     const [equalParts, setEqualParts]= useState(0);
     const [equalPartsDisplay, setEqualPartsDisplay]=useState(0);
     const [unsavedDeleteId, setUnsavedDeleteId] = useState(0);
-    // const [tagsName, setTagsName] = useState("")
+    const [tagsName, setTagsName] = useState("")
     const keys = getFieldValue('keys');
     const callBackValue =(n)=>{
         let cuts = 0;
@@ -171,6 +171,7 @@ const SlittingWidths = (props) => {
             props.form.setFieldsValue({
                 length: obj.length
             });
+            setTagsName(obj.packetClassification.classificationId)
         }
     }
     // - function to apply same data for remaining equals parts
@@ -238,7 +239,8 @@ const SlittingWidths = (props) => {
                             plannedWeight:(values.weights[i]/values.nos[i]).toFixed(2),
                             inwardId: props.coilDetails.inwardEntryId ? props.coilDetails.inwardEntryId : '',
                             parentInstructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : '',
-                            deleteUniqId: unsavedDeleteId
+                            deleteUniqId: unsavedDeleteId,
+                            packetClassificationId:values?.tags || ""
                         }
                         slits.push(slitValue);
                     }
@@ -289,9 +291,9 @@ const SlittingWidths = (props) => {
                 }
         });
     }
-    // const handleTagsChange=(e)=>{
-    //     setTagsName(e.target.value)
-    // }
+    const handleTagsChange=(e)=>{
+        setTagsName(e)
+    }
     const addNewKey = () => {
         const {form} = props;
         const keys = form.getFieldValue('keys');
@@ -498,20 +500,19 @@ const SlittingWidths = (props) => {
                         </>
                     )}
                 </Form.Item>
-                {/* <Form.Item label="Tags">
+                <Form.Item label="Tags">
                     {getFieldDecorator('tags', {
                         rules: [{ required: false}],
                     })(
                         <>
                      <Select style={{width: '100%'}} value={tagsName} onChange={handleTagsChange} >
                 {props?.party?.map(item => {
-                    return <Option value={item}>{item}</Option>
+                    return <Option value={item.classificationId}>{item.classificationName}</Option>
                 })}
             </Select>
                         </>
                     )}
-                </Form.Item> */}
-                {/*  */}
+                </Form.Item>
                 <Form.Item>
                 <Row className="gx-mt-4">
                     <Col span={16} style={{ textAlign: "center"}}>
@@ -633,6 +634,14 @@ const columnsPlan=[
             return Math.round(value);
         },
         key:'plannedWeight',
+    },
+    {
+        title:'Tags',
+        dataIndex:'packetClassification.classificationName',
+        key:'packetClassification.classificationName',
+        render: (text, record) => {
+            return record?.packetClassification?.classificationName || record?.packetClassificationId;
+        }
     },
     {
         title: 'Action',
@@ -1048,7 +1057,7 @@ const columnsPlan=[
                                         slitCut={props.slitCut} 
                                         setParts ={(parts)=>setParts(parts)}
                                         setPanelList={(list) => setPanelList([...panelList,...list])}
-                                        // party={props?.coil.party?.tags}
+                                        party={props?.coilDetails.party?.tags}
                                         />
                                 </Form.Item>
 

@@ -41,7 +41,7 @@ const Party = (props) => {
     const {getFieldDecorator, getFieldValue} = props.form;
 
     const { party } = props.party;
-    const [tagsList, setTagsList] =useState([]);
+    const [tagsList, setTagsList] =useState([{classificationId: 1}]);
     
     getFieldDecorator('phoneKeys', {initialValue: [0]});
     getFieldDecorator('addressKeys', {initialValue: [0]});
@@ -93,6 +93,15 @@ const Party = (props) => {
         sortOrder: sortedInfo.columnKey === 'address1.state' && sortedInfo.order,
     },
     {
+        title: 'Tags',
+        dataIndex: 'packetClassificationTags',
+        render (value) {
+            return value.map(item => item.classificationName)
+        },
+        key: 'tags',
+        filters: []
+    },
+    {
         title: 'Action',
         dataIndex: '',
         key: 'x',
@@ -124,6 +133,8 @@ const Party = (props) => {
 
       const onEdit = (record,e)=>{
         e.preventDefault();
+        let classificationObj = record.packetClassificationTags.length===0? [{classificationId:1}]: record.packetClassificationTags;
+        setTagsList(classificationObj?.map(item =>item.classificationId) || null)
         props.fetchPartyListId(record.nPartyId);
         setEditParty(true);
         setTimeout(() => {
@@ -143,6 +154,7 @@ const Party = (props) => {
         const { loading, error, partyList } = props.party;
         if (!loading && !error) {
             setFilteredInwardList(partyList)
+            
         }
     }, [props.party]);
 
@@ -265,6 +277,7 @@ const Party = (props) => {
                                         <p><strong>State :</strong> {viewPartyDate?.address1?.state}</p>
                                         <p><strong>Pincode :</strong> {viewPartyDate?.address1?.pincode}</p>
                                     </>}
+                                    {viewPartyDate?.packetClassificationTags && <p><strong>Tags:</strong>{viewPartyDate?.packetClassificationTags?.map(item=> item.classificationName)}</p>}
                                 </Card>
                             </Col>
                         </Row>
@@ -452,14 +465,14 @@ const Party = (props) => {
                                     </Form.Item>
                                     <Form.Item label="Tags">
                                         {getFieldDecorator('tags', {
+                                            initialValue:tagsList,
                                             rules: [{ required: true, message: 'Please enter Tags!' }],
                                         })(
                                             <Select
                                              id="tags"
                                              mode="multiple"
-                                             allowClear
+                                             defaultValue={tagsList}
                                              style={{ width: '100%' }}
-                                             placeholder="Please select"
                                              onChange={handleSelectChange}
                                              >{props.classificationList?.map(item => {
                                                 return <Option value={item.classificationId}>{item.classificationName}</Option>
@@ -549,8 +562,8 @@ const addPartyForm = Form.create({
                 value: party?.gstNumber || '',
             }),
             tags: Form.createFormField({
-                ...party?.tags,
-                value: party?.tags || '',
+                ...party?.packetClassificationTags,
+                value: party?.packetClassificationTags || '',
             })
         };
     }
