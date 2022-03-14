@@ -240,7 +240,7 @@ const SlittingWidths = (props) => {
                             inwardId: props.coilDetails.inwardEntryId ? props.coilDetails.inwardEntryId : '',
                             parentInstructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : '',
                             deleteUniqId: unsavedDeleteId,
-                            packetClassificationId:values?.tags || 1
+                            packetClassificationId:values?.tags || ""
                         }
                         slits.push(slitValue);
                     }
@@ -292,7 +292,7 @@ const SlittingWidths = (props) => {
         });
     }
     const handleTagsChange=(e)=>{
-        setTagsName(e.target.value)
+        setTagsName(e)
     }
     const addNewKey = () => {
         const {form} = props;
@@ -507,7 +507,7 @@ const SlittingWidths = (props) => {
                         <>
                      <Select style={{width: '100%'}} value={tagsName} onChange={handleTagsChange} >
                 {props?.party?.map(item => {
-                    return <Option value={item}>{item}</Option>
+                    return <Option value={item.classificationId}>{item.classificationName}</Option>
                 })}
             </Select>
                         </>
@@ -637,8 +637,11 @@ const columnsPlan=[
     },
     {
         title:'Tags',
-        dataIndex:'packetClassification.classificationName'|| 'packetClassificationId',
-        key:'packetClassification.classificationName'|| 'packetClassificationId'
+        dataIndex:'packetClassification.classificationName',
+        key:'packetClassification.classificationName',
+        render: (text, record) => {
+            return record?.packetClassification?.classificationName || record?.packetClassificationId;
+        }
     },
     {
         title: 'Action',

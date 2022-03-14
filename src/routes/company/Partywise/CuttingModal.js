@@ -160,8 +160,11 @@ const CreateCuttingDetailsForm = (props) => {
         },
         {
             title:'Tags',
-            dataIndex:'packetClassification.classificationName'|| 'packetClassificationId',
-            key:'packetClassification.classificationName'|| 'packetClassificationId'
+            dataIndex:'packetClassification.classificationName',
+            key:'packetClassification.classificationName',
+            render: (text, record) => {
+                return record?.packetClassification?.classificationName || record?.packetClassificationId;
+            }
         },
         {
             title:'Actions',
@@ -266,7 +269,7 @@ const CreateCuttingDetailsForm = (props) => {
                 no:record.plannedNoOfPieces ,
                 weight:record.plannedWeight,
             });
-            setTagsName(record.packetClassification.classificationId)
+            setTagsName(record?.packetClassification?.classificationId)
     };
 
     const resetSaveInstruction = (record) => {
@@ -389,7 +392,7 @@ const CreateCuttingDetailsForm = (props) => {
                         parentInstructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : "",
                         groupId:"",
                         deleteUniqId: unsavedDeleteId,
-                        packetClassificationId: values?.tags || 1
+                        packetClassificationId: tagsName || ""
                     });
                     setcurrentWeight(remainWeight);
                     setlength(length - (props.inward.process.length*(props.inward.process.no)));
@@ -752,7 +755,7 @@ const CreateCuttingDetailsForm = (props) => {
         }
     }
     const handleTagsChange=(e)=>{
-        setTagsName(e.target.value)
+        setTagsName(e)
     }
     const handleCancel=() => {
         setCuts([]);
@@ -922,15 +925,15 @@ const CreateCuttingDetailsForm = (props) => {
                                         )}
                             </Form.Item>
                             <Form.Item label="Tags">
-                    {getFieldDecorator('tags', {
-                        rules: [{ required: false}],
-                    })(
-                        <>
-                     <Select style={{width: '100%'}} value={tagsName} onChange={handleTagsChange} >
-                {props?.coilDetails.packetClassification?.map(item => {
-                    return <Option value={item}>{item}</Option>
-                })}
-            </Select>
+                            {getFieldDecorator('tags', {
+                               rules: [{ required: false}],
+                             })(
+                             <>
+                            <Select style={{width: '100%'}} value={tagsName} onChange={handleTagsChange} >
+                            {props?.coilDetails.party?.tags.map(item => {
+                        return <Option value={item.classificationId}>{item.classificationName}</Option>
+                         })}
+                     </Select>
                         </>
                     )}
                 </Form.Item>
@@ -1074,7 +1077,7 @@ const CuttingDetailsForm = Form.create({
             packetLength: Form.createFormField({
                 ...props.inward.process.packetLength,
                 value: props.inward.process.packetLength || '',
-            }),
+            })
 
 
         };

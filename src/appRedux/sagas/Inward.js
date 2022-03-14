@@ -467,7 +467,7 @@ function* postDeliveryConfirmRequest(payload) {
                 let tempItem = {};
                 tempItem.instructionId = item.instructionId;
                 tempItem.remarks = item.remarks;
-                tempItem.weight = item.actualWeight;
+                tempItem.weight = item.actualWeight || item.plannedWeight;
                 packetsData.push(tempItem);
             }
         }
