@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from "react";
 import {connect} from 'react-redux';
-import {Button, Card, Divider, Table, Modal, Row, Col, Form, Input} from "antd";
+import {Button, Card, Divider, Table, Modal, Row, Col, Form, Input, Select} from "antd";
 import moment from 'moment';
 import SearchBox from "../../../components/SearchBox";
 
 import IntlMessages from "../../../util/IntlMessages";
-import { fetchPartyList, addParty, fetchPartyListId, updateParty, resetParty } from "../../../appRedux/actions";
+import { fetchPartyList, addParty, fetchPartyListId, updateParty, resetParty, fetchClassificationList } from "../../../appRedux/actions";
 import { onDeleteContact } from "../../../appRedux/actions";
 
 const FormItem = Form.Item;
@@ -25,6 +25,7 @@ export const formItemLayout = {
 
 const Party = (props) => {
 
+    const Option = Select.Option;
     const [sortedInfo, setSortedInfo] = useState({
         order: 'descend',
         columnKey: 'age',
@@ -40,7 +41,8 @@ const Party = (props) => {
     const {getFieldDecorator, getFieldValue} = props.form;
 
     const { party } = props.party;
-
+    const [tagsList, setTagsList] =useState([{classificationId: 1}]);
+    
     getFieldDecorator('phoneKeys', {initialValue: [0]});
     getFieldDecorator('addressKeys', {initialValue: [0]});
     getFieldDecorator('emailKeys', {initialValue: [0]});
@@ -91,6 +93,15 @@ const Party = (props) => {
         sortOrder: sortedInfo.columnKey === 'address1.state' && sortedInfo.order,
     },
     {
+        title: 'Tags',
+        dataIndex: 'packetClassificationTags',
+        render (value) {
+            return value.map(item => item.classificationName)
+        },
+        key: 'tags',
+        filters: []
+    },
+    {
         title: 'Action',
         dataIndex: '',
         key: 'x',
@@ -122,6 +133,8 @@ const Party = (props) => {
 
       const onEdit = (record,e)=>{
         e.preventDefault();
+        let classificationObj = record.packetClassificationTags.length===0? [{classificationId:1}]: record.packetClassificationTags;
+        setTagsList(classificationObj?.map(item =>item.classificationId) || null)
         props.fetchPartyListId(record.nPartyId);
         setEditParty(true);
         setTimeout(() => {
@@ -133,6 +146,7 @@ const Party = (props) => {
     useEffect(() => {
         setTimeout(() => {
             props.fetchPartyList();
+            props.fetchClassificationList();
         }, 1000);
     }, [showAddParty]);
 
@@ -140,6 +154,7 @@ const Party = (props) => {
         const { loading, error, partyList } = props.party;
         if (!loading && !error) {
             setFilteredInwardList(partyList)
+            
         }
     }, [props.party]);
 
@@ -159,7 +174,6 @@ const Party = (props) => {
             setFilteredInwardList(party.partyList);
         }
     }, [searchValue])
-
     const handleChange = (pagination, filters, sorter) => {
         setSortedInfo(sorter);
         setFilteredInfo(filters)
@@ -201,6 +215,9 @@ const Party = (props) => {
             [key1]: value1.filter((key, idx) => idx !== index),
             [key2]: value2.filter((key, idx) => idx !== index)
         });
+    }
+    const handleSelectChange=(e)=>{
+        console.log(e)
     }
 
     return (
@@ -260,6 +277,7 @@ const Party = (props) => {
                                         <p><strong>State :</strong> {viewPartyDate?.address1?.state}</p>
                                         <p><strong>Pincode :</strong> {viewPartyDate?.address1?.pincode}</p>
                                     </>}
+                                    {viewPartyDate?.packetClassificationTags && <p><strong>Tags:</strong>{viewPartyDate?.packetClassificationTags?.map(item=> item.classificationName)}</p>}
                                 </Card>
                             </Col>
                         </Row>
@@ -445,6 +463,23 @@ const Party = (props) => {
                                             <Input id="gstNumber" />
                                         )}
                                     </Form.Item>
+                                    <Form.Item label="Tags">
+                                        {getFieldDecorator('tags', {
+                                            initialValue:tagsList,
+                                            rules: [{ required: true, message: 'Please enter Tags!' }],
+                                        })(
+                                            <Select
+                                             id="tags"
+                                             mode="multiple"
+                                             defaultValue={tagsList}
+                                             style={{ width: '100%' }}
+                                             onChange={handleSelectChange}
+                                             >{props.classificationList?.map(item => {
+                                                return <Option value={item.classificationId}>{item.classificationName}</Option>
+                                            })}</Select>
+                                        )}
+                                    </Form.Item>
+
                                 </Form>
                             </Col>
                         </Row>
@@ -456,7 +491,8 @@ const Party = (props) => {
 }
 
 const mapStateToProps = state => ({
-    party: state.party
+    party: state.party,
+    classificationList: state.packetClassification?.classificationList,
 });
 
 const addPartyForm = Form.create({
@@ -524,6 +560,10 @@ const addPartyForm = Form.create({
             gstNumber: Form.createFormField({
                 ...party?.gstNumber,
                 value: party?.gstNumber || '',
+            }),
+            tags: Form.createFormField({
+                ...party?.packetClassificationTags,
+                value: party?.packetClassificationTags || '',
             })
         };
     }
@@ -534,5 +574,6 @@ export default connect(mapStateToProps, {
     addParty,
     fetchPartyListId,
     updateParty,
-    resetParty
+    resetParty,
+    fetchClassificationList
 })(addPartyForm);

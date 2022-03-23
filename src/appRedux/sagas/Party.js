@@ -55,7 +55,7 @@ function* addParty(action) {
             city,
             state,
             pincode,
-            phone
+            phone,tags
         } = action.party;
 
         const getEmail = (mail) => {
@@ -86,7 +86,9 @@ function* addParty(action) {
             });
             return addressObj;
         }
-
+        const getTags=()=>{
+            return tags.map(classificationId => ({classificationId}))
+        }
         const reqBody = {
             partyName,
             partyNickname,
@@ -95,6 +97,7 @@ function* addParty(action) {
             gstNumber,
             panNumber,
             tanNumber,
+            tags:getTags(),
             ...getEmail(email),
             ...getAddress(addressKeys),
             ...getPhone(phone)
@@ -131,7 +134,8 @@ function* updateParty(action) {
                 city,
                 state,
                 pincode,
-                phone
+                phone,
+                tags
             },
             id
         } = action.party;
@@ -164,6 +168,9 @@ function* updateParty(action) {
             });
             return addressObj;
         }
+        const getTags=()=>{
+            return tags.map(classificationId => ({classificationId}))
+        }
 
         const reqBody = {
             partyId: id,
@@ -174,6 +181,7 @@ function* updateParty(action) {
             gstNumber,
             panNumber,
             tanNumber,
+            tags:getTags(),
             ...getEmail(email),
             ...getAddress(addressKeys),
             ...getPhone(phone)

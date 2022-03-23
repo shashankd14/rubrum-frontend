@@ -40,6 +40,8 @@ const CoilDetailsForm = (props) => {
         }
         else if (path === 'fpresent'){
             props.inward.fpresent = e.target.value;
+        } else if (path === 'fQuantity') {
+            props.inward.fQuantity = e.target.value;
         }
     }
     const checkCoilExists = (rule, value, callback) => {
@@ -161,7 +163,7 @@ const CoilDetailsForm = (props) => {
                     {getFieldDecorator('grossWeight', {
                         rules: [{ required: true, message: 'Please input the coil gross weight!' }],
                     })(
-                        <Input id="coilGrossWeight" />
+                        <Input id="coilGrossWeight" onChange={props.params!=="" ? (e)=>handleChange(e,'fQuantity'):""} />
                     )}
                 </Form.Item>
                 <Form.Item label="Coil Length (in mts)">

@@ -300,7 +300,8 @@ export default (state = INIT_STATE, action) => {
                 submitInward:'',
                 pdfLoading:false,
                 pdfSuccess:false,
-                pdfError:false
+                pdfError:false,
+                
             }
         }
         
@@ -429,7 +430,12 @@ export default (state = INIT_STATE, action) => {
                 instructionSaveError: false,
                 pdfSuccess:false,
                 pdfLoading: false,
-                pdfError: false
+                pdfError: false,
+                deliverySuccess:false,
+                deliveryError: false,
+                dcpdfError:false,
+                dcpdfSuccess: false,
+                dcpdfLoading: false
             }
         }
         

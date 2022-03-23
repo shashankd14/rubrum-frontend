@@ -225,13 +225,17 @@ function* updateInward(action) {
     
         inwardId : (action.inward.inwardEntryId).toString(),
         partyId :	(partyId).toString(),
+        customerBatchId: action.inward.customerBatchNo || action.inward.customerBatchId || '',
+        customerInvoiceNo: action.inward.customerInvoiceNo,
         coilNumber : (action.inward.coilNumber).toString(),
         inwardDate : moment(action.inward.receivedDate).format('YYYY-MM-DD HH:mm:ss'),
+        batchNumber: action.inward.batchNo || '',
         vehicleNumber : action.inward.vehicleNumber !== undefined? action.inward.vehicleNumber : action.inward.vLorryNo,
         invoiceDate : moment(action.inward.invoiceDate).format('YYYY-MM-DD HH:mm:ss')!== undefined ?moment(action.inward.invoiceDate).format('YYYY-MM-DD HH:mm:ss'): null,
         invoiceNumber : action.inward.invoiceNumber !== undefined ? action.inward.invoiceNumber: action.inward.vInvoiceNo,
         valueOfGoods : action.inward.valueOfGoods !== undefined ? action.inward.valueOfGoods: 0,
         purposeType : action.inward.purposeType,
+        testCertificateNumber: action.inward.testCertificateNo || action.inward.testCertificateNumber || '',
         materialId : (materialId).toString(),
         width : action.inward.width !== undefined ? action.inward.width : action.inward.fWidth,
         thickness : action.inward.thickness !== undefined ? action.inward.thickness : action.inward.fThickness,
@@ -463,7 +467,7 @@ function* postDeliveryConfirmRequest(payload) {
                 let tempItem = {};
                 tempItem.instructionId = item.instructionId;
                 tempItem.remarks = item.remarks;
-                tempItem.weight = item.actualWeight;
+                tempItem.weight = item.actualWeight || item.plannedWeight;
                 packetsData.push(tempItem);
             }
         }
@@ -481,7 +485,7 @@ function* postDeliveryConfirmRequest(payload) {
         });
         if (postConfirm.status === 200 && requestType !== 'PUT') {
             yield put(postDeliveryConfirmSuccess());
-            history.push('/company/partywise-register')
+           
         } else if(requestType === 'PUT'){
             yield put(postDeliveryConfirmSuccess(postConfirm));
         }else

@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { Card } from "antd";
-import { Popover } from "antd";
+import { Popover,Input, Card, message } from "antd";
 import { InfoCircleOutlined, CloseSquareTwoTone } from "@ant-design/icons";
-import { postDeliveryConfirm, generateDCPdf } from "../../../appRedux/actions";
-import { Input } from "antd";
+import { postDeliveryConfirm, generateDCPdf,resetInstruction } from "../../../appRedux/actions";
 import moment from "moment";
 
 const DeliveryInfo = (props) => {
@@ -27,6 +25,15 @@ const DeliveryInfo = (props) => {
     }
 
   },[props.inward.deliverySuccess])
+  useEffect(()=>{
+    if(props.inward.dcpdfSuccess) {
+        message.success('Delivery Challan pdf generated successfully', 2).then(() => { 
+          props.resetInstruction();
+          props.history.push('/company/partywise-register');
+         
+});
+}
+},[props.inward.dcpdfSuccess])
   const handleRemark = (elem, id) => {
     let index = remarksList.findIndex(elem => elem.id === id)
     let newRemarksList = remarksList
@@ -202,4 +209,4 @@ const mapStateToProps = (state) => ({
   inward: state.inward,
 });
 
-export default connect(mapStateToProps, { postDeliveryConfirm, generateDCPdf })(DeliveryInfo);
+export default connect(mapStateToProps, { postDeliveryConfirm, generateDCPdf,resetInstruction})(DeliveryInfo);

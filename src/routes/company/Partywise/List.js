@@ -137,6 +137,11 @@ const List = (props) => {
         sortOrder: sortedInfo.columnKey === 'status.statusName' && sortedInfo.order,
     },
     {
+        title:"Tags",
+        dataIndex:"packetClassification.classificationName",
+        key:"packetClassification.classificationName"
+    },
+    {
         title: 'Action',
         dataIndex: '',
         key: 'x',
@@ -179,6 +184,8 @@ const getFilterData=(list)=>{
             const filteredData = props.inward.inwardList.filter((inward) => {
                 if (inward.coilNumber.toLowerCase().includes(searchValue.toLowerCase()) ||
                     inward.party.partyName.toLowerCase().includes(searchValue.toLowerCase()) ||
+                    inward.customerBatchId?.toLowerCase().includes(searchValue?.toLowerCase()) ||
+                    inward.inStockWeight === Number(searchValue) ||
                     inward.vInvoiceNo.toLowerCase().includes(searchValue.toLowerCase())) {
                     return inward
                 }

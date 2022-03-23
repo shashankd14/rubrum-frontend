@@ -24,6 +24,7 @@ const QualityDetailsForm = (props) => {
         props.inward.materialGrade.gradeName = e;
         console.log(e);
     }
+
     useEffect(() => {
         if (props.params !== ""){
             const { Option } = AutoComplete;
@@ -77,7 +78,9 @@ const QualityDetailsForm = (props) => {
                 {getFieldDecorator('testCertificateNo', {
                     rules: [{ required: false, message: 'Please select a received date' }],
                 })(
-                    <Input id="testCertificateNo" />
+                    <Input id="testCertificateNo" onChange={(e) => {
+                        props.inward.testCertificateNo = e.target.value;
+                    }} />
                 )}
             </Form.Item>
             <Form.Item label="Test File">
@@ -174,7 +177,7 @@ const QualityDetails = Form.create({
             }),
             testCertificateNo: Form.createFormField({
                 ...props.inward.testCertificateNo,
-                value: (props.inward.testCertificateNo) ? props.inward.testCertificateNo : '',
+                value: (props.inward.testCertificateNo) ? props.inward.testCertificateNo : props.inward.testCertificateNumber || '',
             }),
             remarks: Form.createFormField({
                 ...props.inward.remarks,
