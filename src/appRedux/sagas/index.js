@@ -10,7 +10,7 @@ import ratesSagas from './Rates';
 import processSagas from './Process';
 import reportSagas from './Reports';
 
-export default function* rootSaga(getState) {
+export default function* rootSaga() {
   yield all([fork(authSagas)]);
   yield all([fork(notesSagas)]);
   yield all([fork(inwardSagas)]);

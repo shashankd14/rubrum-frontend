@@ -2,9 +2,11 @@ import {all, put, fork, takeLatest} from "redux-saga/effects";
 import {FETCH_PROCESS_LIST_REQUEST} from "../../constants/ActionTypes";
 import {fetchProcessListSuccess, fetchProcessListError} from "../actions";
 
+const baseUrl = process.env.REACT_APP_BASE_URL;
+
 function* fetchProcessList() {
     try {
-        const fetchProcessList =  yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/process/list', {
+        const fetchProcessList =  yield fetch(`${baseUrl}api/process/list`, {
             method: 'GET',
         });
         if(fetchProcessList.status === 200) {

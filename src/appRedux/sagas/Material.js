@@ -14,9 +14,11 @@ import {fetchMaterialListError,
     updateMaterialError
 } from "../actions";
 
+const baseUrl = process.env.REACT_APP_BASE_URL;
+
 function* fetchMaterialList() {
     try {
-        const fetchMaterialList =  yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/material/list', {
+        const fetchMaterialList =  yield fetch(`${baseUrl}api/material/list`, {
             method: 'GET',
         });
         if(fetchMaterialList.status === 200) {
@@ -38,7 +40,7 @@ function* addMaterial(action) {
             hsnCode,
             materialCode
         }
-        const addMaterial = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/material/save', {
+        const addMaterial = yield fetch(`${baseUrl}api/material/save`, {
                 method: 'POST',
                 headers: { "Content-Type": "application/json" },
                 body:JSON.stringify(materialObj)
@@ -63,7 +65,7 @@ function* updateMaterial(action) {
             materialCode,
             hsnCode
         }
-        const updateMaterial = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/material/update', {
+        const updateMaterial = yield fetch(`${baseUrl}api/material/update`, {
                 method: 'PUT',
                 headers: { "Content-Type": "application/json" },
                 body:JSON.stringify(materialObj)
@@ -80,7 +82,7 @@ function* updateMaterial(action) {
 
 function* fetchMaterialListById(action) {
     try {
-        const fetchMaterialById =  yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/material/getById/${action.materialId}`, {
+        const fetchMaterialById =  yield fetch(`${baseUrl}api/material/getById/${action.materialId}`, {
             method: 'GET',
         });
         if(fetchMaterialById.status === 200) {
