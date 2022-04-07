@@ -470,7 +470,7 @@ const CreateCuttingDetailsForm = (props) => {
             }else{
                 data = data.flat();
                 let cutsData = [...data];
-                cutsData = props.unfinish ? (props.slitCut ? 
+                cutsData = props.unfinish || props.editFinish ? (props.slitCut ? 
                     cutsData.filter(item => item.process.processId === 3 && item.status.statusId ===3 && item.parentGroupId !== null) : 
                     cutsData.filter(item => item.process.processId === 1 && item.status.statusId ===3)) :
                 props.wip ? 
@@ -497,7 +497,7 @@ const CreateCuttingDetailsForm = (props) => {
         if (props.unfinish) {
             let actualUpdate = cuts.map(item => {
                 item.actualLength = 0;
-                item.actualWidth = 0;
+                item.actualNoOfPieces = 0;
                 item.actualWeight = 0;
                 if (item.packetClassification?.classificationId) item.packetClassification = {
                     classificationId: 6
@@ -755,15 +755,15 @@ const CreateCuttingDetailsForm = (props) => {
         }
        
         if(props.slitCut){
-            if(saveInstruction.length === 0 && props.inward?.saveSlit[0].partDetailsId !== slitPartId){
-                let partId = props.inward?.saveSlit[0].partDetailsId
+            if(saveInstruction.length === 0 && props.inward?.saveSlit[0]?.partDetailsId !== slitPartId){
+                let partId = props.inward?.saveSlit[0]?.partDetailsId
                 let payload={
                     groupIds: null,
                     partDetailsId: partId
                 }
                 setSlitPartId(partId);
                 props.pdfGenerateInward(payload)
-            }else if(saveInstruction.length === 0 && props.inward?.saveSlit[0].partDetailsId === slitPartId){
+            }else if(saveInstruction.length === 0 && props.inward?.saveSlit[0]?.partDetailsId === slitPartId){
                 message.error("Please enter the cut instructions for existing slits or the new slit to proceed with pdf generation")
             }
             else{

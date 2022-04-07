@@ -154,7 +154,7 @@ const List = (props) => {
                 <Divider type="vertical" />
                 <span className="gx-link">Transfer</span>
                 <Divider type="vertical" />
-                <span className="gx-link" onClick={() => props.history.push(`unfinish/${record.coilNumber}`)}>unfinish</span>
+                <span className="gx-link" onClick={() => props.history.push(`unfinish/${record.coilNumber}`)}>Cancel finish</span>
                 <Divider type="vertical" />
                 <span className="gx-link" onClick={() => props.history.push(`editFinish/${record.coilNumber}`)}>Edit finish</span>
             </span>}

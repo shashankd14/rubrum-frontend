@@ -763,12 +763,14 @@ const columnsPlan=[
     } else{
         data = data.flat();
         data = props.wip ? 
-        (props.unfinish ?
-            data.filter(item => item.process.processId === 2 && item.status.statusId ===3 && item.groupId === null) :
-            data.filter(item => item.process.processId === 2 && item.status.statusId !==3 && item.groupId === null)) :
-        props.slitCut ? 
-        data.filter(item => item.process.processId === 2 && item.isSlitAndCut === true ) :
-        data.filter(item => item.process.processId === 2 && item.isSlitAndCut === false)
+            (props.unfinish || props.editFinish ?
+                data.filter(item => item.process.processId === 2 && item.status.statusId ===3 && item.groupId === null) 
+                :
+                data.filter(item => item.process.processId === 2 && item.status.statusId !==3 && item.groupId === null)) 
+            :
+            props.slitCut ? 
+            data.filter(item => item.process.processId === 2 && item.isSlitAndCut === true ) :
+            data.filter(item => item.process.processId === 2 && item.isSlitAndCut === false)
         let partIdList = data.map(item => item.partId);
         partIdList = [...new Set(partIdList)];
         let list1 = []
@@ -779,14 +781,16 @@ const columnsPlan=[
         setPanelList(list1);  
         let cutsData = [...data];
         cutsData = props.wip ?
-        props.unfinish ? cutsData.filter(item => item.process.processId === 2 && item.status.statusId ===3 && item.groupId === null) :
-        cutsData.filter(item => item.process.processId === 2 && item.status.statusId !==3 && item.groupId === null) :
-        props.slitCut ? 
-        cutsData.filter(item => item.process.processId === 2 && item.isSlitAndCut === true ) :
-        cutsData.filter(item => item.process.processId === 2 && item.isSlitAndCut === false)
+        props.unfinish || props.editFinish ? 
+            cutsData.filter(item => item.process.processId === 2 && item.status.statusId ===3 && item.groupId === null) :
+            cutsData.filter(item => item.process.processId === 2 && item.status.statusId !==3 && item.groupId === null) 
+            :
+            props.slitCut ? 
+            cutsData.filter(item => item.process.processId === 2 && item.isSlitAndCut === true ) :
+            cutsData.filter(item => item.process.processId === 2 && item.isSlitAndCut === false)
         setSlittingDetail(cutsData)
         setCuts(cutsData);
-        setslitpayload([])
+        setslitpayload([]);
         
     }
     setForm(false);
@@ -887,7 +891,7 @@ const columnsPlan=[
             props.updateInstruction(coil);
             props.setShowSlittingModal(false)
         }
-        else if(props.wip){ //
+        else if (props.wip){ //
             const isAllWip = tableData.every(item => item.packetClassification.classificationId === 6);
             if (isAllWip) {
                 message.error('Unable to finish Instructions. All packets are classified as WIP');
