@@ -128,7 +128,19 @@ const SlittingWidths = (props) => {
         setWeightValue(props.coilDetails.fpresent)
     },[props.coilDetails.fpresent])
     useEffect(()=>{
-        if (props.wip) {
+        if (props.unfinish) {
+            let actualUpdate = props.cuts.map(item => {
+                item.actualLength = 0;
+                item.actualWidth = 0;
+                item.actualWeight = 0;
+                if (item.packetClassification?.classificationId) item.packetClassification = {
+                    classificationId: 6
+                }
+                return item;
+            });
+            props.setTableData(actualUpdate);
+        }
+        else if (props.wip) {
             let actualUpdate = props.cuts.map(item => {
                 if (!item.actualLength && item.actualLength !== 0) item.actualLength  =  item.plannedLength;
                 if (!item.actualWidth && item.actualWidth !== 0) item.actualWidth  =  item.plannedWidth;
@@ -566,7 +578,7 @@ const columns = [
         title: 'Actual Length',
         dataIndex: 'actualLength',
         render: (text, record, index) => { // addonAfter={<p>Enter valid length</p>}
-            return <Input value={record.actualLength} onChange={onInputChange("actualLength", index)} />
+            return <Input disabled={props.unfinish} value={record.actualLength} onChange={onInputChange("actualLength", index)} />
         }
     },
     {
@@ -578,7 +590,7 @@ const columns = [
         title: 'Actual Width',
         dataIndex: 'actualWidth',
         render: (text, record, index) => {
-            return <Input value={record.actualWidth} onChange={onInputChange("actualWidth", index)} />
+            return <Input disabled={props.unfinish} value={record.actualWidth} onChange={onInputChange("actualWidth", index)} />
         }
     },
     {
@@ -590,7 +602,7 @@ const columns = [
         title: 'Actual Weight',
         dataIndex: 'actualWeight',
         render: (text, record, index) => {
-            return <Input value={record.actualWeight} onChange={onInputChange("actualWeight", index)} onBlur={() => {
+            return <Input disabled={props.unfinish} value={record.actualWeight} onChange={onInputChange("actualWeight", index)} onBlur={() => {
                 let actualTotalWeight = cuts.map(i => i.actualWeight);
                 actualTotalWeight = actualTotalWeight.filter(i => i !== undefined);
                 actualTotalWeight = actualTotalWeight.length > 0 ? actualTotalWeight.reduce((total, num) => Number(total) + Number(num)) : 0;
@@ -602,7 +614,7 @@ const columns = [
         title: 'Classification',
         dataIndex: 'packetClassification',
         render: (text, record, index) => {
-            return <Select style={{width: '100%'}} value={record?.packetClassification?.classificationId} onChange={onInputChange("packetClassification", index, 'select')} >
+            return <Select disabled={props.unfinish} style={{width: '100%'}} value={record?.packetClassification?.classificationId} onChange={onInputChange("packetClassification", index, 'select')} >
                 {props.classificationList?.map(item => {
                     return <Option value={item.classificationId}>{item.classificationName}</Option>
                 })}
@@ -750,7 +762,15 @@ const columnsPlan=[
         
     } else{
         data = data.flat();
-        data = props.wip ? data.filter(item => item.process.processId === 2 && item.status.statusId !==3 && item.groupId === null) :props.slitCut ? data.filter(item => item.process.processId === 2 && item.isSlitAndCut === true ):data.filter(item => item.process.processId === 2 && item.isSlitAndCut === false)
+        data = props.wip ? 
+            (props.unfinish || props.editFinish ?
+                data.filter(item => item.process.processId === 2 && item.status.statusId ===3 && item.groupId === null) 
+                :
+                data.filter(item => item.process.processId === 2 && item.status.statusId !==3 && item.groupId === null)) 
+            :
+            props.slitCut ? 
+            data.filter(item => item.process.processId === 2 && item.isSlitAndCut === true ) :
+            data.filter(item => item.process.processId === 2 && item.isSlitAndCut === false)
         let partIdList = data.map(item => item.partId);
         partIdList = [...new Set(partIdList)];
         let list1 = []
@@ -760,10 +780,17 @@ const columnsPlan=[
         }
         setPanelList(list1);  
         let cutsData = [...data];
-        cutsData = props.wip ? cutsData.filter(item => item.process.processId === 2 && item.status.statusId !==3 && item.groupId === null) :props.slitCut ? cutsData.filter(item => item.process.processId === 2 && item.isSlitAndCut === true ):cutsData.filter(item => item.process.processId === 2 && item.isSlitAndCut === false)
+        cutsData = props.wip ?
+        props.unfinish || props.editFinish ? 
+            cutsData.filter(item => item.process.processId === 2 && item.status.statusId ===3 && item.groupId === null) :
+            cutsData.filter(item => item.process.processId === 2 && item.status.statusId !==3 && item.groupId === null) 
+            :
+            props.slitCut ? 
+            cutsData.filter(item => item.process.processId === 2 && item.isSlitAndCut === true ) :
+            cutsData.filter(item => item.process.processId === 2 && item.isSlitAndCut === false)
         setSlittingDetail(cutsData)
         setCuts(cutsData);
-        setslitpayload([])
+        setslitpayload([]);
         
     }
     setForm(false);
@@ -855,7 +882,16 @@ const columnsPlan=[
     }
     const handleOk =(e,name) => {
         e.preventDefault();
-        if(props.wip){
+        if (props.wip && props.unfinish) {
+            const coil = {
+                number: props.coil.coilNumber,
+                instruction: tableData,
+                unfinish: props.unfinish
+            };
+            props.updateInstruction(coil);
+            props.setShowSlittingModal(false)
+        }
+        else if (props.wip){ //
             const isAllWip = tableData.every(item => item.packetClassification.classificationId === 6);
             if (isAllWip) {
                 message.error('Unable to finish Instructions. All packets are classified as WIP');
@@ -970,7 +1006,7 @@ const columnsPlan=[
                     <Row>
                         <Form {...formItemLayout} className="login-form gx-pt-4">
                             <Form.Item>
-                                <SlittingWidthsForm setSlitEqualInstruction={setSlitEqualInstruction} setSlitInstructionList={setSlitInstructionList} slitEqualInstruction={slitEqualInstruction} slitInstructionList={slitInstructionList} setSlits={(slits) => setCuts([...cuts,...slits])} setTableData={setTableData} setweight={(w) => settweight(w.toFixed(0))} totalActualweight={(w) => setTotalActualWeight(w)} coilDetails={props.coilDetails} wip={props.wip} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth} plannedWeight ={props.plannedWeight} length={length} cuts={cuts} edit={edit} tweight={tweight} lengthValue={(lengthValue) => setLengthValue(lengthValue)} widthValue={(widthValue) => setWidthValue(widthValue)} reset={form} />
+                                <SlittingWidthsForm setSlitEqualInstruction={setSlitEqualInstruction} setSlitInstructionList={setSlitInstructionList} slitEqualInstruction={slitEqualInstruction} slitInstructionList={slitInstructionList} setSlits={(slits) => setCuts([...cuts,...slits])} setTableData={setTableData} setweight={(w) => settweight(w.toFixed(0))} totalActualweight={(w) => setTotalActualWeight(w)} coilDetails={props.coilDetails} wip={props.wip} unfinish={props.unfinish} editFinish={props.editFinish} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth} plannedWeight ={props.plannedWeight} length={length} cuts={cuts} edit={edit} tweight={tweight} lengthValue={(lengthValue) => setLengthValue(lengthValue)} widthValue={(widthValue) => setWidthValue(widthValue)} reset={form} />
                             </Form.Item>
                         </Form>
                         <Col lg={8} md={12} sm={24} xs={24}>

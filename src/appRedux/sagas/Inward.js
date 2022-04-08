@@ -398,7 +398,7 @@ function* requestSaveSlittingInstruction(action) {
     }
 }
 function* requestUpdateInstruction(action) {
-    const { number, instruction } = action.coil;
+    const { number, instruction, unfinish } = action.coil;
     const ins = instruction.map(item => {
         let insObj = {
             instructionId: item.instructionId ? item.instructionId : null,
@@ -425,8 +425,8 @@ function* requestUpdateInstruction(action) {
     });
     const filteredData = ins.filter(each => each.packetClassificationId !== 6);
     const req = {
-        isFinishTask: true,
-        instructionDtos: filteredData
+        isFinishTask: unfinish ? false : true,
+        instructionDtos: unfinish ? ins : filteredData
     }
     try {
         const updateInstruction = yield fetch(`${baseUrl}api/instruction/update`, {
