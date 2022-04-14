@@ -89,7 +89,7 @@ const CreateCuttingDetailsForm = (props) => {
             title: 'Actual Length',
             dataIndex:'actualLength',
             render: (text, record, index) => (
-                <Input value={record.actualLength}  onChange={onInputChange("actualLength", index)} />
+                <Input disabled={props.unfinish} value={record.actualLength}  onChange={onInputChange("actualLength", index)} />
               )
         },
         {
@@ -101,7 +101,7 @@ const CreateCuttingDetailsForm = (props) => {
             title: 'Actual No of Sheets',
             dataIndex:'actualNoOfPieces',
             render: (text, record, index) => (
-                <Input value={record.actualNoOfPieces} onChange={onInputChange("actualNoOfPieces", index)} />
+                <Input disabled={props.unfinish} value={record.actualNoOfPieces} onChange={onInputChange("actualNoOfPieces", index)} />
               )
         },
         {
@@ -113,7 +113,7 @@ const CreateCuttingDetailsForm = (props) => {
             title: 'Actual Weight',
             dataIndex:'actualWeight',
             render: (text, record, index) => (
-                <Input value={record.actualWeight}  onChange={onInputChange("actualWeight", index)} onBlur={() => {
+                <Input disabled={props.unfinish} value={record.actualWeight}  onChange={onInputChange("actualWeight", index)} onBlur={() => {
                     let actualTotalWeight = cuts.map(i => i.actualWeight);
                     actualTotalWeight = actualTotalWeight.filter(i => i !== undefined);
                     actualTotalWeight = actualTotalWeight.length > 0 ? actualTotalWeight.reduce((total, num) => Number(total) + Number(num)) : 0;
@@ -125,7 +125,7 @@ const CreateCuttingDetailsForm = (props) => {
             title: 'Classification',
             dataIndex: 'packetClassification',
             render: (text, record, index) => {
-                return <Select style={{width: '100%'}} value={record?.packetClassification?.classificationId} onChange={onInputChange("packetClassification", index, 'select')} >
+                return <Select disabled={props.unfinish} style={{width: '100%'}} value={record?.packetClassification?.classificationId} onChange={onInputChange("packetClassification", index, 'select')} >
                     {props.classificationList?.map(item => {
                         return <Option value={item.classificationId}>{item.classificationName}</Option>
                     })}
@@ -470,7 +470,15 @@ const CreateCuttingDetailsForm = (props) => {
             }else{
                 data = data.flat();
                 let cutsData = [...data];
-                cutsData = props.wip ? (props.slitCut ? cutsData.filter(item => item.process.processId === 3 && item.status.statusId !==3 && item.parentGroupId !== null) : cutsData.filter(item => item.process.processId === 1 && item.status.statusId !==3)) : cutsData.filter(item => item.process.processId === 1)
+                cutsData = props.unfinish || props.editFinish ? (props.slitCut ? 
+                    cutsData.filter(item => item.process.processId === 3 && item.status.statusId ===3 && item.parentGroupId !== null) : 
+                    cutsData.filter(item => item.process.processId === 1 && item.status.statusId ===3)) :
+                props.wip ? 
+                (props.slitCut ? 
+                    cutsData.filter(item => item.process.processId === 3 && item.status.statusId !==3 && item.parentGroupId !== null) : 
+                    cutsData.filter(item => item.process.processId === 1 && item.status.statusId !==3)) 
+                    : 
+                    cutsData.filter(item => item.process.processId === 1)
                 setCuts(cutsData);
             }
         }
@@ -486,7 +494,19 @@ const CreateCuttingDetailsForm = (props) => {
         cutsArray = cutsArray.filter(i => i !== undefined)
         cutsArray = cutsArray.length > 0? cutsArray.reduce((total, num) => Number(total) + Number(num)) : 0
         settweight(cutsArray);
-        if (props.wip) {
+        if (props.unfinish) {
+            let actualUpdate = cuts.map(item => {
+                item.actualLength = 0;
+                item.actualNoOfPieces = 0;
+                item.actualWeight = 0;
+                if (item.packetClassification?.classificationId) item.packetClassification = {
+                    classificationId: 6
+                }
+                return item;
+            });
+            setTableData(actualUpdate);
+        }
+        else if (props.wip) {
             let actualUpdate = cuts.map(item => {
                 if (!item.actualNoOfPieces && item.actualNoOfPieces !== 0) item.actualNoOfPieces  =  item.plannedNoOfPieces;
                 if (!item.actualLength && item.actualLength !== 0) item.actualLength  =  item.plannedLength;
@@ -708,7 +728,16 @@ const CreateCuttingDetailsForm = (props) => {
     }
     const handleOk=(e)=>{
         e.preventDefault();
-        if(props.wip){
+        if (props.unfinish) {
+            const coil = {
+                number: props.coil.coilNumber,
+                instruction: tableData,
+                unfinish: props.unfinish
+            };
+            props.updateInstruction(coil);
+            props.setShowCuttingModal(false);
+        }
+        else if(props.wip){
             const isAllWip = tableData.every(item => item.packetClassification.classificationId === 6);
             if (isAllWip) {
                 message.error('Unable to finish Instructions. All packets are classified as WIP');
@@ -726,15 +755,15 @@ const CreateCuttingDetailsForm = (props) => {
         }
        
         if(props.slitCut){
-            if(saveInstruction.length === 0 && props.inward?.saveSlit[0].partDetailsId !== slitPartId){
-                let partId = props.inward?.saveSlit[0].partDetailsId
+            if(saveInstruction.length === 0 && props.inward?.saveSlit[0]?.partDetailsId !== slitPartId){
+                let partId = props.inward?.saveSlit[0]?.partDetailsId
                 let payload={
                     groupIds: null,
                     partDetailsId: partId
                 }
                 setSlitPartId(partId);
                 props.pdfGenerateInward(payload)
-            }else if(saveInstruction.length === 0 && props.inward?.saveSlit[0].partDetailsId === slitPartId){
+            }else if(saveInstruction.length === 0 && props.inward?.saveSlit[0]?.partDetailsId === slitPartId){
                 message.error("Please enter the cut instructions for existing slits or the new slit to proceed with pdf generation")
             }
             else{
