@@ -240,7 +240,8 @@ const SlittingWidths = (props) => {
                             inwardId: props.coilDetails.inwardEntryId ? props.coilDetails.inwardEntryId : '',
                             parentInstructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : '',
                             deleteUniqId: unsavedDeleteId,
-                            packetClassificationId:values?.tags || ""
+                            packetClassificationId: null
+                           
                         }
                         slits.push(slitValue);
                     }
@@ -291,9 +292,7 @@ const SlittingWidths = (props) => {
                 }
         });
     }
-    const handleTagsChange=(e)=>{
-        setTagsName(e)
-    }
+    
     const addNewKey = () => {
         const {form} = props;
         const keys = form.getFieldValue('keys');
@@ -386,10 +385,11 @@ const SlittingWidths = (props) => {
             <Form {...formItemLayoutSlitting}>
                 {!props.wip && <><label>Current Available length : {len}mm</label>
                 <div><label>Available Width : {weightValue > 0 ? (props.coilDetails.fWidth || props.coilDetails.plannedWidth) : 0}mm</label></div> 
-                <div><label>Current Available Weight : {weightValue.toFixed(1)}kg</label></div> 
+                <div><label>Current Available Weight : {weightValue?.toFixed(1)}kg</label></div> 
                 </>}
                 {!props.wip && 
-                <><Form.Item label="Process Date" >
+                <>
+                <Form.Item label="Process Date" >
                     {getFieldDecorator('processDate', {
                         initialValue: moment(new Date(), APPLICATION_DATE_FORMAT),
                         rules: [{ required: true, message: 'Please select a Process date' }],
@@ -500,20 +500,7 @@ const SlittingWidths = (props) => {
                         </>
                     )}
                 </Form.Item>
-                <Form.Item label="Tags">
-                    {getFieldDecorator('tags', {
-                        rules: [{ required: false}],
-                    })(
-                        <>
-                     <Select style={{width: '100%'}} value={tagsName} onChange={handleTagsChange} >
-                {props?.party?.map(item => {
-                    return <Option value={item.classificationId}>{item.classificationName}</Option>
-                })}
-            </Select>
-                        </>
-                    )}
-                </Form.Item>
-                <Form.Item>
+                
                 <Row className="gx-mt-4">
                     <Col span={16} style={{ textAlign: "center"}}>
                         <Button type="primary" htmlType="submit" onClick={() => addNewSize()} disabled={props.wip ? true : (props.slitInstructionList.length === equalParts)? true: false}>
@@ -524,7 +511,7 @@ const SlittingWidths = (props) => {
                  <Button type="primary" onClick={applyData} hidden={value=== 1 && equalParts > 1 && props.slitInstructionList.length !== equalParts? false: true} disabled={value===1 && equalPartsDisplay !== 0 ? (props.cuts.length=== 0 ?  true : false) :true}>
                            Apply to remainig {equalPartsDisplay} parts <Icon type="right"/>
                 </Button>
-                </Form.Item></>}
+                </>}
                 </Form>
         </>
     )
@@ -636,11 +623,14 @@ const columnsPlan=[
         key:'plannedWeight',
     },
     {
-        title:'Tags',
-        dataIndex:'packetClassification.classificationName',
-        key:'packetClassification.classificationName',
-        render: (text, record) => {
-            return record?.packetClassification?.classificationName || record?.packetClassificationId;
+        title: 'Tags',
+        dataIndex: 'packetClassification.classificationName',
+        render: (text, record, index) => {
+            return  <Select style={{width: '100%'}} value={record?.packetClassificationId} onChange={(e) =>handleTagsChange(record,e)} >
+            {props?.coilDetails.party?.tags?.map(item => {
+                return <Option value={item.classificationId}>{item.classificationName}</Option>
+            })}
+        </Select>
         }
     },
     {
@@ -681,6 +671,7 @@ const columnsPlan=[
     const [showDeleteModal, setshowDeleteModal] = useState(false);
     const [deleteRecord, setDeleteRecord] = useState({});
     const [panelList, setPanelList]= useState([]);
+    const [tagsName, setTagsName]= useState()
     const onDelete = ({ record, key, e }) => {
         e.preventDefault();
 
@@ -774,6 +765,15 @@ const columnsPlan=[
     props.resetIsDeleted(false);
  }, [props.coilDetails]);
 
+
+ const handleTagsChange=(record,e)=>{
+     setTagsName(e)
+     record.packetClassificationId= e
+    //  let list = [...panelList]?.filter(item => item.instructionId === record.instructionId)
+    // list[0].packetClassification=e
+    // setSlitInstruction(new Set(...list,...panelList))
+    // setPanelList(...panelList)
+}
   const onInputChange = (key, index, type) => (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -1057,7 +1057,7 @@ const columnsPlan=[
                                         slitCut={props.slitCut} 
                                         setParts ={(parts)=>setParts(parts)}
                                         setPanelList={(list) => setPanelList([...panelList,...list])}
-                                        party={props?.coilDetails.party?.tags}
+                                        
                                         />
                                 </Form.Item>
 
