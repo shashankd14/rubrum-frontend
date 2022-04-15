@@ -5,6 +5,7 @@ import {Card, Table, Select, Input, message} from "antd";
 import SearchBox from "../../../components/SearchBox";
 import ReconcileModal from "./ReconcileModal";
 import moment from 'moment';
+import IntlMessages from "../../../util/IntlMessages";
 const Option = Select.Option;
 function List(props) {
 
@@ -152,6 +153,7 @@ function List(props) {
 
 
     return (
+        <div><h1><IntlMessages id="sidebar.company.deliveryItems" /></h1>
         <Card>
             <div className="gx-flex-row gx-flex-1">
             {reconcileModal ? <ReconcileModal showModal={reconcileModal} deliveryRecord={deliveryRecord}/>: null}
@@ -180,6 +182,7 @@ function List(props) {
                    onChange={handleChange}
             />
         </Card>
+        </div>
     );
 }
 

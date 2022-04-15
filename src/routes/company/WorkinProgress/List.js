@@ -1,12 +1,11 @@
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
-import {Button, Card, Divider, Icon, Table} from "antd";
+import { Card,  Table} from "antd";
 import moment from 'moment';
 import SearchBox from "../../../components/SearchBox";
-import {fetchWorkInProgressList} from "../../../appRedux/actions";
+import IntlMessages from "../../../util/IntlMessages";
 import {
-    fetchInwardList,
-    resetInwardForm
+    fetchInwardList
 } from "../../../appRedux/actions/Inward";
 
 function  List(props) {
@@ -146,6 +145,7 @@ const getFilterData=(list)=>{
     };
 
     return (
+        <div><h1><IntlMessages id="sidebar.company.workinprogress" /></h1>
         <Card>
             <div style={{width: "50%" ,"margin-bottom":"10px"}}className="gx-flex-row gx-flex-1 wip-search">
             <SearchBox styleName="gx-flex-1" placeholder="Search for coil number or party name..." value={searchValue} onChange={(e) => setSearchValue(e.target.value)} />
@@ -163,6 +163,7 @@ const getFilterData=(list)=>{
                   }}
             />
         </Card>
+        </div>
     );
 }
 

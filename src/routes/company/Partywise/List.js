@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { connect } from 'react-redux';
-import { Button, Card, Divider, Icon, Select, Table } from "antd";
-import moment from 'moment';
+import { Button, Card, Divider,Select, Table } from "antd";
 import SearchBox from "../../../components/SearchBox";
 
 import IntlMessages from "../../../util/IntlMessages";
