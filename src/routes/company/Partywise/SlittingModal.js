@@ -638,7 +638,7 @@ const columnsPlan=[
         title: 'Tags',
         dataIndex: 'packetClassification.classificationName',
         render: (text, record, index) => {
-            return  <Select style={{width: '100%'}} value={record?.packetClassificationId} onChange={(e) =>handleTagsChange(record,e)} >
+            return  <Select style={{width: '100%'}} value={record?.packetClassification ? record?.packetClassification?.classificationName: record?.packetClassificationId} onChange={(e) =>handleTagsChange(record,e)} >
             {props?.coilDetails.party?.tags?.map(item => {
                 return <Option value={item.classificationId}>{item.classificationName}</Option>
             })}
