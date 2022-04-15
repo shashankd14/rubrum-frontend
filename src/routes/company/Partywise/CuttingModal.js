@@ -159,11 +159,14 @@ const CreateCuttingDetailsForm = (props) => {
             key:'plannedWeight',
         },
         {
-            title:'Tags',
-            dataIndex:'packetClassification.classificationName',
-            key:'packetClassification.classificationName',
-            render: (text, record) => {
-                return record?.packetClassification?.classificationName || record?.packetClassificationId;
+            title: 'Tags',
+            dataIndex: 'packetClassification.classificationName',
+            render: (text, record, index) => {
+                return  <Select style={{width: '100%'}} value={record?.packetClassification ? record?.packetClassification?.classificationName: record?.packetClassificationId} onChange={(e) =>handleTagsChange(record,e)} >
+                {props?.coilDetails.party?.tags?.map(item => {
+                    return <Option value={item.classificationId}>{item.classificationName}</Option>
+                })}
+            </Select>
             }
         },
         {
@@ -258,7 +261,15 @@ const CreateCuttingDetailsForm = (props) => {
             title: 'Weight',
             dataIndex:'plannedWeight',
             key:'plannedWeight',
-        }
+        },
+        {
+            title: 'Tags',
+            dataIndex: 'packetClassification.classificationName',
+            render (value) {
+                return value || ""
+            },
+           
+        },
     ];
 
     const onEdit=(record,index) => {
@@ -271,6 +282,10 @@ const CreateCuttingDetailsForm = (props) => {
             });
             setTagsName(record?.packetClassification?.classificationId)
     };
+    const handleTagsChange=(record,e)=>{
+         setTagsName(e)
+        record.packetClassificationId= e
+   }
 
     const resetSaveInstruction = (record) => {
         setSaveInstruction(prev => prev.filter(item => item.deleteUniqId !== record.deleteUniqId));
@@ -392,7 +407,7 @@ const CreateCuttingDetailsForm = (props) => {
                         parentInstructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : "",
                         groupId:"",
                         deleteUniqId: unsavedDeleteId,
-                        packetClassificationId: tagsName || ""
+                        packetClassificationId: null
                     });
                     setcurrentWeight(remainWeight);
                     setlength(length - (props.inward.process.length*(props.inward.process.no)));
@@ -783,9 +798,7 @@ const CreateCuttingDetailsForm = (props) => {
           }
         }
     }
-    const handleTagsChange=(e)=>{
-        setTagsName(e)
-    }
+    
     const handleCancel=() => {
         setCuts([]);
         setCutPayload([]);
@@ -953,19 +966,7 @@ const CreateCuttingDetailsForm = (props) => {
                                     <Input id="noOfCuts" disabled={props.wip ? true : false} />
                                         )}
                             </Form.Item>
-                            <Form.Item label="Tags">
-                            {getFieldDecorator('tags', {
-                               rules: [{ required: false}],
-                             })(
-                             <>
-                            <Select style={{width: '100%'}} value={tagsName} onChange={handleTagsChange} >
-                            {props?.coilDetails.party?.tags.map(item => {
-                        return <Option value={item.classificationId}>{item.classificationName}</Option>
-                         })}
-                     </Select>
-                        </>
-                    )}
-                </Form.Item>
+                           
                             <Form.Item>
                                 <Button type="primary" onClick={onChange} disabled={props.wip ? true :balanced ? true : false}>
                                         Balance

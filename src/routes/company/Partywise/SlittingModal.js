@@ -796,10 +796,6 @@ const columnsPlan=[
  const handleTagsChange=(record,e)=>{
      setTagsName(e)
      record.packetClassificationId= e
-    //  let list = [...panelList]?.filter(item => item.instructionId === record.instructionId)
-    // list[0].packetClassification=e
-    // setSlitInstruction(new Set(...list,...panelList))
-    // setPanelList(...panelList)
 }
   const onInputChange = (key, index, type) => (
     e: React.ChangeEvent<HTMLInputElement>
