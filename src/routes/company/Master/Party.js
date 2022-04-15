@@ -96,7 +96,7 @@ const Party = (props) => {
         title: 'Tags',
         dataIndex: 'packetClassificationTags',
         render (value) {
-            return value.map(item => item.classificationName)
+            return value?.map(item => item.classificationName)
         },
         key: 'tags',
         filters: []
@@ -465,13 +465,11 @@ const Party = (props) => {
                                     </Form.Item>
                                     <Form.Item label="Tags">
                                         {getFieldDecorator('tags', {
-                                            initialValue:tagsList,
                                             rules: [{ required: true, message: 'Please enter Tags!' }],
                                         })(
                                             <Select
                                              id="tags"
                                              mode="multiple"
-                                             defaultValue={tagsList}
                                              style={{ width: '100%' }}
                                              onChange={handleSelectChange}
                                              >{props.classificationList?.map(item => {
@@ -504,9 +502,10 @@ const addPartyForm = Form.create({
         const city = party?.address2?.city ? [party?.address1?.city, party?.address2?.city] : [party?.address1?.city];
         const state = party?.address2?.state ? [party?.address1?.state, party?.address2?.state] : [party?.address1?.state];
         const pincode = party?.address2?.pincode ? [party?.address1?.pincode, party?.address2?.pincode] : [party?.address1?.pincode];
-
+        // const tags = props?.party?.party?.tags.map(item=> item.classificationName)
         return {
-            partyName: Form.createFormField({
+            partyName: 
+            ({
                 ...party?.partyName,
                 value: party?.partyName|| '',
             }),
@@ -562,8 +561,8 @@ const addPartyForm = Form.create({
                 value: party?.gstNumber || '',
             }),
             tags: Form.createFormField({
-                ...party?.packetClassificationTags,
-                value: party?.packetClassificationTags || '',
+                ...props.party?.party?.tags,
+                value: party?.tags?.map(item=> item.classificationName)?.join() || '',
             })
         };
     }
