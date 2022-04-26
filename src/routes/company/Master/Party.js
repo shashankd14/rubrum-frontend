@@ -5,7 +5,7 @@ import moment from 'moment';
 import SearchBox from "../../../components/SearchBox";
 
 import IntlMessages from "../../../util/IntlMessages";
-import { fetchPartyList, addParty, fetchPartyListId, updateParty, resetParty, fetchClassificationList } from "../../../appRedux/actions";
+import { fetchPartyList, addParty, fetchPartyListId, updateParty, resetParty, fetchClassificationList,fetchEndUserTagsList } from "../../../appRedux/actions";
 import { onDeleteContact } from "../../../appRedux/actions";
 
 const FormItem = Form.Item;
@@ -41,7 +41,7 @@ const Party = (props) => {
     const {getFieldDecorator, getFieldValue} = props.form;
 
     const { party } = props.party;
-    const [tagsList, setTagsList] =useState([{classificationId: 1}]);
+    const [tagsList, setTagsList] =useState([{tagId: 1}]);
     
     getFieldDecorator('phoneKeys', {initialValue: [0]});
     getFieldDecorator('addressKeys', {initialValue: [0]});
@@ -93,10 +93,19 @@ const Party = (props) => {
         sortOrder: sortedInfo.columnKey === 'address1.state' && sortedInfo.order,
     },
     {
-        title: 'Tags',
+        title: 'Process Tags',
         dataIndex: 'packetClassificationTags',
         render (value) {
-            return value?.map(item => item.classificationName)
+            return value?.map(item => item.tagName)
+        },
+        key: 'tags',
+        filters: []
+    },
+    {
+        title: 'End User Tags',
+        dataIndex: 'endUserTags',
+        render (value) {
+            return value?.map(item => item.tagName)
         },
         key: 'tags',
         filters: []
@@ -133,8 +142,8 @@ const Party = (props) => {
 
       const onEdit = (record,e)=>{
         e.preventDefault();
-        let classificationObj = record.packetClassificationTags.length===0? [{classificationId:1}]: record.packetClassificationTags;
-        setTagsList(classificationObj?.map(item =>item.classificationId) || null)
+        let classificationObj = record.packetClassificationTags.length===0? [{tagId:1}]: record.packetClassificationTags;
+        setTagsList(classificationObj?.map(item =>item.tagId) || null)
         props.fetchPartyListId(record.nPartyId);
         setEditParty(true);
         setTimeout(() => {
@@ -147,6 +156,7 @@ const Party = (props) => {
         setTimeout(() => {
             props.fetchPartyList();
             props.fetchClassificationList();
+            props.fetchEndUserTagsList();
         }, 1000);
     }, [showAddParty]);
 
@@ -277,7 +287,8 @@ const Party = (props) => {
                                         <p><strong>State :</strong> {viewPartyDate?.address1?.state}</p>
                                         <p><strong>Pincode :</strong> {viewPartyDate?.address1?.pincode}</p>
                                     </>}
-                                    {viewPartyDate?.packetClassificationTags && <p><strong>Tags:</strong>{viewPartyDate?.packetClassificationTags?.map(item=> item.classificationName)}</p>}
+                                    {viewPartyDate?.packetClassificationTags && <p><strong>Tags:</strong>{viewPartyDate?.packetClassificationTags?.map(item=> item.tagName)}</p>}
+                                    {viewPartyDate?.endUserTags && <p><strong>EndUser Tags:</strong>{viewPartyDate?.endUserTags?.map(item=> item.tagName)}</p>}
                                 </Card>
                             </Col>
                         </Row>
@@ -286,7 +297,7 @@ const Party = (props) => {
                 <Modal
                     title='Add Party'
                     visible={showAddParty}
-                    onOk={() => {
+                    onOk={(e) => {
                         if (editParty) {
                             props.form.validateFields((err, values) => {
                                 if (!err) {
@@ -301,7 +312,7 @@ const Party = (props) => {
                         } else {
                             props.form.validateFields((err, values) => {
                                 if (!err) {
-                                  console.log('Received values of form: ', values);
+                                 e.preventDefault();
                                   props.addParty(values);
                                   props.form.resetFields();
                                   setShowAddParty(false);
@@ -463,7 +474,7 @@ const Party = (props) => {
                                             <Input id="gstNumber" />
                                         )}
                                     </Form.Item>
-                                    <Form.Item label="Tags">
+                                    <Form.Item label="Process Tags">
                                         {getFieldDecorator('tags', {
                                             rules: [{ required: true, message: 'Please enter Tags!' }],
                                         })(
@@ -472,8 +483,22 @@ const Party = (props) => {
                                              mode="multiple"
                                              style={{ width: '100%' }}
                                              onChange={handleSelectChange}
-                                             >{props.classificationList?.map(item => {
-                                                return <Option value={item.classificationId}>{item.classificationName}</Option>
+                                             >{props?.packetClassification?.processTags?.map(item => {
+                                                return <Option value={item?.tagId}>{item?.tagName}</Option>
+                                            })}</Select>
+                                        )}
+                                    </Form.Item>
+                                    <Form.Item label="End User Tags">
+                                        {getFieldDecorator('endUsertags', {
+                                            rules: [{ required: true, message: 'Please enter End UserTags!' }],
+                                        })(
+                                            <Select
+                                             id="endUsertags"
+                                             mode="multiple"
+                                             style={{ width: '100%' }}
+                                             onChange={handleSelectChange}
+                                             >{props?.packetClassification?.endUserTags?.map(item => {
+                                                return <Option value={item?.tagId}>{item.tagName}</Option>
                                             })}</Select>
                                         )}
                                     </Form.Item>
@@ -490,7 +515,7 @@ const Party = (props) => {
 
 const mapStateToProps = state => ({
     party: state.party,
-    classificationList: state.packetClassification?.classificationList,
+    packetClassification: state.packetClassification,
 });
 
 const addPartyForm = Form.create({
@@ -562,7 +587,11 @@ const addPartyForm = Form.create({
             }),
             tags: Form.createFormField({
                 ...props.party?.party?.tags,
-                value: party?.tags?.map(item=> item.classificationName)?.join() || '',
+                value: party?.tags?.map(item=> item.tagName)?.join() || '',
+            }),
+            endUsertags: Form.createFormField({
+                ...props.party?.party?.endUserTags,
+                value: party?.endUserTags?.map(item=> item.tagName)?.join() || '',
             })
         };
     }
@@ -574,5 +603,6 @@ export default connect(mapStateToProps, {
     fetchPartyListId,
     updateParty,
     resetParty,
-    fetchClassificationList
+    fetchClassificationList,
+    fetchEndUserTagsList
 })(addPartyForm);

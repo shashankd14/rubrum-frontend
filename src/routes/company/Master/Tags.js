@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from "react";
 import {connect} from 'react-redux';
-import {Button, Card, Divider, Table, Modal, Row, Col, Form, Input, Select} from "antd";
+import {Button, Card, Divider, Table, Modal, Row, Col, Form, Input, Select,Tabs, message} from "antd";
 import moment from 'moment';
 import SearchBox from "../../../components/SearchBox";
 
 import IntlMessages from "../../../util/IntlMessages";
-import { fetchClassificationList,addPacketClassification} from "../../../appRedux/actions";
+import { fetchClassificationList,addProccessTags,addEndUserTags,fetchTagsListById,deleteTagById, fetchEndUserTagsList, resetTagsState} from "../../../appRedux/actions";
 
 const Option = Select.Option;
 
@@ -24,23 +24,35 @@ export const formItemLayout = {
 
 
 const Tags = (props) => {
-
+    const TabPane = Tabs.TabPane;
     const [sortedInfo, setSortedInfo] = useState({
         order: 'descend',
         columnKey: 'age',
     });
-    const [searchValue, setSearchValue] = useState('');
+    const [mode, setMode] = useState('top');
+    const [tabKey, setTabKey]= useState("1");
     const [showAddTags, setShowAddTags] = useState(false);
-    const [tagsName, setTagName] = useState("");
-    const [tagsList, setTagsList] =useState(props?.classificationList || [])
-
+    const [tagsList, setTagsList] =useState(tabKey === "1"? props?.processTags: props?.endUserTags)
     const { getFieldDecorator } = props.form;
+    const [tagsDeleted, setTagsDeleted] = useState(props?.tagsDeleteSuccess)
+    
 
     const columns = [{
+        title: 'Tag Id',
+        dataIndex: 'classificationId',
+        key: 'classificationId',
+        filters: [],
+        render: (text, record) => {
+            return record?.classificationId || record?.tagId
+        }
+    },{
         title: 'Tag Name',
         dataIndex: 'classificationName',
         key: 'classificationName',
-        filters: []
+        filters: [],
+        render: (text, record) => {
+            return record?.classificationName || record?.tagName
+        }
     },
     {
         title: 'Action',
@@ -48,70 +60,82 @@ const Tags = (props) => {
         key: 'x',
         render: (text, record, index) => (
             <span>
-                <span className="gx-link" onClick={(e) => onEdit(record,e)}>Edit</span>
+                <span className="gx-link" onClick={(e) => onEdit(e,record)}>Edit</span>
+                <Divider type="vertical"/>
+                <span className="gx-link" onClick={(e) => onDelete(e,record)}>Delete</span>
             </span>
         ),
     },
     ];
-    const onEdit = (record,e)=>{
+    const onEdit = (e,record)=>{
         e.preventDefault();
-        setTagName(record.classificationName)
-        setShowAddTags(true)
-                
+        const {form} = props;
+        form.setFieldsValue({
+                tagName:record?.tagName || record?.classificationName
+            });
+            const payload={
+                tagId: tabKey ==="1"? record?.classificationId: record?.tagId,
+                type: tabKey ==="1"?"packetClassification":"endusertags"
+            }
+        props.fetchTagsListById(payload);   
+        setTimeout(() => {
+            setShowAddTags(true) 
+        }, 1000);
+    }
+    const onDelete = (e,record)=>{
+        e.preventDefault();
+            const payload={
+                tagId: tabKey ==="1"? record?.classificationId: record?.tagId,
+                type: tabKey ==="1"?"packetClassification":"endusertags"
+            }
+         props.deleteTagById(payload);   
+        
     }
     const addTags=()=> {
         props.form.validateFields((err, values) => {
             if (!err) {
                 let payload=[];
                 payload.push(values)
-              console.log('Received values of form: ', values);
-              props.addPacketClassification(payload);
-              props.form.resetFields();
+             tabKey==="1"?props.addProccessTags(payload): props.addEndUserTags(payload);
+
               setShowAddTags(false);
             }
         });
     }
-    
- const handleTagsChange =(e)=>{
-    setTagName(e.target.value)
    
+useEffect(()=>{
+    setTimeout(() => {
+        props.fetchClassificationList();
+        props.fetchEndUserTagsList();
+    }, 1000);
+   
+},[showAddTags, tagsDeleted])
+useEffect(()=>{
+    setTagsList(tabKey ==="1"? props?.processTags: props?.endUserTags)
+},[props?.processTags, props?.endUserTags, tabKey])
+useEffect(()=>{
+    if(props?.tagsDeleteSuccess) {
+        setTagsDeleted(props?.packetClassification?.tagsDeleteSuccess)
+        message.success('Tags deleted Successfully', 2).then(() => {
+        setTimeout(() => {
+            props.resetTagsState();
+        }, 1000);
+});
 }
-useEffect(()=>{
-    props.fetchClassificationList();
-},[showAddTags])
-useEffect(()=>{
-    setTagsList(props.classificationList)
-},[props?.classificationList])
-
-    // useEffect(() => {
-
-    //     const { classificationList } = props;
-    //     if(searchValue) {
-    //         const filteredData = classificationList.filter((tag) => {
-    //             if( tag?.classificationName.toLowerCase().includes(searchValue.toLowerCase())){
-    //                 return tag;
-    //             }
-    //         });
-    //         setFilteredInwardList(filteredData);
-    //     } else {
-    //         setFilteredInwardList(classificationList);
-    //     }
-    // }, [searchValue])
-    const handleChange = (pagination, filters, sorter) => {
+},[props?.tagsDeleteSuccess])
+ const handleChange = (pagination, filters, sorter) => {
         setSortedInfo(sorter);
         // setFilteredInfo(filters)
     };
 
-    // const clearAll = () => {
-    //     setSortedInfo(null);
-    //     setFilteredInfo(null);
-    // };
-
+  const callback=(key)=>{
+    setTabKey(key)
+  }
 
     return (
         <div>
-            <h1><IntlMessages id="sidebar.company.ratesList"/></h1>
-            <Card>
+            <h1><IntlMessages id="sidebar.company.tagsList"/></h1>
+          
                 <div className="gx-flex-row gx-flex-1">
                     <div className="gx-flex-row gx-w-50">
                         <Button type="primary" icon={() => <i className="icon icon-add"/>} size="medium"
@@ -120,6 +144,13 @@ useEffect(()=>{
                         {/* <SearchBox styleName="gx-flex-1" placeholder="Search for process name or party name..." value={searchValue} onChange={(e) => setSearchValue(e.target.value)}/> */}
                     </div>
                 </div>
+                <Tabs
+          defaultActiveKey="1"
+          tabPosition={mode}
+          onChange={callback}
+            >
+                <TabPane tab="Process Tags" key="1">
+                  <Card>
                 <Table rowSelection={[]}
                     className="gx-table-responsive"
                     columns={columns}
@@ -128,7 +159,45 @@ useEffect(()=>{
                 />
 
                 <Modal
-                    title='Add Rates'
+                    title='Add Tags'
+                    visible={showAddTags}
+                    onOk={addTags}
+                    width={600}
+                    onCancel={() => {
+                        props.form.resetFields();
+                        setShowAddTags(false);
+                    }}
+                >
+                    <Card className="gx-card">
+                        <Row>
+                            <Col lg={24} md={24} sm={24} xs={24} className="gx-align-self-center">
+                                <Form {...formItemLayout} className="gx-pt-4">
+                                    
+                                    <Form.Item label="Tag Name" >
+                                        {getFieldDecorator('tagName', {
+                                            rules: [{ required: true, message: 'Please enter Tags name!' }],
+                                            })(
+                                                <Input id="tagName"/>
+                                        )}
+                                    </Form.Item>
+                                    
+                                </Form>
+                            </Col>
+                        </Row>
+                    </Card>
+                </Modal>
+            </Card></TabPane>
+            <TabPane tab="EndUser Tags" key="2">
+            <Card>
+                <Table rowSelection={[]}
+                    className="gx-table-responsive"
+                    columns={columns}
+                    dataSource={tagsList}
+                    onChange={handleChange}
+                />
+
+                <Modal
+                    title='Add Tags'
                     visible={showAddTags}
                     onOk={addTags}
                     width={600}
@@ -144,10 +213,10 @@ useEffect(()=>{
                                 <Form {...formItemLayout} className="gx-pt-4">
                                     
                                     <Form.Item label="Tag Name" >
-                                        {getFieldDecorator('classificationName', {
+                                        {getFieldDecorator('tagName', {
                                             rules: [{ required: true, message: 'Please enter Tags name!' }],
                                             })(
-                                                <Input id="classificationName" value={tagsName} onChange={handleTagsChange}/>
+                                                <Input id="tagName"/>
                                         )}
                                     </Form.Item>
                                     
@@ -157,28 +226,36 @@ useEffect(()=>{
                         </Row>
                     </Card>
                 </Modal>
-            </Card>
+            </Card></TabPane>
+            </Tabs>
         </div>
     );
 }
 
 const mapStateToProps = state => ({
-    classificationList: state.packetClassification?.classificationList,
+    processTags: state.packetClassification?.processTags,
+    endUserTags: state.packetClassification?.endUserTags,
+    tagsDeleteSuccess: state.packetClassification?.tagsDeleteSuccess
 });
 
 const addTagsForm = Form.create({
     mapPropsToFields(props) {
-        const { classificationList } = props.classificationList;
+        const tagList = [...props?.processTags,...props?.endUserTags];
         return {
-            tags: Form.createFormField({
-                ...classificationList?.classificationName,
-                value: classificationList?.classificationName || '',
+            tagName: Form.createFormField({
+                ...tagList,
+                value: tagList.tagName|| '',
             })
         };
     }
 })(Tags);
 
 export default connect(mapStateToProps, {
-    addPacketClassification,
-    fetchClassificationList
+    addProccessTags,
+    fetchClassificationList,
+    addEndUserTags,
+    fetchTagsListById,
+    fetchEndUserTagsList,
+    deleteTagById,
+    resetTagsState
 })(addTagsForm);

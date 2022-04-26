@@ -133,8 +133,8 @@ const SlittingWidths = (props) => {
                 item.actualLength = 0;
                 item.actualWidth = 0;
                 item.actualWeight = 0;
-                if (item.packetClassification?.classificationId) item.packetClassification = {
-                    classificationId: 6
+                if (item.packetClassification?.tagId) item.packetClassification = {
+                    tagId: 6
                 }
                 return item;
             });
@@ -145,8 +145,8 @@ const SlittingWidths = (props) => {
                 if (!item.actualLength && item.actualLength !== 0) item.actualLength  =  item.plannedLength;
                 if (!item.actualWidth && item.actualWidth !== 0) item.actualWidth  =  item.plannedWidth;
                 if (!item.actualWeight && item.actualWeight !== 0) item.actualWeight  =  item.plannedWeight;
-                if (!item.packetClassification?.classificationId) item.packetClassification = {
-                    classificationId: item.plannedWidth < 20 ? 2 : 6
+                if (!item.packetClassification?.tagId) item.packetClassification = {
+                    tagId: item.plannedWidth < 20 ? 2 : 6
                 }
                 return item;
             });
@@ -183,7 +183,7 @@ const SlittingWidths = (props) => {
             props.form.setFieldsValue({
                 length: obj.length
             });
-            setTagsName(obj.packetClassification.classificationId)
+            setTagsName(obj.packetClassification.tagId)
         }
     }
     // - function to apply same data for remaining equals parts
@@ -601,9 +601,20 @@ const columns = [
         title: 'Classification',
         dataIndex: 'packetClassification',
         render: (text, record, index) => {
-            return <Select disabled={props.unfinish} style={{width: '100%'}} value={record?.packetClassification?.classificationId} onChange={onInputChange("packetClassification", index, 'select')} >
-                {props.classificationList?.map(item => {
-                    return <Option value={item.classificationId}>{item.classificationName}</Option>
+            return <Select disabled={props.unfinish} style={{width: '100%'}} value={record?.packetClassification?.tagId} onChange={onInputChange("packetClassification", index, 'select')} >
+                {props.processTags?.map(item => {
+                    return <Option value={item.tagId}>{item.tagName}</Option>
+                })}
+            </Select>
+        }
+    },
+    {
+        title: 'End User Tags',
+        dataIndex: 'endUserTags',
+        render: (text, record, index) => {
+            return <Select disabled={props.unfinish} style={{width: '100%'}} value={record?.endUserTags?.tagId} onChange={onInputChange("packetClassification", index, 'select')} >
+                {props.endUserTags?.map(item => {
+                    return <Option value={item.tagId}>{item.tagName}</Option>
                 })}
             </Select>
         }
@@ -636,11 +647,22 @@ const columnsPlan=[
     },
     {
         title: 'Tags',
-        dataIndex: 'packetClassification.classificationName',
+        dataIndex: 'packetClassification.tagName',
         render: (text, record, index) => {
-            return  <Select style={{width: '100%'}} value={record?.packetClassification ? record?.packetClassification?.classificationName: record?.packetClassificationId} onChange={(e) =>handleTagsChange(record,e)} >
+            return  <Select style={{width: '100%'}} value={record?.packetClassification ? record?.packetClassification?.tagsName: record?.packetClassificationId} onChange={(e) =>handleTagsChange(record,e)} >
             {props?.coilDetails.party?.tags?.map(item => {
-                return <Option value={item.classificationId}>{item.classificationName}</Option>
+                return <Option value={item.tagId}>{item.tagName}</Option>
+            })}
+        </Select>
+        }
+    },
+    {
+        title: 'End User Tags',
+        dataIndex: 'endUserTags.tagsName',
+        render: (text, record, index) => {
+            return  <Select style={{width: '100%'}} value={record?.endUserTags ? record?.endUserTags?.tagsName: record?.packetClassificationId} onChange={(e) =>handleTagsChange(record,e)} >
+            {props?.coilDetails.party?.endUserTags?.map(item => {
+                return <Option value={item.tagId}>{item.tagName}</Option>
             })}
         </Select>
         }
@@ -802,7 +824,7 @@ const columnsPlan=[
   ) => {
     const newData = [...tableData];
     const newIndex = (page - 1) * 10 + index;
-    newData[newIndex][key] = type === 'select' ? { classificationId: Number(e) } : Number(e.target.value);
+    newData[newIndex][key] = type === 'select' ? { tagId: Number(e) } : Number(e.target.value);
     if (key === 'actualWeight') {
         const data = (e.target.value / ((newData[newIndex]['actualWidth'] / 1000) * 7.85 * props.coil.fThickness )) * 1000;
         newData[newIndex]['actualLength'] = Number.isInteger(data) ? data : data.toFixed(1);
@@ -888,7 +910,7 @@ const columnsPlan=[
             props.setShowSlittingModal(false)
         }
         else if (props.wip){ //
-            const isAllWip = tableData.every(item => item.packetClassification.classificationId === 6);
+            const isAllWip = tableData.every(item => item.packetClassification.tagId === 6);
             if (isAllWip) {
                 message.error('Unable to finish Instructions. All packets are classified as WIP');
             }
@@ -1164,7 +1186,7 @@ const columnsPlan=[
 const mapStateToProps = state => ({
     party: state.party,
     inward: state.inward,
-    classificationList: state.packetClassification?.classificationList
+    processTags: state.packetClassification?.processTags
 });
 
 const SlittingDetailsForm = Form.create({

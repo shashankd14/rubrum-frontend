@@ -125,9 +125,20 @@ const CreateCuttingDetailsForm = (props) => {
             title: 'Classification',
             dataIndex: 'packetClassification',
             render: (text, record, index) => {
-                return <Select disabled={props.unfinish} style={{width: '100%'}} value={record?.packetClassification?.classificationId} onChange={onInputChange("packetClassification", index, 'select')} >
-                    {props.classificationList?.map(item => {
-                        return <Option value={item.classificationId}>{item.classificationName}</Option>
+                return <Select disabled={props.unfinish} style={{width: '100%'}} value={record?.packetClassification?.tagId} onChange={onInputChange("packetClassification", index, 'select')} >
+                    {props.processTags?.map(item => {
+                        return <Option value={item.tagId}>{item.tagName}</Option>
+                    })}
+                </Select>
+            }
+        },
+        {
+            title: 'End User Tags',
+            dataIndex: 'endUserTags.tagName',
+            render: (text, record, index) => {
+                return <Select disabled={props.unfinish} style={{width: '100%'}} value={record?.endUserTags?.tagId} onChange={onInputChange("packetClassification", index, 'select')} >
+                    {props?.coilDetails.party?.endUserTags?.map(item => {
+                        return <Option value={item.tagId}>{item.tagName}</Option>
                     })}
                 </Select>
             }
@@ -160,11 +171,22 @@ const CreateCuttingDetailsForm = (props) => {
         },
         {
             title: 'Tags',
-            dataIndex: 'packetClassification.classificationName',
+            dataIndex: 'packetClassification.tagName',
             render: (text, record, index) => {
-                return  <Select style={{width: '100%'}} value={record?.packetClassification ? record?.packetClassification?.classificationName: record?.packetClassificationId} onChange={(e) =>handleTagsChange(record,e)} >
+                return  <Select style={{width: '100%'}} value={record?.packetClassification ? record?.packetClassification?.tagName: record?.packetClassificationId} onChange={(e) =>handleTagsChange(record,e)} >
                 {props?.coilDetails.party?.tags?.map(item => {
-                    return <Option value={item.classificationId}>{item.classificationName}</Option>
+                    return <Option value={item.tagId}>{item.tagName}</Option>
+                })}
+            </Select>
+            }
+        },
+        {
+            title: 'End User Tags',
+            dataIndex: 'endUserTags.tagName',
+            render: (text, record, index) => {
+                return  <Select style={{width: '100%'}} value={record?.endUserTags ? record?.endUserTags?.tagName: record?.packetClassificationId} onChange={(e) =>handleTagsChange(record,e)} >
+                {props?.coilDetails.party?.endUserTags?.map(item => {
+                    return <Option value={item.tagId}>{item.tagName}</Option>
                 })}
             </Select>
             }
@@ -264,7 +286,15 @@ const CreateCuttingDetailsForm = (props) => {
         },
         {
             title: 'Tags',
-            dataIndex: 'packetClassification.classificationName',
+            dataIndex: 'packetClassification.tagName',
+            render (value) {
+                return value || ""
+            },
+           
+        },
+        {
+            title: 'End User Tags',
+            dataIndex: 'endUserTags.tagName',
             render (value) {
                 return value || ""
             },
@@ -280,7 +310,7 @@ const CreateCuttingDetailsForm = (props) => {
                 no:record.plannedNoOfPieces ,
                 weight:record.plannedWeight,
             });
-            setTagsName(record?.packetClassification?.classificationId)
+            setTagsName(record?.packetClassification?.tagId)
     };
     const handleTagsChange=(record,e)=>{
          setTagsName(e)
@@ -514,8 +544,8 @@ const CreateCuttingDetailsForm = (props) => {
                 item.actualLength = 0;
                 item.actualNoOfPieces = 0;
                 item.actualWeight = 0;
-                if (item.packetClassification?.classificationId) item.packetClassification = {
-                    classificationId: 6
+                if (item.packetClassification?.tagId) item.packetClassification = {
+                    tagId: 6
                 }
                 return item;
             });
@@ -526,8 +556,8 @@ const CreateCuttingDetailsForm = (props) => {
                 if (!item.actualNoOfPieces && item.actualNoOfPieces !== 0) item.actualNoOfPieces  =  item.plannedNoOfPieces;
                 if (!item.actualLength && item.actualLength !== 0) item.actualLength  =  item.plannedLength;
                 if (!item.actualWeight && item.actualWeight !== 0) item.actualWeight  =  item.plannedWeight;
-                if (!item.packetClassification?.classificationId) item.packetClassification = {
-                    classificationId: 6
+                if (!item.packetClassification?.tagId) item.packetClassification = {
+                    tagId: 6
                 }
                 return item;
             });
@@ -591,7 +621,7 @@ const CreateCuttingDetailsForm = (props) => {
     const onInputChange = (key, index, type) => (e: React.ChangeEvent<HTMLInputElement>) => {
         const newData = [...tableData];
         const newIndex = (page - 1) * 10 + index;
-        newData[newIndex][key] = type === 'select' ? { classificationId: Number(e) } : Number(e.target.value);
+        newData[newIndex][key] = type === 'select' ? { tagId: Number(e) } : Number(e.target.value);
         setTableData(newData);
     };
     const handleChange = (e) =>{
@@ -753,7 +783,7 @@ const CreateCuttingDetailsForm = (props) => {
             props.setShowCuttingModal(false);
         }
         else if(props.wip){
-            const isAllWip = tableData.every(item => item.packetClassification.classificationId === 6);
+            const isAllWip = tableData.every(item => item.packetClassification.tagId === 6);
             if (isAllWip) {
                 message.error('Unable to finish Instructions. All packets are classified as WIP');
             }
@@ -1074,7 +1104,7 @@ const CreateCuttingDetailsForm = (props) => {
 const mapStateToProps = state => ({
     party: state.party,
     inward: state.inward,
-    classificationList: state.packetClassification?.classificationList,
+    processTags: state.packetClassification?.processTags,
     saveCut: state.saveCut,
     groupId: state.groupId
 });

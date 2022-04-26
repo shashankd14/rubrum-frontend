@@ -57,7 +57,7 @@ function* addParty(action) {
             city,
             state,
             pincode,
-            phone,tags
+            phone,tags,endUsertags
         } = action.party;
 
         const getEmail = (mail) => {
@@ -91,6 +91,9 @@ function* addParty(action) {
         const getTags=()=>{
             return tags.map(classificationId => ({classificationId}))
         }
+        const getEndUserTags=()=>{
+            return endUsertags.map(tagId => ({tagId}))
+        }
         const reqBody = {
             partyName,
             partyNickname,
@@ -102,7 +105,8 @@ function* addParty(action) {
             tags:getTags(),
             ...getEmail(email),
             ...getAddress(addressKeys),
-            ...getPhone(phone)
+            ...getPhone(phone), 
+            endUserTags: getEndUserTags(),
         }
         const addParty = yield fetch(`${baseUrl}api/party/save`, {
             method: 'POST',
@@ -137,7 +141,8 @@ function* updateParty(action) {
                 state,
                 pincode,
                 phone,
-                tags
+                tags,
+                endUsertags
             },
             id
         } = action.party;
@@ -173,6 +178,9 @@ function* updateParty(action) {
         const getTags=()=>{
             return tags.map(classificationId => ({classificationId}))
         }
+        const getEndUserTags=()=>{
+            return endUsertags.map(tagId => ({tagId}))
+        }
 
         const reqBody = {
             partyId: id,
@@ -184,6 +192,7 @@ function* updateParty(action) {
             panNumber,
             tanNumber,
             tags:getTags(),
+            endUserTags:getEndUserTags(),
             ...getEmail(email),
             ...getAddress(addressKeys),
             ...getPhone(phone)
