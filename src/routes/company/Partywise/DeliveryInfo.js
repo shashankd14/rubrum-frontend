@@ -112,6 +112,11 @@ const DeliveryInfo = (props) => {
                       Rate -{elem?.rateId}
                     </p>
                   </div>
+                  <div>
+                    <p style={{ marginLeft: "5px", marginTop: "10px" }}>
+                      Tags -{elem?.packetClassification?.classificationName}
+                    </p>
+                  </div>
                   <div style={{ marginLeft: "3px", marginTop: "10px" }}>
                     <Popover
                       content={
@@ -129,6 +134,7 @@ const DeliveryInfo = (props) => {
                       <InfoCircleOutlined />
                     </Popover>
                   </div>
+                  
                   <div style={{ marginLeft: "20px" }}>
                     <Input
                       placeholder="Remarks"
