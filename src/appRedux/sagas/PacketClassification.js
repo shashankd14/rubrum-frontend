@@ -1,12 +1,12 @@
 import {all, put, fork, takeLatest} from "redux-saga/effects";
-import {FETCH_CLASSIFICATION_LIST_REQUEST, ADD_PROCESSTAGS_REQUEST, ADD_ENDUSERTAGS_REQUEST, FETCH_TAGS_LIST_BY_ID_REQUEST, FETCH_ENDUSERTAGS_LIST_REQUEST,DELETE_TAGS_BY_ID_REQUEST} from "../../constants/ActionTypes";
+import {FETCH_CLASSIFICATION_LIST_REQUEST, ADD_PROCESSTAGS_REQUEST, ADD_ENDUSERTAGS_REQUEST, FETCH_TAGS_LIST_BY_ID_REQUEST, FETCH_ENDUSERTAGS_LIST_REQUEST,DELETE_TAGS_BY_ID_REQUEST, UPDATE_TAGS_REQUEST} from "../../constants/ActionTypes";
 import {fetchClassificationListSuccess, 
     fetchClassificationListError, 
     addEndUserTagsError,
     addEndUserTagsSuccess,
     addProccessTagsError,
     addProccessTagsSuccess, fetchTagsListIdError, fetchTagsListIdSuccess,
-fetchEndUserTagsSuccess, fetchEndUserTagsError, deleteTagsListIdError, deleteTagsListIdSuccess} from "../actions";
+fetchEndUserTagsSuccess, fetchEndUserTagsError, deleteTagsListIdError, deleteTagsListIdSuccess,updateTagsSuccess,updateTagsError} from "../actions";
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
 
@@ -99,6 +99,22 @@ function* deleteTagById(action) {
         yield put(deleteTagsListIdError(error));
     }
 }
+function* updateTags(action) {
+    try {
+        const updateTags = yield fetch(`${baseUrl}api/${action?.payload?.type}/update`, {
+            method: 'PUT',
+            headers: { "Content-Type": "application/json" },
+            body:JSON.stringify(action.payload?.tagsBody)
+            
+        });
+        if (updateTags.status == 200) {
+            yield put(updateTagsSuccess());
+        } else
+            yield put(updateTagsError('error'));
+    } catch (error) {
+        yield put(updateTagsError(error));
+    }
+}
 export function* watchFetchRequests() {
     yield takeLatest(FETCH_CLASSIFICATION_LIST_REQUEST, fetchClassificationList);
     yield takeLatest(ADD_PROCESSTAGS_REQUEST, addProccessTags);
@@ -106,6 +122,7 @@ export function* watchFetchRequests() {
     yield takeLatest(FETCH_TAGS_LIST_BY_ID_REQUEST, fetchTagsListById);
     yield takeLatest(FETCH_ENDUSERTAGS_LIST_REQUEST, fetchEndUserTagsList);
     yield takeLatest(DELETE_TAGS_BY_ID_REQUEST, deleteTagById);
+    yield takeLatest(UPDATE_TAGS_REQUEST, updateTags);
 }
 
 export default function* packetClassification() {

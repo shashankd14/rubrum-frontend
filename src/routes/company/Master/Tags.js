@@ -5,7 +5,7 @@ import moment from 'moment';
 import SearchBox from "../../../components/SearchBox";
 
 import IntlMessages from "../../../util/IntlMessages";
-import { fetchClassificationList,addProccessTags,addEndUserTags,fetchTagsListById,deleteTagById, fetchEndUserTagsList, resetTagsState} from "../../../appRedux/actions";
+import { fetchClassificationList,addProccessTags,addEndUserTags,fetchTagsListById,deleteTagById, fetchEndUserTagsList, resetTagsState,updateTags} from "../../../appRedux/actions";
 
 const Option = Select.Option;
 
@@ -34,24 +34,27 @@ const Tags = (props) => {
     const [showAddTags, setShowAddTags] = useState(false);
     const [tagsList, setTagsList] =useState(tabKey === "1"? props?.processTags: props?.endUserTags)
     const { getFieldDecorator } = props.form;
-    const [tagsDeleted, setTagsDeleted] = useState(props?.tagsDeleteSuccess)
+    const [tagsDeleted, setTagsDeleted] = useState(props?.tagsDeleteSuccess);
+    const [tagId, setTagId]= useState("")
+    const [showEditTags, setShowEditTags] = useState(false);
+    const [editFlag, setEditFlag]= useState(false);
     
 
     const columns = [{
         title: 'Tag Id',
-        dataIndex: 'classificationId',
-        key: 'classificationId',
+        dataIndex: 'tagId',
+        key: 'tagId',
         filters: [],
         render: (text, record) => {
-            return record?.classificationId || record?.tagId
+            return record?.tagId
         }
     },{
         title: 'Tag Name',
-        dataIndex: 'classificationName',
-        key: 'classificationName',
+        dataIndex: 'tagName',
+        key: 'tagName',
         filters: [],
         render: (text, record) => {
-            return record?.classificationName || record?.tagName
+            return record?.tagName
         }
     },
     {
@@ -71,15 +74,12 @@ const Tags = (props) => {
         e.preventDefault();
         const {form} = props;
         form.setFieldsValue({
-                tagName:record?.tagName || record?.classificationName
-            });
-            const payload={
-                tagId: tabKey ==="1"? record?.classificationId: record?.tagId,
-                type: tabKey ==="1"?"packetClassification":"endusertags"
-            }
-        props.fetchTagsListById(payload);   
+            tagName: record?.tagName
+        });
+        setTagId(record?.tagId)
+        //  setShowAddTags(true)
         setTimeout(() => {
-            setShowAddTags(true) 
+            setShowEditTags(true) 
         }, 1000);
     }
     const onDelete = (e,record)=>{
@@ -91,16 +91,32 @@ const Tags = (props) => {
          props.deleteTagById(payload);   
         
     }
-    const addTags=()=> {
-        props.form.validateFields((err, values) => {
+    const addTags=(e)=> {
+        e.preventDefault();
+        if(showEditTags){
+            props.form.validateFields((err, values) => {
             if (!err) {
-                let payload=[];
-                payload.push(values)
-             tabKey==="1"?props.addProccessTags(payload): props.addEndUserTags(payload);
-
-              setShowAddTags(false);
-            }
-        });
+              
+               const payload={
+                type: tabKey ==="1"?"packetClassification":"endusertags",
+                tagsBody:{...values,tagId: tagId}
+               }
+                props.updateTags(payload);
+                setShowEditTags(false)
+                }
+            });
+        }else{
+            props.form.validateFields((err, values) => {
+                if (!err) {
+                    let payload=[];
+                    payload.push(values)
+                 tabKey==="1"?props.addProccessTags(payload): props.addEndUserTags(payload);
+    
+                  setShowAddTags(false);
+                }
+            });
+        }
+        
     }
    
 useEffect(()=>{
@@ -109,7 +125,7 @@ useEffect(()=>{
         props.fetchEndUserTagsList();
     }, 1000);
    
-},[showAddTags, tagsDeleted])
+},[showAddTags, tagsDeleted, editFlag])
 useEffect(()=>{
     setTagsList(tabKey ==="1"? props?.processTags: props?.endUserTags)
 },[props?.processTags, props?.endUserTags, tabKey])
@@ -123,6 +139,16 @@ useEffect(()=>{
 });
 }
 },[props?.tagsDeleteSuccess])
+useEffect(()=>{
+    if(props?.tagsEditSuccess) {
+        setEditFlag(props?.packetClassification?.tagsEditSuccess)
+        message.success('Tags Updates Successfully', 2).then(() => {
+        setTimeout(() => {
+            props.resetTagsState();
+        }, 1000);
+});
+}
+},[props?.tagsEditSuccess])
  const handleChange = (pagination, filters, sorter) => {
         setSortedInfo(sorter);
         // setFilteredInfo(filters)
@@ -160,12 +186,13 @@ useEffect(()=>{
 
                 <Modal
                     title='Add Tags'
-                    visible={showAddTags}
+                    visible={showAddTags || showEditTags}
                     onOk={addTags}
                     width={600}
                     onCancel={() => {
                         props.form.resetFields();
                         setShowAddTags(false);
+                        setShowEditTags(false)
                     }}
                 >
                     <Card className="gx-card">
@@ -198,12 +225,13 @@ useEffect(()=>{
 
                 <Modal
                     title='Add Tags'
-                    visible={showAddTags}
+                    visible={showAddTags || showEditTags}
                     onOk={addTags}
                     width={600}
                     onCancel={() => {
                         props.form.resetFields();
                         setShowAddTags(false);
+                        setShowEditTags(false)
                         // setEditRates(false)
                     }}
                 >
@@ -235,7 +263,8 @@ useEffect(()=>{
 const mapStateToProps = state => ({
     processTags: state.packetClassification?.processTags,
     endUserTags: state.packetClassification?.endUserTags,
-    tagsDeleteSuccess: state.packetClassification?.tagsDeleteSuccess
+    tagsDeleteSuccess: state.packetClassification?.tagsDeleteSuccess,
+    tagsEditSuccess: state.packetClassification?.tagsEditSuccess
 });
 
 const addTagsForm = Form.create({
@@ -257,5 +286,6 @@ export default connect(mapStateToProps, {
     fetchTagsListById,
     fetchEndUserTagsList,
     deleteTagById,
-    resetTagsState
+    resetTagsState,
+    updateTags
 })(addTagsForm);
