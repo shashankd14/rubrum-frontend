@@ -17,7 +17,10 @@ FETCH_ENDUSERTAGS_LIST_REQUEST,
 DELETE_TAGS_BY_ID_REQUEST,
 DELETE_TAGS_BY_ID_ERROR,
 DELETE_TAGS_BY_ID_SUCCESS,
-RESET_TAGS_STATE
+RESET_TAGS_STATE,
+UPDATE_TAGS_ERROR,
+UPDATE_TAGS_REQUEST,
+UPDATE_TAGS_SUCCESS
 } from "../../constants/ActionTypes";
 
 const INIT_STATE = {
@@ -27,7 +30,9 @@ const INIT_STATE = {
     tags:{},
     endUserTags:[],
     tagsDeleteError: false,
-    tagsDeleteSuccess: false
+    tagsDeleteSuccess: false,
+    tagsEditSuccess: false
+
 };
 
 export default (state = INIT_STATE, action) => {
@@ -155,9 +160,36 @@ export default (state = INIT_STATE, action) => {
             return {
                 ...state,
                 tagsDeleteSuccess: false,
-                tagsDeleteError: false
+                tagsDeleteError: false,
+                tagsEditSuccess: false
             }
         }
+        case UPDATE_TAGS_REQUEST: {
+            return {
+                ...state,
+                loading: true,
+                tagsEditSuccess: false
+
+            }
+        }
+        case UPDATE_TAGS_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                tagsEditSuccess: true
+
+            }
+        }
+        case UPDATE_TAGS_ERROR: {
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                tagsEditSuccess: false
+
+            }
+        }
+        
         default:
             return state;
     }

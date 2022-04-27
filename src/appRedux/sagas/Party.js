@@ -89,7 +89,7 @@ function* addParty(action) {
             return addressObj;
         }
         const getTags=()=>{
-            return tags.map(classificationId => ({classificationId}))
+            return tags.map(tagId => ({tagId}))
         }
         const getEndUserTags=()=>{
             return endUsertags.map(tagId => ({tagId}))
@@ -176,7 +176,7 @@ function* updateParty(action) {
             return addressObj;
         }
         const getTags=()=>{
-            return tags.map(classificationId => ({classificationId}))
+            return tags.map(tagId => ({tagId}))
         }
         const getEndUserTags=()=>{
             return endUsertags.map(tagId => ({tagId}))

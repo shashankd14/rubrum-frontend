@@ -16,7 +16,10 @@ FETCH_ENDUSERTAGS_LIST_ERROR,
 DELETE_TAGS_BY_ID_REQUEST,
 DELETE_TAGS_BY_ID_SUCCESS,
 DELETE_TAGS_BY_ID_ERROR,
-RESET_TAGS_STATE} from "../../constants/ActionTypes";
+RESET_TAGS_STATE,
+UPDATE_TAGS_ERROR,
+UPDATE_TAGS_REQUEST,
+UPDATE_TAGS_SUCCESS} from "../../constants/ActionTypes";
 
 export const fetchClassificationList = () => ({
     type: FETCH_CLASSIFICATION_LIST_REQUEST,
@@ -102,3 +105,17 @@ export const deleteTagsListIdError = (error) => ({
 export const resetTagsState = () => ({
     type: RESET_TAGS_STATE,
 })
+export const updateTags = (payload) => ({
+    type: UPDATE_TAGS_REQUEST,
+    payload
+});
+
+export const updateTagsSuccess = () => ({
+    type: UPDATE_TAGS_SUCCESS
+    
+});
+
+export const updateTagsError = (error) => ({
+    type: UPDATE_TAGS_ERROR,
+    error
+});
