@@ -85,7 +85,7 @@ const Tags = (props) => {
     const onDelete = (e,record)=>{
         e.preventDefault();
             const payload={
-                tagId: tabKey ==="1"? record?.classificationId: record?.tagId,
+                tagId: record?.tagId,
                 type: tabKey ==="1"?"packetClassification":"endusertags"
             }
          props.deleteTagById(payload);   
