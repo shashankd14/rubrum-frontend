@@ -419,13 +419,13 @@ function* requestUpdateInstruction(action) {
             packingWeight: item.packingWeight ? item.packingWeight : 0,
             createdBy: item.createdBy ? item.createdBy : 1,
             updatedBy: item.updatedBy ? item.updatedBy : 1,
-            packetClassificationId: item.packetClassification?.classificationId || ''
+            packetClassificationId: item.packetClassification?.classificationId || '',
         }
         return insObj;
     });
     const filteredData = ins.filter(each => each.packetClassificationId !== 6);
     const req = {
-        isFinishTask: unfinish ? false : true,
+        taskType: unfinish ? "FGtoWIP" :"WIPtoFG",
         instructionDtos: unfinish ? ins : filteredData
     }
     try {
