@@ -117,6 +117,11 @@ const DeliveryInfo = (props) => {
                       Tags -{elem?.packetClassification?.classificationName}
                     </p>
                   </div>
+                  <div>
+                    <p style={{ marginLeft: "5px", marginTop: "10px" }}>
+                      End User Tags -{elem?.endUserTagsentity?.tagName}
+                    </p>
+                  </div>
                   <div style={{ marginLeft: "3px", marginTop: "10px" }}>
                     <Popover
                       content={

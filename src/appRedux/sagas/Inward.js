@@ -420,6 +420,7 @@ function* requestUpdateInstruction(action) {
             createdBy: item.createdBy ? item.createdBy : 1,
             updatedBy: item.updatedBy ? item.updatedBy : 1,
             packetClassificationId: item.packetClassification?.classificationId || '',
+            endUserTagId:item?.endUserTagsentity?.tagId || ""
         }
         return insObj;
     });
