@@ -252,7 +252,8 @@ const SlittingWidths = (props) => {
                             inwardId: props.coilDetails.inwardEntryId ? props.coilDetails.inwardEntryId : '',
                             parentInstructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : '',
                             deleteUniqId: unsavedDeleteId,
-                            packetClassificationId: null
+                            packetClassificationId: null,
+                            endUserTagId: null
                            
                         }
                         slits.push(slitValue);
@@ -601,7 +602,7 @@ const columns = [
         title: 'Classification',
         dataIndex: 'packetClassification',
         render: (text, record, index) => {
-            return <Select disabled={props.unfinish} style={{width: '100%'}} value={record?.packetClassification?.tagId} onChange={onInputChange("packetClassification", index, 'select')} >
+            return <Select disabled={props.unfinish} style={{width: '100%'}} value={record?.packetClassification?.tagId || record?.packetClassification?.classificationId} onChange={onInputChange("packetClassification", index, 'select')} >
                 {props.processTags?.map(item => {
                     return <Option value={item.tagId}>{item.tagName}</Option>
                 })}
@@ -610,10 +611,10 @@ const columns = [
     },
     {
         title: 'End User Tags',
-        dataIndex: 'endUserTags',
+        dataIndex: 'party.endUserTags',
         render: (text, record, index) => {
-            return <Select disabled={props.unfinish} style={{width: '100%'}} value={record?.endUserTags?.tagId} onChange={onInputChange("packetClassification", index, 'select')} >
-                {props.endUserTags?.map(item => {
+            return <Select disabled={props.unfinish} style={{width: '100%'}} value={record?.endUserTagsentity?.tagId} onChange={onInputChange("endUserTagsentity", index, 'select')} >
+                {props.coilDetails.party.endUserTags?.map(item => {
                     return <Option value={item.tagId}>{item.tagName}</Option>
                 })}
             </Select>
@@ -649,7 +650,7 @@ const columnsPlan=[
         title: 'Tags',
         dataIndex: 'packetClassification.tagName',
         render: (text, record, index) => {
-            return  <Select style={{width: '100%'}} value={record?.packetClassification ? record?.packetClassification?.tagsName: record?.packetClassificationId} onChange={(e) =>handleTagsChange(record,e)} >
+            return  <Select style={{width: '100%'}} value={record?.packetClassification ? record?.packetClassification?.classificationName: record?.packetClassificationId} onChange={(e) =>handleTagsChange(record,e)} >
             {props?.coilDetails.party?.tags?.map(item => {
                 return <Option value={item.tagId}>{item.tagName}</Option>
             })}
@@ -660,7 +661,7 @@ const columnsPlan=[
         title: 'End User Tags',
         dataIndex: 'endUserTags.tagsName',
         render: (text, record, index) => {
-            return  <Select style={{width: '100%'}} value={record?.endUserTags ? record?.endUserTags?.tagsName: record?.packetClassificationId} onChange={(e) =>handleTagsChange(record,e)} >
+            return  <Select style={{width: '100%'}} value={record?.endUserTagsentity ? record?.endUserTagsentity?.tagName: record?.endUserTagId} onChange={(e) =>handleTagsChange(record,e,"endUser")} >
             {props?.coilDetails.party?.endUserTags?.map(item => {
                 return <Option value={item.tagId}>{item.tagName}</Option>
             })}
@@ -815,16 +816,20 @@ const columnsPlan=[
  }, [props.coilDetails]);
 
 
- const handleTagsChange=(record,e)=>{
+ const handleTagsChange=(record,e,type="")=>{
      setTagsName(e)
-     record.packetClassificationId= e
+     if(type==="endUser"){
+        record.endUserTagId=e
+     }else{
+        record.packetClassificationId= e
+     }
 }
   const onInputChange = (key, index, type) => (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const newData = [...tableData];
     const newIndex = (page - 1) * 10 + index;
-    newData[newIndex][key] = type === 'select' ? { tagId: Number(e) } : Number(e.target.value);
+    newData[newIndex][key] = type === 'select' ? key==="endUserTagsentity"?{tagId: Number(e)}: {classificationId: Number(e) } : Number(e.target.value);
     if (key === 'actualWeight') {
         const data = (e.target.value / ((newData[newIndex]['actualWidth'] / 1000) * 7.85 * props.coil.fThickness )) * 1000;
         newData[newIndex]['actualLength'] = Number.isInteger(data) ? data : data.toFixed(1);
