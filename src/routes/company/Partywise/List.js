@@ -21,7 +21,8 @@ const List = (props) => {
     const [filteredInfo, setFilteredInfo] = useState(null);
     const [searchValue, setSearchValue] = useState('');
     const [customerValue, setCustomerValue] = useState('');
-    let filter = props.inward.inwardList.map(item =>{
+    const { inwardList, totalItems } = props.inward;
+    let filter = inwardList.map(item =>{
         if(item.instruction.length>0){
             item.children= item.instruction.filter(ins => ins.groupId === null)
          }
@@ -33,14 +34,16 @@ const List = (props) => {
     const [selectedCBKeys, setSelectedCBKeys] = React.useState([]);
     const [selectedRowData, setSelectedRowData] = React.useState([]);
 
+    const [pageNo, setPageNo] = React.useState(1);
+    const [totalPageItems, setTotalItems] = React.useState(0);
+
     const columns = [{
         title: 'Coil Number',
         dataIndex: 'coilNumber',
         key: 'coilNumber',
         filters: [],
         sorter: (a, b) => a.coilNumber?.length - b.coilNumber?.length,
-        sortOrder: sortedInfo.columnKey === 'coilNumber' && sortedInfo.order,
-        ellipsis: true
+        sortOrder: sortedInfo.columnKey === 'coilNumber' && sortedInfo.order
     },
     {
         title: 'Customer Batch No',
@@ -70,7 +73,7 @@ const List = (props) => {
         key: 'material.description',
         filteredValue: filteredInfo ? filteredInfo["material.description"] : null,
         onFilter: (value, record) => record.material?.description == value,
-        filters: props.inward.inwardList.length > 0 ? [...new Set(props.inward.inwardList.map(item => item.material?.description))].map(material => ({ text: material, value: material })) : [],
+        filters: inwardList.length > 0 ? [...new Set(inwardList.map(item => item.material?.description))].map(material => ({ text: material, value: material })) : [],
         sorter: (a, b) => a.material?.description.length - b.material?.description.length,
         sortOrder: sortedInfo.columnKey === 'material.description' && sortedInfo.order,
     },
@@ -169,8 +172,13 @@ const List = (props) => {
     
     useEffect(() => {
         props.fetchPartyList();
-        props.fetchInwardList();
     }, []);
+
+    useEffect(() => {
+        if(totalItems) {
+            setTotalItems(totalItems);
+        }
+    }, [totalItems]);
    
 const getFilterData=(list)=>{
     let filter = list.map(item =>{
@@ -183,25 +191,19 @@ const getFilterData=(list)=>{
 }
     useEffect(() => {
         if(!props.inward.loading && props.inward.success) {
-            setFilteredInwardList(getFilterData(props.inward.inwardList));
+            setFilteredInwardList(getFilterData(inwardList));
         }
     }, [props.inward.loading, props.inward.success])
 
     useEffect(() => {
         if (searchValue) {
-            const filteredData = props.inward.inwardList.filter((inward) => {
-                if (inward.coilNumber.toLowerCase().includes(searchValue.toLowerCase()) ||
-                    inward.party.partyName.toLowerCase().includes(searchValue.toLowerCase()) ||
-                    inward.customerBatchId?.toLowerCase().includes(searchValue?.toLowerCase()) ||
-                    inward.inStockWeight === Number(searchValue) ||
-                    inward.vInvoiceNo.toLowerCase().includes(searchValue.toLowerCase())) {
-                    return inward
-                }
-            });
-            
-            setFilteredInwardList(getFilterData(filteredData));
+            if(searchValue.length >= 3) {
+                setPageNo(1);
+                props.fetchInwardList(1, 15, searchValue)
+            }
         } else {
-            setFilteredInwardList(getFilterData(props.inward.inwardList));
+            setPageNo(1);
+            props.fetchInwardList(1, 15, searchValue)
         }
     }, [searchValue])
 
@@ -214,7 +216,8 @@ const getFilterData=(list)=>{
         setCustomerValue('');
         setFilteredInfo(null);
         setSearchValue('');
-        setFilteredInwardList(props.inward.inwardList);
+        setPageNo(1);
+        props.fetchInwardList(1, 15)
     };
 
     const clearAll = () => {
@@ -228,12 +231,12 @@ const getFilterData=(list)=>{
 
     const handleCustomerChange = (value) => {
         if (value) {
-            const filteredData = props.inward.inwardList.filter((inward) =>inward.party.nPartyId===value);
-            setFilteredInwardList(filteredData);
-            setCustomerValue(value);
+            // const filteredData = inwardList.filter((inward) =>inward.party.nPartyId===value);
+            // setFilteredInwardList(filteredData);
+            // setCustomerValue(value);
         } else {
-            setCustomerValue('');
-            setFilteredInwardList(props.inward.inwardList);
+            // setCustomerValue('');
+            // setFilteredInwardList(inwardList);
         }
       
     }
@@ -367,6 +370,15 @@ const getFilterData=(list)=>{
                         };
                         const result = expanded ? expandedRow : expandedRow.filter(row => row.key !== record.key);
                         setExpandedRecord([...result, motherRecord])
+                    }}
+                    pagination={{
+                        pageSize: 15,
+                        onChange: page => {
+                            setPageNo(page);
+                            props.fetchInwardList(page, 15, searchValue);
+                        },
+                        current: pageNo,
+                        total: totalPageItems
                     }}
                 />
             </Card>

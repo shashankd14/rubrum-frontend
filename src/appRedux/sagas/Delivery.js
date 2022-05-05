@@ -5,13 +5,14 @@ import {FETCH_DELIVERY_LIST_REQUEST, FETCH_DELIVERY_LIST_REQUEST_BY_ID, DELETE_D
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
 
-function* fetchDeliveryList() {
+function* fetchDeliveryList({ page = 1, pageSize = 15, searchValue = '' }) {
     try {
-        const fetchDeliveryList =  yield fetch(`${baseUrl}api/delivery/list`, {
+        const fetchDeliveryList =  yield fetch(`${baseUrl}api/delivery/list/${page}/${pageSize}?searchText=${searchValue}`, {
             method: 'GET',
         });
         if(fetchDeliveryList.status === 200) {
             const fetchDeliveryListResponse = yield fetchDeliveryList.json();
+            console.log(fetchDeliveryListResponse);
             yield put(fetchDeliveryListSuccess(fetchDeliveryListResponse));
         } else
             yield put(fetchDeliveryListError('error'));
