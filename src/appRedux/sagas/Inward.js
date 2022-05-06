@@ -76,16 +76,17 @@ import { formItemLayout } from "../../routes/company/Partywise/CuttingModal";
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
 
-function* fetchInwardList() {
+function* fetchInwardList({ page = 1, pageSize = 15, searchValue = '' }) {
     try {
-        const fetchInwardList = yield fetch(`${baseUrl}api/inwardEntry/list`, {
+        const fetchInwardList = yield fetch(`${baseUrl}api/inwardEntry/list/${page}/${pageSize}?searchText=${searchValue}`, {
             method: 'GET',
         });
         if (fetchInwardList.status === 200) {
             const fetchInwardListResponse = yield fetchInwardList.json();
             const inwardResponse = [];
-            if (fetchInwardListResponse.length > 0) {
-                fetchInwardListResponse.map((inward) => {
+            const { content, totalItems } = fetchInwardListResponse;
+            if (content.length > 0) {
+                content.map((inward) => {
                     let eachInward = { ...inward };
                     eachInward.key = inward.coilNumber;
                     if (inward.instruction.length > 0) {
@@ -111,7 +112,7 @@ function* fetchInwardList() {
                     inwardResponse.push(eachInward);
                 });
             }
-            yield put(fetchInwardListSuccess(inwardResponse));
+            yield put(fetchInwardListSuccess(inwardResponse, totalItems));
         } else
             yield put(fetchInwardListError('error'));
     } catch (error) {

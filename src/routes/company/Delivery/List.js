@@ -14,11 +14,17 @@ function List(props) {
         columnKey: 'age',
     });
 
+    const { totalItems } = props.delivery;
+
     const [filteredInfo, setFilteredInfo] = useState(null);
     const [searchValue, setSearchValue] = useState('');
     const [deliveryList, setDeliveryList] = useState(props.delivery.deliveryList)
     const [reconcileModal, setreconcileModal] = useState(false);
     const [deliveryRecord, setDeliveryRecord] = useState();
+
+    const [pageNo, setPageNo] = React.useState(1);
+    const [totalPageItems, setTotalItems] = React.useState(0);
+
     const columns = [
     {
         title: 'Delivery Chalan Number',
@@ -92,7 +98,7 @@ function List(props) {
     useEffect(() => {
         if(props.delivery.deleteSuccess) {
             message.success('Successfully deleted the coil', 2).then(() => {
-                props.fetchDeliveryList();
+                props.fetchDeliveryList(pageNo, 15);
                 props.resetDeleteInward();
                 
             });
@@ -116,23 +122,27 @@ function List(props) {
         setDeliveryList(newData);
     };
     useEffect(() => {
-        props.fetchDeliveryList();
         props.fetchPartyList();
     }, [])
+
+    useEffect(() => {
+        if(totalItems) {
+            setTotalItems(totalItems);
+        }
+    }, [totalItems]);
+
     useEffect(() => {
         if (searchValue) {
-            const filteredData = props.delivery.deliveryList.filter((deliveryEntry) => {
-                if (deliveryEntry?.coilNumber.includes(searchValue) ||
-                    deliveryEntry?.partyName?.toLowerCase().includes(searchValue.toLowerCase()) ||
-                    deliveryEntry?.customerBatchId?.toLowerCase().includes(searchValue.toLowerCase())) {
-                    return deliveryEntry
-                }
-            });
-            setDeliveryList(filteredData);
+            if(searchValue.length >= 3) {
+                setPageNo(1);
+                props.fetchDeliveryList(1, 15, searchValue)
+            }
         } else {
-            setDeliveryList(props.delivery.deliveryList);
+            setPageNo(1);
+            props.fetchDeliveryList(1, 15, searchValue)
         }
     }, [searchValue])
+
     const handleChange = (pagination, filters, sorter) => {
         console.log('params', pagination, filters, sorter);
     };
@@ -175,11 +185,20 @@ function List(props) {
                    </div>
                    
                 <Table
-                rowSelection={[]}
-                   className="gx-table-responsive"
-                   columns={columns}
-                   dataSource={deliveryList}
-                   onChange={handleChange}
+                    rowSelection={[]}
+                    className="gx-table-responsive"
+                    columns={columns}
+                    dataSource={deliveryList}
+                    onChange={handleChange}
+                    pagination={{
+                        pageSize: 15,
+                        onChange: page => {
+                            setPageNo(page);
+                            props.fetchDeliveryList(page, 15, searchValue)
+                        },
+                        current: pageNo,
+                        total: totalPageItems
+                    }}
             />
         </Card>
         </div>

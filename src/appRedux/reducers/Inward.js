@@ -80,6 +80,7 @@ import {
 
 const INIT_STATE = {
     inwardList: [],
+    totalItems: 0,
     loading: false,
     success: false,
     error: false,
@@ -135,6 +136,7 @@ export default (state = INIT_STATE, action) => {
                 ...state,
                 loading: false,
                 inwardList: action.inwardList,
+                totalItems: action.totalItems,
                 success: true
             }
         }
