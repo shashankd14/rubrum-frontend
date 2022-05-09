@@ -209,7 +209,11 @@ const Plan = (props) => {
                 width={400}
                 onOk={() => {
                     setTimeout(() => {
-                        props.saveUnprocessedDelivery(props.inward.plan.inwardEntryId);
+                        let payload={
+                            inwardEntryId:props.inward.plan.inwardEntryId,
+                            motherCoilDispatch:""
+                        }
+                        props.saveUnprocessedDelivery(payload);
                         setUnprocessedOkClick(true);
                         setshowUnprocessedModal(false);
                     }, 1000)
