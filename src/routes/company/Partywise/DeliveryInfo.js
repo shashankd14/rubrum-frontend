@@ -9,17 +9,21 @@ const DeliveryInfo = (props) => {
   const [vehicleNo, setVehicleNo] = useState("");
   const [remarksList, setRemarksList] = useState([]);
   const [instructionList, setInstructionList]= useState([]);
+  const [fullHandling, setFullHandling] = useState(false);
   useEffect(()=>{
     let insList = props.inward.inwardListForDelivery?.map(i => {
-      return i.instruction || i;
+      setFullHandling(true)
+      return i.instruction.length ?i.instruction: i;
     });
     insList = insList?.flat();
     setInstructionList(insList?.map(item => item.instructionId));
   },[]);
   useEffect(()=>{
     if(props.inward.deliverySuccess){
+      let insList = []
+      insList.push(props.inward?.unprocessedSuccess?.instructionId)
       const pdfPayload ={
-        instructionIds: instructionList
+        instructionIds: fullHandling ?insList :instructionList
       }
       props.generateDCPdf(pdfPayload);
     }
@@ -28,21 +32,23 @@ const DeliveryInfo = (props) => {
   useEffect(()=>{
     if(props.inward.dcpdfSuccess) {
         message.success('Delivery Challan pdf generated successfully', 2).then(() => { 
+          setFullHandling(false)
           props.resetInstruction();
           props.history.push('/company/partywise-register');
-         
 });
 }
 },[props.inward.dcpdfSuccess])
 useEffect(()=>{
   if(props.inward?.unprocessedSuccess){
     if(props.inward?.unprocessedSuccess?.process?.processId === 8){
-    let arrayList=[];
-    arrayList.push(props.inward?.unprocessedSuccess?.instructionId)
-    const pdfPayload ={
-      instructionIds: arrayList
+     let arrayList=[];
+      arrayList.push(props.inward?.unprocessedSuccess)
+    const reqObj = {
+      vehicleNo,
+      inwardListForDelivery: arrayList
     }
-    props.generateDCPdf(pdfPayload);
+    props.postDeliveryConfirm(reqObj);
+  
   }
   }
 },[props.inward.unprocessedSuccess])
