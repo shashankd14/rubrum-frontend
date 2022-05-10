@@ -76,9 +76,9 @@ import { formItemLayout } from "../../routes/company/Partywise/CuttingModal";
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
 
-function* fetchInwardList({ page = 1, pageSize = 15, searchValue = '' }) {
+function* fetchInwardList({ page = 1, pageSize = 15, searchValue = '', partyId = '' }) {
     try {
-        const fetchInwardList = yield fetch(`${baseUrl}api/inwardEntry/list/${page}/${pageSize}?searchText=${searchValue}`, {
+        const fetchInwardList = yield fetch(`${baseUrl}api/inwardEntry/list/${page}/${pageSize}?searchText=${searchValue}&partyId=${partyId}`, {
             method: 'GET',
         });
         if (fetchInwardList.status === 200) {
