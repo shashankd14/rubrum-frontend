@@ -5,9 +5,9 @@ import {FETCH_DELIVERY_LIST_REQUEST, FETCH_DELIVERY_LIST_REQUEST_BY_ID, DELETE_D
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
 
-function* fetchDeliveryList({ page = 1, pageSize = 15, searchValue = '' }) {
+function* fetchDeliveryList({ page = 1, pageSize = 15, searchValue = '', partyId = '' }) {
     try {
-        const fetchDeliveryList =  yield fetch(`${baseUrl}api/delivery/list/${page}/${pageSize}?searchText=${searchValue}`, {
+        const fetchDeliveryList =  yield fetch(`${baseUrl}api/delivery/list/${page}/${pageSize}?searchText=${searchValue}&partyId=${partyId}`, {
             method: 'GET',
         });
         if(fetchDeliveryList.status === 200) {

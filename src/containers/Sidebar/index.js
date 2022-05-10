@@ -27,11 +27,11 @@ const Sidebar = () => {
     dispatch(toggleCollapsedSideNav(!navCollapsed));
   };
 
-  useEffect(() => {
-    window.addEventListener('resize', () => {
-      dispatch(updateWindowWidth(window.innerWidth));
-    })
-  }, [dispatch]);
+  // useEffect(() => {
+  //   window.addEventListener('resize', () => {
+  //     dispatch(updateWindowWidth(window.innerWidth));
+  //   })
+  // }, [dispatch]);
 
 
   let drawerStyle = "gx-collapsed-sidebar";

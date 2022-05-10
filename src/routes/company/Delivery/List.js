@@ -21,6 +21,7 @@ function List(props) {
     const [deliveryList, setDeliveryList] = useState(props.delivery.deliveryList)
     const [reconcileModal, setreconcileModal] = useState(false);
     const [deliveryRecord, setDeliveryRecord] = useState();
+    const [customerValue, setCustomerValue] = useState('');
 
     const [pageNo, setPageNo] = React.useState(1);
     const [totalPageItems, setTotalItems] = React.useState(0);
@@ -135,11 +136,11 @@ function List(props) {
         if (searchValue) {
             if(searchValue.length >= 3) {
                 setPageNo(1);
-                props.fetchDeliveryList(1, 15, searchValue)
+                props.fetchDeliveryList(1, 15, searchValue, customerValue)
             }
         } else {
             setPageNo(1);
-            props.fetchDeliveryList(1, 15, searchValue)
+            props.fetchDeliveryList(1, 15, searchValue, customerValue);
         }
     }, [searchValue])
 
@@ -148,9 +149,9 @@ function List(props) {
     };
     
     const handleCustomerChange = (value) => {
-        let partyList = props.party.partyList.find(element =>  element.nPartyId === value);
-        if (partyList.partyName) {
-         const filteredData = props.delivery.deliveryList.filter((deliveryEntry) =>deliveryEntry.partyName===partyList.partyName);                setDeliveryList(filteredData);
+        if (value) {
+            setCustomerValue(value);
+            props.fetchDeliveryList(1, 15, searchValue, value);
         } else {
          setDeliveryList(props.delivery.deliveryList);
       }
@@ -194,7 +195,7 @@ function List(props) {
                         pageSize: 15,
                         onChange: page => {
                             setPageNo(page);
-                            props.fetchDeliveryList(page, 15, searchValue)
+                            props.fetchDeliveryList(page, 15, searchValue, customerValue)
                         },
                         current: pageNo,
                         total: totalPageItems

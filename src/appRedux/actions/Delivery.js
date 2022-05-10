@@ -8,11 +8,12 @@ import {FETCH_DELIVERY_LIST_ERROR,
     DELETE_DELIVERY_BY_ID_SUCCESS,
     DELETE_DELIVERY_BY_ID_ERROR} from "../../constants/ActionTypes";
 
-export const fetchDeliveryList = (page, pageSize, searchValue) => ({
+export const fetchDeliveryList = (page, pageSize, searchValue, partyId) => ({
     type: FETCH_DELIVERY_LIST_REQUEST,
     page,
     pageSize,
-    searchValue
+    searchValue,
+    partyId
 });
 
 export const fetchDeliveryListSuccess = (deliveryList) => ({

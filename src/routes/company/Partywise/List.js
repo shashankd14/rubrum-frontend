@@ -199,11 +199,11 @@ const getFilterData=(list)=>{
         if (searchValue) {
             if(searchValue.length >= 3) {
                 setPageNo(1);
-                props.fetchInwardList(1, 15, searchValue)
+                props.fetchInwardList(1, 15, searchValue, customerValue)
             }
         } else {
             setPageNo(1);
-            props.fetchInwardList(1, 15, searchValue)
+            props.fetchInwardList(1, 15, searchValue, customerValue)
         }
     }, [searchValue])
 
@@ -231,12 +231,11 @@ const getFilterData=(list)=>{
 
     const handleCustomerChange = (value) => {
         if (value) {
-            // const filteredData = inwardList.filter((inward) =>inward.party.nPartyId===value);
-            // setFilteredInwardList(filteredData);
-            // setCustomerValue(value);
+            setCustomerValue(value);
+            props.fetchInwardList(1, 15, searchValue, value);
         } else {
-            // setCustomerValue('');
-            // setFilteredInwardList(inwardList);
+            setCustomerValue('');
+            setFilteredInwardList(inwardList);
         }
       
     }
@@ -375,7 +374,7 @@ const getFilterData=(list)=>{
                         pageSize: 15,
                         onChange: page => {
                             setPageNo(page);
-                            props.fetchInwardList(page, 15, searchValue);
+                            props.fetchInwardList(page, 15, searchValue, customerValue);
                         },
                         current: pageNo,
                         total: totalPageItems
