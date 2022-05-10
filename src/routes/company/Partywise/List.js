@@ -261,7 +261,7 @@ const getFilterData=(list)=>{
       };
 
     const getKey = (data, selected) => {
-        if (data.status.statusName === 'READY TO DELIVER') {
+        if (data.status.statusName === 'READY TO DELIVER' || data.status.statusName === "RECEIVED") {
                 storeKey(data, selected);
                 if (data.children) {
                     data.children.map(item => getKey(item, selected));
@@ -271,7 +271,7 @@ const getFilterData=(list)=>{
 
       const rowSelection = {
         onSelect: (record, selected, selectedRows) => {
-            if (record.status.statusName === 'READY TO DELIVER') {
+            if (record.status.statusName === 'READY TO DELIVER' || record.status.statusName === 'RECEIVED') {
                 if (record.key.includes('-') && !selected) {
                     const eKeys = record.key.split('-');
                     let removeKeys = [record.key];
@@ -289,7 +289,7 @@ const getFilterData=(list)=>{
             }
         },
         getCheckboxProps: (record) => ({
-            disabled: record.status.statusName !== 'READY TO DELIVER'
+            disabled: record.status.statusName !== 'READY TO DELIVER' && record.status.statusName !== 'RECEIVED'
         }),
         onSelectAll: (selected, selectedRows, changeRows) => {
             if (changeRows.length === selectedCBKeys.length) {
@@ -297,7 +297,7 @@ const getFilterData=(list)=>{
                 setSelectedRowData([]);
             } else {
                 changeRows.map(item => {
-                    if (item.status.statusName === 'READY TO DELIVER') {
+                    if (item.status.statusName === 'READY TO DELIVER' || item.status.statusName ==="RECEIVED") {
                       getKey(item)
                     }
                 });
@@ -339,7 +339,13 @@ const getFilterData=(list)=>{
                             size="medium"
                             onClick={() => {
                                 console.log('selected rows', selectedRowData, selectedCBKeys);
-                                const newList = selectedRowData.filter(item => !item.childInstructions && item.instructionId)
+                                const newList = selectedRowData.filter(item => {
+                                    if(item?.instruction?.length){
+                                        return !item.childInstructions && item.instructionId
+                                    }else {
+                                        return item
+                                    }
+                                    })
                                 props.setInwardSelectedForDelivery(newList);
                                 props.history.push('/company/partywise-register/delivery')
                             }}

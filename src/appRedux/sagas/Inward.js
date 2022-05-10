@@ -514,10 +514,17 @@ function* fetchInwardInstructionDetails(action) {
     }
 }
 function* saveUnprocessedDelivery(action) {
+    let fetchInwardInstruction
     try {
-        const fetchInwardInstruction = yield fetch(`${baseUrl}api/instruction/saveUnprocessedForDelivery/${action.inwardEntryId}`, {
+        if(action?.inwardEntryId?.motherCoilDispatch){
+         fetchInwardInstruction = yield fetch(`${baseUrl}api/instruction/saveFullHandlingDispatch/${action.inwardEntryId?.inwardEntryId}`, {
             method: 'POST',
         });
+    }else{
+        fetchInwardInstruction = yield fetch(`${baseUrl}api/instruction/saveUnprocessedForDelivery/${action.inwardEntryId?.inwardEntryId}`, {
+            method: 'POST',
+        });
+    }
         if (fetchInwardInstruction.status === 200) {
             const fetchInwardPlanResponse = yield fetchInwardInstruction.json();
             yield put(saveUnprocessedDeliverySuccess(fetchInwardPlanResponse));
