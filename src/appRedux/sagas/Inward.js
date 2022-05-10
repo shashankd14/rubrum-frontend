@@ -517,7 +517,7 @@ function* saveUnprocessedDelivery(action) {
     let fetchInwardInstruction
     try {
         if(action?.inwardEntryId?.motherCoilDispatch){
-         fetchInwardInstruction = yield fetch(`${baseUrl}api/instruction/saveUnprocessedForDelivery/${action.inwardEntryId?.inwardEntryId}?taskType=FULL_HANDLING`, {
+         fetchInwardInstruction = yield fetch(`${baseUrl}api/instruction/saveFullHandlingDispatch/${action.inwardEntryId?.inwardEntryId}`, {
             method: 'POST',
         });
     }else{

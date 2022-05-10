@@ -36,12 +36,14 @@ const DeliveryInfo = (props) => {
 },[props.inward.dcpdfSuccess])
 useEffect(()=>{
   if(props.inward?.unprocessedSuccess){
+    if(props.inward?.unprocessedSuccess?.process?.processId === 8){
     let arrayList=[];
     arrayList.push(props.inward?.unprocessedSuccess?.instructionId)
     const pdfPayload ={
       instructionIds: arrayList
     }
     props.generateDCPdf(pdfPayload);
+  }
   }
 },[props.inward.unprocessedSuccess])
   const handleRemark = (elem, id) => {
