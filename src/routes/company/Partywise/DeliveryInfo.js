@@ -13,7 +13,7 @@ const DeliveryInfo = (props) => {
   useEffect(()=>{
     let insList = props.inward.inwardListForDelivery?.map(i => {
       setFullHandling(true)
-      return i.instruction.length ?i.instruction: i;
+      return i?.instruction?.length ?i?.instruction: i;
     });
     insList = insList?.flat();
     setInstructionList(insList?.map(item => item.instructionId));
@@ -45,6 +45,7 @@ useEffect(()=>{
       arrayList.push(props.inward?.unprocessedSuccess)
     const reqObj = {
       vehicleNo,
+      taskType:"FULL_HANDLING",
       inwardListForDelivery: arrayList
     }
     props.postDeliveryConfirm(reqObj);
