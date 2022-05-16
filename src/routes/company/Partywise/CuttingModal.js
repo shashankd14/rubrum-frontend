@@ -63,6 +63,8 @@ const CreateCuttingDetailsForm = (props) => {
     const [unsavedDeleteId, setUnsavedDeleteId] = useState(0);
     const [slitPartId, setSlitPartId] = useState('');
     const [tagsName, setTagsName] = useState("")
+    const [endUserTagList, setEndUserTagList]= useState([]);
+    const [tagsList, setTagsList] = useState([]);
     const [tableData, setTableData] = useState(props.wip?(props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts);
     const columns=[
 
@@ -242,6 +244,28 @@ const CreateCuttingDetailsForm = (props) => {
             key: 'plannedWidth',
         },
         {
+            title: 'Tags',
+            dataIndex: 'packetClassification.tagName',
+            render: (text, record, index) => {
+                return  <Select style={{width: '100%'}} value={record?.packetClassification ? record?.packetClassification?.classificationName: record?.packetClassificationId} onChange={(e) =>handleTagsChange(record,e)} >
+                {tagsList?.map(item => {
+                    return <Option value={item?.classificationId}>{item?.classificationName}</Option>
+                })}
+            </Select>
+            }
+        },
+        {
+            title: 'End User Tags',
+            dataIndex: 'endUserTags.tagName',
+            render: (text, record, index) => {
+                return  <Select style={{width: '100%'}} value={record?.endUserTagsentity ? record?.endUserTagsentity?.tagName: record?.endUserTagId} onChange={(e) =>handleTagsChange(record,e,"endUser")} >
+                {endUserTagList?.map(item => {
+                    return <Option value={item?.tagId}>{item?.tagName}</Option>
+                })}
+            </Select>
+            }
+        },
+        {
             title:'Actions',
             dataIndex:'actions',
             render: (text, record,index) => (
@@ -287,17 +311,17 @@ const CreateCuttingDetailsForm = (props) => {
         {
             title: 'Tags',
             dataIndex: 'packetClassification.tagName',
-            render (value) {
-                return value || ""
-            },
+            render: (text, record) => {
+                return record.packetClassification?.tagName || record.packetClassification?.classificationName ;
+            }
            
         },
         {
             title: 'End User Tags',
             dataIndex: 'endUserTags.tagName',
-            render (value) {
-                return value || ""
-            },
+            render: (text, record) => {
+                return record.endUserTags?.tagName || record.endUserTagsentity?.tagName;
+            }
            
         },
     ];
@@ -684,6 +708,8 @@ const CreateCuttingDetailsForm = (props) => {
     const getCuts=(e, idx)=>{
         let cutsWidth = selectedRowKeys.reduce((a,c)=> c.plannedWidth)
         cutsWidth = selectedRowKeys.length ===1 ? cutsWidth.plannedWidth : cutsWidth;
+        setEndUserTagList(selectedRowKeys?.map(item=> item?.endUserTagsentity))
+        setTagsList(selectedRowKeys?.map(item=> item?.packetClassification))
         let cutsValue = [];
         let instructionPlanDto = {
             "createdBy": "1",
@@ -706,7 +732,7 @@ const CreateCuttingDetailsForm = (props) => {
                     parentInstructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : "",
                     groupId:props.inward.groupId.groupId,
                     deleteUniqId: unsavedDeleteId,
-                    index: idx
+                    index: idx,
            };
             cutsValue.push(cutObj);
         }
