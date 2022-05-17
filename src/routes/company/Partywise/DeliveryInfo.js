@@ -12,7 +12,6 @@ const DeliveryInfo = (props) => {
   const [fullHandling, setFullHandling] = useState(false);
   useEffect(()=>{
     let insList = props.inward.inwardListForDelivery?.map(i => {
-      setFullHandling(true)
       return i?.instruction?.length ?i?.instruction: i;
     });
     insList = insList?.flat();
@@ -63,11 +62,12 @@ useEffect(()=>{
   const handleSubmit = (e) => {
     e.preventDefault();
     let inslist = props?.inward.inwardListForDelivery.map(item => {
-      if(item?.inwardEntryId){
+      if(item?.inwardEntryId && item?.status?.statusName ==="RECEIVED"){
         const payload ={
           inwardEntryId: item?.inwardEntryId,
           motherCoilDispatch: true
         }
+        setFullHandling(true)
         props.saveUnprocessedDelivery(payload)
       }else {
         const reqObj = {

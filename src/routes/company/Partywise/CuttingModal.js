@@ -830,7 +830,7 @@ const CreateCuttingDetailsForm = (props) => {
             }
         }
        
-        if(props.slitCut){
+        if(props.slitCut && !props.wip){
             if(saveInstruction.length === 0 && props.inward?.saveSlit[0]?.partDetailsId !== slitPartId){
                 let partId = props.inward?.saveSlit[0]?.partDetailsId
                 let payload={
