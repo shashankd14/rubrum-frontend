@@ -602,7 +602,7 @@ const columns = [
         title: 'Classification',
         dataIndex: 'packetClassification',
         render: (text, record, index) => {
-            return <Select disabled={props.unfinish} style={{width: '100%'}} value={record?.packetClassification?.tagId || record?.packetClassification?.classificationId} onChange={onInputChange("packetClassification", index, 'select')} >
+            return <Select disabled={props.unfinish} dropdownMatchSelectWidth={false} style={{width: '100%'}} value={record?.packetClassification?.tagId || record?.packetClassification?.classificationId} onChange={onInputChange("packetClassification", index, 'select')} >
                 {props.processTags?.map(item => {
                     return <Option value={item.tagId}>{item.tagName}</Option>
                 })}
@@ -613,7 +613,7 @@ const columns = [
         title: 'End User Tags',
         dataIndex: 'party.endUserTags',
         render: (text, record, index) => {
-            return <Select disabled={props.unfinish} style={{width: '100%'}} value={record?.endUserTagsentity?.tagId} onChange={onInputChange("endUserTagsentity", index, 'select')} >
+            return <Select disabled={props.unfinish} dropdownMatchSelectWidth={false} style={{width: '100%'}} value={record?.endUserTagsentity?.tagId} onChange={onInputChange("endUserTagsentity", index, 'select')} >
                 {props.coilDetails.party.endUserTags?.map(item => {
                     return <Option value={item.tagId}>{item.tagName}</Option>
                 })}
@@ -650,7 +650,7 @@ const columnsPlan=[
         title: 'Tags',
         dataIndex: 'packetClassification.tagName',
         render: (text, record, index) => {
-            return  <Select style={{width: '100%'}} value={record?.packetClassification ? record?.packetClassification?.classificationName: record?.packetClassificationId} onChange={(e) =>handleTagsChange(record,e)} >
+            return  <Select style={{width: '100%'}} dropdownMatchSelectWidth={false} value={record?.packetClassification ? record?.packetClassification?.classificationName: record?.packetClassificationId} onChange={(e) =>handleTagsChange(record,e)} >
             {props?.coilDetails.party?.tags?.map(item => {
                 return <Option value={item.tagId}>{item.tagName}</Option>
             })}
@@ -661,7 +661,7 @@ const columnsPlan=[
         title: 'End User Tags',
         dataIndex: 'endUserTags.tagsName',
         render: (text, record, index) => {
-            return  <Select style={{width: '100%'}} value={record?.endUserTagsentity ? record?.endUserTagsentity?.tagName: record?.endUserTagId} onChange={(e) =>handleTagsChange(record,e,"endUser")} >
+            return  <Select style={{width: '100%'}} dropdownMatchSelectWidth={false} value={record?.endUserTagsentity ? record?.endUserTagsentity?.tagName: record?.endUserTagId} onChange={(e) =>handleTagsChange(record,e,"endUser")} >
             {props?.coilDetails.party?.endUserTags?.map(item => {
                 return <Option value={item.tagId}>{item.tagName}</Option>
             })}
