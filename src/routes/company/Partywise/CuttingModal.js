@@ -573,6 +573,7 @@ const CreateCuttingDetailsForm = (props) => {
                 item.actualLength = 0;
                 item.actualNoOfPieces = 0;
                 item.actualWeight = 0;
+                item.actualWidth = 0;
                 if (item.packetClassification?.tagId) item.packetClassification = {
                     tagId: 6
                 }
@@ -585,6 +586,7 @@ const CreateCuttingDetailsForm = (props) => {
                 if (!item.actualNoOfPieces && item.actualNoOfPieces !== 0) item.actualNoOfPieces  =  item.plannedNoOfPieces;
                 if (!item.actualLength && item.actualLength !== 0) item.actualLength  =  item.plannedLength;
                 if (!item.actualWeight && item.actualWeight !== 0) item.actualWeight  =  item.plannedWeight;
+                if (!item.actualWidth && item.actualWidth !== 0) item.actualWidth  =  item.plannedWidth;
                 if (!item.packetClassification?.tagId) item.packetClassification = {
                     tagId: 6
                 }
