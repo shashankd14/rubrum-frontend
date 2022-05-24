@@ -80,6 +80,7 @@ import {
 
 const INIT_STATE = {
     inwardList: [],
+    totalItems: 0,
     loading: false,
     success: false,
     error: false,
@@ -118,7 +119,8 @@ const INIT_STATE = {
     dcpdfSuccess: false,
     deliverySuccess:false,
     deliveryError: false,
-    isDeleted: false
+    isDeleted: false,
+    unprocessedSuccess:{}
 
 };
 
@@ -135,6 +137,7 @@ export default (state = INIT_STATE, action) => {
                 ...state,
                 loading: false,
                 inwardList: action.inwardList,
+                totalItems: action.totalItems,
                 success: true
             }
         }
@@ -435,7 +438,8 @@ export default (state = INIT_STATE, action) => {
                 deliveryError: false,
                 dcpdfError:false,
                 dcpdfSuccess: false,
-                dcpdfLoading: false
+                dcpdfLoading: false,
+                unprocessedSuccess:{}
             }
         }
         
@@ -504,7 +508,8 @@ export default (state = INIT_STATE, action) => {
         case SAVE_UNPROCESSED_FOR_DELIVERY_SUCCESS: {
             return {
                 ...state,
-                loading: false
+                loading: false,
+                unprocessedSuccess: action.payload
             }
         }
         case SAVE_UNPROCESSED_FOR_DELIVERY_ERROR: {

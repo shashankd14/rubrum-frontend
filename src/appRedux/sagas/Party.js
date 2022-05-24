@@ -10,9 +10,11 @@ import {fetchPartyListSuccess,
     updatePartyError
 } from "../actions";
 
+const baseUrl = process.env.REACT_APP_BASE_URL;
+
 function* fetchPartyList() {
     try {
-        const fetchPartyList =  yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/party/list', {
+        const fetchPartyList =  yield fetch(`${baseUrl}api/party/list`, {
             method: 'GET',
         });
         if(fetchPartyList.status === 200) {
@@ -27,7 +29,7 @@ function* fetchPartyList() {
 
 function* fetchPartyListById(action) {
     try {
-        const fetchPartyListId =  yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/party/getById/${action.partyId}`, {
+        const fetchPartyListId =  yield fetch(`${baseUrl}api/party/getById/${action.partyId}`, {
             method: 'GET',
         });
         if(fetchPartyListId.status === 200) {
@@ -55,7 +57,7 @@ function* addParty(action) {
             city,
             state,
             pincode,
-            phone,tags
+            phone,tags,endUsertags
         } = action.party;
 
         const getEmail = (mail) => {
@@ -87,7 +89,10 @@ function* addParty(action) {
             return addressObj;
         }
         const getTags=()=>{
-            return tags.map(classificationId => ({classificationId}))
+            return tags.map(tagId => ({tagId}))
+        }
+        const getEndUserTags=()=>{
+            return endUsertags.map(tagId => ({tagId}))
         }
         const reqBody = {
             partyName,
@@ -100,9 +105,10 @@ function* addParty(action) {
             tags:getTags(),
             ...getEmail(email),
             ...getAddress(addressKeys),
-            ...getPhone(phone)
+            ...getPhone(phone), 
+            endUserTags: getEndUserTags(),
         }
-        const addParty = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/party/save', {
+        const addParty = yield fetch(`${baseUrl}api/party/save`, {
             method: 'POST',
             headers: { "Content-Type": "application/json" },
             body:JSON.stringify(reqBody)
@@ -135,7 +141,8 @@ function* updateParty(action) {
                 state,
                 pincode,
                 phone,
-                tags
+                tags,
+                endUsertags
             },
             id
         } = action.party;
@@ -169,7 +176,10 @@ function* updateParty(action) {
             return addressObj;
         }
         const getTags=()=>{
-            return tags.map(classificationId => ({classificationId}))
+            return tags.map(tagId => ({tagId}))
+        }
+        const getEndUserTags=()=>{
+            return endUsertags.map(tagId => ({tagId}))
         }
 
         const reqBody = {
@@ -182,11 +192,12 @@ function* updateParty(action) {
             panNumber,
             tanNumber,
             tags:getTags(),
+            endUserTags:getEndUserTags(),
             ...getEmail(email),
             ...getAddress(addressKeys),
             ...getPhone(phone)
         }
-        const updateParty = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/party/update', {
+        const updateParty = yield fetch(`${baseUrl}api/party/update`, {
             method: 'PUT',
             headers: { "Content-Type": "application/json" },
             body:JSON.stringify(reqBody)

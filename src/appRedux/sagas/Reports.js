@@ -8,9 +8,11 @@ import {
     sendReportError
 } from "../actions";
 
+const baseUrl = process.env.REACT_APP_BASE_URL;
+
 function* sendReport(action) {
     try {
-        const sendReport = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/reports', {
+        const sendReport = yield fetch(`${baseUrl}api/reports`, {
                 method: 'POST',
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(action.data) 

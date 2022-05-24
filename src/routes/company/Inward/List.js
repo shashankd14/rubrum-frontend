@@ -24,6 +24,11 @@ const List = (props) => {
     const [searchValue, setSearchValue] = useState('');
     const [filteredInwardList, setFilteredInwardList] = useState(props.inward.inwardList);
 
+    const [pageNo, setPageNo] = React.useState(1);
+    const [totalPageItems, setTotalItems] = React.useState(0);
+
+    const { totalItems } = props.inward;
+
     const columns = [{
         title: 'Coil Number',
         dataIndex: 'coilNumber',
@@ -130,22 +135,22 @@ const List = (props) => {
             });
         }
     }, [props.inward.deleteFail])
-    useEffect(() => {
-        props.fetchInwardList();
-    }, []);
 
     useEffect(() => {
-        if(searchValue) {
-            const filteredData = props.inward.inwardList.filter((inward) => {
-                if(inward.coilNumber.toLowerCase().includes(searchValue.toLowerCase()) ||
-                    inward.party.partyName.toLowerCase().includes(searchValue.toLowerCase()) ||
-                    inward.vInvoiceNo.toLowerCase().includes(searchValue.toLowerCase())) {
-                    return inward
-                }
-            });
-            setFilteredInwardList(filteredData);
+        if(totalItems) {
+            setTotalItems(totalItems);
+        }
+    }, [totalItems]);
+    
+    useEffect(() => {
+        if (searchValue) {
+            if(searchValue.length >= 3) {
+                setPageNo(1);
+                props.fetchInwardList(1, 15, searchValue)
+            }
         } else {
-            setFilteredInwardList(props.inward.inwardList);
+            setPageNo(1);
+            props.fetchInwardList(1, 15, searchValue)
         }
     }, [searchValue])
 
@@ -203,6 +208,15 @@ const List = (props) => {
                        columns={columns}
                        dataSource={filteredInwardList}
                        onChange={handleChange}
+                       pagination={{
+                        pageSize: 15,
+                        onChange: page => {
+                            setPageNo(page);
+                            props.fetchInwardList(page, 15, searchValue);
+                        },
+                        current: pageNo,
+                        total: totalPageItems
+                    }}
                 />
             </Card>
         </div>

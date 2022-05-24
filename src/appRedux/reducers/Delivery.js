@@ -32,8 +32,9 @@ export default (state = INIT_STATE, action) => {
             return {
                 ...state,
                 loading: false,
-                deliveryList: action.deliveryList,
-                success:true
+                deliveryList: action.deliveryList.content,
+                totalItems: action.deliveryList.totalItems,
+                success: true
             }
         }
         case FETCH_DELIVERY_LIST_ERROR: {

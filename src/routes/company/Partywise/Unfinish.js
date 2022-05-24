@@ -2,13 +2,13 @@ import { Button, Card, Col, Select, Modal, message } from "antd";
 import moment from 'moment';
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { getCoilPlanDetails, saveUnprocessedDelivery, fetchClassificationList } from "../../../appRedux/actions";
+import { getCoilPlanDetails, fetchClassificationList } from "../../../appRedux/actions";
 import IntlMessages from "../../../util/IntlMessages";
-import CuttingModal from "../Partywise/CuttingModal";
+import CuttingModal from "./CuttingModal";
 import SlittingModal from "./SlittingModal";
 
 
-const Plan = (props) => {
+const Unfinish = (props) => {
     
     const { instruction } = props.inward.plan;
     const [showCuttingModal, setShowCuttingModal] = useState(false);
@@ -18,9 +18,6 @@ const Plan = (props) => {
     const [childCoil, setChildCoil] = useState(false);
     const [slitCut, setSlitCut] = useState(false);
     const [defaultValue, setdefaultValue] = useState();
-    const [showUnprocessedModal, setshowUnprocessedModal] = useState(false);
-    const [unprocessedOkClick, setUnprocessedOkClick] = useState(false);
-    const [reshowModal, setReshowModal] = useState(false);
     const { Option } = Select;
     const getPlannedLength = (ins) => {
         let length = 0;
@@ -119,18 +116,8 @@ const Plan = (props) => {
 
     useEffect(() => {
         getCoilData();
-        if (props.wip) {
-            props.fetchClassificationList();
-        }
-        
+        props.fetchClassificationList();
     }, [showSlittingModal,showCuttingModal])
-
-    useEffect(() => {
-        if (unprocessedOkClick) {
-            setUnprocessedOkClick(false);
-            getCoilData();
-        }
-    }, [unprocessedOkClick])
 
     useEffect(() => {
         if (slittingCoil) {
@@ -145,16 +132,6 @@ const Plan = (props) => {
             setShowCuttingModal(true);
         }
     }, [cuttingCoil]);
-
-    useEffect(() => {
-        if (props.inward.plan?.instruction?.length !== slittingCoil?.instruction?.length && props.inward.isDeleted) {
-            message.loading('Deleting part of slit instructions....', 1);
-            setTimeout(() => {
-                setSlittingCoil(props.inward.plan);
-                message.success('Deleted successfully!!', 2);
-            }, 1000);
-        }
-    }, [props.inward.plan])
 
     const getLength = (value, type) => {
         let tempDelValue = 0;
@@ -201,28 +178,8 @@ const Plan = (props) => {
     const insList = ["Slitting","Cutting","Slit & Cut"];
     return (
         <div className="gx-full-height" style={{ overflowX: "auto", overflowy: "scroll" }}>
-            {cuttingCoil && <CuttingModal showCuttingModal={showCuttingModal} setShowCuttingModal={setShowCuttingModal} coilDetails={cuttingCoil} wip={props.wip} childCoil={childCoil} plannedLength={getPlannedLength} plannedWidth ={getPlannedWidth} plannedWeight={getPlannedWeight} coil={props.inward.plan} slitCut={slitCut} />}
-            {slittingCoil && <SlittingModal showSlittingModal={showSlittingModal} setShowSlittingModal={setShowSlittingModal} wip={props.wip} coilDetails={slittingCoil} childCoil={childCoil} plannedLength={getPlannedLength} plannedWidth ={getPlannedWidth} plannedWeight={getPlannedWeight} coil={props.inward.plan} slitCut={slitCut} setShowCuttingModal={setShowCuttingModal} setCutting={(cuts)=>setCuttingCoil(cuts)}/>}
-            <Modal 
-                title='Confirmation'
-                visible={showUnprocessedModal}
-                width={400}
-                onOk={() => {
-                    setTimeout(() => {
-                        let payload={
-                            inwardEntryId:props.inward.plan.inwardEntryId,
-                            motherCoilDispatch:""
-                        }
-                        props.saveUnprocessedDelivery(payload);
-                        setUnprocessedOkClick(true);
-                        setshowUnprocessedModal(false);
-                    }, 1000)
-                }}
-                onCancel={() => setshowUnprocessedModal(false)}
-            >
-                <p>Are you sure to proceed Unprocessed ? </p>
-                <p>Please click OK to confirm</p>
-            </Modal>
+            {cuttingCoil && <CuttingModal showCuttingModal={showCuttingModal} setShowCuttingModal={setShowCuttingModal} coilDetails={cuttingCoil} wip unfinish={props.unfinish} editFinish={props.editFinish} childCoil={childCoil} plannedLength={getPlannedLength} plannedWidth ={getPlannedWidth} plannedWeight={getPlannedWeight} coil={props.inward.plan} slitCut={slitCut} />}
+            {slittingCoil && <SlittingModal showSlittingModal={showSlittingModal} setShowSlittingModal={setShowSlittingModal} wip unfinish={props.unfinish} editFinish={props.editFinish} coilDetails={slittingCoil} childCoil={childCoil} plannedLength={getPlannedLength} plannedWidth ={getPlannedWidth} plannedWeight={getPlannedWeight} coil={props.inward.plan} slitCut={slitCut} setShowCuttingModal={setShowCuttingModal} setCutting={(cuts)=>setCuttingCoil(cuts)}/>}
             <h1><IntlMessages id="partywise.plan.label" /></h1>
             <div className="gx-full-height gx-flex-row">
                 <Col lg={5} md={5} sm={24} xs={24} className="gx-align-self-center">
@@ -243,41 +200,25 @@ const Plan = (props) => {
                             <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.availableWeight" /> : </p>
                             <span className="gx-coil-details-label">{props.inward.plan.fpresent}</span>
                         </div>
-                        {props.wip ?
-                            <div>
-                                {props.inward.plan.fpresent !== 0 ? <Button onClick={() => setshowUnprocessedModal(true)}>Unprocessed</Button> : <></>}
-                                <Button onClick={() => {
-                                    setSlittingCoil(props.inward.plan);
-                                    setShowSlittingModal(true)
-                                    setChildCoil(false)
-                                }}>Finish Slitting</Button>
-                                <Button onClick={() => {
-                                    setCuttingCoil(props.inward.plan);
-                                    setSlitCut(false);
-                                    setShowCuttingModal(true);
-                                    setChildCoil(false)
-                                }}>Finish Cutting</Button>
-                                <Button onClick={() => {
-                                    setCuttingCoil(props.inward.plan);
-                                    setSlitCut(true);
-                                    setShowCuttingModal(true);
-                                    setChildCoil(false)
-                                }}>Finish Cut & Slit</Button>
-                            </div> :
-                            <div>
-                                <Select
-                                style={{ width: 100 }}
-                                placeholder="Select Instruction"
-                                optionFilterProp="children"
-                                value= {defaultValue}
-                                onChange={(value)=>handleSelectChange(value, setChildCoil(false), props.inward.plan)}
-                                filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-                        >
-                            {insList?.length > 0 && insList.map((instruction) => (
-                                <Option value={instruction}>{instruction}</Option>
-                            ))}
-                        </Select>
-                    </div>}
+                        <div>
+                            <Button onClick={() => {
+                                setSlittingCoil(props.inward.plan);
+                                setShowSlittingModal(true)
+                                setChildCoil(false)
+                            }}>{props.unfinish ? 'Unfinish Slitting' : 'edit finish slitting'}</Button>
+                            <Button onClick={() => {
+                                setCuttingCoil(props.inward.plan);
+                                setSlitCut(false);
+                                setShowCuttingModal(true);
+                                setChildCoil(false)
+                            }}>{props.unfinish ? 'Unfinish Cutting' : 'edit finish cutting'}</Button>
+                            <Button onClick={() => {
+                                setCuttingCoil(props.inward.plan);
+                                setSlitCut(true);
+                                setShowCuttingModal(true);
+                                setChildCoil(false)
+                            }}>{props.unfinish ? 'Unfinish Cut & Slit' : 'edit finish Cut & Slit'}</Button>
+                        </div>
                     </Card>
                 </Col>
                 <Col lg={18} md={18} sm={24} xs={24} offset={1} className="gx-align-self-center gx-branch lv1">
@@ -301,39 +242,21 @@ const Plan = (props) => {
                                                         <p className="gx-coil-details-label">Available specs(TXWXL/W) :</p>
                                                         <span className="gx-coil-details-label">{props.inward.plan.fThickness}X{getPlannedWidth(instruction)}X{instruction?.deliveryDetails !== null &&instruction?.deliveryDetails?.deliveryId !==null? 0 :getPlannedLength(instruction)}/{instruction?.deliveryDetails !== null &&instruction?.deliveryDetails?.deliveryId !==null?0:getPlannedWeight(instruction)}</span>
                                                     </div>
-                                                    {/* <div className="gx-flex-row">
-                                                        <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.availableWeight" /> : </p>
-                                                        <span className="gx-coil-details-label">{instruction?.deliveryDetails !== null &&instruction?.deliveryDetails?.deliveryId !==null? 0:getPlannedWeight(instruction)}</span>
-                                                    </div> */}
-                                                    { props.wip ?
-                                                         <div>
-                                                             <Select
-                                                                value= {defaultValue}
-                                                                style={{ width: 100 }}
-                                                                placeholder="Select Instruction"
-                                                                optionFilterProp="children"
-                                                                disabled={!(instruction && instruction.childInstructions && instruction?.childInstructions.length >= 1) }
-                                                                onChange={(value)=>handleSelectChange(value, setChildCoil(true), instruction)}
-                                                                filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-                                                             >
-                                                                {insList?.length > 0 && insList.map((instruction) => (
-                                                                    <Option value={instruction}>{instruction}</Option>
-                                                                ))}
-                                                             </Select>
-                                                         </div> :
-                                                            <div><Select
-                                                            value= {defaultValue}
-                                                            style={{ width: 100 }}
-                                                            placeholder="Select Instruction"
-                                                            optionFilterProp="children"
-                                                            onChange={(value)=>handleSelectChange(value, setChildCoil(true), instruction)}
-                                                            filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-                                                    >
+                                                    <div>
+                                                        <Select
+                                                        value= {defaultValue}
+                                                        style={{ width: 100 }}
+                                                        placeholder="Select Instruction"
+                                                        optionFilterProp="children"
+                                                        disabled={!(instruction && instruction.childInstructions && instruction?.childInstructions.length >= 1) }
+                                                        onChange={(value)=>handleSelectChange(value, setChildCoil(true), instruction)}
+                                                        filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                                                        >
                                                         {insList?.length > 0 && insList.map((instruction) => (
                                                             <Option value={instruction}>{instruction}</Option>
                                                         ))}
-                                                    </Select></div>}
-
+                                                        </Select>
+                                                    </div>
                                                 </div>
                                             </Card>
                                         </Col>
@@ -355,32 +278,10 @@ const Plan = (props) => {
                                                                     <div className="gx-coil-details-label"><IntlMessages id="partywise.plan.availableLength" /> : </div>
                                                                     <span className="gx-coil-details-label">{instruction?.deliveryDetails !== null &&instruction?.deliveryDetails?.deliveryId !==null?0: getLength(instruction.childInstructions, 'Non-Delivered')}</span>
                                                                 </div>
-                                                                {/* <div className="gx-flex-row">
-                                                                    <div className="gx-coil-details-label"><IntlMessages id="partywise.plan.deliveredLength" /> : </div>
-                                                                    <span className="gx-coil-details-label">{getLength(instruction.childInstructions, 'Delivered')}</span>
-                                                                </div> */}
                                                                 <div className="gx-flex-row">
                                                                     <div className="gx-coil-details-label"><IntlMessages id="partywise.plan.availableWeight" /> : </div>
                                                                     <span className="gx-coil-details-label">{instruction?.deliveryDetails !== null &&instruction?.deliveryDetails?.deliveryId !==null? 0 :getWeight(instruction.childInstructions, 'Non-Delivered')}</span>
                                                                 </div>
-                                                                {/* <div className="gx-flex-row">
-                                                                    <div className="gx-coil-details-label"><IntlMessages id="partywise.plan.deliveredWeight" /> : </div>
-                                                                    <span className="gx-coil-details-label">{getWeight(instruction.childInstructions, 'Delivered')}</span>
-                                                                </div> */}
-                                                                {props.wip ?
-                                                                     <></> :
-                                                                        <div><Select
-                                                                        value= {defaultValue}
-                                                                        style={{ width: 100 }}
-                                                                        placeholder="Select Instruction"
-                                                                        optionFilterProp="children"
-                                                                        onChange={(value)=>handleSelectChange(value, setChildCoil(true),instruction)}
-                                                                        filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-                                                                >
-                                                                    {insList?.length > 0 && insList.map((instruction) => (
-                                                                        <Option value={instruction}>{instruction}</Option>
-                                                                    ))}
-                                                                </Select></div>}
                                                             </div>
                                                         </Card>
                                                     </Col>
@@ -428,6 +329,5 @@ const mapStateToProps = state => ({
 
 export default connect(mapStateToProps, {
     getCoilPlanDetails,
-    saveUnprocessedDelivery,
     fetchClassificationList
-})(Plan);
+})(Unfinish);
