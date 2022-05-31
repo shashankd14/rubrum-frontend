@@ -67,7 +67,6 @@ const CreateCuttingDetailsForm = (props) => {
     const [tagsList, setTagsList] = useState([]);
     const [tableData, setTableData] = useState(props.wip?(props.childCoil ?props.coilDetails :(props.coilDetails && props.coilDetails.instruction)? props.coilDetails.instruction:props.coilDetails.childInstructions): cuts);
     const columns=[
-
         {
             title: 'Serial No',
             dataIndex:'instructionId',
@@ -146,6 +145,14 @@ const CreateCuttingDetailsForm = (props) => {
             }
         }
     ];
+    if (props.slitCut) {
+        const widthObj = {
+            title: 'Width',
+            dataIndex:'plannedWidth',
+            key: 'plannedWidth',
+        };
+        columns.splice(4,0,widthObj)
+    }
     const columnsPlan=[
         {
             title: 'Serial No',
