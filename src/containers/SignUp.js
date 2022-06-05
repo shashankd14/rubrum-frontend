@@ -111,7 +111,7 @@ const SignUp = (props) => {
                   <span><IntlMessages id="app.userAuth.or"/></span> <Link to="/signin"><IntlMessages
                   id="app.userAuth.signIn"/></Link>
                 </FormItem>
-                <div className="gx-flex-row gx-justify-content-between">
+                {/* <div className="gx-flex-row gx-justify-content-between">
                   <span>or connect with</span>
                   <ul className="gx-social-link">
                     <li>
@@ -139,7 +139,7 @@ const SignUp = (props) => {
                       }}/>
                     </li>
                   </ul>
-                </div>
+                </div> */}
               </Form>
             </div>
             {loader &&

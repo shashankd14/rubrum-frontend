@@ -88,23 +88,14 @@ const SignIn =(props)=> {
                   )}
                 </FormItem>
                 <FormItem>
-                  {getFieldDecorator('remember', {
-                    valuePropName: 'checked',
-                    initialValue: true,
-                  })(
-                    <Checkbox><IntlMessages id="appModule.iAccept"/></Checkbox>
-                  )}
-                  <span className="gx-signup-form-forgot gx-link"><IntlMessages
-                    id="appModule.termAndCondition"/></span>
-                </FormItem>
-                <FormItem>
                   <Button type="primary" className="gx-mb-0" htmlType="submit">
                     <IntlMessages id="app.userAuth.signIn"/>
                   </Button>
                   <span><IntlMessages id="app.userAuth.or"/></span> <Link to="/signup"><IntlMessages
                   id="app.userAuth.signUp"/></Link>
                 </FormItem>
-                <div className="gx-flex-row gx-justify-content-between">
+                {/* Keeping the code for future use */}
+                {/* <div className="gx-flex-row gx-justify-content-between">
                   <span>or connect with</span>
                   <ul className="gx-social-link">
                     <li>
@@ -134,7 +125,7 @@ const SignIn =(props)=> {
                   </ul>
                 </div>
                 <span
-                  className="gx-text-light gx-fs-sm"> demo user email: 'demo@example.com' and password: 'demo#123'</span>
+                  className="gx-text-light gx-fs-sm"> demo user email: 'demo@example.com' and password: 'demo#123'</span> */}
               </Form>
             </div>
 

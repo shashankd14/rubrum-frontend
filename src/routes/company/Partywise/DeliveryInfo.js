@@ -10,8 +10,11 @@ const DeliveryInfo = (props) => {
   const [remarksList, setRemarksList] = useState([]);
   const [instructionList, setInstructionList]= useState([]);
   const [fullHandling, setFullHandling] = useState(false);
+  const [thickness, setThickness] = useState();
   useEffect(()=>{
     let insList = props.inward.inwardListForDelivery?.map(i => {
+      const inwardList = props?.inward?.inwardList.filter(item => item.inwardEntryId === i.inwardEntryId)
+      inwardList.map(item=> setThickness(item?.fThickness))
       return i?.instruction?.length ?i?.instruction: i;
     });
     insList = insList?.flat();
@@ -117,14 +120,14 @@ useEffect(()=>{
                       Coil Width:{elem?.plannedWidth || elem?.fWidth}
                     </p>
                   </div>
-                  <div>
+                  {thickness &&<div>
                     <p style={{ marginLeft: "5px", marginTop: "10px" }}>
-                      Coil Thickness:{elem?.fThickness}
+                      Coil Thickness:{thickness}
                     </p>
-                  </div>
+                  </div>}
                   <div>
                     <p style={{ marginLeft: "5px", marginTop: "10px" }}>
-                      Coil Weight:{elem?.plannedWeight || elem?.fpresent}
+                      Coil Weight:{elem?.plannedWeight || props?.inward?.inwardList?.fpresent}
                     </p>
                   </div>
                  {elem?.instructionDate && <div>
