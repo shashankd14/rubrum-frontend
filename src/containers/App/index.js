@@ -4,7 +4,7 @@ import URLSearchParams from 'url-search-params'
 import {Redirect, Route, Switch, useHistory, useLocation, useRouteMatch} from "react-router-dom";
 import {LocaleProvider} from "antd";
 import {IntlProvider} from "react-intl";
-
+import List from "../../routes/company/Partywise/List";
 import AppLocale from "lngProvider";
 import MainApp from "./MainApp";
 import SignIn from "../SignIn";
@@ -114,7 +114,7 @@ const App = (props) => {
       if (authUser === null) {
         history.push('/signin');
       } else if (initURL === '' || initURL === '/' || initURL === '/signin') {
-        history.push('/main/dashboard/crypto');
+        history.push('/company/partywise-register/list');
       } else {
         history.push(initURL);
       }
