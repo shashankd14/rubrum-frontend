@@ -71,17 +71,14 @@ const SignIn =(props)=> {
 
                 <FormItem>
                   {getFieldDecorator('email', {
-                    initialValue: "demo@example.com",
-                    rules: [{
-                      required: true, type: 'email', message: 'The input is not valid E-mail!',
-                    }],
+                    initialValue: "",
                   })(
-                    <Input placeholder="Email"/>
+                    <Input placeholder="Username"/>
                   )}
                 </FormItem>
                 <FormItem>
                   {getFieldDecorator('password', {
-                    initialValue: "demo#123",
+                    initialValue: "",
                     rules: [{required: true, message: 'Please input your Password!'}],
                   })(
                     <Input type="password" placeholder="Password"/>
@@ -134,7 +131,7 @@ const SignIn =(props)=> {
                 <CircularProgress/>
               </div> : null}
             {showMessage ?
-              message.error(alertMessage.toString()) : null}
+              message.error("Login Error") : null}
           </div>
         </div>
       </div>
