@@ -139,13 +139,24 @@ function* signInUserWithTwitter() {
 
 function* signInUserWithEmailPassword({payload}) {
   const {email, password} = payload;
+  const jsonPayload ={
+    "userName":email,
+    "password":password
+  }
   try {
-    const signInUser = yield call(signInUserWithEmailPasswordRequest, email, password);
-    if (signInUser.message) {
-      yield put(showAuthMessage(signInUser.message));
+    const signInUser = yield fetch("http://3.110.7.212/api/login/testlogin", {
+      method: 'POST',
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(jsonPayload)
+  });
+   
+    if (signInUser.status ===200) {
+      const signeduser = yield signInUser.json()
+      yield put(userSignInSuccess(signeduser.userName));
+      localStorage.setItem("userToken",signeduser.access_token)
+      localStorage.setItem("userName",signeduser.userName)
     } else {
-      localStorage.setItem('user_id', signInUser.user.uid);
-      yield put(userSignInSuccess(signInUser.user.uid));
+      yield put(showAuthMessage("Failed to Login"));
     }
   } catch (error) {
     yield put(showAuthMessage(error));
