@@ -144,7 +144,7 @@ function* signInUserWithEmailPassword({payload}) {
     "password":password
   }
   try {
-    const signInUser = yield fetch("http://3.110.7.212/api/login/testlogin", {
+    const signInUser = yield fetch("http://3.110.7.212/api/login", {
       method: 'POST',
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(jsonPayload)
