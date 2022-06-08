@@ -1,4 +1,5 @@
 import {all, put, fork, takeLatest} from "redux-saga/effects";
+import { getUserToken } from './common';
 import {FETCH_RATES_LIST_REQUEST, ADD_RATES_REQUEST, FETCH_RATES_LIST_ID_REQUEST, UPDATE_RATES_REQUEST} from "../../constants/ActionTypes";
 import {
     fetchRatesListSuccess, 
@@ -12,11 +13,15 @@ import {
 } from "../actions";
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
+const headers = {
+    access_token: getUserToken()
+};
 
 function* fetchRatesList() {
     try {
         const fetchRatesList =  yield fetch(`${baseUrl}api/rates/list`, {
             method: 'GET',
+            headers
         });
         if(fetchRatesList.status === 200) {
             const fetchRatesListResponse = yield fetchRatesList.json();
@@ -54,8 +59,8 @@ function* addRates(action) {
 
         const addRates = yield fetch(`${baseUrl}api/rates/save`, {
             method: 'POST',
-            body: data
-            
+            body: data,
+            headers
         });
         if (addRates.status == 200) {
             yield put(addRatesSuccess());
@@ -96,8 +101,8 @@ function* updateRates(action) {
 
         const updateRates = yield fetch(`${baseUrl}api/rates/update`, {
             method: 'PUT',
-            body: data
-            
+            body: data,
+            headers
         });
         if (updateRates.status == 200) {
             yield put(updateRatesSuccess());
@@ -112,6 +117,7 @@ function* fetchRatesListById(action) {
     try {
         const fetchRatesById =  yield fetch(`${baseUrl}api/rates/getById/${action.rateId}`, {
             method: 'GET',
+            headers
         });
         if(fetchRatesById.status === 200) {
             const fetchRatesByIdResponse = yield fetchRatesById.json();

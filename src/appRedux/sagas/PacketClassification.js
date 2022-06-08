@@ -1,4 +1,5 @@
 import {all, put, fork, takeLatest} from "redux-saga/effects";
+import { getUserToken } from './common';
 import {FETCH_CLASSIFICATION_LIST_REQUEST, ADD_PROCESSTAGS_REQUEST, ADD_ENDUSERTAGS_REQUEST, FETCH_TAGS_LIST_BY_ID_REQUEST, FETCH_ENDUSERTAGS_LIST_REQUEST,DELETE_TAGS_BY_ID_REQUEST, UPDATE_TAGS_REQUEST} from "../../constants/ActionTypes";
 import {fetchClassificationListSuccess, 
     fetchClassificationListError, 
@@ -10,10 +11,15 @@ fetchEndUserTagsSuccess, fetchEndUserTagsError, deleteTagsListIdError, deleteTag
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
 
+const headers = {
+    access_token: getUserToken()
+};
+
 function* fetchClassificationList() {
     try {
         const fetchClassificationList =  yield fetch(`${baseUrl}api/packetClassification/list`, {
             method: 'GET',
+            headers
         });
         if(fetchClassificationList.status === 200) {
             const fetchClassificationListResponse = yield fetchClassificationList.json();
@@ -29,7 +35,7 @@ function* addProccessTags(action) {
     try {
         const addProccessTags = yield fetch(`${baseUrl}api/packetClassification/save`, {
             method: 'POST',
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json", ...headers },
             body:JSON.stringify(action.classificationName)
             
         });
@@ -45,7 +51,7 @@ function* addEndUserTags(action) {
     try {
         const addEndUserTags = yield fetch(`${baseUrl}api/endusertags/save`, {
             method: 'POST',
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json", ...headers },
             body:JSON.stringify(action.classificationName)
             
         });
@@ -61,6 +67,7 @@ function* fetchTagsListById(action) {
     try {
         const fetchTagsListId =  yield fetch(`${baseUrl}api/${action?.payload?.type}/getById/${action?.payload?.tagId}`, {
             method: 'GET',
+            headers
         });
         if(fetchTagsListId.status === 200) {
             const fetchTagsListResponse = yield fetchTagsListId.json();
@@ -75,6 +82,7 @@ function* fetchEndUserTagsList() {
     try {
         const fetchEndUserTags =  yield fetch(`${baseUrl}api/endusertags/list`, {
             method: 'GET',
+            headers
         });
         if(fetchEndUserTags.status === 200) {
             const fetchEndUserTagsResponse = yield fetchEndUserTags.json();
@@ -89,6 +97,7 @@ function* deleteTagById(action) {
     try {
         const deletedTag =  yield fetch(`${baseUrl}api/${action?.payload?.type}/delete/${action?.payload?.tagId}`, {
             method: 'DELETE',
+            headers
         });
         if(deletedTag.status === 200) {
             // const deleteTagsListResponse = yield deletedTag.json();
@@ -103,7 +112,7 @@ function* updateTags(action) {
     try {
         const updateTags = yield fetch(`${baseUrl}api/${action?.payload?.type}/update`, {
             method: 'PUT',
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json", ...headers },
             body:JSON.stringify(action.payload?.tagsBody)
             
         });
