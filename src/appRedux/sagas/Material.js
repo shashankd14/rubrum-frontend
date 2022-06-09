@@ -17,7 +17,7 @@ import {fetchMaterialListError,
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
 const headers = {
-    access_token: getUserToken()
+    'Authorization': getUserToken()
 };
 
 function* fetchMaterialList() {

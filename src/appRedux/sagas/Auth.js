@@ -22,7 +22,7 @@ import {
   userGoogleSignInSuccess,
   userTwitterSignInSuccess
 } from "../actions/Auth";
-
+const baseUrl = process.env.REACT_APP_BASE_URL;
 const createUserWithEmailPasswordRequest = async (email, password) =>
   await  auth.createUserWithEmailAndPassword(email, password)
     .then(authUser => authUser)

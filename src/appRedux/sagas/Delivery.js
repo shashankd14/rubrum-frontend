@@ -5,7 +5,7 @@ import {FETCH_DELIVERY_LIST_REQUEST, FETCH_DELIVERY_LIST_REQUEST_BY_ID, DELETE_D
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
 const headers = {
-    access_token: getUserToken()
+    Authorization: getUserToken()
 };
 
 function* fetchDeliveryList({ page = 1, pageSize = 15, searchValue = '', partyId = '' }) {

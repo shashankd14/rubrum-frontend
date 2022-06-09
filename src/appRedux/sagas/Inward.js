@@ -76,9 +76,10 @@ import { CUTTING_INSTRUCTION_PROCESS_ID, SLITTING_INSTRUCTION_PROCESS_ID, SLIT_C
 import { formItemLayout } from "../../routes/company/Partywise/CuttingModal";
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
-const headers = {
-    access_token: getUserToken()
-};
+
+const headers= {
+    'Authorization': getUserToken()
+  }
 
 function* fetchInwardList({ page = 1, pageSize = 15, searchValue = '', partyId = '' }) {
     try {
