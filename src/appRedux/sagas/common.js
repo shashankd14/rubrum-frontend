@@ -1,6 +1,6 @@
 
 export const getUserToken = () => {
-    return localStorage.getItem('userToken') || '';
+    return `Bearer ${localStorage.getItem('userToken') || ''}`;
 }
 
 export default {

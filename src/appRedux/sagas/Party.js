@@ -12,15 +12,15 @@ import {fetchPartyListSuccess,
 } from "../actions";
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
-const headers = {
-    'Authorization': getUserToken()
-};
+const getHeaders = () => ({
+    Authorization: getUserToken()
+});
 
 function* fetchPartyList() {
     try {
         const fetchPartyList =  yield fetch(`${baseUrl}api/party/list`, {
             method: 'GET',
-            headers
+            headers: getHeaders()
         });
         if(fetchPartyList.status === 200) {
             const fetchPartyListResponse = yield fetchPartyList.json();
@@ -36,7 +36,7 @@ function* fetchPartyListById(action) {
     try {
         const fetchPartyListId =  yield fetch(`${baseUrl}api/party/getById/${action.partyId}`, {
             method: 'GET',
-            headers
+            headers: getHeaders()
         });
         if(fetchPartyListId.status === 200) {
             const fetchPartyListResponse = yield fetchPartyListId.json();
@@ -116,7 +116,7 @@ function* addParty(action) {
         }
         const addParty = yield fetch(`${baseUrl}api/party/save`, {
             method: 'POST',
-            headers: { "Content-Type": "application/json", ...headers },
+            headers: { "Content-Type": "application/json", ...getHeaders() },
             body:JSON.stringify(reqBody)
             
         });
@@ -205,7 +205,7 @@ function* updateParty(action) {
         }
         const updateParty = yield fetch(`${baseUrl}api/party/update`, {
             method: 'PUT',
-            headers: { "Content-Type": "application/json", ...headers },
+            headers: { "Content-Type": "application/json", ...getHeaders() },
             body:JSON.stringify(reqBody)
             
         });

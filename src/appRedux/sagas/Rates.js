@@ -13,15 +13,15 @@ import {
 } from "../actions";
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
-const headers = {
-    'Authorization': getUserToken()
-};
+const getHeaders = () => ({
+    Authorization: getUserToken()
+});
 
 function* fetchRatesList() {
     try {
         const fetchRatesList =  yield fetch(`${baseUrl}api/rates/list`, {
             method: 'GET',
-            headers
+            headers: getHeaders()
         });
         if(fetchRatesList.status === 200) {
             const fetchRatesListResponse = yield fetchRatesList.json();
@@ -60,7 +60,7 @@ function* addRates(action) {
         const addRates = yield fetch(`${baseUrl}api/rates/save`, {
             method: 'POST',
             body: data,
-            headers
+            headers: getHeaders()
         });
         if (addRates.status == 200) {
             yield put(addRatesSuccess());
@@ -102,7 +102,7 @@ function* updateRates(action) {
         const updateRates = yield fetch(`${baseUrl}api/rates/update`, {
             method: 'PUT',
             body: data,
-            headers
+            headers: getHeaders()
         });
         if (updateRates.status == 200) {
             yield put(updateRatesSuccess());
@@ -117,7 +117,7 @@ function* fetchRatesListById(action) {
     try {
         const fetchRatesById =  yield fetch(`${baseUrl}api/rates/getById/${action.rateId}`, {
             method: 'GET',
-            headers
+            headers: getHeaders()
         });
         if(fetchRatesById.status === 200) {
             const fetchRatesByIdResponse = yield fetchRatesById.json();

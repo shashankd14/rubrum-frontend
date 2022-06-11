@@ -168,6 +168,8 @@ function* signOut() {
     const signOutUser = yield call(signOutRequest);
     if (signOutUser === undefined) {
       localStorage.removeItem('user_id');
+      localStorage.removeItem('userToken');
+      localStorage.removeItem('userName');
       yield put(userSignOutSuccess(signOutUser));
     } else {
       yield put(showAuthMessage(signOutUser.message));

@@ -10,15 +10,15 @@ import {
 } from "../actions";
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
-const headers = {
-    'Authorization': getUserToken()
-};
+const getHeaders = () => ({
+    Authorization: getUserToken()
+});
 
 function* sendReport(action) {
     try {
         const sendReport = yield fetch(`${baseUrl}api/reports`, {
                 method: 'POST',
-                headers: { "Content-Type": "application/json", ...headers },
+                headers: { "Content-Type": "application/json", ...getHeaders() },
                 body: JSON.stringify(action.data) 
         });
         if (sendReport.status == 200) {
