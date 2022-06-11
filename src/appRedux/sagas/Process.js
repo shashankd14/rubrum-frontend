@@ -4,15 +4,15 @@ import {FETCH_PROCESS_LIST_REQUEST} from "../../constants/ActionTypes";
 import {fetchProcessListSuccess, fetchProcessListError} from "../actions";
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
-const headers = {
-    'Authorization': getUserToken()
-};
+const getHeaders = () => ({
+    Authorization: getUserToken()
+});
 
 function* fetchProcessList() {
     try {
         const fetchProcessList =  yield fetch(`${baseUrl}api/process/list`, {
             method: 'GET',
-            headers
+            headers: getHeaders()
         });
         if(fetchProcessList.status === 200) {
             const fetchProcessListResponse = yield fetchProcessList.json();

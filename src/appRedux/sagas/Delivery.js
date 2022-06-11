@@ -4,15 +4,15 @@ import {fetchDeliveryListError, fetchDeliveryListSuccess,fetchDeliveryListByIdSu
 import {FETCH_DELIVERY_LIST_REQUEST, FETCH_DELIVERY_LIST_REQUEST_BY_ID, DELETE_DELIVERY_BY_ID } from "../../constants/ActionTypes";
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
-const headers = {
+const getHeaders = () => ({
     Authorization: getUserToken()
-};
+});
 
 function* fetchDeliveryList({ page = 1, pageSize = 15, searchValue = '', partyId = '' }) {
     try {
         const fetchDeliveryList =  yield fetch(`${baseUrl}api/delivery/list/${page}/${pageSize}?searchText=${searchValue}&partyId=${partyId}`, {
             method: 'GET',
-            headers
+            headers: getHeaders()
         });
         if(fetchDeliveryList.status === 200) {
             const fetchDeliveryListResponse = yield fetchDeliveryList.json();
@@ -29,7 +29,7 @@ function* fetchDeliveryListById(action) {
     try {
         const fetchDeliveryList =  yield fetch(`${baseUrl}api/delivery/getById/${action.deliveryId}`, {
             method: 'GET',
-            headers
+            headers: getHeaders()
         });
         if(fetchDeliveryList.status === 200) {
             const fetchDeliveryListResponse = yield fetchDeliveryList.json();
@@ -45,7 +45,7 @@ function* deleteByDeliveryId(action) {
         
         const deleteDelivery = yield fetch(`${baseUrl}api/delivery/deleteById/${action.id}`, {
             method: 'DELETE',
-            headers
+            headers: getHeaders()
         });
         if (deleteDelivery.status === 200) {
             yield put(deleteDeliveryByIdSuccess(deleteDelivery));

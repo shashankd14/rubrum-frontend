@@ -77,15 +77,15 @@ import { formItemLayout } from "../../routes/company/Partywise/CuttingModal";
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
 
-const headers= {
-    'Authorization': getUserToken()
-  }
+const getHeaders = () => ({
+    Authorization: getUserToken()
+});
 
 function* fetchInwardList({ page = 1, pageSize = 15, searchValue = '', partyId = '' }) {
     try {
         const fetchInwardList = yield fetch(`${baseUrl}api/inwardEntry/list/${page}/${pageSize}?searchText=${searchValue}&partyId=${partyId}`, {
             method: 'GET',
-            headers
+            headers: getHeaders()
         });
         if (fetchInwardList.status === 200) {
             const fetchInwardListResponse = yield fetchInwardList.json();
@@ -130,7 +130,7 @@ function* fetchInwardInstructionWIPDetails(action) {
     try {
         const fetchInwardList = yield fetch(`${baseUrl}api/instruction/listWIP`, {
             method: 'GET',
-            headers
+            headers: getHeaders()
         });
         if (fetchInwardList.status === 200) {
             const fetchInwardListResponse = yield fetchInwardList.json();
@@ -145,7 +145,7 @@ function* checkCoilDuplicate(action) {
     try {
         const checkCoilDuplicate = yield fetch(`${baseUrl}api/inwardEntry/isCoilPresent?coilNumber=${action.coilNumber}`, {
             method: 'GET',
-            headers
+            headers: getHeaders()
         });
         if (checkCoilDuplicate.status === 200) {
             const checkCoilDuplicateResponse = yield checkCoilDuplicate.json();
@@ -160,7 +160,7 @@ function* checkCustomerBatchNumber(action) {
     try {
         const checkCustomerBatchNumberResponse = yield fetch(`${baseUrl}api/inwardEntry/isCustomerBatchIdPresent?customerBatchId=${action.customerBatchId}`, {
             method: 'GET',
-            headers
+            headers: getHeaders()
         });
         if (checkCustomerBatchNumberResponse.status === 200) {
             const checkCoilDuplicateResponse = yield checkCustomerBatchNumberResponse.json();
@@ -218,7 +218,7 @@ function* submitInward(action) {
         const newInwardEntry = yield fetch(`${baseUrl}api/inwardEntry/addNew`, {
             method: 'POST',
             body: data,
-            headers
+            headers: getHeaders()
         });
         if (newInwardEntry.status == 200) {
             let submitInwardResponse = yield newInwardEntry.json()
@@ -266,7 +266,7 @@ function* updateInward(action) {
 const newInwardEntry = yield fetch(`${baseUrl}api/inwardEntry/update`, {
             
                 method: 'PUT',
-                headers: { "Content-Type": "application/json", ...headers },
+                headers: { "Content-Type": "application/json", ...getHeaders()},
                 body:JSON.stringify(insObj)
             
         });
@@ -283,7 +283,7 @@ function* fetchInwardListByParty(action) {
     try {
         const fetchPartyInwardList = yield fetch(`${baseUrl}api/inwardEntry/getByPartyId/${action.partyId}`, {
             method: 'GET',
-            headers
+            headers: getHeaders()
         });
         if (fetchPartyInwardList.status === 200) {
             const fetchPartyInwardListResponse = yield fetchPartyInwardList.json();
@@ -298,7 +298,7 @@ function* fetchPartyListById(action) {
     try {
         const fetchPartyInwardList = yield fetch(`${baseUrl}api/inwardEntry/getById/${action.inwardEntryId}`, {
             method: 'GET',
-            headers
+            headers: getHeaders()
         });
         if (fetchPartyInwardList.status === 200) {
             const fetchPartyInwardListResponse = yield fetchPartyInwardList.json();
@@ -314,7 +314,7 @@ function* fetchInwardPlanDetails(action) {
     try {
         const fetchInwardPlan = yield fetch(`${baseUrl}api/inwardEntry/getByCoilId/${action.coilNumber}`, {
             method: 'GET',
-            headers
+            headers: getHeaders()
         });
         if (fetchInwardPlan.status === 200) {
             const fetchInwardPlanResponse = yield fetchInwardPlan.json();
@@ -357,7 +357,7 @@ function* requestSaveCuttingInstruction(action) {
     try {
         const fetchPartyInwardList = yield fetch(`${baseUrl}api/instruction/save`, {
             method: 'POST',
-            headers: { "Content-Type": "application/json", ...headers },
+            headers: { "Content-Type": "application/json", ...getHeaders()},
             body: JSON.stringify(action.cuttingDetails)
         });
         if (fetchPartyInwardList.status === 201) {
@@ -382,7 +382,7 @@ function* instructionGroupsave(action) {
     try {
         const groupSaveList = yield fetch(`${baseUrl}api/instructionGroup/save`, {
             method: 'POST',
-            headers: { "Content-Type": "application/json", ...headers },
+            headers: { "Content-Type": "application/json", ...getHeaders()},
             body: JSON.stringify(action.groupDetails)
         });
         if (groupSaveList.status === 200) {
@@ -399,7 +399,7 @@ function* requestSaveSlittingInstruction(action) {
     try {
         const fetchPartyInwardList = yield fetch(`${baseUrl}api/instruction/save`, {
             method: 'POST',
-            headers: { "Content-Type": "application/json", ...headers },
+            headers: { "Content-Type": "application/json", ...getHeaders()},
             body: JSON.stringify(action.slittingDetails)
         });
         if (fetchPartyInwardList.status === 201) {
@@ -446,7 +446,7 @@ function* requestUpdateInstruction(action) {
     try {
         const updateInstruction = yield fetch(`${baseUrl}api/instruction/update`, {
             method: 'PUT',
-            headers: { "Content-Type": "application/json", ...headers },
+            headers: { "Content-Type": "application/json", ...getHeaders()},
             body: JSON.stringify(req)
         });
         if (updateInstruction.status === 200) {
@@ -463,7 +463,7 @@ function* requestGradesByMaterialId(action) {
     try {
         const fetchGradesByMaterialIdList = yield fetch(`${baseUrl}api/materialGrade/getByMaterialId/${action.materialId}`, {
             method: 'GET',
-            headers
+            headers: getHeaders()
         });
         if (fetchGradesByMaterialIdList.status === 200) {
             const fetchGradesByMaterialIdListResponse = yield fetchGradesByMaterialIdList.json();
@@ -500,7 +500,7 @@ function* postDeliveryConfirmRequest(payload) {
     }
     try {
         const postConfirm = yield fetch(`${baseUrl}api/delivery/save`, {
-            method: 'POST', headers: { "Content-Type": "application/json", ...headers }, body: JSON.stringify(req_obj)
+            method: 'POST', headers: { "Content-Type": "application/json", ...getHeaders()}, body: JSON.stringify(req_obj)
         });
         if (postConfirm.status === 200 && requestType !== 'PUT') {
             yield put(postDeliveryConfirmSuccess());
@@ -518,7 +518,7 @@ function* fetchInwardInstructionDetails(action) {
     try {
         const fetchInwardInstruction = yield fetch(`${baseUrl}api/instruction/getById/${action.instructionId}`, {
             method: 'GET',
-            headers
+            headers: getHeaders()
         });
         if (fetchInwardInstruction.status === 200) {
             const fetchInwardPlanResponse = yield fetchInwardInstruction.json();
@@ -535,12 +535,12 @@ function* saveUnprocessedDelivery(action) {
         if(action?.inwardEntryId?.motherCoilDispatch){
          fetchInwardInstruction = yield fetch(`${baseUrl}api/instruction/saveFullHandlingDispatch/${action.inwardEntryId?.inwardEntryId}`, {
             method: 'POST',
-            headers
+            headers: getHeaders()
         });
     }else{
         fetchInwardInstruction = yield fetch(`${baseUrl}api/instruction/saveUnprocessedForDelivery/${action.inwardEntryId?.inwardEntryId}`, {
             method: 'POST',
-            headers
+            headers: getHeaders()
         });
     }
         if (fetchInwardInstruction.status === 200) {
@@ -559,7 +559,7 @@ function* deleteInwardEntryById(action) {
         const fetchInwardInstruction = yield fetch(`${baseUrl}api/inwardEntry/deleteById`, {
             method: 'DELETE',
             body: data,
-            headers
+            headers: getHeaders()
         });
         if (fetchInwardInstruction.status === 200) {
             yield put(deleteInwardEntryByIdSuccess(fetchInwardInstruction));
@@ -575,7 +575,7 @@ function* deleteInstructionById(action) {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",
-                ...headers
+                ...getHeaders()
             },
             body: JSON.stringify(action.payload)
         });
@@ -597,7 +597,7 @@ function* pdfGenerateInward(action) {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/json",
-                    ...headers
+                    ...getHeaders()
                   },
                 body: JSON.stringify(action.payload.payloadObj)
             });
@@ -606,7 +606,7 @@ function* pdfGenerateInward(action) {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/json",
-                    ...headers
+                    ...getHeaders()
                   },
                 body: JSON.stringify(action.payload)
             });
@@ -640,7 +640,7 @@ function* generateDCPdf(action) {
     try {
         const pdfGenerate = yield fetch(`${baseUrl}api/pdf/delivery`, {
             method: 'POST',
-            headers: { "Content-Type": "application/json", ...headers },
+            headers: { "Content-Type": "application/json", ...getHeaders()},
             body: JSON.stringify(action.payload)
         });
         if (pdfGenerate.status === 200) {
