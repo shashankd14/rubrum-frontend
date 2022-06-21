@@ -19,6 +19,7 @@ const INIT_STATE = {
   showMessage: false,
   initURL: '',
   authUser: localStorage.getItem('userName'),
+  signedUp: false
 };
 
 
@@ -28,7 +29,7 @@ export default (state = INIT_STATE, action) => {
       return {
         ...state,
         loader: false,
-        authUser: action.payload
+        signedUp: true
       }
     }
     case SIGNIN_USER_SUCCESS: {

@@ -23,7 +23,7 @@ const SignUp = (props) => {
 
   const dispatch = useDispatch();
   const history = useHistory();
-  const {loader, alertMessage, showMessage, authUser} = useSelector(({auth}) => auth);
+  const {loader, alertMessage, showMessage, authUser, signedUp} = useSelector(({auth}) => auth);
 
 
   useEffect(() => {
@@ -32,7 +32,7 @@ const SignUp = (props) => {
         dispatch(hideMessage());
       }, 100);
     }
-    if (authUser !== null) {
+    if (authUser !== null || signedUp) {
       history.push('/');
     }
   });
@@ -149,6 +149,8 @@ const SignUp = (props) => {
             }
             {showMessage &&
             message.error(alertMessage)}
+            {signedUp && 
+            message.success('User signed up successfully')}
           </div>
         </div>
       </div>
