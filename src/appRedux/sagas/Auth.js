@@ -60,14 +60,26 @@ const signInUserWithTwitterRequest = async () =>
     .catch(error => error);
 
 function* createUserWithEmailPassword({payload}) {
-  const {email, password} = payload;
+  const { email, password, userName } = payload;
+  const body = {
+    email,
+    password,
+    userName
+  }
   try {
-    const signUpUser = yield call(createUserWithEmailPasswordRequest, email, password);
-    if (signUpUser.message) {
-      yield put(showAuthMessage(signUpUser.message));
+    const signUpUser = yield fetch("http://3.110.7.212/api/user/signup", {
+      method: 'POST',
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+  });
+   
+    if (signUpUser.status === 200) {
+      const signedUpUser = yield signUpUser.json();
+      localStorage.setItem('user_id', signedUpUser.userId);
+      localStorage.setItem("userName",signedUpUser.userName)
+      yield put(userSignUpSuccess(signedUpUser.userName));
     } else {
-      localStorage.setItem('user_id', signUpUser.user.uid);
-      yield put(userSignUpSuccess(signUpUser.user.uid));
+      yield put(showAuthMessage("Failed to Sign up"));
     }
   } catch (error) {
     yield put(showAuthMessage(error));
