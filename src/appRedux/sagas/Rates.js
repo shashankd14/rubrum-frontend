@@ -70,6 +70,33 @@ function* addRates(action) {
         yield put(addRatesError(error));
     }
 }
+function* savePriceMaster(action) {
+   
+    const data= [{ 
+        partyId:action.rates.partyId,
+        processId:action?.rates?.processId,
+        matGradeId:action?.rates?.matGradeId,
+        thicknessFrom:action?.rates?.thicknessFrom,
+        thicknessTo:action?.rates?.thicknessTo,
+        price:action?.rates?.price
+    }]
+
+    try {
+        
+
+        const addRates = yield fetch(`${baseUrl}api/pricemaster/save`, {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: getHeaders()
+        });
+        if (addRates.status == 200) {
+            yield put(addRatesSuccess());
+        } else
+            yield put(addRatesError('error'));
+    } catch (error) {
+        yield put(addRatesError(error));
+    }
+}
 
 function* updateRates(action) {
 
@@ -132,7 +159,7 @@ function* fetchRatesListById(action) {
 
 export function* watchFetchRequests() {
     yield takeLatest(FETCH_RATES_LIST_REQUEST, fetchRatesList);
-    yield takeLatest(ADD_RATES_REQUEST, addRates);
+    yield takeLatest(ADD_RATES_REQUEST, savePriceMaster);
     yield takeLatest(UPDATE_RATES_REQUEST, updateRates);
     yield takeLatest(FETCH_RATES_LIST_ID_REQUEST, fetchRatesListById);
 

@@ -36,8 +36,9 @@ const Rates = (props) => {
     const [viewMaterial, setViewMaterial] = useState(false);
     const [editRates, setEditRates] = useState(false);
     const [viewMaterialData, setViewMaterialData] = useState({});
+    const [type, setType] = useState([])
     const [filteredInwardList, setFilteredInwardList] = useState(props.rates?.ratesList || []);
-
+    const [gradeList, setGradeList] = useState([])
     const { getFieldDecorator } = props.form;
 
     const columns = [{
@@ -81,20 +82,20 @@ const Rates = (props) => {
         sorter: (a, b) => a.thicknessRate - b.thicknessRate,
         sortOrder: sortedInfo.columnKey === 'thicknessRate' && sortedInfo.order,
     },
-    {
-        title: 'Packaging charges',
-        dataIndex: 'packagingCharges',
-        key: 'packagingCharges',
-        sorter: (a, b) => a.packagingCharges - b.packagingCharges,
-        sortOrder: sortedInfo.columnKey === 'packagingCharges' && sortedInfo.order,
-    },
-    {
-        title: 'Lamination charges',
-        dataIndex: 'laminationCharges',
-        key: 'laminationCharges',
-        sorter: (a, b) => a.laminationCharges - b.laminationCharges,
-        sortOrder: sortedInfo.columnKey === 'laminationCharges' && sortedInfo.order,
-    },
+    // {
+    //     title: 'Packaging charges',
+    //     dataIndex: 'packagingCharges',
+    //     key: 'packagingCharges',
+    //     sorter: (a, b) => a.packagingCharges - b.packagingCharges,
+    //     sortOrder: sortedInfo.columnKey === 'packagingCharges' && sortedInfo.order,
+    // },
+    // {
+    //     title: 'Lamination charges',
+    //     dataIndex: 'laminationCharges',
+    //     key: 'laminationCharges',
+    //     sorter: (a, b) => a.laminationCharges - b.laminationCharges,
+    //     sortOrder: sortedInfo.columnKey === 'laminationCharges' && sortedInfo.order,
+    // },
     {
         title: 'Action',
         dataIndex: '',
@@ -169,7 +170,10 @@ const Rates = (props) => {
             setFilteredInwardList(rates.ratesList);
         }
     }, [searchValue])
-
+    useEffect(()=>{
+        const list=props.material.materialList.filter(material => material.matId === type);
+        setGradeList(list.map(item=>item.materialGrade)?.flat())
+    },[type])
     const handleChange = (pagination, filters, sorter) => {
         setSortedInfo(sorter);
         setFilteredInfo(filters)
@@ -183,7 +187,9 @@ const Rates = (props) => {
     const exportSelectedData = () => {
 
     }
-
+const handleMaterialTypeChange=(e)=>{
+    setType(e)
+}
     const deleteSelectedCoils = () => {
         console.log('dfd');
     };
@@ -227,12 +233,11 @@ const Rates = (props) => {
                                 <Card>
                                     <p><strong>Psrty Name :</strong> {viewMaterialData?.partyRates?.partyName}</p>
                                     <p><strong>Material Type :</strong> {viewMaterialData?.materialType?.description}</p>
+                                    <p><strong>Material Grade :</strong> {viewMaterialData?.materialGrade}</p>
                                     <p><strong>Process Name :</strong> {viewMaterialData?.process?.processName}</p>
                                     <p><strong>Minimum Thickness :</strong> {viewMaterialData?.minThickness}</p>
                                     <p><strong>Maximum Thickness :</strong> {viewMaterialData?.maxThickness}</p>
                                     <p><strong>Thickness Rate :</strong> {viewMaterialData?.thicknessRate}</p>
-                                    <p><strong>Packaging Charges :</strong> {viewMaterialData?.packagingCharges}</p>
-                                    <p><strong>Lamination Charges :</strong> {viewMaterialData?.laminationCharges}</p>
                                 </Card>
                             </Col>
                         </Row>
@@ -280,7 +285,7 @@ const Rates = (props) => {
                                 <Form {...formItemLayout} className="gx-pt-4">
                                     
                                     <Form.Item label="Party Name" >
-                                        {getFieldDecorator('partyRates', {
+                                        {getFieldDecorator('partyId', {
                                             rules: [{ required: true, message: 'Please enter Party name!' }],
                                             })(
                                                 <Select
@@ -293,7 +298,7 @@ const Rates = (props) => {
                                         )}
                                     </Form.Item>
                                     <Form.Item label="Process Name" >
-                                        {getFieldDecorator('process', {
+                                        {getFieldDecorator('processId', {
                                             rules: [{ required: true, message: 'Please enter Process name!' }],
                                             })(
                                                 <Select
@@ -305,41 +310,56 @@ const Rates = (props) => {
                                               </Select>
                                         )}
                                     </Form.Item>
-                                    <Form.Item label="Material Grade" >
+                                    <Form.Item label="Material Type" >
                                         {getFieldDecorator('materialType', {
-                                            rules: [{ required: true, message: 'Please enter grade!' }],
+                                            rules: [{ required: true, message: 'Please enter material Type!' }],
                                             })(
                                                 <Select
                                                 showSearch
+                                                value={type}
                                                 style={{width: 300}}
                                                 placeholder="Select a Material"
+                                                onChange={handleMaterialTypeChange}
                                               >
                                                 {props.material?.materialList?.map(material => <Option value={material.matId}>{material.description}</Option>)}
                                               </Select>
                                         )}
                                     </Form.Item>
+                                    <Form.Item label="Material Grade" >
+                                        {getFieldDecorator('matGradeId', {
+                                            rules: [{ required: true, message: 'Please enter grade!' }],
+                                            })(
+                                                <Select
+                                                showSearch
+                                                style={{width: 300}}
+                                                placeholder="Select a Grade"
+                                              >
+                                                {gradeList?.map(material => <Option value={material.gradeId}>{material.gradeName}</Option>)}
+                                              </Select>
+                                        )}
+                                    </Form.Item>
                                     <Form.Item label="Minimum Thickness">
-                                        {getFieldDecorator('minThickness', {
+                                        {getFieldDecorator('thicknessFrom', {
                                             rules: [{ required: true, message: 'Please input the GST Number!' }],
                                         })(
-                                            <Input id="minThickness" />
+                                            <Input id="thicknessFrom" />
                                         )}
                                     </Form.Item>
                                     <Form.Item label="Maximum Thickness">
-                                        {getFieldDecorator('maxThickness', {
+                                        {getFieldDecorator('thicknessTo', {
                                             rules: [{ required: true, message: 'Please input the GST Number!' }],
                                         })(
-                                            <Input id="maxThickness" />
+                                            <Input id="thicknessTo" />
                                         )}
                                     </Form.Item>
                                     <Form.Item label="Thickness Rate">
-                                        {getFieldDecorator('thicknessRate', {
+                                        {getFieldDecorator('price', {
                                             rules: [{ required: true, message: 'Please input the GST Number!' }],
                                         })(
-                                            <Input id="thicknessRate" />
+                                            <Input id="price" />
                                         )}
                                     </Form.Item>
-                                    <Form.Item label="Packaging Charges">
+                                    {/* <Form.Item label="Packaging Charges">
                                         {getFieldDecorator('packagingCharges', {
                                             rules: [{ required: true, message: 'Please input the GST Number!' }],
                                         })(
@@ -352,7 +372,7 @@ const Rates = (props) => {
                                         })(
                                             <Input id="laminationCharges" />
                                         )}
-                                    </Form.Item>
+                                    </Form.Item> */}
                                     
                                 </Form>
                             </Col>
@@ -386,6 +406,10 @@ const addRatesForm = Form.create({
                 ...props.rates?.rates?.materialType?.matId,
                 value: props.rates?.rates?.materialType?.matId || undefined,
             }),
+            materialGrade: Form.createFormField({
+                ...props.rates?.rates?.materialGrade?.gradeId,
+                value: props.rates?.rates?.materialGrade?.gradeId || undefined,
+            }),
             minThickness: Form.createFormField({
                 ...props.rates?.rates?.minThickness,
                 value: props.rates?.rates?.minThickness || '',
@@ -398,14 +422,14 @@ const addRatesForm = Form.create({
                 ...props.rates?.rates?.thicknessRate,
                 value: props.rates?.rates?.thicknessRate || '',
             }),
-            packagingCharges: Form.createFormField({
-                ...props.rates?.rates?.packagingCharges,
-                value: props.rates?.rates?.packagingCharges || '',
-            }),
-            laminationCharges: Form.createFormField({
-                ...props.rates?.rates?.laminationCharges,
-                value: props.rates?.rates?.laminationCharges || '',
-            }),
+            // packagingCharges: Form.createFormField({
+            //     ...props.rates?.rates?.packagingCharges,
+            //     value: props.rates?.rates?.packagingCharges || '',
+            // }),
+            // laminationCharges: Form.createFormField({
+            //     ...props.rates?.rates?.laminationCharges,
+            //     value: props.rates?.rates?.laminationCharges || '',
+            // }),
         };
     }
 })(Rates);
