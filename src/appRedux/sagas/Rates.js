@@ -19,7 +19,7 @@ const getHeaders = () => ({
 
 function* fetchRatesList() {
     try {
-        const fetchRatesList =  yield fetch(`${baseUrl}api/rates/list`, {
+        const fetchRatesList =  yield fetch(`${baseUrl}api/pricemaster`, {
             method: 'GET',
             headers: getHeaders()
         });
@@ -33,43 +33,7 @@ function* fetchRatesList() {
     }
 }
 
-function* addRates(action) {
 
-    const { 
-        partyRates,
-        process,
-        materialType,
-        minThickness, 
-        maxThickness, 
-        thicknessRate, 
-        packagingCharges, 
-        laminationCharges
-    } = action.rates;
-
-    try {
-        let data = new FormData();
-        data.append('partyRates', partyRates);
-        data.append('process', process);
-        data.append('materialType', materialType);
-        data.append('minThickness', parseFloat(minThickness));
-        data.append('maxThickness', parseFloat(maxThickness));
-        data.append('thicknessRate', parseFloat(thicknessRate));
-        data.append('packagingCharges', parseFloat(packagingCharges));
-        data.append('laminationCharges', parseFloat(laminationCharges));
-
-        const addRates = yield fetch(`${baseUrl}api/rates/save`, {
-            method: 'POST',
-            body: data,
-            headers: getHeaders()
-        });
-        if (addRates.status == 200) {
-            yield put(addRatesSuccess());
-        } else
-            yield put(addRatesError('error'));
-    } catch (error) {
-        yield put(addRatesError(error));
-    }
-}
 function* savePriceMaster(action) {
    
     const data= [{ 
@@ -82,12 +46,10 @@ function* savePriceMaster(action) {
     }]
 
     try {
-        
-
         const addRates = yield fetch(`${baseUrl}api/pricemaster/save`, {
             method: 'POST',
             body: JSON.stringify(data),
-            headers: getHeaders()
+            headers: { "Content-Type": "application/json", ...getHeaders() },
         });
         if (addRates.status == 200) {
             yield put(addRatesSuccess());
@@ -99,37 +61,20 @@ function* savePriceMaster(action) {
 }
 
 function* updateRates(action) {
-
-    const { 
-        values: {
-            partyRates,
-            process,
-            materialType,
-            minThickness, 
-            maxThickness, 
-            thicknessRate, 
-            packagingCharges, 
-            laminationCharges
-        },
-        id
-    } = action.rates;
-
+    const data= [{ 
+        id:action?.rates?.id,
+        partyId:action.rates.values.partyId,
+        processId:action?.rates?.values.processId,
+        matGradeId:action?.rates?.values.matGradeId,
+        thicknessFrom:action?.rates?.values.thicknessFrom,
+        thicknessTo:action?.rates?.values.thicknessTo,
+        price:action?.rates?.values.price
+    }]
     try {
-        let data = new FormData();
-        data.append('rateId', id);
-        data.append('partyRates', partyRates);
-        data.append('process', process);
-        data.append('materialType', materialType);
-        data.append('minThickness', parseFloat(minThickness));
-        data.append('maxThickness', parseFloat(maxThickness));
-        data.append('thicknessRate', parseFloat(thicknessRate));
-        data.append('packagingCharges', parseFloat(packagingCharges));
-        data.append('laminationCharges', parseFloat(laminationCharges));
-
-        const updateRates = yield fetch(`${baseUrl}api/rates/update`, {
+        const updateRates = yield fetch(`${baseUrl}api/pricemaster/update`, {
             method: 'PUT',
-            body: data,
-            headers: getHeaders()
+            body: JSON.stringify(data),
+            headers: { "Content-Type": "application/json", ...getHeaders() },
         });
         if (updateRates.status == 200) {
             yield put(updateRatesSuccess());
@@ -142,7 +87,7 @@ function* updateRates(action) {
 
 function* fetchRatesListById(action) {
     try {
-        const fetchRatesById =  yield fetch(`${baseUrl}api/rates/getById/${action.rateId}`, {
+        const fetchRatesById =  yield fetch(`${baseUrl}api/pricemaster/${action.rateId}`, {
             method: 'GET',
             headers: getHeaders()
         });

@@ -43,59 +43,46 @@ const Rates = (props) => {
 
     const columns = [{
         title: 'Rate Id',
-        dataIndex: 'rateId',
-        key: 'rateId',
+        dataIndex: 'id',
+        key: 'id',
         filters: [],
         sorter: (a, b) => {
-            return a.rateId - b.rateId
+            return a.id - b.id
         },
-        sortOrder: sortedInfo.columnKey === 'rateId' && sortedInfo.order,
+        sortOrder: sortedInfo.columnKey === 'id' && sortedInfo.order,
     },
     {
         title: 'Party Name',
-        dataIndex: 'partyRates.partyName',
-        key: 'partyRates.partyName',
+        dataIndex: 'partyId',
+        key: 'partyId',
         filters: [],
-        sorter: (a, b) => a.partyRates.partyName.length - b.partyRates.partyName.length,
-        sortOrder: sortedInfo.columnKey === 'partyRates.partyName' && sortedInfo.order,
+        sorter: (a, b) => a.partyId - b.partyId,
+        sortOrder: sortedInfo.columnKey === 'partyId' && sortedInfo.order,
     },
     {
         title: 'Process Name',
-        dataIndex: 'process.processName',
-        key: 'process.processName',
+        dataIndex: 'processId',
+        key: 'processId',
         filters: [],
-        sorter: (a, b) => a.process.processName.length - b.process.processName.length,
-        sortOrder: sortedInfo.columnKey === 'process.processName' && sortedInfo.order,
+        sorter: (a, b) => a.processId - b.processId,
+        sortOrder: sortedInfo.columnKey === 'processId' && sortedInfo.order,
     },
     {
         title: 'Material description',
-        dataIndex: 'materialType.description',
-        key: 'materialType.description',
+        dataIndex: 'matGradeId',
+        key: 'matGradeId',
         filters: [],
-        sorter: (a, b) => a.materialType.description.length - b.materialType.description.length,
-        sortOrder: sortedInfo.columnKey === 'materialType.description' && sortedInfo.order,
+        sorter: (a, b) => a.matGradeId - b.matGradeId,
+        sortOrder: sortedInfo.columnKey === 'matGradeId' && sortedInfo.order,
     },
     {
         title: 'Thickness rate',
-        dataIndex: 'thicknessRate',
-        key: 'thicknessRate',
-        sorter: (a, b) => a.thicknessRate - b.thicknessRate,
-        sortOrder: sortedInfo.columnKey === 'thicknessRate' && sortedInfo.order,
+        dataIndex: 'price',
+        key: 'price',
+        sorter: (a, b) => a.price - b.price,
+        sortOrder: sortedInfo.columnKey === 'price' && sortedInfo.order,
     },
-    // {
-    //     title: 'Packaging charges',
-    //     dataIndex: 'packagingCharges',
-    //     key: 'packagingCharges',
-    //     sorter: (a, b) => a.packagingCharges - b.packagingCharges,
-    //     sortOrder: sortedInfo.columnKey === 'packagingCharges' && sortedInfo.order,
-    // },
-    // {
-    //     title: 'Lamination charges',
-    //     dataIndex: 'laminationCharges',
-    //     key: 'laminationCharges',
-    //     sorter: (a, b) => a.laminationCharges - b.laminationCharges,
-    //     sortOrder: sortedInfo.columnKey === 'laminationCharges' && sortedInfo.order,
-    // },
+  
     {
         title: 'Action',
         dataIndex: '',
@@ -127,7 +114,7 @@ const Rates = (props) => {
       }
     const onEdit = (record,e)=>{
         e.preventDefault();
-        props.fetchRatesListById(record.rateId);
+        props.fetchRatesListById(record.id);
         setEditRates(true);
         setTimeout(() => {
             setShowAddRates(true);
@@ -158,10 +145,10 @@ const Rates = (props) => {
         const { rates } = props;
         if(searchValue) {
             const filteredData = rates?.ratesList?.filter((rate) => {
-                if(rate?.rateId?.toString() === searchValue ||
-                    rate?.partyRates?.partyName?.toLowerCase().includes(searchValue.toLowerCase()) ||
-                    rate?.materialType?.description.toLowerCase().includes(searchValue.toLowerCase()) ||
-                    rate?.process?.processName.toLowerCase().includes(searchValue)) {
+                if(rate?.id?.toString() === searchValue ||
+                    rate?.partyId?.toString()===searchValue ||
+                    rate?.matGradeId?.toString()===searchValue ||
+                    rate?.processId?.toString()===searchValue ||rate?.price?.toString()===searchValue) {
                     return rate;
                 }
             });
@@ -231,13 +218,12 @@ const handleMaterialTypeChange=(e)=>{
                         <Row>
                             <Col span={24}>
                                 <Card>
-                                    <p><strong>Psrty Name :</strong> {viewMaterialData?.partyRates?.partyName}</p>
-                                    <p><strong>Material Type :</strong> {viewMaterialData?.materialType?.description}</p>
-                                    <p><strong>Material Grade :</strong> {viewMaterialData?.materialGrade}</p>
-                                    <p><strong>Process Name :</strong> {viewMaterialData?.process?.processName}</p>
-                                    <p><strong>Minimum Thickness :</strong> {viewMaterialData?.minThickness}</p>
-                                    <p><strong>Maximum Thickness :</strong> {viewMaterialData?.maxThickness}</p>
-                                    <p><strong>Thickness Rate :</strong> {viewMaterialData?.thicknessRate}</p>
+                                    <p><strong>Psrty Name :</strong> {viewMaterialData?.partyId}</p>
+                                    <p><strong>Material Type :</strong> {viewMaterialData?.matGradeId}</p>
+                                    <p><strong>Process Name :</strong> {viewMaterialData?.processId}</p>
+                                    <p><strong>Minimum Thickness :</strong> {viewMaterialData?.thicknessFrom}</p>
+                                    <p><strong>Maximum Thickness :</strong> {viewMaterialData?.thicknessTo}</p>
+                                    <p><strong>Thickness Rate :</strong> {viewMaterialData?.price}</p>
                                 </Card>
                             </Col>
                         </Row>
@@ -252,8 +238,7 @@ const handleMaterialTypeChange=(e)=>{
                         if (editRates) {
                             props.form.validateFields((err, values) => {
                                 if (!err) {
-                                    console.log('Received values of form: ', values);
-                                    const data = { values, id: props.rates?.rates?.rateId };
+                                    const data = { values, id: props.rates?.rates?.id };
                                     props.updateRates(data);
                                     props.form.resetFields();
                                     setEditRates(false);
@@ -263,7 +248,6 @@ const handleMaterialTypeChange=(e)=>{
                         } else {
                             props.form.validateFields((err, values) => {
                                 if (!err) {
-                                    console.log('Received values of form: ', values);
                                     props.addRates(values);
                                     props.form.resetFields();
                                     setShowAddRates(false);
@@ -394,33 +378,29 @@ const mapStateToProps = state => ({
 const addRatesForm = Form.create({
     mapPropsToFields(props) {
         return {
-            partyRates: Form.createFormField({
-                ...props.rates?.rates?.partyRates?.nPartyId,
-                value: props.rates?.rates?.partyRates?.nPartyId|| undefined,
+            partyId: Form.createFormField({
+                ...props.rates?.rates?.partyId,
+                value: props.rates?.rates?.partyId|| undefined,
             }),
-            process: Form.createFormField({
-                ...props.rates?.rates?.process?.processId,
-                value: props.rates?.rates?.process?.processId || undefined,
+            processId: Form.createFormField({
+                ...props.rates?.rates?.processId,
+                value: props.rates?.rates?.processId || undefined,
             }),
-            materialType: Form.createFormField({
-                ...props.rates?.rates?.materialType?.matId,
-                value: props.rates?.rates?.materialType?.matId || undefined,
+            matGradeId: Form.createFormField({
+                ...props.rates?.rates?.matGradeId,
+                value: props.rates?.rates?.matGradeId || undefined,
             }),
-            materialGrade: Form.createFormField({
-                ...props.rates?.rates?.materialGrade?.gradeId,
-                value: props.rates?.rates?.materialGrade?.gradeId || undefined,
+            thicknessFrom: Form.createFormField({
+                ...props.rates?.rates?.thicknessFrom,
+                value: props.rates?.rates?.thicknessFrom || '',
             }),
-            minThickness: Form.createFormField({
-                ...props.rates?.rates?.minThickness,
-                value: props.rates?.rates?.minThickness || '',
+            thicknessTo: Form.createFormField({
+                ...props.rates?.rates?.thicknessTo,
+                value: props.rates?.rates?.thicknessTo || '',
             }),
-            maxThickness: Form.createFormField({
-                ...props.rates?.rates?.maxThickness,
-                value: props.rates?.rates?.maxThickness || '',
-            }),
-            thicknessRate: Form.createFormField({
-                ...props.rates?.rates?.thicknessRate,
-                value: props.rates?.rates?.thicknessRate || '',
+            price: Form.createFormField({
+                ...props.rates?.rates?.price,
+                value: props.rates?.rates?.price || '',
             }),
             // packagingCharges: Form.createFormField({
             //     ...props.rates?.rates?.packagingCharges,
