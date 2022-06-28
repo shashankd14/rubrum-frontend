@@ -529,14 +529,13 @@ const addPartyForm = Form.create({
         const pincode = party?.address2?.pincode ? [party?.address1?.pincode, party?.address2?.pincode] : [party?.address1?.pincode];
         // const tags = props?.party?.party?.tags.map(item=> item.classificationName)
         return {
-            partyName: 
-            ({
-                ...party?.partyName,
-                value: party?.partyName|| '',
+            partyName:Form.createFormField ({
+                ...props.party?.party?.partyName,
+                value: props.party?.party?.partyName|| '',
             }),
             partyNickname: Form.createFormField({
-                ...party?.partyNickname,
-                value: party?.partyNickname || '',
+                ...props.party?.party?.partyNickname,
+                value: props.party?.party?.partyNickname || '',
             }),
             phone: Form.createFormField({
                 value: phone

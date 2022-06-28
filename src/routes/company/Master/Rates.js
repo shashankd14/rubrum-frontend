@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {connect} from 'react-redux';
-import {Button, Card, Divider, Table, Modal, Row, Col, Form, Input, Select} from "antd";
+import {Button, Card, Divider, Table, Modal, Row, Col, Form, Input, Select, Checkbox} from "antd";
+import type { CheckboxChangeEvent } from 'antd/es/checkbox';
 import moment from 'moment';
 import SearchBox from "../../../components/SearchBox";
 
@@ -39,6 +40,7 @@ const Rates = (props) => {
     const [type, setType] = useState([])
     const [filteredInwardList, setFilteredInwardList] = useState(props.rates?.ratesList || []);
     const [gradeList, setGradeList] = useState([])
+    const [checked, setChecked]=useState(false)
     const { getFieldDecorator } = props.form;
 
     const columns = [{
@@ -53,27 +55,32 @@ const Rates = (props) => {
     },
     {
         title: 'Party Name',
-        dataIndex: 'partyId',
-        key: 'partyId',
+        dataIndex: 'partyName',
+        key: 'partyName',
         filters: [],
-        sorter: (a, b) => a.partyId - b.partyId,
-        sortOrder: sortedInfo.columnKey === 'partyId' && sortedInfo.order,
+        sorter: (a, b) => a.partyName - b.partyName,
+        sortOrder: sortedInfo.columnKey === 'partyName' && sortedInfo.order,
     },
     {
         title: 'Process Name',
-        dataIndex: 'processId',
-        key: 'processId',
+        dataIndex: 'processName',
+        key: 'processName',
         filters: [],
-        sorter: (a, b) => a.processId - b.processId,
-        sortOrder: sortedInfo.columnKey === 'processId' && sortedInfo.order,
+        sorter: (a, b) => a.processName - b.processName,
+        sortOrder: sortedInfo.columnKey === 'processName' && sortedInfo.order,
     },
     {
         title: 'Material description',
-        dataIndex: 'matGradeId',
-        key: 'matGradeId',
+        dataIndex: 'matGradeName',
+        key: 'matGradeName',
         filters: [],
-        sorter: (a, b) => a.matGradeId - b.matGradeId,
-        sortOrder: sortedInfo.columnKey === 'matGradeId' && sortedInfo.order,
+        sorter: (a, b) => a.matGradeName - b.matGradeName,
+        sortOrder: sortedInfo.columnKey === 'matGradeName' && sortedInfo.order,
+    },
+    {
+        title: 'Thickness Range',
+        dataIndex: 'thicknessFrom',
+        render: (text, record, index) => (record.thicknessFrom+"-"+record.thicknessTo),
     },
     {
         title: 'Thickness rate',
@@ -158,9 +165,16 @@ const Rates = (props) => {
         }
     }, [searchValue])
     useEffect(()=>{
-        const list=props.material.materialList.filter(material => material.matId === type);
+        if(checked){
+            const list=props.material.materialList.filter(item => type.includes(item.matId));
+            setGradeList(list.map(item=>item.materialGrade)?.flat())
+        }else{
+            const list=props.material.materialList.filter(material => material.matId === type);
         setGradeList(list.map(item=>item.materialGrade)?.flat())
-    },[type])
+        }
+        
+    },[type, checked])
+    
     const handleChange = (pagination, filters, sorter) => {
         setSortedInfo(sorter);
         setFilteredInfo(filters)
@@ -175,11 +189,16 @@ const Rates = (props) => {
 
     }
 const handleMaterialTypeChange=(e)=>{
+    console.log("material",e)
     setType(e)
 }
     const deleteSelectedCoils = () => {
         console.log('dfd');
     };
+    const checkboxChange = (e: CheckboxChangeEvent) => {
+        setChecked(e.target.checked)
+        console.log(`checked = ${e.target.checked}`);
+      };
 
     return (
         <div>
@@ -251,6 +270,7 @@ const handleMaterialTypeChange=(e)=>{
                                     props.addRates(values);
                                     props.form.resetFields();
                                     setShowAddRates(false);
+                                    setChecked(false)
                                 }
                             });
                         }
@@ -267,8 +287,50 @@ const handleMaterialTypeChange=(e)=>{
                         <Row>
                             <Col lg={24} md={24} sm={24} xs={24} className="gx-align-self-center">
                                 <Form {...formItemLayout} className="gx-pt-4">
-                                    
-                                    <Form.Item label="Party Name" >
+                                <Form.Item >
+                                    <Checkbox onChange={checkboxChange}>Apply to multiple fields</Checkbox>
+                                    </Form.Item>
+                                    {checked &&<><Form.Item label="Party Name">
+                                        {getFieldDecorator('partyName', {
+                                            rules: [{ required: true, message: 'Please select party name!' }],
+                                        })(
+                                            <Select
+                                             id="partyName"
+                                             mode="multiple"
+                                             style={{ width: '100%' }}
+                                            >                                                
+                                            {props.party?.partyList?.map(party => <Option value={party.nPartyId}>{party.partyName}</Option>)}
+                                            </Select>
+                                        )}
+                                        </Form.Item>
+                                        <Form.Item label="Material Type">
+                                        {getFieldDecorator('materialType', {
+                                            rules: [{ required: true, message: 'Please select material type!' }],
+                                        })(
+                                            <Select
+                                             id="materialType"
+                                             mode="multiple"
+                                             style={{ width: '100%' }}
+                                             onChange={handleMaterialTypeChange}
+                                             >{props.material?.materialList?.map(material => <Option value={material.matId}>{material.description}</Option>)}
+                                             </Select>
+                                        )}
+                                    </Form.Item>
+                                    <Form.Item label="Material Grade">
+                                        {getFieldDecorator('matGradeId', {
+                                            rules: [{ required: true, message: 'Please select material grade!' }],
+                                        })(
+                                            <Select
+                                             id="matGradeId"
+                                             mode="multiple"
+                                             style={{ width: '100%' }}
+                                             >{gradeList?.map(material => <Option value={material.gradeId}>{material.gradeName}</Option>)}
+                                             </Select>
+                                        )}
+                                    </Form.Item>
+                                    </>
+                                    }
+                                    {!checked &&<Form.Item label="Party Name" >
                                         {getFieldDecorator('partyId', {
                                             rules: [{ required: true, message: 'Please enter Party name!' }],
                                             })(
@@ -280,7 +342,7 @@ const handleMaterialTypeChange=(e)=>{
                                                 {props.party?.partyList?.map(party => <Option value={party.nPartyId}>{party.partyName}</Option>)}
                                               </Select>
                                         )}
-                                    </Form.Item>
+                                    </Form.Item>}
                                     <Form.Item label="Process Name" >
                                         {getFieldDecorator('processId', {
                                             rules: [{ required: true, message: 'Please enter Process name!' }],
@@ -294,7 +356,7 @@ const handleMaterialTypeChange=(e)=>{
                                               </Select>
                                         )}
                                     </Form.Item>
-                                    <Form.Item label="Material Type" >
+                                    {!checked &&<Form.Item label="Material Type" >
                                         {getFieldDecorator('materialType', {
                                             rules: [{ required: true, message: 'Please enter material Type!' }],
                                             })(
@@ -308,8 +370,8 @@ const handleMaterialTypeChange=(e)=>{
                                                 {props.material?.materialList?.map(material => <Option value={material.matId}>{material.description}</Option>)}
                                               </Select>
                                         )}
-                                    </Form.Item>
-                                    <Form.Item label="Material Grade" >
+                                    </Form.Item>}
+                                    {!checked && <Form.Item label="Material Grade" >
                                         {getFieldDecorator('matGradeId', {
                                             rules: [{ required: true, message: 'Please enter grade!' }],
                                             })(
@@ -321,7 +383,7 @@ const handleMaterialTypeChange=(e)=>{
                                                 {gradeList?.map(material => <Option value={material.gradeId}>{material.gradeName}</Option>)}
                                               </Select>
                                         )}
-                                    </Form.Item>
+                                    </Form.Item>}
                                     <Form.Item label="Minimum Thickness">
                                         {getFieldDecorator('thicknessFrom', {
                                             rules: [{ required: true, message: 'Please input the GST Number!' }],
@@ -343,20 +405,6 @@ const handleMaterialTypeChange=(e)=>{
                                             <Input id="price" />
                                         )}
                                     </Form.Item>
-                                    {/* <Form.Item label="Packaging Charges">
-                                        {getFieldDecorator('packagingCharges', {
-                                            rules: [{ required: true, message: 'Please input the GST Number!' }],
-                                        })(
-                                            <Input id="packagingCharges" />
-                                        )}
-                                    </Form.Item>
-                                    <Form.Item label="Lamination Charges">
-                                        {getFieldDecorator('laminationCharges', {
-                                            rules: [{ required: true, message: 'Please input the GST Number!' }],
-                                        })(
-                                            <Input id="laminationCharges" />
-                                        )}
-                                    </Form.Item> */}
                                     
                                 </Form>
                             </Col>
