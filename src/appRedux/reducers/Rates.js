@@ -1,3 +1,4 @@
+import { stubFalse } from "lodash";
 import {
     FETCH_RATES_LIST_REQUEST,
     FETCH_RATES_LIST_SUCCESS,
@@ -11,7 +12,10 @@ import {
     UPDATE_RATES_REQUEST,
     UPDATE_RATES_SUCCESS,
     UPDATE_RATES_ERROR,
-    RESET_RATES_REQUEST
+    RESET_RATES_REQUEST,
+    DELETE_RATES_BY_ID,
+    DELETE_RATES_BY_ID_SUCCESS,
+    DELETE_RATES_BY_ID_ERROR
 } from "../../constants/ActionTypes";
 
 const INIT_STATE = {
@@ -19,6 +23,8 @@ const INIT_STATE = {
     rates: {},
     loading: false,
     error: false,
+    addSuccess:false,
+    deleteSuccess: false
 };
 
 export default (state = INIT_STATE, action) => {
@@ -53,7 +59,8 @@ export default (state = INIT_STATE, action) => {
         case ADD_RATES_SUCCESS: {
             return {
                 ...state,
-                loading: false
+                loading: false,
+                addSuccess: true
             }
         }
         case ADD_RATES_ERROR: {
@@ -89,7 +96,9 @@ export default (state = INIT_STATE, action) => {
         case RESET_RATES_REQUEST: {
             return {
                 ...state,
-                rates: {}
+                rates: {},
+                deleteSuccess:false,
+                addSuccess:false
             }
         }
 
@@ -106,6 +115,25 @@ export default (state = INIT_STATE, action) => {
             }
         }
         case UPDATE_RATES_ERROR: {
+            return {
+                ...state,
+                loading: false,
+                error: true,
+            }
+        } case DELETE_RATES_BY_ID: {
+            return {
+                ...state,
+                loading: true
+            }
+        }
+        case DELETE_RATES_BY_ID_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                deleteSuccess: true
+            }
+        }
+        case DELETE_RATES_BY_ID_ERROR: {
             return {
                 ...state,
                 loading: false,
