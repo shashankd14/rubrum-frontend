@@ -586,11 +586,11 @@ const addPartyForm = Form.create({
             }),
             tags: Form.createFormField({
                 ...props.party?.party?.tags,
-                value: party?.tags?.map(item=> item.tagName)?.join() || '',
+                value: party?.tags?.map(item=> item.tagId) || [],
             }),
             endUsertags: Form.createFormField({
                 ...props.party?.party?.endUserTags,
-                value: party?.endUserTags?.map(item=> item.tagName)?.join() || '',
+                value: party?.endUserTags?.map(item=> item.tagId) || [],
             })
         };
     }

@@ -64,7 +64,7 @@ function* updateMaterial(action) {
     try {
         const { values: { description, grade, hsnCode, materialCode }, id } = action.material;
         const materialObj = {
-            materialId: id,
+            matId: id,
             material: description,
             grade,
             materialCode,

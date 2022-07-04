@@ -189,7 +189,7 @@ function* updateParty(action) {
         }
 
         const reqBody = {
-            partyId: id,
+            nPartyId: id,
             partyName,
             partyNickname,
             contactName,
@@ -214,6 +214,7 @@ function* updateParty(action) {
         } else
             yield put(updatePartyError('error'));
     } catch (error) {
+        console.log(error);
         yield put(updatePartyError(error));
     }
 }
