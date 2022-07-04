@@ -166,7 +166,7 @@ const Rates = (props) => {
     }, [searchValue])
     useEffect(()=>{
         if(checked){
-            const list=props.material.materialList.filter(item => type.includes(item.matId));
+            const list=props.material.materialList.filter(item => type?.includes(item.matId));
             setGradeList(list.map(item=>item.materialGrade)?.flat())
         }else{
             const list=props.material.materialList.filter(material => material.matId === type);
@@ -267,10 +267,21 @@ const handleMaterialTypeChange=(e)=>{
                         } else {
                             props.form.validateFields((err, values) => {
                                 if (!err) {
-                                    props.addRates(values);
+                                    if(checked){
+                                        props.addRates(values);  
+                                    }else{
+                                        const payload={
+                                          ...values,
+                                         matGradeId:[values.matGradeId],
+                                         partyId:[values.partyId]
+                                        }
+                                        props.addRates(payload);
+                                    }
+                                    
                                     props.form.resetFields();
-                                    setShowAddRates(false);
                                     setChecked(false)
+                                    setShowAddRates(false);
+                                    
                                 }
                             });
                         }
@@ -291,11 +302,11 @@ const handleMaterialTypeChange=(e)=>{
                                     <Checkbox onChange={checkboxChange}>Apply to multiple fields</Checkbox>
                                     </Form.Item>
                                     {checked &&<><Form.Item label="Party Name">
-                                        {getFieldDecorator('partyName', {
+                                        {getFieldDecorator('partyId', {
                                             rules: [{ required: true, message: 'Please select party name!' }],
                                         })(
                                             <Select
-                                             id="partyName"
+                                             id="partyId"
                                              mode="multiple"
                                              style={{ width: '100%' }}
                                             >                                                
@@ -434,9 +445,13 @@ const addRatesForm = Form.create({
                 ...props.rates?.rates?.processId,
                 value: props.rates?.rates?.processId || undefined,
             }),
+            materialType: Form.createFormField({
+                ...props.rates?.rates?.matId,
+                value: props.rates?.rates?.matId || undefined,
+            }),
             matGradeId: Form.createFormField({
-                ...props.rates?.rates?.matGradeId,
-                value: props.rates?.rates?.matGradeId || undefined,
+                ...props.rates?.rates?.matGradeName,
+                value: props.rates?.rates?.matGradeName || undefined,
             }),
             thicknessFrom: Form.createFormField({
                 ...props.rates?.rates?.thicknessFrom,
