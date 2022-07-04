@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useDebugValue, useEffect, useState} from "react";
 import {connect} from 'react-redux';
 import {Button, Card, Divider, Table, Modal, Row, Col, Form, Input, Select, Checkbox, Tabs} from "antd";
 import type { CheckboxChangeEvent } from 'antd/es/checkbox';
@@ -6,7 +6,7 @@ import moment from 'moment';
 import SearchBox from "../../../components/SearchBox";
 
 import IntlMessages from "../../../util/IntlMessages";
-import { fetchRatesList, fetchPartyList, fetchMaterialList, fetchProcessList, addRates, fetchRatesListById, updateRates, resetRates} from "../../../appRedux/actions";
+import { fetchRatesList, fetchPartyList, fetchMaterialList, fetchProcessList, addRates, fetchRatesListById, updateRates, resetRates, deleteRates} from "../../../appRedux/actions";
 import { onDeleteContact } from "../../../appRedux/actions";
 
 const Option = Select.Option;
@@ -102,7 +102,7 @@ const Rates = (props) => {
                 <Divider type="vertical"/>
                 <span className="gx-link" onClick={(e) => onEdit(record,e)}>Edit</span>
                 <Divider type="vertical"/>
-                <span className="gx-link"onClick={() => {}}>Delete</span>
+                <span className="gx-link"onClick={(e) => onDelete(record, e)}>Delete</span>
             </span>
         ),
     },
@@ -114,12 +114,9 @@ const Rates = (props) => {
         setViewMaterial(true);
     }
 
-    const onDelete = (record,key, e) => {
-        let id = []
-        id.push(record.inwardEntryId);
+    const onDelete = (record,e) => {
         e.preventDefault();
-        props.deleteInwardEntryById(id)
-        console.log(record,key)
+        props.deleteRates(record?.id)
       }
     const onEdit = (record,e)=>{
         e.preventDefault();
@@ -147,8 +144,15 @@ const Rates = (props) => {
         if (!loading && !error) {
             setFilteredInwardList(ratesList)
         }
-    }, [props.rates]);
-
+       
+    }, [props.rates.ratesList]);
+    useEffect(()=>{
+        const {addSuccess, deleteSuccess}= props.rates
+        if(addSuccess || deleteSuccess){
+            props.fetchRatesList()
+            props.resetRates()
+        }
+    },[props.rates.addSuccess, props.rates.deleteSuccess])
     useEffect(() => {
 
         const { rates } = props;
@@ -502,5 +506,6 @@ export default connect(mapStateToProps, {
     addRates,
     fetchRatesListById,
     updateRates,
-    resetRates
+    resetRates,
+    deleteRates
 })(addRatesForm);
