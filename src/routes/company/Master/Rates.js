@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {connect} from 'react-redux';
-import {Button, Card, Divider, Table, Modal, Row, Col, Form, Input, Select, Checkbox} from "antd";
+import {Button, Card, Divider, Table, Modal, Row, Col, Form, Input, Select, Checkbox, Tabs} from "antd";
 import type { CheckboxChangeEvent } from 'antd/es/checkbox';
 import moment from 'moment';
 import SearchBox from "../../../components/SearchBox";
@@ -26,7 +26,7 @@ export const formItemLayout = {
 
 
 const Rates = (props) => {
-
+    const TabPane = Tabs.TabPane;
     const [sortedInfo, setSortedInfo] = useState({
         order: 'descend',
         columnKey: 'age',
@@ -42,6 +42,8 @@ const Rates = (props) => {
     const [gradeList, setGradeList] = useState([])
     const [checked, setChecked]=useState(false)
     const { getFieldDecorator } = props.form;
+    const [tabKey, setTabKey]=useState("1")
+    const [mode, setMode] = useState('top');
 
     const columns = [{
         title: 'Rate Id',
@@ -166,7 +168,7 @@ const Rates = (props) => {
     }, [searchValue])
     useEffect(()=>{
         if(checked){
-            const list=props.material.materialList.filter(item => type.includes(item.matId));
+            const list=props.material.materialList.filter(item => type?.includes(item.matId));
             setGradeList(list.map(item=>item.materialGrade)?.flat())
         }else{
             const list=props.material.materialList.filter(material => material.matId === type);
@@ -199,7 +201,9 @@ const handleMaterialTypeChange=(e)=>{
         setChecked(e.target.checked)
         console.log(`checked = ${e.target.checked}`);
       };
-
+      const callback=(key)=>{
+        setTabKey(key)
+      }
     return (
         <div>
             <h1><IntlMessages id="sidebar.company.ratesList"/></h1>
@@ -220,13 +224,26 @@ const handleMaterialTypeChange=(e)=>{
                         <SearchBox styleName="gx-flex-1" placeholder="Search for process name or material or party name..." value={searchValue} onChange={(e) => setSearchValue(e.target.value)}/>
                     </div>
                 </div>
+                <Tabs defaultActiveKey="1"
+                    tabPosition={mode}
+                    onChange={callback}
+            ><TabPane tab="Base Rates" key="1">
                 <Table rowSelection={[]}
                     className="gx-table-responsive"
                     columns={columns}
                     dataSource={filteredInwardList}
                     onChange={handleChange}
                 />
-
+                </TabPane>
+                <TabPane tab="Additional Rates" key="2">
+                <Table rowSelection={[]}
+                    className="gx-table-responsive"
+                    columns={columns}
+                    dataSource={filteredInwardList}
+                    onChange={handleChange}
+                />
+                </TabPane>
+            </Tabs>
                 <Modal
                     title='Material Details'
                     visible={viewMaterial}
@@ -267,10 +284,21 @@ const handleMaterialTypeChange=(e)=>{
                         } else {
                             props.form.validateFields((err, values) => {
                                 if (!err) {
-                                    props.addRates(values);
+                                    if(checked){
+                                        props.addRates(values);  
+                                    }else{
+                                        const payload={
+                                          ...values,
+                                         matGradeId:[values.matGradeId],
+                                         partyId:[values.partyId]
+                                        }
+                                        props.addRates(payload);
+                                    }
+                                    
                                     props.form.resetFields();
-                                    setShowAddRates(false);
                                     setChecked(false)
+                                    setShowAddRates(false);
+                                    
                                 }
                             });
                         }
@@ -291,11 +319,11 @@ const handleMaterialTypeChange=(e)=>{
                                     <Checkbox onChange={checkboxChange}>Apply to multiple fields</Checkbox>
                                     </Form.Item>
                                     {checked &&<><Form.Item label="Party Name">
-                                        {getFieldDecorator('partyName', {
+                                        {getFieldDecorator('partyId', {
                                             rules: [{ required: true, message: 'Please select party name!' }],
                                         })(
                                             <Select
-                                             id="partyName"
+                                             id="partyId"
                                              mode="multiple"
                                              style={{ width: '100%' }}
                                             >                                                
@@ -434,9 +462,13 @@ const addRatesForm = Form.create({
                 ...props.rates?.rates?.processId,
                 value: props.rates?.rates?.processId || undefined,
             }),
+            materialType: Form.createFormField({
+                ...props.rates?.rates?.matId,
+                value: props.rates?.rates?.matId || undefined,
+            }),
             matGradeId: Form.createFormField({
-                ...props.rates?.rates?.matGradeId,
-                value: props.rates?.rates?.matGradeId || undefined,
+                ...props.rates?.rates?.matGradeName,
+                value: props.rates?.rates?.matGradeName || undefined,
             }),
             thicknessFrom: Form.createFormField({
                 ...props.rates?.rates?.thicknessFrom,
