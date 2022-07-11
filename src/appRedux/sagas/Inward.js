@@ -433,7 +433,7 @@ function* requestUpdateInstruction(action) {
             packingWeight: item.packingWeight ? item.packingWeight : 0,
             createdBy: item.createdBy ? item.createdBy : 1,
             updatedBy: item.updatedBy ? item.updatedBy : 1,
-            packetClassificationId: item.packetClassification?.classificationId || '',
+            packetClassificationId: item.packetClassification?.classificationId || item.packetClassification?.tagId || '',
             endUserTagId:item?.endUserTagsentity?.tagId || ""
         }
         return insObj;
