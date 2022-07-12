@@ -16,7 +16,9 @@ export const formItemLayout = {
     },
 };
 const AdditionalRates=(props)=>{
-    const { getFieldDecorator } = props.form;
+    const { getFieldDecorator, getFieldValue } = props.form;
+    getFieldDecorator('keys', {initialValue: [{width:0, no:0, weight:0}]});
+    const keys = getFieldValue('keys');
     const [parts, setParts]= useState("");
     const [processId, setProcessId] = useState();
     const [slits, setSlits]= useState("");
@@ -49,41 +51,100 @@ const AdditionalRates=(props)=>{
             setLength(e.target.value)
         }
       }
+      const addNewKey = () => {
+        const {form} = props;
+        const keys = form.getFieldValue('keys');
+        const nextKeys = keys.concat({width:0, no:0, weight:0});
+        form.setFieldsValue({
+            keys: nextKeys,
+        });
+    }
+    const removeKey = (k) => {
+        const {form} = props;
+        // can use data-binding to get
+        const keys = form.getFieldValue('keys');
+        // We need at least one passenger
+        if (keys.length === 1) {
+            return;
+        }
+        // can use data-binding to set
+        form.setFieldsValue({
+            keys: keys.filter(key => key !== k),
+        });
+    }
+    const multipleFields=(type)=>{
+        return <><Row>
+        <Col lg={6} md={6} sm={12} xs={24}>
+            <label>Range From</label>
+        </Col>
+        <Col lg={6} md={6} sm={12} xs={24}>
+            <label>Range To</label>
+        </Col>
+        <Col lg={6} md={6} sm={12} xs={24}>
+            <label>Additional Rate</label>
+        </Col>
+        <Col lg={6} md={6} sm={12} xs={24}>
+            <label>Action</label>
+        </Col>
+    </Row>
+    <Row>
+        {keys.map((k, index) => {
+            return (
+            <>
+                <Col lg={6} md={6} sm={12} xs={24}>
+                    <Form.Item name={"minimum"+type} >
+                        {getFieldDecorator(`minimum${type}[${index}]`, {
+                            rules: [{ required: true, message: 'Please enter width' },
+                                {pattern: "^[0-9]*$", message: 'Width greater than available width'},],
+                        })(
+                            <Input id={"minimum"+type} />
+                        )}
+                    </Form.Item>
+                </Col>
+                <Col lg={6} md={6} sm={12} xs={24}>
+                    <Form.Item name={"maximum"+type}>
+                        {getFieldDecorator(`maximum${type}[${index}]`, {
+                            rules: [{ required: true, message: 'Please enter nos' },
+                                {pattern: "^[0-9]*$", message: 'Number of slits should be a number'},],
+                        })(
+                            <Input id={"maximum"+type} />
+                        )}
+                    </Form.Item>
+                </Col>
+                <Col lg={6} md={6} sm={12} xs={24}>
+                    <Form.Item name={type+"rate"}>
+                        {getFieldDecorator(`${type}Rate[${index}]`)(
+                            <Input id={type+"rate"} />
+                        )}
+                    </Form.Item>
+                </Col>
+                <Col lg={6} md={6} sm={12} xs={24}>
+                    <div style={{height: "40px"}} className="gx-flex-row gx-align-items-center">
+                        {keys.length-1 > 0 ? <i className="icon icon-trash gx-margin" onClick={() => removeKey(k)}/> : <></>}
+                        {index == keys.length-1 ? <i className="icon icon-add-circle" onClick={() => addNewKey()}/> : <></>}
+                    </div>
+                </Col>
+            </>
+        ) }
+        )}
+    </Row></>
+      }
        const getLengthCriteria=()=>{
         return (processId ===3 || processId ===1) && <><Form.Item label="Is length a criteria?"
         >
         {getFieldDecorator('radioLength', {
                 rules: [{ required: true, message: 'Please select radio' }],
             })(
-                <Radio.Group id="radioLength" name ="Length" onChange={radioChange} value={length}>
+                <Radio.Group id="radioLength" name ="length" onChange={radioChange} value={length}>
                 <Radio value={'yesLength'}>Yes</Radio>
                 <Radio value={'noLength'}>No</Radio>
             </Radio.Group>
             )}
         
         </Form.Item>
-    {length ==="yesLength" &&<><Form.Item label="Minimum Length">
-        {getFieldDecorator('lengthFrom', {
-            rules: [{ required: true, message: 'Please input the GST Number!' }],
-        })(
-            <Input id="lengthFrom" />
-        )}
-    </Form.Item>
-    <Form.Item label="Maximum Length">
-        {getFieldDecorator('lengthTo', {
-            rules: [{ required: true, message: 'Please input the GST Number!' }],
-        })(
-            <Input id="lengthTo" />
-        )}
-    </Form.Item>
-    <Form.Item label="Additional Rate">
-        {getFieldDecorator('lengthRate', {
-            rules: [{ required: true, message: 'Please input the GST Number!' }],
-        })(
-            <Input id="lengthRate" />
-        )}
-    </Form.Item></>}</>
+    {length ==="yesLength" &&multipleFields("length")}</>
       }
+     
       return (
         <Modal
                  title='Add Additional Rates'
@@ -143,7 +204,7 @@ const AdditionalRates=(props)=>{
                                     </Form.Item>
                                     {/* Slit specific fields - start */}
                                     {(processId === 2|| processId ===3)?<>
-                                        <Form.Item label="No of parts"
+                                        <Form.Item label="No of parts alert to activate?"
                                         >
                                         {getFieldDecorator('radioParts', {
                                                 rules: [{ required: true, message: 'Please select Parts' }],
@@ -155,28 +216,8 @@ const AdditionalRates=(props)=>{
                                             )}
                                         
                                         </Form.Item>
-                                         {parts==="yesparts" && <><Form.Item label="Minimum No Of Parts">
-                                        {getFieldDecorator('noofPartsFrom', {
-                                            rules: [{ required: true, message: 'Please input the GST Number!' }],
-                                        })(
-                                            <Input id="noofPartsFrom" />
-                                        )}
-                                    </Form.Item>
-                                    <Form.Item label="Maximum No Of Parts">
-                                        {getFieldDecorator('noofPartsTo', {
-                                            rules: [{ required: true, message: 'Please input the GST Number!' }],
-                                        })(
-                                            <Input id="noofPartsTo" />
-                                        )}
-                                    </Form.Item>
-                                    <Form.Item label="Additional Rate">
-                                        {getFieldDecorator('rate', {
-                                            rules: [{ required: true, message: 'Please input the GST Number!' }],
-                                        })(
-                                            <Input id="rate" />
-                                        )}
-                                    </Form.Item></>}
-                                    <Form.Item label="No of Slits"
+                                         {parts==="yesparts" && multipleFields("parts")}
+                                    <Form.Item label="No of slits alert to activate?"
                                         >
                                         {getFieldDecorator('radioSlits', {
                                                 rules: [{ required: true, message: 'Please select Slits' }],
@@ -188,64 +229,24 @@ const AdditionalRates=(props)=>{
                                             )}
                                         
                                         </Form.Item>
-                                    {slits ==="yesslits" &&<><Form.Item label="Minimum No Of Slits">
-                                        {getFieldDecorator('noofSlitsFrom', {
-                                            rules: [{ required: true, message: 'Please input the GST Number!' }],
-                                        })(
-                                            <Input id="noofSlitsFrom" />
-                                        )}
-                                    </Form.Item>
-                                    <Form.Item label="Maximum No Of Slits">
-                                        {getFieldDecorator('noofSlitsTo', {
-                                            rules: [{ required: true, message: 'Please input the GST Number!' }],
-                                        })(
-                                            <Input id="noofSlitsTo" />
-                                        )}
-                                    </Form.Item>
-                                    <Form.Item label="Additional Rate">
-                                        {getFieldDecorator('slitsrate', {
-                                            rules: [{ required: true, message: 'Please input the GST Number!' }],
-                                        })(
-                                            <Input id="slitsrate" />
-                                        )}
-                                    </Form.Item></>}
+                                    {slits ==="yesslits" && multipleFields("slits")}
                                     {/* Slit specific fields -end */}
                                   {getLengthCriteria()}
                                     </>:getLengthCriteria()}
                                     {/* Bundle weight field start */}
-                                    <Form.Item label="Bundle Weight"
+                                    <Form.Item label="Bundle weight alert to activate?"
                                         >
                                         {getFieldDecorator('radioWeight', {
-                                                rules: [{ required: true, message: 'Please select Parts' }],
+                                                rules: [{ required: true, message: 'Please select Bundle Weight' }],
                                             })(
-                                                <Radio.Group id="radioWeight" name="bundleWeight" onChange={radioChange} value={parts}>
+                                                <Radio.Group id="radioWeight" name="bundleweight" onChange={radioChange} value={bundleWeight}>
                                                 <Radio value={'yes'}>Yes</Radio>
                                                 <Radio value={'no'}>No</Radio>
                                             </Radio.Group>
                                             )}
                                         
                                         </Form.Item>
-                                        {bundleWeight === "yes" &&<><Form.Item label="Minimum Bundle Weight">
-                                        {getFieldDecorator('bundleWeightFrom', {
-                                            rules: [{ required: true, message: 'Please input the GST Number!' }],
-                                        })(
-                                            <Input id="bundleWeightFrom" />
-                                        )}
-                                    </Form.Item>
-                                    <Form.Item label="Maximum Bundle Weight">
-                                        {getFieldDecorator('bundleWeightTo', {
-                                            rules: [{ required: true, message: 'Please input the GST Number!' }],
-                                        })(
-                                            <Input id="bundleWeightTo" />
-                                        )}
-                                    </Form.Item>
-                                    <Form.Item label="Additional Rate">
-                                        {getFieldDecorator('weightRate', {
-                                            rules: [{ required: true, message: 'Please input the GST Number!' }],
-                                        })(
-                                            <Input id="weightRate" />
-                                        )}
-                                    </Form.Item></>}
+                                        {bundleWeight === "yes" && multipleFields("bundleweight")}
                                     {/* Bundle weight field -end */}
                                     {/* Balanced coil fields-- start */}
                                     <Form.Item label="Balance coil removed and processed again"
