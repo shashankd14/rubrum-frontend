@@ -779,9 +779,9 @@ const columnsPlan=[
         data = data.flat();
         data = props.wip ? 
             (props.unfinish || props.editFinish ?
-                data.filter(item => item.process.processId === 2 && item.status.statusId ===3 && item.groupId === null) 
+                data.filter(item => item.process.processId === 2 && item.status.statusId === 3 && item.groupId === null) 
                 :
-                data.filter(item => item.process.processId === 2 && item.status.statusId !==3 && item.groupId === null)) 
+                data.filter(item => item.process.processId === 2 && item.status.statusId === 2 && item.groupId === null)) 
             :
             props.slitCut ? 
             data.filter(item => item.process.processId === 2 && item.isSlitAndCut === true ) :
