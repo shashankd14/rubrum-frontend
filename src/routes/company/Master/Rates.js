@@ -1,6 +1,6 @@
 import React, {useDebugValue, useEffect, useState} from "react";
 import {connect} from 'react-redux';
-import {Button, Card, Divider, Table, Modal, Row, Col, Form, Input, Select, Checkbox, Tabs} from "antd";
+import {Button, Card, Divider, Table, Modal, Row, Col, Form, Input, Select, Checkbox, Tabs, Radio} from "antd";
 import type { CheckboxChangeEvent } from 'antd/es/checkbox';
 import moment from 'moment';
 import SearchBox from "../../../components/SearchBox";
@@ -8,6 +8,7 @@ import SearchBox from "../../../components/SearchBox";
 import IntlMessages from "../../../util/IntlMessages";
 import { fetchRatesList, fetchPartyList, fetchMaterialList, fetchProcessList, addRates, fetchRatesListById, updateRates, resetRates, deleteRates} from "../../../appRedux/actions";
 import { onDeleteContact } from "../../../appRedux/actions";
+import AdditionalRates from "./addAdditionalRates";
 
 const Option = Select.Option;
 
@@ -44,7 +45,8 @@ const Rates = (props) => {
     const { getFieldDecorator } = props.form;
     const [tabKey, setTabKey]=useState("1")
     const [mode, setMode] = useState('top');
-
+    const [selectedRows, setSelectedRows]= useState([])
+    const [showAdditionalRates, setShowAdditionalRates]= useState(false)
     const columns = [{
         title: 'Rate Id',
         dataIndex: 'id',
@@ -208,6 +210,17 @@ const handleMaterialTypeChange=(e)=>{
       const callback=(key)=>{
         setTabKey(key)
       }
+      const rowSelection = {
+        onSelect: (record, selected, selectedRows) => {
+           console.log("record",record,selectedRows)
+           setSelectedRows(selectedRows)
+        },
+        // getCheckboxProps: (record) => ({
+        //     disabled: 
+        // }),
+        
+      };
+      
     return (
         <div>
             <h1><IntlMessages id="sidebar.company.ratesList"/></h1>
@@ -218,13 +231,17 @@ const handleMaterialTypeChange=(e)=>{
                         <Button onClick={exportSelectedData}>Export</Button>
                     </div>
                     <div className="gx-flex-row gx-w-50">
-                        <Button type="primary" icon={() => <i className="icon icon-add"/>} size="medium"
+                    {tabKey ==="2" && <Button type="primary" icon={() => <i className="icon icon-add"/>} size="medium"
+                        onClick={() => {
+                            setShowAdditionalRates(true)
+                        }}>Add Additional Rates</Button>}
+                        {tabKey ==="1" &&<Button type="primary" icon={() => <i className="icon icon-add"/>} size="medium"
                                 onClick={() => {
                                     props.resetRates();
                                     props.form.resetFields();
                                     setShowAddRates(true)
                                 }}
-                        >Add Rates</Button>
+                        >Add Rates</Button>}
                         <SearchBox styleName="gx-flex-1" placeholder="Search for process name or material or party name..." value={searchValue} onChange={(e) => setSearchValue(e.target.value)}/>
                     </div>
                 </div>
@@ -232,7 +249,7 @@ const handleMaterialTypeChange=(e)=>{
                     tabPosition={mode}
                     onChange={callback}
             ><TabPane tab="Base Rates" key="1">
-                <Table rowSelection={[]}
+                <Table rowSelection={rowSelection}
                     className="gx-table-responsive"
                     columns={columns}
                     dataSource={filteredInwardList}
@@ -258,7 +275,7 @@ const handleMaterialTypeChange=(e)=>{
                         <Row>
                             <Col span={24}>
                                 <Card>
-                                    <p><strong>Psrty Name :</strong> {viewMaterialData?.partyId}</p>
+                                    <p><strong>Party Name :</strong> {viewMaterialData?.partyId}</p>
                                     <p><strong>Material Type :</strong> {viewMaterialData?.matGradeId}</p>
                                     <p><strong>Process Name :</strong> {viewMaterialData?.processId}</p>
                                     <p><strong>Minimum Thickness :</strong> {viewMaterialData?.thicknessFrom}</p>
@@ -443,6 +460,7 @@ const handleMaterialTypeChange=(e)=>{
                         </Row>
                     </Card>
                 </Modal>
+                {showAdditionalRates && <AdditionalRates form={props.form} showAdditionalRates={showAdditionalRates}setShowAdditionalRates={(w)=>setShowAdditionalRates(w)} {...props}/>}
             </Card>
         </div>
     );
