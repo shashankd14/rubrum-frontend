@@ -552,12 +552,12 @@ const CreateCuttingDetailsForm = (props) => {
                 data = data.flat();
                 let cutsData = [...data];
                 cutsData = props.unfinish || props.editFinish ? (props.slitCut ? 
-                    cutsData.filter(item => item.process.processId === 3 && item.status.statusId ===3 && item.parentGroupId !== null) : 
-                    cutsData.filter(item => item.process.processId === 1 && item.status.statusId ===3)) :
+                    cutsData.filter(item => item.process.processId === 3 && item.status.statusId === 3 && item.parentGroupId !== null) : 
+                    cutsData.filter(item => item.process.processId === 1 && item.status.statusId === 3)) :
                 props.wip ? 
                 (props.slitCut ? 
-                    cutsData.filter(item => item.process.processId === 3 && item.status.statusId !==3 && item.parentGroupId !== null) : 
-                    cutsData.filter(item => item.process.processId === 1 && item.status.statusId !==3)) 
+                    cutsData.filter(item => item.process.processId === 3 && item.status.statusId === 2 && item.parentGroupId !== null) : 
+                    cutsData.filter(item => item.process.processId === 1 && item.status.statusId === 2)) 
                     : 
                     cutsData.filter(item => item.process.processId === 1)
                 setCuts(cutsData);

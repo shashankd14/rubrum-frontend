@@ -23,6 +23,8 @@ import {
   userTwitterSignInSuccess
 } from "../actions/Auth";
 
+const baseUrl = process.env.REACT_APP_BASE_URL;
+
 const createUserWithEmailPasswordRequest = async (email, password) =>
   await  auth.createUserWithEmailAndPassword(email, password)
     .then(authUser => authUser)
@@ -60,14 +62,26 @@ const signInUserWithTwitterRequest = async () =>
     .catch(error => error);
 
 function* createUserWithEmailPassword({payload}) {
-  const {email, password} = payload;
+  const { email, password, userName } = payload;
+  const body = {
+    email,
+    password,
+    userName
+  }
   try {
-    const signUpUser = yield call(createUserWithEmailPasswordRequest, email, password);
-    if (signUpUser.message) {
-      yield put(showAuthMessage(signUpUser.message));
+    const signUpUser = yield fetch(`${baseUrl}api/user/signup`, {
+      method: 'POST',
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+  });
+   
+    if (signUpUser.status === 200) {
+      const signedUpUser = yield signUpUser.json();
+      localStorage.setItem('user_id', signedUpUser.userId);
+      localStorage.setItem("userName",signedUpUser.userName)
+      yield put(userSignUpSuccess(signedUpUser.userName));
     } else {
-      localStorage.setItem('user_id', signUpUser.user.uid);
-      yield put(userSignUpSuccess(signUpUser.user.uid));
+      yield put(showAuthMessage("Failed to Sign up"));
     }
   } catch (error) {
     yield put(showAuthMessage(error));
@@ -139,13 +153,24 @@ function* signInUserWithTwitter() {
 
 function* signInUserWithEmailPassword({payload}) {
   const {email, password} = payload;
+  const jsonPayload ={
+    "userName":email,
+    "password":password
+  }
   try {
-    const signInUser = yield call(signInUserWithEmailPasswordRequest, email, password);
-    if (signInUser.message) {
-      yield put(showAuthMessage(signInUser.message));
+    const signInUser = yield fetch(`${baseUrl}api/login`, {
+      method: 'POST',
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(jsonPayload)
+  });
+   
+    if (signInUser.status ===200) {
+      const signeduser = yield signInUser.json()
+      yield put(userSignInSuccess(signeduser.userName));
+      localStorage.setItem("userToken",signeduser.access_token)
+      localStorage.setItem("userName",signeduser.userName)
     } else {
-      localStorage.setItem('user_id', signInUser.user.uid);
-      yield put(userSignInSuccess(signInUser.user.uid));
+      yield put(showAuthMessage("Failed to Login"));
     }
   } catch (error) {
     yield put(showAuthMessage(error));
@@ -157,6 +182,8 @@ function* signOut() {
     const signOutUser = yield call(signOutRequest);
     if (signOutUser === undefined) {
       localStorage.removeItem('user_id');
+      localStorage.removeItem('userToken');
+      localStorage.removeItem('userName');
       yield put(userSignOutSuccess(signOutUser));
     } else {
       yield put(showAuthMessage(signOutUser.message));

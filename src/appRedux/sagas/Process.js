@@ -1,13 +1,18 @@
 import {all, put, fork, takeLatest} from "redux-saga/effects";
+import { getUserToken } from './common';
 import {FETCH_PROCESS_LIST_REQUEST} from "../../constants/ActionTypes";
 import {fetchProcessListSuccess, fetchProcessListError} from "../actions";
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
+const getHeaders = () => ({
+    Authorization: getUserToken()
+});
 
 function* fetchProcessList() {
     try {
         const fetchProcessList =  yield fetch(`${baseUrl}api/process/list`, {
             method: 'GET',
+            headers: getHeaders()
         });
         if(fetchProcessList.status === 200) {
             const fetchProcessListResponse = yield fetchProcessList.json();

@@ -23,7 +23,7 @@ const SignUp = (props) => {
 
   const dispatch = useDispatch();
   const history = useHistory();
-  const {loader, alertMessage, showMessage, authUser} = useSelector(({auth}) => auth);
+  const {loader, alertMessage, showMessage, authUser, signedUp} = useSelector(({auth}) => auth);
 
 
   useEffect(() => {
@@ -32,7 +32,7 @@ const SignUp = (props) => {
         dispatch(hideMessage());
       }, 100);
     }
-    if (authUser !== null) {
+    if (authUser !== null || signedUp) {
       history.push('/');
     }
   });
@@ -111,7 +111,7 @@ const SignUp = (props) => {
                   <span><IntlMessages id="app.userAuth.or"/></span> <Link to="/signin"><IntlMessages
                   id="app.userAuth.signIn"/></Link>
                 </FormItem>
-                <div className="gx-flex-row gx-justify-content-between">
+                {/* <div className="gx-flex-row gx-justify-content-between">
                   <span>or connect with</span>
                   <ul className="gx-social-link">
                     <li>
@@ -139,7 +139,7 @@ const SignUp = (props) => {
                       }}/>
                     </li>
                   </ul>
-                </div>
+                </div> */}
               </Form>
             </div>
             {loader &&
@@ -149,6 +149,8 @@ const SignUp = (props) => {
             }
             {showMessage &&
             message.error(alertMessage)}
+            {signedUp && 
+            message.success('User signed up successfully')}
           </div>
         </div>
       </div>

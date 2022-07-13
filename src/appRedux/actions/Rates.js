@@ -10,7 +10,10 @@ import {FETCH_RATES_LIST_ERROR,
     UPDATE_RATES_REQUEST,
     UPDATE_RATES_SUCCESS,
     UPDATE_RATES_ERROR,
-    RESET_RATES_REQUEST
+    RESET_RATES_REQUEST,
+    DELETE_RATES_BY_ID,
+    DELETE_RATES_BY_ID_SUCCESS,
+    DELETE_RATES_BY_ID_ERROR
 } from "../../constants/ActionTypes";
 
 export const fetchRatesList = () => ({
@@ -71,5 +74,19 @@ export const updateRatesSuccess = () => ({
 
 export const updateRatesError = (error) => ({
     type: UPDATE_RATES_ERROR,
+    error
+});
+export const deleteRates = (payload) => ({
+    type: DELETE_RATES_BY_ID,
+    payload
+});
+
+export const deleteRatesSuccess = (rates) => ({
+    type: DELETE_RATES_BY_ID_SUCCESS,
+    rates
+});
+
+export const deleteRatesError = (error) => ({
+    type: DELETE_RATES_BY_ID_ERROR,
     error
 });

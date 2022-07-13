@@ -107,6 +107,7 @@ const SlittingWidths = (props) => {
         let cuts = props.cuts.map(i => i.plannedWeight);
        cuts = cuts.filter(i => i !== undefined)
         cuts = cuts.length > 0? cuts.reduce((total, num) => Number(total) + Number(num)) : 0
+        cuts = Number(cuts).toFixed(0)
         props.setweight(cuts)
         if(props.setDeleted){
             setWeightValue(weightValue-cuts);
@@ -370,7 +371,7 @@ const SlittingWidths = (props) => {
         if(value === 2){
             settargetWeight(0);
         }else {
-            settargetWeight((weightValue/Number(e.target.value)).toFixed(2));
+            settargetWeight((weightValue/Number(e.target.value)));
          }
     }
     const onTargetChange=  e=>{
@@ -778,9 +779,9 @@ const columnsPlan=[
         data = data.flat();
         data = props.wip ? 
             (props.unfinish || props.editFinish ?
-                data.filter(item => item.process.processId === 2 && item.status.statusId ===3 && item.groupId === null) 
+                data.filter(item => item.process.processId === 2 && item.status.statusId === 3 && item.groupId === null) 
                 :
-                data.filter(item => item.process.processId === 2 && item.status.statusId !==3 && item.groupId === null)) 
+                data.filter(item => item.process.processId === 2 && item.status.statusId === 2 && item.groupId === null)) 
             :
             props.slitCut ? 
             data.filter(item => item.process.processId === 2 && item.isSlitAndCut === true ) :
@@ -1029,7 +1030,7 @@ const columnsPlan=[
                     <Row>
                         <Form {...formItemLayout} className="login-form gx-pt-4">
                             <Form.Item>
-                                <SlittingWidthsForm setSlitEqualInstruction={setSlitEqualInstruction} setSlitInstructionList={setSlitInstructionList} slitEqualInstruction={slitEqualInstruction} slitInstructionList={slitInstructionList} setSlits={(slits) => setCuts([...cuts,...slits])} setTableData={setTableData} setweight={(w) => settweight(w.toFixed(0))} totalActualweight={(w) => setTotalActualWeight(w)} coilDetails={props.coilDetails} wip={props.wip} unfinish={props.unfinish} editFinish={props.editFinish} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth} plannedWeight ={props.plannedWeight} length={length} cuts={cuts} edit={edit} tweight={tweight} lengthValue={(lengthValue) => setLengthValue(lengthValue)} widthValue={(widthValue) => setWidthValue(widthValue)} reset={form} />
+                                <SlittingWidthsForm setSlitEqualInstruction={setSlitEqualInstruction} setSlitInstructionList={setSlitInstructionList} slitEqualInstruction={slitEqualInstruction} slitInstructionList={slitInstructionList} setSlits={(slits) => setCuts([...cuts,...slits])} setTableData={setTableData} setweight={(w) => settweight(w)} totalActualweight={(w) => setTotalActualWeight(w)} coilDetails={props.coilDetails} wip={props.wip} unfinish={props.unfinish} editFinish={props.editFinish} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth} plannedWeight ={props.plannedWeight} length={length} cuts={cuts} edit={edit} tweight={tweight} lengthValue={(lengthValue) => setLengthValue(lengthValue)} widthValue={(widthValue) => setWidthValue(widthValue)} reset={form} />
                             </Form.Item>
                         </Form>
                         <Col lg={8} md={12} sm={24} xs={24}>

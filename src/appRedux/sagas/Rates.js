@@ -1,5 +1,6 @@
 import {all, put, fork, takeLatest} from "redux-saga/effects";
-import {FETCH_RATES_LIST_REQUEST, ADD_RATES_REQUEST, FETCH_RATES_LIST_ID_REQUEST, UPDATE_RATES_REQUEST} from "../../constants/ActionTypes";
+import { getUserToken } from './common';
+import {FETCH_RATES_LIST_REQUEST, ADD_RATES_REQUEST, FETCH_RATES_LIST_ID_REQUEST, UPDATE_RATES_REQUEST,DELETE_RATES_BY_ID} from "../../constants/ActionTypes";
 import {
     fetchRatesListSuccess, 
     fetchRatesListError,
@@ -8,15 +9,21 @@ import {
     fetchRatesListByIdSuccess,
     fetchRatesListByIdError,
     updateRatesSuccess,
-    updateRatesError
+    updateRatesError,
+    deleteRatesError,
+    deleteRatesSuccess
 } from "../actions";
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
+const getHeaders = () => ({
+    Authorization: getUserToken()
+});
 
 function* fetchRatesList() {
     try {
-        const fetchRatesList =  yield fetch(`${baseUrl}api/rates/list`, {
+        const fetchRatesList =  yield fetch(`${baseUrl}api/pricemaster`, {
             method: 'GET',
+            headers: getHeaders()
         });
         if(fetchRatesList.status === 200) {
             const fetchRatesListResponse = yield fetchRatesList.json();
@@ -28,34 +35,23 @@ function* fetchRatesList() {
     }
 }
 
-function* addRates(action) {
 
-    const { 
-        partyRates,
-        process,
-        materialType,
-        minThickness, 
-        maxThickness, 
-        thicknessRate, 
-        packagingCharges, 
-        laminationCharges
-    } = action.rates;
+function* savePriceMaster(action) {
+   
+    const data= [{ 
+        partyId:action.rates.partyId,
+        processId:action?.rates?.processId,
+        matGradeId:action?.rates?.matGradeId,
+        thicknessFrom:action?.rates?.thicknessFrom,
+        thicknessTo:action?.rates?.thicknessTo,
+        price:action?.rates?.price
+    }]
 
     try {
-        let data = new FormData();
-        data.append('partyRates', partyRates);
-        data.append('process', process);
-        data.append('materialType', materialType);
-        data.append('minThickness', parseFloat(minThickness));
-        data.append('maxThickness', parseFloat(maxThickness));
-        data.append('thicknessRate', parseFloat(thicknessRate));
-        data.append('packagingCharges', parseFloat(packagingCharges));
-        data.append('laminationCharges', parseFloat(laminationCharges));
-
-        const addRates = yield fetch(`${baseUrl}api/rates/save`, {
+        const addRates = yield fetch(`${baseUrl}api/pricemaster/save`, {
             method: 'POST',
-            body: data
-            
+            body: JSON.stringify(data),
+            headers: { "Content-Type": "application/json", ...getHeaders() },
         });
         if (addRates.status == 200) {
             yield put(addRatesSuccess());
@@ -67,37 +63,20 @@ function* addRates(action) {
 }
 
 function* updateRates(action) {
-
-    const { 
-        values: {
-            partyRates,
-            process,
-            materialType,
-            minThickness, 
-            maxThickness, 
-            thicknessRate, 
-            packagingCharges, 
-            laminationCharges
-        },
-        id
-    } = action.rates;
-
+    const data= [{ 
+        id:action?.rates?.id,
+        partyId:action.rates.values.partyId,
+        processId:action?.rates?.values.processId,
+        matGradeId:action?.rates?.values.matGradeId,
+        thicknessFrom:action?.rates?.values.thicknessFrom,
+        thicknessTo:action?.rates?.values.thicknessTo,
+        price:action?.rates?.values.price
+    }]
     try {
-        let data = new FormData();
-        data.append('rateId', id);
-        data.append('partyRates', partyRates);
-        data.append('process', process);
-        data.append('materialType', materialType);
-        data.append('minThickness', parseFloat(minThickness));
-        data.append('maxThickness', parseFloat(maxThickness));
-        data.append('thicknessRate', parseFloat(thicknessRate));
-        data.append('packagingCharges', parseFloat(packagingCharges));
-        data.append('laminationCharges', parseFloat(laminationCharges));
-
-        const updateRates = yield fetch(`${baseUrl}api/rates/update`, {
+        const updateRates = yield fetch(`${baseUrl}api/pricemaster/update`, {
             method: 'PUT',
-            body: data
-            
+            body: JSON.stringify(data),
+            headers: { "Content-Type": "application/json", ...getHeaders() },
         });
         if (updateRates.status == 200) {
             yield put(updateRatesSuccess());
@@ -110,8 +89,9 @@ function* updateRates(action) {
 
 function* fetchRatesListById(action) {
     try {
-        const fetchRatesById =  yield fetch(`${baseUrl}api/rates/getById/${action.rateId}`, {
+        const fetchRatesById =  yield fetch(`${baseUrl}api/pricemaster/${action.rateId}`, {
             method: 'GET',
+            headers: getHeaders()
         });
         if(fetchRatesById.status === 200) {
             const fetchRatesByIdResponse = yield fetchRatesById.json();
@@ -122,13 +102,27 @@ function* fetchRatesListById(action) {
         yield put(fetchRatesListByIdError(error));
     }
 }
-
+function* deleteRatesById(action) {
+    try {
+        const deletedRates =  yield fetch(`${baseUrl}api/pricemaster/${action?.payload}`, {
+            method: 'DELETE',
+            headers: getHeaders()
+        });
+        if(deletedRates.status === 200) {
+            yield put(deleteRatesSuccess(deletedRates));
+        } else
+            yield put(deleteRatesError('error'));
+    } catch (error) {
+        yield put(deleteRatesError(error));
+    }
+}
 
 export function* watchFetchRequests() {
     yield takeLatest(FETCH_RATES_LIST_REQUEST, fetchRatesList);
-    yield takeLatest(ADD_RATES_REQUEST, addRates);
+    yield takeLatest(ADD_RATES_REQUEST, savePriceMaster);
     yield takeLatest(UPDATE_RATES_REQUEST, updateRates);
     yield takeLatest(FETCH_RATES_LIST_ID_REQUEST, fetchRatesListById);
+    yield takeLatest(DELETE_RATES_BY_ID, deleteRatesById);
 
 
 }

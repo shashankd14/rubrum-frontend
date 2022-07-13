@@ -1,4 +1,5 @@
 import {all, put, fork, takeLatest} from "redux-saga/effects";
+import { getUserToken } from './common';
 import { FETCH_PARTY_LIST_REQUEST, ADD_PARTY_REQUEST, FETCH_PARTY_LIST_ID_REQUEST, UPDATE_PARTY_REQUEST } from "../../constants/ActionTypes";
 import {fetchPartyListSuccess, 
     fetchPartyListError, 
@@ -11,11 +12,15 @@ import {fetchPartyListSuccess,
 } from "../actions";
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
+const getHeaders = () => ({
+    Authorization: getUserToken()
+});
 
 function* fetchPartyList() {
     try {
         const fetchPartyList =  yield fetch(`${baseUrl}api/party/list`, {
             method: 'GET',
+            headers: getHeaders()
         });
         if(fetchPartyList.status === 200) {
             const fetchPartyListResponse = yield fetchPartyList.json();
@@ -31,6 +36,7 @@ function* fetchPartyListById(action) {
     try {
         const fetchPartyListId =  yield fetch(`${baseUrl}api/party/getById/${action.partyId}`, {
             method: 'GET',
+            headers: getHeaders()
         });
         if(fetchPartyListId.status === 200) {
             const fetchPartyListResponse = yield fetchPartyListId.json();
@@ -110,7 +116,7 @@ function* addParty(action) {
         }
         const addParty = yield fetch(`${baseUrl}api/party/save`, {
             method: 'POST',
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json", ...getHeaders() },
             body:JSON.stringify(reqBody)
             
         });
@@ -183,7 +189,7 @@ function* updateParty(action) {
         }
 
         const reqBody = {
-            partyId: id,
+            nPartyId: id,
             partyName,
             partyNickname,
             contactName,
@@ -199,7 +205,7 @@ function* updateParty(action) {
         }
         const updateParty = yield fetch(`${baseUrl}api/party/update`, {
             method: 'PUT',
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json", ...getHeaders() },
             body:JSON.stringify(reqBody)
             
         });
@@ -208,6 +214,7 @@ function* updateParty(action) {
         } else
             yield put(updatePartyError('error'));
     } catch (error) {
+        console.log(error);
         yield put(updatePartyError(error));
     }
 }

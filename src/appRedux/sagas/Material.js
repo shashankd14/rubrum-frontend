@@ -1,4 +1,5 @@
 import {all, put, fork, takeLatest} from "redux-saga/effects";
+import { getUserToken } from './common';
 import {FETCH_MATERIAL_LIST_REQUEST, 
     ADD_MATERIAL_REQUEST,
     FETCH_MATERIAL_LIST_ID_REQUEST,
@@ -15,11 +16,15 @@ import {fetchMaterialListError,
 } from "../actions";
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
+const getHeaders = () => ({
+    Authorization: getUserToken()
+});
 
 function* fetchMaterialList() {
     try {
         const fetchMaterialList =  yield fetch(`${baseUrl}api/material/list`, {
             method: 'GET',
+            headers: getHeaders()
         });
         if(fetchMaterialList.status === 200) {
             const fetchMaterialListResponse = yield fetchMaterialList.json();
@@ -42,7 +47,7 @@ function* addMaterial(action) {
         }
         const addMaterial = yield fetch(`${baseUrl}api/material/save`, {
                 method: 'POST',
-                headers: { "Content-Type": "application/json" },
+                headers: { "Content-Type": "application/json", ...getHeaders() },
                 body:JSON.stringify(materialObj)
             
         });
@@ -59,7 +64,7 @@ function* updateMaterial(action) {
     try {
         const { values: { description, grade, hsnCode, materialCode }, id } = action.material;
         const materialObj = {
-            materialId: id,
+            matId: id,
             material: description,
             grade,
             materialCode,
@@ -67,7 +72,7 @@ function* updateMaterial(action) {
         }
         const updateMaterial = yield fetch(`${baseUrl}api/material/update`, {
                 method: 'PUT',
-                headers: { "Content-Type": "application/json" },
+                headers: { "Content-Type": "application/json", ...getHeaders() },
                 body:JSON.stringify(materialObj)
             
         });
@@ -84,6 +89,7 @@ function* fetchMaterialListById(action) {
     try {
         const fetchMaterialById =  yield fetch(`${baseUrl}api/material/getById/${action.materialId}`, {
             method: 'GET',
+            headers: getHeaders()
         });
         if(fetchMaterialById.status === 200) {
             const fetchMaterialByIdResponse = yield fetchMaterialById.json();
