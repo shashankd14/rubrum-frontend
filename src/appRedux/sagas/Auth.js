@@ -22,7 +22,9 @@ import {
   userGoogleSignInSuccess,
   userTwitterSignInSuccess
 } from "../actions/Auth";
+
 const baseUrl = process.env.REACT_APP_BASE_URL;
+
 const createUserWithEmailPasswordRequest = async (email, password) =>
   await  auth.createUserWithEmailAndPassword(email, password)
     .then(authUser => authUser)
@@ -67,7 +69,7 @@ function* createUserWithEmailPassword({payload}) {
     userName
   }
   try {
-    const signUpUser = yield fetch("http://3.110.7.212/api/user/signup", {
+    const signUpUser = yield fetch(`${baseUrl}api/user/signup`, {
       method: 'POST',
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body)
@@ -156,7 +158,7 @@ function* signInUserWithEmailPassword({payload}) {
     "password":password
   }
   try {
-    const signInUser = yield fetch("http://3.110.7.212/api/login", {
+    const signInUser = yield fetch(`${baseUrl}api/login`, {
       method: 'POST',
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(jsonPayload)
