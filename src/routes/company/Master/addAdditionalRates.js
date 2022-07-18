@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Card, Divider, Radio, Modal, Row, Col, Form, Input, Select, Checkbox} from "antd";
-import type { CheckboxChangeEvent } from 'antd/es/checkbox';
+import { Card, Radio, Modal, Row, Col, Form, Input, Select, Checkbox, message} from "antd";
+import {connect} from 'react-redux';
+import  { CheckboxChangeEvent } from 'antd/es/checkbox';
+import { addAdditionalRates, resetRates } from "../../../appRedux/actions";
 
 const Option = Select.Option;
 export const formItemLayout = {
@@ -17,7 +19,7 @@ export const formItemLayout = {
 };
 const AdditionalRates=(props)=>{
     const { getFieldDecorator, getFieldValue } = props.form;
-    getFieldDecorator('keys', {initialValue: [{width:0, no:0, weight:0}]});
+    const {form} = props;
     const keys = getFieldValue('keys');
     const [parts, setParts]= useState("");
     const [processId, setProcessId] = useState();
@@ -30,6 +32,16 @@ const AdditionalRates=(props)=>{
       useEffect(()=>{
         props.setShowAdditionalRates(showAdditionalRates)
       },[showAdditionalRates])
+      useEffect(()=>{
+        if(props?.rates?.addAdditionalSuccess){
+            message.success('Additional Rates added successfully',2);
+            setShowAdditionalRates(false)
+            props.resetRates()
+        }
+        if(props?.rates?.addAdditionalFailed){
+            message.error('Please try with new range',2);
+        }
+      },[props.rates.addAdditionalSuccess, props?.rates.addAdditionalFailed])
       
     const checkboxChange = (e: CheckboxChangeEvent) => {
         setChecked(e.target.checked)
@@ -51,28 +63,31 @@ const AdditionalRates=(props)=>{
             setLength(e.target.value)
         }
       }
-      const addNewKey = () => {
+      const addNewKey = (type) => {
         const {form} = props;
-        const keys = form.getFieldValue('keys');
-        const nextKeys = keys.concat({width:0, no:0, weight:0});
+        const keys = form.getFieldValue(`${type}`);
+        const nextKeys = keys.concat({rangeFrom:0, rangeTo:0, rate:0})
         form.setFieldsValue({
-            keys: nextKeys,
+            [type]: nextKeys,
         });
+        console.log("keys",form.getFieldValue(`${type}`))
     }
-    const removeKey = (k) => {
+    const removeKey = (k,type) => {
         const {form} = props;
         // can use data-binding to get
-        const keys = form.getFieldValue('keys');
+        const keys = form.getFieldValue(`${type}`);
         // We need at least one passenger
         if (keys.length === 1) {
             return;
         }
         // can use data-binding to set
         form.setFieldsValue({
-            keys: keys.filter(key => key !== k),
+            [type]: keys.filter(key => key !== k),
         });
     }
     const multipleFields=(type)=>{
+        getFieldDecorator(`${type}`, {initialValue: [{rangeFrom:0, rangeTo:0, rate:0}]});
+        const keys = form.getFieldValue(`${type}`);
         return <><Row>
         <Col lg={6} md={6} sm={12} xs={24}>
             <label>Range From</label>
@@ -90,7 +105,7 @@ const AdditionalRates=(props)=>{
     <Row>
         {keys.map((k, index) => {
             return (
-            <>
+          <>
                 <Col lg={6} md={6} sm={12} xs={24}>
                     <Form.Item name={"minimum"+type} >
                         {getFieldDecorator(`minimum${type}[${index}]`, {
@@ -99,7 +114,7 @@ const AdditionalRates=(props)=>{
                         })(
                             <Input id={"minimum"+type} />
                         )}
-                    </Form.Item>
+                </Form.Item>
                 </Col>
                 <Col lg={6} md={6} sm={12} xs={24}>
                     <Form.Item name={"maximum"+type}>
@@ -109,22 +124,22 @@ const AdditionalRates=(props)=>{
                         })(
                             <Input id={"maximum"+type} />
                         )}
-                    </Form.Item>
+                </Form.Item>
                 </Col>
                 <Col lg={6} md={6} sm={12} xs={24}>
                     <Form.Item name={type+"rate"}>
                         {getFieldDecorator(`${type}Rate[${index}]`)(
                             <Input id={type+"rate"} />
                         )}
-                    </Form.Item>
+                </Form.Item>
                 </Col>
                 <Col lg={6} md={6} sm={12} xs={24}>
                     <div style={{height: "40px"}} className="gx-flex-row gx-align-items-center">
-                        {keys.length-1 > 0 ? <i className="icon icon-trash gx-margin" onClick={() => removeKey(k)}/> : <></>}
-                        {index == keys.length-1 ? <i className="icon icon-add-circle" onClick={() => addNewKey()}/> : <></>}
+                        {keys.length-1 > 0 ? <i className="icon icon-trash gx-margin" onClick={() => removeKey(k,type)}/> : <></>}
+                        {index == keys.length-1 ? <i className="icon icon-add-circle" onClick={() => addNewKey(type)}/> : <></>}
                     </div>
                 </Col>
-            </>
+              </>
         ) }
         )}
     </Row></>
@@ -144,6 +159,79 @@ const AdditionalRates=(props)=>{
         </Form.Item>
     {length ==="yesLength" &&multipleFields("length")}</>
       }
+      const handleOk=(e)=>{
+        e.preventDefault();
+        form.validateFields((err,values)=>{
+            let payload = {
+                partyId: [values?.partyId],
+                processId: values?.processId
+            }
+           
+            let payloadArray =[]
+            if(values?.radioParts ==="yesparts") {
+                const parts =values?.minimumparts?.map((item,idx) =>{
+                    payload={
+                        ...payload,
+                        additionalPriceId:"1",
+                        rangeFrom: item,
+                        rangeTo:values?.maximumparts[idx],
+                        price:values?.partsRate[idx]
+                    }
+                    payloadArray.push(payload)
+                })
+                // payloadArray.push(...parts)
+            }
+            if(values?.radioSlits ==="yesslits"){
+               const slits=values?.minimumslits?.map((item, idx)=>{
+                    payload={
+                        ...payload,
+                        additionalPriceId:"3",
+                        rangeFrom: item,
+                        rangeTo:values?.maximumslits[idx],
+                        price:values?.slitsRate[idx]
+                    }
+                    payloadArray.push(payload)
+                })
+               
+            }if(values?.radioWeight ==="yes"){
+                const bundleweight =values?.minimumbundleweight?.map((item, idx)=>{
+                    payload={
+                        ...payload,
+                        additionalPriceId:"3",
+                        rangeFrom: item,
+                        rangeTo:values?.maximumbundleweight[idx],
+                        price: values?.bundleweightRate[idx]
+                    }
+                    payloadArray.push(payload)
+                })
+                
+            }
+            if(values?.radioLength ==="yesLength"){
+                const length =values?.minimumlength?.map((item, idx)=>{
+                    payload={
+                        ...payload,
+                        additionalPriceId:"4",
+                        rangeFrom: item,
+                        rangeTo:values?.maximumlength[idx],
+                        price: values?.lengthRate[idx]
+                    }
+                    payloadArray.push(payload)
+                })
+                
+            }if(values?.balanceCoil ==="yesBalance"){
+                
+                    payload={
+                        ...payload,
+                        additionalPriceId:"5",
+                        rangeFrom:"",
+                        rangeTo:"",
+                        price:values?.balanceCoilRate
+                    }
+                payloadArray.push(payload)
+            }
+           props.addAdditionalRates(payloadArray)
+        })
+      }
      
       return (
         <Modal
@@ -151,6 +239,7 @@ const AdditionalRates=(props)=>{
                  visible={props.showAdditionalRates}
                  width={900}
                  onCancel={()=>setShowAdditionalRates(false)}
+                 onOk={handleOk}
                 >
                     <Card className="gx-card">
                         <Row>
@@ -158,117 +247,108 @@ const AdditionalRates=(props)=>{
                                 <Form {...formItemLayout} className="gx-pt-4">
                                 <Form.Item >
                                     <Checkbox onChange={checkboxChange}>Apply to multiple fields</Checkbox>
-                                    </Form.Item>
-                                    {checked &&<><Form.Item label="Party Name">
-                                        {getFieldDecorator('partyId', {
+                                </Form.Item>
+                                {checked &&
+                                <><Form.Item label="Party Name">
+                                    {getFieldDecorator('partyId', {
                                             rules: [{ required: true, message: 'Please select party name!' }],
-                                        })(
-                                            <Select
-                                             id="partyId"
-                                             mode="multiple"
-                                             style={{ width: '100%' }}
-                                            >                                                
-                                            {props.party?.partyList?.map(party => <Option value={party.nPartyId}>{party.partyName}</Option>)}
-                                            </Select>
-                                        )}
-                                        </Form.Item>
-                                       
-                                    </>
-                                    }
-                                    {!checked &&<Form.Item label="Party Name" >
-                                        {getFieldDecorator('partyId', {
-                                            rules: [{ required: true, message: 'Please enter Party name!' }],
-                                            })(
-                                                <Select
-                                                showSearch
-                                                style={{width: 300}}
-                                                placeholder="Select a Party"
-                                              >
-                                                {props.party?.partyList?.map(party => <Option value={party.nPartyId}>{party.partyName}</Option>)}
-                                              </Select>
-                                        )}
-                                    </Form.Item>}
-                                    <Form.Item label="Process Name" >
-                                        {getFieldDecorator('processId', {
-                                            rules: [{ required: true, message: 'Please enter Process name!' }],
-                                            })(
-                                                <Select
-                                                showSearch
-                                                style={{width: 300}}
-                                                placeholder="Select a Process"
-                                                onChange={processSelectChange}
-                                              >
-                                                {props.process?.processList?.map(process => <Option value={process.processId}>{process.processName}</Option>)}
-                                              </Select>
-                                        )}
-                                    </Form.Item>
-                                    {/* Slit specific fields - start */}
-                                    {(processId === 2|| processId ===3)?<>
-                                        <Form.Item label="No of parts alert to activate?"
-                                        >
-                                        {getFieldDecorator('radioParts', {
-                                                rules: [{ required: true, message: 'Please select Parts' }],
-                                            })(
-                                                <Radio.Group id="radioParts" name="parts" onChange={radioChange} value={parts}>
-                                                <Radio value={'yesparts'}>Yes</Radio>
-                                                <Radio value={'noparts'}>No</Radio>
-                                            </Radio.Group>
-                                            )}
-                                        
-                                        </Form.Item>
-                                         {parts==="yesparts" && multipleFields("parts")}
-                                    <Form.Item label="No of slits alert to activate?"
-                                        >
-                                        {getFieldDecorator('radioSlits', {
-                                                rules: [{ required: true, message: 'Please select Slits' }],
-                                            })(
-                                                <Radio.Group id="radioSlits" name ="slits" onChange={radioChange} value={slits}>
-                                                <Radio value={'yesslits'}>Yes</Radio>
-                                                <Radio value={'noslits'}>No</Radio>
-                                            </Radio.Group>
-                                            )}
-                                        
-                                        </Form.Item>
-                                    {slits ==="yesslits" && multipleFields("slits")}
-                                    {/* Slit specific fields -end */}
-                                  {getLengthCriteria()}
-                                    </>:getLengthCriteria()}
-                                    {/* Bundle weight field start */}
-                                    <Form.Item label="Bundle weight alert to activate?"
-                                        >
-                                        {getFieldDecorator('radioWeight', {
-                                                rules: [{ required: true, message: 'Please select Bundle Weight' }],
-                                            })(
-                                                <Radio.Group id="radioWeight" name="bundleweight" onChange={radioChange} value={bundleWeight}>
-                                                <Radio value={'yes'}>Yes</Radio>
-                                                <Radio value={'no'}>No</Radio>
-                                            </Radio.Group>
-                                            )}
-                                        
-                                        </Form.Item>
-                                        {bundleWeight === "yes" && multipleFields("bundleweight")}
-                                    {/* Bundle weight field -end */}
-                                    {/* Balanced coil fields-- start */}
-                                    <Form.Item label="Balance coil removed and processed again"
-                                        >
-                                        {getFieldDecorator('balanceCoil', {
-                                                rules: [{ required: true, message: 'Please select Slits' }],
-                                            })(
-                                                <Radio.Group id="balanceCoil" name ="balanceCoil" onChange={radioChange} value={balanceCoil}>
-                                                <Radio value={'yesBalance'}>Yes</Radio>
-                                                <Radio value={'noBalance'}>No</Radio>
-                                            </Radio.Group>
-                                            )}
-                                        
-                                        </Form.Item>
-                                        {balanceCoil ==="yesBalance" &&<><Form.Item label="Additional Rate">
-                                        {getFieldDecorator('balanceCoilRate', {
-                                            rules: [{ required: true, message: 'Please input the Rate!' }],
-                                        })(
-                                            <Input id="balanceCoilRate" />
-                                        )}
-                                    </Form.Item></>}
-                                    {/* Balanced coil fields - end */}
+                                    })(
+                                    <Select
+                                    id="partyId"
+                                    mode="multiple"
+                                    style={{ width: '100%' }}
+                                    >                                                
+                                    {props.party?.partyList?.map(party => <Option value={party.nPartyId}>{party.partyName}</Option>)}
+                                    </Select>
+                                    )}
+                                </Form.Item>
+                                </>}
+                                {!checked &&<Form.Item label="Party Name" >
+                                   {getFieldDecorator('partyId', {
+                                    rules: [{ required: true, message: 'Please enter Party name!' }],
+                                })(
+                                <Select
+                                 showSearch
+                                style={{width: 300}}
+                                placeholder="Select a Party"
+                                >
+                                {props.party?.partyList?.map(party => <Option value={party.nPartyId}>{party.partyName}</Option>)}
+                               </Select>
+                                )}
+                               </Form.Item>}
+                                <Form.Item label="Process Name" >
+                                {getFieldDecorator('processId', {
+                                    rules: [{ required: true, message: 'Please enter Process name!' }],
+                                })(
+                                    <Select
+                                    showSearch
+                                    style={{width: 300}}
+                                    placeholder="Select a Process"
+                                    onChange={processSelectChange}
+                                   >
+                                    {props.process?.processList?.map(process => <Option value={process.processId}>{process.processName}</Option>)}
+                                   </Select>
+                                )}
+                                </Form.Item>
+                                {/* Slit specific fields - start */}
+                                {(processId === 2|| processId ===3)?<>
+                                <Form.Item label="No of parts alert to activate?">
+                                {getFieldDecorator('radioParts', {
+                                   rules: [{ required: true, message: 'Please select Parts' }],
+                                })(
+                                    <Radio.Group id="radioParts" name="parts" onChange={radioChange} value={parts}>
+                                        <Radio value={'yesparts'}>Yes</Radio>
+                                        <Radio value={'noparts'}>No</Radio>
+                                    </Radio.Group>
+                                )}
+                                </Form.Item>
+                                {parts==="yesparts" && multipleFields("parts")}
+                                <Form.Item label="No of slits alert to activate?">
+                                    {getFieldDecorator('radioSlits', {
+                                     rules: [{ required: true, message: 'Please select Slits' }],
+                                })(
+                                    <Radio.Group id="radioSlits" name ="slits" onChange={radioChange} value={slits}>
+                                        <Radio value={'yesslits'}>Yes</Radio>
+                                        <Radio value={'noslits'}>No</Radio>
+                                    </Radio.Group>
+                                )}                                    
+                                </Form.Item>
+                                {slits ==="yesslits" && multipleFields("slits")}
+                                {/* Slit specific fields -end */}
+                                {getLengthCriteria()}
+                                </>:getLengthCriteria()}
+                                {/* Bundle weight field start */}
+                                <Form.Item label="Bundle weight alert to activate?">
+                                {getFieldDecorator('radioWeight', {
+                                    rules: [{ required: true, message: 'Please select Bundle Weight' }],
+                                })(
+                                    <Radio.Group id="radioWeight" name="bundleweight" onChange={radioChange} value={bundleWeight}>
+                                        <Radio value={'yes'}>Yes</Radio>
+                                        <Radio value={'no'}>No</Radio>
+                                    </Radio.Group>
+                                )}
+                                </Form.Item>
+                                {bundleWeight === "yes" && multipleFields("bundleweight")}
+                                {/* Bundle weight field -end */}
+                               {/* Balanced coil fields-- start */}
+                               <Form.Item label="Balance coil removed and processed again">
+                                {getFieldDecorator('balanceCoil', {
+                                    rules: [{ required: true, message: 'Please select Slits' }],
+                               })(
+                                    <Radio.Group id="balanceCoil" name ="balanceCoil" onChange={radioChange} value={balanceCoil}>
+                                        <Radio value={'yesBalance'}>Yes</Radio>
+                                        <Radio value={'noBalance'}>No</Radio>
+                                    </Radio.Group>
+                                 )}
+                                </Form.Item>
+                               {balanceCoil ==="yesBalance" &&<><Form.Item label="Additional Rate">
+                               {getFieldDecorator('balanceCoilRate', {
+                                    rules: [{ required: true, message: 'Please input the Rate!' }],
+                                })(
+                                    <Input id="balanceCoilRate" />
+                                )}
+                                </Form.Item></>}
+                                {/* Balanced coil fields - end */}
                                 </Form>
                             </Col>
                         </Row>
@@ -276,4 +356,26 @@ const AdditionalRates=(props)=>{
                </Modal>
     )
 }
-export default AdditionalRates
+const mapStateToProps = state => ({
+    party: state.party,
+    process: state.process,
+    rates: state.rates
+});
+const addAdditionalRatesForm = Form.create({
+    mapPropsToFields(props) {
+        return {
+            partyId: Form.createFormField({
+                ...props.rates?.rates?.partyId,
+                value: props.rates?.rates?.partyId|| undefined,
+            }),
+            processId: Form.createFormField({
+                ...props.rates?.rates?.processId,
+                value: props.rates?.rates?.processId || undefined,
+            }),
+        };
+    }
+})(AdditionalRates);
+export default connect(mapStateToProps, {
+   addAdditionalRates,
+   resetRates
+})(addAdditionalRatesForm);

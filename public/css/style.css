@@ -37346,3 +37346,7 @@ textarea.gx-chat-textarea {
   border: dotted;
   cursor: pointer;
 }
+
+.additional_price_select {
+  margin-left:25px !important
+}

@@ -1,12 +1,24 @@
-import React, {useDebugValue, useEffect, useState} from "react";
+import React, { useEffect, useState} from "react";
 import {connect} from 'react-redux';
 import {Button, Card, Divider, Table, Modal, Row, Col, Form, Input, Select, Checkbox, Tabs, Radio} from "antd";
-import type { CheckboxChangeEvent } from 'antd/es/checkbox';
+import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import moment from 'moment';
 import SearchBox from "../../../components/SearchBox";
+import EditAdditionalRates from "./editAdditionalRates";
 
 import IntlMessages from "../../../util/IntlMessages";
-import { fetchRatesList, fetchPartyList, fetchMaterialList, fetchProcessList, addRates, fetchRatesListById, updateRates, resetRates, deleteRates} from "../../../appRedux/actions";
+import { fetchRatesList, 
+    fetchPartyList, 
+    fetchMaterialList, 
+    fetchProcessList, 
+    addRates,
+    fetchAdditionalPriceList,
+    fetchAdditionalPriceListById,
+    getStaticList, 
+    fetchRatesListById,
+     updateRates,
+      resetRates, 
+      deleteRates} from "../../../appRedux/actions";
 import { onDeleteContact } from "../../../appRedux/actions";
 import AdditionalRates from "./addAdditionalRates";
 
@@ -47,6 +59,11 @@ const Rates = (props) => {
     const [mode, setMode] = useState('top');
     const [selectedRows, setSelectedRows]= useState([])
     const [showAdditionalRates, setShowAdditionalRates]= useState(false)
+    const [staticList, setStaticList]=useState([])
+    const [selectedProcessId, setSelectedProcessId]=useState("");
+    const [additionPriceList, setAdditionalPriceList]= useState([])
+    const [viewAdditionalRates, setViewAdditionalRates]=useState(false)
+    const [editPriceModal, setEditPriceModal]=useState(false)
     const columns = [{
         title: 'Rate Id',
         dataIndex: 'id',
@@ -109,11 +126,62 @@ const Rates = (props) => {
         ),
     },
     ];
+    const additionalPriceColumns = [
+    {
+        title: 'Party Name',
+        dataIndex: 'partyName',
+        key: 'partyName',
+        filters: [],
+        sorter: (a, b) => a.partyName - b.partyName,
+        sortOrder: sortedInfo.columnKey === 'partyName' && sortedInfo.order,
+    },
+    {
+        title: 'Process Name',
+        dataIndex: 'processName',
+        key: 'processName',
+        filters: [],
+        sorter: (a, b) => a.processName - b.processName,
+        sortOrder: sortedInfo.columnKey === 'processName' && sortedInfo.order,
+    },
+    {
+        title: 'Range',
+        dataIndex: 'thicknessFrom',
+        render: (text, record, index) => (record.rangeFrom+"-"+record.rangeTo),
+    },
+    {
+        title: 'Additional Rates',
+        dataIndex: 'price',
+        key: 'price',
+        sorter: (a, b) => a.price - b.price,
+        sortOrder: sortedInfo.columnKey === 'price' && sortedInfo.order,
+    },
+  
+    {
+        title: 'Action',
+        dataIndex: '',
+        key: 'x',
+        render: (text, record, index) => (
+            <span>
+                <span className="gx-link" onClick={(e) => onView(record, e)}>View</span>
+                <Divider type="vertical"/>
+                <span className="gx-link" onClick={(e) => onEdit(record,e)}>Edit</span>
+                <Divider type="vertical"/>
+                <span className="gx-link"onClick={(e) => onDelete(record, e)}>Delete</span>
+            </span>
+        ),
+    },
+    ];
 
     const onView = (record, e) => {
         e.preventDefault();
-        setViewMaterialData(record);
+        if(tabKey === "1"){
+            setViewMaterialData(record);
         setViewMaterial(true);
+        }else{
+            setViewMaterialData(record);
+        setViewAdditionalRates(true);
+        }
+        
     }
 
     const onDelete = (record,e) => {
@@ -122,11 +190,21 @@ const Rates = (props) => {
       }
     const onEdit = (record,e)=>{
         e.preventDefault();
+        if(tabKey ==="1"){
         props.fetchRatesListById(record.id);
         setEditRates(true);
         setTimeout(() => {
             setShowAddRates(true);
         }, 1000);
+        }
+       else{
+        props.fetchAdditionalPriceListById(record.id);
+            setTimeout(()=>{
+                setEditPriceModal(true)
+            },1000)
+        
+       }
+       
                 
     }
 
@@ -134,6 +212,7 @@ const Rates = (props) => {
         props.fetchPartyList();
         props.fetchMaterialList();
         props.fetchProcessList();
+        props.fetchAdditionalPriceList()
     }, []);
 
 
@@ -154,7 +233,11 @@ const Rates = (props) => {
             props.fetchRatesList()
             props.resetRates()
         }
-    },[props.rates.addSuccess, props.rates.deleteSuccess])
+        if(props?.rates?.staticList){
+            setStaticList(props.rates.staticList)
+        }
+    },[props.rates.addSuccess, props.rates.deleteSuccess, props.rates.staticList])
+    
     useEffect(() => {
 
         const { rates } = props;
@@ -193,17 +276,12 @@ const Rates = (props) => {
         setFilteredInfo(null);
     };
 
-    const exportSelectedData = () => {
-
-    }
 const handleMaterialTypeChange=(e)=>{
     console.log("material",e)
     setType(e)
 }
-    const deleteSelectedCoils = () => {
-        console.log('dfd');
-    };
-    const checkboxChange = (e: CheckboxChangeEvent) => {
+
+ const checkboxChange = (e: CheckboxChangeEvent) => {
         setChecked(e.target.checked)
         console.log(`checked = ${e.target.checked}`);
       };
@@ -220,15 +298,23 @@ const handleMaterialTypeChange=(e)=>{
         // }),
         
       };
-      
+     
+      const handleProcessChange=(e)=>{
+        props.getStaticList(e)
+        setSelectedProcessId(e)
+      }
+      const handleStaticChange=(e)=>{
+        const list = props?.rates?.additionalRatesList.filter(item => item?.additionalPriceId=== e && item.processId === selectedProcessId)
+        setAdditionalPriceList(list)
+    }
     return (
         <div>
             <h1><IntlMessages id="sidebar.company.ratesList"/></h1>
             <Card>
                 <div className="gx-flex-row gx-flex-1">
                     <div className="table-operations gx-col">
-                        <Button onClick={deleteSelectedCoils}>Delete</Button>
-                        <Button onClick={exportSelectedData}>Export</Button>
+                        <Button>Delete</Button>
+                        <Button>Export</Button>
                     </div>
                     <div className="gx-flex-row gx-w-50">
                     {tabKey ==="2" && <Button type="primary" icon={() => <i className="icon icon-add"/>} size="medium"
@@ -256,17 +342,46 @@ const handleMaterialTypeChange=(e)=>{
                     onChange={handleChange}
                 />
                 </TabPane>
-                <TabPane tab="Additional Rates" key="2">
-                <Table rowSelection={[]}
+                <TabPane tab="Additional Rates" key="2" className="additionalTab">
+                <Form.Item>
+                    {getFieldDecorator('processID', {
+                        rules: [{ required: true, message: 'Please enter Process name!' }],
+                    })(
+                    <Select
+                        id="processID"
+                        style={{width: 300}}
+                        className="additional_price_select"
+                        placeholder="Select a Process"
+                        onChange={handleProcessChange}
+                    >
+                    {props.process?.processList?.map(process => <Option value={process.processId}>{process?.processName || selectedProcessId}</Option>)}
+                    </Select>
+                )}
+                </Form.Item>
+                { staticList.length>0 && <><Form.Item>
+                    {getFieldDecorator('staticList', {
+                        rules: [{ required: true, message: 'Please enter Process name!' }],
+                    })(
+                    <Select
+                        style={{width: 300}}
+                        placeholder="Select"
+                        className="additional_price_select"
+                        onChange={handleStaticChange}
+                    >
+                    {staticList?.map(item => <Option value={item.id}>{item.priceDesc}</Option>)}
+                    </Select>
+                )}
+                </Form.Item></>}
+                {additionPriceList.length>0 && <><Table rowSelection={[]}
                     className="gx-table-responsive"
-                    columns={columns}
-                    dataSource={filteredInwardList}
+                    columns={additionalPriceColumns}
+                    dataSource={additionPriceList}
                     onChange={handleChange}
-                />
+                /></>}
                 </TabPane>
             </Tabs>
                 <Modal
-                    title='Material Details'
+                    title='Rates Details'
                     visible={viewMaterial}
                     onOk={() => setViewMaterial(false)}
                     onCancel={() => setViewMaterial(false)}
@@ -286,7 +401,25 @@ const handleMaterialTypeChange=(e)=>{
                         </Row>
                     </Card>
                 </Modal>
-
+                <Modal
+                 title='Additional Rates Details'
+                 visible={viewAdditionalRates}
+                 onOk={() => setViewAdditionalRates(false)}
+                 onCancel={() => setViewAdditionalRates(false)}>
+                <Card className="gx-card">
+                        <Row>
+                            <Col span={24}>
+                                <Card>
+                                    <p><strong>Party Name :</strong> {viewMaterialData?.partyId}</p>
+                                    <p><strong>Process Name :</strong> {viewMaterialData?.processId}</p>
+                                    <p><strong>Minimum Range :</strong> {viewMaterialData?.rangeFrom}</p>
+                                    <p><strong>Maximum Range :</strong> {viewMaterialData?.rangeTo}</p>
+                                    <p><strong>Rate :</strong> {viewMaterialData?.price}</p>
+                                </Card>
+                            </Col>
+                        </Row>
+                    </Card>
+                </Modal>
                 <Modal
                     title='Add Rates'
                     visible={showAddRates}
@@ -460,7 +593,8 @@ const handleMaterialTypeChange=(e)=>{
                         </Row>
                     </Card>
                 </Modal>
-                {showAdditionalRates && <AdditionalRates form={props.form} showAdditionalRates={showAdditionalRates}setShowAdditionalRates={(w)=>setShowAdditionalRates(w)} {...props}/>}
+                {showAdditionalRates && <AdditionalRates form={props.form} showAdditionalRates={showAdditionalRates}setShowAdditionalRates={(w)=>setShowAdditionalRates(w)} />}
+                {editPriceModal && <EditAdditionalRates editPriceModal={editPriceModal} setEditPriceModal={(w)=>setEditPriceModal(w)} {...props}/>}
             </Card>
         </div>
     );
@@ -525,5 +659,8 @@ export default connect(mapStateToProps, {
     fetchRatesListById,
     updateRates,
     resetRates,
-    deleteRates
+    deleteRates,
+    getStaticList,
+    fetchAdditionalPriceList,
+    fetchAdditionalPriceListById
 })(addRatesForm);
