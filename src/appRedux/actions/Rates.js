@@ -25,7 +25,10 @@ import {FETCH_RATES_LIST_ERROR,
     FETCH_ADDITIONAL_RATES_LIST_REQUEST_SUCCESS,
     FETCH_ADDITIONAL_RATES_LIST_BY_ID_REQUEST,
     FETCH_ADDITIONAL_RATES_LIST_BY_ID_REQUEST_SUCCESS,
-    FETCH_ADDITIONAL_RATES_LIST_BY_ID_REQUEST_ERROR
+    FETCH_ADDITIONAL_RATES_LIST_BY_ID_REQUEST_ERROR,
+    DELETE_ADDITIONAL_RATES_BY_ID,
+    DELETE_ADDITIONAL_RATES_BY_ID_ERROR,
+    DELETE_ADDITIONAL_RATES_BY_ID_SUCCESS
 } from "../../constants/ActionTypes";
 
 export const fetchRatesList = () => ({
@@ -154,5 +157,19 @@ export const fetchAdditionalPriceListByIdSuccess = (rates) => ({
 
 export const fetchAdditionalPriceListByIdError = (error) => ({
     type: FETCH_ADDITIONAL_RATES_LIST_BY_ID_REQUEST_ERROR,
+    error
+});
+export const deleteAdditionalRates = (payload) => ({
+    type: DELETE_ADDITIONAL_RATES_BY_ID,
+    payload
+});
+
+export const deleteAdditionalRatesSuccess = (rates) => ({
+    type: DELETE_ADDITIONAL_RATES_BY_ID_SUCCESS,
+    rates
+});
+
+export const deleteAdditionalRatesError = (error) => ({
+    type: DELETE_ADDITIONAL_RATES_BY_ID_ERROR,
     error
 });

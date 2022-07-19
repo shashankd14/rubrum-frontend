@@ -27,7 +27,10 @@ import {
     FETCH_ADDITIONAL_RATES_LIST_REQUEST,
     FETCH_ADDITIONAL_RATES_LIST_BY_ID_REQUEST,
     FETCH_ADDITIONAL_RATES_LIST_BY_ID_REQUEST_SUCCESS,
-    FETCH_ADDITIONAL_RATES_LIST_BY_ID_REQUEST_ERROR
+    FETCH_ADDITIONAL_RATES_LIST_BY_ID_REQUEST_ERROR,
+    DELETE_ADDITIONAL_RATES_BY_ID,
+    DELETE_ADDITIONAL_RATES_BY_ID_ERROR,
+    DELETE_ADDITIONAL_RATES_BY_ID_SUCCESS
 } from "../../constants/ActionTypes";
 
 const INIT_STATE = {
@@ -40,7 +43,8 @@ const INIT_STATE = {
     addAdditionalSuccess:false,
     staticList:[],
     additionalRatesList:[],
-    additionalRates:{}
+    additionalRates:{},
+    deleteAdditionalSuccess: false
 };
 
 export default (state = INIT_STATE, action) => {
@@ -241,7 +245,26 @@ export default (state = INIT_STATE, action) => {
                 error: true
             }
         }
-
+        case DELETE_ADDITIONAL_RATES_BY_ID: {
+            return {
+                ...state,
+                loading: true
+            }
+        }
+        case DELETE_ADDITIONAL_RATES_BY_ID_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                deleteAdditionalSuccess: true
+            }
+        }
+        case DELETE_ADDITIONAL_RATES_BY_ID_ERROR: {
+            return {
+                ...state,
+                loading: false,
+                error: true,
+            }
+        }
         default:
             return state;
     }

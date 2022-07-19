@@ -1,6 +1,15 @@
 import {all, put, fork, takeLatest} from "redux-saga/effects";
 import { getUserToken } from './common';
-import {FETCH_RATES_LIST_REQUEST, ADD_RATES_REQUEST, FETCH_ADDITIONAL_RATES_LIST_REQUEST,FETCH_ADDITIONAL_RATES_LIST_BY_ID_REQUEST,FETCH_RATES_LIST_ID_REQUEST, FETCH_STATIC_LIST_BY_PROCESSS,UPDATE_RATES_REQUEST,DELETE_RATES_BY_ID,ADD_ADDITIONAL_RATES_REQUEST} from "../../constants/ActionTypes";
+import {FETCH_RATES_LIST_REQUEST, 
+    ADD_RATES_REQUEST, 
+    FETCH_ADDITIONAL_RATES_LIST_REQUEST,
+    DELETE_ADDITIONAL_RATES_BY_ID,
+     FETCH_ADDITIONAL_RATES_LIST_BY_ID_REQUEST,
+     FETCH_RATES_LIST_ID_REQUEST, 
+     FETCH_STATIC_LIST_BY_PROCESSS,
+     UPDATE_RATES_REQUEST,
+     DELETE_RATES_BY_ID,
+     ADD_ADDITIONAL_RATES_REQUEST} from "../../constants/ActionTypes";
 import {
     fetchRatesListSuccess, 
     fetchRatesListError,
@@ -19,7 +28,9 @@ import {
     fetchAdditionalRatesListError,
     fetchAdditionalRatesListSuccess,
     fetchAdditionalPriceListByIdError,
-    fetchAdditionalPriceListByIdSuccess
+    fetchAdditionalPriceListByIdSuccess,
+    deleteAdditionalRatesError,
+    deleteAdditionalRatesSuccess
 } from "../actions";
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -185,6 +196,20 @@ function* fetchAdditionalPriceListById(action) {
         yield put(fetchAdditionalPriceListByIdError(error));
     }
 }
+function* deleteAdditionalRatesById(action) {
+    try {
+        const deletedRates =  yield fetch(`${baseUrl}api/additionalprice/${action?.payload}`, {
+            method: 'DELETE',
+            headers: getHeaders()
+        });
+        if(deletedRates.status === 200) {
+            yield put(deleteAdditionalRatesSuccess(deletedRates));
+        } else
+            yield put(deleteAdditionalRatesError('error'));
+    } catch (error) {
+        yield put(deleteAdditionalRatesError(error));
+    }
+}
 export function* watchFetchRequests() {
     yield takeLatest(FETCH_RATES_LIST_REQUEST, fetchRatesList);
     yield takeLatest(ADD_RATES_REQUEST, savePriceMaster);
@@ -195,6 +220,7 @@ export function* watchFetchRequests() {
     yield takeLatest(FETCH_STATIC_LIST_BY_PROCESSS, getStaticAdditionalRatesByProcess);
     yield takeLatest(FETCH_ADDITIONAL_RATES_LIST_REQUEST, fetchAdditionalPriceList);
     yield takeLatest(FETCH_ADDITIONAL_RATES_LIST_BY_ID_REQUEST, fetchAdditionalPriceListById);
+    yield takeLatest(DELETE_ADDITIONAL_RATES_BY_ID, deleteAdditionalRatesById);
 }
 
 export default function* ratesSagas() {

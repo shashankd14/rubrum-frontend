@@ -18,7 +18,8 @@ import { fetchRatesList,
     fetchRatesListById,
      updateRates,
       resetRates, 
-      deleteRates} from "../../../appRedux/actions";
+      deleteRates,
+      deleteAdditionalRates} from "../../../appRedux/actions";
 import { onDeleteContact } from "../../../appRedux/actions";
 import AdditionalRates from "./addAdditionalRates";
 
@@ -186,7 +187,12 @@ const Rates = (props) => {
 
     const onDelete = (record,e) => {
         e.preventDefault();
-        props.deleteRates(record?.id)
+        if(tabKey ==="1"){
+            props.deleteRates(record?.id)
+        }else{
+            props.deleteAdditionalRates(record?.id)
+        }
+        
       }
     const onEdit = (record,e)=>{
         e.preventDefault();
@@ -236,7 +242,10 @@ const Rates = (props) => {
         if(props?.rates?.staticList){
             setStaticList(props.rates.staticList)
         }
-    },[props.rates.addSuccess, props.rates.deleteSuccess, props.rates.staticList])
+        if(props?.rates?.deleteAdditionalSuccess){
+            props.fetchAdditionalPriceList()
+        }
+    },[props.rates.addSuccess, props.rates.deleteSuccess, props.rates.staticList, props.rates.deleteAdditionalSuccess])
     
     useEffect(() => {
 
@@ -343,25 +352,16 @@ const handleMaterialTypeChange=(e)=>{
                 />
                 </TabPane>
                 <TabPane tab="Additional Rates" key="2" className="additionalTab">
-                <Form.Item>
-                    {getFieldDecorator('processID', {
-                        rules: [{ required: true, message: 'Please enter Process name!' }],
-                    })(
+                
                     <Select
-                        id="processID"
                         style={{width: 300}}
                         className="additional_price_select"
                         placeholder="Select a Process"
                         onChange={handleProcessChange}
                     >
-                    {props.process?.processList?.map(process => <Option value={process.processId}>{process?.processName || selectedProcessId}</Option>)}
+                    {props.process?.processList?.map(process => <Option value={process.processId}>{process?.processName}</Option>)}
                     </Select>
-                )}
-                </Form.Item>
-                { staticList.length>0 && <><Form.Item>
-                    {getFieldDecorator('staticList', {
-                        rules: [{ required: true, message: 'Please enter Process name!' }],
-                    })(
+                { staticList.length>0 && <>
                     <Select
                         style={{width: 300}}
                         placeholder="Select"
@@ -370,8 +370,7 @@ const handleMaterialTypeChange=(e)=>{
                     >
                     {staticList?.map(item => <Option value={item.id}>{item.priceDesc}</Option>)}
                     </Select>
-                )}
-                </Form.Item></>}
+               </>}
                 {additionPriceList.length>0 && <><Table rowSelection={[]}
                     className="gx-table-responsive"
                     columns={additionalPriceColumns}
@@ -660,6 +659,7 @@ export default connect(mapStateToProps, {
     updateRates,
     resetRates,
     deleteRates,
+    deleteAdditionalRates,
     getStaticList,
     fetchAdditionalPriceList,
     fetchAdditionalPriceListById
