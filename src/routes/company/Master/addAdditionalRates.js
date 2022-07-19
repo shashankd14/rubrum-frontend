@@ -163,7 +163,7 @@ const AdditionalRates=(props)=>{
         e.preventDefault();
         form.validateFields((err,values)=>{
             let payload = {
-                partyId: [values?.partyId],
+                partyId: checked? values?.partyId:[values?.partyId],
                 processId: values?.processId
             }
            
@@ -197,7 +197,7 @@ const AdditionalRates=(props)=>{
                 const bundleweight =values?.minimumbundleweight?.map((item, idx)=>{
                     payload={
                         ...payload,
-                        additionalPriceId:"3",
+                        additionalPriceId:values?.processId==="1"?"8":"3",
                         rangeFrom: item,
                         rangeTo:values?.maximumbundleweight[idx],
                         price: values?.bundleweightRate[idx]
@@ -210,7 +210,7 @@ const AdditionalRates=(props)=>{
                 const length =values?.minimumlength?.map((item, idx)=>{
                     payload={
                         ...payload,
-                        additionalPriceId:"4",
+                        additionalPriceId:"6",
                         rangeFrom: item,
                         rangeTo:values?.maximumlength[idx],
                         price: values?.lengthRate[idx]
@@ -222,7 +222,7 @@ const AdditionalRates=(props)=>{
                 
                     payload={
                         ...payload,
-                        additionalPriceId:"5",
+                        additionalPriceId:values?.processId==="1"?"7":"4",
                         rangeFrom:"",
                         rangeTo:"",
                         price:values?.balanceCoilRate
