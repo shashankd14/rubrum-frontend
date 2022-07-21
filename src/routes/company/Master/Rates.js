@@ -65,6 +65,7 @@ const Rates = (props) => {
     const [additionPriceList, setAdditionalPriceList]= useState([])
     const [viewAdditionalRates, setViewAdditionalRates]=useState(false)
     const [editPriceModal, setEditPriceModal]=useState(false)
+    const [staticSelected,setStaticSelected]=useState();
     const columns = [{
         title: 'Rate Id',
         dataIndex: 'id',
@@ -244,9 +245,16 @@ const Rates = (props) => {
         }
         if(props?.rates?.deleteAdditionalSuccess){
             props.fetchAdditionalPriceList()
+            setTimeout(() => {
+            const list = props?.rates?.additionalRatesList.filter(item => item?.additionalPriceId=== staticSelected && item.processId === selectedProcessId)
+            setAdditionalPriceList(list)}
+        ,1000)
         }
     },[props.rates.addSuccess, props.rates.deleteSuccess, props.rates.staticList, props.rates.deleteAdditionalSuccess])
-    
+    useEffect(()=>{
+        const list = props?.rates?.additionalRatesList.filter(item => item?.additionalPriceId=== staticSelected && item.processId === selectedProcessId)
+        setAdditionalPriceList(list)
+    },[props?.rates?.additionalRatesList])
     useEffect(() => {
 
         const { rates } = props;
@@ -313,6 +321,7 @@ const handleMaterialTypeChange=(e)=>{
         setSelectedProcessId(e)
       }
       const handleStaticChange=(e)=>{
+        setStaticSelected(e)
         const list = props?.rates?.additionalRatesList.filter(item => item?.additionalPriceId=== e && item.processId === selectedProcessId)
         setAdditionalPriceList(list)
     }
