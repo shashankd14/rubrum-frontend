@@ -298,7 +298,7 @@ const handleMaterialTypeChange=(e)=>{
     setType(e)
 }
 
- const checkboxChange = (e: CheckboxChangeEvent) => {
+ const checkboxChange = (e) => {
         setChecked(e.target.checked)
         console.log(`checked = ${e.target.checked}`);
       };
@@ -602,7 +602,7 @@ const handleMaterialTypeChange=(e)=>{
                     </Card>
                 </Modal>
                 {showAdditionalRates && <AdditionalRates form={props.form} showAdditionalRates={showAdditionalRates}setShowAdditionalRates={(w)=>setShowAdditionalRates(w)} />}
-                {editPriceModal && <EditAdditionalRates editPriceModal={editPriceModal} setEditPriceModal={(w)=>setEditPriceModal(w)} {...props}/>}
+                <EditAdditionalRates editPriceModal={editPriceModal} setEditPriceModal={(w)=>setEditPriceModal(w)} {...props}/>
             </Card>
         </div>
     );
@@ -612,7 +612,8 @@ const mapStateToProps = state => ({
     rates: state.rates,
     material: state.material,
     party: state.party,
-    process: state.process
+    process: state.process,
+    aRates: state.rates.additionalRates
 });
 
 const addRatesForm = Form.create({
@@ -654,6 +655,26 @@ const addRatesForm = Form.create({
             //     ...props.rates?.rates?.laminationCharges,
             //     value: props.rates?.rates?.laminationCharges || '',
             // }),
+            aPartyId: Form.createFormField({
+                ...props.aRates?.partyId,
+                value: props.aRates?.partyId|| undefined,
+            }),
+            aProcessId: Form.createFormField({
+                ...props.aRates?.processId,
+                value: props.aRates?.processId || undefined,
+            }),
+            rangeFrom: Form.createFormField({
+                ...props.aRates?.rangeFrom,
+                value: props.aRates?.rangeFrom || '',
+            }),
+            rangeTo: Form.createFormField({
+                ...props.aRates?.rangeTo,
+                value: props.aRates?.rangeTo || '',
+            }),
+            aPrice: Form.createFormField({
+                ...props.aRates?.price,
+                value: props.aRates?.price || '',
+            }),
         };
     }
 })(Rates);

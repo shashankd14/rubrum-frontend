@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Modal, Form, Col, Row, Select, Card, Input } from "antd";
 import { connect } from "react-redux";
 const Option = Select.Option;
@@ -17,6 +17,7 @@ export const formItemLayout = {
 const EditAdditionalRates=(props)=>{
     const { getFieldDecorator, getFieldValue } = props.form;
     const {editPriceModal, setEditPriceModal}=props;
+
 return (
     <Modal
     visible={editPriceModal}
@@ -31,7 +32,7 @@ return (
                     <Form {...formItemLayout} className="gx-pt-4">
                    
                    <Form.Item label="Party Name">
-                        {getFieldDecorator('partyId', {
+                        {getFieldDecorator('aPartyId', {
                                 rules: [{ required: true, message: 'Please select party name!' }],
                         })(
                         <Select
@@ -46,7 +47,7 @@ return (
                     
                    
                     <Form.Item label="Process Name" >
-                    {getFieldDecorator('processId', {
+                    {getFieldDecorator('aProcessId', {
                         rules: [{ required: true, message: 'Please enter Process name!' }],
                     })(
                         <Select
@@ -59,26 +60,26 @@ return (
                     )}
                     </Form.Item>
                     <Form.Item label="Range From">
-                                        {getFieldDecorator('rangeFrom', {
-                                            rules: [{ required: true, message: 'Please input the GST Number!' }],
-                                        })(
-                                            <Input id="rangeFrom" />
-                                        )}
-                                    </Form.Item>
-                                    <Form.Item label="Range To">
-                                        {getFieldDecorator('rangeTo', {
-                                            rules: [{ required: true, message: 'Please input the GST Number!' }],
-                                        })(
-                                            <Input id="rangeTo" />
-                                        )}
-                                    </Form.Item>
-                                    <Form.Item label="Rate">
-                                        {getFieldDecorator('price', {
-                                            rules: [{ required: true, message: 'Please input the GST Number!' }],
-                                        })(
-                                            <Input id="price" />
-                                        )}
-                                    </Form.Item>
+                        {getFieldDecorator('rangeFrom', {
+                            rules: [{ required: true, message: 'Please input the GST Number!' }],
+                        })(
+                            <Input id="rangeFrom" />
+                        )}
+                    </Form.Item>
+                    <Form.Item label="Range To">
+                        {getFieldDecorator('rangeTo', {
+                            rules: [{ required: true, message: 'Please input the GST Number!' }],
+                        })(
+                            <Input id="rangeTo" />
+                        )}
+                    </Form.Item>
+                    <Form.Item label="Rate">
+                        {getFieldDecorator('aPrice', {
+                            rules: [{ required: true, message: 'Please input the GST Number!' }],
+                        })(
+                            <Input id="price" />
+                        )}
+                    </Form.Item>
                     </Form>
                 </Col>
             </Row>
@@ -86,37 +87,5 @@ return (
     </Modal>
 )
 }
-const mapStateToProps = state => ({
-    party: state.party,
-    process: state.process,
-    rates: state.rates
-});
-const EditAdditionalRatesForm = Form.create({
-    mapPropsToFields(props) {
-        return {
-            partyId: Form.createFormField({
-                ...props.rates?.additionalRates?.partyId,
-                value: props.rates?.additionalRates?.partyId|| undefined,
-            }),
-            processId: Form.createFormField({
-                ...props.rates?.additionalRates?.processId,
-                value: props.rates?.additionalRates?.processId || undefined,
-            }),
-            rangeFrom: Form.createFormField({
-                ...props.rates?.additionalRates?.rangeFrom,
-                value: props.rates?.additionalRates?.rangeFrom || '',
-            }),
-            rangeTo: Form.createFormField({
-                ...props.rates?.additionalRates?.rangeTo,
-                value: props.rates?.additionalRates?.rangeTo || '',
-            }),
-            price: Form.createFormField({
-                ...props.rates?.additionalRates?.price,
-                value: props.rates?.additionalRates?.price || '',
-            }),
-        };
-    }
-})(EditAdditionalRates);
-export default connect(mapStateToProps, {
-  
-})(EditAdditionalRatesForm);
+
+export default EditAdditionalRates;
