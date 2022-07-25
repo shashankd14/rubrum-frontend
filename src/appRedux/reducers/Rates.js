@@ -120,7 +120,8 @@ export default (state = INIT_STATE, action) => {
                 deleteSuccess:false,
                 addSuccess:false,
                 addAdditionalSuccess:false,
-                addAdditionalFailed:false
+                addAdditionalFailed:false,
+                deleteAdditionalRatesSuccess:false
             }
         }
 
