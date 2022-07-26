@@ -10,6 +10,7 @@ import {fetchPartyListSuccess,
     updatePartySuccess,
     updatePartyError
 } from "../actions";
+import { userSignOutSuccess } from "../../appRedux/actions/Auth";
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
 const getHeaders = () => ({
@@ -25,6 +26,8 @@ function* fetchPartyList() {
         if(fetchPartyList.status === 200) {
             const fetchPartyListResponse = yield fetchPartyList.json();
             yield put(fetchPartyListSuccess(fetchPartyListResponse));
+        } else if (fetchPartyList.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(fetchPartyListError('error'));
     } catch (error) {
@@ -41,6 +44,8 @@ function* fetchPartyListById(action) {
         if(fetchPartyListId.status === 200) {
             const fetchPartyListResponse = yield fetchPartyListId.json();
             yield put(fetchPartyListIdSuccess(fetchPartyListResponse));
+        } else if (fetchPartyListId.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(fetchPartyListIdError('error'));
     } catch (error) {
@@ -122,6 +127,8 @@ function* addParty(action) {
         });
         if (addParty.status == 200) {
             yield put(addPartySuccess());
+        } else if (addParty.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(addPartyError('error'));
     } catch (error) {
@@ -211,6 +218,8 @@ function* updateParty(action) {
         });
         if (updateParty.status == 200) {
             yield put(updatePartySuccess());
+        } else if (updateParty.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(updatePartyError('error'));
     } catch (error) {

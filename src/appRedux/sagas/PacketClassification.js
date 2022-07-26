@@ -8,6 +8,7 @@ import {fetchClassificationListSuccess,
     addProccessTagsError,
     addProccessTagsSuccess, fetchTagsListIdError, fetchTagsListIdSuccess,
 fetchEndUserTagsSuccess, fetchEndUserTagsError, deleteTagsListIdError, deleteTagsListIdSuccess,updateTagsSuccess,updateTagsError} from "../actions";
+import { userSignOutSuccess } from "../../appRedux/actions/Auth";
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
 
@@ -24,7 +25,9 @@ function* fetchClassificationList() {
         if(fetchClassificationList.status === 200) {
             const fetchClassificationListResponse = yield fetchClassificationList.json();
             yield put(fetchClassificationListSuccess(fetchClassificationListResponse));
-        } else
+        } else if (fetchClassificationList.status === 401) {
+            yield put(userSignOutSuccess());
+        }  else
             yield put(fetchClassificationListError('error'));
     } catch (error) {
         yield put(fetchClassificationListError(error));
@@ -41,6 +44,8 @@ function* addProccessTags(action) {
         });
         if (addProccessTags.status == 200) {
             yield put(addProccessTagsSuccess());
+        } else if (addProccessTags.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(addProccessTagsError('error'));
     } catch (error) {
@@ -57,6 +62,8 @@ function* addEndUserTags(action) {
         });
         if (addEndUserTags.status == 200) {
             yield put(addEndUserTagsSuccess());
+        } else if (addEndUserTags.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(addEndUserTagsError('error'));
     } catch (error) {
@@ -72,6 +79,8 @@ function* fetchTagsListById(action) {
         if(fetchTagsListId.status === 200) {
             const fetchTagsListResponse = yield fetchTagsListId.json();
             yield put(fetchTagsListIdSuccess(fetchTagsListResponse));
+        } else if (fetchTagsListId.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(fetchTagsListIdError('error'));
     } catch (error) {
@@ -87,6 +96,8 @@ function* fetchEndUserTagsList() {
         if(fetchEndUserTags.status === 200) {
             const fetchEndUserTagsResponse = yield fetchEndUserTags.json();
             yield put(fetchEndUserTagsSuccess(fetchEndUserTagsResponse));
+        } else if (fetchEndUserTags.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(fetchEndUserTagsError('error'));
     } catch (error) {
@@ -102,6 +113,8 @@ function* deleteTagById(action) {
         if(deletedTag.status === 200) {
             // const deleteTagsListResponse = yield deletedTag.json();
             yield put(deleteTagsListIdSuccess(deletedTag));
+        } else if (deletedTag.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(deleteTagsListIdError('error'));
     } catch (error) {
@@ -118,6 +131,8 @@ function* updateTags(action) {
         });
         if (updateTags.status == 200) {
             yield put(updateTagsSuccess());
+        } else if (updateTags.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(updateTagsError('error'));
     } catch (error) {
