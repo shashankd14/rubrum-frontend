@@ -277,8 +277,8 @@ const SlittingWidths = (props) => {
                  slitInstructionPayload.push(instructionPayload);
                  setUnsavedDeleteId(prev => prev + 1);
                  let remainWeight = (props.coilDetails.fpresent || props.coilDetails.plannedWeight);
-                 const totalWeightRound = totalWeight.toFixed(0);
-                 const remainWeightRound = remainWeight.toFixed(0);
+                 const totalWeightRound = Number(totalWeight.toFixed(0));
+                 const remainWeightRound = Number(remainWeight.toFixed(0));
                  if(Number(availLength)  > lengthValue) {
                     message.error('Length greater than available length', 2);
                 }else if(totalWeightRound > remainWeightRound) {
