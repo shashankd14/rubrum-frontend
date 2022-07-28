@@ -1,6 +1,5 @@
 import { all, put, fork, takeLatest, take, call } from "redux-saga/effects";
 import { getUserToken } from './common';
-import { history } from '../store/index';
 import toNumber from 'lodash';
 import moment from "moment";
 import {
