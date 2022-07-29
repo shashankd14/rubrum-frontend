@@ -243,15 +243,15 @@ const Rates = (props) => {
         if(props?.rates?.staticList){
             setStaticList(props.rates.staticList)
         }
-        if(props?.rates?.deleteAdditionalSuccess || props?.rates?.addAdditionalSuccess){
+        if(props?.rates?.deleteAdditionalSuccess || props?.rates?.addAdditionalSuccess || editPriceModal){
             props.fetchAdditionalPriceList()
-            props.resetRates()
             setTimeout(() => {
             const list = props?.rates?.additionalRatesList.filter(item => item?.additionalPriceId=== staticSelected && item.processId === selectedProcessId)
-            setAdditionalPriceList(list)}
+            setAdditionalPriceList(list)
+            props.resetRates()}
         ,1000)
         }
-    },[props.rates.addSuccess, props.rates.deleteSuccess, props.rates.staticList, props.rates.deleteAdditionalSuccess,props.rates?.addAdditionalSuccess])
+    },[editPriceModal,props.rates.addSuccess, props.rates.deleteSuccess, props.rates.staticList, props.rates.deleteAdditionalSuccess,props.rates?.addAdditionalSuccess])
     useEffect(()=>{
         const list = props?.rates?.additionalRatesList.filter(item => item?.additionalPriceId=== staticSelected && item.processId === selectedProcessId)
         setAdditionalPriceList(list)
@@ -289,10 +289,6 @@ const Rates = (props) => {
         setFilteredInfo(filters)
     };
 
-    const clearAll = () => {
-        setSortedInfo(null);
-        setFilteredInfo(null);
-    };
 
 const handleMaterialTypeChange=(e)=>{
     console.log("material",e)
