@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
-import { Modal, Form, Col, Row, Select, Card, Input } from "antd";
+import { Modal, Form, Col, Row, Select, Card, Input, message } from "antd";
 import { connect } from "react-redux";
+import { updateAdditionalRates,resetRates } from "../../../appRedux/actions";
 const Option = Select.Option;
 export const formItemLayout = {
     labelCol: {
@@ -17,13 +18,40 @@ export const formItemLayout = {
 const EditAdditionalRates=(props)=>{
     const { getFieldDecorator, getFieldValue } = props.form;
     const {editPriceModal, setEditPriceModal}=props;
+    useEffect(()=>{
+        if(props?.rates?.updateAdditionalSuccess){
+            message.success("Additional Rates updated Successfully!")
+                setEditPriceModal(false)
+                props.resetRates();
+        }
+        if(props?.rates?.updateAdditionalFailure){
+            message.error("Please try with different range!",2);
+            props.resetRates()
+        }
+    },[props?.rates?.updateAdditionalSuccess, props?.rates?.updateAdditionalFailure])
+const handleOk=(e)=>{
+    e.preventDefault();
+    props.form.validateFields((err, values) => {
+        
+        let payload = [{
+            partyId: [values?.aPartyId],
+            processId: values?.aProcessId,
+            price:values?.aPrice,
+            additionalPriceId:props?.aRates?.additionalPriceId,
+            rangeFrom:values?.rangeFrom,
+            rangeTo:values?.rangeTo
+
+    }]
+    props.updateAdditionalRates(payload);
+    })
+    }
 
 return (
     <Modal
     visible={editPriceModal}
     width={700}
     title="Edit Additional Rate"
-    onOk={() => setEditPriceModal(false)}
+    onOk={handleOk}
     onCancel={() => setEditPriceModal(false)}
     >
         <Card className="gx-card">
@@ -87,5 +115,11 @@ return (
     </Modal>
 )
 }
+const mapStateToProps = state => ({
+    rates: state.rates,
+});
+export default connect(mapStateToProps, {
+   updateAdditionalRates,
+   resetRates
+})(EditAdditionalRates);
 
-export default EditAdditionalRates;
