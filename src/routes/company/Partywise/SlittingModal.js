@@ -277,9 +277,11 @@ const SlittingWidths = (props) => {
                  slitInstructionPayload.push(instructionPayload);
                  setUnsavedDeleteId(prev => prev + 1);
                  let remainWeight = (props.coilDetails.fpresent || props.coilDetails.plannedWeight);
+                 const totalWeightRound = Number(totalWeight.toFixed(0));
+                 const remainWeightRound = Number(remainWeight.toFixed(0));
                  if(Number(availLength)  > lengthValue) {
                     message.error('Length greater than available length', 2);
-                }else if(totalWeight > remainWeight) {
+                }else if(totalWeightRound > remainWeightRound) {
                    message.error('Weight greater than available weight', 2);
                    
                 }else if(totalWidth !== widthValue) {
@@ -287,7 +289,7 @@ const SlittingWidths = (props) => {
                 }else if((totalWidth) > widthValue) {
                         message.error('Sum of slits width is greater than width of coil.', 2);
                  } else{
-                    setWeightValue(remainWeight-(totalWeight));
+                    setWeightValue(remainWeightRound-(totalWeightRound));
                     setlen(lengthValue - sumLength)
                         props.setPanelList(slitArray)
                         props.setSlits(slits);
