@@ -14,6 +14,7 @@ import {fetchMaterialListError,
     updateMaterialSuccess,
     updateMaterialError
 } from "../actions";
+import { userSignOutSuccess } from "../../appRedux/actions/Auth";
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
 const getHeaders = () => ({
@@ -29,6 +30,8 @@ function* fetchMaterialList() {
         if(fetchMaterialList.status === 200) {
             const fetchMaterialListResponse = yield fetchMaterialList.json();
             yield put(fetchMaterialListSuccess(fetchMaterialListResponse));
+        } else if (fetchMaterialList.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(fetchMaterialListError('error'));
     } catch (error) {
@@ -53,6 +56,8 @@ function* addMaterial(action) {
         });
         if (addMaterial.status == 200) {
             yield put(addMaterialSuccess());
+        } else if (addMaterial.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(addMaterialError('error'));
     } catch (error) {
@@ -78,6 +83,8 @@ function* updateMaterial(action) {
         });
         if (updateMaterial.status == 200) {
             yield put(updateMaterialSuccess());
+        } else if (updateMaterial.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(updateMaterialError('error'));
     } catch (error) {
@@ -94,6 +101,8 @@ function* fetchMaterialListById(action) {
         if(fetchMaterialById.status === 200) {
             const fetchMaterialByIdResponse = yield fetchMaterialById.json();
             yield put(fetchMaterialListByIdSuccess(fetchMaterialByIdResponse));
+        }  else if (fetchMaterialById.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(fetchMaterialListByIdError('error'));
     } catch (error) {

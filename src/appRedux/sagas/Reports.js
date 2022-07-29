@@ -8,6 +8,7 @@ import {
     sendReportSuccess,
     sendReportError
 } from "../actions";
+import { userSignOutSuccess } from "../../appRedux/actions/Auth";
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
 const getHeaders = () => ({
@@ -23,6 +24,8 @@ function* sendReport(action) {
         });
         if (sendReport.status == 200) {
             yield put(sendReportSuccess());
+        } else if (sendReport.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(sendReportError());
     } catch (error) {

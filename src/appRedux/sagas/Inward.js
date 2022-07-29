@@ -1,6 +1,5 @@
 import { all, put, fork, takeLatest, take, call } from "redux-saga/effects";
 import { getUserToken } from './common';
-import { history } from '../store/index';
 import toNumber from 'lodash';
 import moment from "moment";
 import {
@@ -74,6 +73,7 @@ import {
 } from "../actions";
 import { CUTTING_INSTRUCTION_PROCESS_ID, SLITTING_INSTRUCTION_PROCESS_ID, SLIT_CUT_INSTRUCTION_PROCESS_ID } from "../../constants";
 import { formItemLayout } from "../../routes/company/Partywise/CuttingModal";
+import { userSignOutSuccess } from "../../appRedux/actions/Auth";
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
 
@@ -119,6 +119,8 @@ function* fetchInwardList({ page = 1, pageSize = 15, searchValue = '', partyId =
                 });
             }
             yield put(fetchInwardListSuccess(inwardResponse, totalItems));
+        } else if (fetchInwardList.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(fetchInwardListError('error'));
     } catch (error) {
@@ -135,6 +137,8 @@ function* fetchInwardInstructionWIPDetails(action) {
         if (fetchInwardList.status === 200) {
             const fetchInwardListResponse = yield fetchInwardList.json();
             yield put(getInstructionWipListSuccess(fetchInwardListResponse));
+        } else if (fetchInwardList.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(getInstructionWipListError('error'));
     } catch (error) {
@@ -150,6 +154,8 @@ function* checkCoilDuplicate(action) {
         if (checkCoilDuplicate.status === 200) {
             const checkCoilDuplicateResponse = yield checkCoilDuplicate.json();
             yield put(checkDuplicateCoilSuccess(checkCoilDuplicateResponse));
+        } else if (checkCoilDuplicate.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(checkDuplicateCoilError('error'));
     } catch (error) {
@@ -165,6 +171,8 @@ function* checkCustomerBatchNumber(action) {
         if (checkCustomerBatchNumberResponse.status === 200) {
             const checkCoilDuplicateResponse = yield checkCustomerBatchNumberResponse.json();
             yield put(checkCustomerBatchNumberSuccess(checkCoilDuplicateResponse));
+        } else if (checkCustomerBatchNumberResponse.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(checkCustomerBatchNumberError('error'));
     } catch (error) {
@@ -223,6 +231,8 @@ function* submitInward(action) {
         if (newInwardEntry.status == 200) {
             let submitInwardResponse = yield newInwardEntry.json()
             yield put(submitInwardSuccess(submitInwardResponse.inwardEntryId));
+        } else if (newInwardEntry.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(submitInwardError('error'));
     } catch (error) {
@@ -272,6 +282,8 @@ const newInwardEntry = yield fetch(`${baseUrl}api/inwardEntry/update`, {
         });
         if (newInwardEntry.status == 200) {
             yield put(updateInwardSuccess(newInwardEntry));
+        } else if (newInwardEntry.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(updateInwardError('error'));
     } catch (error) {
@@ -288,6 +300,8 @@ function* fetchInwardListByParty(action) {
         if (fetchPartyInwardList.status === 200) {
             const fetchPartyInwardListResponse = yield fetchPartyInwardList.json();
             yield put(getCoilsByPartyIdSuccess(fetchPartyInwardListResponse.body));
+        } else if (fetchPartyInwardList.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(getCoilsByPartyIdError('error'));
     } catch (error) {
@@ -303,6 +317,8 @@ function* fetchPartyListById(action) {
         if (fetchPartyInwardList.status === 200) {
             const fetchPartyInwardListResponse = yield fetchPartyInwardList.json();
             yield put(fetchPartyInwardListByIdSuccess(fetchPartyInwardListResponse));
+        } else if (fetchPartyInwardList.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(fetchPartyInwardListByIdError('error'));
     } catch (error) {
@@ -346,6 +362,8 @@ function* fetchInwardPlanDetails(action) {
             })
             fetchInwardPlanResponse.instruction = formattedResponse;
             yield put(getCoilPlanDetailsSuccess(fetchInwardPlanResponse));
+        } else if (fetchInwardPlan.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(getCoilPlanDetailsError('error'));
     } catch (error) {
@@ -363,6 +381,8 @@ function* requestSaveCuttingInstruction(action) {
         if (fetchPartyInwardList.status === 201) {
             const fetchPartyListObj = yield fetchPartyInwardList.json()
             yield put(saveCuttingInstructionSuccess(fetchPartyListObj));
+        } else if (fetchPartyInwardList.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(saveCuttingInstructionError('error'));
     } catch (error) {
@@ -388,6 +408,8 @@ function* instructionGroupsave(action) {
         if (groupSaveList.status === 200) {
             const groupSaveListObj = yield groupSaveList.json()
             yield put(instructionGroupsaveSuccess(groupSaveListObj));
+        } else if (groupSaveList.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(instructionGroupsaveError('error'));
     } catch (error) {
@@ -405,6 +427,8 @@ function* requestSaveSlittingInstruction(action) {
         if (fetchPartyInwardList.status === 201) {
             const fetchPartyListObj = yield fetchPartyInwardList.json()
             yield put(saveSlittingInstructionSuccess(fetchPartyListObj));
+        } else if (fetchPartyInwardList.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(saveSlittingInstructionError('error'));
     } catch (error) {
@@ -451,6 +475,8 @@ function* requestUpdateInstruction(action) {
         });
         if (updateInstruction.status === 200) {
             yield put(updateInstructionSuccess(updateInstruction));
+        } else if (updateInstruction.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(updateInstructionError('error'));
 
@@ -468,6 +494,8 @@ function* requestGradesByMaterialId(action) {
         if (fetchGradesByMaterialIdList.status === 200) {
             const fetchGradesByMaterialIdListResponse = yield fetchGradesByMaterialIdList.json();
             yield put(getGradeByMaterialIdSuccess(fetchGradesByMaterialIdListResponse));
+        } else if (fetchGradesByMaterialIdList.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(getGradeByMaterialIdError('error'));
     } catch (error) {
@@ -505,9 +533,11 @@ function* postDeliveryConfirmRequest(payload) {
         if (postConfirm.status === 200 && requestType !== 'PUT') {
             yield put(postDeliveryConfirmSuccess());
            
-        } else if(requestType === 'PUT'){
+        } else if(postConfirm.status === 200 && requestType === 'PUT'){
             yield put(postDeliveryConfirmSuccess(postConfirm));
-        }else
+        } else if (postConfirm.status === 401) {
+            yield put(userSignOutSuccess());
+        } else
             yield put(postDeliveryConfirmError('error'));
     } catch (error) {
         yield put(postDeliveryConfirmError(error));
@@ -523,6 +553,8 @@ function* fetchInwardInstructionDetails(action) {
         if (fetchInwardInstruction.status === 200) {
             const fetchInwardPlanResponse = yield fetchInwardInstruction.json();
             yield put(getInstructionByIdSuccess(fetchInwardPlanResponse));
+        } else if (fetchInwardInstruction.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(getInstructionByIdError('error'));
     } catch (error) {
@@ -546,6 +578,8 @@ function* saveUnprocessedDelivery(action) {
         if (fetchInwardInstruction.status === 200) {
             const fetchInwardPlanResponse = yield fetchInwardInstruction.json();
             yield put(saveUnprocessedDeliverySuccess(fetchInwardPlanResponse));
+        } else if (fetchInwardInstruction.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(saveUnprocessedDeliveryError('error'));
     } catch (error) {
@@ -563,6 +597,8 @@ function* deleteInwardEntryById(action) {
         });
         if (fetchInwardInstruction.status === 200) {
             yield put(deleteInwardEntryByIdSuccess(fetchInwardInstruction));
+        } else if (fetchInwardInstruction.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(deleteInwardEntryByIdError('error'));
     } catch (error) {
@@ -581,6 +617,8 @@ function* deleteInstructionById(action) {
         });
         if (fetchInwardInstruction.status === 200) {
             yield put(deleteInstructionByIdSuccess(fetchInwardInstruction, action.param));
+        } else if (fetchInwardInstruction.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(deleteInstructionByIdError('error'));
     } catch (error) {
@@ -629,7 +667,9 @@ function* pdfGenerateInward(action) {
                     encodeURI(pdfGenerateResponse.encodedBase64String) + "'></iframe>"
                )                 
             yield put(pdfGenerateSuccess(pdfGenerateResponse));
-        } else
+        } else if (pdfGenerate.status === 401) {
+            yield put(userSignOutSuccess());
+        }  else
             yield put(pdfGenerateError('error'));
     }
      catch (error) {
@@ -651,6 +691,8 @@ function* generateDCPdf(action) {
                     encodeURI(pdfGenerateResponse.encodedBase64String) + "'></iframe>"
                )                 
             yield put(generateDCPdfSuccess(pdfGenerateResponse));
+        } else if (pdfGenerate.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(generateDCPdfError('error'));
     } catch (error) {

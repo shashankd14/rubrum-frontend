@@ -35,6 +35,7 @@ import {
     updateAdditionalRatesError,
     updateAdditionalRatesSuccess
 } from "../actions";
+import { userSignOutSuccess } from "../../appRedux/actions/Auth";
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
 const getHeaders = () => ({
@@ -50,6 +51,8 @@ function* fetchRatesList() {
         if(fetchRatesList.status === 200) {
             const fetchRatesListResponse = yield fetchRatesList.json();
             yield put(fetchRatesListSuccess(fetchRatesListResponse));
+        } else if (fetchRatesList.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(fetchRatesListError('error'));
     } catch (error) {
@@ -77,6 +80,8 @@ function* savePriceMaster(action) {
         });
         if (addRates.status == 200) {
             yield put(addRatesSuccess());
+        } else if (addRates.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(addRatesError('error'));
     } catch (error) {
@@ -102,6 +107,8 @@ function* updateRates(action) {
         });
         if (updateRates.status == 200) {
             yield put(updateRatesSuccess());
+        } else if (updateRates.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(updateRatesError('error'));
     } catch (error) {
@@ -118,6 +125,8 @@ function* fetchRatesListById(action) {
         if(fetchRatesById.status === 200) {
             const fetchRatesByIdResponse = yield fetchRatesById.json();
             yield put(fetchRatesListByIdSuccess(fetchRatesByIdResponse));
+        } else if (fetchRatesById.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(fetchRatesListByIdError('error'));
     } catch (error) {
@@ -132,6 +141,8 @@ function* deleteRatesById(action) {
         });
         if(deletedRates.status === 200) {
             yield put(deleteRatesSuccess(deletedRates));
+        } else if (deletedRates.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(deleteRatesError('error'));
     } catch (error) {
@@ -148,6 +159,8 @@ function* saveAdditionalPriceMaster(action) {
         });
         if (addAdditionalRates.status == 200) {
             yield put(addAdditionalRatesSuccess());
+        } else if (addAdditionalRates.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(addAdditionalRatesError('error'));
     } catch (error) {
@@ -163,7 +176,9 @@ function* getStaticAdditionalRatesByProcess(action) {
         if(getStaticList.status === 200) {
             const getStaticListResponse = yield getStaticList.json();
             yield put(getStaticListSuccess(getStaticListResponse));
-        } else
+        } else if (getStaticList.status === 401) {
+            yield put(userSignOutSuccess());
+        }  else
             yield put(getStaticListError('error'));
     } catch (error) {
         yield put(getStaticListError(error));
@@ -178,6 +193,8 @@ function* fetchAdditionalPriceList() {
         if(fetchRatesList.status === 200) {
             const fetchRatesListResponse = yield fetchRatesList.json();
             yield put(fetchAdditionalRatesListSuccess(fetchRatesListResponse));
+        } else if (fetchRatesList.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(fetchAdditionalRatesListError('error'));
     } catch (error) {
@@ -193,6 +210,8 @@ function* fetchAdditionalPriceListById(action) {
         if(fetchRatesById.status === 200) {
             const fetchRatesByIdResponse = yield fetchRatesById.json();
             yield put(fetchAdditionalPriceListByIdSuccess(fetchRatesByIdResponse));
+        } else if (fetchRatesById.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(fetchAdditionalPriceListByIdError('error'));
     } catch (error) {
@@ -207,6 +226,8 @@ function* deleteAdditionalRatesById(action) {
         });
         if(deletedRates.status === 200) {
             yield put(deleteAdditionalRatesSuccess(deletedRates));
+        } else if (deletedRates.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(deleteAdditionalRatesError('error'));
     } catch (error) {
