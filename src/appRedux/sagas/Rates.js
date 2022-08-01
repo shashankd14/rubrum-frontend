@@ -244,6 +244,8 @@ function* updateAdditionalRates(action) {
         });
         if (updateRates.status == 200) {
             yield put(updateAdditionalRatesSuccess());
+        }else if (updateRates.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(updateAdditionalRatesError('error'));
     } catch (error) {

@@ -21,12 +21,14 @@ const EditAdditionalRates=(props)=>{
     useEffect(()=>{
         if(props?.rates?.updateAdditionalSuccess){
             message.success("Additional Rates updated Successfully!")
+            props.resetRates();
                 setEditPriceModal(false)
-                props.resetRates();
+               
         }
         if(props?.rates?.updateAdditionalFailure){
-            message.error("Please try with different range!",2);
             props.resetRates()
+            message.error("Please try with different range!",2);
+           
         }
     },[props?.rates?.updateAdditionalSuccess, props?.rates?.updateAdditionalFailure])
 const handleOk=(e)=>{
