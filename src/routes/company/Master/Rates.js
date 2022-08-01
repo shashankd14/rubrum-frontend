@@ -245,11 +245,7 @@ const Rates = (props) => {
         }
         if(props?.rates?.deleteAdditionalSuccess || props?.rates?.addAdditionalSuccess || editPriceModal){
             props.fetchAdditionalPriceList()
-            setTimeout(() => {
-            const list = props?.rates?.additionalRatesList.filter(item => item?.additionalPriceId=== staticSelected && item.processId === selectedProcessId)
-            setAdditionalPriceList(list)
-            props.resetRates()}
-        ,1000)
+            props.resetRates()
         }
     },[editPriceModal,props.rates.addSuccess, props.rates.deleteSuccess, props.rates.staticList, props.rates.deleteAdditionalSuccess,props.rates?.addAdditionalSuccess])
     useEffect(()=>{
