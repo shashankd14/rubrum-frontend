@@ -71,31 +71,18 @@ const SignIn =(props)=> {
 
                 <FormItem>
                   {getFieldDecorator('email', {
-                    initialValue: "demo@example.com",
-                    rules: [{
-                      required: true, type: 'email', message: 'The input is not valid E-mail!',
-                    }],
+                    initialValue: "",
                   })(
-                    <Input placeholder="Email"/>
+                    <Input placeholder="Username"/>
                   )}
                 </FormItem>
                 <FormItem>
                   {getFieldDecorator('password', {
-                    initialValue: "demo#123",
+                    initialValue: "",
                     rules: [{required: true, message: 'Please input your Password!'}],
                   })(
                     <Input type="password" placeholder="Password"/>
                   )}
-                </FormItem>
-                <FormItem>
-                  {getFieldDecorator('remember', {
-                    valuePropName: 'checked',
-                    initialValue: true,
-                  })(
-                    <Checkbox><IntlMessages id="appModule.iAccept"/></Checkbox>
-                  )}
-                  <span className="gx-signup-form-forgot gx-link"><IntlMessages
-                    id="appModule.termAndCondition"/></span>
                 </FormItem>
                 <FormItem>
                   <Button type="primary" className="gx-mb-0" htmlType="submit">
@@ -104,7 +91,8 @@ const SignIn =(props)=> {
                   <span><IntlMessages id="app.userAuth.or"/></span> <Link to="/signup"><IntlMessages
                   id="app.userAuth.signUp"/></Link>
                 </FormItem>
-                <div className="gx-flex-row gx-justify-content-between">
+                {/* Keeping the code for future use */}
+                {/* <div className="gx-flex-row gx-justify-content-between">
                   <span>or connect with</span>
                   <ul className="gx-social-link">
                     <li>
@@ -134,7 +122,7 @@ const SignIn =(props)=> {
                   </ul>
                 </div>
                 <span
-                  className="gx-text-light gx-fs-sm"> demo user email: 'demo@example.com' and password: 'demo#123'</span>
+                  className="gx-text-light gx-fs-sm"> demo user email: 'demo@example.com' and password: 'demo#123'</span> */}
               </Form>
             </div>
 
@@ -143,7 +131,7 @@ const SignIn =(props)=> {
                 <CircularProgress/>
               </div> : null}
             {showMessage ?
-              message.error(alertMessage.toString()) : null}
+              message.error("Login Error") : null}
           </div>
         </div>
       </div>

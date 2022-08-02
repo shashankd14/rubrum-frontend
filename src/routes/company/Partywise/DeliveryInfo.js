@@ -2,24 +2,30 @@ import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { Popover,Input, Card, message } from "antd";
 import { InfoCircleOutlined, CloseSquareTwoTone } from "@ant-design/icons";
-import { postDeliveryConfirm, generateDCPdf,resetInstruction } from "../../../appRedux/actions";
+import { postDeliveryConfirm, generateDCPdf,resetInstruction,saveUnprocessedDelivery } from "../../../appRedux/actions";
 import moment from "moment";
 
 const DeliveryInfo = (props) => {
   const [vehicleNo, setVehicleNo] = useState("");
   const [remarksList, setRemarksList] = useState([]);
   const [instructionList, setInstructionList]= useState([]);
+  const [fullHandling, setFullHandling] = useState(false);
+  const [thickness, setThickness] = useState();
   useEffect(()=>{
-    let insList = props.inward.inwardListForDelivery.map(i => {
-      return i.instruction || i;
+    let insList = props.inward.inwardListForDelivery?.map(i => {
+      const inwardList = props?.inward?.inwardList.filter(item => item.inwardEntryId === i.inwardEntryId)
+      inwardList.map(item=> setThickness(item?.fThickness))
+      return i?.instruction?.length ?i?.instruction: i;
     });
-    insList = insList.flat();
-    setInstructionList(insList.map(item => item.instructionId));
+    insList = insList?.flat();
+    setInstructionList(insList?.map(item => item.instructionId));
   },[]);
   useEffect(()=>{
     if(props.inward.deliverySuccess){
+      let insList = []
+      insList.push(props.inward?.unprocessedSuccess?.instructionId)
       const pdfPayload ={
-        instructionIds: instructionList
+        instructionIds: fullHandling ?insList :instructionList
       }
       props.generateDCPdf(pdfPayload);
     }
@@ -28,12 +34,27 @@ const DeliveryInfo = (props) => {
   useEffect(()=>{
     if(props.inward.dcpdfSuccess) {
         message.success('Delivery Challan pdf generated successfully', 2).then(() => { 
+          setFullHandling(false)
           props.resetInstruction();
           props.history.push('/company/partywise-register');
-         
 });
 }
 },[props.inward.dcpdfSuccess])
+useEffect(()=>{
+  if(props.inward?.unprocessedSuccess){
+    if(props.inward?.unprocessedSuccess?.process?.processId === 8){
+     let arrayList=[];
+      arrayList.push(props.inward?.unprocessedSuccess)
+    const reqObj = {
+      vehicleNo,
+      taskType:"FULL_HANDLING",
+      inwardListForDelivery: arrayList
+    }
+    props.postDeliveryConfirm(reqObj);
+  
+  }
+  }
+},[props.inward.unprocessedSuccess])
   const handleRemark = (elem, id) => {
     let index = remarksList.findIndex(elem => elem.id === id)
     let newRemarksList = remarksList
@@ -43,12 +64,24 @@ const DeliveryInfo = (props) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const reqObj = {
-      vehicleNo,
-      inwardListForDelivery: props.inward.inwardListForDelivery
-    }
+    let inslist = props?.inward.inwardListForDelivery.map(item => {
+      if(item?.inwardEntryId && item?.status?.statusName ==="RECEIVED"){
+        const payload ={
+          inwardEntryId: item?.inwardEntryId,
+          motherCoilDispatch: true
+        }
+        setFullHandling(true)
+        props.saveUnprocessedDelivery(payload)
+      }else {
+        const reqObj = {
+          vehicleNo,
+          inwardListForDelivery: props.inward.inwardListForDelivery
+        }
+       
+        props.postDeliveryConfirm(reqObj);
+      }
+    })
    
-    props.postDeliveryConfirm(reqObj);
    
   };
 
@@ -58,8 +91,8 @@ const DeliveryInfo = (props) => {
       <h1>Delivery Information</h1>
       <Card>
         {props.inward.inwardList.length > 0 ? (
-          props.inward.inwardListForDelivery.map((elem) => elem.instructionId && (
-            <div key={elem.instructionId}
+          props.inward.inwardListForDelivery.map((elem) => (elem?.instructionId || elem?.status?.statusName ==="RECEIVED") && (
+            <div key={elem?.instructionId || elem?.inwardEntryId}
               style={{
                 border: "1px solid black",
                 display: "flex",
@@ -77,41 +110,51 @@ const DeliveryInfo = (props) => {
               </div>
               <div className="flex flex-col">
                 <div style={{ marginTop: "5px" }}>
-                  <p style={{ fontWeight: "bold" }}>Coil Number - {elem.instructionId}</p>
+                  <p style={{ fontWeight: "bold" }}>Coil Number - {elem.instructionId || elem?.inwardEntryId}</p>
                 </div>
                 <div
                   style={{ display: "flex", justifyContent: "space-around" }}
                 >
                   <div>
                     <p style={{ marginTop: "10px" }}>
-                      Coil Width:{elem.plannedWidth}
+                      Coil Width:{elem?.plannedWidth || elem?.fWidth}
                     </p>
                   </div>
+                  {thickness &&<div>
+                    <p style={{ marginLeft: "5px", marginTop: "10px" }}>
+                      Coil Thickness:{thickness}
+                    </p>
+                  </div>}
                   <div>
                     <p style={{ marginLeft: "5px", marginTop: "10px" }}>
-                      Coil Thickness:{elem.fThickness}
+                      Coil Weight:{elem?.plannedWeight || props?.inward?.inwardList?.fpresent}
                     </p>
                   </div>
+                 {elem?.instructionDate && <div>
+                    <p style={{ marginLeft: "5px", marginTop: "10px" }}>
+                      Sliting/Cutting Date:{moment(elem.instructionDate).format('DD/MM/YYYY')}
+                    </p>
+                  </div>}
                   <div>
                     <p style={{ marginLeft: "5px", marginTop: "10px" }}>
-                      Coil Weight:{elem.plannedWeight}
+                      Coil Length:{elem?.plannedLength || elem?.fLength}
                     </p>
                   </div>
-                  <div>
-                    <p style={{ marginLeft: "5px", marginTop: "10px" }}>
-                      Sliting Date:{moment(elem.instructionDate).format('DD/MM/YYYY')}
-                    </p>
-                  </div>
-                  <div>
-                    <p style={{ marginLeft: "5px", marginTop: "10px" }}>
-                      Coil Length:{elem.plannedLength}
-                    </p>
-                  </div>
-                  <div>
+                  {elem?.rateId &&<div>
                     <p style={{ marginLeft: "5px", marginTop: "10px" }}>
                       Rate -{elem?.rateId}
                     </p>
-                  </div>
+                  </div>}
+                  {elem?.packetClassification && <div>
+                    <p style={{ marginLeft: "5px", marginTop: "10px" }}>
+                      Tags -{elem?.packetClassification?.classificationName}
+                    </p>
+                  </div>}
+                 { elem?.endUserTagsentity &&<div>
+                    <p style={{ marginLeft: "5px", marginTop: "10px" }}>
+                      End User Tags -{elem?.endUserTagsentity?.tagName}
+                    </p>
+                  </div>}
                   <div style={{ marginLeft: "3px", marginTop: "10px" }}>
                     <Popover
                       content={
@@ -129,6 +172,7 @@ const DeliveryInfo = (props) => {
                       <InfoCircleOutlined />
                     </Popover>
                   </div>
+                  
                   <div style={{ marginLeft: "20px" }}>
                     <Input
                       placeholder="Remarks"
@@ -209,4 +253,4 @@ const mapStateToProps = (state) => ({
   inward: state.inward,
 });
 
-export default connect(mapStateToProps, { postDeliveryConfirm, generateDCPdf,resetInstruction})(DeliveryInfo);
+export default connect(mapStateToProps, { saveUnprocessedDelivery,postDeliveryConfirm, generateDCPdf,resetInstruction})(DeliveryInfo);

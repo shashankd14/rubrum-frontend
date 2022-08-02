@@ -84,13 +84,18 @@ import {
     PDF_GENERATE_DELIVERY_ERROR
 } from "../../constants/ActionTypes";
 
-export const fetchInwardList = () => ({
+export const fetchInwardList = (page, pageSize, searchValue, partyId) => ({
     type: FETCH_INWARD_LIST_REQUEST,
+    page,
+    pageSize,
+    searchValue,
+    partyId
 });
 
-export const fetchInwardListSuccess = (inwardList) => ({
+export const fetchInwardListSuccess = (inwardList, totalItems) => ({
     type: FETCH_INWARD_LIST_SUCCESS,
-    inwardList
+    inwardList,
+    totalItems
 });
 
 export const fetchInwardListError = (error) => ({

@@ -1,4 +1,5 @@
 import {all, put, fork, takeLatest} from "redux-saga/effects";
+import { getUserToken } from './common';
 import { FETCH_PARTY_LIST_REQUEST, ADD_PARTY_REQUEST, FETCH_PARTY_LIST_ID_REQUEST, UPDATE_PARTY_REQUEST } from "../../constants/ActionTypes";
 import {fetchPartyListSuccess, 
     fetchPartyListError, 
@@ -9,15 +10,24 @@ import {fetchPartyListSuccess,
     updatePartySuccess,
     updatePartyError
 } from "../actions";
+import { userSignOutSuccess } from "../../appRedux/actions/Auth";
+
+const baseUrl = process.env.REACT_APP_BASE_URL;
+const getHeaders = () => ({
+    Authorization: getUserToken()
+});
 
 function* fetchPartyList() {
     try {
-        const fetchPartyList =  yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/party/list', {
+        const fetchPartyList =  yield fetch(`${baseUrl}api/party/list`, {
             method: 'GET',
+            headers: getHeaders()
         });
         if(fetchPartyList.status === 200) {
             const fetchPartyListResponse = yield fetchPartyList.json();
             yield put(fetchPartyListSuccess(fetchPartyListResponse));
+        } else if (fetchPartyList.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(fetchPartyListError('error'));
     } catch (error) {
@@ -27,12 +37,15 @@ function* fetchPartyList() {
 
 function* fetchPartyListById(action) {
     try {
-        const fetchPartyListId =  yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/party/getById/${action.partyId}`, {
+        const fetchPartyListId =  yield fetch(`${baseUrl}api/party/getById/${action.partyId}`, {
             method: 'GET',
+            headers: getHeaders()
         });
         if(fetchPartyListId.status === 200) {
             const fetchPartyListResponse = yield fetchPartyListId.json();
             yield put(fetchPartyListIdSuccess(fetchPartyListResponse));
+        } else if (fetchPartyListId.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(fetchPartyListIdError('error'));
     } catch (error) {
@@ -55,7 +68,7 @@ function* addParty(action) {
             city,
             state,
             pincode,
-            phone,tags
+            phone,tags,endUsertags
         } = action.party;
 
         const getEmail = (mail) => {
@@ -87,7 +100,10 @@ function* addParty(action) {
             return addressObj;
         }
         const getTags=()=>{
-            return tags.map(classificationId => ({classificationId}))
+            return tags.map(tagId => ({tagId}))
+        }
+        const getEndUserTags=()=>{
+            return endUsertags.map(tagId => ({tagId}))
         }
         const reqBody = {
             partyName,
@@ -100,16 +116,19 @@ function* addParty(action) {
             tags:getTags(),
             ...getEmail(email),
             ...getAddress(addressKeys),
-            ...getPhone(phone)
+            ...getPhone(phone), 
+            endUserTags: getEndUserTags(),
         }
-        const addParty = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/party/save', {
+        const addParty = yield fetch(`${baseUrl}api/party/save`, {
             method: 'POST',
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json", ...getHeaders() },
             body:JSON.stringify(reqBody)
             
         });
         if (addParty.status == 200) {
             yield put(addPartySuccess());
+        } else if (addParty.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(addPartyError('error'));
     } catch (error) {
@@ -135,7 +154,8 @@ function* updateParty(action) {
                 state,
                 pincode,
                 phone,
-                tags
+                tags,
+                endUsertags
             },
             id
         } = action.party;
@@ -169,11 +189,14 @@ function* updateParty(action) {
             return addressObj;
         }
         const getTags=()=>{
-            return tags.map(classificationId => ({classificationId}))
+            return tags.map(tagId => ({tagId}))
+        }
+        const getEndUserTags=()=>{
+            return endUsertags.map(tagId => ({tagId}))
         }
 
         const reqBody = {
-            partyId: id,
+            nPartyId: id,
             partyName,
             partyNickname,
             contactName,
@@ -182,21 +205,25 @@ function* updateParty(action) {
             panNumber,
             tanNumber,
             tags:getTags(),
+            endUserTags:getEndUserTags(),
             ...getEmail(email),
             ...getAddress(addressKeys),
             ...getPhone(phone)
         }
-        const updateParty = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/party/update', {
+        const updateParty = yield fetch(`${baseUrl}api/party/update`, {
             method: 'PUT',
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json", ...getHeaders() },
             body:JSON.stringify(reqBody)
             
         });
         if (updateParty.status == 200) {
             yield put(updatePartySuccess());
+        } else if (updateParty.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(updatePartyError('error'));
     } catch (error) {
+        console.log(error);
         yield put(updatePartyError(error));
     }
 }

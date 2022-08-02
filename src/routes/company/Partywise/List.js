@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { connect } from 'react-redux';
-import { Button, Card, Divider, Icon, Select, Table } from "antd";
-import moment from 'moment';
+import { Button, Card, Divider,Select, Table } from "antd";
 import SearchBox from "../../../components/SearchBox";
 
 import IntlMessages from "../../../util/IntlMessages";
@@ -22,7 +21,8 @@ const List = (props) => {
     const [filteredInfo, setFilteredInfo] = useState(null);
     const [searchValue, setSearchValue] = useState('');
     const [customerValue, setCustomerValue] = useState('');
-    let filter = props.inward.inwardList.map(item =>{
+    const { inwardList, totalItems } = props.inward;
+    let filter = inwardList.map(item =>{
         if(item.instruction.length>0){
             item.children= item.instruction.filter(ins => ins.groupId === null)
          }
@@ -34,14 +34,16 @@ const List = (props) => {
     const [selectedCBKeys, setSelectedCBKeys] = React.useState([]);
     const [selectedRowData, setSelectedRowData] = React.useState([]);
 
+    const [pageNo, setPageNo] = React.useState(1);
+    const [totalPageItems, setTotalItems] = React.useState(0);
+
     const columns = [{
         title: 'Coil Number',
         dataIndex: 'coilNumber',
         key: 'coilNumber',
         filters: [],
         sorter: (a, b) => a.coilNumber?.length - b.coilNumber?.length,
-        sortOrder: sortedInfo.columnKey === 'coilNumber' && sortedInfo.order,
-        ellipsis: true
+        sortOrder: sortedInfo.columnKey === 'coilNumber' && sortedInfo.order
     },
     {
         title: 'Customer Batch No',
@@ -71,7 +73,7 @@ const List = (props) => {
         key: 'material.description',
         filteredValue: filteredInfo ? filteredInfo["material.description"] : null,
         onFilter: (value, record) => record.material?.description == value,
-        filters: props.inward.inwardList.length > 0 ? [...new Set(props.inward.inwardList.map(item => item.material?.description))].map(material => ({ text: material, value: material })) : [],
+        filters: inwardList.length > 0 ? [...new Set(inwardList.map(item => item.material?.description))].map(material => ({ text: material, value: material })) : [],
         sorter: (a, b) => a.material?.description.length - b.material?.description.length,
         sortOrder: sortedInfo.columnKey === 'material.description' && sortedInfo.order,
     },
@@ -137,9 +139,14 @@ const List = (props) => {
         sortOrder: sortedInfo.columnKey === 'status.statusName' && sortedInfo.order,
     },
     {
-        title:"Tags",
+        title:"Classification",
         dataIndex:"packetClassification.classificationName",
         key:"packetClassification.classificationName"
+    },
+    {
+        title:"End User Tags",
+        dataIndex:"endUserTagsentity.tagName",
+        key:"endUserTagsentity.tagName"
     },
     {
         title: 'Action',
@@ -153,6 +160,10 @@ const List = (props) => {
                 <span className="gx-link">Bill</span>
                 <Divider type="vertical" />
                 <span className="gx-link">Transfer</span>
+                <Divider type="vertical" />
+                <span className="gx-link" onClick={() => props.history.push(`unfinish/${record.coilNumber}`)}>Cancel finish</span>
+                <Divider type="vertical" />
+                <span className="gx-link" onClick={() => props.history.push(`editFinish/${record.coilNumber}`)}>Edit finish</span>
             </span>}
             </span>
         ),
@@ -161,8 +172,13 @@ const List = (props) => {
     
     useEffect(() => {
         props.fetchPartyList();
-        props.fetchInwardList();
     }, []);
+
+    useEffect(() => {
+        if(totalItems) {
+            setTotalItems(totalItems);
+        }
+    }, [totalItems]);
    
 const getFilterData=(list)=>{
     let filter = list.map(item =>{
@@ -175,25 +191,19 @@ const getFilterData=(list)=>{
 }
     useEffect(() => {
         if(!props.inward.loading && props.inward.success) {
-            setFilteredInwardList(getFilterData(props.inward.inwardList));
+            setFilteredInwardList(getFilterData(inwardList));
         }
     }, [props.inward.loading, props.inward.success])
 
     useEffect(() => {
         if (searchValue) {
-            const filteredData = props.inward.inwardList.filter((inward) => {
-                if (inward.coilNumber.toLowerCase().includes(searchValue.toLowerCase()) ||
-                    inward.party.partyName.toLowerCase().includes(searchValue.toLowerCase()) ||
-                    inward.customerBatchId?.toLowerCase().includes(searchValue?.toLowerCase()) ||
-                    inward.inStockWeight === Number(searchValue) ||
-                    inward.vInvoiceNo.toLowerCase().includes(searchValue.toLowerCase())) {
-                    return inward
-                }
-            });
-            
-            setFilteredInwardList(getFilterData(filteredData));
+            if(searchValue.length >= 3) {
+                setPageNo(1);
+                props.fetchInwardList(1, 15, searchValue, customerValue)
+            }
         } else {
-            setFilteredInwardList(getFilterData(props.inward.inwardList));
+            setPageNo(1);
+            props.fetchInwardList(1, 15, searchValue, customerValue)
         }
     }, [searchValue])
 
@@ -206,7 +216,8 @@ const getFilterData=(list)=>{
         setCustomerValue('');
         setFilteredInfo(null);
         setSearchValue('');
-        setFilteredInwardList(props.inward.inwardList);
+        setPageNo(1);
+        props.fetchInwardList(1, 15)
     };
 
     const clearAll = () => {
@@ -220,12 +231,11 @@ const getFilterData=(list)=>{
 
     const handleCustomerChange = (value) => {
         if (value) {
-            const filteredData = props.inward.inwardList.filter((inward) =>inward.party.nPartyId===value);
-            setFilteredInwardList(filteredData);
             setCustomerValue(value);
+            props.fetchInwardList(1, 15, searchValue, value);
         } else {
             setCustomerValue('');
-            setFilteredInwardList(props.inward.inwardList);
+            setFilteredInwardList(inwardList);
         }
       
     }
@@ -251,7 +261,7 @@ const getFilterData=(list)=>{
       };
 
     const getKey = (data, selected) => {
-        if (data.status.statusName === 'READY TO DELIVER') {
+        if (data.status.statusName === 'READY TO DELIVER' || data.status.statusName === "RECEIVED") {
                 storeKey(data, selected);
                 if (data.children) {
                     data.children.map(item => getKey(item, selected));
@@ -261,7 +271,7 @@ const getFilterData=(list)=>{
 
       const rowSelection = {
         onSelect: (record, selected, selectedRows) => {
-            if (record.status.statusName === 'READY TO DELIVER') {
+            if (record.status.statusName === 'READY TO DELIVER' || record.status.statusName === 'RECEIVED') {
                 if (record.key.includes('-') && !selected) {
                     const eKeys = record.key.split('-');
                     let removeKeys = [record.key];
@@ -279,7 +289,7 @@ const getFilterData=(list)=>{
             }
         },
         getCheckboxProps: (record) => ({
-            disabled: record.status.statusName !== 'READY TO DELIVER'
+            disabled: record.status.statusName !== 'READY TO DELIVER' && record.status.statusName !== 'RECEIVED'
         }),
         onSelectAll: (selected, selectedRows, changeRows) => {
             if (changeRows.length === selectedCBKeys.length) {
@@ -287,7 +297,7 @@ const getFilterData=(list)=>{
                 setSelectedRowData([]);
             } else {
                 changeRows.map(item => {
-                    if (item.status.statusName === 'READY TO DELIVER') {
+                    if (item.status.statusName === 'READY TO DELIVER' || item.status.statusName ==="RECEIVED") {
                       getKey(item)
                     }
                 });
@@ -329,7 +339,13 @@ const getFilterData=(list)=>{
                             size="medium"
                             onClick={() => {
                                 console.log('selected rows', selectedRowData, selectedCBKeys);
-                                const newList = selectedRowData.filter(item => !item.childInstructions && item.instructionId)
+                                const newList = selectedRowData.filter(item => {
+                                    if(item?.instruction?.length){
+                                        return !item.childInstructions && item.instructionId
+                                    }else {
+                                        return item
+                                    }
+                                    })
                                 props.setInwardSelectedForDelivery(newList);
                                 props.history.push('/company/partywise-register/delivery')
                             }}
@@ -359,6 +375,15 @@ const getFilterData=(list)=>{
                         };
                         const result = expanded ? expandedRow : expandedRow.filter(row => row.key !== record.key);
                         setExpandedRecord([...result, motherRecord])
+                    }}
+                    pagination={{
+                        pageSize: 15,
+                        onChange: page => {
+                            setPageNo(page);
+                            props.fetchInwardList(page, 15, searchValue, customerValue);
+                        },
+                        current: pageNo,
+                        total: totalPageItems
                     }}
                 />
             </Card>

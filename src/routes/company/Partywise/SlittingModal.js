@@ -107,6 +107,7 @@ const SlittingWidths = (props) => {
         let cuts = props.cuts.map(i => i.plannedWeight);
        cuts = cuts.filter(i => i !== undefined)
         cuts = cuts.length > 0? cuts.reduce((total, num) => Number(total) + Number(num)) : 0
+        cuts = Number(cuts).toFixed(0)
         props.setweight(cuts)
         if(props.setDeleted){
             setWeightValue(weightValue-cuts);
@@ -128,13 +129,25 @@ const SlittingWidths = (props) => {
         setWeightValue(props.coilDetails.fpresent)
     },[props.coilDetails.fpresent])
     useEffect(()=>{
-        if (props.wip) {
+        if (props.unfinish) {
+            let actualUpdate = props.cuts.map(item => {
+                item.actualLength = 0;
+                item.actualWidth = 0;
+                item.actualWeight = 0;
+                if (item.packetClassification?.tagId) item.packetClassification = {
+                    tagId: 6
+                }
+                return item;
+            });
+            props.setTableData(actualUpdate);
+        }
+        else if (props.wip) {
             let actualUpdate = props.cuts.map(item => {
                 if (!item.actualLength && item.actualLength !== 0) item.actualLength  =  item.plannedLength;
                 if (!item.actualWidth && item.actualWidth !== 0) item.actualWidth  =  item.plannedWidth;
                 if (!item.actualWeight && item.actualWeight !== 0) item.actualWeight  =  item.plannedWeight;
-                if (!item.packetClassification?.classificationId) item.packetClassification = {
-                    classificationId: item.plannedWidth < 20 ? 2 : 6
+                if (!item.packetClassification?.tagId) item.packetClassification = {
+                    tagId: item.plannedWidth < 20 ? 2 : 6
                 }
                 return item;
             });
@@ -171,7 +184,7 @@ const SlittingWidths = (props) => {
             props.form.setFieldsValue({
                 length: obj.length
             });
-            setTagsName(obj.packetClassification.classificationId)
+            setTagsName(obj.packetClassification.tagId)
         }
     }
     // - function to apply same data for remaining equals parts
@@ -240,7 +253,9 @@ const SlittingWidths = (props) => {
                             inwardId: props.coilDetails.inwardEntryId ? props.coilDetails.inwardEntryId : '',
                             parentInstructionId: props.coilDetails.instructionId ? props.coilDetails.instructionId : '',
                             deleteUniqId: unsavedDeleteId,
-                            packetClassificationId:values?.tags || ""
+                            packetClassificationId: null,
+                            endUserTagId: null
+                           
                         }
                         slits.push(slitValue);
                     }
@@ -262,9 +277,11 @@ const SlittingWidths = (props) => {
                  slitInstructionPayload.push(instructionPayload);
                  setUnsavedDeleteId(prev => prev + 1);
                  let remainWeight = (props.coilDetails.fpresent || props.coilDetails.plannedWeight);
+                 const totalWeightRound = Number(totalWeight.toFixed(0));
+                 const remainWeightRound = Number(remainWeight.toFixed(0));
                  if(Number(availLength)  > lengthValue) {
                     message.error('Length greater than available length', 2);
-                }else if(totalWeight > remainWeight) {
+                }else if(totalWeightRound > remainWeightRound) {
                    message.error('Weight greater than available weight', 2);
                    
                 }else if(totalWidth !== widthValue) {
@@ -272,7 +289,7 @@ const SlittingWidths = (props) => {
                 }else if((totalWidth) > widthValue) {
                         message.error('Sum of slits width is greater than width of coil.', 2);
                  } else{
-                    setWeightValue(remainWeight-(totalWeight));
+                    setWeightValue(remainWeightRound-(totalWeightRound));
                     setlen(lengthValue - sumLength)
                         props.setPanelList(slitArray)
                         props.setSlits(slits);
@@ -291,9 +308,7 @@ const SlittingWidths = (props) => {
                 }
         });
     }
-    const handleTagsChange=(e)=>{
-        setTagsName(e)
-    }
+    
     const addNewKey = () => {
         const {form} = props;
         const keys = form.getFieldValue('keys');
@@ -358,7 +373,7 @@ const SlittingWidths = (props) => {
         if(value === 2){
             settargetWeight(0);
         }else {
-            settargetWeight((weightValue/Number(e.target.value)).toFixed(2));
+            settargetWeight((weightValue/Number(e.target.value)));
          }
     }
     const onTargetChange=  e=>{
@@ -386,10 +401,11 @@ const SlittingWidths = (props) => {
             <Form {...formItemLayoutSlitting}>
                 {!props.wip && <><label>Current Available length : {len}mm</label>
                 <div><label>Available Width : {weightValue > 0 ? (props.coilDetails.fWidth || props.coilDetails.plannedWidth) : 0}mm</label></div> 
-                <div><label>Current Available Weight : {weightValue.toFixed(1)}kg</label></div> 
+                <div><label>Current Available Weight : {weightValue?.toFixed(1)}kg</label></div> 
                 </>}
                 {!props.wip && 
-                <><Form.Item label="Process Date" >
+                <>
+                <Form.Item label="Process Date" >
                     {getFieldDecorator('processDate', {
                         initialValue: moment(new Date(), APPLICATION_DATE_FORMAT),
                         rules: [{ required: true, message: 'Please select a Process date' }],
@@ -500,20 +516,7 @@ const SlittingWidths = (props) => {
                         </>
                     )}
                 </Form.Item>
-                <Form.Item label="Tags">
-                    {getFieldDecorator('tags', {
-                        rules: [{ required: false}],
-                    })(
-                        <>
-                     <Select style={{width: '100%'}} value={tagsName} onChange={handleTagsChange} >
-                {props?.party?.map(item => {
-                    return <Option value={item.classificationId}>{item.classificationName}</Option>
-                })}
-            </Select>
-                        </>
-                    )}
-                </Form.Item>
-                <Form.Item>
+                
                 <Row className="gx-mt-4">
                     <Col span={16} style={{ textAlign: "center"}}>
                         <Button type="primary" htmlType="submit" onClick={() => addNewSize()} disabled={props.wip ? true : (props.slitInstructionList.length === equalParts)? true: false}>
@@ -524,7 +527,7 @@ const SlittingWidths = (props) => {
                  <Button type="primary" onClick={applyData} hidden={value=== 1 && equalParts > 1 && props.slitInstructionList.length !== equalParts? false: true} disabled={value===1 && equalPartsDisplay !== 0 ? (props.cuts.length=== 0 ?  true : false) :true}>
                            Apply to remainig {equalPartsDisplay} parts <Icon type="right"/>
                 </Button>
-                </Form.Item></>}
+                </>}
                 </Form>
         </>
     )
@@ -566,7 +569,7 @@ const columns = [
         title: 'Actual Length',
         dataIndex: 'actualLength',
         render: (text, record, index) => { // addonAfter={<p>Enter valid length</p>}
-            return <Input value={record.actualLength} onChange={onInputChange("actualLength", index)} />
+            return <Input disabled={props.unfinish} value={record.actualLength} onChange={onInputChange("actualLength", index)} />
         }
     },
     {
@@ -578,7 +581,7 @@ const columns = [
         title: 'Actual Width',
         dataIndex: 'actualWidth',
         render: (text, record, index) => {
-            return <Input value={record.actualWidth} onChange={onInputChange("actualWidth", index)} />
+            return <Input disabled={props.unfinish} value={record.actualWidth} onChange={onInputChange("actualWidth", index)} />
         }
     },
     {
@@ -590,7 +593,7 @@ const columns = [
         title: 'Actual Weight',
         dataIndex: 'actualWeight',
         render: (text, record, index) => {
-            return <Input value={record.actualWeight} onChange={onInputChange("actualWeight", index)} onBlur={() => {
+            return <Input disabled={props.unfinish} value={record.actualWeight} onChange={onInputChange("actualWeight", index)} onBlur={() => {
                 let actualTotalWeight = cuts.map(i => i.actualWeight);
                 actualTotalWeight = actualTotalWeight.filter(i => i !== undefined);
                 actualTotalWeight = actualTotalWeight.length > 0 ? actualTotalWeight.reduce((total, num) => Number(total) + Number(num)) : 0;
@@ -602,9 +605,20 @@ const columns = [
         title: 'Classification',
         dataIndex: 'packetClassification',
         render: (text, record, index) => {
-            return <Select style={{width: '100%'}} value={record?.packetClassification?.classificationId} onChange={onInputChange("packetClassification", index, 'select')} >
-                {props.classificationList?.map(item => {
-                    return <Option value={item.classificationId}>{item.classificationName}</Option>
+            return <Select disabled={props.unfinish} dropdownMatchSelectWidth={false} style={{width: '100%'}} value={record?.packetClassification?.tagId || record?.packetClassification?.classificationId} onChange={onInputChange("packetClassification", index, 'select')} >
+                {props.processTags?.map(item => {
+                    return <Option value={item.tagId}>{item.tagName}</Option>
+                })}
+            </Select>
+        }
+    },
+    {
+        title: 'End User Tags',
+        dataIndex: 'party.endUserTags',
+        render: (text, record, index) => {
+            return <Select disabled={props.unfinish} dropdownMatchSelectWidth={false} style={{width: '100%'}} value={record?.endUserTagsentity?.tagId} onChange={onInputChange("endUserTagsentity", index, 'select')} >
+                {props.coilDetails.party.endUserTags?.map(item => {
+                    return <Option value={item.tagId}>{item.tagName}</Option>
                 })}
             </Select>
         }
@@ -636,11 +650,25 @@ const columnsPlan=[
         key:'plannedWeight',
     },
     {
-        title:'Tags',
-        dataIndex:'packetClassification.classificationName',
-        key:'packetClassification.classificationName',
-        render: (text, record) => {
-            return record?.packetClassification?.classificationName || record?.packetClassificationId;
+        title: 'Tags',
+        dataIndex: 'packetClassification.tagName',
+        render: (text, record, index) => {
+            return  <Select style={{width: '100%'}} dropdownMatchSelectWidth={false} value={record?.packetClassification ? record?.packetClassification?.classificationName: record?.packetClassificationId} onChange={(e) =>handleTagsChange(record,e)} >
+            {props?.coilDetails.party?.tags?.map(item => {
+                return <Option value={item.tagId}>{item.tagName}</Option>
+            })}
+        </Select>
+        }
+    },
+    {
+        title: 'End User Tags',
+        dataIndex: 'endUserTags.tagsName',
+        render: (text, record, index) => {
+            return  <Select style={{width: '100%'}} dropdownMatchSelectWidth={false} value={record?.endUserTagsentity ? record?.endUserTagsentity?.tagName: record?.endUserTagId} onChange={(e) =>handleTagsChange(record,e,"endUser")} >
+            {props?.coilDetails.party?.endUserTags?.map(item => {
+                return <Option value={item.tagId}>{item.tagName}</Option>
+            })}
+        </Select>
         }
     },
     {
@@ -681,6 +709,7 @@ const columnsPlan=[
     const [showDeleteModal, setshowDeleteModal] = useState(false);
     const [deleteRecord, setDeleteRecord] = useState({});
     const [panelList, setPanelList]= useState([]);
+    const [tagsName, setTagsName]= useState()
     const onDelete = ({ record, key, e }) => {
         e.preventDefault();
 
@@ -750,7 +779,15 @@ const columnsPlan=[
         
     } else{
         data = data.flat();
-        data = props.wip ? data.filter(item => item.process.processId === 2 && item.status.statusId !==3 && item.groupId === null) :props.slitCut ? data.filter(item => item.process.processId === 2 && item.isSlitAndCut === true ):data.filter(item => item.process.processId === 2 && item.isSlitAndCut === false)
+        data = props.wip ? 
+            (props.unfinish || props.editFinish ?
+                data.filter(item => item.process.processId === 2 && item.status.statusId === 3 && item.groupId === null) 
+                :
+                data.filter(item => item.process.processId === 2 && item.status.statusId === 2 && item.groupId === null)) 
+            :
+            props.slitCut ? 
+            data.filter(item => item.process.processId === 2 && item.isSlitAndCut === true ) :
+            data.filter(item => item.process.processId === 2 && item.isSlitAndCut === false)
         let partIdList = data.map(item => item.partId);
         partIdList = [...new Set(partIdList)];
         let list1 = []
@@ -760,10 +797,17 @@ const columnsPlan=[
         }
         setPanelList(list1);  
         let cutsData = [...data];
-        cutsData = props.wip ? cutsData.filter(item => item.process.processId === 2 && item.status.statusId !==3 && item.groupId === null) :props.slitCut ? cutsData.filter(item => item.process.processId === 2 && item.isSlitAndCut === true ):cutsData.filter(item => item.process.processId === 2 && item.isSlitAndCut === false)
+        cutsData = props.wip ?
+        props.unfinish || props.editFinish ? 
+            cutsData.filter(item => item.process.processId === 2 && item.status.statusId ===3 && item.groupId === null) :
+            cutsData.filter(item => item.process.processId === 2 && item.status.statusId !==3 && item.groupId === null) 
+            :
+            props.slitCut ? 
+            cutsData.filter(item => item.process.processId === 2 && item.isSlitAndCut === true ) :
+            cutsData.filter(item => item.process.processId === 2 && item.isSlitAndCut === false)
         setSlittingDetail(cutsData)
         setCuts(cutsData);
-        setslitpayload([])
+        setslitpayload([]);
         
     }
     setForm(false);
@@ -774,12 +818,21 @@ const columnsPlan=[
     props.resetIsDeleted(false);
  }, [props.coilDetails]);
 
+
+ const handleTagsChange=(record,e,type="")=>{
+     setTagsName(e)
+     if(type==="endUser"){
+        record.endUserTagId=e
+     }else{
+        record.packetClassificationId= e
+     }
+}
   const onInputChange = (key, index, type) => (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const newData = [...tableData];
     const newIndex = (page - 1) * 10 + index;
-    newData[newIndex][key] = type === 'select' ? { classificationId: Number(e) } : Number(e.target.value);
+    newData[newIndex][key] = type === 'select' ? key==="endUserTagsentity"?{tagId: Number(e)}: {classificationId: Number(e) } : Number(e.target.value);
     if (key === 'actualWeight') {
         const data = (e.target.value / ((newData[newIndex]['actualWidth'] / 1000) * 7.85 * props.coil.fThickness )) * 1000;
         newData[newIndex]['actualLength'] = Number.isInteger(data) ? data : data.toFixed(1);
@@ -855,8 +908,17 @@ const columnsPlan=[
     }
     const handleOk =(e,name) => {
         e.preventDefault();
-        if(props.wip){
-            const isAllWip = tableData.every(item => item.packetClassification.classificationId === 6);
+        if (props.wip && props.unfinish) {
+            const coil = {
+                number: props.coil.coilNumber,
+                instruction: tableData,
+                unfinish: props.unfinish
+            };
+            props.updateInstruction(coil);
+            props.setShowSlittingModal(false)
+        }
+        else if (props.wip){ //
+            const isAllWip = tableData.every(item => item.packetClassification.tagId === 6);
             if (isAllWip) {
                 message.error('Unable to finish Instructions. All packets are classified as WIP');
             }
@@ -970,7 +1032,7 @@ const columnsPlan=[
                     <Row>
                         <Form {...formItemLayout} className="login-form gx-pt-4">
                             <Form.Item>
-                                <SlittingWidthsForm setSlitEqualInstruction={setSlitEqualInstruction} setSlitInstructionList={setSlitInstructionList} slitEqualInstruction={slitEqualInstruction} slitInstructionList={slitInstructionList} setSlits={(slits) => setCuts([...cuts,...slits])} setTableData={setTableData} setweight={(w) => settweight(w.toFixed(0))} totalActualweight={(w) => setTotalActualWeight(w)} coilDetails={props.coilDetails} wip={props.wip} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth} plannedWeight ={props.plannedWeight} length={length} cuts={cuts} edit={edit} tweight={tweight} lengthValue={(lengthValue) => setLengthValue(lengthValue)} widthValue={(widthValue) => setWidthValue(widthValue)} reset={form} />
+                                <SlittingWidthsForm setSlitEqualInstruction={setSlitEqualInstruction} setSlitInstructionList={setSlitInstructionList} slitEqualInstruction={slitEqualInstruction} slitInstructionList={slitInstructionList} setSlits={(slits) => setCuts([...cuts,...slits])} setTableData={setTableData} setweight={(w) => settweight(w)} totalActualweight={(w) => setTotalActualWeight(w)} coilDetails={props.coilDetails} wip={props.wip} unfinish={props.unfinish} editFinish={props.editFinish} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth} plannedWeight ={props.plannedWeight} length={length} cuts={cuts} edit={edit} tweight={tweight} lengthValue={(lengthValue) => setLengthValue(lengthValue)} widthValue={(widthValue) => setWidthValue(widthValue)} reset={form} />
                             </Form.Item>
                         </Form>
                         <Col lg={8} md={12} sm={24} xs={24}>
@@ -1057,7 +1119,7 @@ const columnsPlan=[
                                         slitCut={props.slitCut} 
                                         setParts ={(parts)=>setParts(parts)}
                                         setPanelList={(list) => setPanelList([...panelList,...list])}
-                                        party={props?.coilDetails.party?.tags}
+                                        
                                         />
                                 </Form.Item>
 
@@ -1132,7 +1194,7 @@ const columnsPlan=[
 const mapStateToProps = state => ({
     party: state.party,
     inward: state.inward,
-    classificationList: state.packetClassification?.classificationList
+    processTags: state.packetClassification?.processTags
 });
 
 const SlittingDetailsForm = Form.create({

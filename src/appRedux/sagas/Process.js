@@ -1,15 +1,25 @@
 import {all, put, fork, takeLatest} from "redux-saga/effects";
+import { getUserToken } from './common';
 import {FETCH_PROCESS_LIST_REQUEST} from "../../constants/ActionTypes";
 import {fetchProcessListSuccess, fetchProcessListError} from "../actions";
+import { userSignOutSuccess } from "../../appRedux/actions/Auth";
+
+const baseUrl = process.env.REACT_APP_BASE_URL;
+const getHeaders = () => ({
+    Authorization: getUserToken()
+});
 
 function* fetchProcessList() {
     try {
-        const fetchProcessList =  yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/process/list', {
+        const fetchProcessList =  yield fetch(`${baseUrl}api/process/list`, {
             method: 'GET',
+            headers: getHeaders()
         });
         if(fetchProcessList.status === 200) {
             const fetchProcessListResponse = yield fetchProcessList.json();
             yield put(fetchProcessListSuccess(fetchProcessListResponse));
+        } else if (fetchProcessList.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(fetchProcessListError('error'));
     } catch (error) {

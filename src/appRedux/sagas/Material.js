@@ -1,4 +1,5 @@
 import {all, put, fork, takeLatest} from "redux-saga/effects";
+import { getUserToken } from './common';
 import {FETCH_MATERIAL_LIST_REQUEST, 
     ADD_MATERIAL_REQUEST,
     FETCH_MATERIAL_LIST_ID_REQUEST,
@@ -13,15 +14,24 @@ import {fetchMaterialListError,
     updateMaterialSuccess,
     updateMaterialError
 } from "../actions";
+import { userSignOutSuccess } from "../../appRedux/actions/Auth";
+
+const baseUrl = process.env.REACT_APP_BASE_URL;
+const getHeaders = () => ({
+    Authorization: getUserToken()
+});
 
 function* fetchMaterialList() {
     try {
-        const fetchMaterialList =  yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/material/list', {
+        const fetchMaterialList =  yield fetch(`${baseUrl}api/material/list`, {
             method: 'GET',
+            headers: getHeaders()
         });
         if(fetchMaterialList.status === 200) {
             const fetchMaterialListResponse = yield fetchMaterialList.json();
             yield put(fetchMaterialListSuccess(fetchMaterialListResponse));
+        } else if (fetchMaterialList.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(fetchMaterialListError('error'));
     } catch (error) {
@@ -38,14 +48,16 @@ function* addMaterial(action) {
             hsnCode,
             materialCode
         }
-        const addMaterial = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/material/save', {
+        const addMaterial = yield fetch(`${baseUrl}api/material/save`, {
                 method: 'POST',
-                headers: { "Content-Type": "application/json" },
+                headers: { "Content-Type": "application/json", ...getHeaders() },
                 body:JSON.stringify(materialObj)
             
         });
         if (addMaterial.status == 200) {
             yield put(addMaterialSuccess());
+        } else if (addMaterial.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(addMaterialError('error'));
     } catch (error) {
@@ -57,20 +69,22 @@ function* updateMaterial(action) {
     try {
         const { values: { description, grade, hsnCode, materialCode }, id } = action.material;
         const materialObj = {
-            materialId: id,
+            matId: id,
             material: description,
             grade,
             materialCode,
             hsnCode
         }
-        const updateMaterial = yield fetch('http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/material/update', {
+        const updateMaterial = yield fetch(`${baseUrl}api/material/update`, {
                 method: 'PUT',
-                headers: { "Content-Type": "application/json" },
+                headers: { "Content-Type": "application/json", ...getHeaders() },
                 body:JSON.stringify(materialObj)
             
         });
         if (updateMaterial.status == 200) {
             yield put(updateMaterialSuccess());
+        } else if (updateMaterial.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(updateMaterialError('error'));
     } catch (error) {
@@ -80,12 +94,15 @@ function* updateMaterial(action) {
 
 function* fetchMaterialListById(action) {
     try {
-        const fetchMaterialById =  yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/material/getById/${action.materialId}`, {
+        const fetchMaterialById =  yield fetch(`${baseUrl}api/material/getById/${action.materialId}`, {
             method: 'GET',
+            headers: getHeaders()
         });
         if(fetchMaterialById.status === 200) {
             const fetchMaterialByIdResponse = yield fetchMaterialById.json();
             yield put(fetchMaterialListByIdSuccess(fetchMaterialByIdResponse));
+        }  else if (fetchMaterialById.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(fetchMaterialListByIdError('error'));
     } catch (error) {
