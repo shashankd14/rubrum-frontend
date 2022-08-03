@@ -121,14 +121,16 @@ export default (state = INIT_STATE, action) => {
         case RESET_RATES_REQUEST: {
             return {
                 ...state,
+                loading:false,
                 rates: {},
                 deleteSuccess:false,
                 addSuccess:false,
                 addAdditionalSuccess:false,
                 addAdditionalFailed:false,
-                deleteAdditionalRatesSuccess:false,
+                deleteAdditionalSuccess:false,
                 updateAdditionalFailure:false,
-                updateAdditionalSuccess:false
+                updateAdditionalSuccess:false,
+                
             }
         }
 

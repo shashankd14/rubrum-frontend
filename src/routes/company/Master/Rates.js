@@ -1,6 +1,6 @@
 import React, { useEffect, useState} from "react";
 import {connect} from 'react-redux';
-import {Button, Card, Divider, Table, Modal, Row, Col, Form, Input, Select, Checkbox, Tabs, Radio} from "antd";
+import {Button, Card, Divider, Table, Modal, Row, Col, Form, Input, Select, Checkbox, Tabs, message} from "antd";
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import moment from 'moment';
 import SearchBox from "../../../components/SearchBox";
@@ -234,6 +234,11 @@ const Rates = (props) => {
         }
        
     }, [props.rates.ratesList]);
+    useEffect(()=>{
+        if(props.rates.loading) {
+            message.loading('Loading..');
+        }
+    },[props.rates.loading])
     useEffect(()=>{
         const {addSuccess, deleteSuccess}= props.rates
         if(addSuccess || deleteSuccess){
