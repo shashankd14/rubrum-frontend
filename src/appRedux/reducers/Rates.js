@@ -182,7 +182,8 @@ export default (state = INIT_STATE, action) => {
             return {
                 ...state,
                 loading: false,
-                addAdditionalSuccess: true
+                addAdditionalSuccess: true,
+                addAdditionalFailed:false
             }
         }
         case ADD_ADDITIONAL_RATES_ERROR: {
