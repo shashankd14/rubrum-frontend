@@ -616,7 +616,17 @@ const columns = [
         title: 'End User Tags',
         dataIndex: 'party.endUserTags',
         render: (text, record, index) => {
-            return <Select disabled={props.unfinish} dropdownMatchSelectWidth={false} style={{width: '100%'}} value={record?.endUserTagsentity?.tagId} onChange={onInputChange("endUserTagsentity", index, 'select')} >
+            return <Select
+            showSearch
+            disabled={props.unfinish} 
+            dropdownMatchSelectWidth={false} 
+            optionFilterProp="children"
+            filterOption={(input, option) => {
+                return option?.props?.children?.toLowerCase().includes(input.toLowerCase());
+            }}
+            style={{width: '100px'}} 
+            value={record?.endUserTagsentity?.tagId} 
+            onChange={onInputChange("endUserTagsentity", index, 'select')} >
                 {props.coilDetails.party.endUserTags?.map(item => {
                     return <Option value={item.tagId}>{item.tagName}</Option>
                 })}
@@ -653,7 +663,19 @@ const columnsPlan=[
         title: 'Tags',
         dataIndex: 'packetClassification.tagName',
         render: (text, record, index) => {
-            return  <Select style={{width: '100%'}} dropdownMatchSelectWidth={false} value={record?.packetClassification ? record?.packetClassification?.classificationName: record?.packetClassificationId} onChange={(e) =>handleTagsChange(record,e)} >
+            return  <Select 
+            style={{width: '100px'}} 
+            dropdownMatchSelectWidth={false}
+            showSearch
+            optionFilterProp="children"
+            filterOption={(input, option) => {
+                return option?.props?.children?.toLowerCase().includes(input.toLowerCase());
+            }}
+            filterSort={(optionA, optionB) =>
+                optionA?.props?.children.toLowerCase().localeCompare(optionB?.props?.children.toLowerCase())
+            }
+            value={record?.packetClassification ? record?.packetClassification?.classificationName: record?.packetClassificationId} 
+            onChange={(e) =>handleTagsChange(record,e)} >
             {props?.coilDetails.party?.tags?.map(item => {
                 return <Option value={item.tagId}>{item.tagName}</Option>
             })}
@@ -664,7 +686,19 @@ const columnsPlan=[
         title: 'End User Tags',
         dataIndex: 'endUserTags.tagsName',
         render: (text, record, index) => {
-            return  <Select style={{width: '100%'}} dropdownMatchSelectWidth={false} value={record?.endUserTagsentity ? record?.endUserTagsentity?.tagName: record?.endUserTagId} onChange={(e) =>handleTagsChange(record,e,"endUser")} >
+            return  <Select
+            showSearch
+            style={{width: '100px'}} 
+            dropdownMatchSelectWidth={false}
+            optionFilterProp="children"
+            filterOption={(input, option) => {
+                return option?.props?.children?.toLowerCase().includes(input.toLowerCase());
+            }}
+            filterSort={(optionA, optionB) =>
+                optionA?.props?.children.toLowerCase().localeCompare(optionB?.props?.children.toLowerCase())
+            }
+            value={record?.endUserTagsentity ? record?.endUserTagsentity?.tagName: record?.endUserTagId} 
+            onChange={(e) =>handleTagsChange(record,e,"endUser")} >
             {props?.coilDetails.party?.endUserTags?.map(item => {
                 return <Option value={item.tagId}>{item.tagName}</Option>
             })}
