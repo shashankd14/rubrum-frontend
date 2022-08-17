@@ -223,20 +223,19 @@ const AdditionalRates = (props) => {
         const parts = values?.minimumparts?.map((item, idx) => {
           payload = {
             ...payload,
-            additionalPriceId: "1",
+            additionalPriceId: processId ===3?"11":"1",
             rangeFrom: item,
             rangeTo: values?.maximumparts[idx],
             price: values?.partsRate[idx],
           };
           payloadArray.push(payload);
         });
-        // payloadArray.push(...parts)
       }
       if (values?.radioSlits === "yesslits") {
         const slits = values?.minimumslits?.map((item, idx) => {
           payload = {
             ...payload,
-            additionalPriceId: "3",
+            additionalPriceId: processId===3?"12":"3",
             rangeFrom: item,
             rangeTo: values?.maximumslits[idx],
             price: values?.slitsRate[idx],
@@ -248,7 +247,7 @@ const AdditionalRates = (props) => {
         const bundleweight = values?.minimumbundleweight?.map((item, idx) => {
           payload = {
             ...payload,
-            additionalPriceId: processId === 1 ? "8" : "3",
+            additionalPriceId: processId === 1 ? "8":processId===3?"10" : "3",
             rangeFrom: item,
             rangeTo: values?.maximumbundleweight[idx],
             price: values?.bundleweightRate[idx],
@@ -260,7 +259,7 @@ const AdditionalRates = (props) => {
         const length = values?.minimumlength?.map((item, idx) => {
           payload = {
             ...payload,
-            additionalPriceId: "6",
+            additionalPriceId: processId===3?"14":"6",
             rangeFrom: item,
             rangeTo: values?.maximumlength[idx],
             price: values?.lengthRate[idx],
@@ -271,7 +270,7 @@ const AdditionalRates = (props) => {
       if (values?.balanceCoil === "yesBalance") {
         payload = {
           ...payload,
-          additionalPriceId: processId === 1 ? "7" : "4",
+          additionalPriceId: processId === 1 ? "7" :processId ===3?"9": "4",
           rangeFrom: "",
           rangeTo: "",
           price: values?.balanceCoilRate,
