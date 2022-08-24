@@ -11,6 +11,8 @@
   "sidebar.master.party": "Party",
   "sidebar.master.rates": "Rates",
   "sidebar.master.tags":"Tags",
+  "sidebar.master.packing": "Packing",
+  "sidebar.company.packingList": "Packing List",
   "sidebar.layouts": "Layouts",
   "sidebar.dashboard.crm": "Crm",
   "sidebar.components": "Components",
