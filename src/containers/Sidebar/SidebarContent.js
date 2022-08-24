@@ -103,6 +103,12 @@ const SidebarContent = () => {
                       <span><IntlMessages id="sidebar.master.tags"/></span>
                     </Link>
                   </Menu.Item>
+                  <Menu.Item key="company/master/packing">
+                    <Link to="/company/master/packing">
+                      <i className="icon icon-crypto"/>
+                      <span><IntlMessages id="sidebar.master.packing"/></span>
+                    </Link>
+                  </Menu.Item>
                 </SubMenu>
 
 
