@@ -24,7 +24,8 @@ import {
     CHECK_BATCH_NO_EXIST,
     INSTRUCTION_GROUP_SAVE,
     PDF_GENERATE_INWARD,
-    PDF_GENERATE_DELIVERY
+    PDF_GENERATE_DELIVERY,
+    PDF_S3_URL
 } from "../../constants/ActionTypes";
 
 import {
@@ -69,7 +70,9 @@ import {
     pdfGenerateSuccess,
     pdfGenerateError,
     generateDCPdfSuccess,
-    generateDCPdfError
+    generateDCPdfError,
+    getS3PDFUrlError,
+    getS3PDFUrlSuccess
 } from "../actions";
 import { CUTTING_INSTRUCTION_PROCESS_ID, SLITTING_INSTRUCTION_PROCESS_ID, SLIT_CUT_INSTRUCTION_PROCESS_ID } from "../../constants";
 import { formItemLayout } from "../../routes/company/Partywise/CuttingModal";
@@ -699,6 +702,23 @@ function* generateDCPdf(action) {
         yield put(generateDCPdfError(error));
     }
 }
+function* getS3PDFUrl(action) {
+    try {
+        const getS3PDFUrl = yield fetch(`${baseUrl}api/inwardEntry/getPlanPDFs/${action.inwardEntryId}`, { 
+            method: 'GET',
+            headers: getHeaders()
+        });
+        if (getS3PDFUrl.status === 200) {
+            const response = yield getS3PDFUrl.json();
+            yield put(getS3PDFUrlSuccess(response));
+        } else if (getS3PDFUrl.status === 401) {
+            yield put(userSignOutSuccess());
+        } else
+            yield put(getS3PDFUrlError('error'));
+    } catch (error) {
+        yield put(getS3PDFUrlError(error));
+    }
+}
 
 
 export function* watchFetchRequests() {
@@ -723,6 +743,7 @@ export function* watchFetchRequests() {
     yield takeLatest(INSTRUCTION_GROUP_SAVE, instructionGroupsave);
     yield takeLatest(PDF_GENERATE_INWARD, pdfGenerateInward);
     yield takeLatest(PDF_GENERATE_DELIVERY, generateDCPdf);
+    yield takeLatest(PDF_S3_URL, getS3PDFUrl);
 }
 
 export default function* inwardSagas() {

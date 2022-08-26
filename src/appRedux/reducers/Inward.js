@@ -75,7 +75,10 @@ import {
     PDF_GENERATE_INWARD_SUCCESS,
     PDF_GENERATE_DELIVERY,
     PDF_GENERATE_DELIVERY_ERROR,
-    PDF_GENERATE_DELIVERY_SUCCESS
+    PDF_GENERATE_DELIVERY_SUCCESS,
+    PDF_S3_URL,
+    PDF_S3_URL_SUCCESS,
+    PDF_S3_URL_ERROR
 } from "../../constants/ActionTypes";
 
 const INIT_STATE = {
@@ -120,8 +123,8 @@ const INIT_STATE = {
     deliverySuccess:false,
     deliveryError: false,
     isDeleted: false,
-    unprocessedSuccess:{}
-
+    unprocessedSuccess:{},
+    s3pdfurl:[]
 };
 
 export default (state = INIT_STATE, action) => {
@@ -643,7 +646,27 @@ export default (state = INIT_STATE, action) => {
                 dcpdfError: true
             }
         }
-
+        case PDF_S3_URL: {
+            return {
+                ...state,
+            }
+        }
+        case PDF_S3_URL_SUCCESS: {
+            return {
+                ...state,
+                loading:false,
+                success:true,
+                s3pdfurl: action.payload,
+            }
+        }
+        case PDF_S3_URL_ERROR: {
+            return {
+                ...state,
+                loading:false,
+                error:true,
+                s3pdfurl:[]
+            }
+        }
         default:
             return state;
     }
