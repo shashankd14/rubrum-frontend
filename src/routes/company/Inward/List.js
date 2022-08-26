@@ -131,8 +131,8 @@ const List = (props) => {
           <span className="gx-link" onClick={(e) => onDelete(record, index, e)}>
             Delete
           </span>
-          <Divider type="vertical" />
-          <span className="gx-link">Retrieve</span>
+          {/* <Divider type="vertical" />
+          <span className="gx-link">Retrieve</span> */}
         </span>
       ),
     },
