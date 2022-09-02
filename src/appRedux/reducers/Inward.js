@@ -124,7 +124,7 @@ const INIT_STATE = {
     deliveryError: false,
     isDeleted: false,
     unprocessedSuccess:{},
-    s3pdfurl:[]
+    s3pdfurl:{}
 };
 
 export default (state = INIT_STATE, action) => {
@@ -664,7 +664,7 @@ export default (state = INIT_STATE, action) => {
                 ...state,
                 loading:false,
                 error:true,
-                s3pdfurl:[]
+                s3pdfurl:{}
             }
         }
         default:

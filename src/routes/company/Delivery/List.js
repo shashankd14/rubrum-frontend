@@ -124,7 +124,6 @@ function List(props) {
             className="icon icon-trash gx-margin"
             onClick={() => handleDelete(record)}
           />
-          {/* <span className="gx-link">Retrieve</span> */}
           <span
             className="gx-link"
             style={{ display: "none" }}
