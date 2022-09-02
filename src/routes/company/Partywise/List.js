@@ -7,7 +7,7 @@ import IntlMessages from "../../../util/IntlMessages";
 import {
   fetchInwardList,
   getCoilsByPartyId,
-  getS3PDFUrl
+  getS3PDFUrl,
 } from "../../../appRedux/actions/Inward";
 import {
   fetchPartyList,
@@ -39,7 +39,7 @@ const List = (props) => {
 
   const [pageNo, setPageNo] = React.useState(1);
   const [totalPageItems, setTotalItems] = React.useState(0);
-const [showRetrieve,setShowRetrieve] = React.useState(false)
+  const [showRetrieve, setShowRetrieve] = React.useState(false);
   const columns = [
     {
       title: "Coil Number",
@@ -179,10 +179,15 @@ const [showRetrieve,setShowRetrieve] = React.useState(false)
                 Plan
               </span>
               <Divider type="vertical" />
-              <span className="gx-link" onClick={()=> {
-                props.getS3PDFUrl(record.inwardEntryId)
-                setShowRetrieve(true)}
-                }>Retrieve</span>
+              <span
+                className="gx-link"
+                onClick={() => {
+                  props.getS3PDFUrl(record.inwardEntryId);
+                  setShowRetrieve(true);
+                }}
+              >
+                Retrieve
+              </span>
               <Divider type="vertical" />
               <span
                 className="gx-link"
@@ -237,11 +242,11 @@ const [showRetrieve,setShowRetrieve] = React.useState(false)
     if (searchValue) {
       if (searchValue.length >= 3) {
         setPageNo(1);
-        props.fetchInwardList(1, 15, searchValue, customerValue);
+        props.fetchInwardList(1, 20, searchValue, customerValue);
       }
     } else {
       setPageNo(1);
-      props.fetchInwardList(1, 15, searchValue, customerValue);
+      props.fetchInwardList(1, 20, searchValue, customerValue);
     }
   }, [searchValue]);
 
@@ -352,7 +357,40 @@ const [showRetrieve,setShowRetrieve] = React.useState(false)
     },
     selectedRowKeys: selectedCBKeys,
   };
-
+  const gets3PDFurl = () => {
+    return (
+      <>
+        <div>
+          <a href={props?.inward.s3pdfurl?.inward_pdf} target="_blank">
+            Inward PDF
+          </a>
+        </div>
+        {props.inward.s3pdfurl?.plan_pdfs?.length > 0 && (
+          <div>
+            <p>Plan PDF</p>
+            {props.inward.s3pdfurl?.plan_pdfs?.map((item) => (
+              <>
+                <a href={item?.pdfS3Url} target="_blank">
+                  {item.id}
+                </a>
+                <br />
+              </>
+            ))}
+          </div>
+        )}
+        {props.inward.s3pdfurl?.dc_pdfs?.length > 0 && (
+          <div>
+            <p>DC PDF</p>
+            {props.inward.s3pdfurl?.dc_pdfs?.map((item) => (
+              <a href={item?.pdfS3Url} target="_blank">
+                {item.id}
+              </a>
+            ))}
+          </div>
+        )}
+      </>
+    );
+  };
   return (
     <div>
       <h1>
@@ -425,11 +463,18 @@ const [showRetrieve,setShowRetrieve] = React.useState(false)
             />
           </div>
         </div>
-        {showRetrieve && <Modal title="Retrieve Plan PDF"
+        {showRetrieve && (
+          <Modal
+            title="Retrieve Plan PDF"
             visible={showRetrieve}
             width={600}
-            onOk={()=>setShowRetrieve(false)}
-            onCancel={()=>setShowRetrieve(false)}><p>Please click on the Instructions to generate the PDF</p>{props.inward.s3pdfurl.map(item=><><br/><a href={item?.pdfS3Url} target="_blank">{item.id}</a></>)}</Modal>}
+            onOk={() => setShowRetrieve(false)}
+            onCancel={() => setShowRetrieve(false)}
+          >
+            <p>Please click on the Instructions to generate the PDF</p>
+            {gets3PDFurl()}
+          </Modal>
+        )}
         <Table
           className="gx-table-responsive"
           columns={columns}
@@ -451,7 +496,7 @@ const [showRetrieve,setShowRetrieve] = React.useState(false)
             setExpandedRecord([...result, motherRecord]);
           }}
           pagination={{
-            pageSize: 15,
+            pageSizeOptions: ["15"],
             onChange: (page) => {
               setPageNo(page);
               props.fetchInwardList(page, 15, searchValue, customerValue);
@@ -475,5 +520,5 @@ export default connect(mapStateToProps, {
   fetchInwardList,
   getCoilsByPartyId,
   setInwardSelectedForDelivery,
-  getS3PDFUrl
+  getS3PDFUrl,
 })(List);
