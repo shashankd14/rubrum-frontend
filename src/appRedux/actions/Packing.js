@@ -23,7 +23,8 @@ import {
     UPDATE_PACKING_BUCKET_REQUEST,
     UPDATE_PACKING_BUCKET_SUCCESS,
     UPDATE_PACKING_BUCKET_ERROR,
-    RESET_PACKING_REQUEST
+    RESET_PACKING_REQUEST,
+    RESET_PACKING_BUCKET_REQUEST
 } from "../../constants/ActionTypes";
 
 export const fetchPackingList = () => ({
@@ -84,6 +85,10 @@ export const addPackingBucketError = (error) => ({
 
 export const resetPacking = () => ({
     type: RESET_PACKING_REQUEST
+});
+
+export const resetPackingBucket = () => ({
+    type: RESET_PACKING_BUCKET_REQUEST
 });
 
 export const updatePacking = (packing) => ({

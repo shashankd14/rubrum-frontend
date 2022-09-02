@@ -23,12 +23,15 @@ import {
     UPDATE_PACKING_BUCKET_REQUEST,
     UPDATE_PACKING_BUCKET_SUCCESS,
     UPDATE_PACKING_BUCKET_ERROR,
-    RESET_PACKING_REQUEST
+    RESET_PACKING_REQUEST,
+    RESET_PACKING_BUCKET_REQUEST
 } from "../../constants/ActionTypes";
 
 const INIT_STATE = {
     packingList: [],
     packing: {},
+    bucket: {},
+    bucketList: [],
     loading: false,
     error: false
 };
@@ -169,6 +172,13 @@ export default (state = INIT_STATE, action) => {
             return {
                 ...state,
                 packing: {}
+            }
+        }
+
+        case RESET_PACKING_BUCKET_REQUEST: {
+            return {
+                ...state,
+                bucket: {}
             }
         }
 
