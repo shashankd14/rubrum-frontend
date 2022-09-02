@@ -5,7 +5,9 @@ import moment from 'moment';
 import SearchBox from "../../../components/SearchBox";
 
 import IntlMessages from "../../../util/IntlMessages";
-import { fetchPackingList, fetchPackingBucketList, addPacking, fetchPackingListById, fetchPackingBucketListById, updatePacking, updatePackingBucket, resetPacking, addPackingBucket } from "../../../appRedux/actions";
+import { fetchPackingList, fetchPackingBucketList, addPacking, 
+    fetchPackingListById, fetchPackingBucketListById, updatePacking, 
+    updatePackingBucket, resetPacking, addPackingBucket, resetPackingBucket } from "../../../appRedux/actions";
 
 export const formItemLayout = {
     labelCol: {
@@ -21,7 +23,6 @@ export const formItemLayout = {
 };
 
 const Packing = (props) => {
-    console.log(props);
     const TabPane = Tabs.TabPane;
     const Option = Select.Option;
     const [sortedInfo, setSortedInfo] = useState({
@@ -473,7 +474,7 @@ const Packing = (props) => {
                     }}
                     width={600}
                     onCancel={() => {
-                        props.resetPacking();
+                        props.resetPackingBucket();
                         props.form.resetFields();
                         setShowAddBucket(false);
                         setEditBucket(false);
@@ -594,5 +595,6 @@ export default connect(mapStateToProps, {
     updatePacking,
     updatePackingBucket,
     resetPacking,
+    resetPackingBucket,
     fetchPackingBucketList
 })(packingForm);
