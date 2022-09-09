@@ -229,7 +229,7 @@ const Packing = (props) => {
                         return packing;
                     }
                 });
-                setFilteredInwardList(filteredData);
+                setFilteredBucketList(filteredData);
             }
         } else {
             setFilteredInwardList(packing.packingList);

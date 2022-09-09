@@ -23,18 +23,24 @@ import EditAdditionalRates from "./editAdditionalRates";
 import IntlMessages from "../../../util/IntlMessages";
 import {
   fetchRatesList,
+  fetchPackingRatesList,
   fetchPartyList,
   fetchMaterialList,
   fetchProcessList,
   addRates,
+  addPackingRates,
   fetchAdditionalPriceList,
   fetchAdditionalPriceListById,
   getStaticList,
   fetchRatesListById,
+  fetchPackingRatesById,
   updateRates,
+  updatePackingRates,
   resetRates,
+  resetPackingRates,
   deleteRates,
   deleteAdditionalRates,
+  fetchPackingBucketList
 } from "../../../appRedux/actions";
 import { onDeleteContact } from "../../../appRedux/actions";
 import AdditionalRates from "./addAdditionalRates";
@@ -63,13 +69,18 @@ const Rates = (props) => {
   const [filteredInfo, setFilteredInfo] = useState(null);
   const [searchValue, setSearchValue] = useState("");
   const [showAddRates, setShowAddRates] = useState(false);
+  const [showAddPackingRates, setShowAddPackingRates] = useState(false);
   const [viewMaterial, setViewMaterial] = useState(false);
+  const [viewPackingRate, setViewPackingRate] = useState(false);
   const [editRates, setEditRates] = useState(false);
+  const [editPackingRates, setEditPackingRates] = useState(false);
   const [viewMaterialData, setViewMaterialData] = useState({});
+  const [viewPackingRateData, setViewPackingRateData] = useState({});
   const [type, setType] = useState([]);
   const [filteredInwardList, setFilteredInwardList] = useState(
     props.rates?.ratesList || []
   );
+  const [filteredPackingRateList, setfilteredPackingRateList] = useState();
   const [gradeList, setGradeList] = useState([]);
   const [checked, setChecked] = useState(false);
   const { getFieldDecorator } = props.form;
@@ -206,11 +217,80 @@ const Rates = (props) => {
     },
   ];
 
+  const packingRateColumn = [{
+    title: 'S No',
+    dataIndex: 'packingRateId',
+    key: 'packingRateId',
+    filters: [],
+    sorter: (a, b) => {
+        return a.packingRateId - b.packingRateId
+    },
+    sortOrder: sortedInfo.columnKey === 'packingRateId' && sortedInfo.order,
+},
+{
+    title: 'Party Name',
+    dataIndex: 'partyName',
+    key: 'partyName',
+    filters: [],
+    sorter: (a, b) => {
+        return a.partyName - b.partyName
+    },
+    sortOrder: sortedInfo.columnKey === 'partyName' && sortedInfo.order,
+},
+{
+    title: 'Bucket Name',
+    dataIndex: 'packingBucketName',
+    key: 'packingBucketName',
+    filters: [],
+    sorter: (a, b) => {
+        return a.packingBucketName - b.packingBucketName
+    },
+    sortOrder: sortedInfo.columnKey === 'packingBucketName' && sortedInfo.order,
+},
+{
+  title: 'Rate',
+  dataIndex: 'packingRate',
+  key: 'packingRate',
+  filters: [],
+  sorter: (a, b) => {
+      return a.packingRate - b.packingRate
+  },
+  sortOrder: sortedInfo.columnKey === 'packingRate' && sortedInfo.order,
+},
+{
+  title: 'Description',
+  dataIndex: 'packingRateDesc',
+  key: 'packingRateDesc',
+  filteredValue: filteredInfo ? filteredInfo["packingRateDesc"] : null,
+  filters: [],
+  onFilter: (value, record) => record.packingRateDesc == value,
+  sorter: (a, b) => a.packingRateDesc?.length - b.packingRateDesc?.length,
+  sortOrder: sortedInfo.columnKey === 'packingRateDesc' && sortedInfo.order,
+},
+{
+    title: 'Action',
+    dataIndex: '',
+    key: 'x',
+    render: (text, record, index) => (
+        <span>
+            <span className="gx-link" onClick={(e) => onView(record, e)}>View</span>
+            <Divider type="vertical"/>
+            <span className="gx-link" onClick={(e) => onEdit(record,e)}>Edit</span>
+            <Divider type="vertical"/>
+            <span className="gx-link"onClick={() => {}}>Delete</span>
+        </span>
+    ),
+},
+];
+
   const onView = (record, e) => {
     e.preventDefault();
     if (tabKey === "1") {
       setViewMaterialData(record);
       setViewMaterial(true);
+    } else if (tabKey === "3") {
+      setViewPackingRateData(record);
+      setViewPackingRate(true);
     } else {
       setViewMaterialData(record);
       setViewAdditionalRates(true);
@@ -233,6 +313,12 @@ const Rates = (props) => {
       setTimeout(() => {
         setShowAddRates(true);
       }, 1000);
+    } else if (tabKey === "3") {
+      props.fetchPackingRatesById(record.packingRateId);
+      setEditPackingRates(true);
+      setTimeout(() => {
+        setShowAddPackingRates(true);
+      }, 1000);
     } else {
       props.fetchAdditionalPriceListById(record.id);
       setTimeout(() => {
@@ -246,6 +332,8 @@ const Rates = (props) => {
     props.fetchMaterialList();
     props.fetchProcessList();
     props.fetchAdditionalPriceList();
+    props.fetchPackingRatesList();
+    props.fetchPackingBucketList();
   }, []);
 
   useEffect(() => {
@@ -253,15 +341,27 @@ const Rates = (props) => {
   }, [showAddRates]);
 
   useEffect(() => {
+    props.fetchPackingRatesList();
+  }, [showAddPackingRates]);
+
+  useEffect(() => {
     const { ratesList } = props.rates;
 
     setFilteredInwardList(ratesList);
   }, [props.rates.ratesList]);
+
+  useEffect(() => {
+    const { packingRateList } = props.rates;
+
+    setfilteredPackingRateList(packingRateList)
+  }, [props.rates.packingRateList]);
+
   useEffect(() => {
     if (props.rates.loading) {
       message.loading("Loading..");
     }
   }, [props.rates.loading]);
+
   useEffect(() => {
     if (props.rates.addSuccess || props.rates.deleteSuccess) {
       props.fetchRatesList();
@@ -298,20 +398,36 @@ const Rates = (props) => {
   useEffect(() => {
     const { rates } = props;
     if (searchValue) {
-      const filteredData = rates?.ratesList?.filter((rate) => {
-        if (
-          rate?.id?.toString() === searchValue ||
-          rate?.partyId?.toString() === searchValue ||
-          rate?.matGradeId?.toString() === searchValue ||
-          rate?.processId?.toString() === searchValue ||
-          rate?.price?.toString() === searchValue
-        ) {
-          return rate;
-        }
-      });
-      setFilteredInwardList(filteredData);
+      if (tabKey === "3") {
+        const filteredData = rates?.packingRateList?.filter((rate) => {
+          if (
+            rate?.partyName?.toString().includes(searchValue) ||
+            rate?.packingBucketName?.toString().includes(searchValue) ||
+            rate?.packingRate?.toString() === searchValue ||
+            rate?.packingRateDesc?.toString().includes(searchValue)
+          ) {
+            return rate;
+          }
+        });
+        setfilteredPackingRateList(filteredData);
+      }
+      else {
+        const filteredData = rates?.ratesList?.filter((rate) => {
+          if (
+            rate?.id?.toString() === searchValue ||
+            rate?.partyId?.toString() === searchValue ||
+            rate?.matGradeId?.toString() === searchValue ||
+            rate?.processId?.toString() === searchValue ||
+            rate?.price?.toString() === searchValue
+          ) {
+            return rate;
+          }
+        });
+        setFilteredInwardList(filteredData);
+      }
     } else {
       setFilteredInwardList(rates.ratesList);
+      setfilteredPackingRateList(rates.packingRateList);
     }
   }, [searchValue]);
   useEffect(() => {
@@ -350,9 +466,6 @@ const Rates = (props) => {
       console.log("record", record, selectedRows);
       setSelectedRows(selectedRows);
     },
-    // getCheckboxProps: (record) => ({
-    //     disabled:
-    // }),
   };
 
   const handleProcessChange = (e) => {
@@ -412,6 +525,20 @@ const Rates = (props) => {
                 }}
               >
                 Add Rates
+              </Button>
+            )}
+            {tabKey === "3" && (
+              <Button
+                type="primary"
+                icon={() => <i className="icon icon-add" />}
+                size="medium"
+                onClick={() => {
+                  props.resetPackingRates();
+                  props.form.resetFields();
+                  setShowAddPackingRates(true);
+                }}
+              >
+                Add Packing Rates
               </Button>
             )}
             <SearchBox
@@ -481,6 +608,14 @@ const Rates = (props) => {
                 />
               </>
             )}
+          </TabPane>
+          <TabPane tab="Packing Rate" key="3">
+            <Table rowSelection={[]}
+              className="gx-table-responsive"
+              columns={packingRateColumn}
+              dataSource={filteredPackingRateList}
+              onChange={handleChange}
+              />
           </TabPane>
         </Tabs>
         <Modal
@@ -805,6 +940,144 @@ const Rates = (props) => {
             </Row>
           </Card>
         </Modal>
+
+        <Modal
+          title="Packing Rates Details"
+          visible={viewPackingRate}
+          onOk={() => setViewPackingRate(false)}
+          onCancel={() => setViewPackingRate(false)}
+        >
+          <Card className="gx-card">
+            <Row>
+              <Col span={24}>
+                <Card>
+                  <p>
+                    <strong>Bucket Name:</strong> {viewPackingRateData?.packingBucketName}
+                  </p>
+                  <p>
+                    <strong>Party Name:</strong>{" "}
+                    {viewPackingRateData?.partyName}
+                  </p>
+                  <p>
+                    <strong>Packing Rate:</strong>{" "}
+                    {viewPackingRateData?.packingRate}
+                  </p>
+                  <p>
+                    <strong>Description:</strong> {viewPackingRateData?.packingRateDesc}
+                  </p>
+                </Card>
+              </Col>
+            </Row>
+          </Card>
+        </Modal>
+
+        <Modal
+          title={editPackingRates ? "Edit Packing Rates" : "Add Packing Rates"}
+          visible={showAddPackingRates}
+          onOk={(e) => {
+            e.preventDefault();
+            if (editPackingRates) {
+              const values = props.form.getFieldsValue();
+              console.log('Received values of form: ', values);
+              if (values.packingBucketId !== '' && values.rPartyId !== '' && values.packingRate !== '' && values.packingRateDesc !== '') {
+                const packingRateId = props?.packingRates?.packingRateId;
+                props.updatePackingRates({ ...values, packingRateId });
+                setEditPackingRates(false);
+                setShowAddPackingRates(false);
+              }
+            } else {
+              const values = props.form.getFieldsValue();
+              console.log('Received values of form: ', values);
+              if (values.packingBucketId !== '' && values.rPartyId !== '' && values.packingRate !== '' && values.packingRateDesc !== '') {
+                props.addPackingRates(values);
+                setShowAddPackingRates(false);
+              }
+            }
+            props.form.resetFields();
+          }}
+          width={600}
+          onCancel={() => {
+            props.form.resetFields();
+            setShowAddPackingRates(false);
+            setEditPackingRates(false);
+          }}
+        >
+          <Card className="gx-card">
+            <Row>
+              <Col
+                lg={24}
+                md={24}
+                sm={24}
+                xs={24}
+                className="gx-align-self-center"
+              >
+                <Form {...formItemLayout} className="gx-pt-4">
+                <Form.Item label="Bucket Id">
+                    {getFieldDecorator('packingBucketId', {
+                        rules: [{ required: true, message: 'Please select Items' }],
+                    })(
+                        <Select
+                        id="packingItem"
+                        showSearch
+                        style={{ width: '100%' }}
+                        filterOption={(input, option) => {
+                            return option?.props?.children?.toLowerCase().includes(input.toLowerCase());
+                        }}
+                        filterSort={(optionA, optionB) =>
+                            optionA?.props?.children.toLowerCase().localeCompare(optionB?.props?.children.toLowerCase())
+                        }
+                        >{props?.packing?.bucketList?.map(item => {
+                            return <Option value={item?.bucketId}>{item?.packingBucketId}</Option>
+                        })}</Select>
+                    )}
+                </Form.Item>
+                <Form.Item label="Party Name">
+                  {getFieldDecorator("rPartyId", {
+                    rules: [{
+                        required: true,
+                        message: "Please select party name!",
+                      }],
+                  })(
+                    <Select
+                      id="partyId"
+                      showSearch
+                      style={{ width: "100%" }}
+                      filterOption={(input, option) => {
+                        return option?.props?.children?.toLowerCase().includes(input.toLowerCase());
+                      }}
+                      filterSort={(optionA, optionB) =>
+                        optionA?.props?.children.toLowerCase().localeCompare(optionB?.props?.children.toLowerCase())
+                      }
+                    >
+                      {props.party?.partyList?.map((party) => (
+                        <Option value={party.nPartyId}>
+                          {party.partyName}
+                        </Option>
+                      ))}
+                    </Select>
+                  )}
+                </Form.Item>
+                <Form.Item label="Packing Rate" >
+                      {getFieldDecorator('packingRate', {
+                          rules: [{ required: true, message: 'Please enter rate' }],
+                          })(
+                          <Input id="packingRate" />
+                      )}
+                  </Form.Item>
+                  <Form.Item label="Description" >
+                      {getFieldDecorator('packingRateDesc', {
+                          rules: [{ required: true, message: 'Please enter description' }],
+                          })(
+                          <Input id="packingRateDesc" />
+                      )}
+                  </Form.Item>
+                </Form>
+              </Col>
+            </Row>
+          </Card>
+        </Modal>
+
+
         {showAdditionalRates && (
           <AdditionalRates
             form={props.form}
@@ -828,6 +1101,8 @@ const mapStateToProps = (state) => ({
   party: state.party,
   process: state.process,
   aRates: state.rates.additionalRates,
+  packing: state.packing,
+  packingRates: state.rates.packingRates
 });
 
 const addRatesForm = Form.create({
@@ -889,22 +1164,44 @@ const addRatesForm = Form.create({
         ...props.aRates?.price,
         value: props.aRates?.price || "",
       }),
+      packingBucketId: Form.createFormField({
+        ...props.packingRates?.packingBucketId,
+        value: props.packingRates?.packingBucketId || "",
+      }),
+      rPartyId: Form.createFormField({
+        ...props.packingRates?.partyId,
+        value: props.packingRates?.partyId || "",
+      }),
+      packingRate: Form.createFormField({
+        ...props.packingRates?.packingRate,
+        value: props.packingRates?.packingRate || "",
+      }),
+      packingRateDesc: Form.createFormField({
+        ...props.packingRates?.packingRateDesc,
+        value: props.packingRates?.packingRateDesc || "",
+      }),
     };
   },
 })(Rates);
 
 export default connect(mapStateToProps, {
   fetchRatesList,
+  fetchPackingRatesList,
   fetchPartyList,
   fetchMaterialList,
   fetchProcessList,
   addRates,
+  addPackingRates,
   fetchRatesListById,
+  fetchPackingRatesById,
   updateRates,
+  updatePackingRates,
   resetRates,
+  resetPackingRates,
   deleteRates,
   deleteAdditionalRates,
   getStaticList,
   fetchAdditionalPriceList,
   fetchAdditionalPriceListById,
+  fetchPackingBucketList
 })(addRatesForm);
