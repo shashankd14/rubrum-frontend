@@ -480,9 +480,16 @@ const Party = (props) => {
                                         })(
                                             <Select
                                              id="tags"
+                                             showSearch
                                              mode="multiple"
                                              style={{ width: '100%' }}
                                              onChange={handleSelectChange}
+                                             filterOption={(input, option) => {
+                                                return option?.props?.children?.toLowerCase().includes(input.toLowerCase());
+                                            }}
+                                            filterSort={(optionA, optionB) =>
+                                                optionA?.props?.children.toLowerCase().localeCompare(optionB?.props?.children.toLowerCase())
+                                            }
                                              >{props?.packetClassification?.processTags?.map(item => {
                                                 return <Option value={item?.tagId}>{item?.tagName}</Option>
                                             })}</Select>
@@ -494,8 +501,15 @@ const Party = (props) => {
                                         })(
                                             <Select
                                              id="endUsertags"
+                                             showSearch
                                              mode="multiple"
                                              style={{ width: '100%' }}
+                                             filterOption={(input, option) => {
+                                                return option?.props?.children?.toLowerCase().includes(input.toLowerCase());
+                                            }}
+                                            filterSort={(optionA, optionB) =>
+                                                optionA?.props?.children.toLowerCase().localeCompare(optionB?.props?.children.toLowerCase())
+                                            }
                                              onChange={handleSelectChange}
                                              >{props?.packetClassification?.endUserTags?.map(item => {
                                                 return <Option value={item?.tagId}>{item.tagName}</Option>

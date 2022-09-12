@@ -277,9 +277,11 @@ const SlittingWidths = (props) => {
                  slitInstructionPayload.push(instructionPayload);
                  setUnsavedDeleteId(prev => prev + 1);
                  let remainWeight = (props.coilDetails.fpresent || props.coilDetails.plannedWeight);
+                 const totalWeightRound = Number(totalWeight.toFixed(0));
+                 const remainWeightRound = Number(remainWeight.toFixed(0));
                  if(Number(availLength)  > lengthValue) {
                     message.error('Length greater than available length', 2);
-                }else if(totalWeight > remainWeight) {
+                }else if(totalWeightRound > remainWeightRound) {
                    message.error('Weight greater than available weight', 2);
                    
                 }else if(totalWidth !== widthValue) {
@@ -287,7 +289,7 @@ const SlittingWidths = (props) => {
                 }else if((totalWidth) > widthValue) {
                         message.error('Sum of slits width is greater than width of coil.', 2);
                  } else{
-                    setWeightValue(remainWeight-(totalWeight));
+                    setWeightValue(remainWeightRound-(totalWeightRound));
                     setlen(lengthValue - sumLength)
                         props.setPanelList(slitArray)
                         props.setSlits(slits);
@@ -614,7 +616,17 @@ const columns = [
         title: 'End User Tags',
         dataIndex: 'party.endUserTags',
         render: (text, record, index) => {
-            return <Select disabled={props.unfinish} dropdownMatchSelectWidth={false} style={{width: '100%'}} value={record?.endUserTagsentity?.tagId} onChange={onInputChange("endUserTagsentity", index, 'select')} >
+            return <Select
+            showSearch
+            disabled={props.unfinish} 
+            dropdownMatchSelectWidth={false} 
+            optionFilterProp="children"
+            filterOption={(input, option) => {
+                return option?.props?.children?.toLowerCase().includes(input.toLowerCase());
+            }}
+            style={{width: '100px'}} 
+            value={record?.endUserTagsentity?.tagId} 
+            onChange={onInputChange("endUserTagsentity", index, 'select')} >
                 {props.coilDetails.party.endUserTags?.map(item => {
                     return <Option value={item.tagId}>{item.tagName}</Option>
                 })}
@@ -651,7 +663,19 @@ const columnsPlan=[
         title: 'Tags',
         dataIndex: 'packetClassification.tagName',
         render: (text, record, index) => {
-            return  <Select style={{width: '100%'}} dropdownMatchSelectWidth={false} value={record?.packetClassification ? record?.packetClassification?.classificationName: record?.packetClassificationId} onChange={(e) =>handleTagsChange(record,e)} >
+            return  <Select 
+            style={{width: '100px'}} 
+            dropdownMatchSelectWidth={false}
+            showSearch
+            optionFilterProp="children"
+            filterOption={(input, option) => {
+                return option?.props?.children?.toLowerCase().includes(input.toLowerCase());
+            }}
+            filterSort={(optionA, optionB) =>
+                optionA?.props?.children.toLowerCase().localeCompare(optionB?.props?.children.toLowerCase())
+            }
+            value={record?.packetClassification ? record?.packetClassification?.classificationName: record?.packetClassificationId} 
+            onChange={(e) =>handleTagsChange(record,e)} >
             {props?.coilDetails.party?.tags?.map(item => {
                 return <Option value={item.tagId}>{item.tagName}</Option>
             })}
@@ -662,7 +686,19 @@ const columnsPlan=[
         title: 'End User Tags',
         dataIndex: 'endUserTags.tagsName',
         render: (text, record, index) => {
-            return  <Select style={{width: '100%'}} dropdownMatchSelectWidth={false} value={record?.endUserTagsentity ? record?.endUserTagsentity?.tagName: record?.endUserTagId} onChange={(e) =>handleTagsChange(record,e,"endUser")} >
+            return  <Select
+            showSearch
+            style={{width: '100px'}} 
+            dropdownMatchSelectWidth={false}
+            optionFilterProp="children"
+            filterOption={(input, option) => {
+                return option?.props?.children?.toLowerCase().includes(input.toLowerCase());
+            }}
+            filterSort={(optionA, optionB) =>
+                optionA?.props?.children.toLowerCase().localeCompare(optionB?.props?.children.toLowerCase())
+            }
+            value={record?.endUserTagsentity ? record?.endUserTagsentity?.tagName: record?.endUserTagId} 
+            onChange={(e) =>handleTagsChange(record,e,"endUser")} >
             {props?.coilDetails.party?.endUserTags?.map(item => {
                 return <Option value={item.tagId}>{item.tagName}</Option>
             })}

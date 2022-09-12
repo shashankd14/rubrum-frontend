@@ -9,6 +9,7 @@ import packetClassification from "./PacketClassification";
 import ratesSagas from './Rates';
 import processSagas from './Process';
 import reportSagas from './Reports';
+import packingSagas from "./Packing";
 
 export default function* rootSaga() {
   yield all([fork(authSagas)]);
@@ -21,4 +22,5 @@ export default function* rootSaga() {
   yield all([fork(ratesSagas)]);
   yield all([fork(processSagas)]);
   yield all([fork(reportSagas)]);
+  yield all([fork(packingSagas)]);
 }

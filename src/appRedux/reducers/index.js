@@ -13,6 +13,7 @@ import PacketClassification from "./PacketClassification";
 import Rates from "./Rates";
 import Process from './Process';
 import Reports from './Reports';
+import Packing from './Packing';
 
 const createRootReducer = (history) => combineReducers({
   router: connectRouter(history),
@@ -28,7 +29,8 @@ const createRootReducer = (history) => combineReducers({
   packetClassification: PacketClassification,
   rates: Rates,
   process: Process,
-  reports: Reports
+  reports: Reports,
+  packing: Packing
 });
 
 export default createRootReducer

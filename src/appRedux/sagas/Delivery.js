@@ -2,6 +2,7 @@ import {all, fork, put, takeLatest} from "redux-saga/effects";
 import { getUserToken } from './common';
 import {fetchDeliveryListError, fetchDeliveryListSuccess,fetchDeliveryListByIdSuccess, fetchDeliveryListByIdError, deleteDeliveryByIdError,deleteDeliveryByIdSuccess} from "../actions/Delivery";
 import {FETCH_DELIVERY_LIST_REQUEST, FETCH_DELIVERY_LIST_REQUEST_BY_ID, DELETE_DELIVERY_BY_ID } from "../../constants/ActionTypes";
+import { userSignOutSuccess } from "../../appRedux/actions/Auth";
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
 const getHeaders = () => ({
@@ -18,6 +19,8 @@ function* fetchDeliveryList({ page = 1, pageSize = 15, searchValue = '', partyId
             const fetchDeliveryListResponse = yield fetchDeliveryList.json();
             console.log(fetchDeliveryListResponse);
             yield put(fetchDeliveryListSuccess(fetchDeliveryListResponse));
+        } else if (fetchDeliveryList.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(fetchDeliveryListError('error'));
     } catch (error) {
@@ -34,6 +37,8 @@ function* fetchDeliveryListById(action) {
         if(fetchDeliveryList.status === 200) {
             const fetchDeliveryListResponse = yield fetchDeliveryList.json();
             yield put(fetchDeliveryListByIdSuccess(fetchDeliveryListResponse));
+        } else if (fetchDeliveryList.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(fetchDeliveryListByIdError('error'));
     } catch (error) {
@@ -49,6 +54,8 @@ function* deleteByDeliveryId(action) {
         });
         if (deleteDelivery.status === 200) {
             yield put(deleteDeliveryByIdSuccess(deleteDelivery));
+        } else if (deleteDelivery.status === 401) {
+            yield put(userSignOutSuccess());
         } else
             yield put(deleteDeliveryByIdError('error'));
     } catch (error) {
