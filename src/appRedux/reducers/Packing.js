@@ -2,6 +2,9 @@ import {
     FETCH_PACKING_LIST_REQUEST,
     FETCH_PACKING_LIST_SUCCESS,
     FETCH_PACKING_LIST_ERROR,
+    FETCH_PACKING_LIST_BY_PARTY_REQUEST,
+    FETCH_PACKING_LIST_BY_PARTY_SUCCESS,
+    FETCH_PACKING_LIST_BY_PARTY_ERROR,
     FETCH_PACKING_BUCKET_LIST_REQUEST,
     FETCH_PACKING_BUCKET_LIST_SUCCESS,
     FETCH_PACKING_BUCKET_LIST_ERROR,
@@ -28,6 +31,7 @@ import {
 } from "../../constants/ActionTypes";
 
 const INIT_STATE = {
+    packingDeliveryList: [],
     packingList: [],
     packing: {},
     bucket: {},
@@ -56,6 +60,28 @@ export default (state = INIT_STATE, action) => {
                 ...state,
                 loading: false,
                 packingList: [],
+                error: true
+            }
+        }
+
+        case FETCH_PACKING_LIST_BY_PARTY_REQUEST: {
+            return {
+                ...state,
+                loading: true
+            }
+        }
+        case FETCH_PACKING_LIST_BY_PARTY_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                packingDeliveryList: action.packingDeliveryList
+            }
+        }
+        case FETCH_PACKING_LIST_BY_PARTY_ERROR: {
+            return {
+                ...state,
+                loading: false,
+                packingDeliveryList: [],
                 error: true
             }
         }

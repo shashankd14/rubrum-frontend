@@ -522,6 +522,7 @@ function* postDeliveryConfirmRequest(payload) {
         }
         req_obj = {
             vehicleNo: payload.payload.vehicleNo,
+            packingRateId: payload.payload.packingRateId,
             taskType:payload.payload?.taskType?payload.payload?.taskType:"",
             deliveryItemDetails: packetsData
         }
