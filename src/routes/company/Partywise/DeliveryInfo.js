@@ -1,16 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { Popover,Input, Card, message } from "antd";
+import { Popover,Input, Card, message, Select } from "antd";
 import { InfoCircleOutlined, CloseSquareTwoTone } from "@ant-design/icons";
-import { postDeliveryConfirm, generateDCPdf,resetInstruction,saveUnprocessedDelivery } from "../../../appRedux/actions";
+import { fetchPackingListByParty, postDeliveryConfirm, generateDCPdf,resetInstruction,saveUnprocessedDelivery } from "../../../appRedux/actions";
 import moment from "moment";
 
 const DeliveryInfo = (props) => {
+  const Option = Select.Option;
   const [vehicleNo, setVehicleNo] = useState("");
   const [remarksList, setRemarksList] = useState([]);
   const [instructionList, setInstructionList]= useState([]);
   const [fullHandling, setFullHandling] = useState(false);
   const [thickness, setThickness] = useState();
+  const [partyRate, setPartyRate] = useState(0);
+  const [packingRateId, setPackingRateId] = useState('');
+
+  useEffect(() => {
+    const partyId = props.inward.inwardListForDelivery?.map(ele => ele?.party?.nPartyId || '');
+    props.fetchPackingListByParty(partyId);
+  }, [])
+
   useEffect(()=>{
     let insList = props.inward.inwardListForDelivery?.map(i => {
       const inwardList = props?.inward?.inwardList.filter(item => item.inwardEntryId === i.inwardEntryId)
@@ -20,6 +29,7 @@ const DeliveryInfo = (props) => {
     insList = insList?.flat();
     setInstructionList(insList?.map(item => item.instructionId));
   },[]);
+
   useEffect(()=>{
     if(props.inward.deliverySuccess){
       let insList = []
@@ -74,6 +84,7 @@ useEffect(()=>{
         props.saveUnprocessedDelivery(payload)
       }else {
         const reqObj = {
+          packingRateId,
           vehicleNo,
           inwardListForDelivery: props.inward.inwardListForDelivery
         }
@@ -195,6 +206,28 @@ useEffect(()=>{
       {props.inward.inwardList.length > 0 ? (
         <div>
           <div style={{ width: "20%", marginBottom: "15px" }}>
+            <Select
+                style={{ width: 300 }}
+                className="Packing Rate"
+                placeholder="Select Packing"
+                name="partyName"
+                onChange={(value) => {
+                  const packingData = props.packing?.packingDeliveryList?.filter((party) => {
+                    return party.packingRateId === value
+                  })[0]
+                  setPartyRate(packingData?.packingRate || 0);
+                  setPackingRateId(value);
+                }}
+              >
+                {props.packing?.packingDeliveryList?.map((party) => (
+                  <Option value={party.packingRateId}>{party.packingBucketName}</Option>
+                ))}
+            </Select>
+          </div>
+          {!!partyRate && <div>
+            <p>Party Rate: {partyRate}</p>
+          </div>}
+          <div style={{ width: "20%", marginBottom: "15px" }}>
             <Input
               placeholder="Vehicle Number"
               type="text"
@@ -251,6 +284,7 @@ useEffect(()=>{
 
 const mapStateToProps = (state) => ({
   inward: state.inward,
+  packing: state.packing
 });
 
-export default connect(mapStateToProps, { saveUnprocessedDelivery,postDeliveryConfirm, generateDCPdf,resetInstruction})(DeliveryInfo);
+export default connect(mapStateToProps, { fetchPackingListByParty, saveUnprocessedDelivery,postDeliveryConfirm, generateDCPdf,resetInstruction})(DeliveryInfo);
