@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { Button, Card, Divider, Select, Table, Modal } from "antd";
+import { Button, Card, Divider, Select, Table, Modal, message } from "antd";
 import SearchBox from "../../../components/SearchBox";
 
 import IntlMessages from "../../../util/IntlMessages";
@@ -40,6 +40,7 @@ const List = (props) => {
   const [pageNo, setPageNo] = React.useState(1);
   const [totalPageItems, setTotalItems] = React.useState(0);
   const [showRetrieve, setShowRetrieve] = React.useState(false);
+  const [selectedCoil, setSelectedCoil] = React.useState([]);
   const columns = [
     {
       title: "Coil Number",
@@ -333,6 +334,8 @@ const List = (props) => {
           });
         } else getKey(record, selected);
       }
+      const selectedCoil = selectedRows.map(row => row?.party?.nPartyId) || []
+      setSelectedCoil(Array.from(new Set(selectedCoil)))
     },
     getCheckboxProps: (record) => ({
       disabled:
@@ -354,6 +357,8 @@ const List = (props) => {
         });
       }
       console.log(selectedRows);
+      const selectedCoil = selectedRows.map(row => row?.party?.nPartyId) || []
+      setSelectedCoil(Array.from(new Set(selectedCoil)))
     },
     selectedRowKeys: selectedCBKeys,
   };
@@ -429,16 +434,20 @@ const List = (props) => {
               icon={() => <i className="icon icon-add" />}
               size="medium"
               onClick={() => {
-                console.log("selected rows", selectedRowData, selectedCBKeys);
-                const newList = selectedRowData.filter((item) => {
-                  if (item?.instruction?.length) {
-                    return !item.childInstructions && item.instructionId;
-                  } else {
-                    return item;
-                  }
-                });
-                props.setInwardSelectedForDelivery(newList);
-                props.history.push("/company/partywise-register/delivery");
+                console.log("selected rows", selectedRowData, selectedCBKeys, selectedCoil);
+                if (selectedCoil?.length > 1) {
+                  message.error('Please select coils of same party');
+                } else {
+                  const newList = selectedRowData.filter((item) => {
+                    if (item?.instruction?.length) {
+                      return !item.childInstructions && item.instructionId;
+                    } else {
+                      return item;
+                    }
+                  });
+                  props.setInwardSelectedForDelivery(newList);
+                  props.history.push("/company/partywise-register/delivery");
+                }
               }}
               disabled={!!selectedCBKeys?.length < 1}
             >
