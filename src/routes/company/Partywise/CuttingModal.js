@@ -325,7 +325,7 @@ const CreateCuttingDetailsForm = (props) => {
                 filterSort={(optionA, optionB) =>
                     optionA?.props?.children.toLowerCase().localeCompare(optionB?.props?.children.toLowerCase())
                 }
-                value={record?.endUserTagsentity ? record?.endUserTagsentity?.tagName: record?.endUserTagId} 
+                value={record?.endUserTagsentity ? record?.endUserTagsentity?.tagName || endUserTagList[0]?.tagName: record?.endUserTagId ||endUserTagList[0]?.tagName} 
                 onChange={(e) =>handleTagsChange(record,e,"endUser")} >
                 {endUserTagList?.map(item => {
                     return <Option value={item?.tagId}>{item?.tagName}</Option>
