@@ -12,3 +12,4 @@ export * from './Rates';
 export * from './Process';
 export * from './Reports';
 export * from './Quality';
+export * from './Packing'

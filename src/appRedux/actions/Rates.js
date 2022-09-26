@@ -1,16 +1,29 @@
 import {FETCH_RATES_LIST_ERROR, 
     FETCH_RATES_LIST_REQUEST, 
     FETCH_RATES_LIST_SUCCESS,
+    FETCH_PACKING_RATES_LIST_ERROR, 
+    FETCH_PACKING_RATES_LIST_REQUEST, 
+    FETCH_PACKING_RATES_LIST_SUCCESS,
     ADD_RATES_REQUEST,
     ADD_RATES_SUCCESS,
     ADD_RATES_ERROR,
+    ADD_PACKING_RATES_REQUEST,
+    ADD_PACKING_RATES_SUCCESS,
+    ADD_PACKING_RATES_ERROR,
     FETCH_RATES_LIST_ID_REQUEST,
     FETCH_RATES_LIST_ID_SUCCESS,
     FETCH_RATES_LIST_ID_ERROR,
+    FETCH_PACKING_RATES_LIST_ID_REQUEST,
+    FETCH_PACKING_RATES_LIST_ID_SUCCESS,
+    FETCH_PACKING_RATES_LIST_ID_ERROR,
     UPDATE_RATES_REQUEST,
     UPDATE_RATES_SUCCESS,
     UPDATE_RATES_ERROR,
+    UPDATE_PACKING_RATES_REQUEST,
+    UPDATE_PACKING_RATES_SUCCESS,
+    UPDATE_PACKING_RATES_ERROR,
     RESET_RATES_REQUEST,
+    RESET_PACKING_RATES_REQUEST,
     DELETE_RATES_BY_ID,
     DELETE_RATES_BY_ID_SUCCESS,
     DELETE_RATES_BY_ID_ERROR,
@@ -48,6 +61,20 @@ export const fetchRatesListError = (error) => ({
     error
 });
 
+export const fetchPackingRatesList = () => ({
+    type: FETCH_PACKING_RATES_LIST_REQUEST,
+});
+
+export const fetchPackingRatesListSuccess = (packingRateList) => ({
+    type: FETCH_PACKING_RATES_LIST_SUCCESS,
+    packingRateList
+});
+
+export const fetchPackingRatesListError = (error) => ({
+    type: FETCH_PACKING_RATES_LIST_ERROR,
+    error
+});
+
 export const addRates = (rates) => ({
     type: ADD_RATES_REQUEST,
     rates
@@ -59,6 +86,20 @@ export const addRatesSuccess = () => ({
 
 export const addRatesError = (error) => ({
     type: ADD_RATES_ERROR,
+    error
+});
+
+export const addPackingRates = (packingRate) => ({
+    type: ADD_PACKING_RATES_REQUEST,
+    packingRate
+});
+
+export const addPackingRatesSuccess = () => ({
+    type: ADD_PACKING_RATES_SUCCESS
+});
+
+export const addPackingRatesError = (error) => ({
+    type: ADD_PACKING_RATES_ERROR,
     error
 });
 
@@ -77,8 +118,27 @@ export const fetchRatesListByIdError = (error) => ({
     error
 });
 
+export const fetchPackingRatesById = (packingRatesId) => ({
+    type: FETCH_PACKING_RATES_LIST_ID_REQUEST,
+    packingRatesId
+});
+
+export const fetchPackingRatesByIdSuccess = (packingRates) => ({
+    type: FETCH_PACKING_RATES_LIST_ID_SUCCESS,
+    packingRates
+});
+
+export const fetchPackingRatesByIdError = (error) => ({
+    type: FETCH_PACKING_RATES_LIST_ID_ERROR,
+    error
+});
+
 export const resetRates = () => ({
     type: RESET_RATES_REQUEST
+});
+
+export const resetPackingRates = () => ({
+    type: RESET_PACKING_RATES_REQUEST
 });
 
 export const updateRates = (rates) => ({
@@ -94,6 +154,21 @@ export const updateRatesError = (error) => ({
     type: UPDATE_RATES_ERROR,
     error
 });
+
+export const updatePackingRates = (packingRates) => ({
+    type: UPDATE_PACKING_RATES_REQUEST,
+    packingRates
+});
+
+export const updatePackingRatesSuccess = () => ({
+    type: UPDATE_PACKING_RATES_SUCCESS
+});
+
+export const updatePackingRatesError = (error) => ({
+    type: UPDATE_PACKING_RATES_ERROR,
+    error
+});
+
 export const deleteRates = (payload) => ({
     type: DELETE_RATES_BY_ID,
     payload

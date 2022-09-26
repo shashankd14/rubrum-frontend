@@ -3,16 +3,29 @@ import {
     FETCH_RATES_LIST_REQUEST,
     FETCH_RATES_LIST_SUCCESS,
     FETCH_RATES_LIST_ERROR,
+    FETCH_PACKING_RATES_LIST_ERROR, 
+    FETCH_PACKING_RATES_LIST_REQUEST, 
+    FETCH_PACKING_RATES_LIST_SUCCESS,
     ADD_RATES_REQUEST,
     ADD_RATES_SUCCESS,
     ADD_RATES_ERROR,
+    ADD_PACKING_RATES_REQUEST,
+    ADD_PACKING_RATES_SUCCESS,
+    ADD_PACKING_RATES_ERROR,
     FETCH_RATES_LIST_ID_REQUEST,
     FETCH_RATES_LIST_ID_SUCCESS,
     FETCH_RATES_LIST_ID_ERROR,
+    FETCH_PACKING_RATES_LIST_ID_REQUEST,
+    FETCH_PACKING_RATES_LIST_ID_SUCCESS,
+    FETCH_PACKING_RATES_LIST_ID_ERROR,
     UPDATE_RATES_REQUEST,
     UPDATE_RATES_SUCCESS,
     UPDATE_RATES_ERROR,
+    UPDATE_PACKING_RATES_REQUEST,
+    UPDATE_PACKING_RATES_SUCCESS,
+    UPDATE_PACKING_RATES_ERROR,
     RESET_RATES_REQUEST,
+    RESET_PACKING_RATES_REQUEST,
     DELETE_RATES_BY_ID,
     DELETE_RATES_BY_ID_SUCCESS,
     DELETE_RATES_BY_ID_ERROR,
@@ -38,7 +51,9 @@ import {
 
 const INIT_STATE = {
     ratesList: [],
+    packingRateList: [],
     rates: {},
+    packingRates: {},
     loading: false,
     error: false,
     addSuccess:false,
@@ -75,6 +90,29 @@ export default (state = INIT_STATE, action) => {
                 error: true
             }
         }
+
+        case FETCH_PACKING_RATES_LIST_REQUEST: {
+            return {
+                ...state,
+                loading: true
+            }
+        }
+        case FETCH_PACKING_RATES_LIST_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                packingRateList: action.packingRateList
+            }
+        }
+        case FETCH_PACKING_RATES_LIST_ERROR: {
+            return {
+                ...state,
+                loading: false,
+                packingRateList: [],
+                error: true
+            }
+        }
+
         case ADD_RATES_REQUEST: {
             return {
                 ...state,
@@ -89,6 +127,26 @@ export default (state = INIT_STATE, action) => {
             }
         }
         case ADD_RATES_ERROR: {
+            return {
+                ...state,
+                loading: false,
+                error: true,
+            }
+        }
+
+        case ADD_PACKING_RATES_REQUEST: {
+            return {
+                ...state,
+                loading: true
+            }
+        }
+        case ADD_PACKING_RATES_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+            }
+        }
+        case ADD_PACKING_RATES_ERROR: {
             return {
                 ...state,
                 loading: false,
@@ -118,17 +176,48 @@ export default (state = INIT_STATE, action) => {
             }
         }
 
+        case FETCH_PACKING_RATES_LIST_ID_REQUEST: {
+            return {
+                ...state,
+                loading: true
+            }
+        }
+        case FETCH_PACKING_RATES_LIST_ID_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                packingRates: action.packingRates
+            }
+        }
+        case FETCH_PACKING_RATES_LIST_ID_ERROR: {
+            return {
+                ...state,
+                loading: false,
+                packingRates: {},
+                error: true
+            }
+        }
+
         case RESET_RATES_REQUEST: {
             return {
                 ...state,
+                loading:false,
                 rates: {},
                 deleteSuccess:false,
                 addSuccess:false,
                 addAdditionalSuccess:false,
                 addAdditionalFailed:false,
-                deleteAdditionalRatesSuccess:false,
+                deleteAdditionalSuccess:false,
                 updateAdditionalFailure:false,
-                updateAdditionalSuccess:false
+                updateAdditionalSuccess:false,
+                
+            }
+        }
+
+        case RESET_PACKING_RATES_REQUEST: {
+            return {
+                ...state,
+                packingRates: {}
             }
         }
 
@@ -150,12 +239,34 @@ export default (state = INIT_STATE, action) => {
                 loading: false,
                 error: true,
             }
-        } case DELETE_RATES_BY_ID: {
+        } 
+
+        case UPDATE_PACKING_RATES_REQUEST: {
             return {
                 ...state,
                 loading: true
             }
         }
+        case UPDATE_PACKING_RATES_SUCCESS: {
+            return {
+                ...state,
+                loading: false
+            }
+        }
+        case UPDATE_PACKING_RATES_ERROR: {
+            return {
+                ...state,
+                loading: false,
+                error: true,
+            }
+        } 
+        case DELETE_RATES_BY_ID: {
+            return {
+                ...state,
+                loading: true
+            }
+        }
+
         case DELETE_RATES_BY_ID_SUCCESS: {
             return {
                 ...state,
@@ -180,7 +291,8 @@ export default (state = INIT_STATE, action) => {
             return {
                 ...state,
                 loading: false,
-                addAdditionalSuccess: true
+                addAdditionalSuccess: true,
+                addAdditionalFailed:false
             }
         }
         case ADD_ADDITIONAL_RATES_ERROR: {

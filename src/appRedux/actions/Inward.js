@@ -81,7 +81,10 @@ import {
     PDF_GENERATE_INWARD_SUCCESS,
     PDF_GENERATE_DELIVERY,
     PDF_GENERATE_DELIVERY_SUCCESS,
-    PDF_GENERATE_DELIVERY_ERROR
+    PDF_GENERATE_DELIVERY_ERROR,
+    PDF_S3_URL,
+    PDF_S3_URL_SUCCESS,
+    PDF_S3_URL_ERROR
 } from "../../constants/ActionTypes";
 
 export const fetchInwardList = (page, pageSize, searchValue, partyId) => ({
@@ -421,5 +424,19 @@ export const generateDCPdfSuccess = (payload) => ({
 
 export const generateDCPdfError = (error) => ({
     type: PDF_GENERATE_DELIVERY_ERROR,
+    error
+});
+export const getS3PDFUrl = (inwardEntryId) => ({
+    type: PDF_S3_URL,
+    inwardEntryId
+});
+
+export const getS3PDFUrlSuccess = (payload) => ({
+    type: PDF_S3_URL_SUCCESS,
+    payload
+});
+
+export const getS3PDFUrlError = (error) => ({
+    type: PDF_S3_URL_ERROR,
     error
 });

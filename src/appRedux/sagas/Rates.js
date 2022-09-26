@@ -1,25 +1,37 @@
 import {all, put, fork, takeLatest} from "redux-saga/effects";
 import { getUserToken } from './common';
-import {FETCH_RATES_LIST_REQUEST, 
+import {FETCH_RATES_LIST_REQUEST,
+    FETCH_PACKING_RATES_LIST_REQUEST,
     ADD_RATES_REQUEST, 
+    ADD_PACKING_RATES_REQUEST,
     FETCH_ADDITIONAL_RATES_LIST_REQUEST,
     DELETE_ADDITIONAL_RATES_BY_ID,
      FETCH_ADDITIONAL_RATES_LIST_BY_ID_REQUEST,
-     FETCH_RATES_LIST_ID_REQUEST, 
+     FETCH_RATES_LIST_ID_REQUEST,
+     FETCH_PACKING_RATES_LIST_ID_REQUEST,
      FETCH_STATIC_LIST_BY_PROCESSS,
      UPDATE_RATES_REQUEST,
+     UPDATE_PACKING_RATES_REQUEST,
      DELETE_RATES_BY_ID,
      ADD_ADDITIONAL_RATES_REQUEST,
     UPDATE_ADDITIONAL_RATES_REQUEST} from "../../constants/ActionTypes";
 import {
     fetchRatesListSuccess, 
     fetchRatesListError,
+    fetchPackingRatesListSuccess, 
+    fetchPackingRatesListError,
     addRatesError,
     addRatesSuccess,
+    addPackingRatesError,
+    addPackingRatesSuccess,
     fetchRatesListByIdSuccess,
     fetchRatesListByIdError,
+    fetchPackingRatesByIdSuccess,
+    fetchPackingRatesByIdError,
     updateRatesSuccess,
     updateRatesError,
+    updatePackingRatesSuccess,
+    updatePackingRatesError,
     deleteRatesError,
     deleteRatesSuccess,
     addAdditionalRatesError,
@@ -60,6 +72,23 @@ function* fetchRatesList() {
     }
 }
 
+function* fetchPackingRatesList() {
+    try {
+        const fetchPackingRatesList =  yield fetch(`${baseUrl}api/packing/rate`, {
+            method: 'GET',
+            headers: getHeaders()
+        });
+        if(fetchPackingRatesList.status === 200) {
+            const fetchPackingRatesListResponse = yield fetchPackingRatesList.json();
+            yield put(fetchPackingRatesListSuccess(fetchPackingRatesListResponse));
+        } else if (fetchPackingRatesList.status === 401) {
+            yield put(userSignOutSuccess());
+        } else
+            yield put(fetchPackingRatesListError('error'));
+    } catch (error) {
+        yield put(fetchPackingRatesListError(error));
+    }
+}
 
 function* savePriceMaster(action) {
    
@@ -86,6 +115,33 @@ function* savePriceMaster(action) {
             yield put(addRatesError('error'));
     } catch (error) {
         yield put(addRatesError(error));
+    }
+}
+
+function* addPackingRates(action) {
+    try {
+        const { packingBucketId, rPartyId: partyId, packingRate, packingRateDesc } = action.packingRate;
+
+        const data = {
+            packingBucketId,
+            partyId,
+            packingRate,
+            packingRateDesc
+        }
+
+        const addPackingRates = yield fetch(`${baseUrl}api/packing/rate/save`, {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: { "Content-Type": "application/json", ...getHeaders() },
+        });
+        if (addPackingRates.status == 200) {
+            yield put(addPackingRatesSuccess());
+        } else if (addPackingRates.status === 401) {
+            yield put(userSignOutSuccess());
+        } else
+            yield put(addPackingRatesError('error'));
+    } catch (error) {
+        yield put(addPackingRatesError(error));
     }
 }
 
@@ -116,6 +172,33 @@ function* updateRates(action) {
     }
 }
 
+function* updatePackingRates(action) {
+    try {
+        const { packingBucketId, rPartyId: partyId, packingRate, packingRateDesc, packingRateId } = action.packingRates;
+
+        const data = {
+            packingRateId,
+            packingBucketId,
+            partyId,
+            packingRate,
+            packingRateDesc
+        };
+        const updatePackingRates = yield fetch(`${baseUrl}api/packing/rate/update`, {
+            method: 'PUT',
+            body: JSON.stringify(data),
+            headers: { "Content-Type": "application/json", ...getHeaders() },
+        });
+        if (updatePackingRates.status == 200) {
+            yield put(updatePackingRatesSuccess());
+        } else if (updatePackingRates.status === 401) {
+            yield put(userSignOutSuccess());
+        } else
+            yield put(updatePackingRatesError('error'));
+    } catch (error) {
+        yield put(updatePackingRatesError(error));
+    }
+}
+
 function* fetchRatesListById(action) {
     try {
         const fetchRatesById =  yield fetch(`${baseUrl}api/pricemaster/${action.rateId}`, {
@@ -133,6 +216,25 @@ function* fetchRatesListById(action) {
         yield put(fetchRatesListByIdError(error));
     }
 }
+
+function* fetchPackingRatesById(action) {
+    try {
+        const fetchPackingRatesById =  yield fetch(`${baseUrl}api/packing/rate/${action.packingRatesId}`, {
+            method: 'GET',
+            headers: getHeaders()
+        });
+        if(fetchPackingRatesById.status === 200) {
+            const fetchPackingRatesByIdResponse = yield fetchPackingRatesById.json();
+            yield put(fetchPackingRatesByIdSuccess(fetchPackingRatesByIdResponse));
+        } else if (fetchPackingRatesById.status === 401) {
+            yield put(userSignOutSuccess());
+        } else
+            yield put(fetchPackingRatesByIdError('error'));
+    } catch (error) {
+        yield put(fetchPackingRatesByIdError(error));
+    }
+}
+
 function* deleteRatesById(action) {
     try {
         const deletedRates =  yield fetch(`${baseUrl}api/pricemaster/${action?.payload}`, {
@@ -254,9 +356,13 @@ function* updateAdditionalRates(action) {
 }
 export function* watchFetchRequests() {
     yield takeLatest(FETCH_RATES_LIST_REQUEST, fetchRatesList);
+    yield takeLatest(FETCH_PACKING_RATES_LIST_REQUEST, fetchPackingRatesList);
     yield takeLatest(ADD_RATES_REQUEST, savePriceMaster);
+    yield takeLatest(ADD_PACKING_RATES_REQUEST, addPackingRates);
     yield takeLatest(UPDATE_RATES_REQUEST, updateRates);
+    yield takeLatest(UPDATE_PACKING_RATES_REQUEST, updatePackingRates);
     yield takeLatest(FETCH_RATES_LIST_ID_REQUEST, fetchRatesListById);
+    yield takeLatest(FETCH_PACKING_RATES_LIST_ID_REQUEST, fetchPackingRatesById);
     yield takeLatest(DELETE_RATES_BY_ID, deleteRatesById);
     yield takeLatest(ADD_ADDITIONAL_RATES_REQUEST, saveAdditionalPriceMaster);
     yield takeLatest(FETCH_STATIC_LIST_BY_PROCESSS, getStaticAdditionalRatesByProcess);
