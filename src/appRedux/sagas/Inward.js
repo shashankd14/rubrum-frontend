@@ -521,8 +521,8 @@ function* postDeliveryConfirmRequest(payload) {
             }
         }
         req_obj = {
-            vehicleNo: payload.payload.vehicleNo,
-            packingRateId: payload.payload.packingRateId,
+            vehicleNo: payload.payload?.vehicleNo,
+            packingRateId: payload.payload?.packingRateId,
             taskType:payload.payload?.taskType?payload.payload?.taskType:"",
             deliveryItemDetails: packetsData
         }
@@ -569,9 +569,10 @@ function* saveUnprocessedDelivery(action) {
     let fetchInwardInstruction
     try {
         if(action?.inwardEntryId?.motherCoilDispatch){
-         fetchInwardInstruction = yield fetch(`${baseUrl}api/instruction/saveFullHandlingDispatch/${action.inwardEntryId?.inwardEntryId}`, {
+         fetchInwardInstruction = yield fetch(`${baseUrl}api/instruction/saveFullHandlingDispatch`, {
             method: 'POST',
-            headers: getHeaders()
+            headers: { "Content-Type": "application/json", ...getHeaders()},
+            body: JSON.stringify(action.inwardEntryId?.inwardEntryId)
         });
     }else{
         fetchInwardInstruction = yield fetch(`${baseUrl}api/instruction/saveUnprocessedForDelivery/${action.inwardEntryId?.inwardEntryId}`, {

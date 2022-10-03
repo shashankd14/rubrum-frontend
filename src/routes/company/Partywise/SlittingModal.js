@@ -107,7 +107,7 @@ const SlittingWidths = (props) => {
         let cuts = props.cuts.map(i => i.plannedWeight);
        cuts = cuts.filter(i => i !== undefined)
         cuts = cuts.length > 0? cuts.reduce((total, num) => Number(total) + Number(num)) : 0
-        cuts = Number(cuts).toFixed(0)
+        cuts = Number(cuts).toFixed(0) + props?.wip ?Number(props?.coilDetails?.scrapWeight): 0
         props.setweight(cuts)
         if(props.setDeleted){
             setWeightValue(weightValue-cuts);
