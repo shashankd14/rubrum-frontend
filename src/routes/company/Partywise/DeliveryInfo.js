@@ -51,18 +51,18 @@ const DeliveryInfo = (props) => {
 }
 },[props.inward.dcpdfSuccess])
 useEffect(()=>{
-  if(props.inward?.unprocessedSuccess){
-    if(props.inward?.unprocessedSuccess?.process?.processId === 8){
-     let arrayList=[];
-      arrayList.push(props.inward?.unprocessedSuccess)
+  if(props.inward?.unprocessedSuccess?.length){
+    const fullHandlingList = props.inward?.unprocessedSuccess.map(item => {
+      if(item?.process?.processId === 8){
+        return item
+      }
+    }) 
     const reqObj = {
       vehicleNo,
       taskType:"FULL_HANDLING",
-      inwardListForDelivery: arrayList
+      inwardListForDelivery: fullHandlingList
     }
     props.postDeliveryConfirm(reqObj);
-  
-  }
   }
 },[props.inward.unprocessedSuccess])
   const handleRemark = (elem, id) => {
@@ -74,26 +74,26 @@ useEffect(()=>{
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    let inslist = props?.inward.inwardListForDelivery.map(item => {
-      if(item?.inwardEntryId && item?.status?.statusName ==="RECEIVED"){
-        const payload ={
-          inwardEntryId: item?.inwardEntryId,
-          motherCoilDispatch: true
-        }
-        setFullHandling(true)
-        props.saveUnprocessedDelivery(payload)
-      }else {
+    const iList= props?.inward.inwardListForDelivery.map(item => {
+      if(item?.inwardEntryId && item?.status?.statusName ==="RECEIVED") {
+        return item?.inwardEntryId
+      }
+    })
+    if(iList.length){
+      const payload={
+        inwardEntryId: iList,
+        motherCoilDispatch: true
+      }
+      setFullHandling(true)
+      props.saveUnprocessedDelivery(payload)
+    }else {
         const reqObj = {
           packingRateId,
           vehicleNo,
           inwardListForDelivery: props.inward.inwardListForDelivery
         }
-       
         props.postDeliveryConfirm(reqObj);
       }
-    })
-   
-   
   };
 
  
