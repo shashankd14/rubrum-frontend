@@ -635,7 +635,7 @@ const CreateCuttingDetailsForm = (props) => {
         let cutsArray = cuts.map(i => i.plannedWeight);
         cutsArray = cutsArray.filter(i => i !== undefined)
         cutsArray = cutsArray.length > 0? cutsArray.reduce((total, num) => Number(total) + Number(num)) : 0
-        settweight(cutsArray);
+        settweight(Number(cutsArray)+ Number(props?.coilDetails?.scrapWeight));
         if (props.unfinish) {
             let actualUpdate = cuts.map(item => {
                 item.actualLength = 0;
@@ -891,12 +891,17 @@ const CreateCuttingDetailsForm = (props) => {
             else if (totalActualweight > tweight) {
                 message.error('Actual Weight is greater than Total weight, Please modify actual weight!');
             } else {
-                const coil = {
-                    number: props.coil.coilNumber,
-                    instruction: tableData
-                };
-                props.updateInstruction(coil);
-                props.setShowCuttingModal();
+                if(totalActualweight === Number(tweight)){
+                    const coil = {
+                        number: props.coil.coilNumber,
+                        instruction: tableData
+                    };
+                    props.updateInstruction(coil);
+                    props.setShowCuttingModal();
+                }else {
+                    message.error("Please adjust the weight")
+                }
+                
             }
         }
        

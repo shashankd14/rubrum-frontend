@@ -107,7 +107,9 @@ const SlittingWidths = (props) => {
         let cuts = props.cuts.map(i => i.plannedWeight);
        cuts = cuts.filter(i => i !== undefined)
         cuts = cuts.length > 0? cuts.reduce((total, num) => Number(total) + Number(num)) : 0
-        cuts = Number(cuts).toFixed(0) + props?.wip ?Number(props?.coilDetails?.scrapWeight): 0
+        const scrapWeight =props?.wip ?props?.coilDetails?.scrapWeight: 0
+        cuts = Number(cuts) +Number(scrapWeight)
+        cuts = Number(cuts).toFixed(0);
         props.setweight(cuts)
         if(props.setDeleted){
             setWeightValue(weightValue-cuts);
@@ -959,12 +961,17 @@ const columnsPlan=[
              else if (totalActualweight > tweight) {
                 message.error('Actual Weight is greater than Total weight, Please modify actual weight!');
             } else {
-                const coil = {
-                    number: props.coil.coilNumber,
-                    instruction: tableData
-                };
-                props.updateInstruction(coil);
-                props.setShowSlittingModal(false)
+                if(totalActualweight === Number(tweight)){
+                    const coil = {
+                        number: props.coil.coilNumber,
+                        instruction: tableData
+                    };
+                    props.updateInstruction(coil);
+                    props.setShowSlittingModal(false)
+                }else{
+                   message.error("Please adjust the weight")
+                }
+                
             }
         }
         
