@@ -17,7 +17,7 @@ const DeliveryInfo = (props) => {
 
   useEffect(() => {
     const partyId = props.inward.inwardListForDelivery?.map(ele => ele?.party?.nPartyId || '');
-    props.fetchPackingListByParty(partyId);
+    props.fetchPackingListByParty([...new Set(partyId)]);
   }, [])
 
   useEffect(()=>{
