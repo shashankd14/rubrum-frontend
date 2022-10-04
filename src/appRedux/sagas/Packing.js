@@ -56,7 +56,7 @@ function* fetchPackingList() {
 
 function* fetchPackingListByParty(action) {
     try {
-        const fetchPackingListByParty =  yield fetch(`${baseUrl}api/packing/rate/party/${action.partyId}`, {
+        const fetchPackingListByParty =  yield fetch(`${baseUrl}api/packing/rate/party/${action?.partyId[0]}`, {
             method: 'GET',
             headers: getHeaders()
         });
