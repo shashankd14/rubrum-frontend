@@ -1207,16 +1207,14 @@ const CreateCuttingDetailsForm = (props) => {
           "Actual Weight is greater than Total weight, Please modify actual weight!"
         );
       } else {
-        if (totalActualweight === Number(tweight)) {
+       
           const coil = {
             number: props.coil.coilNumber,
             instruction: tableData,
           };
           props.updateInstruction(coil);
           props.setShowCuttingModal();
-        } else {
-          message.error("Please adjust the weight");
-        }
+       
       }
     }
 
