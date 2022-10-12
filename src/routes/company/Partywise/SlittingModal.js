@@ -107,9 +107,8 @@ const SlittingWidths = (props) => {
         let cuts = props.cuts.map(i => i.plannedWeight);
        cuts = cuts.filter(i => i !== undefined)
         cuts = cuts.length > 0? cuts.reduce((total, num) => Number(total) + Number(num)) : 0
-        const scrapWeight =props?.wip ?props?.coilDetails?.scrapWeight: 0
-        cuts = Number(cuts) +Number(scrapWeight)
-        cuts = Number(cuts).toFixed(0);
+        cuts = Number(cuts)+Number(props?.coilDetails?.scrapWeight)
+        cuts = Number(cuts).toFixed(0)
         props.setweight(cuts)
         if(props.setDeleted){
             setWeightValue(weightValue-cuts);
@@ -565,7 +564,7 @@ const columns = [
     {
         title: 'Length',
         dataIndex:'plannedLength',
-        key: 'plannedLength',
+        render:(text, record,index)=> record?.instructionId? text : <Input value={record?.plannedLength} onChange={onInputChange("plannedLength", index)}/>
     },
     {
         title: 'Actual Length',
@@ -577,7 +576,7 @@ const columns = [
     {
         title: 'Width',
         dataIndex:'plannedWidth',
-        key: 'plannedWidth',
+        render:(text, record,index)=> record?.instructionId? text : <Input value={record?.plannedWidth} onChange={onInputChange("plannedWidth", index)}/>
     },
     {
         title: 'Actual Width',
@@ -634,6 +633,10 @@ const columns = [
                 })}
             </Select>
         }
+    },
+    {
+        title: '',
+        render:(text, record)=> record?.instructionId? "" : <a onClick={(e)=>handleWeight(e, record)}>Save</a>
     }
 ];
 const columnsPlan=[
@@ -920,8 +923,7 @@ const columnsPlan=[
                     
                 });
             }
-        }else{
-            if(props.inward.instructionSaveSlittingSuccess && !props.wip && !props.slitCut) {
+        }else if(props.inward.instructionSaveSlittingSuccess && !props.wip && !props.slitCut) {
                 let partId = props.inward.saveSlit[0].partDetailsId
                 let payload={
                     groupIds: null,
@@ -929,7 +931,8 @@ const columnsPlan=[
                 }
                 props.pdfGenerateInward(payload);
                 loading = ''; 
-            }
+        } else if(props.inward.instructionSaveSlittingSuccess && props?.wip){
+            props.setShowSlittingModal(true)
         }
        
     }, [props.inward.instructionSaveSlittingSuccess])
@@ -961,17 +964,12 @@ const columnsPlan=[
              else if (totalActualweight > tweight) {
                 message.error('Actual Weight is greater than Total weight, Please modify actual weight!');
             } else {
-                if(totalActualweight === Number(tweight)){
-                    const coil = {
-                        number: props.coil.coilNumber,
-                        instruction: tableData
-                    };
-                    props.updateInstruction(coil);
-                    props.setShowSlittingModal(false)
-                }else{
-                   message.error("Please adjust the weight")
-                }
-                
+                const coil = {
+                    number: props.coil.coilNumber,
+                    instruction: tableData
+                };
+                props.updateInstruction(coil);
+                props.setShowSlittingModal(false)
             }
         }
         
@@ -1023,6 +1021,58 @@ const columnsPlan=[
         } 
         
     }
+    const handleWeight = (e,record) => {
+        const instructionPayload = [
+            {
+                "partDetailsRequest": {
+                    "targetWeight": "0",
+                    "length": "0",
+                    "createdBy": "1",
+                    "updatedBy": "1",
+                    "deleteUniqId": 0
+                },
+                "instructionRequestDTOs": [
+                    {
+                        "processId": 2,
+                        "instructionDate": "2022-04-28 21:04:49",
+                        "plannedLength": record?.plannedLength,
+                        "plannedWidth": record?.plannedWidth,
+                        "isSlitAndCut": false,
+                        "plannedNoOfPieces": "1",
+                        "status": 1,
+                        "createdBy": "1",
+                        "updatedBy": "1",
+                        "groupId": null,
+                        "plannedWeight": props?.coilDetails?.scrapWeight,
+                        "inwardId": props?.coilDetails?.inwardEntryId,
+                        "parentInstructionId": "",
+                        "endUserTagId": record?.endUserTagsentity?.tagId,
+                        "deleteUniqId": 0,
+                        "packetClassificationId": record?.packetClassification?.tagId || record?.packetClassification?.classificationId
+                    }
+                ]
+            }
+        ]
+        props.saveSlittingInstruction(instructionPayload);
+        props.setShowSlittingModal(false)
+       };
+      const addRow=()=>{
+ const newData = {
+          processDate: new Date(),
+          plannedLength: 0,
+          actualLength: "",
+          plannedWeight: props?.coilDetails?.scrapWeight,
+          actualWeight: "",
+          packetClassification: {
+            tagName: "",
+          },
+          endUserTags: {
+            tagsName: "",
+          },
+        };
+        setTableData([...tableData, newData]);
+      
+      }
     return (
         
         <Modal
@@ -1071,6 +1121,14 @@ const columnsPlan=[
                 <TabPane tab="Slitting Instruction" key="1">
                     {props.wip ? 
                     <Row>
+                       
+                  <Col lg={24} md={24} sm={24} xs={24}>
+                  <Button type="primary" onClick={addRow}>
+                      Add Row
+                    </Button>
+                   
+                  </Col>
+                
                         <Form {...formItemLayout} className="login-form gx-pt-4">
                             <Form.Item>
                                 <SlittingWidthsForm setSlitEqualInstruction={setSlitEqualInstruction} setSlitInstructionList={setSlitInstructionList} slitEqualInstruction={slitEqualInstruction} slitInstructionList={slitInstructionList} setSlits={(slits) => setCuts([...cuts,...slits])} setTableData={setTableData} setweight={(w) => settweight(w)} totalActualweight={(w) => setTotalActualWeight(w)} coilDetails={props.coilDetails} wip={props.wip} unfinish={props.unfinish} editFinish={props.editFinish} plannedLength={props.plannedLength} plannedWidth ={props.plannedWidth} plannedWeight ={props.plannedWeight} length={length} cuts={cuts} edit={edit} tweight={tweight} lengthValue={(lengthValue) => setLengthValue(lengthValue)} widthValue={(widthValue) => setWidthValue(widthValue)} reset={form} />
