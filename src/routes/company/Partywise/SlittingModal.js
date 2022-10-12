@@ -1125,12 +1125,12 @@ const columnsPlan=[
                     {props.wip ? 
                     <Row>
                        
-                  <Col lg={24} md={24} sm={24} xs={24}>
+                  {props?.coilDetails?.scrapWeight &&<Col lg={24} md={24} sm={24} xs={24}>
                   <Button type="primary" onClick={addRow}>
                       Add Row
                     </Button>
                    
-                  </Col>
+                  </Col>}
                 
                         <Form {...formItemLayout} className="login-form gx-pt-4">
                             <Form.Item>
