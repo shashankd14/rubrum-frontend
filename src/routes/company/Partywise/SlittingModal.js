@@ -1036,6 +1036,9 @@ const columnsPlan=[
                         "processId": 2,
                         "instructionDate": "2022-04-28 21:04:49",
                         "plannedLength": record?.plannedLength,
+                        "actualLength":record?.actualLength,
+                        "actualWidth":record?.actualWidth,
+                        "actualWeight":record?.actualWeight,
                         "plannedWidth": record?.plannedWidth,
                         "isSlitAndCut": false,
                         "plannedNoOfPieces": "1",
@@ -1059,7 +1062,7 @@ const columnsPlan=[
       const addRow=()=>{
  const newData = {
           processDate: new Date(),
-          plannedLength: 0,
+          plannedLength: "",
           actualLength: "",
           plannedWeight: props?.coilDetails?.scrapWeight,
           actualWeight: "",
