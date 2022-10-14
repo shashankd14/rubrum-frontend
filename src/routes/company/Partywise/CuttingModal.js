@@ -128,7 +128,15 @@ const CreateCuttingDetailsForm = (props) => {
     {
       title: "Length",
       dataIndex: "plannedLength",
-      render:(text, record,index)=> record?.instructionId? text : <Input value={record?.plannedLength} onChange={onInputChange("plannedLength", index)}/>
+      render: (text, record, index) =>
+        record?.instructionId ? (
+          text
+        ) : (
+          <Input
+            value={record?.plannedLength}
+            onChange={onInputChange("plannedLength", index)}
+          />
+        ),
     },
     {
       title: "Actual Length",
@@ -144,7 +152,15 @@ const CreateCuttingDetailsForm = (props) => {
     {
       title: "No of Sheets",
       dataIndex: "plannedNoOfPieces",
-      render:(text, record,index)=> record?.instructionId? text : <Input value={record?.plannedNoOfPieces} onChange={onInputChange("plannedNoOfPieces", index)}/>
+      render: (text, record, index) =>
+        record?.instructionId ? (
+          text
+        ) : (
+          <Input
+            value={record?.plannedNoOfPieces}
+            onChange={onInputChange("plannedNoOfPieces", index)}
+          />
+        ),
     },
     {
       title: "Actual No of Sheets",
@@ -160,7 +176,7 @@ const CreateCuttingDetailsForm = (props) => {
     {
       title: "Weight",
       dataIndex: "plannedWeight",
-      key:"plannedWeight"
+      key: "plannedWeight",
     },
     {
       title: "Actual Weight",
@@ -240,9 +256,14 @@ const CreateCuttingDetailsForm = (props) => {
       },
     },
     {
-        title: '',
-        render:(text, record)=> record?.instructionId? "" : <a onClick={(e)=>handleWeight(e, record)}>Save</a>
-    }
+      title: "",
+      render: (text, record) =>
+        record?.instructionId ? (
+          ""
+        ) : (
+          <a onClick={(e) => handleWeight(e, record)}>Save</a>
+        ),
+    },
   ];
   if (props.slitCut) {
     const widthObj = {
@@ -942,29 +963,35 @@ const CreateCuttingDetailsForm = (props) => {
   }, [props.inward.pdfSuccess]);
   useEffect(() => {
     let payload = {};
-    if(!props.wip){
-    if (props.inward.instructionSaveCuttingSuccess ) {
-      if (props.slitCut) {
-        let partId = props.inward?.saveSlit[0]?.partDetailsId;
-        let instructions = props.inward?.saveCut.map((cut) => cut.instructions);
-        instructions = instructions.flat();
-        instructions = instructions.map((ins) => ins.parentGroupId);
-        payload = {
-          partDetailsId: slitPartId !== partId ? partId : null,
-          groupIds: [...new Set(instructions)],
-        };
-        setSlitPartId(partId);
-      } else {
-        let partId = props.inward.saveCut[0].partDetailsId;
-        payload = {
-          groupIds: null,
-          partDetailsId: partId,
-        };
+    if (!props.wip) {
+      if (props.inward.instructionSaveCuttingSuccess) {
+        if (props.slitCut) {
+          let partId = props.inward?.saveSlit[0]?.partDetailsId;
+          let instructions = props.inward?.saveCut.map(
+            (cut) => cut.instructions
+          );
+          instructions = instructions.flat();
+          instructions = instructions.map((ins) => ins.parentGroupId);
+          payload = {
+            partDetailsId: slitPartId !== partId ? partId : null,
+            groupIds: [...new Set(instructions)],
+          };
+          setSlitPartId(partId);
+        } else {
+          let partId = props.inward.saveCut[0].partDetailsId;
+          payload = {
+            groupIds: null,
+            partDetailsId: partId,
+          };
+        }
+        loading = "";
+        props.pdfGenerateInward(payload);
       }
-      loading = "";
-      props.pdfGenerateInward(payload);
-    }}else{
-        props.setShowCuttingModal(true)
+    } else {
+      setTimeout(() => {
+        props.setShowCuttingModal(false);
+        props.resetInstruction();
+      }, 1000);
     }
   }, [props.inward.instructionSaveCuttingSuccess]);
 
@@ -1207,14 +1234,12 @@ const CreateCuttingDetailsForm = (props) => {
           "Actual Weight is greater than Total weight, Please modify actual weight!"
         );
       } else {
-       
-          const coil = {
-            number: props.coil.coilNumber,
-            instruction: tableData,
-          };
-          props.updateInstruction(coil);
-          props.setShowCuttingModal();
-       
+        const coil = {
+          number: props.coil.coilNumber,
+          instruction: tableData,
+        };
+        props.updateInstruction(coil);
+        props.setShowCuttingModal();
       }
     }
 
@@ -1262,45 +1287,45 @@ const CreateCuttingDetailsForm = (props) => {
     setBalancedValue(false);
     props.setShowCuttingModal(false);
   };
-  const handleWeight = (e,record) => {
+  const handleWeight = (e, record) => {
     const instructionPayload = [
-        {
-            "partDetailsRequest": {
-                "targetWeight": "0",
-                "length": "0",
-                "createdBy": "1",
-                "updatedBy": "1",
-                "deleteUniqId": 0
-            },
-            "instructionRequestDTOs": [
-                {
-                    
-                    "processId": 1,
-                    "instructionDate": "2022-04-28 21:04:49",
-                    "plannedLength": record?.plannedLength,
-                    "actualLength":record?.actualLength,
-                    "actualNoOfPieces":record?.actualNoOfPieces,
-                    "actualWeight":record?.actualWeight,
-                    "plannedNoOfPieces": record?.plannedWidth,
-                    "isSlitAndCut": false,
-                    "plannedNoOfPieces": "1",
-                    "status": 1,
-                    "createdBy": "1",
-                    "updatedBy": "1",
-                    "groupId": null,
-                    "plannedWeight": props?.coilDetails?.scrapWeight,
-                    "inwardId": props?.coilDetails?.inwardEntryId,
-                    "parentInstructionId": "",
-                    "endUserTagId": record?.endUserTagsentity?.tagId,
-                    "deleteUniqId": 0,
-                    "packetClassificationId": record?.packetClassification?.tagId || record?.packetClassification?.classificationId
-                }
-            ]
-        }
-    ]
+      {
+        partDetailsRequest: {
+          targetWeight: "0",
+          length: "0",
+          createdBy: "1",
+          updatedBy: "1",
+          deleteUniqId: 0,
+        },
+        instructionRequestDTOs: [
+          {
+            processId: 1,
+            instructionDate: "2022-04-28 21:04:49",
+            plannedLength: record?.plannedLength,
+            actualLength: record?.actualLength,
+            actualNoOfPieces: record?.actualNoOfPieces,
+            actualWeight: record?.actualWeight,
+            plannedNoOfPieces: record?.plannedWidth,
+            isSlitAndCut: false,
+            plannedNoOfPieces: "1",
+            status: 1,
+            createdBy: "1",
+            updatedBy: "1",
+            groupId: null,
+            plannedWeight: props?.coilDetails?.scrapWeight,
+            inwardId: props?.coilDetails?.inwardEntryId,
+            parentInstructionId: "",
+            endUserTagId: record?.endUserTagsentity?.tagId,
+            deleteUniqId: 0,
+            packetClassificationId:
+              record?.packetClassification?.tagId ||
+              record?.packetClassification?.classificationId,
+          },
+        ],
+      },
+    ];
     props.saveCuttingInstruction(instructionPayload);
-    props.setShowCuttingModal(false)
-   };
+  };
   const addRow = () => {
     const newData = {
       processDate: new Date(),
@@ -1592,7 +1617,9 @@ const CreateCuttingDetailsForm = (props) => {
               <>
                 {props?.wip && props?.coilDetails?.scrapWeight && (
                   <Row>
-                    <Button type="primary" onClick={addRow}>Add Row</Button>
+                    <Button type="primary" onClick={addRow}>
+                      Add Row
+                    </Button>
                   </Row>
                 )}
                 {!props.wip && (
