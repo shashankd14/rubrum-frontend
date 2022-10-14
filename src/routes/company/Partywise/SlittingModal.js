@@ -1299,8 +1299,11 @@ const CreateSlittingDetailsForm = (props) => {
       };
       props.pdfGenerateInward(payload);
       loading = "";
-    } else if (props.inward.instructionSaveSlittingSuccess && props?.wip) {
-      props.setShowSlittingModal(true);
+    } else if (props.inward.instructionSaveSlittingSuccess && props.wip) {
+      setTimeout(() => {
+        props.setShowSlittingModal(false);
+        props.resetInstruction();
+      }, 1000);
     }
   }, [props.inward.instructionSaveSlittingSuccess]);
   const handleCancel = (e) => {
@@ -1427,7 +1430,6 @@ const CreateSlittingDetailsForm = (props) => {
       },
     ];
     props.saveSlittingInstruction(instructionPayload);
-    props.setShowSlittingModal(false);
   };
   const addRow = () => {
     const newData = {
