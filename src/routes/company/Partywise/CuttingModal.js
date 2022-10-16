@@ -739,6 +739,7 @@ const CreateCuttingDetailsForm = (props) => {
             deleteUniqId: unsavedDeleteId,
             packetClassificationId: null,
             endUserTagId: null,
+            isScrapWeightUsed:false,
           });
           setcurrentWeight(remainWeight);
           setlength(
@@ -1125,6 +1126,7 @@ const CreateCuttingDetailsForm = (props) => {
         groupId: props.inward.groupId.groupId,
         deleteUniqId: unsavedDeleteId,
         index: idx,
+        isScrapWeightUsed:false,
       };
       cutsValue.push(cutObj);
     }
@@ -1317,6 +1319,7 @@ const CreateCuttingDetailsForm = (props) => {
             parentInstructionId: "",
             endUserTagId: record?.endUserTagsentity?.tagId,
             deleteUniqId: 0,
+            isScrapWeightUsed:true,
             packetClassificationId:
               record?.packetClassification?.tagId ||
               record?.packetClassification?.classificationId,
