@@ -326,6 +326,7 @@ const SlittingWidths = (props) => {
               parentInstructionId: props.coilDetails.instructionId
                 ? props.coilDetails.instructionId
                 : "",
+              isScrapWeightUsed:false,
               deleteUniqId: unsavedDeleteId,
               packetClassificationId: null,
               endUserTagId: null,
@@ -1422,6 +1423,7 @@ const CreateSlittingDetailsForm = (props) => {
             parentInstructionId: "",
             endUserTagId: record?.endUserTagsentity?.tagId,
             deleteUniqId: 0,
+            isScrapWeightUsed:true,
             packetClassificationId:
               record?.packetClassification?.tagId ||
               record?.packetClassification?.classificationId,
