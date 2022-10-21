@@ -1544,14 +1544,11 @@ const CreateSlittingDetailsForm = (props) => {
         <TabPane tab="Slitting Instruction" key="1">
           {props.wip ? (
             <Row>
-              {props?.coilDetails?.scrapWeight && (
                 <Col lg={24} md={24} sm={24} xs={24}>
                   <Button type="primary" onClick={addRow}>
                     Add Row
                   </Button>
                 </Col>
-              )}
-
               <Form {...formItemLayout} className="login-form gx-pt-4">
                 <Form.Item>
                   <SlittingWidthsForm

@@ -1618,7 +1618,7 @@ const CreateCuttingDetailsForm = (props) => {
               )
             ) : (
               <>
-                {props?.wip && props?.coilDetails?.scrapWeight && (
+                {props?.wip  && (
                   <Row>
                     <Button type="primary" onClick={addRow}>
                       Add Row
