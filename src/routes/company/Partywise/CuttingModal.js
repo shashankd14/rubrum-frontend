@@ -1314,7 +1314,7 @@ const CreateCuttingDetailsForm = (props) => {
             createdBy: "1",
             updatedBy: "1",
             groupId: null,
-            plannedWeight: props?.coilDetails?.scrapWeight,
+            plannedWeight: props?.coilDetails?.scrapWeight === null ? 0: props?.coilDetails?.scrapWeight,
             inwardId: props?.coilDetails?.inwardEntryId,
             parentInstructionId: "",
             endUserTagId: record?.endUserTagsentity?.tagId,
@@ -1334,7 +1334,7 @@ const CreateCuttingDetailsForm = (props) => {
       processDate: new Date(),
       plannedLength: "",
       actualLength: "",
-      plannedWeight: props?.coilDetails?.scrapWeight,
+      plannedWeight: props?.coilDetails?.scrapWeight || 0,
       actualWeight: "",
       packetClassification: {
         tagName: "",

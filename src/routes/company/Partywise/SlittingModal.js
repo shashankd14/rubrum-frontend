@@ -1418,7 +1418,7 @@ const CreateSlittingDetailsForm = (props) => {
             createdBy: "1",
             updatedBy: "1",
             groupId: null,
-            plannedWeight: props?.coilDetails?.scrapWeight,
+            plannedWeight: props?.coilDetails?.scrapWeight || 0,
             inwardId: props?.coilDetails?.inwardEntryId,
             parentInstructionId: "",
             endUserTagId: record?.endUserTagsentity?.tagId,
@@ -1438,7 +1438,7 @@ const CreateSlittingDetailsForm = (props) => {
       processDate: new Date(),
       plannedLength: "",
       actualLength: "",
-      plannedWeight: props?.coilDetails?.scrapWeight,
+      plannedWeight: props?.coilDetails?.scrapWeight===null ? 0 : props?.coilDetails?.scrapWeight,
       actualWeight: "",
       packetClassification: {
         tagName: "",
