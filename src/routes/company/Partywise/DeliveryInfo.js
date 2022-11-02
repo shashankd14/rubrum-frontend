@@ -32,7 +32,7 @@ const DeliveryInfo = (props) => {
 
   useEffect(()=>{
     if(props.inward.deliverySuccess){
-      let insList = props.inward?.unprocessedSuccess?.map(item => item?.instructionId)
+      let insList = props.inward?.unprocessedSuccess?.length ?props.inward?.unprocessedSuccess?.map(item => item?.instructionId):[]
       
       const pdfPayload ={
         instructionIds: fullHandling ?insList :instructionList
@@ -76,14 +76,11 @@ useEffect(()=>{
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const iList= props?.inward.inwardListForDelivery.map(item => {
-      if(item?.inwardEntryId && item?.status?.statusName ==="RECEIVED") {
-        return item?.inwardEntryId
-      }
-    })
-    if(iList.length){
+    const iList= props?.inward.inwardListForDelivery.filter(item =>  item?.inwardEntryId && item?.status?.statusName ==="RECEIVED")
+   
+    if(iList?.length){
       const payload={
-        inwardEntryId: iList,
+        inwardEntryId: iList.map(item => item.inwardEntryId),
         motherCoilDispatch: true
       }
       setFullHandling(true)
