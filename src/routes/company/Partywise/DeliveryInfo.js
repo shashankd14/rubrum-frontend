@@ -32,11 +32,12 @@ const DeliveryInfo = (props) => {
 
   useEffect(()=>{
     if(props.inward.deliverySuccess){
-      let insList = []
-      insList.push(props.inward?.unprocessedSuccess?.instructionId)
+      let insList = props.inward?.unprocessedSuccess?.map(item => item?.instructionId)
+      
       const pdfPayload ={
         instructionIds: fullHandling ?insList :instructionList
       }
+      setFullHandling(false)
       props.generateDCPdf(pdfPayload);
     }
 
@@ -44,7 +45,7 @@ const DeliveryInfo = (props) => {
   useEffect(()=>{
     if(props.inward.dcpdfSuccess) {
         message.success('Delivery Challan pdf generated successfully', 2).then(() => { 
-          setFullHandling(false)
+          
           props.resetInstruction();
           props.history.push('/company/partywise-register');
 });
@@ -60,6 +61,7 @@ useEffect(()=>{
     const reqObj = {
       vehicleNo,
       taskType:"FULL_HANDLING",
+      packingRateId,
       inwardListForDelivery: fullHandlingList
     }
     props.postDeliveryConfirm(reqObj);
