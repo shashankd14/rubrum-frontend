@@ -1394,6 +1394,7 @@ const CreateSlittingDetailsForm = (props) => {
     }
   };
   const handleWeight = (e, record) => {
+    e.preventDefault();
     const instructionPayload = [
       {
         partDetailsRequest: {
