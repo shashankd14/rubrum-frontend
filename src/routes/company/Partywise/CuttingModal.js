@@ -1290,6 +1290,7 @@ const CreateCuttingDetailsForm = (props) => {
     props.setShowCuttingModal(false);
   };
   const handleWeight = (e, record) => {
+    e.preventDefault();
     const instructionPayload = [
       {
         partDetailsRequest: {
