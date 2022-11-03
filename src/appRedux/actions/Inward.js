@@ -3,6 +3,10 @@ import {
     FETCH_INWARD_LIST_SUCCESS,
     FETCH_INWARD_LIST_ERROR,
 
+    FETCH_WIP_INWARD_LIST_REQUEST,
+    FETCH_WIP_INWARD_LIST_SUCCESS,
+    FETCH_WIP_INWARD_LIST_ERROR,
+
     CHECK_COIL_EXISTS,
 
     SET_INWARD_DETAILS,
@@ -103,6 +107,25 @@ export const fetchInwardListSuccess = (inwardList, totalItems) => ({
 
 export const fetchInwardListError = (error) => ({
     type: FETCH_INWARD_LIST_ERROR,
+    error
+});
+
+export const fetchWIPInwardList = (page, pageSize, searchValue, partyId) => ({
+    type: FETCH_WIP_INWARD_LIST_REQUEST,
+    page,
+    pageSize,
+    searchValue,
+    partyId
+});
+
+export const fetchWIPInwardListSuccess = (wipList, totalItems) => ({
+    type: FETCH_WIP_INWARD_LIST_SUCCESS,
+    wipList,
+    totalItems
+});
+
+export const fetchWIPInwardListError = (error) => ({
+    type: FETCH_WIP_INWARD_LIST_ERROR,
     error
 });
 
