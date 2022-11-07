@@ -1,6 +1,7 @@
 import {all, put, fork, takeLatest} from "redux-saga/effects";
 import { getUserToken } from './common';
 import {FETCH_PACKING_LIST_REQUEST,
+    FETCH_PACKING_LIST_BY_PARTY_REQUEST,
     FETCH_PACKING_BUCKET_LIST_REQUEST,
     ADD_PACKING_REQUEST,
     ADD_PACKING_BUCKET_REQUEST,
@@ -11,6 +12,8 @@ import {FETCH_PACKING_LIST_REQUEST,
 } from "../../constants/ActionTypes";
 import {fetchPackingListError, 
     fetchPackingListSuccess,
+    fetchPackingListByPartySuccess,
+    fetchPackingListByPartyError,
     fetchPackingBucketListError,
     fetchPackingBucketListSuccess,
     addPackingSuccess, 
@@ -48,6 +51,24 @@ function* fetchPackingList() {
             yield put(fetchPackingListError('error'));
     } catch (error) {
         yield put(fetchPackingListError(error));
+    }
+}
+
+function* fetchPackingListByParty(action) {
+    try {
+        const fetchPackingListByParty =  yield fetch(`${baseUrl}api/packing/rate/party/${action?.partyId[0]}`, {
+            method: 'GET',
+            headers: getHeaders()
+        });
+        if(fetchPackingListByParty.status === 200) {
+            const fetchPackingListByPartyResponse = yield fetchPackingListByParty.json();
+            yield put(fetchPackingListByPartySuccess(fetchPackingListByPartyResponse));
+        } else if (fetchPackingListByParty.status === 401) {
+            yield put(userSignOutSuccess());
+        } else
+            yield put(fetchPackingListByPartyError('error'));
+    } catch (error) {
+        yield put(fetchPackingListByPartyError(error));
     }
 }
 
@@ -211,6 +232,7 @@ function* fetchPackingBucketListById(action) {
 
 export function* watchFetchRequests() {
     yield takeLatest(FETCH_PACKING_LIST_REQUEST, fetchPackingList);
+    yield takeLatest(FETCH_PACKING_LIST_BY_PARTY_REQUEST, fetchPackingListByParty);
     yield takeLatest(FETCH_PACKING_BUCKET_LIST_REQUEST, fetchPackingBucketList);
     yield takeLatest(ADD_PACKING_REQUEST, addPacking);
     yield takeLatest(ADD_PACKING_BUCKET_REQUEST, addPackingBucket);

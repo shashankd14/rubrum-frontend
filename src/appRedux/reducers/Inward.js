@@ -3,6 +3,10 @@ import {
     FETCH_INWARD_LIST_SUCCESS,
     FETCH_INWARD_LIST_ERROR,
 
+    FETCH_WIP_INWARD_LIST_REQUEST,
+    FETCH_WIP_INWARD_LIST_SUCCESS,
+    FETCH_WIP_INWARD_LIST_ERROR,
+
     SET_INWARD_DETAILS,
     SUBMIT_INWARD_ENTRY,
     SUBMIT_INWARD_SUCCESS,
@@ -83,7 +87,11 @@ import {
 
 const INIT_STATE = {
     inwardList: [],
+    wipList: [],
     totalItems: 0,
+    wipLoading: false,
+    wipSuccess: false,
+    wipError: false,
     loading: false,
     success: false,
     error: false,
@@ -144,6 +152,32 @@ export default (state = INIT_STATE, action) => {
                 success: true
             }
         }
+
+        case FETCH_WIP_INWARD_LIST_REQUEST: {
+            return {
+                ...state,
+                wipLoading: true
+            }
+        }
+        case FETCH_WIP_INWARD_LIST_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                wipList: action.wipList,
+                totalItems: action.totalItems,
+                wipSuccess: true
+            }
+        }
+
+        case FETCH_WIP_INWARD_LIST_ERROR: {
+            return {
+                ...state,
+                loading: false,
+                wipList: [],
+                wipError: true
+            }
+        }
+
         case CHECK_COIL_EXISTS: {
             return {
                 ...state,
