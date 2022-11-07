@@ -53,7 +53,7 @@ const CreateTemplate = (props) => {
     }, []);
 
    return (
-        <Card className="gx-card" title="Create Template">
+        <Card className="gx-card" bodyStyle={{ minHeight: "75vh" }} title="Create Template">
             <Steps current={currentStep}>
                 <Step title="Inward" onClick={() => setCurrentStep(0)}/>
                 <Step title="Pre Processing" onClick={() => setCurrentStep(1)} />
@@ -61,7 +61,7 @@ const CreateTemplate = (props) => {
                 <Step title="Pre Dispatch" onClick={() => setCurrentStep(3)} />
                 <Step title="Post Dispatch" onClick={() => setCurrentStep(4)} />
             </Steps>
-            <Row className="gx-justify-content-center">
+            <Row className="gx-justify-content-center" style={{ minHeight: "70vh" }}>
                 {steps.length > 0 && steps[currentStep].content}
             </Row>
         </Card>

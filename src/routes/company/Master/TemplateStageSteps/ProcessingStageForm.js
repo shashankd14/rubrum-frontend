@@ -2,8 +2,10 @@ import React, {useEffect, useState} from "react";
 import {connect} from 'react-redux';
 import { camelCase } from 'lodash';
 import moment from 'moment';
+import {useDispatch, useSelector} from "react-redux";
 import {Button, Card, Divider, Table, Modal, Row, Col, Form, Input, Icon, Tabs, Radio, DatePicker} from "antd";
 import CreateForm from './../CreateField';
+import { createFormFields } from '../../../../appRedux/actions';
 
 const FormItem = Form.Item;
 const TabPane = Tabs.TabPane;
@@ -23,69 +25,148 @@ export const formItemLayout = {
 
 const ProcessingStageForm = (props) => {
 
-    const [showSlitAddParameter, setshowSlitAddParameter] = useState(false);
-    const [showCutAddParameter, setshowCutAddParameter] = useState(false);
+    const [slitFields, setSlitFields] = React.useState(props.slitFields || []);
+    const [cutFields, setCutFields] = React.useState(props.cutFields || []);
+    const dispatch = useDispatch();
+
+    React.useEffect(() => {
+        if (props.slitFields.length > 0) {
+            setSlitFields(props.slitFields)
+        }
+    }, [props.slitFields])
+
+    React.useEffect(() => {
+        if (props.cutFields.length > 0) {
+            setCutFields(props.cutFields)
+        }
+    }, [props.cutFields])
+
 
    return (
     <>
         <Col span={18} className="login-form gx-pt-4">
-            <Button type="primary" icon={() => <i className="icon icon-add"/>} size="medium"
-                    onClick={() => {
-                        setshowSlitAddParameter(true);
-                    }}
-            >Create Slit Form</Button>
-            <Button type="primary" icon={() => <i className="icon icon-add"/>} size="medium"
-                    onClick={() => {
-                        setshowCutAddParameter(true);
-                    }}
-            >Create Cut Form</Button>
-            <Form {...formItemLayout}  className="login-form gx-pt-4">
-                { props.formFields && Object.keys(props.formFields)?.map((value, index) => {
-                    const field = props.formFields[value];
-                    let inputEle = null;
-                    if (field.type === 'calendar') {
-                            inputEle = (
-                                <DatePicker
-                                    style={{width: 250}}
-                                    className="gx-mb-3 gx-w-200"
-                                    format='DD/MM/YYYY'
-                                    defaultValue={moment(new Date(), 'DD/MM/YYYY')}
-                                />
-                            )
-                    }
-                    else if (field.type === 'radio') {
-                            const options = field.options.split(',') || [];
-                            inputEle = (
-                                <Radio.Group defaultValue={field.default}>
-                                    {options.map((item, index) => (
-                                        <Radio value={camelCase(item)} key={index}>{item}</Radio>
-                                    ))}
-                                </Radio.Group>
-                            );
-                    } else if (field.type === 'textArea') {
-                            inputEle = (
-                                <Input.TextArea type={field.type} max={field.max} min={field.min} defaultValue={field.default}>
-                                </Input.TextArea>
-                            )
-                    } else {
-                        inputEle = (
-                            <Input type={field.type} max={field.max} min={field.min} defaultValue={field.default}>
-                            </Input>
-                        );
-                    }
-                    return (
-                        <FormItem key={index} label={field.value}>
-                            {inputEle && inputEle}
-                        </FormItem>
-                    )
-                })}
-            </Form>
-            <CreateForm setshowAddParameter={setshowSlitAddParameter} showAddParameter={showSlitAddParameter} />
-            <CreateForm setshowAddParameter={setshowCutAddParameter} showAddParameter={showCutAddParameter} />
-            <Button style={{ marginLeft: 8 }} onClick={() => props.updateStep(1)}>
+            <div style={{ display: "flex", flexDirection: "row" }}>
+                <div style={{ width: "50%" }}>
+                 <CreateForm formFields={props.slitFields} setFields={setSlitFields} btnName="Slit Parameters" />
+                </div>
+                <div style={{ width: "50%" }}>
+                 <CreateForm formFields={props.cutFields} setFields={setCutFields} btnName="Cut Parameters" />
+                </div>
+            </div>
+            <div style={{ display:"flex", flexDirection: "row" }}>
+            <Card style={{ display:"flex", minHeight: "40vh", width: "50%" }} className="gx-card">
+                <Row>
+                    <Col lg={24} md={24} sm={24} xs={24} className="gx-align-self-center">
+                        {!!slitFields?.length && <Form {...formItemLayout} style={{ height: "100%" }}>
+                            { slitFields && slitFields?.map((field, index) => {
+                                let inputEle = null;
+                                if (field.type === 'calendar') {
+                                        inputEle = (
+                                            <DatePicker
+                                                style={{width: 250}}
+                                                className="gx-mb-3 gx-w-200"
+                                                format='DD/MM/YYYY'
+                                                defaultValue={moment(new Date(), 'DD/MM/YYYY')}
+                                            />
+                                        )
+                                }
+                                else if (field.type === 'radio') {
+                                        const options = field.options.split(',') || [];
+                                        inputEle = (
+                                            <Radio.Group value={field.value}>
+                                                {options.map((item, index) => (
+                                                    <Radio value={camelCase(item)} key={index}>{item}</Radio>
+                                                ))}
+                                            </Radio.Group>
+                                        );
+                                } else if (field.type === 'textArea') {
+                                        inputEle = (
+                                            <Input.TextArea type={field.type} value={field.value}>
+                                            </Input.TextArea>
+                                        )
+                                } else if (field.type === 'number') {
+                                    inputEle = (
+                                        <Input type={field.type} max={field.max} min={field.min} value={field.value}>
+                                        </Input>
+                                    );
+                                } else {
+                                    inputEle = (
+                                        <Input type={field.type} value={field.value}>
+                                        </Input>
+                                    );
+                                }
+                                return (
+                                    <FormItem key={index} label={field.label}>
+                                        {inputEle && inputEle}
+                                    </FormItem>
+                                )
+                            })}
+                        </Form>}
+                    </Col>
+                </Row>
+            </Card>
+            <Card style={{ display:"flex", minHeight: "40vh", width: "50%", marginLeft: "10px" }} className="gx-card">
+                <Row>
+                    <Col lg={24} md={24} sm={24} xs={24} className="gx-align-self-center">
+                        {!!cutFields?.length && <Form {...formItemLayout} style={{ height: "100%" }}>
+                            { cutFields && cutFields?.map((field, index) => {
+                                let inputEle = null;
+                                if (field.type === 'calendar') {
+                                        inputEle = (
+                                            <DatePicker
+                                                style={{width: 250}}
+                                                className="gx-mb-3 gx-w-200"
+                                                format='DD/MM/YYYY'
+                                                defaultValue={moment(new Date(), 'DD/MM/YYYY')}
+                                            />
+                                        )
+                                }
+                                else if (field.type === 'radio') {
+                                        const options = field.options.split(',') || [];
+                                        inputEle = (
+                                            <Radio.Group value={field.value}>
+                                                {options.map((item, index) => (
+                                                    <Radio value={camelCase(item)} key={index}>{item}</Radio>
+                                                ))}
+                                            </Radio.Group>
+                                        );
+                                } else if (field.type === 'textArea') {
+                                        inputEle = (
+                                            <Input.TextArea type={field.type} value={field.value}>
+                                            </Input.TextArea>
+                                        )
+                                } else if (field.type === 'number') {
+                                    inputEle = (
+                                        <Input type={field.type} max={field.max} min={field.min} value={field.value}>
+                                        </Input>
+                                    );
+                                } else {
+                                    inputEle = (
+                                        <Input type={field.type} value={field.value}>
+                                        </Input>
+                                    );
+                                }
+                                return (
+                                    <FormItem key={index} label={field.label}>
+                                        {inputEle && inputEle}
+                                    </FormItem>
+                                )
+                            })}
+                        </Form>}
+                    </Col>
+                </Row>
+            </Card>
+            </div>
+            <Button style={{ marginLeft: 8 }}>
                 <Icon type="left"/>Back
             </Button>
-            <Button type="primary" htmlType="submit">
+            <Button type="primary" htmlType="submit" style={{ float: "right" }} onClick={() => {
+                dispatch(createFormFields({
+                    slitFields,
+                    cutFields
+                }, 'processing'));
+                props.updateStep(3);
+            }}>
                 Forward<Icon type="right"/>
             </Button>
         </Col>
@@ -93,8 +174,12 @@ const ProcessingStageForm = (props) => {
    );
 };
 
-const mapStateToProps = state => ({
-    formFields: state.quality.formFields
-});
+const mapStateToProps = state => {
+    const { processing = {} } = state.quality.formFields;
+    return {
+        slitFields: processing.slitFields,
+        cutFields: processing.cutFields
+    }
+};
 
 export default connect(mapStateToProps)(ProcessingStageForm);

@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from "react";
 import {Button, Card, Divider, Table, Modal, Row, Col, Form, Input, Icon, Tabs} from "antd";
-import { createFormFields } from '../../../appRedux/actions';
 import {useDispatch, useSelector} from "react-redux";
 
 const FormItem = Form.Item;
@@ -27,84 +26,74 @@ const formItemLayoutWithOutLabel = {
   };
 
 const CreateField = (props) => {
-    const { setshowAddParameter, showAddParameter } = props;
-    const dispatch = useDispatch();
+    const { name, formFields, setFields, btnName } = props;
   
     const [selectType, setSelectType] = useState({});
+
+    const [showParameters, setShowParamters] = useState(false);
   
   
     const { getFieldDecorator, getFieldValue, getFieldProps } = props.form;
+
+
+    useEffect(() => {
+      setSelectType(selectType);
+    }, [selectType])
   
-    const numberChange = (e, index) => {
+    const numberChange = (e) => {
         const { name, value } = e.target;
         setSelectType(prev => {
-           return {...prev, [index]: { ...prev[index], [name]: value } }; 
+           return {...prev, [name]: value }; 
         });
     }
     
   
-    const getNumberFields = index => {
+    const getNumberFields = () => {
         return (
-            <div>
-              <div style={{ display: "flex", marginBottom: 10 }}>
-                <label style={{ width: '25%' }}> Minimum value :</label>
-                <input style={{ width: '60%', marginLeft: '10px' }} className="ant-input" name='min' placeholder='enter minimum value' value={selectType[index].min} onChange={(e) => numberChange(e, index)}></input>
-              </div>
-              <div style={{ display: "flex", marginBottom: 10 }}>
-                <label style={{ width: '25%' }}> Maximum value :</label>
-                <input style={{ width: '60%', marginLeft: '10px' }} className="ant-input" name='max' placeholder='enter maximum value' value={selectType[index].max} onChange={(e) => numberChange(e, index)}></input>
-              </div>
-              <div style={{ display: "flex", marginBottom: 10 }}>
-                <label style={{ width: '25%' }}> Default value :</label>
-                <input style={{ width: '60%', marginLeft: '10px' }} className="ant-input" name='default' placeholder='enter default value' value={selectType[index].default} onChange={(e) => numberChange(e, index)}></input>
-              </div>
+            <div style={{ width: "100%", textAlign: "center", padding: "15px", marginBottom: 10 }}>
+                <input style={{ width: '30%', marginLeft: '10px' }} className="ant-input" name='min' placeholder='enter minimum value' value={selectType.min} onChange={(e) => numberChange(e)}></input>
+                <input style={{ width: '30%', marginLeft: '10px' }} className="ant-input" name='max' placeholder='enter maximum value' value={selectType.max} onChange={(e) => numberChange(e)}></input>
+                <input style={{ width: '30%', marginLeft: '10px' }} className="ant-input" name='value' placeholder='enter default value' value={selectType.value} onChange={(e) => numberChange(e)}></input>
             </div>
         )
     };
 
-    const getTextFields = index => {
+    const getTextFields = () => {
       return (
-        <div style={{ display: "flex", marginBottom: 10 }}>
-          <label style={{ width: '25%' }}> Default value :</label>
-          <input style={{ width: '60%', marginLeft: '10px' }} className="ant-input" name='default' placeholder='enter default value' value={selectType[index].default} onChange={e => numberChange(e, index)} ></input>
+        <div style={{ width: "100%", textAlign: "center", padding: "15px", marginBottom: 10 }}>
+          <input style={{ width: '30%', marginLeft: '10px' }} className="ant-input" name='value' placeholder='enter default value' value={selectType.value} onChange={e => numberChange(e)} ></input>
         </div>
       )
     };
 
-    const getRadioFields = index => {
+    const getRadioFields = () => {
       return (
-        <div>
-          <div style={{ display: "flex", marginBottom: 10 }}>
-            <label style={{ width: '25%' }}> Enter options :</label>
-            <input style={{ width: '60%', marginLeft: '10px' }} className="ant-input" name='options' placeholder='enter options comma seperated' value={selectType[index].options} onChange={e => numberChange(e, index)}></input>
-          </div>
-          <div style={{ display: "flex", marginBottom: 10 }}>
-            <label style={{ width: '25%' }}> Default value :</label>
-            <input style={{ width: '60%', marginLeft: '10px' }} className="ant-input" name='default' placeholder='enter default value' value={selectType[index].default} onChange={e => numberChange(e, index)}></input>
-          </div>
+        <div style={{ width: "100%", textAlign: "center", padding: "15px", marginBottom: 10 }}>
+            <input style={{ width: '30%', marginLeft: '10px' }} className="ant-input" name='options' placeholder='enter options comma seperated' value={selectType.options} onChange={e => numberChange(e)}></input>
+            <input style={{ width: '30%', marginLeft: '10px' }} className="ant-input" name='value' placeholder='enter default value' value={selectType.value} onChange={e => numberChange(e)}></input>
         </div>
       );
     };
 
-    const getTextAreaFields = index => {
+    const getTextAreaFields = () => {
       return (
         <>
-          <input name='default' placeholder='enter default value' value={selectType[index].default} onChange={e => numberChange(e, index)}></input>
+          <input name='value' placeholder='enter default value' value={selectType.value} onChange={e => numberChange(e)}></input>
         </>
       )
     }
   
-    const generateFieldsByType = (obj = {}, index) => {
+    const generateFieldsByType = (obj = {}) => {
         console.log('inside fun');
-        const type = obj[index]?.type || '';
+        const type = obj.type || '';
         switch (type) {
             case 'number':
-                return getNumberFields(index);
+                return getNumberFields();
             case 'radio':
-                return getRadioFields(index);
+                return getRadioFields();
             case 'text':
             case 'textArea':
-                return getTextFields(index);
+                return getTextFields();
             default:
                 break;
         }
@@ -112,124 +101,85 @@ const CreateField = (props) => {
   
     getFieldDecorator('keys', {initialValue: []});
     const keys = getFieldValue('keys');
-    const formItems = keys.map((k, index) => {
-      return (
-        <FormItem
-          {...formItemLayout}
-          required={false}
-          key={k}
-        >
-          <div style={{ display: "flex", marginBottom: 10 }}>
-          <label style={{ width: '25%' }}>Paramter Name :</label>
-          <input type='text' placeholder="Paramter Name" value={selectType[k]?.value} onChange={(e) => {
-              e.preventDefault();
-              var val = e.target.value;
-              console.log(val);
-              setSelectType(prev => { 
-                  return {...prev, [k]: { ...prev[k], value: val } }; });
-          }} className="ant-input" style={{ width: '60%', marginLeft: '10px' }} />
-          </div>
-          <div style={{ display: "flex", marginBottom: 10 }}>
-            <label style={{ width: '25%' }}>Paramter Type :</label>
-            <select className="ant-input" value={selectType[k]?.type} style={{width: '60%', marginLeft: '10px' }} onChange={(e) => {
-                var val = e.target.value;
-                setSelectType(prev => { 
-                  return {...prev, [k]: { ...prev[k], type: val } }; });
-            }}>
-                <option disabled selected>Select Paramter type</option>
-                <option>text</option>
-                <option>number</option>
-                <option>textArea</option>
-                <option>radio</option>
-                <option>checkbox</option>
-                <option>select</option>
-                <option>calendar</option>
-            </select>
-          </div>
-          {generateFieldsByType(selectType, k)}
-          {keys.length > 1 ? (
-            <Icon
-              className="dynamic-delete-button"
-              type="minus-circle-o"
-              disabled={keys.length === 1}
-              onClick={() => remove(k)}
-            />
-          ) : null}
-        </FormItem>
-      );
-    });
-  
-    const remove = (k) => {
-        const {form} = props;
-        // can use data-binding to get
-        const keys = form.getFieldValue('keys');
-        // We need at least one passenger
-        if (keys.length === 1) {
-          return;
-        }
+
+    // const remove = (k) => {
+    //     const {form} = props;
+    //     // can use data-binding to get
+    //     const keys = form.getFieldValue('keys');
+    //     // We need at least one passenger
+    //     if (keys.length === 1) {
+    //       return;
+    //     }
     
-        // can use data-binding to set
-        form.setFieldsValue({
-          keys: keys.filter(key => key !== k),
-        });
-        setSelectType(prev => {
-          delete prev[k];
-          return {
-            ...prev
-          }
-        });
-      };
+    //     // can use data-binding to set
+    //     form.setFieldsValue({
+    //       keys: keys.filter(key => key !== k),
+    //     });
+    //     setSelectType(prev => {
+    //       delete prev[k];
+    //       return {
+    //         ...prev
+    //       }
+    //     });
+    //   };
   
-    const add = () => {
-        const {form} = props;
-        // can use data-binding to get
-        const keys = form.getFieldValue('keys');
-        const nextKeys = keys.concat(uuid);
-        uuid++;
-        // can use data-binding to set
-        // important! notify form to detect changes
-        form.setFieldsValue({
-          keys: nextKeys,
-        });
-      };
+    // const add = () => {
+    //     const {form} = props;
+    //     // can use data-binding to get
+    //     const keys = form.getFieldValue('keys');
+    //     const nextKeys = keys.concat(uuid);
+    //     uuid++;
+    //     // can use data-binding to set
+    //     // important! notify form to detect changes
+    //     form.setFieldsValue({
+    //       keys: nextKeys,
+    //     });
+    //   };
+
+    const clearParameterForm = () => {
+      document.getElementById('name').value = '';
+      document.getElementById('type').selectedIndex = 0;
+    }
   
     return (
-        <Modal
-            title='Create Form'
-            visible={showAddParameter}
-            onOk={e => {
+      <Form style={{ minHeight: "20%", textAlign: "center" }}>
+                  {/* {formItems} */}
+          <Button type="dashed" onClick={() => setShowParamters(true)} style={{width: '50%'}}>
+            <Icon type="plus"/> { btnName ? btnName : 'Add Parameters' }
+          </Button>
+          {showParameters && <div style={{ display: "flex", flexFlow: "row wrap", alignContent: "space-between", justifyContent: "center", marginBottom: 10 }}>
+            <input id="name" type='text' placeholder="Paramter Name" value={selectType.label} onChange={(e) => {
                 e.preventDefault();
-                setshowAddParameter(false);
-            }}
-            width={600}
-            onCancel={e => {
-                e.preventDefault();
-                setshowAddParameter(false);
-            }}
-        >
-            <Card className="gx-card">
-                <Row>
-                    <Col lg={24} md={24} sm={24} xs={24} className="gx-align-self-center">
-                    <Form>
-                        {formItems}
-                        <FormItem {...formItemLayoutWithOutLabel}>
-                            <Button type="dashed" onClick={() => add()} style={{width: '60%'}}>
-                            <Icon type="plus"/> Add field
-                            </Button>
-                        </FormItem>
-                        <FormItem {...formItemLayoutWithOutLabel}>
-                            <Button type="primary" onClick={() => {
-                                console.log(selectType); //
-                                // props.setFormItemsObj(selectType); // calling
-                                dispatch(createFormFields(selectType));
-                                setshowAddParameter(false)
-                            }}>Submit</Button>
-                        </FormItem>
-                    </Form>
-                    </Col>
-                </Row>
-            </Card>
-        </Modal>
+                var val = e.target.value;
+                console.log(val);
+                setSelectType(prev => { 
+                    return { ...prev, label: val } });
+            }} className="ant-input" style={{ width: '35%', marginLeft: '10px' }} />
+            <select id="type" className="ant-input" value={selectType.type} style={{width: '35%', marginLeft: '10px' }} onChange={(e) => {
+                  var val = e.target.value;
+                  setSelectType(prev => { 
+                    return { ...prev, type: val } });
+              }}>
+                  <option disabled selected>Select Paramter type</option>
+                  <option>text</option>
+                  <option>number</option>
+                  <option>textArea</option>
+                  <option>radio</option>
+                  <option>checkbox</option>
+                  <option>select</option>
+                  <option>calendar</option>
+              </select>
+              {generateFieldsByType(selectType)}
+              <Button style={{ marginLeft: '10px' }}  type="primary" onClick={() => {
+                  console.log(selectType); //
+                  // props.setFormItemsObj(selectType); // calling
+                  // dispatch(createFormFields(selectType, props.name));
+                  setFields(prev => [...prev, selectType]);
+                  setSelectType({});
+                  clearParameterForm();
+              }}>Add</Button>
+          </div>}
+      </Form>
     )
   };
   

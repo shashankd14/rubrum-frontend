@@ -130,7 +130,7 @@ const Quality = (props) => {
                 <Table rowSelection={[]}
                     className="gx-table-responsive"
                     columns={columns}
-                    dataSource={[{}]}
+                    dataSource={[]}
                     onChange={handleChange}
                 />
             </Card>
