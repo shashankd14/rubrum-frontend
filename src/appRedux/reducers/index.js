@@ -13,7 +13,6 @@ import PacketClassification from "./PacketClassification";
 import Rates from "./Rates";
 import Process from './Process';
 import Reports from './Reports';
-import Quality from './Quality';
 import Packing from './Packing';
 
 const createRootReducer = (history) => combineReducers({
@@ -31,7 +30,6 @@ const createRootReducer = (history) => combineReducers({
   rates: Rates,
   process: Process,
   reports: Reports,
-  quality: Quality,
   packing: Packing
 });
 
