@@ -27,7 +27,7 @@ function* saveTemplate(action) {
     try {
         const { formFields, templateId } = action.payload;
         const body = {
-            templateId,
+            templateName: templateId,
             stageDetails: getStageDetails(formFields)
         };
         const addPacking = yield fetch(`${baseUrl}api/quality/template/save`, {
