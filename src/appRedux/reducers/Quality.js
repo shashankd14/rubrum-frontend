@@ -3,7 +3,10 @@ import {
     SAVE_TEMPLATE_REQUEST,
     SAVE_TEMPLATE_SUCCESS,
     SAVE_TEMPLATE_ERROR,
-    TEMPLATE_NAME
+    TEMPLATE_NAME,
+    FETCH_TEMPLATE_LIST,
+    FETCH_TEMPLATE_LIST_SUCCESS,
+    FETCH_TEMPLATE_LIST_ERROR
   } from "constants/ActionTypes";
   
   const INIT_STATE = {
@@ -18,6 +21,8 @@ import {
       preDispatch: [],
       postDispatch: []
     },
+    loading: false,
+    data: [],
     error: false
   };
   
@@ -57,6 +62,26 @@ import {
           error: true,
           loading: false
         }
+      case FETCH_TEMPLATE_LIST: 
+        return {
+          ...state,
+          error: false,
+          loading: true
+        }
+      case FETCH_TEMPLATE_LIST_SUCCESS:
+          return {
+            ...state,
+            error: false,
+            loading: false,
+            data: action.templateList
+          }
+      case FETCH_TEMPLATE_LIST_ERROR: 
+          return {
+            ...state,
+            error: true,
+            loading: false
+          }
+          
       default:
         return state;
     }
