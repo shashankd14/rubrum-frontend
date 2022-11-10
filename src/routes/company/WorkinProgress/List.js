@@ -5,7 +5,7 @@ import moment from 'moment';
 import SearchBox from "../../../components/SearchBox";
 import IntlMessages from "../../../util/IntlMessages";
 import {
-    fetchInwardList
+    fetchWIPInwardList
 } from "../../../appRedux/actions/Inward";
 
 function  List(props) {
@@ -16,7 +16,7 @@ function  List(props) {
     });
     const [filteredInfo, setFilteredInfo] = useState(null);
     const [searchValue, setSearchValue] = useState('');
-    const [filteredInwardList, setFilteredInwardList] = useState(props.inward.inwardList);
+    const [filteredInwardList, setFilteredInwardList] = useState(props.inward?.wipList);
 
     const [pageNo, setPageNo] = React.useState(1);
     const [totalPageItems, setTotalItems] = React.useState(0);
@@ -25,7 +25,7 @@ function  List(props) {
        
 const getFilterData=(list)=>{
     let filter = list.map(item =>{
-    if(item.instruction.length>0){
+    if(item.instruction?.length>0){
         item.children = item.instruction.filter(filteredInfo => filteredInfo.status.statusName ==='IN PROGRESS');
     }
       return item
@@ -37,7 +37,7 @@ const getFilterData=(list)=>{
         dataIndex: 'coilNumber',
         key: 'coilNumber',
         filters: [],
-        sorter: (a, b) => a.coilNumber.length - b.coilNumber.length,
+        sorter: (a, b) => a.coilNumber?.length - b.coilNumber?.length,
         sortOrder: sortedInfo.columnKey === 'coilNumber' && sortedInfo.order,
     },
     {
@@ -46,8 +46,8 @@ const getFilterData=(list)=>{
         key: 'party.partyName',
         filteredValue: filteredInfo ? filteredInfo["party.partyName"] : null,
         onFilter: (value, record) => record.party.partyName == value,
-        filters: props.inward.inwardList.length > 0 ? [...new Set(props.inward.inwardList.map(item => item.party.partyName))].map(partyName => ({ text: partyName, value: partyName })) : [],
-        sorter: (a, b) => a.party.partyName.length - b.party.partyName.length,
+        filters: props.inward?.wipList?.length > 0 ? [...new Set(props.inward?.wipList?.map(item => item.party.partyName))].map(partyName => ({ text: partyName, value: partyName })) : [],
+        sorter: (a, b) => a.party.partyName?.length - b.party.partyName?.length,
         sortOrder: sortedInfo.columnKey === 'party.partyName' && sortedInfo.order,
     },
     {
@@ -67,8 +67,8 @@ const getFilterData=(list)=>{
         key: 'material.description',
         filteredValue: filteredInfo ? filteredInfo["material.description"] : null,
         onFilter: (value, record) => record.material.description == value,
-        filters: props.inward.inwardList.length > 0 ? [...new Set(props.inward.inwardList.map(item => item.material.description))].map(material => ({ text: material, value: material })) : [],
-        sorter: (a, b) => a.material.description.length - b.material.description.length,
+        filters: props.inward?.wipList?.length > 0 ? [...new Set(props.inward?.wipList.map(item => item?.material?.description))].map(material => ({ text: material, value: material })) : [],
+        sorter: (a, b) => a.material.description?.length - b.material.description?.length,
         sortOrder: sortedInfo.columnKey === 'material.description' && sortedInfo.order,
     },
     {
@@ -76,7 +76,7 @@ const getFilterData=(list)=>{
         dataIndex: 'status.statusName',
         key: 'status.statusName',
         filters:[] ,
-        sorter: (a, b) => a.status.statusName.length - b.status.statusName.length,
+        sorter: (a, b) => a.status.statusName?.length - b.status.statusName?.length,
         sortOrder: sortedInfo.columnKey === 'status.statusName' && sortedInfo.order,
     },
     {
@@ -120,14 +120,14 @@ const getFilterData=(list)=>{
     ];
 
     useEffect(() => {
-        props.fetchInwardList();
+        props.fetchWIPInwardList();
     }, []);
 
     useEffect(() => {
-        if(!props.inward.loading && props.inward.success) {
-            setFilteredInwardList(props.inward.inwardList);
+        if(props.inward.wipSuccess) {
+            setFilteredInwardList(props.inward?.wipList);
         }
-    }, [props.inward.loading, props.inward.success])
+    }, [props.inward.wipSuccess])
 
     useEffect(() => {
         if(totalItems) {
@@ -137,13 +137,13 @@ const getFilterData=(list)=>{
     
     useEffect(() => {
         if (searchValue) {
-            if(searchValue.length >= 3) {
+            if(searchValue?.length >= 3) {
                 setPageNo(1);
-                props.fetchInwardList(1, 15, searchValue)
+                props.fetchWIPInwardList(1, 15, searchValue)
             }
         } else {
             setPageNo(1);
-            props.fetchInwardList(1, 15, searchValue)
+            props.fetchWIPInwardList(1, 15, searchValue)
         }
     }, [searchValue])
 
@@ -165,7 +165,7 @@ const getFilterData=(list)=>{
             <Table rowSelection={[]}
                    className="gx-table-responsive"
                    columns={columns}
-                   dataSource={filteredInwardList.filter(filteredInfo => filteredInfo.status.statusName ==='IN PROGRESS')}
+                   dataSource={filteredInwardList}
                    onChange={handleChange}
                    onRow={(record, index) => {
                     return {
@@ -176,7 +176,7 @@ const getFilterData=(list)=>{
                     pageSize: 15,
                     onChange: page => {
                         setPageNo(page);
-                        props.fetchInwardList(page, 15, searchValue);
+                        props.fetchWIPInwardList(page, 15, searchValue);
                     },
                     current: pageNo,
                     total: totalPageItems
@@ -193,5 +193,5 @@ const mapStateToProps = state => ({
 
 
 export default connect(mapStateToProps, {
-    fetchInwardList
+    fetchWIPInwardList
 })(List);

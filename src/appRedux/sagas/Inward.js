@@ -5,6 +5,7 @@ import moment from "moment";
 import {
     CHECK_COIL_EXISTS,
     FETCH_INWARD_LIST_REQUEST,
+    FETCH_WIP_INWARD_LIST_REQUEST,
     SUBMIT_INWARD_ENTRY,
     FETCH_INWARD_LIST_BY_PARTY_REQUEST,
     FETCH_INWARD_PLAN_DETAILS_REQUESTED,
@@ -31,6 +32,8 @@ import {
 import {
     fetchInwardListError,
     fetchInwardListSuccess,
+    fetchWIPInwardListSuccess,
+    fetchWIPInwardListError,
     submitInwardSuccess,
     submitInwardError,
     checkDuplicateCoilSuccess,
@@ -128,6 +131,53 @@ function* fetchInwardList({ page = 1, pageSize = 15, searchValue = '', partyId =
             yield put(fetchInwardListError('error'));
     } catch (error) {
         yield put(fetchInwardListError(error));
+    }
+}
+
+function* fetchWIPInwardList({ page = 1, pageSize = 15, searchValue = '', partyId = '' }) {
+    try {
+        const fetchWIPInwardList = yield fetch(`${baseUrl}api/inwardEntry/wiplist/${page}/${pageSize}?searchText=${searchValue}&partyId=${partyId}`, {
+            method: 'GET',
+            headers: getHeaders()
+        });
+        if (fetchWIPInwardList.status === 200) {
+            const fetchWIPInwardListResponse = yield fetchWIPInwardList.json();
+            const inwardResponse = [];
+            const { content, totalItems } = fetchWIPInwardListResponse;
+            if (content.length > 0) {
+                content.map((inward) => {
+                    let eachInward = { ...inward };
+                    eachInward.key = inward.coilNumber;
+                    if (inward.instruction.length > 0) {
+                        eachInward.children = inward.instruction;
+                        inward.instruction.map((instruction, index) => {
+                            eachInward.children[index].key = `${inward.coilNumber}-${instruction.instructionId}`;
+                            eachInward.children[index].coilNumber = instruction.instructionId;
+                            eachInward.children[index].party = inward.party;
+                            eachInward.children[index].material = inward.material;
+                            if (instruction.childInstructions && instruction.childInstructions.length > 0) {
+                                eachInward.children[index].children = instruction.childInstructions;
+                                eachInward.children[index].children.map((childInstruction, childIndex) => {
+                                    eachInward.children[index].children[childIndex].key = `${inward.coilNumber}-${instruction.instructionId}-${childInstruction.instructionId}`;
+                                    eachInward.children[index].children[childIndex].coilNumber = childInstruction.instructionId;
+                                    eachInward.children[index].children[childIndex].party = inward.party;
+                                    eachInward.children[index].children[childIndex].material = inward.material;
+                                    eachInward.children[index].children[childIndex].customerBatchId = inward.customerBatchId;
+                                    eachInward.children[index].children[childIndex].fThickness = inward.fThickness;
+                                })
+                            }
+                        })
+                    }
+                    inwardResponse.push(eachInward);
+                });
+            }
+            yield put(fetchWIPInwardListSuccess(inwardResponse, totalItems));
+        } else if (fetchWIPInwardList.status === 401) {
+            yield put(userSignOutSuccess());
+        } else
+            yield put(fetchWIPInwardListError('error'));
+    } catch (error) {
+        yield put(fetchWIPInwardListError(error));
     }
 }
 
@@ -521,8 +571,8 @@ function* postDeliveryConfirmRequest(payload) {
             }
         }
         req_obj = {
-            vehicleNo: payload.payload.vehicleNo,
-            packingRateId: payload.payload.packingRateId,
+            vehicleNo: payload.payload?.vehicleNo,
+            packingRateId: payload.payload?.packingRateId,
             taskType:payload.payload?.taskType?payload.payload?.taskType:"",
             deliveryItemDetails: packetsData
         }
@@ -569,9 +619,10 @@ function* saveUnprocessedDelivery(action) {
     let fetchInwardInstruction
     try {
         if(action?.inwardEntryId?.motherCoilDispatch){
-         fetchInwardInstruction = yield fetch(`${baseUrl}api/instruction/saveFullHandlingDispatch/${action.inwardEntryId?.inwardEntryId}`, {
+         fetchInwardInstruction = yield fetch(`${baseUrl}api/instruction/saveFullHandlingDispatch`, {
             method: 'POST',
-            headers: getHeaders()
+            headers: { "Content-Type": "application/json", ...getHeaders()},
+            body: JSON.stringify(action.inwardEntryId?.inwardEntryId)
         });
     }else{
         fetchInwardInstruction = yield fetch(`${baseUrl}api/instruction/saveUnprocessedForDelivery/${action.inwardEntryId?.inwardEntryId}`, {
@@ -724,6 +775,7 @@ function* getS3PDFUrl(action) {
 
 export function* watchFetchRequests() {
     yield takeLatest(FETCH_INWARD_LIST_REQUEST, fetchInwardList);
+    yield takeLatest(FETCH_WIP_INWARD_LIST_REQUEST, fetchWIPInwardList);
     yield takeLatest(SUBMIT_INWARD_ENTRY, submitInward);
     yield takeLatest(CHECK_COIL_EXISTS, checkCoilDuplicate);
     yield takeLatest( FETCH_INWARD_LIST_BY_ID, fetchPartyListById);
