@@ -1,7 +1,7 @@
 import {all, put, fork, takeLatest} from "redux-saga/effects";
 import { getUserToken } from './common';
-import {SAVE_TEMPLATE_REQUEST} from "../../constants/ActionTypes";
-import {saveTemplateError, saveTemplateSuccess} from "../actions/Quality";
+import {SAVE_TEMPLATE_REQUEST, FETCH_TEMPLATE_LIST} from "../../constants/ActionTypes";
+import {saveTemplateError, saveTemplateSuccess, fetchTemplatesListSuccess, fetchTemplatesListError} from "../actions/Quality";
 import { userSignOutSuccess } from "../../appRedux/actions/Auth";
 import { forEach } from "lodash";
 
@@ -27,7 +27,7 @@ function* saveTemplate(action) {
     try {
         const { formFields, templateId } = action.payload;
         const body = {
-            templateId,
+            templateName: templateId,
             stageDetails: getStageDetails(formFields)
         };
         const addPacking = yield fetch(`${baseUrl}api/quality/template/save`, {
@@ -47,9 +47,27 @@ function* saveTemplate(action) {
     }
 }
 
+function* fetchTemplateList(action) {
+    try {
+        const fetchTemplateList =  yield fetch(`${baseUrl}api/quality/template`, {
+            method: 'GET',
+            headers: getHeaders()
+        });
+        if(fetchTemplateList.status === 200) {
+            const fetchTemplateListResponse = yield fetchTemplateList.json();
+            yield put(fetchTemplatesListSuccess(fetchTemplateListResponse));
+        } else if (fetchTemplateList.status === 401) {
+            yield put(userSignOutSuccess());
+        } else
+            yield put(fetchTemplatesListError('error'));
+    } catch (error) {
+        yield put(fetchTemplatesListError(error));
+    }
+}
 
 export function* watchFetchRequests() {
     yield takeLatest(SAVE_TEMPLATE_REQUEST, saveTemplate);
+    yield takeLatest(FETCH_TEMPLATE_LIST, fetchTemplateList);
 }
 
 export default function* qualitySagas() {
