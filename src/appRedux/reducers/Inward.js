@@ -156,7 +156,8 @@ export default (state = INIT_STATE, action) => {
         case FETCH_WIP_INWARD_LIST_REQUEST: {
             return {
                 ...state,
-                wipLoading: true
+                wipLoading: true,
+                wipSuccess:false
             }
         }
         case FETCH_WIP_INWARD_LIST_SUCCESS: {
@@ -173,6 +174,7 @@ export default (state = INIT_STATE, action) => {
             return {
                 ...state,
                 loading: false,
+                wipSuccess:false,
                 wipList: [],
                 wipError: true
             }
