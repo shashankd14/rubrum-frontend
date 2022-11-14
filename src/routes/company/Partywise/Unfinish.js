@@ -178,8 +178,8 @@ const Unfinish = (props) => {
     const insList = ["Slitting","Cutting","Slit & Cut"];
     return (
         <div className="gx-full-height" style={{ overflowX: "auto", overflowy: "scroll" }}>
-            {cuttingCoil && <CuttingModal showCuttingModal={showCuttingModal} setShowCuttingModal={setShowCuttingModal} coilDetails={cuttingCoil} wip unfinish={props.unfinish} editFinish={props.editFinish} childCoil={childCoil} plannedLength={getPlannedLength} plannedWidth ={getPlannedWidth} plannedWeight={getPlannedWeight} coil={props.inward.plan} slitCut={slitCut} />}
-            {slittingCoil && <SlittingModal showSlittingModal={showSlittingModal} setShowSlittingModal={setShowSlittingModal} wip unfinish={props.unfinish} editFinish={props.editFinish} coilDetails={slittingCoil} childCoil={childCoil} plannedLength={getPlannedLength} plannedWidth ={getPlannedWidth} plannedWeight={getPlannedWeight} coil={props.inward.plan} slitCut={slitCut} setShowCuttingModal={setShowCuttingModal} setCutting={(cuts)=>setCuttingCoil(cuts)}/>}
+            {cuttingCoil && <CuttingModal showCuttingModal={showCuttingModal} setShowCuttingModal={setShowCuttingModal} coilDetails={cuttingCoil} wip unfinish={props?.unfinish} editFinish={props?.editFinish} childCoil={childCoil} plannedLength={getPlannedLength} plannedWidth ={getPlannedWidth} plannedWeight={getPlannedWeight} coil={props.inward.plan} slitCut={slitCut} />}
+            {slittingCoil && <SlittingModal showSlittingModal={showSlittingModal} setShowSlittingModal={setShowSlittingModal} wip unfinish={props?.unfinish} editFinish={props?.editFinish} coilDetails={slittingCoil} childCoil={childCoil} plannedLength={getPlannedLength} plannedWidth ={getPlannedWidth} plannedWeight={getPlannedWeight} coil={props.inward.plan} slitCut={slitCut} setShowCuttingModal={setShowCuttingModal} setCutting={(cuts)=>setCuttingCoil(cuts)}/>}
             <h1><IntlMessages id="partywise.plan.label" /></h1>
             <div className="gx-full-height gx-flex-row">
                 <Col lg={5} md={5} sm={24} xs={24} className="gx-align-self-center">
@@ -205,19 +205,19 @@ const Unfinish = (props) => {
                                 setSlittingCoil(props.inward.plan);
                                 setShowSlittingModal(true)
                                 setChildCoil(false)
-                            }}>{props.unfinish ? 'Unfinish Slitting' : 'edit finish slitting'}</Button>
+                            }}>{props.unfinish ? 'Unfinish Slitting' : 'Edit Finish Slitting'}</Button>
                             <Button onClick={() => {
                                 setCuttingCoil(props.inward.plan);
                                 setSlitCut(false);
                                 setShowCuttingModal(true);
                                 setChildCoil(false)
-                            }}>{props.unfinish ? 'Unfinish Cutting' : 'edit finish cutting'}</Button>
+                            }}>{props.unfinish ? 'Unfinish Cutting' : 'Edit Finish Cutting'}</Button>
                             <Button onClick={() => {
                                 setCuttingCoil(props.inward.plan);
                                 setSlitCut(true);
                                 setShowCuttingModal(true);
                                 setChildCoil(false)
-                            }}>{props.unfinish ? 'Unfinish Cut & Slit' : 'edit finish Cut & Slit'}</Button>
+                            }}>{props.unfinish ? 'Unfinish Slit & Cut' : 'Edit Finish Slit & Cut'}</Button>
                         </div>
                     </Card>
                 </Col>

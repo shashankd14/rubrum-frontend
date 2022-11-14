@@ -1318,11 +1318,12 @@ const CreateSlittingDetailsForm = (props) => {
   };
   const handleOk = (e, name) => {
     e.preventDefault();
-    if (props.wip && props.unfinish) {
+    if (props.wip && (props?.unfinish || props?.editFinish)) {
       const coil = {
         number: props.coil.coilNumber,
         instruction: tableData,
-        unfinish: props.unfinish,
+        unfinish: props?.unfinish,
+        editFinish:props?.editFinish
       };
       props.updateInstruction(coil);
       props.setShowSlittingModal(false);
