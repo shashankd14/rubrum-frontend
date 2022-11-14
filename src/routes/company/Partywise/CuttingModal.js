@@ -1215,11 +1215,12 @@ const CreateCuttingDetailsForm = (props) => {
   };
   const handleOk = (e) => {
     e.preventDefault();
-    if (props.unfinish) {
+    if (props?.unfinish || props?.editFinish) {
       const coil = {
         number: props.coil.coilNumber,
         instruction: tableData,
-        unfinish: props.unfinish,
+        unfinish: props?.unfinish,
+        editFinish: props?.editFinish
       };
       props.updateInstruction(coil);
       props.setShowCuttingModal(false);
