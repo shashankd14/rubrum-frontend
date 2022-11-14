@@ -1,10 +1,11 @@
 {
-  "app.announced": "A new version will be released on December 25th. Stay tuned!", 
+  "app.announced": "A new version will be released on December 25th. Stay tuned!",
   "sidebar.main": "Main",
   "sidebar.dashboard": "Dashboard",
   "sidebar.master": "Master",
   "sidebar.master.material": "Material",
   "sidebar.company.materialList": "Material List",
+  "sidebar.company.qualityList": "Quality Templates",
   "sidebar.company.partyList": "Party List",
   "sidebar.company.ratesList": "Rates List",
   "sidebar.company.tagsList": "Tags List",

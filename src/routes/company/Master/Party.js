@@ -5,7 +5,7 @@ import moment from 'moment';
 import SearchBox from "../../../components/SearchBox";
 
 import IntlMessages from "../../../util/IntlMessages";
-import { fetchPartyList, addParty, fetchPartyListId, updateParty, resetParty, fetchClassificationList,fetchEndUserTagsList } from "../../../appRedux/actions";
+import { fetchPartyList, addParty, fetchPartyListId, updateParty, resetParty, fetchClassificationList,fetchEndUserTagsList, fetchTemplatesList } from "../../../appRedux/actions";
 import { onDeleteContact } from "../../../appRedux/actions";
 
 const FormItem = Form.Item;
@@ -21,7 +21,6 @@ export const formItemLayout = {
         md: {span: 16},
     },
 };
-
 
 const Party = (props) => {
 
@@ -42,7 +41,7 @@ const Party = (props) => {
 
     const { party } = props.party;
     const [tagsList, setTagsList] =useState([{tagId: 1}]);
-    
+
     getFieldDecorator('phoneKeys', {initialValue: [0]});
     getFieldDecorator('addressKeys', {initialValue: [0]});
     getFieldDecorator('emailKeys', {initialValue: [0]});
@@ -149,7 +148,7 @@ const Party = (props) => {
         setTimeout(() => {
             setShowAddParty(true);
         }, 1000);
-                
+
     }
 
     useEffect(() => {
@@ -157,6 +156,7 @@ const Party = (props) => {
             props.fetchPartyList();
             props.fetchClassificationList();
             props.fetchEndUserTagsList();
+            props.fetchTemplatesList()
         }, 1000);
     }, [showAddParty]);
 
@@ -164,7 +164,7 @@ const Party = (props) => {
         const { loading, error, partyList } = props.party;
         if (!loading && !error) {
             setFilteredInwardList(partyList)
-            
+
         }
     }, [props.party]);
 
@@ -262,7 +262,7 @@ const Party = (props) => {
                     width={600}
                     onOk={() => setViewParty(false)}
                     onCancel={() => setViewParty(false)}
-                    
+
                 >
                     <Card className="gx-card">
                         <Row>
@@ -405,9 +405,9 @@ const Party = (props) => {
                                             })(
                                                 <Input id="city" />
                                             )}
-                                            
+
                                         </Form.Item>
-                                        
+
                                         <Form.Item {...formItemLayout} className='address'
                                             label='State'
                                         >
@@ -516,7 +516,27 @@ const Party = (props) => {
                                             })}</Select>
                                         )}
                                     </Form.Item>
-
+                                    <Form.Item label="Quality Templates">
+                                        {getFieldDecorator('qualityTemplates', {
+                                            rules: [{ required: true, message: 'Please enter End UserTags!' }],
+                                        })(
+                                            <Select
+                                             id="qualityTemplates"
+                                             showSearch
+                                             mode="multiple"
+                                             style={{ width: '100%' }}
+                                             filterOption={(input, option) => {
+                                                return option?.props?.children?.toLowerCase().includes(input.toLowerCase());
+                                            }}
+                                            filterSort={(optionA, optionB) =>
+                                                optionA?.props?.children.toLowerCase().localeCompare(optionB?.props?.children.toLowerCase())
+                                            }
+                                             onChange={handleSelectChange}
+                                             >{props?.quality?.data?.map(item => {
+                                                return <Option value={item?.id}>{item.templateName}</Option>
+                                            })}</Select>
+                                        )}
+                                    </Form.Item>
                                 </Form>
                             </Col>
                         </Row>
@@ -530,6 +550,7 @@ const Party = (props) => {
 const mapStateToProps = state => ({
     party: state.party,
     packetClassification: state.packetClassification,
+    quality: state.quality,
 });
 
 const addPartyForm = Form.create({
@@ -605,6 +626,10 @@ const addPartyForm = Form.create({
             endUsertags: Form.createFormField({
                 ...props.party?.party?.endUserTags,
                 value: party?.endUserTags?.map(item=> item.tagId) || [],
+            }),
+            qualityTemplates: Form.createFormField({
+                ...props.party?.party?.templateIdList,
+                value: party?.templateIdList?.map(item=> item.templateId) || [],
             })
         };
     }
@@ -617,5 +642,6 @@ export default connect(mapStateToProps, {
     updateParty,
     resetParty,
     fetchClassificationList,
-    fetchEndUserTagsList
+    fetchEndUserTagsList,
+    fetchTemplatesList
 })(addPartyForm);
