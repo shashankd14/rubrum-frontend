@@ -143,7 +143,7 @@ const Quality = (props) => {
   return (
     <div>
       <h1>
-        <IntlMessages id="sidebar.company.materialList" />
+        <IntlMessages id="sidebar.company.qualityList" />
       </h1>
       <Card>
         <div className="gx-flex-row gx-flex-1">

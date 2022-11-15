@@ -1,11 +1,11 @@
 import {all, put, fork, takeLatest} from "redux-saga/effects";
 import { getUserToken } from './common';
 import { FETCH_PARTY_LIST_REQUEST, ADD_PARTY_REQUEST, FETCH_PARTY_LIST_ID_REQUEST, UPDATE_PARTY_REQUEST } from "../../constants/ActionTypes";
-import {fetchPartyListSuccess, 
-    fetchPartyListError, 
-    addPartySuccess, 
-    addPartyError, 
-    fetchPartyListIdSuccess, 
+import {fetchPartyListSuccess,
+    fetchPartyListError,
+    addPartySuccess,
+    addPartyError,
+    fetchPartyListIdSuccess,
     fetchPartyListIdError,
     updatePartySuccess,
     updatePartyError
@@ -55,12 +55,12 @@ function* fetchPartyListById(action) {
 
 function* addParty(action) {
     try {
-        const { partyName, 
-            partyNickname, 
+        const { partyName,
+            partyNickname,
             contactName,
-            contactNumber, 
-            gstNumber, 
-            panNumber, 
+            contactNumber,
+            gstNumber,
+            panNumber,
             tanNumber,
             email,
             addressKeys,
@@ -68,7 +68,8 @@ function* addParty(action) {
             city,
             state,
             pincode,
-            phone,tags,endUsertags
+            phone,tags,endUsertags,
+            qualityTemplates
         } = action.party;
 
         const getEmail = (mail) => {
@@ -105,6 +106,10 @@ function* addParty(action) {
         const getEndUserTags=()=>{
             return endUsertags.map(tagId => ({tagId}))
         }
+        const qualityTemplateIds =()=>{
+            return qualityTemplates.map(templateId => ({templateId
+            }))
+        }
         const reqBody = {
             partyName,
             partyNickname,
@@ -116,14 +121,15 @@ function* addParty(action) {
             tags:getTags(),
             ...getEmail(email),
             ...getAddress(addressKeys),
-            ...getPhone(phone), 
+            ...getPhone(phone),
             endUserTags: getEndUserTags(),
+            templateIdList: qualityTemplateIds()
         }
         const addParty = yield fetch(`${baseUrl}api/party/save`, {
             method: 'POST',
             headers: { "Content-Type": "application/json", ...getHeaders() },
             body:JSON.stringify(reqBody)
-            
+
         });
         if (addParty.status == 200) {
             yield put(addPartySuccess());
@@ -139,13 +145,13 @@ function* addParty(action) {
 function* updateParty(action) {
     try {
         const {
-            values: { 
-                partyName, 
-                partyNickname, 
+            values: {
+                partyName,
+                partyNickname,
                 contactName,
-                contactNumber, 
-                gstNumber, 
-                panNumber, 
+                contactNumber,
+                gstNumber,
+                panNumber,
                 tanNumber,
                 email,
                 addressKeys,
@@ -155,7 +161,8 @@ function* updateParty(action) {
                 pincode,
                 phone,
                 tags,
-                endUsertags
+                endUsertags,
+                qualityTemplates
             },
             id
         } = action.party;
@@ -194,6 +201,10 @@ function* updateParty(action) {
         const getEndUserTags=()=>{
             return endUsertags.map(tagId => ({tagId}))
         }
+        const qualityTemplateIds =()=>{
+            return qualityTemplates.map(templateId => ({templateId
+            }))
+        }
 
         const reqBody = {
             nPartyId: id,
@@ -208,13 +219,14 @@ function* updateParty(action) {
             endUserTags:getEndUserTags(),
             ...getEmail(email),
             ...getAddress(addressKeys),
-            ...getPhone(phone)
+            ...getPhone(phone),
+            templateIdList: qualityTemplateIds()
         }
         const updateParty = yield fetch(`${baseUrl}api/party/update`, {
             method: 'PUT',
             headers: { "Content-Type": "application/json", ...getHeaders() },
             body:JSON.stringify(reqBody)
-            
+
         });
         if (updateParty.status == 200) {
             yield put(updatePartySuccess());

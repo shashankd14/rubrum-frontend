@@ -8,7 +8,7 @@ import {
     FETCH_TEMPLATE_LIST_SUCCESS,
     FETCH_TEMPLATE_LIST_ERROR
   } from "constants/ActionTypes";
-  
+
 
   export const fetchTemplatesList  = () => ({
     type: FETCH_TEMPLATE_LIST,
@@ -23,7 +23,6 @@ export const fetchTemplatesListError = (error) => ({
   type: FETCH_TEMPLATE_LIST_ERROR,
   error
 });
-
 
   export const createFormFields = (fieldsObj, formName) => {
     return {
