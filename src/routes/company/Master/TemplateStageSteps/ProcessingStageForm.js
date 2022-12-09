@@ -24,6 +24,7 @@ export const formItemLayout = {
 };
 
 const ProcessingStageForm = (props) => {
+    const [template, setTemplate] = React.useState('');
 
     const [slitFields, setSlitFields] = React.useState(props.slitFields || []);
     const [cutFields, setCutFields] = React.useState(props.cutFields || []);
@@ -45,6 +46,13 @@ const ProcessingStageForm = (props) => {
    return (
     <>
         <Col span={18} className="login-form gx-pt-4">
+            <div style={{ margin: "20px", textAlign: "center" }}>
+                <label>Template Name : </label>
+                <input id="template" type='text' placeholder="Template Name" onChange={(e) => {
+                    e.preventDefault();
+                    setTemplate(e.target.value);
+                }} className="ant-input" style={{ width: '35%', marginLeft: '10px', textAlign: "center" }} />
+            </div>
             <div style={{ display: "flex", flexDirection: "row" }}>
                 <div style={{ width: "50%" }}>
                  <CreateForm formFields={props.slitFields} setFields={setSlitFields} btnName="Slit Parameters" />

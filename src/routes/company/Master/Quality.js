@@ -12,6 +12,8 @@ import {
   Input,
   Icon,
   Tabs,
+  Dropdown,
+    Menu
 } from "antd";
 import moment from "moment";
 import SearchBox from "../../../components/SearchBox";
@@ -43,11 +45,28 @@ const formItemLayoutWithOutLabel = {
   },
 };
 
+const routeQualityTemplate = (processStep, history) => {
+  history.push({
+    pathname: '/company/master/quality/createTemplate',
+    state: { stepId: processStep }
+  });
+}
+
 const Quality = (props) => {
   const [sortedInfo, setSortedInfo] = useState({
     order: "descend",
     columnKey: "age",
   });
+
+  const menu = (
+      <Menu onClick={(e) => routeQualityTemplate(e.key, props.history)}>
+        <Menu.Item key="1">Inward</Menu.Item>
+        <Menu.Item key="2">Pre Processing</Menu.Item>
+        <Menu.Item key="3">Processing</Menu.Item>
+        <Menu.Item key="4">Pre Dispatch</Menu.Item>
+        <Menu.Item key="5">Post Dispatch</Menu.Item>
+      </Menu>
+  );
 
   const [filteredTemplateList, setFilteredTemplateList] = useState(
     props.quality?.data || []
@@ -153,23 +172,16 @@ const Quality = (props) => {
                     </div> */}
           <div className="gx-flex-row gx-w-50">
             <SearchBox
-              styleName="gx-flex-1"
+              styleName="gx-flex-1 gx-mr-3"
               placeholder="Search template"
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
             />
-            <Button
-              type="primary"
-              icon={() => <i className="icon icon-add" />}
-              size="medium"
-              onClick={() => {
-                // setshowCreateTemplate(true);
-                // history.push(`${pathname}/createTemplate`);
-                props.history.push("/company/master/quality/createTemplate");
-              }}
-            >
-              Create Template
-            </Button>
+            <Dropdown onClick={() => menu} overlay={menu}>
+              <Button>
+                Create Template <Icon type="down"/>
+              </Button>
+            </Dropdown>
           </div>
         </div>
         <Table

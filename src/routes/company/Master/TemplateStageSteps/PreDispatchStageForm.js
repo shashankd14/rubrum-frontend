@@ -24,6 +24,7 @@ export const formItemLayout = {
 };
 
 const PreDispatchStageForm = (props) => {
+    const [template, setTemplate] = React.useState('');
 
     const [fields, setFields] = React.useState(props.formFields || []);
     const dispatch = useDispatch();
@@ -37,6 +38,13 @@ const PreDispatchStageForm = (props) => {
    return (
     <>
         <Col span={18} className="login-form gx-pt-4">
+            <div style={{ margin: "20px", textAlign: "center" }}>
+                <label>Template Name : </label>
+                <input id="template" type='text' placeholder="Template Name" onChange={(e) => {
+                    e.preventDefault();
+                    setTemplate(e.target.value);
+                }} className="ant-input" style={{ width: '35%', marginLeft: '10px', textAlign: "center" }} />
+            </div>
             <CreateForm formFields={props.formFields} setFields={setFields} />
             <Card style={{ minHeight: "40vh" }} className="gx-card">
                 <Row>

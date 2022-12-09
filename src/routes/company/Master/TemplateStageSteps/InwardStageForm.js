@@ -120,7 +120,7 @@ const InwardStageForm = (props) => {
                 dispatch(setTemplateName(template));
                 props.updateStep(1);
             }}>
-                Forward<Icon type="right"/>
+                Save<Icon type="right"/>
             </Button>
         </Col>
     </>
