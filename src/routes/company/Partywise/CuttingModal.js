@@ -923,7 +923,9 @@ const CreateCuttingDetailsForm = (props) => {
         return item;
       });
       setTableData(actualUpdate);
-    } else if (props.wip) {
+    } else if(props.editFinish){
+      setTableData(cuts)
+    }else if (props.wip) {
       let actualUpdate = cuts.map((item) => {
         if (!item.actualNoOfPieces && item.actualNoOfPieces !== 0)
           item.actualNoOfPieces = item.plannedNoOfPieces;
@@ -1620,7 +1622,7 @@ const CreateCuttingDetailsForm = (props) => {
               )
             ) : (
               <>
-                {props?.wip  && (
+                {props?.wip && !props.editFinish && !props.unfinish && (
                   <Row>
                     <Button type="primary" onClick={addRow}>
                       Add Row

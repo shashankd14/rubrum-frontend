@@ -185,7 +185,9 @@ const SlittingWidths = (props) => {
         return item;
       });
       props.setTableData(actualUpdate);
-    } else if (props.wip) {
+    } else if(props.editFinish){
+      props.setTableData(props.cuts)
+    }else if (props.wip) {
       let actualUpdate = props.cuts.map((item) => {
         if (!item.actualLength && item.actualLength !== 0)
           item.actualLength = item.plannedLength;
@@ -210,7 +212,7 @@ const SlittingWidths = (props) => {
             )
           : 0;
       props.totalActualweight(actualTotalWeight);
-    }
+    } 
   }, [props.cuts]);
 
   useEffect(() => {
@@ -1460,7 +1462,7 @@ const CreateSlittingDetailsForm = (props) => {
       onCancel={handleCancel}
       footer={
         props.slitCut
-          ? slittingDetail.length === cuts.length
+          ? slittingDetail.length === cuts.length && !props.wip
             ? [
                 <Button key="back" onClick={handleCancel}>
                   Cancel
@@ -1546,11 +1548,11 @@ const CreateSlittingDetailsForm = (props) => {
         <TabPane tab="Slitting Instruction" key="1">
           {props.wip ? (
             <Row>
-                <Col lg={24} md={24} sm={24} xs={24}>
+                {!props.unfinish &&!props.editFinish &&<><Col lg={24} md={24} sm={24} xs={24}>
                   <Button type="primary" onClick={addRow}>
                     Add Row
                   </Button>
-                </Col>
+                </Col></>}
               <Form {...formItemLayout} className="login-form gx-pt-4">
                 <Form.Item>
                   <SlittingWidthsForm
