@@ -103,6 +103,7 @@ const CreateCuttingDetailsForm = (props) => {
   const [endUserTagList, setEndUserTagList] = useState([]);
   const [tagsList, setTagsList] = useState([]);
   const [packetClassification, setPacketClassification]=useState([])
+  const [editedRecordState,setEditedRecordState]=useState([])
   const [tableData, setTableData] = useState(
     props.wip
       ? props.childCoil
@@ -135,7 +136,7 @@ const CreateCuttingDetailsForm = (props) => {
         ) : (
           <Input
             value={record?.plannedLength}
-            onChange={onInputChange("plannedLength", index)}
+            onChange={onInputChange("plannedLength", index, record)}
           />
         ),
     },
@@ -146,7 +147,7 @@ const CreateCuttingDetailsForm = (props) => {
         <Input
           disabled={props.unfinish}
           value={record.actualLength}
-          onChange={onInputChange("actualLength", index)}
+          onChange={onInputChange("actualLength", index, record)}
         />
       ),
     },
@@ -170,7 +171,7 @@ const CreateCuttingDetailsForm = (props) => {
         <Input
           disabled={props.unfinish}
           value={record.actualNoOfPieces}
-          onChange={onInputChange("actualNoOfPieces", index)}
+          onChange={onInputChange("actualNoOfPieces", index, record)}
         />
       ),
     },
@@ -186,7 +187,7 @@ const CreateCuttingDetailsForm = (props) => {
         <Input
           disabled={props.unfinish}
           value={record.actualWeight}
-          onChange={onInputChange("actualWeight", index)}
+          onChange={onInputChange("actualWeight", index, record)}
           onBlur={() => {
             let actualTotalWeight = cuts.map((i) => i.actualWeight);
             actualTotalWeight = actualTotalWeight.filter(
@@ -216,7 +217,7 @@ const CreateCuttingDetailsForm = (props) => {
               record?.packetClassification?.classificationId ||
               record?.packetClassification?.tagId
             }
-            onChange={onInputChange("packetClassification", index, "select")}
+            onChange={onInputChange("packetClassification", index,record, "select")}
           >
             {packetClassification?.map((item) => {
               return <Option value={item.tagId}>{item.tagName}</Option>;
@@ -247,7 +248,7 @@ const CreateCuttingDetailsForm = (props) => {
                 .localeCompare(optionB?.props?.children.toLowerCase())
             }
             value={record?.endUserTagsentity?.tagId}
-            onChange={onInputChange("endUserTagsentity", index, "select")}
+            onChange={onInputChange("endUserTagsentity", index,record, "select")}
           >
             {props?.coilDetails.party?.endUserTags?.map((item) => {
               return <Option value={item.tagId}>{item.tagName}</Option>;
@@ -1019,7 +1020,10 @@ processTags=[...processTags,...props?.processTags]
 setPacketClassification(processTags)
   },[props.processTags])
   const onInputChange =
-    (key, index, type) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    (key, index, record,type) => (e: React.ChangeEvent<HTMLInputElement>) => {
+      let editedRecord =[];
+      editedRecord.push(record);
+      editedRecord= [...new Set([...editedRecordState,...editedRecord])]
       const newData = [...tableData];
       const newIndex = (page - 1) * 10 + index;
       newData[newIndex][key] =
@@ -1221,7 +1225,7 @@ setPacketClassification(processTags)
   };
   const handleOk = (e) => {
     e.preventDefault();
-    if (props?.unfinish || props?.editFinish) {
+    if (props?.unfinish) {
       const coil = {
         number: props.coil.coilNumber,
         instruction: tableData,
@@ -1230,7 +1234,17 @@ setPacketClassification(processTags)
       };
       props.updateInstruction(coil);
       props.setShowCuttingModal(false);
-    } else if (props.wip) {
+    } else if(props?.editFinish){
+      const instructionList = tableData.filter(item =>editedRecordState.some(record=> record.instructionId === item.instructionId))
+      const coil = {
+        number: props.coil.coilNumber,
+        instruction: instructionList,
+        unfinish: props?.unfinish,
+        editFinish: props?.editFinish
+      };
+      props.updateInstruction(coil);
+      props.setShowSlittingModal(false);
+    }else if (props.wip) {
       const isAllWip = tableData.every(
         (item) => item.packetClassification.tagId === 0
       );
@@ -1243,9 +1257,10 @@ setPacketClassification(processTags)
           "Actual Weight is greater than Total weight, Please modify actual weight!"
         );
       } else {
+        const instructionList = tableData.filter(item => item.packetClassification.tagId !== 0 || item.packetClassification.classificationId !==0)
         const coil = {
           number: props.coil.coilNumber,
-          instruction: tableData,
+          instruction: instructionList,
         };
         props.updateInstruction(coil);
         props.setShowCuttingModal();
