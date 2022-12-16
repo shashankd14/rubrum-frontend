@@ -180,7 +180,7 @@ const SlittingWidths = (props) => {
         item.actualWeight = 0;
         if (item.packetClassification?.tagId)
           item.packetClassification = {
-            tagId: 6,
+            tagId: 0,
           };
         return item;
       });
@@ -197,7 +197,7 @@ const SlittingWidths = (props) => {
           item.actualWeight = item.plannedWeight;
         if (!item.packetClassification?.tagId)
           item.packetClassification = {
-            tagId: item.plannedWidth < 20 ? 2 : 6,
+            tagId: item.plannedWidth < 20 ? 2 : 0,
           };
         return item;
       });
@@ -877,7 +877,7 @@ const CreateSlittingDetailsForm = (props) => {
             }
             onChange={onInputChange("packetClassification", index, "select")}
           >
-            {props.processTags?.map((item) => {
+            {packetClassification?.map((item) => {
               return <Option value={item.tagId}>{item.tagName}</Option>;
             })}
           </Select>
@@ -1071,6 +1071,7 @@ const CreateSlittingDetailsForm = (props) => {
   const [deleteRecord, setDeleteRecord] = useState({});
   const [panelList, setPanelList] = useState([]);
   const [tagsName, setTagsName] = useState();
+  const [packetClassification, setPacketClassification]=useState([])
   const onDelete = ({ record, key, e }) => {
     e.preventDefault();
 
@@ -1244,7 +1245,11 @@ const CreateSlittingDetailsForm = (props) => {
       }
       setTableData(newData);
     };
-
+    useEffect(()=>{
+      let processTags = [{tagId:0,tagName:"Select"}];
+      processTags=[...processTags,...props?.processTags]
+      setPacketClassification(processTags)
+        },[props.processTags])
   useEffect(() => {
     if (props.slitCut) {
       if (props.inward.instructionSaveSlittingLoading && !props.wip) {
@@ -1320,7 +1325,7 @@ const CreateSlittingDetailsForm = (props) => {
   };
   const handleOk = (e, name) => {
     e.preventDefault();
-    if (props.wip && (props?.unfinish || props?.editFinish)) {
+    if ((props?.unfinish || props?.editFinish)) {
       const coil = {
         number: props.coil.coilNumber,
         instruction: tableData,
@@ -1332,11 +1337,11 @@ const CreateSlittingDetailsForm = (props) => {
     } else if (props.wip) {
       //
       const isAllWip = tableData.every(
-        (item) => item.packetClassification.tagId === 6
+        (item) => item.packetClassification.tagId === 0 || item.packetClassification.classificationId ===0
       );
       if (isAllWip) {
         message.error(
-          "Unable to finish Instructions. All packets are classified as WIP"
+          "Unable to finish Instructions. Please select the classification"
         );
       } else if (totalActualweight > tweight) {
         message.error(

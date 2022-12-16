@@ -102,6 +102,7 @@ const CreateCuttingDetailsForm = (props) => {
   const [tagsName, setTagsName] = useState("");
   const [endUserTagList, setEndUserTagList] = useState([]);
   const [tagsList, setTagsList] = useState([]);
+  const [packetClassification, setPacketClassification]=useState([])
   const [tableData, setTableData] = useState(
     props.wip
       ? props.childCoil
@@ -217,7 +218,7 @@ const CreateCuttingDetailsForm = (props) => {
             }
             onChange={onInputChange("packetClassification", index, "select")}
           >
-            {props.processTags?.map((item) => {
+            {packetClassification?.map((item) => {
               return <Option value={item.tagId}>{item.tagName}</Option>;
             })}
           </Select>
@@ -684,9 +685,7 @@ const CreateCuttingDetailsForm = (props) => {
       no: no,
     });
   };
-  const handleModeChange = (e) => {
-    setMode(e.target.value);
-  };
+ 
   const handleSubmit = (e) => {
     e.preventDefault();
     let instructionRequestDTOs = [];
@@ -918,7 +917,7 @@ const CreateCuttingDetailsForm = (props) => {
         item.actualWidth = 0;
         if (item.packetClassification?.tagId)
           item.packetClassification = {
-            tagId: 6,
+            tagId: 0,
           };
         return item;
       });
@@ -937,7 +936,7 @@ const CreateCuttingDetailsForm = (props) => {
           item.actualWidth = item.plannedWidth;
         if (!item.packetClassification?.tagId)
           item.packetClassification = {
-            tagId: 6,
+            tagId: 0,
           };
         return item;
       });
@@ -1014,6 +1013,11 @@ const CreateCuttingDetailsForm = (props) => {
       listItem.length > 0 ? [...listItem].flat() : [...listItem]
     );
   }, [props.inward.groupId]);
+  useEffect(()=>{
+let processTags = [{tagId:0,tagName:"Select"}];
+processTags=[...processTags,...props?.processTags]
+setPacketClassification(processTags)
+  },[props.processTags])
   const onInputChange =
     (key, index, type) => (e: React.ChangeEvent<HTMLInputElement>) => {
       const newData = [...tableData];
@@ -1228,11 +1232,11 @@ const CreateCuttingDetailsForm = (props) => {
       props.setShowCuttingModal(false);
     } else if (props.wip) {
       const isAllWip = tableData.every(
-        (item) => item.packetClassification.tagId === 6
+        (item) => item.packetClassification.tagId === 0
       );
       if (isAllWip) {
         message.error(
-          "Unable to finish Instructions. All packets are classified as WIP"
+          "Unable to finish Instructions. Please select the classification"
         );
       } else if (totalActualweight > tweight) {
         message.error(
