@@ -1460,7 +1460,7 @@ const CreateSlittingDetailsForm = (props) => {
   };
   return (
     <Modal
-      title={props.wip ? "Finish Slitting Instruction" : "Slitting Instruction"}
+      title={ props?.unfinish? "UnFinish Slitting Instruction":props?.editFinish ? "Edit Finish Slitting Instruction":props.wip ?"Finish Slitting Instruction" : "Slitting Instruction"}
       visible={props.showSlittingModal}
       onOk={handleOk}
       width={1020}

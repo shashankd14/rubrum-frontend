@@ -1358,8 +1358,8 @@ setPacketClassification(processTags)
       title={
         props.wip
           ? props.slitCut
-            ? "Finish slit & cut Instruction"
-            : "Finish Cutting Instruction"
+            ? props.editFinish?"Edit Finish slit & cut Instruction":props.unfinish?"UnFinish slit & cut Instruction":"Finish slit & cut Instruction"
+            : props.editFinish?"Edit Finish Cutting Instruction":props.unfinish?"UnFinish Cutting Instruction":"Finish Cutting Instruction"
           : "Cutting Instruction"
       }
       visible={props.showCuttingModal}
