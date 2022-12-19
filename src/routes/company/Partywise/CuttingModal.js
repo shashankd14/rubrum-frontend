@@ -992,8 +992,11 @@ const CreateCuttingDetailsForm = (props) => {
       }
     } else {
       setTimeout(() => {
-        props.setShowCuttingModal(false);
-        props.resetInstruction();
+        message.success("Cutting Instruction Saved",2).then(()=>{
+          props.setShowCuttingModal(false);
+          props.resetInstruction();
+        })
+       
       }, 1000);
     }
   }, [props.inward.instructionSaveCuttingSuccess]);
@@ -1024,6 +1027,7 @@ setPacketClassification(processTags)
       let editedRecord =[];
       editedRecord.push(record);
       editedRecord= [...new Set([...editedRecordState,...editedRecord])]
+      setEditedRecordState(editedRecord)
       const newData = [...tableData];
       const newIndex = (page - 1) * 10 + index;
       newData[newIndex][key] =
@@ -1313,44 +1317,56 @@ setPacketClassification(processTags)
   };
   const handleWeight = (e, record) => {
     e.preventDefault();
-    const instructionPayload = [
-      {
-        partDetailsRequest: {
-          targetWeight: "0",
-          length: "0",
-          createdBy: "1",
-          updatedBy: "1",
-          deleteUniqId: 0,
-        },
-        instructionRequestDTOs: [
-          {
-            processId: 1,
-            instructionDate: "2022-04-28 21:04:49",
-            plannedLength: record?.plannedLength,
-            actualLength: record?.actualLength,
-            actualNoOfPieces: record?.actualNoOfPieces,
-            actualWeight: record?.actualWeight,
-            plannedNoOfPieces: record?.plannedWidth,
-            isSlitAndCut: false,
-            plannedNoOfPieces: "1",
-            status: 1,
+     if((Number(record.plannedWeight)+totalActualweight) >tweight ||(Number(record.actualWeight)+totalActualweight)>tweight){
+      message.error("Error! Please adjust the weight")
+    }else{
+      const instructionList = tableData.slice(0,tableData.length-1).filter(item =>editedRecordState.some(record=> record !== undefined && record.instructionId === item.instructionId))
+   
+      let instructionPayload = [
+        {
+          partDetailsRequest: {
+            targetWeight: "0",
+            length: "0",
             createdBy: "1",
             updatedBy: "1",
-            groupId: null,
-            plannedWeight: props?.coilDetails?.scrapWeight === null ? 0: props?.coilDetails?.scrapWeight,
-            inwardId: props?.coilDetails?.inwardEntryId,
-            parentInstructionId: "",
-            endUserTagId: record?.endUserTagsentity?.tagId,
             deleteUniqId: 0,
-            isScrapWeightUsed:true,
-            packetClassificationId:
-              record?.packetClassification?.tagId ||
-              record?.packetClassification?.classificationId,
           },
-        ],
-      },
-    ];
-    props.saveCuttingInstruction(instructionPayload);
+          instructionRequestDTOs: [
+            {
+              processId: 1,
+              instructionDate: "2022-04-28 21:04:49",
+              plannedLength: record?.plannedLength,
+              actualLength: record?.actualLength,
+              actualNoOfPieces: record?.actualNoOfPieces,
+              actualWeight: record?.actualWeight,
+              plannedNoOfPieces: record?.plannedWidth,
+              isSlitAndCut: false,
+              plannedNoOfPieces: "1",
+              status: 1,
+              createdBy: "1",
+              updatedBy: "1",
+              groupId: null,
+              plannedWeight: props?.coilDetails?.scrapWeight === null ? 0: props?.coilDetails?.scrapWeight,
+              inwardId: props?.coilDetails?.inwardEntryId,
+              parentInstructionId: "",
+              endUserTagId: record?.endUserTagsentity?.tagId,
+              deleteUniqId: 0,
+              isScrapWeightUsed:true,
+              packetClassificationId:
+                record?.packetClassification?.tagId ||
+                record?.packetClassification?.classificationId,
+            },
+          ],
+        },
+      ];
+      props.saveCuttingInstruction(instructionPayload);
+      const coil = {
+        number: props.coil.coilNumber,
+        instruction: instructionList,
+      };
+      props.updateInstruction(coil)
+    }
+   
   };
   const addRow = () => {
     const newData = {
