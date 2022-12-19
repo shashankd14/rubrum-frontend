@@ -463,8 +463,8 @@ const SlittingWidths = (props) => {
     let weight = props.coilDetails?.fQuantity
       ? props.coilDetails.fQuantity
       : props.plannedWeight(props.coilDetails);
-    let length = props.coilDetails?.fLength
-      ? props.coilDetails.fLength
+    let length = props.coilDetails?.availableLength
+      ? props.coilDetails.availableLength
       : props.plannedLength(props.coilDetails);
     settargetWeight(e.target.value);
     setavailLength((length * (e.target.value / weight)).toFixed(0));
@@ -473,8 +473,8 @@ const SlittingWidths = (props) => {
     let weight = props.coilDetails?.fQuantity
       ? props.coilDetails.fQuantity
       : props.plannedWeight(props.coilDetails);
-    let length = props.coilDetails?.fLength
-      ? props.coilDetails.fLength
+    let length = props.coilDetails?.availableLength
+      ? props.coilDetails.availableLength
       : props.plannedLength(props.coilDetails);
 
     settargetWeight(weightValue / equalParts);
