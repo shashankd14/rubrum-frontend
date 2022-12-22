@@ -102,6 +102,8 @@ const CreateCuttingDetailsForm = (props) => {
   const [tagsName, setTagsName] = useState("");
   const [endUserTagList, setEndUserTagList] = useState([]);
   const [tagsList, setTagsList] = useState([]);
+  const [packetClassification, setPacketClassification] = useState([]);
+  const [editedRecordState, setEditedRecordState] = useState([]);
   const [tableData, setTableData] = useState(
     props.wip
       ? props.childCoil
@@ -134,7 +136,7 @@ const CreateCuttingDetailsForm = (props) => {
         ) : (
           <Input
             value={record?.plannedLength}
-            onChange={onInputChange("plannedLength", index)}
+            onChange={onInputChange("plannedLength", index, record)}
           />
         ),
     },
@@ -145,7 +147,7 @@ const CreateCuttingDetailsForm = (props) => {
         <Input
           disabled={props.unfinish}
           value={record.actualLength}
-          onChange={onInputChange("actualLength", index)}
+          onChange={onInputChange("actualLength", index, record)}
         />
       ),
     },
@@ -169,7 +171,7 @@ const CreateCuttingDetailsForm = (props) => {
         <Input
           disabled={props.unfinish}
           value={record.actualNoOfPieces}
-          onChange={onInputChange("actualNoOfPieces", index)}
+          onChange={onInputChange("actualNoOfPieces", index, record)}
         />
       ),
     },
@@ -185,7 +187,7 @@ const CreateCuttingDetailsForm = (props) => {
         <Input
           disabled={props.unfinish}
           value={record.actualWeight}
-          onChange={onInputChange("actualWeight", index)}
+          onChange={onInputChange("actualWeight", index, record)}
           onBlur={() => {
             let actualTotalWeight = cuts.map((i) => i.actualWeight);
             actualTotalWeight = actualTotalWeight.filter(
@@ -215,9 +217,14 @@ const CreateCuttingDetailsForm = (props) => {
               record?.packetClassification?.classificationId ||
               record?.packetClassification?.tagId
             }
-            onChange={onInputChange("packetClassification", index, "select")}
+            onChange={onInputChange(
+              "packetClassification",
+              index,
+              record,
+              "select"
+            )}
           >
-            {props.processTags?.map((item) => {
+            {packetClassification?.map((item) => {
               return <Option value={item.tagId}>{item.tagName}</Option>;
             })}
           </Select>
@@ -246,7 +253,12 @@ const CreateCuttingDetailsForm = (props) => {
                 .localeCompare(optionB?.props?.children.toLowerCase())
             }
             value={record?.endUserTagsentity?.tagId}
-            onChange={onInputChange("endUserTagsentity", index, "select")}
+            onChange={onInputChange(
+              "endUserTagsentity",
+              index,
+              record,
+              "select"
+            )}
           >
             {props?.coilDetails.party?.endUserTags?.map((item) => {
               return <Option value={item.tagId}>{item.tagName}</Option>;
@@ -684,9 +696,7 @@ const CreateCuttingDetailsForm = (props) => {
       no: no,
     });
   };
-  const handleModeChange = (e) => {
-    setMode(e.target.value);
-  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     let instructionRequestDTOs = [];
@@ -739,7 +749,7 @@ const CreateCuttingDetailsForm = (props) => {
             deleteUniqId: unsavedDeleteId,
             packetClassificationId: null,
             endUserTagId: null,
-            isScrapWeightUsed:false,
+            isScrapWeightUsed: false,
           });
           setcurrentWeight(remainWeight);
           setlength(
@@ -918,11 +928,13 @@ const CreateCuttingDetailsForm = (props) => {
         item.actualWidth = 0;
         if (item.packetClassification?.tagId)
           item.packetClassification = {
-            tagId: 6,
+            tagId: 0,
           };
         return item;
       });
       setTableData(actualUpdate);
+    } else if (props.editFinish) {
+      setTableData(cuts);
     } else if (props.wip) {
       let actualUpdate = cuts.map((item) => {
         if (!item.actualNoOfPieces && item.actualNoOfPieces !== 0)
@@ -935,7 +947,7 @@ const CreateCuttingDetailsForm = (props) => {
           item.actualWidth = item.plannedWidth;
         if (!item.packetClassification?.tagId)
           item.packetClassification = {
-            tagId: 6,
+            tagId: 0,
           };
         return item;
       });
@@ -990,12 +1002,22 @@ const CreateCuttingDetailsForm = (props) => {
       }
     } else {
       setTimeout(() => {
-        props.setShowCuttingModal(false);
-        props.resetInstruction();
+        message.success("Cutting Instruction Saved", 2).then(() => {
+          props.setShowCuttingModal(false);
+          props.resetInstruction();
+        });
       }, 1000);
     }
   }, [props.inward.instructionSaveCuttingSuccess]);
-
+ useEffect(() => {
+   if(props?.inward?.instructionUpdateSuccess){
+    message
+        .success("Successfully Updated!", 2)
+        .then(() => {
+          props.resetInstruction();
+        });
+   }
+  }, [props?.inward?.instructionUpdateSuccess]);
   useEffect(() => {
     let listItem = bundleItemList.length > 0 ? bundleItemList : [];
     if (listItem.length === 0 && Object.keys(props.inward.groupId).length > 0) {
@@ -1012,8 +1034,17 @@ const CreateCuttingDetailsForm = (props) => {
       listItem.length > 0 ? [...listItem].flat() : [...listItem]
     );
   }, [props.inward.groupId]);
+  useEffect(() => {
+    let processTags = [{ tagId: 0, tagName: "Select" }];
+    processTags = [...processTags, ...props?.processTags];
+    setPacketClassification(processTags);
+  }, [props.processTags]);
   const onInputChange =
-    (key, index, type) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    (key, index, record, type) => (e: React.ChangeEvent<HTMLInputElement>) => {
+      let editedRecord = [];
+      editedRecord.push(record);
+      editedRecord = [...new Set([...editedRecordState, ...editedRecord])];
+      setEditedRecordState(editedRecord);
       const newData = [...tableData];
       const newIndex = (page - 1) * 10 + index;
       newData[newIndex][key] =
@@ -1126,7 +1157,7 @@ const CreateCuttingDetailsForm = (props) => {
         groupId: props.inward.groupId.groupId,
         deleteUniqId: unsavedDeleteId,
         index: idx,
-        isScrapWeightUsed:false,
+        isScrapWeightUsed: false,
       };
       cutsValue.push(cutObj);
     }
@@ -1215,7 +1246,7 @@ const CreateCuttingDetailsForm = (props) => {
   };
   const handleOk = (e) => {
     e.preventDefault();
-    if (props?.unfinish || props?.editFinish) {
+    if (props?.unfinish) {
       const coil = {
         number: props.coil.coilNumber,
         instruction: tableData,
@@ -1224,22 +1255,41 @@ const CreateCuttingDetailsForm = (props) => {
       };
       props.updateInstruction(coil);
       props.setShowCuttingModal(false);
+    } else if (props?.editFinish) {
+      const instructionList = tableData.filter((item) =>
+        editedRecordState.some(
+          (record) => record.instructionId === item.instructionId
+        )
+      );
+      const coil = {
+        number: props.coil.coilNumber,
+        instruction: instructionList,
+        unfinish: props?.unfinish,
+        editFinish: props?.editFinish,
+      };
+      props.updateInstruction(coil);
+      props.setShowSlittingModal(false);
     } else if (props.wip) {
       const isAllWip = tableData.every(
-        (item) => item.packetClassification.tagId === 6
+        (item) => item.packetClassification.tagId === 0
       );
       if (isAllWip) {
         message.error(
-          "Unable to finish Instructions. All packets are classified as WIP"
+          "Unable to finish Instructions. Please select the classification"
         );
       } else if (totalActualweight > tweight) {
         message.error(
           "Actual Weight is greater than Total weight, Please modify actual weight!"
         );
       } else {
+        const instructionList = tableData.filter(
+          (item) =>
+            item.packetClassification.tagId !== 0 ||
+            item.packetClassification.classificationId !== 0
+        );
         const coil = {
           number: props.coil.coilNumber,
-          instruction: tableData,
+          instruction: instructionList,
         };
         props.updateInstruction(coil);
         props.setShowCuttingModal();
@@ -1292,44 +1342,69 @@ const CreateCuttingDetailsForm = (props) => {
   };
   const handleWeight = (e, record) => {
     e.preventDefault();
-    const instructionPayload = [
-      {
-        partDetailsRequest: {
-          targetWeight: "0",
-          length: "0",
-          createdBy: "1",
-          updatedBy: "1",
-          deleteUniqId: 0,
-        },
-        instructionRequestDTOs: [
-          {
-            processId: 1,
-            instructionDate: "2022-04-28 21:04:49",
-            plannedLength: record?.plannedLength,
-            actualLength: record?.actualLength,
-            actualNoOfPieces: record?.actualNoOfPieces,
-            actualWeight: record?.actualWeight,
-            plannedNoOfPieces: record?.plannedWidth,
-            isSlitAndCut: false,
-            plannedNoOfPieces: "1",
-            status: 1,
+    if (
+      Number(record.plannedWeight) + totalActualweight > tweight ||
+      Number(record.actualWeight) + totalActualweight > tweight
+    ) {
+      message.error("Error! Please adjust the weight");
+    } else {
+      const instructionList = tableData
+        .slice(0, tableData.length - 1)
+        .filter((item) =>
+          editedRecordState.some(
+            (record) =>
+              record !== undefined &&
+              record.instructionId === item.instructionId
+          )
+        );
+
+      let instructionPayload = [
+        {
+          partDetailsRequest: {
+            targetWeight: "0",
+            length: "0",
             createdBy: "1",
             updatedBy: "1",
-            groupId: null,
-            plannedWeight: props?.coilDetails?.scrapWeight === null ? 0: props?.coilDetails?.scrapWeight,
-            inwardId: props?.coilDetails?.inwardEntryId,
-            parentInstructionId: "",
-            endUserTagId: record?.endUserTagsentity?.tagId,
             deleteUniqId: 0,
-            isScrapWeightUsed:true,
-            packetClassificationId:
-              record?.packetClassification?.tagId ||
-              record?.packetClassification?.classificationId,
           },
-        ],
-      },
-    ];
-    props.saveCuttingInstruction(instructionPayload);
+          instructionRequestDTOs: [
+            {
+              processId: 1,
+              instructionDate: "2022-04-28 21:04:49",
+              plannedLength: record?.plannedLength,
+              actualLength: record?.actualLength,
+              actualNoOfPieces: record?.actualNoOfPieces,
+              actualWeight: record?.actualWeight,
+              plannedNoOfPieces: record?.plannedWidth,
+              isSlitAndCut: false,
+              plannedNoOfPieces: "1",
+              status: 1,
+              createdBy: "1",
+              updatedBy: "1",
+              groupId: null,
+              plannedWeight:
+                props?.coilDetails?.scrapWeight === null
+                  ? 0
+                  : props?.coilDetails?.scrapWeight,
+              inwardId: props?.coilDetails?.inwardEntryId,
+              parentInstructionId: "",
+              endUserTagId: record?.endUserTagsentity?.tagId,
+              deleteUniqId: 0,
+              isScrapWeightUsed: true,
+              packetClassificationId:
+                record?.packetClassification?.tagId ||
+                record?.packetClassification?.classificationId,
+            },
+          ],
+        },
+      ];
+      props.saveCuttingInstruction(instructionPayload);
+      const coil = {
+        number: props.coil.coilNumber,
+        instruction: instructionList,
+      };
+      props.updateInstruction(coil);
+    }
   };
   const addRow = () => {
     const newData = {
@@ -1352,7 +1427,15 @@ const CreateCuttingDetailsForm = (props) => {
       title={
         props.wip
           ? props.slitCut
-            ? "Finish slit & cut Instruction"
+            ? props.editFinish
+              ? "Edit Finish slit & cut Instruction"
+              : props.unfinish
+              ? "UnFinish slit & cut Instruction"
+              : "Finish slit & cut Instruction"
+            : props.editFinish
+            ? "Edit Finish Cutting Instruction"
+            : props.unfinish
+            ? "UnFinish Cutting Instruction"
             : "Finish Cutting Instruction"
           : "Cutting Instruction"
       }
@@ -1620,7 +1703,7 @@ const CreateCuttingDetailsForm = (props) => {
               )
             ) : (
               <>
-                {props?.wip  && (
+                {props?.wip && !props.editFinish && !props.unfinish && (
                   <Row>
                     <Button type="primary" onClick={addRow}>
                       Add Row

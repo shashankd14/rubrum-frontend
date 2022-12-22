@@ -494,7 +494,7 @@ function* requestUpdateInstruction(action) {
         let insObj = {
             instructionId: item.instructionId ? item.instructionId : null,
             parentInstructionId: item.parentInstructionId ? item.parentInstructionId : null,
-            processId: item.process.processId ? item.process.processId : 1,
+            processId: item?.process?.processId ? item?.process?.processId : 1,
             instructionDate: item.instructionDate ? moment(item.instructionDate).format('YYYY-MM-DD HH:mm:ss') : null,
             plannedLength: item.plannedLength ? item.plannedLength : 0,
             plannedWidth: item.plannedWidth ? item.plannedWidth : 0,

@@ -40,10 +40,6 @@ import {
     POST_DELIVERY_CONFIRM_SUCCESS,
     POST_DELIVERY_CONFIRM_ERROR,
 
-    FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST,
-    FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST_SUCCESS,
-    FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST_ERROR,
-
 	FETCH_INWARD_INSTRUCTION_DETAILS_REQUESTED,
     FETCH_INWARD_INSTRUCTION_DETAILS_SUCCESS,
     FETCH_INWARD_INSTRUCTION_DETAILS_ERROR,
@@ -132,7 +128,9 @@ const INIT_STATE = {
     deliveryError: false,
     isDeleted: false,
     unprocessedSuccess:{},
-    s3pdfurl:{}
+    s3pdfurl:{},
+    instructionUpdateSuccess:false,
+    instructionUpdateFailure: false,
 };
 
 export default (state = INIT_STATE, action) => {
@@ -426,6 +424,8 @@ export default (state = INIT_STATE, action) => {
             return {
                 ...state,
                 loading: true,
+                instructionUpdateSuccess:false,
+                instructionUpdateFailure: false,
                 error: false
             }
         }
@@ -433,6 +433,8 @@ export default (state = INIT_STATE, action) => {
             return {
                 ...state,
                 loading: false,
+                instructionUpdateSuccess:true,
+                instructionUpdateFailure: false,
                 error: false
             }
         }
@@ -440,6 +442,8 @@ export default (state = INIT_STATE, action) => {
             return {
                 ...state,
                 loading: true,
+                instructionUpdateSuccess:false,
+                instructionUpdateFailure: true,
                 error: true
             }
         }
@@ -478,7 +482,9 @@ export default (state = INIT_STATE, action) => {
                 dcpdfError:false,
                 dcpdfSuccess: false,
                 dcpdfLoading: false,
-                unprocessedSuccess:{}
+                unprocessedSuccess:{},
+                instructionUpdateSuccess:false,
+                instructionUpdateFailure: false,
             }
         }
         
