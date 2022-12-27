@@ -310,40 +310,7 @@ const CreateCuttingDetailsForm = (props) => {
       dataIndex: "plannedWeight",
       key: "plannedWeight",
     },
-    {
-      title: "Tags",
-      dataIndex: "packetClassification.tagName",
-      render: (text, record, index) => {
-        return (
-          <Select
-            style={{ width: "100px" }}
-            dropdownMatchSelectWidth={false}
-            showSearch
-            optionFilterProp="children"
-            filterOption={(input, option) => {
-              return option?.props?.children
-                ?.toLowerCase()
-                .includes(input.toLowerCase());
-            }}
-            filterSort={(optionA, optionB) =>
-              optionA?.props?.children
-                .toLowerCase()
-                .localeCompare(optionB?.props?.children.toLowerCase())
-            }
-            value={
-              record?.packetClassification
-                ? record?.packetClassification?.classificationName
-                : record?.packetClassificationId
-            }
-            onChange={(e) => handleTagsChange(record, e)}
-          >
-            {props?.coilDetails.party?.tags?.map((item) => {
-              return <Option value={item.tagId}>{item.tagName}</Option>;
-            })}
-          </Select>
-        );
-      },
-    },
+
     {
       title: "End User Tags",
       dataIndex: "endUserTags.tagName",
@@ -437,44 +404,7 @@ const CreateCuttingDetailsForm = (props) => {
       dataIndex: "plannedWidth",
       key: "plannedWidth",
     },
-    {
-      title: "Tags",
-      dataIndex: "packetClassification.tagName",
-      render: (text, record, index) => {
-        return (
-          <Select
-            style={{ width: "100px" }}
-            dropdownMatchSelectWidth={false}
-            showSearch
-            optionFilterProp="children"
-            filterOption={(input, option) => {
-              return option?.props?.children
-                ?.toLowerCase()
-                .includes(input.toLowerCase());
-            }}
-            filterSort={(optionA, optionB) =>
-              optionA?.props?.children
-                .toLowerCase()
-                .localeCompare(optionB?.props?.children.toLowerCase())
-            }
-            value={
-              record?.packetClassification
-                ? record?.packetClassification?.classificationName
-                : record?.packetClassificationId
-            }
-            onChange={(e) => handleTagsChange(record, e)}
-          >
-            {tagsList?.map((item) => {
-              return (
-                <Option value={item?.classificationId}>
-                  {item?.classificationName}
-                </Option>
-              );
-            })}
-          </Select>
-        );
-      },
-    },
+
     {
       title: "End User Tags",
       dataIndex: "endUserTags.tagName",
@@ -557,16 +487,7 @@ const CreateCuttingDetailsForm = (props) => {
       dataIndex: "plannedWeight",
       key: "plannedWeight",
     },
-    {
-      title: "Tags",
-      dataIndex: "packetClassification.tagName",
-      render: (text, record) => {
-        return (
-          record.packetClassification?.tagName ||
-          record.packetClassification?.classificationName
-        );
-      },
-    },
+
     {
       title: "End User Tags",
       dataIndex: "endUserTags.tagName",
@@ -1009,14 +930,12 @@ const CreateCuttingDetailsForm = (props) => {
       }, 1000);
     }
   }, [props.inward.instructionSaveCuttingSuccess]);
- useEffect(() => {
-   if(props?.inward?.instructionUpdateSuccess){
-    message
-        .success("Successfully Updated!", 2)
-        .then(() => {
-          props.resetInstruction();
-        });
-   }
+  useEffect(() => {
+    if (props?.inward?.instructionUpdateSuccess) {
+      message.success("Successfully Updated!", 2).then(() => {
+        props.resetInstruction();
+      });
+    }
   }, [props?.inward?.instructionUpdateSuccess]);
   useEffect(() => {
     let listItem = bundleItemList.length > 0 ? bundleItemList : [];
@@ -1316,15 +1235,31 @@ const CreateCuttingDetailsForm = (props) => {
           "Please enter the cut instructions for existing slits or the new slit to proceed with pdf generation"
         );
       } else {
-        props.saveCuttingInstruction(saveInstruction);
-        setSaveInstruction([]);
-        setSaveCutting([]);
+        saveInstruction.map((ins) => {
+          return ins.instructionRequestDTOs?.map((item) => {
+            if (item?.endUserTagId !== null) {
+              props.saveCuttingInstruction(saveInstruction);
+              setSaveInstruction([]);
+              setSaveCutting([]);
+            } else {
+              message.error("Please select End User Tags");
+            }
+          });
+        });
       }
     } else if (validate === false) {
       if (cutPayload.length > 0) {
-        props.saveCuttingInstruction(saveInstruction);
-        setSaveInstruction([]);
-        setSaveCutting([]);
+        saveInstruction.map((ins) => {
+          return ins.instructionRequestDTOs?.map((item) => {
+            if (item?.endUserTagId !== null) {
+              props.saveCuttingInstruction(saveInstruction);
+              setSaveInstruction([]);
+              setSaveCutting([]);
+            } else {
+              message.error("Please select End User Tags");
+            }
+          });
+        });
       } else {
         props.setShowCuttingModal(false);
       }

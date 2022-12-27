@@ -944,40 +944,7 @@ const CreateSlittingDetailsForm = (props) => {
       },
       key: "plannedWeight",
     },
-    {
-      title: "Tags",
-      dataIndex: "packetClassification.tagName",
-      render: (text, record, index) => {
-        return (
-          <Select
-            style={{ width: "100px" }}
-            dropdownMatchSelectWidth={false}
-            showSearch
-            optionFilterProp="children"
-            filterOption={(input, option) => {
-              return option?.props?.children
-                ?.toLowerCase()
-                .includes(input.toLowerCase());
-            }}
-            filterSort={(optionA, optionB) =>
-              optionA?.props?.children
-                .toLowerCase()
-                .localeCompare(optionB?.props?.children.toLowerCase())
-            }
-            value={
-              record?.packetClassification
-                ? record?.packetClassification?.classificationName
-                : record?.packetClassificationId
-            }
-            onChange={(e) => handleTagsChange(record, e)}
-          >
-            {props?.coilDetails.party?.tags?.map((item) => {
-              return <Option value={item.tagId}>{item.tagName}</Option>;
-            })}
-          </Select>
-        );
-      },
-    },
+  
     {
       title: "End User Tags",
       dataIndex: "endUserTags.tagsName",
@@ -1392,7 +1359,16 @@ const CreateSlittingDetailsForm = (props) => {
         setDeletedSelected(false);
         if (name === "Slitting") {
           if (slitPayload.length > 0) {
-            props.saveSlittingInstruction(slitInstruction);
+            slitInstruction.map(ins=>{
+              return ins?.instructionRequestDTOs?.map(item =>{
+                if(item?.endUserTagId !== null){
+                  props.saveSlittingInstruction(slitInstruction);
+                }else{
+                  message.error("Please select End User Tags")
+                }
+              })
+            })
+           
           } else {
             props.resetIsDeleted(false);
             props.setShowSlittingModal(false);
@@ -1400,7 +1376,15 @@ const CreateSlittingDetailsForm = (props) => {
         } else {
           if (name === "SlitCut") {
             if (slitPayload.length > 0) {
-              props.saveSlittingInstruction(slitInstruction);
+              slitInstruction.map(ins=>{
+                return ins?.instructionRequestDTOs?.map(item =>{
+                  if(item?.endUserTagId !== null){
+                    props.saveSlittingInstruction(slitInstruction);
+                  }else{
+                    message.error("Please select End User Tags")
+                  }
+                })
+              })
             }
           } else {
             props.resetIsDeleted(false);
