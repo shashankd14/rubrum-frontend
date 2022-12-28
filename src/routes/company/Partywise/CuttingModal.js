@@ -1203,8 +1203,8 @@ const CreateCuttingDetailsForm = (props) => {
       } else {
         const instructionList = tableData.filter(
           (item) =>
-            item.packetClassification.tagId !== 0 ||
-            item.packetClassification.classificationId !== 0
+            item.packetClassification.tagId !== 0 &&
+            item.packetClassification.classificationId !== 0 && item?.packetClassification !==""&& item?.packetClassification !==null
         );
         const coil = {
           number: props.coil.coilNumber,
@@ -1358,8 +1358,7 @@ const CreateCuttingDetailsForm = (props) => {
     setTableData([...tableData, newData]);
   };
   const getFooterButtons = () => {
-    return [
-      <Button key="back" onClick={handleCancel}>
+    return [<Button key="back" onClick={handleCancel}>
         Cancel
       </Button>,
       <Button
@@ -1400,7 +1399,7 @@ const CreateCuttingDetailsForm = (props) => {
       onOk={handleOk}
       width={1020}
       onCancel={handleCancel}
-      footer={getFooterButtons}
+      footer={getFooterButtons()}
     >
       <Card className="gx-card">
         {!props.wip && props.slitCut && (

@@ -1362,8 +1362,8 @@ const CreateSlittingDetailsForm = (props) => {
       } else {
         const instructionList = tableData.filter(
           (item) =>
-            item.packetClassification.tagId !== 0 ||
-            item.packetClassification.classificationId !== 0
+            item?.packetClassification?.tagId !== 0 &&
+            item?.packetClassification?.classificationId !== 0 && item?.packetClassification !==""&& item?.packetClassification !==null
         );
         const coil = {
           number: props.coil.coilNumber,

@@ -521,7 +521,7 @@ function* requestUpdateInstruction(action) {
         }
         return insObj;
     });
-    const filteredData = ins.filter(each => each.packetClassificationId !== 6);
+    const filteredData = ins.filter(each => each.packetClassificationId !== 0 && each.packetClassificationId !== "");
     const req = {
         taskType: editFinish ?"FGtoFG":unfinish ? "FGtoWIP" :"WIPtoFG",
         instructionDtos: (unfinish || editFinish) ? ins : filteredData
