@@ -235,7 +235,7 @@ const Plan = (props) => {
                 <p>Please click OK to confirm</p>
             </Modal>
             <h1><IntlMessages id="partywise.plan.label" /></h1>
-            {reconcileModalShow?.length>0 &&<><div><span>Reconcile table</span>
+            {reconcileModalShow?.length>0 &&<><div>
                 <ReconcileTable reconcileData={reconcileModalShow}/>
             </div></>}
             <div className="gx-full-height gx-flex-row">
