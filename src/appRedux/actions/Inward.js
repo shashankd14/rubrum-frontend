@@ -88,7 +88,10 @@ import {
     PDF_GENERATE_DELIVERY_ERROR,
     PDF_S3_URL,
     PDF_S3_URL_SUCCESS,
-    PDF_S3_URL_ERROR
+    PDF_S3_URL_ERROR,
+    GET_RECONCILE_REPORT,
+    GET_RECONCILE_REPORT_SUCCESS,
+    GET_RECONCILE_REPORT_ERROR
 } from "../../constants/ActionTypes";
 
 export const fetchInwardList = (page, pageSize, searchValue, partyId) => ({
@@ -463,3 +466,16 @@ export const getS3PDFUrlError = (error) => ({
     type: PDF_S3_URL_ERROR,
     error
 });
+export const getReconcileReport = (coilNumber) => ({
+    type: GET_RECONCILE_REPORT,
+    coilNumber
+});
+export const getReconcileReportSuccess = (payload) => ({
+    type: GET_RECONCILE_REPORT_SUCCESS,
+    payload
+});
+export const getReconcileReportError = (error) => ({
+    type: GET_RECONCILE_REPORT_ERROR,
+    error
+});
+

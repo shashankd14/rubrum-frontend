@@ -26,7 +26,10 @@ import {
     INSTRUCTION_GROUP_SAVE,
     PDF_GENERATE_INWARD,
     PDF_GENERATE_DELIVERY,
-    PDF_S3_URL
+    PDF_S3_URL,
+    GET_RECONCILE_REPORT_SUCCESS,
+    GET_RECONCILE_REPORT,
+    GET_RECONCILE_REPORT_ERROR
 } from "../../constants/ActionTypes";
 
 import {
@@ -75,7 +78,10 @@ import {
     generateDCPdfSuccess,
     generateDCPdfError,
     getS3PDFUrlError,
-    getS3PDFUrlSuccess
+    getS3PDFUrlSuccess,
+    getReconcileReport,
+    getReconcileReportError,
+    getReconcileReportSuccess
 } from "../actions";
 import { CUTTING_INSTRUCTION_PROCESS_ID, SLITTING_INSTRUCTION_PROCESS_ID, SLIT_CUT_INSTRUCTION_PROCESS_ID } from "../../constants";
 import { formItemLayout } from "../../routes/company/Partywise/CuttingModal";
@@ -771,6 +777,23 @@ function* getS3PDFUrl(action) {
         yield put(getS3PDFUrlError(error));
     }
 }
+function* getReconcileReportSaga(action) {
+    try {
+        const getreconcileData = yield fetch(`${baseUrl}api/reports/reconcile/${action.coilNumber}`, { 
+            method: 'GET',
+            headers: getHeaders()
+        });
+        if (getreconcileData.status === 200) {
+            const response = yield getreconcileData.json();
+            yield put(getReconcileReportSuccess(response));
+        } else if (getreconcileData.status === 401) {
+            yield put(userSignOutSuccess());
+        } else
+            yield put(getReconcileReportError('error'));
+    } catch (error) {
+        yield put(getReconcileReportError(error));
+    }
+}
 
 
 export function* watchFetchRequests() {
@@ -797,6 +820,7 @@ export function* watchFetchRequests() {
     yield takeLatest(PDF_GENERATE_INWARD, pdfGenerateInward);
     yield takeLatest(PDF_GENERATE_DELIVERY, generateDCPdf);
     yield takeLatest(PDF_S3_URL, getS3PDFUrl);
+    yield takeLatest(GET_RECONCILE_REPORT, getReconcileReportSaga);
 }
 
 export default function* inwardSagas() {

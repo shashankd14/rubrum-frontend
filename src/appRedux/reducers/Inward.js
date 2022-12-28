@@ -78,7 +78,10 @@ import {
     PDF_GENERATE_DELIVERY_SUCCESS,
     PDF_S3_URL,
     PDF_S3_URL_SUCCESS,
-    PDF_S3_URL_ERROR
+    PDF_S3_URL_ERROR,
+    GET_RECONCILE_REPORT_SUCCESS,
+    GET_RECONCILE_REPORT,
+    GET_RECONCILE_REPORT_ERROR
 } from "../../constants/ActionTypes";
 
 const INIT_STATE = {
@@ -131,6 +134,7 @@ const INIT_STATE = {
     s3pdfurl:{},
     instructionUpdateSuccess:false,
     instructionUpdateFailure: false,
+    reconcileData:[]
 };
 
 export default (state = INIT_STATE, action) => {
@@ -707,6 +711,27 @@ export default (state = INIT_STATE, action) => {
                 loading:false,
                 error:true,
                 s3pdfurl:{}
+            }
+        }
+        case GET_RECONCILE_REPORT: {
+            return {
+                ...state,
+            }
+        }
+        case GET_RECONCILE_REPORT_SUCCESS: {
+            return {
+                ...state,
+                loading:false,
+                success:true,
+                reconcileData: action.payload,
+            }
+        }
+        case GET_RECONCILE_REPORT_ERROR: {
+            return {
+                ...state,
+                loading:false,
+                success:false,
+                error: true
             }
         }
         default:
