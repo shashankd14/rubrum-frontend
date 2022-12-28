@@ -40,10 +40,6 @@ import {
     POST_DELIVERY_CONFIRM_SUCCESS,
     POST_DELIVERY_CONFIRM_ERROR,
 
-    FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST,
-    FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST_SUCCESS,
-    FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST_ERROR,
-
 	FETCH_INWARD_INSTRUCTION_DETAILS_REQUESTED,
     FETCH_INWARD_INSTRUCTION_DETAILS_SUCCESS,
     FETCH_INWARD_INSTRUCTION_DETAILS_ERROR,
@@ -82,7 +78,10 @@ import {
     PDF_GENERATE_DELIVERY_SUCCESS,
     PDF_S3_URL,
     PDF_S3_URL_SUCCESS,
-    PDF_S3_URL_ERROR
+    PDF_S3_URL_ERROR,
+    GET_RECONCILE_REPORT_SUCCESS,
+    GET_RECONCILE_REPORT,
+    GET_RECONCILE_REPORT_ERROR
 } from "../../constants/ActionTypes";
 
 const INIT_STATE = {
@@ -132,7 +131,10 @@ const INIT_STATE = {
     deliveryError: false,
     isDeleted: false,
     unprocessedSuccess:{},
-    s3pdfurl:{}
+    s3pdfurl:{},
+    instructionUpdateSuccess:false,
+    instructionUpdateFailure: false,
+    reconcileData:[]
 };
 
 export default (state = INIT_STATE, action) => {
@@ -157,7 +159,7 @@ export default (state = INIT_STATE, action) => {
             return {
                 ...state,
                 wipLoading: true,
-                wipSuccess:false
+                wipSuccess: false
             }
         }
         case FETCH_WIP_INWARD_LIST_SUCCESS: {
@@ -176,7 +178,8 @@ export default (state = INIT_STATE, action) => {
                 loading: false,
                 wipSuccess:false,
                 wipList: [],
-                wipError: true
+                wipError: true,
+                wipSuccess: false
             }
         }
 
@@ -426,6 +429,8 @@ export default (state = INIT_STATE, action) => {
             return {
                 ...state,
                 loading: true,
+                instructionUpdateSuccess:false,
+                instructionUpdateFailure: false,
                 error: false
             }
         }
@@ -433,6 +438,8 @@ export default (state = INIT_STATE, action) => {
             return {
                 ...state,
                 loading: false,
+                instructionUpdateSuccess:true,
+                instructionUpdateFailure: false,
                 error: false
             }
         }
@@ -440,6 +447,8 @@ export default (state = INIT_STATE, action) => {
             return {
                 ...state,
                 loading: true,
+                instructionUpdateSuccess:false,
+                instructionUpdateFailure: true,
                 error: true
             }
         }
@@ -478,7 +487,9 @@ export default (state = INIT_STATE, action) => {
                 dcpdfError:false,
                 dcpdfSuccess: false,
                 dcpdfLoading: false,
-                unprocessedSuccess:{}
+                unprocessedSuccess:{},
+                instructionUpdateSuccess:false,
+                instructionUpdateFailure: false,
             }
         }
         
@@ -701,6 +712,27 @@ export default (state = INIT_STATE, action) => {
                 loading:false,
                 error:true,
                 s3pdfurl:{}
+            }
+        }
+        case GET_RECONCILE_REPORT: {
+            return {
+                ...state,
+            }
+        }
+        case GET_RECONCILE_REPORT_SUCCESS: {
+            return {
+                ...state,
+                loading:false,
+                success:true,
+                reconcileData: action.payload,
+            }
+        }
+        case GET_RECONCILE_REPORT_ERROR: {
+            return {
+                ...state,
+                loading:false,
+                success:false,
+                error: true
             }
         }
         default:

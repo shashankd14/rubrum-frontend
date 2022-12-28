@@ -26,7 +26,10 @@ import {
     INSTRUCTION_GROUP_SAVE,
     PDF_GENERATE_INWARD,
     PDF_GENERATE_DELIVERY,
-    PDF_S3_URL
+    PDF_S3_URL,
+    GET_RECONCILE_REPORT_SUCCESS,
+    GET_RECONCILE_REPORT,
+    GET_RECONCILE_REPORT_ERROR
 } from "../../constants/ActionTypes";
 
 import {
@@ -75,7 +78,10 @@ import {
     generateDCPdfSuccess,
     generateDCPdfError,
     getS3PDFUrlError,
-    getS3PDFUrlSuccess
+    getS3PDFUrlSuccess,
+    getReconcileReport,
+    getReconcileReportError,
+    getReconcileReportSuccess
 } from "../actions";
 import { CUTTING_INSTRUCTION_PROCESS_ID, SLITTING_INSTRUCTION_PROCESS_ID, SLIT_CUT_INSTRUCTION_PROCESS_ID } from "../../constants";
 import { formItemLayout } from "../../routes/company/Partywise/CuttingModal";
@@ -494,7 +500,7 @@ function* requestUpdateInstruction(action) {
         let insObj = {
             instructionId: item.instructionId ? item.instructionId : null,
             parentInstructionId: item.parentInstructionId ? item.parentInstructionId : null,
-            processId: item.process.processId ? item.process.processId : 1,
+            processId: item?.process?.processId ? item?.process?.processId : 1,
             instructionDate: item.instructionDate ? moment(item.instructionDate).format('YYYY-MM-DD HH:mm:ss') : null,
             plannedLength: item.plannedLength ? item.plannedLength : 0,
             plannedWidth: item.plannedWidth ? item.plannedWidth : 0,
@@ -515,10 +521,10 @@ function* requestUpdateInstruction(action) {
         }
         return insObj;
     });
-    const filteredData = ins.filter(each => each.packetClassificationId !== 6);
+    const filteredData = ins.filter(each => each.packetClassificationId !== 0 && each.packetClassificationId !== "");
     const req = {
-        taskType: editFinish? "FGtoFG":unfinish ? "FGtoWIP" :"WIPtoFG",
-        instructionDtos: unfinish ? ins : filteredData
+        taskType: editFinish ?"FGtoFG":unfinish ? "FGtoWIP" :"WIPtoFG",
+        instructionDtos: (unfinish || editFinish) ? ins : filteredData
     }
     try {
         const updateInstruction = yield fetch(`${baseUrl}api/instruction/update`, {
@@ -771,6 +777,23 @@ function* getS3PDFUrl(action) {
         yield put(getS3PDFUrlError(error));
     }
 }
+function* getReconcileReportSaga(action) {
+    try {
+        const getreconcileData = yield fetch(`${baseUrl}api/reports/reconcile/${action.coilNumber}`, { 
+            method: 'GET',
+            headers: getHeaders()
+        });
+        if (getreconcileData.status === 200) {
+            const response = yield getreconcileData.json();
+            yield put(getReconcileReportSuccess(response));
+        } else if (getreconcileData.status === 401) {
+            yield put(userSignOutSuccess());
+        } else
+            yield put(getReconcileReportError('error'));
+    } catch (error) {
+        yield put(getReconcileReportError(error));
+    }
+}
 
 
 export function* watchFetchRequests() {
@@ -797,6 +820,7 @@ export function* watchFetchRequests() {
     yield takeLatest(PDF_GENERATE_INWARD, pdfGenerateInward);
     yield takeLatest(PDF_GENERATE_DELIVERY, generateDCPdf);
     yield takeLatest(PDF_S3_URL, getS3PDFUrl);
+    yield takeLatest(GET_RECONCILE_REPORT, getReconcileReportSaga);
 }
 
 export default function* inwardSagas() {

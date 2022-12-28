@@ -2,10 +2,13 @@ import { Button, Card, Col, Select, Modal, message } from "antd";
 import moment from 'moment';
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { getCoilPlanDetails, saveUnprocessedDelivery, fetchClassificationList } from "../../../appRedux/actions";
+import { getCoilPlanDetails, saveUnprocessedDelivery, fetchClassificationList,getReconcileReport } from "../../../appRedux/actions";
 import IntlMessages from "../../../util/IntlMessages";
 import CuttingModal from "../Partywise/CuttingModal";
 import SlittingModal from "./SlittingModal";
+import ReconcileTable from "./ReconcileTable";
+import { useParams } from "react-router-dom";
+import { useDispatch } from "react-redux";
 
 
 const Plan = (props) => {
@@ -20,8 +23,10 @@ const Plan = (props) => {
     const [defaultValue, setdefaultValue] = useState();
     const [showUnprocessedModal, setshowUnprocessedModal] = useState(false);
     const [unprocessedOkClick, setUnprocessedOkClick] = useState(false);
-    const [reshowModal, setReshowModal] = useState(false);
+    const [reconcileModalShow, setReconcileModalShow] = useState([])
     const { Option } = Select;
+    const { coilNumber } = useParams();
+  const dispatch = useDispatch();
     const getPlannedLength = (ins) => {
         let length = 0;
         let actualLength = 0;
@@ -124,14 +129,20 @@ const Plan = (props) => {
         }
         
     }, [showSlittingModal,showCuttingModal])
-
+    useEffect(() => {
+        dispatch(getReconcileReport(coilNumber));
+      }, []);
     useEffect(() => {
         if (unprocessedOkClick) {
             setUnprocessedOkClick(false);
             getCoilData();
         }
     }, [unprocessedOkClick])
-
+    useEffect(()=>{
+        if(props?.inward?.reconcileData?.length){
+            setReconcileModalShow(props?.inward?.reconcileData)
+        }
+    },[props?.inward?.reconcileData])
     useEffect(() => {
         if (slittingCoil) {
             setSlittingCoil(slittingCoil);
@@ -224,6 +235,9 @@ const Plan = (props) => {
                 <p>Please click OK to confirm</p>
             </Modal>
             <h1><IntlMessages id="partywise.plan.label" /></h1>
+            {reconcileModalShow?.length>0 &&<><div>
+                <ReconcileTable reconcileData={reconcileModalShow}/>
+            </div></>}
             <div className="gx-full-height gx-flex-row">
                 <Col lg={5} md={5} sm={24} xs={24} className="gx-align-self-center">
                     <Card className="gx-plan-main-coil" size="small">
