@@ -840,7 +840,7 @@ const CreateCuttingDetailsForm = (props) => {
       cutsArray.length > 0
         ? cutsArray.reduce((total, num) => Number(total) + Number(num))
         : 0;
-    settweight(Number(cutsArray) + Number(props?.coilDetails?.scrapWeight));
+    settweight(Number(cutsArray) );
     if (props.unfinish) {
       let actualUpdate = cuts.map((item) => {
         item.actualLength = 0;
@@ -1357,6 +1357,28 @@ const CreateCuttingDetailsForm = (props) => {
     };
     setTableData([...tableData, newData]);
   };
+  const getFooterButtons = () => {
+    return [
+      <Button key="back" onClick={handleCancel}>
+        Cancel
+      </Button>,
+      <Button
+        key="submit"
+        type="primary"
+        loading={loading}
+        disabled={props.inward.loading}
+        onClick={handleOk}
+      >
+        {props.inward.loading
+          ? "Loading..."
+          : cuts.length > 0
+          ? props.wip
+            ? "OK"
+            : "Save & Generate"
+          : "OK"}
+      </Button>,
+    ];
+  };
   return (
     <Modal
       title={
@@ -1378,50 +1400,7 @@ const CreateCuttingDetailsForm = (props) => {
       onOk={handleOk}
       width={1020}
       onCancel={handleCancel}
-      footer={
-        cuts.length > 0
-          ? props.wip
-            ? [
-                <Button key="back" onClick={handleCancel}>
-                  Cancel
-                </Button>,
-                <Button
-                  key="submit"
-                  type="primary"
-                  loading={loading}
-                  onClick={handleOk}
-                >
-                  OK
-                </Button>,
-              ]
-            : [
-                <Button key="back" onClick={handleCancel}>
-                  Cancel
-                </Button>,
-                <Button
-                  key="submit"
-                  type="primary"
-                  loading={loading}
-                  disabled={props.inward.loading}
-                  onClick={handleOk}
-                >
-                  {props.inward.loading ? "Loading..." : "Save and Generate"}
-                </Button>,
-              ]
-          : [
-              <Button key="back" onClick={handleCancel}>
-                Cancel
-              </Button>,
-              <Button
-                key="submit"
-                type="primary"
-                loading={loading}
-                onClick={handleOk}
-              >
-                OK
-              </Button>,
-            ]
-      }
+      footer={getFooterButtons}
     >
       <Card className="gx-card">
         {!props.wip && props.slitCut && (
