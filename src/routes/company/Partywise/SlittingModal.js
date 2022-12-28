@@ -1280,7 +1280,7 @@ const CreateSlittingDetailsForm = (props) => {
       };
       props.pdfGenerateInward(payload);
       loading = "";
-    } else if (props.inward.instructionSaveSlittingSuccess && props.wip) {
+    } else if (props.inward.instructionSaveSlittingSuccess && props.wip && !props.slitCut) {
       setTimeout(() => {
         message.success("Slitting instruction saved", 2).then(() => {
           
