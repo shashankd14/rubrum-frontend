@@ -1418,12 +1418,13 @@ const CreateSlittingDetailsForm = (props) => {
   };
   const handleWeight = (e, record) => {
     e.preventDefault();
+    // if (
+    //   Number(record.plannedWeight) + totalActualweight > tweight ||
+    //   Number(record.actualWeight) + totalActualweight > tweight
+    // ) {
+    //   message.error("Error! Please adjust the weight");
+    // } else 
     if (
-      Number(record.plannedWeight) + totalActualweight > tweight ||
-      Number(record.actualWeight) + totalActualweight > tweight
-    ) {
-      message.error("Error! Please adjust the weight");
-    } else if (
       record?.packetClassification?.tagId === 0 ||
       record?.packetClassification?.classificationId === 0
     ) {

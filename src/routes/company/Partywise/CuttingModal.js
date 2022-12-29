@@ -1277,12 +1277,12 @@ const CreateCuttingDetailsForm = (props) => {
   };
   const handleWeight = (e, record) => {
     e.preventDefault();
-    if (
-      Number(record.plannedWeight) + totalActualweight > tweight ||
-      Number(record.actualWeight) + totalActualweight > tweight
-    ) {
-      message.error("Error! Please adjust the weight");
-    } else {
+    // if (
+    //   Number(record.plannedWeight) + totalActualweight > tweight ||
+    //   Number(record.actualWeight) + totalActualweight > tweight
+    // ) {
+    //   message.error("Error! Please adjust the weight");
+    // } 
       const instructionList = tableData
         .slice(0, tableData.length - 1)
         .filter((item) =>
@@ -1339,7 +1339,7 @@ const CreateCuttingDetailsForm = (props) => {
         instruction: instructionList,
       };
       props.updateInstruction(coil);
-    }
+    
   };
   const addRow = () => {
     const newData = {
