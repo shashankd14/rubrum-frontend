@@ -1616,7 +1616,7 @@ const CreateCuttingDetailsForm = (props) => {
               )
             ) : (
               <>
-                {props?.wip && !props.editFinish && !props.unfinish && (
+                {props?.wip  && !props.unfinish && (
                   <Row>
                     <Button type="primary" onClick={addRow}>
                       Add Row

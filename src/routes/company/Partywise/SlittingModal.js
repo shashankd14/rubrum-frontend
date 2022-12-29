@@ -1576,7 +1576,7 @@ const CreateSlittingDetailsForm = (props) => {
         <TabPane tab="Slitting Instruction" key="1">
           {props.wip ? (
             <Row>
-              {!props.unfinish && !props.editFinish && (
+              {!props.unfinish  && (
                 <>
                   <Col lg={24} md={24} sm={24} xs={24}>
                     <Button type="primary" onClick={addRow}>
