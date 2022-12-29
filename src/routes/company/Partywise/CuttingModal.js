@@ -1235,31 +1235,31 @@ const CreateCuttingDetailsForm = (props) => {
           "Please enter the cut instructions for existing slits or the new slit to proceed with pdf generation"
         );
       } else {
-        saveInstruction.map((ins) => {
-          return ins.instructionRequestDTOs?.map((item) => {
-            if (item?.endUserTagId !== null) {
+        // saveInstruction.map((ins) => {
+        //   return ins.instructionRequestDTOs?.map((item) => {
+        //     if (item?.endUserTagId !== null) {
               props.saveCuttingInstruction(saveInstruction);
               setSaveInstruction([]);
               setSaveCutting([]);
-            } else {
-              message.error("Please select End User Tags");
-            }
-          });
-        });
+            // } else {
+            //   message.error("Please select End User Tags");
+            // }
+        //   });
+        // });
       }
     } else if (validate === false) {
       if (cutPayload.length > 0) {
-        saveInstruction.map((ins) => {
-          return ins.instructionRequestDTOs?.map((item) => {
-            if (item?.endUserTagId !== null) {
+        // saveInstruction.map((ins) => {
+        //   return ins.instructionRequestDTOs?.map((item) => {
+        //     if (item?.endUserTagId !== null) {
               props.saveCuttingInstruction(saveInstruction);
               setSaveInstruction([]);
               setSaveCutting([]);
-            } else {
-              message.error("Please select End User Tags");
-            }
-          });
-        });
+        //     } else {
+        //       message.error("Please select End User Tags");
+        //     }
+        //   });
+        // });
       } else {
         props.setShowCuttingModal(false);
       }

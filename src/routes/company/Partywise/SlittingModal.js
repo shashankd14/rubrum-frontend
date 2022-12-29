@@ -1375,15 +1375,8 @@ const CreateSlittingDetailsForm = (props) => {
         setDeletedSelected(false);
         if (name === "Slitting") {
           if (slitPayload.length > 0) {
-            slitInstruction.map((ins) => {
-              return ins?.instructionRequestDTOs?.map((item) => {
-                if (item?.endUserTagId !== null) {
-                  props.saveSlittingInstruction(slitInstruction);
-                } else {
-                  message.error("Please select End User Tags");
-                }
-              });
-            });
+            props.saveSlittingInstruction(slitInstruction);
+           
           } else {
             props.resetIsDeleted(false);
             props.setShowSlittingModal(false);
@@ -1391,16 +1384,9 @@ const CreateSlittingDetailsForm = (props) => {
         } else {
           if (name === "SlitCut") {
             if (slitPayload.length > 0) {
-              slitInstruction.map((ins) => {
-                const list = ins?.instructionRequestDTOs?.map((item) => {
-                  if (item?.endUserTagId !== null) {
-                    e.preventDefault();
-                    props.saveSlittingInstruction(slitInstruction);
-                  } else {
-                    message.error("Please select End User Tags");
-                  }
-                });
-              });
+           
+                props.saveSlittingInstruction(slitInstruction);
+             
             }
           } else {
             props.resetIsDeleted(false);
