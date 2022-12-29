@@ -1260,24 +1260,19 @@ const CreateSlittingDetailsForm = (props) => {
     }
   }, [props.inward.pdfSuccess]);
   useEffect(() => {
-    if (props.slitCut) {
-      if (props.inward.instructionSaveSlittingSuccess && !props.wip) {
+    if (props.slitCut && props.inward.instructionSaveSlittingSuccess && !props.wip) {
         loading = "";
         message.success("Slitting instruction saved", 2).then(() => {
-          if (props.slitCut) {
-            let cutList = props.inward.saveSlit.map((slit) => {
-              return [...slit.instructions];
-            });
+          props.resetInstruction();
+            let cutList = props.inward?.saveSlit.map((slit) =>  [...slit.instructions]);
             let coilList = props.coilDetails.instruction.flat();
             cutList = cutList.flat();
             cutList = [...coilList, ...cutList];
             props.setCutting([...new Set(cutList)]);
-          }
           props.resetIsDeleted(false);
           props.setShowSlittingModal(false);
-          props.resetInstruction();
+         
         });
-      }
     } else if (
       props.inward.instructionSaveSlittingSuccess &&
       !props.wip &&
