@@ -504,11 +504,12 @@ const List = (props) => {
               : expandedRow.filter((row) => row.key !== record.key);
             setExpandedRecord([...result, motherRecord]);
           }}
+          
           pagination={{
-            pageSizeOptions: ["15"],
+            pageSize: "15",
             onChange: (page) => {
               setPageNo(page);
-              props.fetchInwardList(page, 15, searchValue, customerValue);
+              props.fetchInwardList(page, 15, searchValue);
             },
             current: pageNo,
             total: totalPageItems,
