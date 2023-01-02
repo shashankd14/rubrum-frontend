@@ -1234,31 +1234,31 @@ const CreateCuttingDetailsForm = (props) => {
           "Please enter the cut instructions for existing slits or the new slit to proceed with pdf generation"
         );
       } else {
-        saveInstruction.map((ins) => {
-          return ins.instructionRequestDTOs?.map((item) => {
-            if (item?.endUserTagId !== null) {
+        // saveInstruction.map((ins) => {
+        //   return ins.instructionRequestDTOs?.map((item) => {
+        //     if (item?.endUserTagId !== null) {
               props.saveCuttingInstruction(saveInstruction);
               setSaveInstruction([]);
               setSaveCutting([]);
-            } else {
-              message.error("Please select End User Tags");
-            }
-          });
-        });
+            // } else {
+            //   message.error("Please select End User Tags");
+            // }
+        //   });
+        // });
       }
     } else if (validate === false) {
       if (cutPayload.length > 0) {
-        saveInstruction.map((ins) => {
-          return ins.instructionRequestDTOs?.map((item) => {
-            if (item?.endUserTagId !== null) {
+        // saveInstruction.map((ins) => {
+        //   return ins.instructionRequestDTOs?.map((item) => {
+        //     if (item?.endUserTagId !== null) {
               props.saveCuttingInstruction(saveInstruction);
               setSaveInstruction([]);
               setSaveCutting([]);
-            } else {
-              message.error("Please select End User Tags");
-            }
-          });
-        });
+        //     } else {
+        //       message.error("Please select End User Tags");
+        //     }
+        //   });
+        // });
       } else {
         props.setShowCuttingModal(false);
       }
@@ -1276,12 +1276,12 @@ const CreateCuttingDetailsForm = (props) => {
   };
   const handleWeight = (e, record) => {
     e.preventDefault();
-    if (
-      Number(record.plannedWeight) + totalActualweight > tweight ||
-      Number(record.actualWeight) + totalActualweight > tweight
-    ) {
-      message.error("Error! Please adjust the weight");
-    } else {
+    // if (
+    //   Number(record.plannedWeight) + totalActualweight > tweight ||
+    //   Number(record.actualWeight) + totalActualweight > tweight
+    // ) {
+    //   message.error("Error! Please adjust the weight");
+    // } 
       const instructionList = tableData
         .slice(0, tableData.length - 1)
         .filter((item) =>
@@ -1338,7 +1338,7 @@ const CreateCuttingDetailsForm = (props) => {
         instruction: instructionList,
       };
       props.updateInstruction(coil);
-    }
+    
   };
   const addRow = () => {
     const newData = {
@@ -1615,7 +1615,7 @@ const CreateCuttingDetailsForm = (props) => {
               )
             ) : (
               <>
-                {props?.wip && !props.editFinish && !props.unfinish && (
+                {props?.wip  && !props.unfinish && (
                   <Row>
                     <Button type="primary" onClick={addRow}>
                       Add Row

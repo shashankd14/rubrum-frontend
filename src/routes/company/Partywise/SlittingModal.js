@@ -1260,24 +1260,19 @@ const CreateSlittingDetailsForm = (props) => {
     }
   }, [props.inward.pdfSuccess]);
   useEffect(() => {
-    if (props.slitCut) {
-      if (props.inward.instructionSaveSlittingSuccess && !props.wip) {
+    if (props.slitCut && props.inward.instructionSaveSlittingSuccess && !props.wip) {
         loading = "";
         message.success("Slitting instruction saved", 2).then(() => {
-          if (props.slitCut) {
-            let cutList = props.inward.saveSlit.map((slit) => {
-              return [...slit.instructions];
-            });
+          props.resetInstruction();
+            let cutList = props.inward?.saveSlit.map((slit) =>  [...slit.instructions]);
             let coilList = props.coilDetails.instruction.flat();
             cutList = cutList.flat();
             cutList = [...coilList, ...cutList];
             props.setCutting([...new Set(cutList)]);
-          }
           props.resetIsDeleted(false);
           props.setShowSlittingModal(false);
-          props.resetInstruction();
+         
         });
-      }
     } else if (
       props.inward.instructionSaveSlittingSuccess &&
       !props.wip &&
@@ -1390,15 +1385,8 @@ const CreateSlittingDetailsForm = (props) => {
         setDeletedSelected(false);
         if (name === "Slitting") {
           if (slitPayload.length > 0) {
-            slitInstruction.map((ins) => {
-              return ins?.instructionRequestDTOs?.map((item) => {
-                if (item?.endUserTagId !== null) {
-                  props.saveSlittingInstruction(slitInstruction);
-                } else {
-                  message.error("Please select End User Tags");
-                }
-              });
-            });
+            props.saveSlittingInstruction(slitInstruction);
+           
           } else {
             props.resetIsDeleted(false);
             props.setShowSlittingModal(false);
@@ -1406,16 +1394,9 @@ const CreateSlittingDetailsForm = (props) => {
         } else {
           if (name === "SlitCut") {
             if (slitPayload.length > 0) {
-              slitInstruction.map((ins) => {
-                const list = ins?.instructionRequestDTOs?.map((item) => {
-                  if (item?.endUserTagId !== null) {
-                    e.preventDefault();
-                    props.saveSlittingInstruction(slitInstruction);
-                  } else {
-                    message.error("Please select End User Tags");
-                  }
-                });
-              });
+           
+                props.saveSlittingInstruction(slitInstruction);
+             
             }
           } else {
             props.resetIsDeleted(false);
@@ -1447,12 +1428,13 @@ const CreateSlittingDetailsForm = (props) => {
   };
   const handleWeight = (e, record) => {
     e.preventDefault();
+    // if (
+    //   Number(record.plannedWeight) + totalActualweight > tweight ||
+    //   Number(record.actualWeight) + totalActualweight > tweight
+    // ) {
+    //   message.error("Error! Please adjust the weight");
+    // } else 
     if (
-      Number(record.plannedWeight) + totalActualweight > tweight ||
-      Number(record.actualWeight) + totalActualweight > tweight
-    ) {
-      message.error("Error! Please adjust the weight");
-    } else if (
       record?.packetClassification?.tagId === 0 ||
       record?.packetClassification?.classificationId === 0
     ) {
@@ -1586,7 +1568,7 @@ const CreateSlittingDetailsForm = (props) => {
         <TabPane tab="Slitting Instruction" key="1">
           {props.wip ? (
             <Row>
-              {!props.unfinish && !props.editFinish && (
+              {!props.unfinish  && (
                 <>
                   <Col lg={24} md={24} sm={24} xs={24}>
                     <Button type="primary" onClick={addRow}>
