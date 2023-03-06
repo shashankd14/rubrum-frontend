@@ -169,6 +169,7 @@ function* signInUserWithEmailPassword({payload}) {
       yield put(userSignInSuccess(signeduser.userName));
       localStorage.setItem("userToken",signeduser.access_token)
       localStorage.setItem("userName",signeduser.userName)
+      localStorage.setItem("userId",signeduser.userId)
     } else {
       yield put(showAuthMessage("Failed to Login"));
     }

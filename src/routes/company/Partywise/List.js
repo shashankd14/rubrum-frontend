@@ -59,18 +59,18 @@ const List = (props) => {
       filters: [],
       sorter: (a, b) => a.customerBatchId?.length - b.customerBatchId?.length,
       sortOrder: sortedInfo.columnKey === "customerBatchId" && sortedInfo.order,
-      render: (text, record) => {
-        if (record.customerBatchId) return record.customerBatchId;
-        else {
-          let batchId = "";
-          expandedRow.forEach((row) => {
-            if (row.child.includes(record.instructionId)) {
-              batchId = row.batch;
-            }
-          });
-          return batchId;
-        }
-      },
+      // render: (text, record) => {
+      //   if (record.customerBatchId) return record.customerBatchId;
+      //   else {
+      //     let batchId = "";
+      //     expandedRow.forEach((row) => {
+      //       if (row.child.includes(record.instructionId)) {
+      //         batchId = row.batch;
+      //       }
+      //     });
+      //     return batchId;
+      //   }
+      // },
     },
     {
       title: "Material",
@@ -96,18 +96,18 @@ const List = (props) => {
       filters: [],
       sorter: (a, b) => a.fThickness - b.fThickness,
       sortOrder: sortedInfo.columnKey === "fThickness" && sortedInfo.order,
-      render: (text, record) => {
-        if (record.fThickness) return record.fThickness;
-        else {
-          let thickness = "";
-          expandedRow.forEach((row) => {
-            if (row.child.includes(record.instructionId)) {
-              thickness = row.fThickness;
-            }
-          });
-          return thickness;
-        }
-      },
+      // render: (text, record) => {
+      //   if (record.fThickness) return record.fThickness;
+      //   else {
+      //     let thickness = "";
+      //     expandedRow.forEach((row) => {
+      //       if (row.child.includes(record.instructionId)) {
+      //         thickness = row.fThickness;
+      //       }
+      //     });
+      //     return thickness;
+      //   }
+      // },
     },
     {
       title: "Width",
@@ -235,7 +235,10 @@ const List = (props) => {
   };
   useEffect(() => {
     if (!props.inward.loading && props.inward.success) {
-      setFilteredInwardList(getFilterData(inwardList));
+      // setFilteredInwardList(getFilterData(inwardList));
+      // console.log(inwardList)
+      inwardList[0].children = inwardList[0].instruction
+      setFilteredInwardList(inwardList);
     }
   }, [props.inward.loading, props.inward.success]);
 
@@ -490,20 +493,20 @@ const List = (props) => {
           dataSource={filteredInwardList}
           onChange={handleChange}
           rowSelection={rowSelection}
-          onExpand={(expanded, record, data) => {
-            const motherRecord = {
-              key: record.key,
-              child: record.instruction
-                ? record.instruction?.map((r) => r.instructionId)
-                : record.childInstructions?.map((r) => r.instructionId),
-              batch: record.customerBatchId,
-              fThickness: record.fThickness,
-            };
-            const result = expanded
-              ? expandedRow
-              : expandedRow.filter((row) => row.key !== record.key);
-            setExpandedRecord([...result, motherRecord]);
-          }}
+          // onExpand={(expanded, record, data) => {
+          //   const motherRecord = {
+          //     key: record.key,
+          //     child: record.instruction
+          //       ? record.instruction?.map((r) => r.instructionId)
+          //       : record.childInstructions?.map((r) => r.instructionId),
+          //     batch: record.customerBatchId,
+          //     fThickness: record.fThickness,
+          //   };
+          //   const result = expanded
+          //     ? expandedRow
+          //     : expandedRow.filter((row) => row.key !== record.key);
+          //   setExpandedRecord([...result, motherRecord]);
+          // }}
           
           pagination={{
             pageSize: "15",

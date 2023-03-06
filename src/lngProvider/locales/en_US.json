@@ -339,5 +339,18 @@
   "partywise.plan.wastage": "Wastage",
   "partywise.plan.availableWeight": "Available Weight",
   "partywise.plan.deliveredWeight": "Delivered Weight(kg)",
-  "partywise.plan.date": "Date"
+  "partywise.plan.date": "Date",
+  "sidebar.quality": "Quality Module",
+  "sidebar.quality.reports": "Quality Reports",
+  "sidebar.quality.templates": "Quality Templates",
+  "sidebar.quality.kqp": "KQP Templates",
+  "quality.templates.input.action.select.label": "Search Customer",
+  "quality.templates.input.action.select.placeholder": "Search Customer",
+  "quality.templates.input.action.search.label": "Search",
+  "quality.templates.input.action.search.placeholder": "Search for users",
+  "quality.templates.button.action.print.label": "Print",
+  "quality.templates.button.action.export.label": "Export",
+  "quality.templates.button.action.create.label": "Create Template",
+  "quality.kqp.button.action.create.label": "Create KQP",
+  "quality.templates.create.new": "Create New Template"
 }

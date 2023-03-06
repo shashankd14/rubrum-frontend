@@ -125,6 +125,7 @@ const getFilterData=(list)=>{
 
     useEffect(() => {
         if(props.inward.wipSuccess) {
+            console.log(props.inward?.wipList)
             setFilteredInwardList(props.inward?.wipList);
         }
     }, [props.inward.wipSuccess])

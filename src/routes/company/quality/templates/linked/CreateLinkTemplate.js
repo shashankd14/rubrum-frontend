@@ -1,0 +1,318 @@
+import React, { useEffect, useState } from 'react'
+import { connect } from 'react-redux';
+import { Button, Card, Col, Form, Input, Row, Select, Tabs, Tag } from 'antd'
+import {
+    fetchPartyList,
+    fetchTemplatesList,
+    saveQualityTemplateLink,
+    getQualityTemplateLinkById,
+    updateQualityTemplateLink,
+} from "../../../../../appRedux/actions"
+
+const CreateLinkTemplate = (props) => {
+
+    const Option = Select.Option;
+
+    const [selectedTemplate, setSelectedTemplate] = useState();
+    const [selectedTemplateId, setSelectedTemplateId] = useState();
+    const [templateList, setTemplateList] = useState([]);
+    const [defaultSelected, setDefaultSelected] = useState([]);
+    const [selectedCustomers, setSelectedCustomers] = useState([]);
+    const [action, setAction] = useState("create");
+    const [partyList, setPartyList] = useState([]);
+    const [isDisabled, setIsDisabled] = useState(false);
+
+    useEffect(() => {
+        if (props.match) {
+            const urlPaths = props.match.url.split('/')
+            console.log(urlPaths)
+            setSelectedTemplateId(urlPaths[urlPaths.length - 1])
+            if (urlPaths[urlPaths.length - 2] == 'view' || urlPaths[urlPaths.length - 2] == 'edit') {
+                setAction(urlPaths[urlPaths.length - 2])
+                props.getQualityTemplateLinkById(urlPaths[urlPaths.length - 1])
+            }
+            props.fetchTemplatesList();
+            props.fetchPartyList();
+        }
+    }, [])
+
+    useEffect(() => {
+        if (!props.template.loading && !props.template.error && props.template.operation === 'templateList') {
+            setTemplateList([...props.template.data])
+            setSelectedTemplateDetails(selectedTemplateId)
+            // const filteredTemplate = props.template.data.filter(t => t.templateId == selectedTemplateId)
+            // setSelectedTemplate(filteredTemplate?.length === 1 ? filteredTemplate[0] : undefined)
+            // setDefaultSelected(filteredTemplate?.length === 1 ? [filteredTemplate[0].templateId] : [])
+        }
+    }, [props.template.loading, props.template.error]);
+
+    useEffect(() => {
+        if (!props.party.loading && !props.party.error) {
+            // console.log(props.party)
+            setPartyList(props.party.partyList)
+        }
+    }, [props.party.loading, props.party.error]);
+
+    const setSelectedTemplateDetails = (templateId) => {
+        const filteredTemplate = props.template.data.filter(t => t.templateId == templateId)
+        setSelectedTemplate(filteredTemplate?.length === 1 ? filteredTemplate[0] : undefined)
+        setDefaultSelected(filteredTemplate?.length === 1 ? [filteredTemplate[0].templateId] : [])
+    }
+
+    const handeTemplateChange = (e) => {
+        // setTemplateList([...props.template.data])
+        console.log(e)
+        setSelectedTemplateId(e)
+        setSelectedTemplateDetails(e);
+    }
+
+    const searchTemplate = (e) => {
+        const data = [...props.template.data]
+        if (e.length > 2) {
+            setTemplateList(data.filter(t => (t.templateId == e || t.templateName.toLowerCase().includes(e.toLowerCase()))))
+        } else {
+            setTemplateList(data.filter(t => t.templateId == e))
+        }
+
+    }
+
+    const onCustomerSelection = (e) => {
+        setSelectedCustomers(e)
+    }
+
+    const onCustomerDeselection = (e) => {
+        console.log(e)
+        console.log('selectedCustomers', selectedCustomers)
+        console.log('filteredCustomers', selectedCustomers.filter(c => c !== e))
+        console.log('partyList', partyList)
+        setSelectedCustomers(selectedCustomers.filter(c => c !== e))
+    }
+
+    useEffect(() => {
+        console.log(partyList.filter((e) => selectedCustomers.includes(e.nPartyId)).map((party) => (
+            party  
+        )))
+    }, [selectedCustomers])
+
+    const createTemplateLink = () => {
+        props.saveQualityTemplateLink({
+            templateId: selectedTemplateId,
+            partyIdList: selectedCustomers
+        })
+    }
+
+    return (
+        <div>
+            <Card title="Link Template">
+                <Row>
+                    <Col span={12}>
+                        <label>Qty Template Id/Template Name</label>
+                        <Select
+                            showSearch
+                            id="stage"
+                            style={{ width: "100%" }}
+                            onChange={handeTemplateChange}
+                            value={defaultSelected}
+                            onSearch={searchTemplate}
+                        // onBlur={() => setTemplateList([...props.template.data])}
+                        >
+                            {templateList.map((template) => (
+                                <Option key={`${template.templateId}${template.templateName}`} value={template.templateId}>
+                                    {template.templateName}
+                                </Option>
+                            ))}
+                        </Select>
+                    </Col>
+
+                </Row>
+                <Row>
+                    <Col span={12}>
+                        <label style={{ marginTop: 5, display: "flex" }}>Stage: {selectedTemplate?.stageName}</label>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col span={12}>
+                        <div style={{ marginTop: 30, display: "flex" }}>
+                            <label>Assign Customer</label>
+                        </div>
+                        <div >
+                            <Select
+                                id="select"
+                                mode="multiple"
+                                showSearch
+                                style={{ width: '100%' }}
+                                placeholder="Select a customer"
+                                optionFilterProp="children"
+                                onChange={onCustomerSelection}
+                                // onFocus={handleFocus}
+                                // onBlur={handleBlur}
+                                maxTagCount={3}
+                                filterOption={(input, option) =>
+                                    option.props.children
+                                        .toLowerCase()
+                                        .indexOf(input.toLowerCase()) >= 0
+                                }
+                                value={selectedCustomers}
+                                allowClear
+                            >
+
+                                {partyList.length > 0 &&
+                                    partyList.map((party) => (
+                                        <Select.Option value={party.nPartyId}>{party.partyName}</Select.Option>
+                                    ))}
+                            </Select>
+                        </div>
+                    </Col>
+                    <Col span={12}>
+                        <div id="custTags" style={{ marginTop: 30, display: "flex" }}>
+                            {partyList.length > 0 && selectedCustomers.length > 0 &&
+
+                                partyList.filter((e) => selectedCustomers.includes(e.nPartyId)).map((party) => (
+                                    <Tag
+                                        closable
+                                        onClose={() => onCustomerDeselection(party.nPartyId)}
+                                    >
+                                        {party.partyName}
+                                    </Tag>
+                                ))}
+
+                        </div>
+                    </Col>
+                </Row>
+                {selectedTemplate?.stageName === 'PROCESSING' &&
+                    <>
+                        <Row>
+                            <Col span={12}>
+                                <div style={{ marginTop: 30, display: "flex" }}>
+                                    <label>End User Tags</label>
+                                </div>
+                                <div>
+                                    <Select
+                                        id="select"
+                                        mode="multiple"
+                                        showSearch
+                                        style={{ width: '100%' }}
+                                        placeholder="Select End User Tags"
+                                        optionFilterProp="children"
+                                        onChange={onCustomerSelection}
+                                        // onFocus={handleFocus}
+                                        // onBlur={handleBlur}
+                                        maxTagCount={3}
+                                        filterOption={(input, option) =>
+                                            option.props.children
+                                                .toLowerCase()
+                                                .indexOf(input.toLowerCase()) >= 0
+                                        }
+                                        value={selectedCustomers}
+                                        allowClear
+                                    >
+
+                                        {partyList.length > 0 &&
+                                            partyList.map((party) => (
+                                                <Select.Option value={party.nPartyId}>{party.partyName}</Select.Option>
+                                            ))}
+                                    </Select>
+                                </div>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col span={12}>
+                                <div style={{ marginTop: 30, display: "flex" }}>
+                                    <label>Material Grade</label>
+                                </div>
+                                <div>
+                                    <Select
+                                        id="select"
+                                        mode="multiple"
+                                        showSearch
+                                        style={{ width: '100%' }}
+                                        placeholder="Select Material Grade"
+                                        optionFilterProp="children"
+                                        onChange={onCustomerSelection}
+                                        // onFocus={handleFocus}
+                                        // onBlur={handleBlur}
+                                        maxTagCount={3}
+                                        filterOption={(input, option) =>
+                                            option.props.children
+                                                .toLowerCase()
+                                                .indexOf(input.toLowerCase()) >= 0
+                                        }
+                                        value={selectedCustomers}
+                                        allowClear
+                                    >
+
+                                        {partyList.length > 0 &&
+                                            partyList.map((party) => (
+                                                <Select.Option value={party.nPartyId}>{party.partyName}</Select.Option>
+                                            ))}
+                                    </Select>
+                                </div>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col span={12}>
+                                <div style={{ marginTop: 30, display: "flex" }}>
+                                    <label>Thickness</label>
+                                </div>
+                                <div>
+                                    <Select
+                                        id="select"
+                                        mode="multiple"
+                                        showSearch
+                                        style={{ width: '100%' }}
+                                        placeholder="Select Thickness"
+                                        optionFilterProp="children"
+                                        onChange={onCustomerSelection}
+                                        // onFocus={handleFocus}
+                                        // onBlur={handleBlur}
+                                        maxTagCount={3}
+                                        filterOption={(input, option) =>
+                                            option.props.children
+                                                .toLowerCase()
+                                                .indexOf(input.toLowerCase()) >= 0
+                                        }
+                                        value={selectedCustomers}
+                                        allowClear
+                                    >
+
+                                        {partyList.length > 0 &&
+                                            partyList.map((party) => (
+                                                <Select.Option value={party.nPartyId}>{party.partyName}</Select.Option>
+                                            ))}
+                                    </Select>
+                                </div>
+                            </Col>
+                        </Row>
+                    </>
+                }
+                {action !== 'view' && <Row >
+                    <div style={{ marginTop: 45 }}>
+                        <Button style={{ marginLeft: 8 }} disabled={isDisabled}>
+                            Cancel
+                        </Button>
+                        {action === 'create' ? <Button type="primary" htmlType="submit" onClick={createTemplateLink} disabled={isDisabled}>
+                            Link Template
+                        </Button> :
+                            <Button type="primary" htmlType="submit" onClick={createTemplateLink} disabled={isDisabled}>
+                                Update Link
+                            </Button>
+                        }
+                    </div>
+                </Row>}
+            </Card>
+        </div>
+    )
+}
+
+const mapStateToProps = state => ({
+    template: state.quality,
+    party: state.party,
+});
+
+export default connect(mapStateToProps, {
+    fetchPartyList,
+    fetchTemplatesList,
+    saveQualityTemplateLink,
+    getQualityTemplateLinkById,
+    updateQualityTemplateLink,
+})(CreateLinkTemplate);
