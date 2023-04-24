@@ -359,7 +359,7 @@ const SlittingWidths = (props) => {
         const remainWeightRound = Number(remainWeight.toFixed(0));
         if (Number(availLength) > lengthValue) {
           message.error("Length greater than available length", 2);
-        } else if (totalWeightRound > remainWeightRound) {
+        } else if ((totalWeightRound-remainWeightRound) > remainWeightRound) {
           message.error("Weight greater than available weight", 2);
         } else if (totalWidth !== widthValue) {
           message.error("Sum of slits width is not same as width of coil.", 2);
