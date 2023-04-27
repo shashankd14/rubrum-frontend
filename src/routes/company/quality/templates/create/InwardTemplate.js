@@ -51,18 +51,25 @@ const InwardTemplate = (props) => {
     const [isDisabled, setIsDisabled] = useState(false);
 
     useEffect(() => {
-        // console.log(props)
+        console.log(props)
         setIsDisabled(props.action === 'view')
-        if (props.action !== 'create') {
-            const templateDetailsData = JSON.parse(props.templateDetails.templateDetails)
-            const val = {};
-            templateDetailsData.forEach((td) => { 
-                val[td.id] = td;
-            });
-            console.log(val)
-            setTemplateData(val)
+        if (props.from === "qr") {
+            initTemplateForm();
+        } else if (props.action !== 'create') {
+            initTemplateForm();
         }
+
     }, [props.templateDetails]);
+
+    const initTemplateForm = () => {
+        const templateDetailsData = JSON.parse(props.templateDetails.templateDetails)
+        const val = {};
+        templateDetailsData.forEach((td) => {
+            val[td.id] = td;
+        });
+        console.log(val)
+        setTemplateData(val)
+    }
 
     const onFilesChange = (type, file) => {
         templateData[type].fileList = file.fileList.slice(-1)
@@ -346,10 +353,14 @@ const InwardTemplate = (props) => {
                         <Button style={{ marginLeft: 8 }} disabled={isDisabled}>
                             Cancel
                         </Button>
-                        {props.action === 'create' ? <Button type="primary" htmlType="submit" onClick={createTemplate} disabled={isDisabled}>
-                            Create Template
-                        </Button> :
-                            <Button type="primary" htmlType="submit" onClick={createTemplate} disabled={isDisabled}>
+                        {props.from && props.from === "qr" ? props.action === 'create' ? <Button type="primary" htmlType="submit" onClick={createTemplate} disabled={isDisabled}>
+                            Create Report
+                        </Button> : <Button type="primary" htmlType="submit" onClick={createTemplate} disabled={isDisabled}>
+                            Update Report
+                        </Button>
+                            : props.action === 'create' ? <Button type="primary" htmlType="submit" onClick={createTemplate} disabled={isDisabled}>
+                                Create Template
+                            </Button> : <Button type="primary" htmlType="submit" onClick={createTemplate} disabled={isDisabled}>
                                 Update Template
                             </Button>
                         }

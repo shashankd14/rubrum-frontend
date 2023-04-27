@@ -3,7 +3,11 @@ import { getUserToken } from './common';
 import {FETCH_MATERIAL_LIST_REQUEST, 
     ADD_MATERIAL_REQUEST,
     FETCH_MATERIAL_LIST_ID_REQUEST,
-    UPDATE_MATERIAL_REQUEST
+    UPDATE_MATERIAL_REQUEST,
+    FETCH_MATERIAL_GRADES,
+    FETCH_WIDTHS,
+    FETCH_LENGTHS,
+    FETCH_THICKNESS
 } from "../../constants/ActionTypes";
 import {fetchMaterialListError, 
     fetchMaterialListSuccess, 
@@ -110,11 +114,87 @@ function* fetchMaterialListById(action) {
     }
 }
 
+function* fetchMaterialGrades() {
+    try {
+        const fetchMaterialList =  yield fetch(`${baseUrl}api/material/list`, {
+            method: 'GET',
+            headers: getHeaders()
+        });
+        if(fetchMaterialList.status === 200) {
+            const fetchMaterialListResponse = yield fetchMaterialList.json();
+            yield put(fetchMaterialListSuccess(fetchMaterialListResponse));
+        } else if (fetchMaterialList.status === 401) {
+            yield put(userSignOutSuccess());
+        } else
+            yield put(fetchMaterialListError('error'));
+    } catch (error) {
+        yield put(fetchMaterialListError(error));
+    }
+}
+
+function* fetchLengths() {
+    try {
+        const fetchMaterialList =  yield fetch(`${baseUrl}api/material/list`, {
+            method: 'GET',
+            headers: getHeaders()
+        });
+        if(fetchMaterialList.status === 200) {
+            const fetchMaterialListResponse = yield fetchMaterialList.json();
+            yield put(fetchMaterialListSuccess(fetchMaterialListResponse));
+        } else if (fetchMaterialList.status === 401) {
+            yield put(userSignOutSuccess());
+        } else
+            yield put(fetchMaterialListError('error'));
+    } catch (error) {
+        yield put(fetchMaterialListError(error));
+    }
+}
+
+function* fetchWidths() {
+    try {
+        const fetchMaterialList =  yield fetch(`${baseUrl}api/material/list`, {
+            method: 'GET',
+            headers: getHeaders()
+        });
+        if(fetchMaterialList.status === 200) {
+            const fetchMaterialListResponse = yield fetchMaterialList.json();
+            yield put(fetchMaterialListSuccess(fetchMaterialListResponse));
+        } else if (fetchMaterialList.status === 401) {
+            yield put(userSignOutSuccess());
+        } else
+            yield put(fetchMaterialListError('error'));
+    } catch (error) {
+        yield put(fetchMaterialListError(error));
+    }
+}
+
+function* fetchThickness() {
+    try {
+        const fetchMaterialList =  yield fetch(`${baseUrl}api/material/list`, {
+            method: 'GET',
+            headers: getHeaders()
+        });
+        if(fetchMaterialList.status === 200) {
+            const fetchMaterialListResponse = yield fetchMaterialList.json();
+            yield put(fetchMaterialListSuccess(fetchMaterialListResponse));
+        } else if (fetchMaterialList.status === 401) {
+            yield put(userSignOutSuccess());
+        } else
+            yield put(fetchMaterialListError('error'));
+    } catch (error) {
+        yield put(fetchMaterialListError(error));
+    }
+}
+
 export function* watchFetchRequests() {
     yield takeLatest(FETCH_MATERIAL_LIST_REQUEST, fetchMaterialList);
     yield takeLatest(ADD_MATERIAL_REQUEST, addMaterial);
     yield takeLatest(FETCH_MATERIAL_LIST_ID_REQUEST, fetchMaterialListById);
     yield takeLatest(UPDATE_MATERIAL_REQUEST, updateMaterial);
+    yield takeLatest(FETCH_MATERIAL_GRADES, fetchMaterialGrades);
+    yield takeLatest(FETCH_WIDTHS, fetchWidths);
+    yield takeLatest(FETCH_LENGTHS, fetchLengths);
+    yield takeLatest(FETCH_THICKNESS, fetchThickness);
 
 
 }

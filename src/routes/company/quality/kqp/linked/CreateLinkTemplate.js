@@ -3,10 +3,9 @@ import { connect } from 'react-redux';
 import { Button, Card, Col, Form, Input, Row, Select, Tabs, Tag } from 'antd'
 import {
     fetchPartyList,
-    fetchTemplatesList,
-    saveQualityTemplateLink,
-    getQualityTemplateLinkById,
-    updateQualityTemplateLink,
+    fetchKqpList,
+    saveKqpLink,
+    getKqpLinkById,
     fetchEndUserTagsList
 } from "../../../../../appRedux/actions"
 
@@ -31,23 +30,24 @@ const CreateLinkTemplate = (props) => {
             setSelectedTemplateId(urlPaths[urlPaths.length - 1])
             if (urlPaths[urlPaths.length - 2] == 'view' || urlPaths[urlPaths.length - 2] == 'edit') {
                 setAction(urlPaths[urlPaths.length - 2])
-                props.getQualityTemplateLinkById(urlPaths[urlPaths.length - 1])
+                props.getKqpLinkById(urlPaths[urlPaths.length - 1])
             }
-            props.fetchTemplatesList();
+            props.fetchKqpList();
             props.fetchPartyList();
             props.fetchEndUserTagsList();
         }
     }, [])
 
     useEffect(() => {
-        if (!props.template.loading && !props.template.error && props.template.operation === 'templateList') {
+        if (!props.template.loading && !props.template.error && props.template.operation === 'kqpList') {
+            console.log(props.template.data)
             setTemplateList([...props.template.data])
             setSelectedTemplateDetails(selectedTemplateId)
             // const filteredTemplate = props.template.data.filter(t => t.templateId == selectedTemplateId)
             // setSelectedTemplate(filteredTemplate?.length === 1 ? filteredTemplate[0] : undefined)
             // setDefaultSelected(filteredTemplate?.length === 1 ? [filteredTemplate[0].templateId] : [])
         }
-    }, [props.template.loading, props.template.error]);
+    }, [props.template.loading, props.template.error, props.template.operation]);
 
     useEffect(() => {
         if (!props.party.loading && !props.party.error) {
@@ -57,9 +57,9 @@ const CreateLinkTemplate = (props) => {
     }, [props.party.loading, props.party.error]);
 
     const setSelectedTemplateDetails = (templateId) => {
-        const filteredTemplate = props.template.data.filter(t => t.templateId == templateId)
+        const filteredTemplate = props.template.data.filter(t => t.kqpId == templateId)
         setSelectedTemplate(filteredTemplate?.length === 1 ? filteredTemplate[0] : undefined)
-        setDefaultSelected(filteredTemplate?.length === 1 ? [filteredTemplate[0].templateId] : [])
+        setDefaultSelected(filteredTemplate?.length === 1 ? [filteredTemplate[0].kqpId] : [])
     }
 
     const handeTemplateChange = (e) => {
@@ -72,9 +72,9 @@ const CreateLinkTemplate = (props) => {
     const searchTemplate = (e) => {
         const data = [...props.template.data]
         if (e.length > 2) {
-            setTemplateList(data.filter(t => (t.templateId == e || t.templateName.toLowerCase().includes(e.toLowerCase()))))
+            setTemplateList(data.filter(t => (t.kqpId == e || t.kqpName.toLowerCase().includes(e.toLowerCase()))))
         } else {
-            setTemplateList(data.filter(t => t.templateId == e))
+            setTemplateList(data.filter(t => t.kqpId == e))
         }
 
     }
@@ -136,18 +136,13 @@ const CreateLinkTemplate = (props) => {
                         // onBlur={() => setTemplateList([...props.template.data])}
                         >
                             {templateList.map((template) => (
-                                <Option key={`${template.templateId}${template.templateName}`} value={template.templateId}>
-                                    {template.templateName}
+                                <Option key={`${template.kqpId}${template.kqpName}`} value={template.kqpId}>
+                                    {template.kqpName}
                                 </Option>
                             ))}
                         </Select>
                     </Col>
 
-                </Row>
-                <Row>
-                    <Col span={12}>
-                        <label style={{ marginTop: 5, display: "flex" }}>Stage: {selectedTemplate?.stageName}</label>
-                    </Col>
                 </Row>
                 <Row>
                     <Col span={12}>
@@ -198,7 +193,7 @@ const CreateLinkTemplate = (props) => {
                         </div>
                     </Col>
                 </Row>
-                {selectedTemplate?.stageName === 'PROCESSING' &&
+                
                     <>
                         <Row>
                             <Col span={12}>
@@ -311,8 +306,67 @@ const CreateLinkTemplate = (props) => {
                                 </div>
                             </Col>
                         </Row>
+                        <Row>
+                            <Col span={12}>
+                                <div style={{ marginTop: 30, display: "flex" }}>
+                                    <label>Width</label>
+                                </div>
+                                <div>
+                                    <Select
+                                        id="select"
+                                        mode="multiple"
+                                        showSearch
+                                        style={{ width: '100%' }}
+                                        placeholder="Select Width"
+                                        optionFilterProp="children"
+                                        onChange={onCustomerSelection}
+                                        // onFocus={handleFocus}
+                                        // onBlur={handleBlur}
+                                        maxTagCount={3}
+                                        filterOption={(input, option) =>
+                                            option.props.children
+                                                .toLowerCase()
+                                                .indexOf(input.toLowerCase()) >= 0
+                                        }
+                                        // value={selectedCustomers}
+                                        allowClear
+                                    >
+
+                                    </Select>
+                                </div>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col span={12}>
+                                <div style={{ marginTop: 30, display: "flex" }}>
+                                    <label>Length</label>
+                                </div>
+                                <div>
+                                    <Select
+                                        id="select"
+                                        mode="multiple"
+                                        showSearch
+                                        style={{ width: '100%' }}
+                                        placeholder="Select Length"
+                                        optionFilterProp="children"
+                                        onChange={onCustomerSelection}
+                                        // onFocus={handleFocus}
+                                        // onBlur={handleBlur}
+                                        maxTagCount={3}
+                                        filterOption={(input, option) =>
+                                            option.props.children
+                                                .toLowerCase()
+                                                .indexOf(input.toLowerCase()) >= 0
+                                        }
+                                        // value={selectedCustomers}
+                                        allowClear
+                                    >
+
+                                    </Select>
+                                </div>
+                            </Col>
+                        </Row>
                     </>
-                }
                 {action !== 'view' && <Row >
                     <div style={{ marginTop: 45 }}>
                         <Button style={{ marginLeft: 8 }} disabled={isDisabled}>
@@ -340,9 +394,8 @@ const mapStateToProps = state => ({
 
 export default connect(mapStateToProps, {
     fetchPartyList,
-    fetchTemplatesList,
-    saveQualityTemplateLink,
-    getQualityTemplateLinkById,
-    updateQualityTemplateLink,
+    fetchKqpList,
+    saveKqpLink,
+    getKqpLinkById,
     fetchEndUserTagsList,
 })(CreateLinkTemplate);

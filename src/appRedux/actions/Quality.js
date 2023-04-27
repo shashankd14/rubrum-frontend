@@ -34,6 +34,54 @@ import {
   DELETE_QUALITY_TEMPLATE_LINK_REQUEST,
   DELETE_QUALITY_TEMPLATE_LINK_SUCCESS,
   DELETE_QUALITY_TEMPLATE_LINK_ERROR,
+  FETCH_KQP_LIST,
+  FETCH_KQP_LIST_SUCCESS,
+  FETCH_KQP_LIST_ERROR,
+  SAVE_KQP_REQUEST,
+  SAVE_KQP_SUCCESS,
+  SAVE_KQP_ERROR,
+  GET_KQP_BY_ID_REQUEST,
+  GET_KQP_BY_ID_SUCCESS,
+  GET_KQP_BY_ID_ERROR,
+  UPDATE_KQP_REQUEST,
+  UPDATE_KQP_SUCCESS,
+  UPDATE_KQP_ERROR,
+  DELETE_KQP_REQUEST,
+  DELETE_KQP_SUCCESS,
+  DELETE_KQP_ERROR,
+  FETCH_KQP_LINK_LIST,
+  FETCH_KQP_LINK_LIST_SUCCESS,
+  FETCH_KQP_LINK_LIST_ERROR,
+  SAVE_KQP_LINK_REQUEST,
+  SAVE_KQP_LINK_SUCCESS,
+  SAVE_KQP_LINK_ERROR,
+  GET_KQP_LINK_BY_ID_REQUEST,
+  GET_KQP_LINK_BY_ID_SUCCESS,
+  GET_KQP_LINK_BY_ID_ERROR,
+  UPDATE_KQP_LINK_REQUEST,
+  UPDATE_KQP_LINK_SUCCESS,
+  UPDATE_KQP_LINK_ERROR,
+  DELETE_KQP_LINK_REQUEST,
+  DELETE_KQP_LINK_SUCCESS,
+  DELETE_KQP_LINK_ERROR,
+  FETCH_QUALITY_REPORT_STAGE_REQUEST,
+  FETCH_QUALITY_REPORT_STAGE_SUCCESS,
+  FETCH_QUALITY_REPORT_STAGE_ERROR,
+  FETCH_QUALITY_REPORT_REQUEST,
+  FETCH_QUALITY_REPORT_SUCCESS,
+  FETCH_QUALITY_REPORT_ERROR,
+  SAVE_QUALITY_REPORT_REQUEST,
+  SAVE_QUALITY_REPORT_SUCCESS,
+  SAVE_QUALITY_REPORT_ERROR,
+  GET_QUALITY_REPORT_BY_ID_REQUEST,
+  GET_QUALITY_REPORT_BY_ID_SUCCESS,
+  GET_QUALITY_REPORT_BY_ID_ERROR,
+  UPDATE_QUALITY_REPORT_REQUEST,
+  UPDATE_QUALITY_REPORT_SUCCESS,
+  UPDATE_QUALITY_REPORT_ERROR,
+  DELETE_QUALITY_REPORT_REQUEST,
+  DELETE_QUALITY_REPORT_SUCCESS,
+  DELETE_QUALITY_REPORT_ERROR,
 } from "constants/ActionTypes";
 
 
@@ -167,8 +215,9 @@ export const deleteQualityTemplateError = error => {
   }
 };
 
-export const fetchTemplatesLinkList = () => ({
+export const fetchTemplatesLinkList = (params) => ({
   type: FETCH_TEMPLATE_LINK_LIST,
+  params
 });
 
 export const fetchTemplatesLinkListSuccess = (templateList) => ({
@@ -258,6 +307,314 @@ export const deleteQualityTemplateLinkSuccess = () => {
 export const deleteQualityTemplateLinkError = error => {
   return {
     type: DELETE_QUALITY_TEMPLATE_LINK_ERROR,
+    error
+  }
+};
+
+/////////
+
+export const fetchKqpLinkList = () => ({
+  type: FETCH_KQP_LINK_LIST,
+});
+
+export const fetchKqpLinkListSuccess = (templateList) => ({
+  type: FETCH_KQP_LINK_LIST_SUCCESS,
+  templateList
+});
+
+export const fetchKqpLinkListError = (error) => ({
+  type: FETCH_KQP_LINK_LIST_ERROR,
+  error
+});
+
+export const saveKqpLink = payload => {
+  return {
+    type: SAVE_KQP_LINK_REQUEST,
+    payload
+  }
+};
+
+export const saveKqpLinkSuccess = () => {
+  return {
+    type: SAVE_KQP_LINK_SUCCESS
+  }
+};
+
+export const saveKqpLinkError = error => {
+  return {
+    type: SAVE_KQP_LINK_ERROR,
+    error
+  }
+};
+
+export const getKqpLinkById = payload => {
+  return {
+    type: GET_KQP_LINK_BY_ID_REQUEST,
+    payload
+  }
+};
+
+export const getKqpLinkByIdSuccess = (templateDetails) => {
+  return {
+    type: GET_KQP_LINK_BY_ID_SUCCESS,
+    templateDetails
+  }
+};
+
+export const getKqpLinkByIdError = error => {
+  return {
+    type: GET_KQP_LINK_BY_ID_ERROR,
+    error
+  }
+};
+
+export const updateKqpLink = payload => {
+  return {
+    type: UPDATE_KQP_LINK_REQUEST,
+    payload
+  }
+};
+
+export const updateKqpLinkSuccess = () => {
+  return {
+    type: UPDATE_KQP_LINK_SUCCESS
+  }
+};
+
+export const updateKqpLinkError = error => {
+  return {
+    type: UPDATE_KQP_LINK_ERROR,
+    error
+  }
+};
+
+export const deleteKqpLink = payload => {
+  return {
+    type: DELETE_KQP_LINK_REQUEST,
+    payload
+  }
+};
+
+export const deleteKqpLinkSuccess = () => {
+  return {
+    type: DELETE_KQP_LINK_SUCCESS
+  }
+};
+
+export const deleteKqpLinkError = error => {
+  return {
+    type: DELETE_KQP_LINK_ERROR,
+    error
+  }
+};
+
+//######################
+
+export const fetchKqpList = () => ({
+  type: FETCH_KQP_LIST,
+});
+
+export const fetchKqpListSuccess = (templateList) => ({
+  type: FETCH_KQP_LIST_SUCCESS,
+  templateList
+});
+
+export const fetchKqpListError = (error) => ({
+  type: FETCH_KQP_LIST_ERROR,
+  error
+});
+
+export const saveKqp = payload => {
+  return {
+    type: SAVE_KQP_REQUEST,
+    payload
+  }
+};
+
+export const saveKqpSuccess = () => {
+  return {
+    type: SAVE_KQP_SUCCESS
+  }
+};
+
+export const saveKqpError = error => {
+  return {
+    type: SAVE_KQP_ERROR,
+    error
+  }
+};
+
+export const getKqpById = payload => {
+  return {
+    type: GET_KQP_BY_ID_REQUEST,
+    payload
+  }
+};
+
+export const getKqpByIdSuccess = (templateDetails) => {
+  return {
+    type: GET_KQP_BY_ID_SUCCESS,
+    templateDetails
+  }
+};
+
+export const getKqpByIdError = error => {
+  return {
+    type: GET_KQP_BY_ID_ERROR,
+    error
+  }
+};
+
+export const updateKqp = payload => {
+  return {
+    type: UPDATE_KQP_REQUEST,
+    payload
+  }
+};
+
+export const updateKqpSuccess = () => {
+  return {
+    type: UPDATE_KQP_SUCCESS
+  }
+};
+
+export const updateKqpError = error => {
+  return {
+    type: UPDATE_KQP_ERROR,
+    error
+  }
+};
+
+export const deleteKqp = payload => {
+  return {
+    type: DELETE_KQP_REQUEST,
+    payload
+  }
+};
+
+export const deleteKqpSuccess = () => {
+  return {
+    type: DELETE_KQP_SUCCESS
+  }
+};
+
+export const deleteKqpError = error => {
+  return {
+    type: DELETE_KQP_ERROR,
+    error
+  }
+};
+
+// quality report
+
+export const fetchQualityReportStageList = payload => {
+  return {
+    type: FETCH_QUALITY_REPORT_STAGE_REQUEST,
+    payload
+  }
+};
+
+export const fetchQualityReportStageListSuccess = (templateList) => ({
+  type: FETCH_QUALITY_REPORT_STAGE_SUCCESS,
+  templateList
+});
+
+export const fetchQualityReportStageListError = (error) => ({
+  type: FETCH_QUALITY_REPORT_STAGE_ERROR,
+  error
+});
+
+export const fetchQualityReportList = () => ({
+  type: FETCH_QUALITY_REPORT_REQUEST,
+});
+
+export const fetchQualityReportListSuccess = (templateList) => ({
+  type: FETCH_QUALITY_REPORT_SUCCESS,
+  templateList
+});
+
+export const fetchQualityReportListError = (error) => ({
+  type: FETCH_QUALITY_REPORT_ERROR,
+  error
+});
+
+export const saveQualityReport = payload => {
+  return {
+    type: SAVE_QUALITY_REPORT_REQUEST,
+    payload
+  }
+};
+
+export const saveQualityReportSuccess = () => {
+  return {
+    type: SAVE_QUALITY_REPORT_SUCCESS
+  }
+};
+
+export const saveQualityReportError = error => {
+  return {
+    type: SAVE_QUALITY_REPORT_ERROR,
+    error
+  }
+};
+
+export const getQualityReportById = payload => {
+  return {
+    type: GET_QUALITY_REPORT_BY_ID_REQUEST,
+    payload
+  }
+};
+
+export const getQualityReportByIdSuccess = (templateDetails) => {
+  return {
+    type: GET_QUALITY_REPORT_BY_ID_SUCCESS,
+    templateDetails
+  }
+};
+
+export const getQualityReportByIdError = error => {
+  return {
+    type: GET_QUALITY_REPORT_BY_ID_ERROR,
+    error
+  }
+};
+
+export const updateQualityReport = payload => {
+  return {
+    type: UPDATE_QUALITY_REPORT_REQUEST,
+    payload
+  }
+};
+
+export const updateQualityReportSuccess = () => {
+  return {
+    type: UPDATE_QUALITY_REPORT_SUCCESS
+  }
+};
+
+export const updateQualityReportError = error => {
+  return {
+    type: UPDATE_QUALITY_REPORT_ERROR,
+    error
+  }
+};
+
+export const deleteQualityReport = payload => {
+  return {
+    type: DELETE_QUALITY_REPORT_REQUEST,
+    payload
+  }
+};
+
+export const deleteQualityReportSuccess = () => {
+  return {
+    type: DELETE_QUALITY_REPORT_SUCCESS
+  }
+};
+
+export const deleteQualityReportError = error => {
+  return {
+    type: DELETE_QUALITY_REPORT_ERROR,
     error
   }
 };

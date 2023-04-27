@@ -4,9 +4,9 @@ import {Redirect, Route, Switch} from "react-router-dom";
 
 const Quality = ({match}) => (
     <Switch>
-        <Route path={`${match.url}/reports`} component={asyncComponent(() => import('./reports/Reports'))}/>
+        <Route path={`${match.url}/reports`} component={asyncComponent(() => import('./reports'))}/>
         <Route path={`${match.url}/templates`} component={asyncComponent(() => import('./templates'))}/>
-        <Route path={`${match.url}/kqp`} component={asyncComponent(() => import('./kqp/Templates'))}/>
+        <Route path={`${match.url}/kqp`} component={asyncComponent(() => import('./kqp'))}/>
     </Switch>
 );
 

@@ -2,7 +2,7 @@ import { Button, Card, Col, DatePicker, Input, Row } from 'antd'
 import TextArea from 'antd/lib/input/TextArea';
 import React from 'react'
 
-const SlittingForm = (props) => {
+const SlitAndCutForm = (props) => {
 
     const gridCardStyle = {
         width: '50%',
@@ -132,4 +132,4 @@ const SlittingForm = (props) => {
     )
 }
 
-export default SlittingForm
+export default SlitAndCutForm

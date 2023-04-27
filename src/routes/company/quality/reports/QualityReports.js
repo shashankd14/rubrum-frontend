@@ -1,19 +1,47 @@
 import React, { useEffect, useState } from "react";
+import { connect } from 'react-redux';
 import { Card, Tabs } from 'antd'
 import { useIntl } from "react-intl";
+import { useLocation } from 'react-router-dom';
 import IntlMessages from '../../../../util/IntlMessages'
 import { QUALITY_REPORT_ACTIONS } from "../../../../constants/quality/ComponentConstants";
 import InwardReport from "./InwardReport";
+import { 
+  deleteQualityTemplate
+} from "../../../../appRedux/actions"
+import PreProcessingReport from "./PreProcessingReport";
+import ProcessingReport from "./ProcessingReport";
+import PreDispatchReport from "./PreDispatchReport";
+import PostDispatchReport from "./PostDispatchReport";
 
-const Reports = () => {
+const QualityReports = (props) => {
   const [mode, setMode] = useState("top");
   const [tabKey, setTabKey] = useState("1");
   const intl = useIntl();
   const TabPane = Tabs.TabPane;
+  const location = useLocation();
+
+  useEffect(() => {
+    console.log(props.history)
+    if (props.match) {
+        console.log(props.match)
+        console.log(location)
+        
+        const params = new URLSearchParams(location.search);
+        console.log(params.get('view'));
+        if(params.get('view') === 'links') {
+          setTabKey("2");
+        } else {
+          setTabKey("1");
+        }
+    }
+}, [])
 
   const onTabChange = (key) => {
     setTabKey(key);
   };
+
+  
 
   return (
     <div>
@@ -26,16 +54,16 @@ const Reports = () => {
             <InwardReport/>
           </TabPane>
           <TabPane tab="Pre-Processing" key="2" className="additionalTab">
-            {/* <List actions={QUALITY_REPORT_ACTIONS} /> */}
+            <PreProcessingReport/>
           </TabPane>
           <TabPane tab="Processing" key="3" className="additionalTab">
-            {/* <List actions={QUALITY_REPORT_ACTIONS} /> */}
+            <ProcessingReport/>
           </TabPane>
           <TabPane tab="Pre-Dispatch" key="4" className="additionalTab">
-            {/* <List actions={QUALITY_REPORT_ACTIONS} /> */}
+            <PreDispatchReport/>
           </TabPane>
           <TabPane tab="Post-Dispatch" key="5" className="additionalTab">
-            {/* <List actions={QUALITY_REPORT_ACTIONS} /> */}
+            <PostDispatchReport/>
           </TabPane>
         </Tabs>
       </Card>
@@ -43,4 +71,10 @@ const Reports = () => {
   )
 }
 
-export default Reports
+const mapStateToProps = state => ({
+  templateDetails: state.quality,
+});
+
+export default connect(mapStateToProps, {
+  deleteQualityTemplate
+})(QualityReports);

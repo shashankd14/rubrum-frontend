@@ -1,290 +1,401 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Card, Col, Icon, Input, Radio, Row } from 'antd'
-import Dragger from 'antd/lib/upload/Dragger'
+import { connect } from "react-redux";
+import {Link, useHistory, useLocation, withRouter} from "react-router-dom";
+import { Button, Card, Col, Divider, Icon, Modal, Radio, Row, Select, Table } from 'antd'
+import {
+    fetchPartyList,
+    fetchInwardList,
+    fetchTemplatesList,
+    fetchTemplatesLinkList,
+    getQualityTemplateById,
+    fetchQualityReportList,
+    fetchQualityReportStageList
+} from "../../../../appRedux/actions";
+import moment from "moment";
+import { useIntl } from "react-intl";
+import SearchBox from "../../../../components/SearchBox";
 
-const PreProcessingTemplate = (props) => {
-  const [templateData, setTemplateData] = useState({
-    1: {
-      "id": 1,
-      "type": "wireRopeDamages",
-      "value": "No",
-      "fileName": "",
-      "fileList": []
-    },
-    2: {
-      "id": 2,
-      "type": "coilBend",
-      "value": "No",
-      "fileName": "",
-      "fileList": []
-    },
-    3: {
-      "id": 3,
-      "type": "rustObserved",
-      "value": "No",
-      "fileName": "",
-      "fileList": []
-    },
-    4: {
-      "id": 4,
-      "type": "safetyIssues",
-      "value": "No",
-      "fileName": "",
-      "fileList": []
-    },
-    5: {
-      "id": 5,
-      "type": "waterExposure",
-      "value": "No",
-      "fileName": "",
-      "fileList": []
-    },
-    6: {
-      "id": 6,
-      "type": "improperStorage",
-      "value": "No",
-      "fileName": "",
-      "fileList": []
-    },
-    7: {
-      "id": 7,
-      "type": "exactWidth",
-      "value": "",
-      "fileName": "",
-      "fileList": []
+import IntlMessages from "../../../../util/IntlMessages";
+import { compose } from 'redux';
+
+const PreProcessingReport = (props) => {
+
+    const intl = useIntl();
+    const history = useHistory();
+    const location = useLocation();
+    const [sortedInfo, setSortedInfo] = useState({
+        order: "descend",
+        columnKey: "age",
+    });
+    const [filteredInfo, setFilteredInfo] = useState(null);
+    const [searchValue, setSearchValue] = useState("");
+    const [filteredPreProcessingList, setFilteredPreProcessingList] = useState([]);
+    const [qualityReportList, setQualityReportList] = useState([]);
+
+    const [pageNo, setPageNo] = React.useState(1);
+    const [totalPageItems, setTotalItems] = React.useState(0);
+    const [partyList, setPartyList] = useState([]);
+    const [templateList, setTemplateList] = useState([]);
+    const [templateLinkList, setTemplateLinkList] = useState([]);
+    const [templateId, setTemplateId] = useState();
+    const { totalItems } = props.inward;
+    const [selectedItemForQr, setSelectedItemForQr] = useState({})
+    const [showCreateModal, setShowCreateModal] = useState(false);
+    const [showCreateQrScreen, setShowCreateQrScreen] = useState(false);
+
+
+
+    const columns = [
+        {
+            title: "Plan ID",
+            dataIndex: "planId",
+            key: "planId",
+            filters: [],
+            sorter: (a, b) => a.planId.length - b.planId.length,
+            sortOrder: sortedInfo.columnKey === "planId" && sortedInfo.order,
+        },
+        {
+            title: "Batch No",
+            dataIndex: "customerBatchNo",
+            key: "customerBatchNo",
+            filteredValue: filteredInfo ? filteredInfo["customerBatchNo"] : null,
+            onFilter: (value, record) => record.customerBatchNo == value,
+            filters:
+                props.inward.inwardList.length > 0
+                    ? [
+                        ...new Set(
+                            props.inward.inwardList.map((item) => item.customerBatchNo)
+                        ),
+                    ].map((partyName) => ({ text: partyName, value: partyName }))
+                    : [],
+            sorter: (a, b) => a.customerBatchNo.length - b.customerBatchNo.length,
+            sortOrder: sortedInfo.columnKey === "customerBatchNo" && sortedInfo.order,
+        },
+        {
+            title: "Plan Date",
+            dataIndex: "planDate",
+            render(value) {
+                return moment(value).format("Do MMM YYYY");
+            },
+            key: "planDate",
+            filters: [],
+            sorter: (a, b) => a.planDate - b.planDate,
+            sortOrder: sortedInfo.columnKey === "planDate" && sortedInfo.order,
+        },
+        {
+            title: "Material",
+            dataIndex: "materialGrade",
+            key: "materialGrade",
+            filteredValue: filteredInfo ? filteredInfo["materialGrade"] : null,
+            onFilter: (value, record) => record.materialGrade == value,
+            filters:
+                props.inward.inwardList.length > 0
+                    ? [
+                        ...new Set(
+                            props.inward.inwardList.map((item) => item.materialGrade)
+                        ),
+                    ].map((material) => ({ text: material, value: material }))
+                    : [],
+            sorter: (a, b) =>
+                a.materialGrade.length - b.materialGrade.length,
+            sortOrder:
+                sortedInfo.columnKey === "materialGrade" && sortedInfo.order,
+        },
+        {
+            title: "Thickness",
+            dataIndex: "fthickness",
+            key: "fthickness",
+            filters: [],
+            sorter: (a, b) => a.fthickness - b.fthickness,
+            sortOrder: sortedInfo.columnKey === "fthickness" && sortedInfo.order,
+        },
+        {
+            title: "Weight",
+            dataIndex: "fQuantity",
+            key: "fQuantity",
+            filters: [],
+            sorter: (a, b) => a.fQuantity - b.fQuantity,
+            sortOrder: sortedInfo.columnKey === "fQuantity" && sortedInfo.order,
+        },
+        {
+            title: "Report Status",
+            dataIndex: "status.statusName",
+            key: "status.statusName",
+            filters: [],
+            sorter: (a, b) => a.status.statusName.length - b.status.statusName.length,
+            sortOrder:
+                sortedInfo.columnKey === "status.statusName" && sortedInfo.order,
+        },
+        {
+            title: "Action",
+            dataIndex: "",
+            key: "x",
+            render: (text, record, index) => (
+                <span>
+                    <span
+                        className="gx-link"
+                        onClick={(e) => showTemplateList(record, index, e)}
+                    >
+                        Create QR
+                    </span>
+                    <Divider type="vertical" />
+                    <span
+                        className="gx-link"
+                        onClick={(e) => showReportView(record, index, e)}
+                    >
+                        View
+                    </span>
+                    <Divider type="vertical" />
+                    <span className="gx-link" onClick={(e) => onEdit(record, index, e)}>
+                        Edit
+                    </span>
+                    <Divider type="vertical" />
+                    <span className="gx-link" onClick={(e) => onDelete(record, index, e)}>
+                        Delete
+                    </span>
+                </span>
+            ),
+        },
+    ];
+
+    useEffect(() => {
+        props.fetchQualityReportStageList({stage: "preprocessing", page: 1, pageSize: 15, partyId: ''});
+        props.fetchQualityReportList();
+        props.fetchPartyList();
+        props.fetchTemplatesList();
+    }, []);
+
+    useEffect(() => {
+        if (!props.template.loading && !props.template.error && props.template.operation == "fetchQualityReport") {
+            console.log(props.template)
+            setQualityReportList(props.template.data)
+        } else if (!props.template.loading && !props.template.error && props.template.operation == "fetchQualityReportStage") {
+            console.log(props.template)
+            setFilteredPreProcessingList(props.template.data)
+        }
+    }, [props.template.loading, props.template.error, props.template.operation]);
+
+
+    const showCreateQr = () => {
+        // props.history.push()
+        props.getQualityTemplateById(templateId)
     }
-  });
 
-  const [isDisabled, setIsDisabled] = useState(false);
+    useEffect(() => {
+        if (!props.template.loading && !props.template.error && props.template.operation === 'templateById') {
+            console.log(props)
+            setShowCreateQrScreen(true)
+            // history.push('/company/quality/reports/create/inward')
+            props.history.push({pathname: '/company/quality/reports/create/inward', state: {selectedItemForQr: selectedItemForQr, templateDetails: props.template.data, action: 'create'}})
+        }
+    }, [props.template.loading, props.template.error]);
 
-  useEffect(() => {
-    // console.log(props)
-    setIsDisabled(props.action === 'view')
-    if (props.action !== 'create') {
-      const templateDetailsData = JSON.parse(props.templateDetails.templateDetails)
-      const val = {};
-      templateDetailsData.forEach((td) => {
-        val[td.id] = td;
-      });
-      console.log(val)
-      setTemplateData(val)
+    const showTemplateList = (record, key) => {
+        console.log(record, key)
+        setSelectedItemForQr(record)
+        props.fetchTemplatesLinkList({ partyId: record.party.nPartyId });
     }
-  }, [props.templateDetails]);
 
-  const onFilesChange = (type, file) => {
-    console.log(type, file)
-    templateData[type].fileList = file.fileList.slice(-1)
-    templateData[type].fileName = templateData[type].fileList[0].name;
-    console.log(templateData)
-    setTemplateData({ ...templateData })
-  }
+    const showReportView = (record, key) => {
+        console.log(record, key)
+        const templateDetails = qualityReportList.find(qr => qr.coilNumber === record.coilNumber && qr.inwardId === record.inwardEntryId)
+        props.history.push({pathname: '/company/quality/reports/create/inward', state: {selectedItemForQr: record, templateDetails: templateDetails, action: 'view'}})
+    }
 
-  const onOptionChange = (type, value) => {
-    console.log(type, value)
-    templateData[type].value = value.target.value
-    console.log(templateData)
-    setTemplateData({ ...templateData })
-  }
+    useEffect(() => {
+        if (!props.template.loading && !props.template.error && props.template.operation == "templateLinkList") {
+            console.log(props.template)
+            setTemplateLinkList(props.template.data)
+            setShowCreateModal(true)
+        }
+    }, [props.template.loading, props.template.error]);
 
-  const createTemplate = () => {
-    props.handleCreate(templateData)
-  }
+    const onDelete = (record, key, e) => {
+        console.log(record, key);
+    };
 
-  return (
-    <div>
-      <Col span={24} className="gx-pt-4">
-        <Row>
-          <Col span={8}>
-            <div style={{ display: 'grid', marginTop: 15 }}>
-              <label>Enter Exact Width</label>
-              <Input
-                id="exactWidth"
-                onChange={(e) => onOptionChange(7, e)}
-                required
-                disabled={isDisabled}
-              />
-            </div>
-          </Col>
-        </Row>
-        <Row>
-          <Col span={8}>
-            <div style={{ display: 'grid', marginTop: 45 }}>
-              <label>Wire Rope Damages</label>
-              <Radio.Group onChange={(e) => onOptionChange(1, e)} value={templateData[1].value} disabled={isDisabled}>
-                <Radio value="Yes">Yes</Radio>
-                <Radio value="No">No</Radio>
-              </Radio.Group>
-            </div>
-          </Col>
-        </Row>
-        <Row>
-          <Col span={8}>
-            <div style={{ display: 'grid', marginTop: 45 }}>
-              <label>Coil Bend</label>
-              <Radio.Group onChange={(e) => onOptionChange(2, e)} value={templateData[2].value} disabled={isDisabled}>
-                <Radio value="Yes">Yes</Radio>
-                <Radio value="No">No</Radio>
-              </Radio.Group>
-            </div>
-          </Col>
-        </Row>
-        <Row>
-          <Col span={8}>
-            <div style={{ display: 'grid', marginTop: 45 }}>
-              <label>Rust Observed</label>
-              <Radio.Group onChange={(e) => onOptionChange(3, e)} value={templateData[3].value} disabled={isDisabled}>
-                <Radio value="Yes">Yes</Radio>
-                <Radio value="No">No</Radio>
-              </Radio.Group>
-            </div>
-          </Col>
-          <Col span={8}>
-            <div style={{ display: 'grid', marginTop: 45 }}>
-              {props.action === 'view' && props.templateDetails.rustObservedPreSingedURL && <img src={props.templateDetails.rustObservedPreSingedURL} style={{ width: 50 }} />}
-              {props.action === 'edit' && <> {props.templateDetails.rustObservedPreSingedURL && <img src={props.templateDetails.rustObservedPreSingedURL} style={{ width: 50 }} />}
-                <Dragger
-                  name='packingIntact'
-                  height={50}
-                  beforeUpload={() => false}
-                  action=''
-                  onChange={(e) => onFilesChange(3, e)}
-                // fileList={templateData[1].fileList}
+    const onEdit = (record, key, e) => {
+        console.log(record, key)
+        const templateDetails = qualityReportList.find(qr => qr.coilNumber === record.coilNumber && qr.inwardId === record.inwardEntryId)
+        props.history.push({pathname: '/company/quality/reports/create/inward', state: {selectedItemForQr: record, templateDetails: templateDetails, action: 'edit'}})
+    };
+
+    const handleChange = (e) => {
+        console.log(e)
+        setTemplateId(e)
+    };
+
+    useEffect(() => {
+        if (!props.inward.loading && props.inward.success) {
+            setFilteredPreProcessingList(props.inward.inwardList);
+        }
+    }, [props.inward.loading, props.inward.success]);
+
+    useEffect(() => {
+        if (!props.template.loading && !props.template.error && props.template.operation === 'templateList') {
+            console.log(props.template)
+            setTemplateList(props.template.data)
+        }
+    }, [props.template.loading, props.template.error]);
+
+    useEffect(() => {
+        if (!props.party.loading && !props.party.error) {
+            console.log(props.party)
+            setPartyList(props.party.partyList)
+        }
+    }, [props.party.loading, props.party.error]);
+
+    // useEffect(() => {
+    //     if (searchValue) {
+    //         if (searchValue.length >= 3) {
+    //             setPageNo(1);
+    //             props.fetchInwardList(1, 15, searchValue);
+    //         }
+    //     } else {
+    //         setPageNo(1);
+    //         props.fetchInwardList(1, 15, searchValue);
+    //     }
+    // }, [searchValue]);
+
+
+    return (
+        <>
+            
+                <div className="gx-flex-row gx-flex-1">
+                    <div className="table-operations gx-col">
+                        <Select
+                            id="select"
+                            showSearch
+                            style={{ width: 200 }}
+                            placeholder="Select a customer"
+                            optionFilterProp="children"
+                            onChange={handleChange}
+                            value={templateId}
+                            // onFocus={handleFocus}
+                            // onBlur={handleBlur}
+                            filterOption={(input, option) =>
+                                option.props.children
+                                    .toLowerCase()
+                                    .indexOf(input.toLowerCase()) >= 0
+                            }
+                        >
+
+                            {partyList.length > 0 &&
+                                partyList.map((party) => (
+                                    <Select.Option key={party.nPartyId} value={party.nPartyId}>{party.partyName}</Select.Option>
+                                ))}
+                        </Select>
+                    </div>
+                    <div className="table-operations gx-col">
+                        <SearchBox
+                            styleName="gx-flex-1"
+                            placeholder="Search for customers"
+                            value={searchValue}
+                            onChange={(e) => setSearchValue(e.target.value)}>
+                        </SearchBox>
+
+                    </div>
+                </div>
+                <div className="gx-flex-row gx-flex-1">
+                    <Table
+                        className="gx-table-responsive"
+                        columns={columns}
+                        dataSource={filteredPreProcessingList}
+                        onChange={handleChange}
+                        pagination={{
+                            pageSize: 15,
+                            onChange: (page) => {
+                                setPageNo(page);
+                                props.fetchPreProcessingList(page, 15, searchValue);
+                            },
+                            current: pageNo,
+                            total: totalPageItems,
+                        }}
+                    />
+                </div>
+
+                <Modal
+                    title={`Batch No: ${selectedItemForQr?.batchNumber}`}
+                    visible={showCreateModal}
+                    onOk={() => showCreateQr(true)}
+                    onCancel={() => setShowCreateModal(false)}
                 >
-                  <p>
-                    <Icon type="upload" />
-                    &nbsp;Click or drag rust observed img
-                  </p>
-                </Dragger> </>}
-              {props.action === 'create' && <Dragger
-                name='packingIntact'
-                height={50}
-                beforeUpload={() => false}
-                action=''
-                onChange={(e) => onFilesChange(3, e)}
-              // fileList={templateData[1].fileList}
-              >
-                <p>
-                  <Icon type="upload" />
-                  &nbsp;Click or drag rust observed img
-                </p>
-              </Dragger>}
-            </div>
-          </Col>
-        </Row>
-        <Row>
-          <Col span={8}>
-            <div style={{ display: 'grid', marginTop: 45 }} >
-              <label>Saftey Issues</label>
-              <Radio.Group onChange={(e) => onOptionChange(4, e)} value={templateData[4].value} disabled={isDisabled}>
-                <Radio value="Yes">Yes</Radio>
-                <Radio value="No">No</Radio>
-              </Radio.Group>
-            </div>
-          </Col>
-          <Col span={8}>
-            <div style={{ display: 'grid', marginTop: 45 }}>
-              {props.action === 'view' && props.templateDetails.safetyIssuesPreSingedURL && <img src={props.templateDetails.safetyIssuesPreSingedURL} style={{ width: 50 }} />}
-              {props.action === 'edit' && <> {props.templateDetails.safetyIssuesPreSingedURL && <img src={props.templateDetails.safetyIssuesPreSingedURL} style={{ width: 50 }} />}
-                <Dragger
-                  name='packingIntact'
-                  height={50}
-                  beforeUpload={() => false}
-                  action=''
-                  onChange={(e) => onFilesChange(4, e)}
-                // fileList={templateData[1].fileList}
-                >
-                  <p>
-                    <Icon type="upload" />
-                    &nbsp;Click or drag safety issues img
-                  </p>
-                </Dragger> </>}
-              {props.action === 'create' && <Dragger
-                name='packingIntact'
-                height={50}
-                beforeUpload={() => false}
-                action=''
-                onChange={(e) => onFilesChange(4, e)}
-              // fileList={templateData[1].fileList}
-              >
-                <p>
-                  <Icon type="upload" />
-                  &nbsp;Click or drag safety issues img
-                </p>
-              </Dragger>}
-            </div>
-          </Col>
-        </Row>
-        <Row>
-          <Col span={8}>
-            <div style={{ display: 'grid', marginTop: 45 }}>
-              <label>Water Exposure</label>
-              <Radio.Group onChange={(e) => onOptionChange(5, e)} value={templateData[5].value} disabled={isDisabled}>
-                <Radio value="Yes">Yes</Radio>
-                <Radio value="No">No</Radio>
-              </Radio.Group>
-            </div>
-          </Col>
-        </Row>
-        <Row>
-          <Col span={8}>
-            <div style={{ display: 'grid', marginTop: 45 }}>
-              <label>Improper Storage</label>
-              <Radio.Group onChange={(e) => onOptionChange(6, e)} value={templateData[6].value} disabled={isDisabled}>
-                <Radio value="Yes">Yes</Radio>
-                <Radio value="No">No</Radio>
-              </Radio.Group>
-            </div>
-          </Col>
-          <Col span={8}>
-            <div style={{ display: 'grid', marginTop: 45 }}>
-              {props.action === 'view' && props.templateDetails.improperStoragePreSingedURL && <img src={props.templateDetails.improperStoragePreSingedURL} style={{ width: 50 }} />}
-              {props.action === 'edit' && <> {props.templateDetails.improperStoragePreSingedURL && <img src={props.templateDetails.improperStoragePreSingedURL} style={{ width: 50 }} />}
-                <Dragger
-                  name='packingIntact'
-                  height={50}
-                  beforeUpload={() => false}
-                  action=''
-                  onChange={(e) => onFilesChange(6, e)}
-                // fileList={templateData[1].fileList}
-                >
-                  <p>
-                    <Icon type="upload" />
-                    &nbsp;Click or drag improper storage img
-                  </p>
-                </Dragger> </>}
-              {props.action === 'create' && <Dragger
-                name='packingIntact'
-                height={50}
-                beforeUpload={() => false}
-                action=''
-                onChange={(e) => onFilesChange(6, e)}
-              // fileList={templateData[1].fileList}
-              >
-                <p>
-                  <Icon type="upload" />
-                  &nbsp;Click or drag improper storage img
-                </p>
-              </Dragger>}
-            </div>
-          </Col>
-        </Row>
-        {props.action !== 'view' && <Row >
-          <div style={{ marginTop: 45 }}>
-            <Button style={{ marginLeft: 8 }} disabled={isDisabled}>
-              Cancel
-            </Button>
-            {props.action === 'create' ? <Button type="primary" htmlType="submit" onClick={createTemplate} disabled={isDisabled}>
-              Create Template
-            </Button> :
-              <Button type="primary" htmlType="submit" onClick={createTemplate} disabled={isDisabled}>
-                Update Template
-              </Button>
-            }
-          </div>
-        </Row>}
-      </Col>
-    </div>
-  )
+                    <Row>
+                        <Col span={24}>
+                            <Row>
+                                <Col span={12}>
+                                    <strong>Customer Name</strong>
+                                    <p>{selectedItemForQr?.party?.partyName}</p>
+                                </Col>
+                                <Col span={12} style={{ right: 0, position: 'absolute' }}>
+                                    <strong>Stage</strong>
+                                    <p>PreProcessing</p>
+                                </Col>
+                            </Row>
+
+                            <Row>
+                                <Col span={6}>
+                                    <strong>Coil No.</strong>
+                                    <p>{selectedItemForQr?.coilNumber}</p>
+                                </Col>
+                                <Col span={6}>
+                                    <strong>Batch No.</strong>
+                                    <p>{selectedItemForQr?.batchNumber}</p>
+                                </Col>
+                                <Col span={6}>
+                                    <strong>Thickness</strong>
+                                    <p>{selectedItemForQr?.fThickness}</p>
+                                </Col>
+                                <Col span={6} >
+                                    <strong>Weight</strong>
+                                    <p>PreProcessing</p>
+                                </Col>
+                            </Row>
+                            <Divider />
+                            <Row>
+                                <strong>Template ID & Name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Linking Parameter</strong>
+                                <Select
+                                    id="select"
+                                    showSearch
+                                    style={{ width: "100%" }}
+                                    placeholder="Select a customer"
+                                    optionFilterProp="children"
+                                    onChange={handleChange}
+                                    value={templateId}
+                                    // onFocus={handleFocus}
+                                    // onBlur={handleBlur}
+                                    filterOption={(input, option) =>
+                                        option.props.children
+                                            .toLowerCase()
+                                            .indexOf(input.toLowerCase()) >= 0
+                                    }
+                                >
+
+                                    {templateLinkList.length > 0 &&
+                                        templateLinkList.map((link) => (
+                                            <Select.Option value={link.templateId}>{`${link.templateId}-${link.templateName}`}</Select.Option>
+                                        ))}
+                                </Select>
+                            </Row>
+                        </Col>
+                    </Row>
+                </Modal>
+            
+        </>
+    )
 }
 
-export default PreProcessingTemplate
+const mapStateToProps = (state) => ({
+    template: state.quality,
+    inward: state.inward,
+    party: state.party,
+});
+
+export default connect(mapStateToProps, {
+    fetchTemplatesList,
+    fetchPartyList,
+    fetchTemplatesLinkList,
+    getQualityTemplateById,
+    fetchQualityReportList,
+    fetchQualityReportStageList
+})(withRouter(PreProcessingReport));

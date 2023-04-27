@@ -34,7 +34,54 @@ import {
   DELETE_QUALITY_TEMPLATE_LINK_REQUEST,
   DELETE_QUALITY_TEMPLATE_LINK_SUCCESS,
   DELETE_QUALITY_TEMPLATE_LINK_ERROR,
-
+  FETCH_QUALITY_REPORT_STAGE_REQUEST,
+  FETCH_QUALITY_REPORT_STAGE_SUCCESS,
+  FETCH_QUALITY_REPORT_STAGE_ERROR,
+  FETCH_QUALITY_REPORT_REQUEST,
+  FETCH_QUALITY_REPORT_SUCCESS,
+  FETCH_QUALITY_REPORT_ERROR,
+  SAVE_QUALITY_REPORT_REQUEST,
+  SAVE_QUALITY_REPORT_SUCCESS,
+  SAVE_QUALITY_REPORT_ERROR,
+  GET_QUALITY_REPORT_BY_ID_REQUEST,
+  GET_QUALITY_REPORT_BY_ID_SUCCESS,
+  GET_QUALITY_REPORT_BY_ID_ERROR,
+  UPDATE_QUALITY_REPORT_REQUEST,
+  UPDATE_QUALITY_REPORT_SUCCESS,
+  UPDATE_QUALITY_REPORT_ERROR,
+  DELETE_QUALITY_REPORT_REQUEST,
+  DELETE_QUALITY_REPORT_SUCCESS,
+  DELETE_QUALITY_REPORT_ERROR,
+  FETCH_KQP_LIST,
+  FETCH_KQP_LIST_SUCCESS,
+  FETCH_KQP_LIST_ERROR,
+  SAVE_KQP_REQUEST,
+  SAVE_KQP_SUCCESS,
+  SAVE_KQP_ERROR,
+  GET_KQP_BY_ID_REQUEST,
+  GET_KQP_BY_ID_SUCCESS,
+  GET_KQP_BY_ID_ERROR,
+  UPDATE_KQP_REQUEST,
+  UPDATE_KQP_SUCCESS,
+  UPDATE_KQP_ERROR,
+  DELETE_KQP_REQUEST,
+  DELETE_KQP_SUCCESS,
+  DELETE_KQP_ERROR,
+  FETCH_KQP_LINK_LIST,
+  FETCH_KQP_LINK_LIST_SUCCESS,
+  FETCH_KQP_LINK_LIST_ERROR,
+  SAVE_KQP_LINK_REQUEST,
+  SAVE_KQP_LINK_SUCCESS,
+  SAVE_KQP_LINK_ERROR,
+  GET_KQP_LINK_BY_ID_REQUEST,
+  GET_KQP_LINK_BY_ID_SUCCESS,
+  GET_KQP_LINK_BY_ID_ERROR,
+  UPDATE_KQP_LINK_REQUEST,
+  UPDATE_KQP_LINK_SUCCESS,
+  UPDATE_KQP_LINK_ERROR,
+  DELETE_KQP_LINK_REQUEST,
+  DELETE_KQP_LINK_SUCCESS,
+  DELETE_KQP_LINK_ERROR,
 } from "constants/ActionTypes";
 
 const INIT_STATE = {
@@ -209,13 +256,15 @@ export default (state = INIT_STATE, action) => {
     case SAVE_QUALITY_TEMPLATE_LINK_SUCCESS:
       return {
         ...state,
-        loading: false
+        error: false,
+        loading: false,
+        operation: "templateLinkSave"
       }
     case SAVE_QUALITY_TEMPLATE_LINK_ERROR:
       return {
         ...state,
         error: true,
-        loading: false
+        loading: false,
       }
     case GET_QUALITY_TEMPLATE_LINK_BY_ID_REQUEST:
       return {
@@ -253,24 +302,268 @@ export default (state = INIT_STATE, action) => {
         error: true,
         loading: false
       }
-      case DELETE_QUALITY_TEMPLATE_LINK_REQUEST:
-        return {
-          ...state,
-          loading: true
-        }
-      case DELETE_QUALITY_TEMPLATE_LINK_SUCCESS:
-        return {
-          ...state,
-          loading: false,
-          data: action.templateDetails,
-          operation: "templateLinkById"
-        }
-      case DELETE_QUALITY_TEMPLATE_LINK_ERROR:
-        return {
-          ...state,
-          error: true,
-          loading: false
-        }
+    case DELETE_QUALITY_TEMPLATE_LINK_REQUEST:
+      return {
+        ...state,
+        loading: true
+      }
+    case DELETE_QUALITY_TEMPLATE_LINK_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        data: action.templateDetails,
+        operation: "templateLinkById"
+      }
+    case DELETE_QUALITY_TEMPLATE_LINK_ERROR:
+      return {
+        ...state,
+        error: true,
+        loading: false
+      }
+    case FETCH_QUALITY_REPORT_STAGE_REQUEST:
+      return {
+        ...state,
+        error: false,
+        loading: true
+      }
+    case FETCH_QUALITY_REPORT_STAGE_SUCCESS:
+      return {
+        ...state,
+        error: false,
+        loading: false,
+        data: action.templateList,
+        operation: "fetchQualityReportStage"
+      }
+    case FETCH_QUALITY_REPORT_STAGE_ERROR:
+      return {
+        ...state,
+        error: true,
+        loading: false
+      }
+    case FETCH_QUALITY_REPORT_REQUEST:
+      return {
+        ...state,
+        error: false,
+        loading: true
+      }
+    case FETCH_QUALITY_REPORT_SUCCESS:
+      return {
+        ...state,
+        error: false,
+        loading: false,
+        data: action.templateList,
+        operation: "fetchQualityReport"
+      }
+    case FETCH_QUALITY_REPORT_ERROR:
+      return {
+        ...state,
+        error: true,
+        loading: false
+      }
+    case SAVE_QUALITY_REPORT_REQUEST:
+      return {
+        ...state,
+        loading: true
+      }
+    case SAVE_QUALITY_REPORT_SUCCESS:
+      return {
+        ...state,
+        error: false,
+        loading: false,
+        operation: "qualityReportSave"
+      }
+    case SAVE_QUALITY_REPORT_ERROR:
+      return {
+        ...state,
+        error: true,
+        loading: false,
+      }
+
+    case FETCH_KQP_LIST:
+      return {
+        ...state,
+        error: false,
+        loading: true
+      }
+    case FETCH_KQP_LIST_SUCCESS:
+      return {
+        ...state,
+        error: false,
+        loading: false,
+        data: action.templateList,
+        operation: "kqpList"
+      }
+    case FETCH_KQP_LIST_ERROR:
+      return {
+        ...state,
+        error: true,
+        loading: false
+      }
+    case SAVE_KQP_REQUEST:
+      return {
+        ...state,
+        loading: true
+      }
+    case SAVE_KQP_SUCCESS:
+      return {
+        ...state,
+        error: false,
+        loading: false,
+        operation: "kqpSave"
+      }
+    case SAVE_KQP_ERROR:
+      return {
+        ...state,
+        error: true,
+        loading: false,
+      }
+    case GET_KQP_BY_ID_REQUEST:
+      return {
+        ...state,
+        loading: true
+      }
+    case GET_KQP_BY_ID_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        data: action.templateDetails,
+        operation: "kqpById"
+      }
+    case GET_KQP_BY_ID_ERROR:
+      return {
+        ...state,
+        error: true,
+        loading: false
+      }
+    case UPDATE_KQP_REQUEST:
+      return {
+        ...state,
+        loading: true
+      }
+    case UPDATE_KQP_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        data: action.templateDetails,
+        operation: "kqpUpdateById"
+      }
+    case UPDATE_KQP_ERROR:
+      return {
+        ...state,
+        error: true,
+        loading: false
+      }
+    case DELETE_KQP_REQUEST:
+      return {
+        ...state,
+        loading: true
+      }
+    case DELETE_KQP_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        data: action.templateDetails,
+        operation: "kqpDeleteById"
+      }
+    case DELETE_KQP_ERROR:
+      return {
+        ...state,
+        error: true,
+        loading: false
+      }
+
+    case FETCH_KQP_LINK_LIST:
+      return {
+        ...state,
+        error: false,
+        loading: true
+      }
+    case FETCH_KQP_LINK_LIST_SUCCESS:
+      return {
+        ...state,
+        error: false,
+        loading: false,
+        data: action.templateList,
+        operation: "kqpLinkList"
+      }
+    case FETCH_KQP_LINK_LIST_ERROR:
+      return {
+        ...state,
+        error: true,
+        loading: false
+      }
+    case SAVE_KQP_LINK_REQUEST:
+      return {
+        ...state,
+        loading: true
+      }
+    case SAVE_KQP_LINK_SUCCESS:
+      return {
+        ...state,
+        error: false,
+        loading: false,
+        operation: "kqpLinkSave"
+      }
+    case SAVE_KQP_LINK_ERROR:
+      return {
+        ...state,
+        error: true,
+        loading: false,
+      }
+    case GET_KQP_LINK_BY_ID_REQUEST:
+      return {
+        ...state,
+        loading: true
+      }
+    case GET_KQP_LINK_BY_ID_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        data: action.templateDetails,
+        operation: "kqpLinkById"
+      }
+    case GET_KQP_LINK_BY_ID_ERROR:
+      return {
+        ...state,
+        error: true,
+        loading: false
+      }
+    case UPDATE_KQP_LINK_REQUEST:
+      return {
+        ...state,
+        loading: true
+      }
+    case UPDATE_KQP_LINK_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        data: action.templateDetails,
+        operation: "kqpUpdateLinkById"
+      }
+    case UPDATE_KQP_LINK_ERROR:
+      return {
+        ...state,
+        error: true,
+        loading: false
+      }
+    case DELETE_KQP_LINK_REQUEST:
+      return {
+        ...state,
+        loading: true
+      }
+    case DELETE_KQP_LINK_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        data: action.templateDetails,
+        operation: "kqpDeleteLinkById"
+      }
+    case DELETE_KQP_LINK_ERROR:
+      return {
+        ...state,
+        error: true,
+        loading: false
+      }
 
     default:
       return state;

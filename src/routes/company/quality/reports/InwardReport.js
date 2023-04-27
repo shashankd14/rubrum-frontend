@@ -1,36 +1,49 @@
 import React, { useEffect, useState } from 'react'
 import { connect } from "react-redux";
-import { useHistory } from "react-router";
-import { Button, Card, Col, Divider, Icon, Radio, Row, Select, Table } from 'antd'
+import {Link, useHistory, useLocation, withRouter} from "react-router-dom";
+import { Button, Card, Col, Divider, Icon, Modal, Radio, Row, Select, Table } from 'antd'
 import {
     fetchPartyList,
     fetchInwardList,
+    fetchTemplatesList,
+    fetchTemplatesLinkList,
+    getQualityTemplateById,
+    fetchQualityReportList,
+    fetchQualityReportStageList
 } from "../../../../appRedux/actions";
 import moment from "moment";
 import { useIntl } from "react-intl";
 import SearchBox from "../../../../components/SearchBox";
 
 import IntlMessages from "../../../../util/IntlMessages";
+import { compose } from 'redux';
 
-const InwardTemplate = (props) => {
+const InwardReport = (props) => {
 
     const intl = useIntl();
     const history = useHistory();
+    const location = useLocation();
     const [sortedInfo, setSortedInfo] = useState({
         order: "descend",
         columnKey: "age",
     });
     const [filteredInfo, setFilteredInfo] = useState(null);
     const [searchValue, setSearchValue] = useState("");
-    const [filteredInwardList, setFilteredInwardList] = useState(
-        props.inward.inwardList
-    );
+    const [filteredInwardList, setFilteredInwardList] = useState([]);
+    const [qualityReportList, setQualityReportList] = useState([]);
 
     const [pageNo, setPageNo] = React.useState(1);
     const [totalPageItems, setTotalItems] = React.useState(0);
     const [partyList, setPartyList] = useState([]);
-    const [customerValue, setCustomerValue] = useState("");
+    const [templateList, setTemplateList] = useState([]);
+    const [templateLinkList, setTemplateLinkList] = useState([]);
+    const [templateId, setTemplateId] = useState();
     const { totalItems } = props.inward;
+    const [selectedItemForQr, setSelectedItemForQr] = useState({})
+    const [showCreateModal, setShowCreateModal] = useState(false);
+    const [showCreateQrScreen, setShowCreateQrScreen] = useState(false);
+
+
 
     const columns = [
         {
@@ -42,21 +55,21 @@ const InwardTemplate = (props) => {
             sortOrder: sortedInfo.columnKey === "coilNumber" && sortedInfo.order,
         },
         {
-            title: "Party Name",
-            dataIndex: "party.partyName",
-            key: "party.partyName",
-            filteredValue: filteredInfo ? filteredInfo["party.partyName"] : null,
-            onFilter: (value, record) => record.party.partyName == value,
+            title: "Batch No",
+            dataIndex: "batchNumber",
+            key: "batchNumber",
+            filteredValue: filteredInfo ? filteredInfo["batchNumber"] : null,
+            onFilter: (value, record) => record.batchNumber == value,
             filters:
                 props.inward.inwardList.length > 0
                     ? [
                         ...new Set(
-                            props.inward.inwardList.map((item) => item.party.partyName)
+                            props.inward.inwardList.map((item) => item.batchNumber)
                         ),
                     ].map((partyName) => ({ text: partyName, value: partyName }))
                     : [],
-            sorter: (a, b) => a.party.partyName.length - b.party.partyName.length,
-            sortOrder: sortedInfo.columnKey === "party.partyName" && sortedInfo.order,
+            sorter: (a, b) => a.batchNumber.length - b.batchNumber.length,
+            sortOrder: sortedInfo.columnKey === "batchNumber" && sortedInfo.order,
         },
         {
             title: "Inward Date",
@@ -121,14 +134,14 @@ const InwardTemplate = (props) => {
                 <span>
                     <span
                         className="gx-link"
-                        onClick={() => props.history.push(`${record.coilNumber}`)}
+                        onClick={(e) => showTemplateList(record, index, e)}
                     >
                         Create QR
                     </span>
                     <Divider type="vertical" />
                     <span
                         className="gx-link"
-                        onClick={() => props.history.push(`${record.coilNumber}`)}
+                        onClick={(e) => showReportView(record, index, e)}
                     >
                         View
                     </span>
@@ -145,17 +158,84 @@ const InwardTemplate = (props) => {
         },
     ];
 
+    useEffect(() => {
+        props.fetchQualityReportStageList({stage: "inwardlist", page: 1, pageSize: 15, partyId: ''});
+        props.fetchQualityReportList();
+        props.fetchPartyList();
+        props.fetchTemplatesList();
+    }, []);
+
+    useEffect(() => {
+        console.log(props)
+        if (!props.template.loading && !props.template.error && props.template.operation == "fetchQualityReport") {
+            console.log(props.template)
+            setQualityReportList(props.template.data)
+        } else if (!props.template.loading && !props.template.error && props.template.operation == "fetchQualityReportStage") {
+            console.log(props.template)
+            setFilteredInwardList(props.template.data)
+        } else if (!props.template.loading && !props.template.error && props.template.operation === 'templateById') {
+            console.log(props)
+            setShowCreateQrScreen(true)
+            // history.push('/company/quality/reports/create/inward')
+            props.history.push({pathname: '/company/quality/reports/create/inward', state: {selectedItemForQr: selectedItemForQr, templateDetails: props.template.data, action: 'create'}})
+        } else if (!props.template.loading && !props.template.error && props.template.operation == "templateLinkList") {
+            console.log(props.template)
+            setTemplateLinkList(props.template.data)
+            setShowCreateModal(true)
+        } else if (!props.template.loading && !props.template.error && props.template.operation === 'templateList') {
+            console.log(props.template)
+            setTemplateList(props.template.data)
+        }
+    }, [props.template.loading, props.template.error, props.template.operation]);
+
+
+    const showCreateQr = () => {
+        // props.history.push()
+        props.getQualityTemplateById(templateId)
+    }
+
+    // useEffect(() => {
+    //     if (!props.template.loading && !props.template.error && props.template.operation === 'templateById') {
+    //         console.log(props)
+    //         setShowCreateQrScreen(true)
+    //         // history.push('/company/quality/reports/create/inward')
+    //         props.history.push({pathname: '/company/quality/reports/create/inward', state: {selectedItemForQr: selectedItemForQr, templateDetails: props.template.data, action: 'create'}})
+    //     }
+    // }, [props.template.loading, props.template.error]);
+
+    const showTemplateList = (record, key) => {
+        console.log(record, key)
+        setSelectedItemForQr(record)
+        props.fetchTemplatesLinkList({ partyId: record.party.nPartyId });
+    }
+
+    const showReportView = (record, key) => {
+        console.log(record, key)
+        const templateDetails = qualityReportList.find(qr => qr.coilNumber === record.coilNumber && qr.inwardId === record.inwardEntryId)
+        props.history.push({pathname: '/company/quality/reports/create/inward', state: {selectedItemForQr: record, templateDetails: templateDetails, action: 'view'}})
+    }
+
+    // useEffect(() => {
+    //     if (!props.template.loading && !props.template.error && props.template.operation == "templateLinkList") {
+    //         console.log(props.template)
+    //         setTemplateLinkList(props.template.data)
+    //         setShowCreateModal(true)
+    //     }
+    // }, [props.template.loading, props.template.error]);
+
     const onDelete = (record, key, e) => {
         console.log(record, key);
     };
 
     const onEdit = (record, key, e) => {
-        console.log(record, key);
+        console.log(record, key)
+        const templateDetails = qualityReportList.find(qr => qr.coilNumber === record.coilNumber && qr.inwardId === record.inwardEntryId)
+        props.history.push({pathname: '/company/quality/reports/create/inward', state: {selectedItemForQr: record, templateDetails: templateDetails, action: 'edit'}})
     };
 
-    const handleChange = (pagination, filters, sorter) => {
-        setSortedInfo(sorter);
-        setFilteredInfo(filters);
+    const handleChange = (e) => {
+        console.log(e)
+        setTemplateId(e)
     };
 
     useEffect(() => {
@@ -164,84 +244,172 @@ const InwardTemplate = (props) => {
         }
     }, [props.inward.loading, props.inward.success]);
 
+    // useEffect(() => {
+    //     if (!props.template.loading && !props.template.error && props.template.operation === 'templateList') {
+    //         console.log(props.template)
+    //         setTemplateList(props.template.data)
+    //     }
+    // }, [props.template.loading, props.template.error]);
+
     useEffect(() => {
-        if (searchValue) {
-            if (searchValue.length >= 3) {
-                setPageNo(1);
-                props.fetchInwardList(1, 15, searchValue);
-            }
-        } else {
-            setPageNo(1);
-            props.fetchInwardList(1, 15, searchValue);
+        if (!props.party.loading && !props.party.error) {
+            console.log(props.party)
+            setPartyList(props.party.partyList)
         }
-    }, [searchValue]);
+    }, [props.party.loading, props.party.error]);
+
+    // useEffect(() => {
+    //     if (searchValue) {
+    //         if (searchValue.length >= 3) {
+    //             setPageNo(1);
+    //             props.fetchInwardList(1, 15, searchValue);
+    //         }
+    //     } else {
+    //         setPageNo(1);
+    //         props.fetchInwardList(1, 15, searchValue);
+    //     }
+    // }, [searchValue]);
 
 
     return (
         <>
-            <div className="gx-flex-row gx-flex-1">
-                <div className="table-operations gx-col">
-                    <Select
-                        id="select"
-                        showSearch
-                        style={{ width: 200 }}
-                        placeholder="Select a customer"
-                        optionFilterProp="children"
+            
+                <div className="gx-flex-row gx-flex-1">
+                    <div className="table-operations gx-col">
+                        <Select
+                            id="select"
+                            showSearch
+                            style={{ width: 200 }}
+                            placeholder="Select a customer"
+                            optionFilterProp="children"
+                            onChange={handleChange}
+                            value={templateId}
+                            // onFocus={handleFocus}
+                            // onBlur={handleBlur}
+                            filterOption={(input, option) =>
+                                option.props.children
+                                    .toLowerCase()
+                                    .indexOf(input.toLowerCase()) >= 0
+                            }
+                        >
+
+                            {partyList.length > 0 &&
+                                partyList.map((party) => (
+                                    <Select.Option key={party.nPartyId} value={party.nPartyId}>{party.partyName}</Select.Option>
+                                ))}
+                        </Select>
+                    </div>
+                    <div className="table-operations gx-col">
+                        <SearchBox
+                            styleName="gx-flex-1"
+                            placeholder="Search for customers"
+                            value={searchValue}
+                            onChange={(e) => setSearchValue(e.target.value)}>
+                        </SearchBox>
+
+                    </div>
+                </div>
+                <div className="gx-flex-row gx-flex-1">
+                    <Table
+                        className="gx-table-responsive"
+                        columns={columns}
+                        dataSource={filteredInwardList}
                         onChange={handleChange}
-                        value={customerValue}
-                        // onFocus={handleFocus}
-                        // onBlur={handleBlur}
-                        filterOption={(input, option) =>
-                            option.props.children
-                                .toLowerCase()
-                                .indexOf(input.toLowerCase()) >= 0
-                        }
-                    >
-
-                        {partyList.length > 0 &&
-                            partyList.map((party) => (
-                                <Select.Option value={party.nPartyId}>{party.partyName}</Select.Option>
-                            ))}
-                    </Select>
+                        pagination={{
+                            pageSize: 15,
+                            onChange: (page) => {
+                                setPageNo(page);
+                                props.fetchInwardList(page, 15, searchValue);
+                            },
+                            current: pageNo,
+                            total: totalPageItems,
+                        }}
+                    />
                 </div>
-                <div className="table-operations gx-col">
-                    <SearchBox
-                        styleName="gx-flex-1"
-                        placeholder="Search for customers"
-                        value={searchValue}
-                        onChange={(e) => setSearchValue(e.target.value)}>
-                    </SearchBox>
 
-                </div>
-            </div>
-            <div className="gx-flex-row gx-flex-1">
-                <Table
-                    rowSelection={[]}
-                    className="gx-table-responsive"
-                    columns={columns}
-                    dataSource={filteredInwardList}
-                    onChange={handleChange}
-                    pagination={{
-                        pageSize: 15,
-                        onChange: (page) => {
-                            setPageNo(page);
-                            props.fetchInwardList(page, 15, searchValue);
-                        },
-                        current: pageNo,
-                        total: totalPageItems,
-                    }}
-                />
-            </div>
+                <Modal
+                    title={`Batch No: ${selectedItemForQr?.batchNumber}`}
+                    visible={showCreateModal}
+                    onOk={() => showCreateQr(true)}
+                    onCancel={() => setShowCreateModal(false)}
+                >
+                    <Row>
+                        <Col span={24}>
+                            <Row>
+                                <Col span={12}>
+                                    <strong>Customer Name</strong>
+                                    <p>{selectedItemForQr?.party?.partyName}</p>
+                                </Col>
+                                <Col span={12} style={{ right: 0, position: 'absolute' }}>
+                                    <strong>Stage</strong>
+                                    <p>Inward</p>
+                                </Col>
+                            </Row>
+
+                            <Row>
+                                <Col span={6}>
+                                    <strong>Coil No.</strong>
+                                    <p>{selectedItemForQr?.coilNumber}</p>
+                                </Col>
+                                <Col span={6}>
+                                    <strong>Batch No.</strong>
+                                    <p>{selectedItemForQr?.batchNumber}</p>
+                                </Col>
+                                <Col span={6}>
+                                    <strong>Thickness</strong>
+                                    <p>{selectedItemForQr?.fThickness}</p>
+                                </Col>
+                                <Col span={6} >
+                                    <strong>Weight</strong>
+                                    <p>Inward</p>
+                                </Col>
+                            </Row>
+                            <Divider />
+                            <Row>
+                                <strong>Template ID & Name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Linking Parameter</strong>
+                                <Select
+                                    id="select"
+                                    showSearch
+                                    style={{ width: "100%" }}
+                                    placeholder="Select a customer"
+                                    optionFilterProp="children"
+                                    onChange={handleChange}
+                                    value={templateId}
+                                    // onFocus={handleFocus}
+                                    // onBlur={handleBlur}
+                                    filterOption={(input, option) =>
+                                        option.props.children
+                                            .toLowerCase()
+                                            .indexOf(input.toLowerCase()) >= 0
+                                    }
+                                >
+
+                                    {templateLinkList.length > 0 &&
+                                        templateLinkList.map((link) => (
+                                            <Select.Option value={link.templateId}>{`${link.templateId}-${link.templateName}`}</Select.Option>
+                                        ))}
+                                </Select>
+                            </Row>
+                        </Col>
+                    </Row>
+                </Modal>
+            
         </>
     )
 }
 
 const mapStateToProps = (state) => ({
+    template: state.quality,
     inward: state.inward,
     party: state.party,
 });
 
 export default connect(mapStateToProps, {
     fetchInwardList,
-    fetchPartyList
-})(InwardTemplate);
+    fetchTemplatesList,
+    fetchPartyList,
+    fetchTemplatesLinkList,
+    getQualityTemplateById,
+    fetchQualityReportList,
+    fetchQualityReportStageList
+})(withRouter(InwardReport));

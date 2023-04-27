@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { connect } from 'react-redux';
+import { useLocation } from 'react-router-dom';
+import URLSearchParams from 'url-search-params'
 import { Card, Divider, Tabs } from 'antd'
 import IntlMessages from '../../../../util/IntlMessages'
 import { QUALITY_TEMPLATE_ACTIONS, QUALITY_TEMPLATE_COLUMNS, QUALITY_LINKED_TEMPLATE_ACTIONS, QUALITY_LINKED_TEMPLATE_COLUMNS } from "../../../../constants/quality/ComponentConstants";
@@ -14,6 +16,8 @@ const Templates = (props) => {
 
   const [mode, setMode] = useState("top");
   const [tabKey, setTabKey] = useState("1");
+  const location = useLocation();
+  
 
   const TabPane = Tabs.TabPane;
 
@@ -89,13 +93,28 @@ const templateLinkListAactionColumn = {
     setTabKey(key);
   };
 
+  useEffect(() => {
+    if (props.match) {
+        console.log(props.match)
+        console.log(location)
+        
+        const params = new URLSearchParams(location.search);
+        console.log(params.get('view'));
+        if(params.get('view') === 'links') {
+          setTabKey("2");
+        } else {
+          setTabKey("1");
+        }
+    }
+}, [])
+
   return (
     <div>
       <h1>
         <IntlMessages id="sidebar.quality.templates" />
       </h1>
       <Card>
-        <Tabs defaultActiveKey="1" tabPosition={mode} onChange={onTabChange} destroyInactiveTabPane={true} >
+        <Tabs defaultActiveKey="1" tabPosition={mode} onChange={onTabChange} destroyInactiveTabPane={true} activeKey={tabKey}>
           <TabPane tab="Quality Template List" key="1">
             <TemplateList actions={QUALITY_TEMPLATE_ACTIONS} columns={[...QUALITY_TEMPLATE_COLUMNS, templateListAactionColumn]} tab="qualityTemplate"/>
           </TabPane>
