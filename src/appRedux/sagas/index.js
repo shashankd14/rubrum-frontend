@@ -10,6 +10,7 @@ import ratesSagas from './Rates';
 import processSagas from './Process';
 import reportSagas from './Reports';
 import packingSagas from "./Packing";
+import qualitySagas from "./Quality";
 
 export default function* rootSaga() {
   yield all([fork(authSagas)]);
@@ -23,4 +24,5 @@ export default function* rootSaga() {
   yield all([fork(processSagas)]);
   yield all([fork(reportSagas)]);
   yield all([fork(packingSagas)]);
+  yield all([fork(qualitySagas)]);
 }

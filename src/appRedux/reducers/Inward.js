@@ -176,6 +176,7 @@ export default (state = INIT_STATE, action) => {
             return {
                 ...state,
                 loading: false,
+                wipSuccess:false,
                 wipList: [],
                 wipError: true,
                 wipSuccess: false

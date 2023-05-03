@@ -212,7 +212,7 @@ const SlittingWidths = (props) => {
             )
           : 0;
       props.totalActualweight(actualTotalWeight);
-    }
+    } 
   }, [props.cuts]);
 
   useEffect(() => {
@@ -359,7 +359,7 @@ const SlittingWidths = (props) => {
         const remainWeightRound = Number(remainWeight.toFixed(0));
         if (Number(availLength) > lengthValue) {
           message.error("Length greater than available length", 2);
-        } else if (totalWeightRound > remainWeightRound) {
+        } else if ((totalWeightRound-remainWeightRound) > remainWeightRound) {
           message.error("Weight greater than available weight", 2);
         } else if (totalWidth !== widthValue) {
           message.error("Sum of slits width is not same as width of coil.", 2);
@@ -1339,7 +1339,17 @@ const CreateSlittingDetailsForm = (props) => {
       };
       props.updateInstruction(coil);
       props.setShowSlittingModal(false);
-    } else if (props.wip) {
+    } else if(props.editFinish){
+      const instructionList = tableData.filter(item =>editedRecordState.some(record=> record.instructionId === item.instructionId))
+      const coil = {
+        number: props.coil.coilNumber,
+        instruction: instructionList,
+        unfinish: props?.unfinish,
+        editFinish: props?.editFinish
+      };
+      props.updateInstruction(coil);
+      props.setShowSlittingModal(false);
+    }else if (props.wip) {
       //
       const isAllWip = tableData.every(
         (item) =>
