@@ -15,6 +15,7 @@ import {
   Collapse,
 } from "antd";
 import React, { useEffect, useState } from "react";
+import SweetAlert from "react-bootstrap-sweetalert";
 import { connect } from "react-redux";
 import moment from "moment";
 import { APPLICATION_DATE_FORMAT } from "../../../constants";
@@ -27,6 +28,7 @@ import {
   pdfGenerateInward,
   resetIsDeleted,
 } from "../../../appRedux/actions/Inward";
+import IntlMessages from "util/IntlMessages";
 import { set } from "nprogress";
 import { values } from "lodash";
 
@@ -91,6 +93,7 @@ const SlittingWidths = (props) => {
   const [equalPartsDisplay, setEqualPartsDisplay] = useState(0);
   const [unsavedDeleteId, setUnsavedDeleteId] = useState(0);
   const [tagsName, setTagsName] = useState("");
+  const [lengthExceedConfirm, setLengthExceedConfirm] = useState(false);
   const keys = getFieldValue("keys");
   const callBackValue = (n) => {
     let cuts = 0;
@@ -358,6 +361,7 @@ const SlittingWidths = (props) => {
         const totalWeightRound = Number(totalWeight.toFixed(0));
         const remainWeightRound = Number(remainWeight.toFixed(0));
         if (Number(availLength) > lengthValue) {
+          setLengthExceedConfirm(true);
           message.error("Length greater than available length", 2);
         } else if ((totalWeightRound-remainWeightRound) > remainWeightRound) {
           message.error("Weight greater than available weight", 2);
@@ -428,7 +432,7 @@ const SlittingWidths = (props) => {
           Number(targetWeight) *
           ((Number(values.widths[i]) * Number(values.nos[i])) / widthCheck);
         props.form.setFieldsValue({
-          [array[i]]: wValue,
+          [array[i]]: Math.floor(wValue),
         });
         settwidth(widthEntry);
         if (lengthValue1 >= availLength + cutLength) {
@@ -463,8 +467,8 @@ const SlittingWidths = (props) => {
     let weight = props.coilDetails?.fQuantity
       ? props.coilDetails.fQuantity
       : props.plannedWeight(props.coilDetails);
-    let length = props.coilDetails?.availableLength
-      ? props.coilDetails.availableLength
+    let length = props.coilDetails?.fLength
+      ? props.coilDetails.fLength
       : props.plannedLength(props.coilDetails);
     settargetWeight(e.target.value);
     setavailLength((length * (e.target.value / weight)).toFixed(0));
@@ -473,8 +477,8 @@ const SlittingWidths = (props) => {
     let weight = props.coilDetails?.fQuantity
       ? props.coilDetails.fQuantity
       : props.plannedWeight(props.coilDetails);
-    let length = props.coilDetails?.availableLength
-      ? props.coilDetails.availableLength
+    let length = props.coilDetails?.fLength
+      ? props.coilDetails.fLength
       : props.plannedLength(props.coilDetails);
 
     settargetWeight(weightValue / equalParts);
@@ -486,6 +490,16 @@ const SlittingWidths = (props) => {
     }
     setValue(e.target.value);
   };
+
+  const onConfirm = (e) => {
+    setavailLength(props.coilDetails?.availableLength);
+    setLengthExceedConfirm(false);
+  }
+
+  const onCancel = (e) => {
+    setLengthExceedConfirm(false);
+  }
+
   return (
     <>
       <Form {...formItemLayoutSlitting}>
@@ -746,6 +760,22 @@ const SlittingWidths = (props) => {
           </>
         )}
       </Form>
+      <SweetAlert show={lengthExceedConfirm}
+        custom
+        showCancel
+        confirmBtnText={<IntlMessages id="button.yes" />}
+        cancelBtnText={<IntlMessages id="button.no" />}
+        confirmBtnBsStyle="primary"
+        cancelBtnBsStyle="default"
+        // title={<IntlMessages id="sweetAlerts.doYouLikeThumb"/>}
+        onConfirm={onConfirm}
+        onCancel={onCancel}
+      >
+        <div>{`Targeted length: ${availLength}`}</div>
+        <div>{`Current Avaialble length: ${props.coilDetails?.availableLength}`}</div>
+        <div>{`Targeted length is greater than the available length`}</div>
+        <div>Do you want to proceed with current available length?</div>
+      </SweetAlert>
     </>
   );
 };
