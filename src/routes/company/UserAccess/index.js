@@ -65,7 +65,7 @@ const UserAccess = (props) => {
             render: (_, record) => (
                 <>
                     <a onClick={() => {
-                        console.log(record);
+                        props.form.resetFields();
                         setUserEditValues(record);
                         setShowAddUserModal(true);
                     }}>
@@ -236,7 +236,7 @@ const UserAccess = (props) => {
                 />
             </Card>
             <Modal
-                title="Basic Modal"
+                title="Add new user"
                 visible={showAddUserModal}
                 onOk={() => {
                     handleSubmit();
@@ -244,10 +244,11 @@ const UserAccess = (props) => {
                 }}
                 onCancel={() => {
                     props.form.resetFields();
+                    setUserEditValues({})
                     setShowAddUserModal(false);
                 }}
             >
-                <Form layout="horizontal" onSubmit={handleSubmit}>
+                <Form layout="horizontal" onSubmit={handleSubmit} form={props.form}>
                     <FormItem
                         {...formItemLayout}
                     >
@@ -262,7 +263,7 @@ const UserAccess = (props) => {
                         label="Full Name"
                     >
                         {getFieldDecorator('fullName', {
-                            initialValue: `${userEditValues?.firstName} ${userEditValues?.lastName}`,
+                            initialValue: (userEditValues?.firstName || userEditValues?.lastName) ? `${userEditValues?.firstName} ${userEditValues?.lastName}` : '',
                             rules: [{ required: true, message: "Please input your Full Name" }]
                         })(
                             <Input />
@@ -309,10 +310,11 @@ const UserAccess = (props) => {
                     <FormItem {...formItemLayout}
                               label="Company Name">
                         {getFieldDecorator('companyName', {
-                            initialValue: userEditValues?.userPartyMap?.length > 0 ? userEditValues?.userPartyMap[0].partyId : '',
+                            initialValue: userEditValues?.userPartyMap?.length > 0 ? userEditValues?.userPartyMap[0].partyId : [],
                             rules: [{ required: true, message: "Please select company name" }]
                         })(
                             <Select
+                                mode="multiple"
                                 placeholder="Select a company">
                                 {companyData.length > 0 && companyData.map(company => <Option selected={true} value={company.value}>{company.label}</Option>)}
                             </Select>
@@ -321,10 +323,11 @@ const UserAccess = (props) => {
                     <FormItem {...formItemLayout}
                               label="Role">
                         {getFieldDecorator('role', {
-                            initialValue: userEditValues?.userRoleMap?.length > 0 ? userEditValues?.userRoleMap[0].roleId : '',
+                            initialValue: userEditValues?.userRoleMap?.length > 0 ? userEditValues?.userRoleMap[0].roleId : [],
                             rules: [{ required: true, message: "Please assign Role" }]
                         })(
                             <Select
+                                mode="multiple"
                                 placeholder="Select a role">
                                 {roleData.length > 0 && roleData.map(role => <Option value={role.value}>{role.label}</Option>)}
                             </Select>
