@@ -44,11 +44,11 @@ const UserAccess = (props) => {
             title: "Status",
             dataIndex: "enabled",
             key: "enabled",
-        },
-        {
-            title: "Created On",
-            dataIndex: "enabled",
-            key: "enabled",
+            render: (_, record) => (
+                <div>
+                    {record.enabled === 1 ? 'Active' : 'Disabled'}
+                </div>
+            ),
         },
         {
             title: "Contact / Email",
