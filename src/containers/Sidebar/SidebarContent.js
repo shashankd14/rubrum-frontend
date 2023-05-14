@@ -156,6 +156,12 @@ const SidebarContent = () => {
                     <span><IntlMessages id="sidebar.company.billingInfo"/></span>
                   </Link>
                 </Menu.Item>
+                <Menu.Item key="company/userAccess">
+                  <Link to="/company/userAccess">
+                    <i className="icon icon-crypto"/>
+                    <span><IntlMessages id="sidebar.company.userAccess"/></span>
+                  </Link>
+                </Menu.Item>
               </MenuItemGroup>
               <Menu.Item key="main/widgets">
                 <Link to="/main/widgets"><i className="icon icon-widgets"/>
