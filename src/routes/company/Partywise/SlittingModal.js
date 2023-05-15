@@ -88,6 +88,8 @@ const SlittingWidths = (props) => {
   const [width, setwidth] = useState(widthValue1);
   const [weightValue, setWeightValue] = useState(weightValue1);
   const [twidth, settwidth] = useState(0);
+  const [totalPacketsWidth, setTotalPacketsWidth] = useState(0);
+  const [totalPacketsWeight, setTotalPacketsWeight] = useState(0);
   const [oldLength, setOldLength] = useState(0);
   const [equalParts, setEqualParts] = useState(0);
   const [equalPartsDisplay, setEqualPartsDisplay] = useState(0);
@@ -344,6 +346,7 @@ const SlittingWidths = (props) => {
           totalWidth += values.widths[i] * values.nos[i];
           totalWeight += Number(values.weights[i]);
           instructionPlanDto.deleteUniqId = unsavedDeleteId;
+          totalWidth = Math.floor(totalWidth)
           settwidth(totalWidth);
         }
         let lengthList = slits.map((item) => Number(item.plannedLength));
@@ -365,10 +368,14 @@ const SlittingWidths = (props) => {
           message.error("Length greater than available length", 2);
         } else if ((totalWeightRound-remainWeightRound) > remainWeightRound) {
           message.error("Weight greater than available weight", 2);
-        } else if (totalWidth !== widthValue) {
+        } else if (totalPacketsWidth !== widthValue) {
           message.error("Sum of slits width is not same as width of coil.", 2);
-        } else if (totalWidth > widthValue) {
+        } else if (totalPacketsWidth > widthValue) {
           message.error("Sum of slits width is greater than width of coil.", 2);
+        // } else if (totalWidth !== widthValue) {
+        //   message.error("Sum of slits width is not same as width of coil.", 2);
+        // } else if (totalWidth > widthValue) {
+        //   message.error("Sum of slits width is greater than width of coil.", 2);
         } else {
           setWeightValue(remainWeightRound - totalWeightRound);
           setlen(lengthValue - sumLength);
@@ -416,24 +423,35 @@ const SlittingWidths = (props) => {
       keys: keys.filter((key) => key !== k),
     });
   };
+  
   const handleBlur = (e, i) => {
     props.form.validateFields((err, values) => {
       let widthEntry = 0;
       let array = [];
       let wValue;
-      let widthCheck = widthValue1 === 0 && width !== 0 ? width : widthValue1;
+      let weightEntry = 0;
+      // let widthCheck = widthValue1 === 0 && width !== 0 ? width : widthValue1;
+      let widthCheck = props.coilDetails.fWidth;
       if (!err) {
-        for (let i = 0; i < values.widths.length; i++) {
-          array.push(`weights[${i}]`);
-          widthEntry += Number(values.widths[i]) * Number(values.nos[i]);
+        for (let j = 0; j < values.widths.length; j++) {
+          array.push(`weights[${j}]`);
+          widthEntry += Number(values.widths[j]) * Number(values.nos[j]);
+          weightEntry += Number(values.weights[j] || 0)
         }
-
+        widthEntry = Math.floor(widthEntry);
+        
         wValue =
           Number(targetWeight) *
           ((Number(values.widths[i]) * Number(values.nos[i])) / widthCheck);
+        wValue =  Math.floor(wValue)
+        if(widthEntry === props.coilDetails.fWidth) {
+          wValue += targetWeight - (weightEntry + wValue) 
+        }
         props.form.setFieldsValue({
-          [array[i]]: Math.floor(wValue),
+          [array[i]]: wValue,
         });
+        setTotalPacketsWidth(widthEntry)
+        setTotalPacketsWeight(weightEntry + wValue)
         settwidth(widthEntry);
         if (lengthValue1 >= availLength + cutLength) {
           // setlen(lengthValue1-(availLength+cutLength))
@@ -448,6 +466,7 @@ const SlittingWidths = (props) => {
       }
     });
   };
+
   const onChange = () => {
     props.form.setFieldsValue({
       length: len,
@@ -614,31 +633,31 @@ const SlittingWidths = (props) => {
               )}
             </Form.Item>
             <Row>
-              <Col lg={6} md={6} sm={12} xs={24}>
+              <Col lg={8} md={8} sm={12} xs={24}>
                 <label>Width</label>
               </Col>
               <Col lg={6} md={6} sm={12} xs={24}>
                 <label>Nos</label>
               </Col>
-              <Col lg={6} md={6} sm={12} xs={24}>
+              <Col lg={8} md={8} sm={12} xs={24}>
                 <label>Weight</label>
               </Col>
-              <Col lg={6} md={6} sm={12} xs={24}>
-                <label>Action</label>
+              <Col lg={1} md={1} sm={12} xs={24}>
+                {/* <label>Action</label> */}
               </Col>
             </Row>
             <Row>
               {keys.map((k, index) => {
                 return (
-                  <>
-                    <Col lg={6} md={6} sm={12} xs={24}>
+                  <Row style={{marginLeft: 0}}>
+                    <Col lg={8} md={8} sm={12} xs={24}>
                       <Form.Item name="widths">
                         {getFieldDecorator(`widths[${index}]`, {
                           rules: [
                             { required: true, message: "Please enter width" },
                             {
-                              pattern: `^[+-]?[0-9]*\.[0-9]{0,1}$`,
-                              message: "Width greater than available width",
+                              pattern: `^[+-]?[0-9]*\.[0-9]{0,2}$`,
+                              message: "Only 2 decimal values allowed",
                             },
                           ],
                         })(
@@ -669,14 +688,14 @@ const SlittingWidths = (props) => {
                         )}
                       </Form.Item>
                     </Col>
-                    <Col lg={6} md={6} sm={12} xs={24}>
+                    <Col lg={8} md={8} sm={12} xs={24}>
                       <Form.Item name="weights">
                         {getFieldDecorator(`weights[${index}]`)(
                           <Input id="weights" disabled={true} />
                         )}
                       </Form.Item>
                     </Col>
-                    <Col lg={6} md={6} sm={12} xs={24}>
+                    <Col lg={1} md={1} sm={12} xs={24}>
                       <div
                         style={{ height: "40px" }}
                         className="gx-flex-row gx-align-items-center"
@@ -699,7 +718,7 @@ const SlittingWidths = (props) => {
                         )}
                       </div>
                     </Col>
-                  </>
+                  </Row>
                 );
               })}
             </Row>
@@ -1582,7 +1601,7 @@ const CreateSlittingDetailsForm = (props) => {
       }
       visible={props.showSlittingModal}
       onOk={handleOk}
-      width={1020}
+      width={1200}
       onCancel={handleCancel}
       footer={
         props.slitCut
