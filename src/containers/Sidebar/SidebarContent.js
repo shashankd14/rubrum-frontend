@@ -42,7 +42,6 @@ const SidebarContent = () => {
     const menus = localStorage.getItem('Menus') ? JSON.parse(localStorage.getItem('Menus')) : [];
     if(menus.length > 0) {
       const menuLabels = menus.map(menu => menu.menuKey);
-console.log(menuLabels);
       setMenuLabelList(menuLabels);
     }
   }, [])
