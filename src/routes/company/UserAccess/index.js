@@ -64,14 +64,14 @@ const UserAccess = (props) => {
             key: "action",
             render: (_, record) => (
                 <>
-                    <a onClick={() => {
-                        props.form.resetFields();
-                        setUserEditValues(record);
-                        setShowAddUserModal(true);
-                    }}>
-                        Edit
-                    </a>
-                    <Divider type="vertical" />
+                    {/*<a onClick={() => {*/}
+                    {/*    props.form.resetFields();*/}
+                    {/*    setUserEditValues(record);*/}
+                    {/*    setShowAddUserModal(true);*/}
+                    {/*}}>*/}
+                    {/*    Edit*/}
+                    {/*</a>*/}
+                    {/*<Divider type="vertical" />*/}
                     <a onClick={() => {
                         confirm({
                             title: 'Are you sure delete this user?',
