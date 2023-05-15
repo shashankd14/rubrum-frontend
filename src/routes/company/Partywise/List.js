@@ -184,14 +184,14 @@ const List = (props) => {
             <span className="gx-link"></span>
           ) : (
             <span>
-              {partyWiseMenuConstants.length > 0 && partyWiseMenuConstants.includes(partyWiseMenuConstants.plan) && <><span
+              {menuPartyWiseLabelList.length > 0 && menuPartyWiseLabelList.includes(partyWiseMenuConstants.plan) && <><span
                 className="gx-link"
                 onClick={() => props.history.push(`plan/${record.coilNumber}`)}
               >
                 Plan
               </span>
               <Divider type="vertical" /></>}
-              {partyWiseMenuConstants.length > 0 && partyWiseMenuConstants.includes(partyWiseMenuConstants.retrieve) && <><span
+              {menuPartyWiseLabelList.length > 0 && menuPartyWiseLabelList.includes(partyWiseMenuConstants.retrieve) && <><span
                 className="gx-link"
                 onClick={() => {
                   props.getS3PDFUrl(record.inwardEntryId);
@@ -201,7 +201,7 @@ const List = (props) => {
                 Retrieve
               </span>
               <Divider type="vertical" /></>}
-              {partyWiseMenuConstants.length > 0 && partyWiseMenuConstants.includes(partyWiseMenuConstants.cancelFinish) && <><span
+              {menuPartyWiseLabelList.length > 0 && menuPartyWiseLabelList.includes(partyWiseMenuConstants.cancelFinish) && <><span
                 className="gx-link"
                 onClick={() =>
                   props.history.push(`unfinish/${record.coilNumber}`)
@@ -210,7 +210,7 @@ const List = (props) => {
                 Cancel finish
               </span>
               <Divider type="vertical" /></>}
-              {partyWiseMenuConstants.length > 0 && partyWiseMenuConstants.includes(partyWiseMenuConstants.editFinish) && <span
+              {menuPartyWiseLabelList.length > 0 && menuPartyWiseLabelList.includes(partyWiseMenuConstants.editFinish) && <span
                 className="gx-link"
                 onClick={() =>
                   props.history.push(`editFinish/${record.coilNumber}`)
