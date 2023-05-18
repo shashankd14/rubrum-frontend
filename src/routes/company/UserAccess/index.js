@@ -157,8 +157,8 @@ const UserAccess = (props) => {
                 enabled: "1",
                 userDataVisible: "Y",
                 emailId: values.email,
-                roleList: [values.companyName],
-                partyList: [values.role],
+                roleList: values.companyName,
+                partyList: values.role,
             }, { headers: getHeaders() })
             .then((response) => {
                 getAllUsers();
