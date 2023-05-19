@@ -157,8 +157,8 @@ const UserAccess = (props) => {
                 enabled: "1",
                 userDataVisible: "Y",
                 emailId: values.email,
-                roleList: values.companyName,
-                partyList: values.role,
+                partyList: values.companyName,
+                roleList: values.role,
             }, { headers: getHeaders() })
             .then((response) => {
                 getAllUsers();
@@ -177,8 +177,8 @@ const UserAccess = (props) => {
                 enabled: "1",
                 userDataVisible: "Y",
                 emailId: values.email,
-                partyList: [values.companyName],
-                roleList: [values.role],
+                partyList: values.companyName,
+                roleList: values.role,
             }, { headers: getHeaders() })
             .then((response) => {
                 message.success('User updated successfully');
