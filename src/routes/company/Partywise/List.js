@@ -25,6 +25,7 @@ const partyWiseMenuConstants = {
   'cancelFinish': 'Cancel Finish',
   'editFinish': 'Edit Finish',
   'addInward': 'Add Inward',
+  'deliver': 'deliver',
 }
 const List = (props) => {
   const [sortedInfo, setSortedInfo] = useState({
