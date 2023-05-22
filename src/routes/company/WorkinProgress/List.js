@@ -125,7 +125,7 @@ function List(props) {
             key: 'x',
             render: (text, record) => (
                 <span>{record.instructionId ? <span className="gx-link"></span> :
-                    menuWorkInProgressLabelList.length > 0 && menuWorkInProgressLabelList.includes(workInProgressMenuConstants.plan) && <span className="gx-link"
+                    menuWorkInProgressLabelList.length > 0 && menuWorkInProgressLabelList.includes(workInProgressMenuConstants.finish) && <span className="gx-link"
                           onClick={() => props.history.push(`plan/${record.coilNumber}`)}>Finish</span>
                 }
                 
