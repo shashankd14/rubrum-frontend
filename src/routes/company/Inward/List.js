@@ -13,7 +13,15 @@ import {
   fetchPartyListById,
 } from "../../../appRedux/actions/Inward";
 import { onDeleteContact } from "../../../appRedux/actions";
+import {sidebarMenuItems} from "../../../constants";
 
+const inwardMenuConstants = {
+  'view': "View",
+  'addInward': 'Add Inward',
+  'export': 'Export',
+  'edit': 'Edit',
+  'delete': 'Delete',
+}
 const List = (props) => {
   const [sortedInfo, setSortedInfo] = useState({
     order: "descend",
@@ -27,6 +35,7 @@ const List = (props) => {
 
   const [pageNo, setPageNo] = React.useState(1);
   const [totalPageItems, setTotalItems] = React.useState(0);
+  const [menuInwardLabelList, setMenuInwardLabelList] = useState([]);
 
   const { totalItems } = props.inward;
 
@@ -117,20 +126,22 @@ const List = (props) => {
       key: "x",
       render: (text, record, index) => (
         <span>
-          <span
-            className="gx-link"
-            onClick={() => props.history.push(`${record.coilNumber}`)}
+          {menuInwardLabelList.length > 0 && menuInwardLabelList.includes(inwardMenuConstants.view) && <><span
+              className="gx-link"
+              onClick={() => props.history.push(`${record.coilNumber}`)}
           >
             View
           </span>
-          <Divider type="vertical" />
-          <span className="gx-link" onClick={(e) => onEdit(record, index, e)}>
+            <Divider type="vertical" />
+          </>}
+          {menuInwardLabelList.length > 0 && menuInwardLabelList.includes(inwardMenuConstants.edit) && <><span className="gx-link" onClick={(e) => onEdit(record, index, e)}>
             Edit
           </span>
-          <Divider type="vertical" />
-          <span className="gx-link" onClick={(e) => onDelete(record, index, e)}>
+          <Divider type="vertical" /></>}
+          {menuInwardLabelList.length > 0 && menuInwardLabelList.includes(inwardMenuConstants.delete) && <span className="gx-link" onClick={(e) => onDelete(record, index, e)}>
             Delete
           </span>
+          }
         </span>
       ),
     },
@@ -207,6 +218,18 @@ const List = (props) => {
     }
   }, [props.inward.loading, props.inward.success]);
 
+  useEffect(() => {
+    const menus = localStorage.getItem('Menus') ? JSON.parse(localStorage.getItem('Menus')) : [];
+    if(menus.length > 0) {
+      const menuLabels = menus.filter(menu => menu.menuKey === sidebarMenuItems.inward);
+      let menuInwardLabels = [];
+      if(menuLabels.length > 0) {
+        menuInwardLabels = menuLabels[0]?.permission ? menuLabels[0]?.permission?.split(',') : [];
+      }
+      setMenuInwardLabelList(menuInwardLabels);
+    }
+  }, [])
+
   return (
     <div>
       <h1>
@@ -215,12 +238,13 @@ const List = (props) => {
       <Card>
         <div className="gx-flex-row gx-flex-1">
           <div className="table-operations gx-col">
-            <Button onClick={deleteSelectedCoils}>Delete</Button>
-            <Button onClick={exportSelectedData}>Export</Button>
+            {menuInwardLabelList.length > 0 && menuInwardLabelList.includes(inwardMenuConstants.delete) &&
+                <Button onClick={deleteSelectedCoils}>Delete</Button>}
+            {menuInwardLabelList.length > 0 && menuInwardLabelList.includes(inwardMenuConstants.export) && <Button onClick={exportSelectedData}>Export</Button>}
             <Button onClick={clearFilters}>Clear All filters</Button>
           </div>
           <div className="gx-flex-row gx-w-50">
-            <Button
+            {menuInwardLabelList.length > 0 && menuInwardLabelList.includes(inwardMenuConstants.addInward) && <Button
               type="primary"
               icon={() => <i className="icon icon-add" />}
               size="medium"
@@ -230,7 +254,7 @@ const List = (props) => {
               }}
             >
               Add Inward
-            </Button>
+            </Button>}
             <SearchBox
               styleName="gx-flex-1"
               placeholder="Search for coil number or party name..."
