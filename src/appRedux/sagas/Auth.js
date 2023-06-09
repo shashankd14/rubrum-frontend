@@ -170,6 +170,7 @@ function* signInUserWithEmailPassword({payload}) {
       localStorage.setItem("userToken",signeduser.access_token)
       localStorage.setItem("userName",signeduser.userName)
       localStorage.setItem("userId",signeduser.userId)
+      localStorage.setItem("Menus",JSON.stringify(signeduser.menusList))
     } else {
       yield put(showAuthMessage("Failed to Login"));
     }

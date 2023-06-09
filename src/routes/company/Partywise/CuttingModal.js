@@ -84,6 +84,8 @@ const CreateCuttingDetailsForm = (props) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [balancedValue, setBalancedValue] = useState(false);
   const [bundledList, setbundledList] = useState(false);
+  const [bundledListReq, setbundledListReq] = useState([]);
+  const [bundledListRes, setbundledListRes] = useState(undefined);
   const [tpweight, settpweight] = useState([]);
   const [weightIndex, setWeightIndex] = useState();
   const [bundleTableData, setbundleTableData] = useState([]);
@@ -831,6 +833,13 @@ const CreateCuttingDetailsForm = (props) => {
       loading = message.loading("Saving Cut Instruction & Generating pdf..");
     }
   }, [props.inward.instructionSaveCuttingLoading]);
+
+  useEffect(() => {
+    if (!props.inward.loading && props.inward.groupId.groupId) {
+      setbundledListRes(props.inward.groupId.groupId)
+    }
+  }, [props.inward.loading]);
+  
   useEffect(() => {
     setCutPayload(cuts);
     let cutsArray = cuts.map((i) => i.plannedWeight);
@@ -1084,6 +1093,10 @@ const CreateCuttingDetailsForm = (props) => {
       partDetailsRequest: instructionPlanDto,
       instructionRequestDTOs: cutsValue,
       deleteUniqId: unsavedDeleteId,
+      parentInstructionIds: {
+        instructionIds: bundledListReq,
+        groupId: bundledListRes
+      }
     };
     let payload = saveInstruction.length > 0 ? [...saveInstruction] : [];
     payload.push(instructionPayload);
@@ -1153,6 +1166,7 @@ const CreateCuttingDetailsForm = (props) => {
         weights[index] = weightIndex;
         settpweight(weights);
       }
+      setbundledListReq(selectedInstruction);
       props.instructionGroupsave(payload);
     } else {
       Modal.error({

@@ -13,9 +13,20 @@ import {
   fetchPartyList,
   setInwardSelectedForDelivery,
 } from "../../../appRedux/actions";
+import {sidebarMenuItems} from "../../../constants";
 
 const Option = Select.Option;
 
+const partyWiseMenuConstants = {
+  'plan': "Plan",
+  'retrieve': 'Retrieve',
+  'view': 'View',
+  'export': 'Export',
+  'cancelFinish': 'Cancel Finish',
+  'editFinish': 'Edit Finish',
+  'addInward': 'Add Inward',
+  'deliver': 'Deliver',
+}
 const List = (props) => {
   const [sortedInfo, setSortedInfo] = useState({
     order: "descend",
@@ -33,6 +44,7 @@ const List = (props) => {
   });
   const [filteredInwardList, setFilteredInwardList] = useState(filter);
   const [expandedRow, setExpandedRecord] = useState([]);
+  const [menuPartyWiseLabelList, setMenuPartyWiseLabelList] = useState([]);
 
   const [selectedCBKeys, setSelectedCBKeys] = React.useState([]);
   const [selectedRowData, setSelectedRowData] = React.useState([]);
@@ -173,14 +185,14 @@ const List = (props) => {
             <span className="gx-link"></span>
           ) : (
             <span>
-              <span
+              {menuPartyWiseLabelList.length > 0 && menuPartyWiseLabelList.includes(partyWiseMenuConstants.plan) && <><span
                 className="gx-link"
                 onClick={() => props.history.push(`plan/${record.coilNumber}`)}
               >
                 Plan
               </span>
-              <Divider type="vertical" />
-              <span
+              <Divider type="vertical" /></>}
+              {menuPartyWiseLabelList.length > 0 && menuPartyWiseLabelList.includes(partyWiseMenuConstants.retrieve) && <><span
                 className="gx-link"
                 onClick={() => {
                   props.getS3PDFUrl(record.inwardEntryId);
@@ -189,8 +201,8 @@ const List = (props) => {
               >
                 Retrieve
               </span>
-              <Divider type="vertical" />
-              <span
+              <Divider type="vertical" /></>}
+              {menuPartyWiseLabelList.length > 0 && menuPartyWiseLabelList.includes(partyWiseMenuConstants.cancelFinish) && <><span
                 className="gx-link"
                 onClick={() =>
                   props.history.push(`unfinish/${record.coilNumber}`)
@@ -198,15 +210,15 @@ const List = (props) => {
               >
                 Cancel finish
               </span>
-              <Divider type="vertical" />
-              <span
+              <Divider type="vertical" /></>}
+              {menuPartyWiseLabelList.length > 0 && menuPartyWiseLabelList.includes(partyWiseMenuConstants.editFinish) && <span
                 className="gx-link"
                 onClick={() =>
                   props.history.push(`editFinish/${record.coilNumber}`)
                 }
               >
                 Edit finish
-              </span>
+              </span>}
             </span>
           )}
         </span>
@@ -217,6 +229,19 @@ const List = (props) => {
   useEffect(() => {
     props.fetchPartyList();
   }, []);
+
+
+  useEffect(() => {
+    const menus = localStorage.getItem('Menus') ? JSON.parse(localStorage.getItem('Menus')) : [];
+    if(menus.length > 0) {
+      const menuLabels = menus.filter(menu => menu.menuKey === sidebarMenuItems.partywiseRegister);
+      let menuPartyWiseLabels = [];
+      if(menuLabels.length > 0) {
+        menuPartyWiseLabels = menuLabels[0]?.permission ? menuLabels[0]?.permission?.split(',') : [];
+      }
+      setMenuPartyWiseLabelList(menuPartyWiseLabels);
+    }
+  }, [])
 
   useEffect(() => {
     if (totalItems) {
@@ -428,11 +453,11 @@ const List = (props) => {
                   <Option value={party.nPartyId}>{party.partyName}</Option>
                 ))}
             </Select>
-            <Button onClick={exportSelectedData}>Export</Button>
+            {menuPartyWiseLabelList.length > 0 && menuPartyWiseLabelList.includes(partyWiseMenuConstants.export) && <Button onClick={exportSelectedData}>Export</Button>}
             <Button onClick={clearFilters}>Clear All filters</Button>
           </div>
           <div className="gx-flex-row gx-w-50">
-            <Button
+            {menuPartyWiseLabelList.length > 0 && menuPartyWiseLabelList.includes(partyWiseMenuConstants.deliver) && <Button
               type="primary"
               icon={() => <i className="icon icon-add" />}
               size="medium"
@@ -455,9 +480,8 @@ const List = (props) => {
               disabled={!!selectedCBKeys?.length < 1}
             >
               Deliver
-            </Button>
-
-            <Button
+            </Button>}
+            {menuPartyWiseLabelList.length > 0 && menuPartyWiseLabelList.includes(partyWiseMenuConstants.addInward) && <Button
               type="primary"
               icon={() => <i className="icon icon-add" />}
               size="medium"
@@ -466,7 +490,7 @@ const List = (props) => {
               }}
             >
               Add Inward
-            </Button>
+            </Button>}
             <SearchBox
               styleName="gx-flex-1"
               placeholder="Search for coil number or party name..."
