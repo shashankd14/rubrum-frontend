@@ -1,11 +1,11 @@
-import {all, put, fork, takeLatest} from "redux-saga/effects";
+import { all, put, fork, takeLatest } from "redux-saga/effects";
 import { getUserToken } from './common';
 import {
-    SAVE_TEMPLATE_REQUEST, 
-    FETCH_TEMPLATE_LIST, 
-    SAVE_QUALITY_TEMPLATE_REQUEST, 
-    GET_QUALITY_TEMPLATE_BY_ID_REQUEST, 
-    UPDATE_QUALITY_TEMPLATE_REQUEST, 
+    SAVE_TEMPLATE_REQUEST,
+    FETCH_TEMPLATE_LIST,
+    SAVE_QUALITY_TEMPLATE_REQUEST,
+    GET_QUALITY_TEMPLATE_BY_ID_REQUEST,
+    UPDATE_QUALITY_TEMPLATE_REQUEST,
     DELETE_QUALITY_TEMPLATE_REQUEST,
     FETCH_TEMPLATE_LINK_LIST,
     SAVE_QUALITY_TEMPLATE_LINK_REQUEST,
@@ -17,22 +17,22 @@ import {
     GET_QUALITY_REPORT_BY_ID_REQUEST,
     UPDATE_QUALITY_REPORT_REQUEST,
     FETCH_KQP_LIST,
-	SAVE_KQP_REQUEST,
-	GET_KQP_BY_ID_REQUEST,
-	UPDATE_KQP_REQUEST,
-	DELETE_KQP_REQUEST,
-	FETCH_KQP_LINK_LIST,
-	SAVE_KQP_LINK_REQUEST,
-	GET_KQP_LINK_BY_ID_REQUEST,
-	UPDATE_KQP_LINK_REQUEST,
-	DELETE_KQP_LINK_REQUEST,
+    SAVE_KQP_REQUEST,
+    GET_KQP_BY_ID_REQUEST,
+    UPDATE_KQP_REQUEST,
+    DELETE_KQP_REQUEST,
+    FETCH_KQP_LINK_LIST,
+    SAVE_KQP_LINK_REQUEST,
+    GET_KQP_LINK_BY_ID_REQUEST,
+    UPDATE_KQP_LINK_REQUEST,
+    DELETE_KQP_LINK_REQUEST,
 } from "../../constants/ActionTypes";
 import {
-    saveTemplateError, 
-    saveTemplateSuccess, 
-    saveQualityTemplateError, 
-    saveQualityTemplateSuccess, 
-    fetchTemplatesListSuccess, 
+    saveTemplateError,
+    saveTemplateSuccess,
+    saveQualityTemplateError,
+    saveQualityTemplateSuccess,
+    fetchTemplatesListSuccess,
     fetchTemplatesListError,
     getQualityTemplateByIdSuccess,
     getQualityTemplateByIdError,
@@ -40,7 +40,7 @@ import {
     updateQualityTemplateError,
     deleteQualityTemplateSuccess,
     deleteQualityTemplateError,
-    fetchTemplatesLinkListSuccess, 
+    fetchTemplatesLinkListSuccess,
     fetchTemplatesLinkListError,
     saveQualityTemplateLinkSuccess,
     saveQualityTemplateLinkError,
@@ -112,9 +112,9 @@ function* saveTemplate(action) {
             stageDetails: getStageDetails(formFields)
         };
         const addPacking = yield fetch(`${baseUrl}api/quality/template/save`, {
-                method: 'POST',
-                headers: { "Content-Type": "application/json", ...getHeaders() },
-                body: JSON.stringify(body)
+            method: 'POST',
+            headers: { "Content-Type": "application/json", ...getHeaders() },
+            body: JSON.stringify(body)
 
         });
         if (addPacking.status == 200) {
@@ -172,11 +172,11 @@ function* getQualityTemplateById(data) {
 
 function* fetchTemplateList(action) {
     try {
-        const fetchTemplateList =  yield fetch(`${baseUrl}api/quality/template`, {
+        const fetchTemplateList = yield fetch(`${baseUrl}api/quality/template`, {
             method: 'GET',
             headers: getHeaders()
         });
-        if(fetchTemplateList.status === 200) {
+        if (fetchTemplateList.status === 200) {
             const fetchTemplateListResponse = yield fetchTemplateList.json();
             yield put(fetchTemplatesListSuccess(fetchTemplateListResponse));
         } else if (fetchTemplateList.status === 401) {
@@ -236,7 +236,7 @@ function* saveQualityTemplateLink(data) {
         const qualityTemplate = yield fetch(`${baseUrl}api/quality/templatemap/save`, {
             method: 'POST',
             body: data.payload,
-            headers: {'Content-Type': 'application/json', ...getHeaders()}
+            headers: { 'Content-Type': 'application/json', ...getHeaders() }
         });
         if (qualityTemplate.status == 200) {
             let qualityTemplateResponse = yield qualityTemplate.json()
@@ -276,11 +276,11 @@ function* fetchTemplateLinkList(payload) {
         console.log(payload)
         const reqUrl = payload ? `${baseUrl}api/quality/templatemap/party/${payload.params.partyId}` : `${baseUrl}api/quality/templatemap`
         console.log(payload)
-        const fetchTemplateList =  yield fetch(reqUrl, {
+        const fetchTemplateList = yield fetch(reqUrl, {
             method: 'GET',
             headers: getHeaders()
         });
-        if(fetchTemplateList.status === 200) {
+        if (fetchTemplateList.status === 200) {
             const fetchTemplateListResponse = yield fetchTemplateList.json();
             yield put(fetchTemplatesLinkListSuccess(fetchTemplateListResponse));
         } else if (fetchTemplateList.status === 401) {
@@ -318,15 +318,46 @@ function* updateQualityTemplateLinkById(data) {
 function* fetchQualityReportStageList(req) {
     console.log(req.payload)
     try {
-        // const fetchQRList =  yield fetch(`${baseUrl}api/quality/reports/${req.payload.stage}/${req.payload.page}/${req.payload.pageSize}?searchText=&partyId=`, {
         const fetchQRList =  yield fetch(`${baseUrl}api/quality/qir/listpage`, {
             method: 'GET',
             headers: getHeaders()
         });
         if(fetchQRList.status === 200) {
             const fetchQRListResponse = yield fetchQRList.json();
-            console.log('fetchQRListResponse', fetchQRListResponse)
-            yield put(fetchQualityReportStageListSuccess(fetchQRListResponse));
+            console.log('fetchQRListResponse', req.payload.stage === "inwardlist" ? fetchQRListResponse.content : fetchQRListResponse)
+            yield put(fetchQualityReportStageListSuccess(req.payload.stage === "inwardlist" ? fetchQRListResponse.content : fetchQRListResponse));
+        } else if (fetchQRList.status === 401) {
+            yield put(userSignOutSuccess());
+        } else
+            yield put(fetchQualityReportStageListError('error'));
+    } catch (error) {
+        yield put(fetchQualityReportStageListError(error));
+    }
+}
+
+function* fetchQualityReportStageList1(req) {
+    console.log(req.payload)
+    try {
+        // const fetchQRList =  yield fetch(`${baseUrl}api/quality/reports/${req.payload.stage}/${req.payload.page}/${req.payload.pageSize}?searchText=&partyId=`, {
+        const endPoint = req.payload.stage === "inwardlist" ? "/api/quality/reports/inwardlist/1/1" : req.payload.stage === "preprocessing" ? "/api/quality/qir/fetchpacketdtls" : req.payload.stage === "processing" ? "/api/quality/qir/fetchpacketdtls" : req.payload.stage === "predispatch" ? "/api/quality/qir/dispatchlist" : "/api/quality/qir/dispatchlist"
+        const methodType = req.payload.stage === "inwardlist" ? "GET" : req.payload.stage === "preprocessing" ? "POST" : req.payload.stage === "processing" ? "POST" : req.payload.stage === "predispatch" ? "GET" : "GET"
+        const url = `${baseUrl}${endPoint}`;
+        const data = methodType === 'POST' ? {
+            method: methodType,
+            headers: getHeaders(),
+            body: JSON.stringify({
+            "coilNo": "19365",
+            "partDetailsId": "DOC_16605381763598078"
+        })} : {
+            method: methodType,
+            headers: getHeaders(),
+            }
+        
+        const fetchQRList = yield fetch(url, data);
+        if (fetchQRList.status === 200) {
+            const fetchQRListResponse = yield fetchQRList.json();
+            console.log('fetchQRListResponse', req.payload.stage === "inwardlist" ? fetchQRListResponse.content : fetchQRListResponse)
+            yield put(fetchQualityReportStageListSuccess(req.payload.stage === "inwardlist" ? fetchQRListResponse.content : fetchQRListResponse));
         } else if (fetchQRList.status === 401) {
             yield put(userSignOutSuccess());
         } else
@@ -338,11 +369,11 @@ function* fetchQualityReportStageList(req) {
 
 function* fetchQualityReportList(action) {
     try {
-        const fetchQRList =  yield fetch(`${baseUrl}api/quality/inspectionreport`, {
+        const fetchQRList = yield fetch(`${baseUrl}api/quality/inspectionreport`, {
             method: 'GET',
             headers: getHeaders()
         });
-        if(fetchQRList.status === 200) {
+        if (fetchQRList.status === 200) {
             const fetchQRListResponse = yield fetchQRList.json();
             yield put(fetchQualityReportListSuccess(fetchQRListResponse));
         } else if (fetchQRList.status === 401) {
@@ -422,11 +453,11 @@ function* updateQualityReportById(data) {
 
 function* fetchKqpList(action) {
     try {
-        const fetchQRList =  yield fetch(`${baseUrl}api/quality/kqp`, {
+        const fetchQRList = yield fetch(`${baseUrl}api/quality/kqp`, {
             method: 'GET',
             headers: getHeaders()
         });
-        if(fetchQRList.status === 200) {
+        if (fetchQRList.status === 200) {
             const fetchQRListResponse = yield fetchQRList.json();
             yield put(fetchKqpListSuccess(fetchQRListResponse));
         } else if (fetchQRList.status === 401) {
@@ -445,7 +476,7 @@ function* saveKqp(data) {
         const qualityTemplate = yield fetch(`${baseUrl}api/quality/kqp/save`, {
             method: 'POST',
             body: data.payload,
-            headers: {'Content-Type': 'application/json', ...getHeaders()}
+            headers: { 'Content-Type': 'application/json', ...getHeaders() }
             // headers: getHeaders()
         });
         if (qualityTemplate.status == 200) {
@@ -487,7 +518,7 @@ function* updateKqpById(data) {
         const qualityTemplate = yield fetch(`${baseUrl}api/quality/kqp/update`, {
             method: 'PUT',
             body: data.payload,
-            headers: {'Content-Type': 'application/json', ...getHeaders()}
+            headers: { 'Content-Type': 'application/json', ...getHeaders() }
         });
         if (qualityTemplate.status == 200) {
             let qualityTemplateResponse = yield qualityTemplate.json()
@@ -526,11 +557,11 @@ function* deleteKqpById(data) {
 
 function* fetchKqpLinkList(action) {
     try {
-        const fetchQRList =  yield fetch(`${baseUrl}api/quality/kqppartymap`, {
+        const fetchQRList = yield fetch(`${baseUrl}api/quality/kqppartymap`, {
             method: 'GET',
             headers: getHeaders()
         });
-        if(fetchQRList.status === 200) {
+        if (fetchQRList.status === 200) {
             const fetchQRListResponse = yield fetchQRList.json();
             yield put(fetchKqpLinkListSuccess(fetchQRListResponse));
         } else if (fetchQRList.status === 401) {

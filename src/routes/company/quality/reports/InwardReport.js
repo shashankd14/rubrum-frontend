@@ -48,17 +48,17 @@ const InwardReport = (props) => {
     const columns = [
         {
             title: "Coil Number",
-            dataIndex: "coilNumber",
-            key: "coilNumber",
+            dataIndex: "coilNo",
+            key: "coilNo",
             filters: [],
-            sorter: (a, b) => a.coilNumber.length - b.coilNumber.length,
-            sortOrder: sortedInfo.columnKey === "coilNumber" && sortedInfo.order,
+            sorter: (a, b) => a.coilNo.length - b.coilNo.length,
+            sortOrder: sortedInfo.columnKey === "coilNo" && sortedInfo.order,
         },
         {
             title: "Batch No",
-            dataIndex: "batchNumber",
-            key: "batchNumber",
-            filteredValue: filteredInfo ? filteredInfo["batchNumber"] : null,
+            dataIndex: "customerBatchNo",
+            key: "customerBatchNo",
+            filteredValue: filteredInfo ? filteredInfo["customerBatchNo"] : null,
             onFilter: (value, record) => record.batchNumber == value,
             filters:
                 props.inward.inwardList.length > 0
@@ -84,22 +84,22 @@ const InwardReport = (props) => {
         },
         {
             title: "Material",
-            dataIndex: "material.description",
-            key: "material.description",
-            filteredValue: filteredInfo ? filteredInfo["material.description"] : null,
-            onFilter: (value, record) => record.material.description == value,
+            dataIndex: "materialGrade",
+            key: "materialGrade",
+            filteredValue: filteredInfo ? filteredInfo["materialGrade"] : null,
+            onFilter: (value, record) => record.materialGrade == value,
             filters:
                 props.inward.inwardList.length > 0
                     ? [
                         ...new Set(
-                            props.inward.inwardList.map((item) => item.material.description)
+                            props.inward.inwardList.map((item) => item.materialGrade)
                         ),
                     ].map((material) => ({ text: material, value: material }))
                     : [],
             sorter: (a, b) =>
-                a.material.description.length - b.material.description.length,
+                a.materialGrade.length - b.materialGrade.length,
             sortOrder:
-                sortedInfo.columnKey === "material.description" && sortedInfo.order,
+                sortedInfo.columnKey === "materialGrade" && sortedInfo.order,
         },
         {
             title: "Status",
@@ -112,11 +112,11 @@ const InwardReport = (props) => {
         },
         {
             title: "Thickness",
-            dataIndex: "fThickness",
-            key: "fThickness",
+            dataIndex: "fthickness",
+            key: "fthickness",
             filters: [],
-            sorter: (a, b) => a.fThickness - b.fThickness,
-            sortOrder: sortedInfo.columnKey === "fThickness" && sortedInfo.order,
+            sorter: (a, b) => a.fthickness - b.fthickness,
+            sortOrder: sortedInfo.columnKey === "fthickness" && sortedInfo.order,
         },
         {
             title: "Weight",
