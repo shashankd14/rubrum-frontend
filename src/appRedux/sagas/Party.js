@@ -201,10 +201,10 @@ function* updateParty(action) {
         const getEndUserTags=()=>{
             return endUsertags.map(tagId => ({tagId}))
         }
-        const qualityTemplateIds =()=>{
-            return qualityTemplates.map(templateId => ({templateId
-            }))
-        }
+        // const qualityTemplateIds =()=>{
+        //     return qualityTemplates.map(templateId => ({templateId
+        //     }))
+        // }
 
         const reqBody = {
             nPartyId: id,
@@ -220,7 +220,7 @@ function* updateParty(action) {
             ...getEmail(email),
             ...getAddress(addressKeys),
             ...getPhone(phone),
-            templateIdList: qualityTemplateIds()
+            templateIdList: []
         }
         const updateParty = yield fetch(`${baseUrl}api/party/update`, {
             method: 'PUT',
