@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { connect } from "react-redux";
-import {Link, useHistory, useLocation, withRouter} from "react-router-dom";
+import { Link, useHistory, useLocation, withRouter } from "react-router-dom";
 import { Button, Card, Col, Divider, Icon, Modal, Radio, Row, Select, Table } from 'antd'
 import {
     fetchPartyList,
@@ -9,6 +9,9 @@ import {
     fetchTemplatesLinkList,
     getQualityTemplateById,
     fetchQualityReportList,
+    getQualityReportById,
+    updateQualityReport,
+    deleteQualityReport,
     fetchQualityReportStageList
 } from "../../../../appRedux/actions";
 import moment from "moment";
@@ -60,14 +63,6 @@ const PreProcessingReport = (props) => {
             key: "customerBatchNo",
             filteredValue: filteredInfo ? filteredInfo["customerBatchNo"] : null,
             onFilter: (value, record) => record.customerBatchNo == value,
-            filters:
-                props.inward.inwardList.length > 0
-                    ? [
-                        ...new Set(
-                            props.inward.inwardList.map((item) => item.customerBatchNo)
-                        ),
-                    ].map((partyName) => ({ text: partyName, value: partyName }))
-                    : [],
             sorter: (a, b) => a.customerBatchNo.length - b.customerBatchNo.length,
             sortOrder: sortedInfo.columnKey === "customerBatchNo" && sortedInfo.order,
         },
@@ -88,14 +83,6 @@ const PreProcessingReport = (props) => {
             key: "materialGrade",
             filteredValue: filteredInfo ? filteredInfo["materialGrade"] : null,
             onFilter: (value, record) => record.materialGrade == value,
-            filters:
-                props.inward.inwardList.length > 0
-                    ? [
-                        ...new Set(
-                            props.inward.inwardList.map((item) => item.materialGrade)
-                        ),
-                    ].map((material) => ({ text: material, value: material }))
-                    : [],
             sorter: (a, b) =>
                 a.materialGrade.length - b.materialGrade.length,
             sortOrder:
@@ -111,11 +98,11 @@ const PreProcessingReport = (props) => {
         },
         {
             title: "Weight",
-            dataIndex: "fQuantity",
-            key: "fQuantity",
+            dataIndex: "targetWeight",
+            key: "targetWeight",
             filters: [],
-            sorter: (a, b) => a.fQuantity - b.fQuantity,
-            sortOrder: sortedInfo.columnKey === "fQuantity" && sortedInfo.order,
+            sorter: (a, b) => a.targetWeight - b.targetWeight,
+            sortOrder: sortedInfo.columnKey === "targetWeight" && sortedInfo.order,
         },
         {
             title: "Report Status",
@@ -159,7 +146,7 @@ const PreProcessingReport = (props) => {
     ];
 
     useEffect(() => {
-        props.fetchQualityReportStageList({stage: "preprocessing", page: 1, pageSize: 15, partyId: ''});
+        props.fetchQualityReportStageList({ stage: "preprocessing", page: 1, pageSize: 15, partyId: '' });
         props.fetchQualityReportList();
         props.fetchPartyList();
         props.fetchTemplatesList();
@@ -178,7 +165,8 @@ const PreProcessingReport = (props) => {
 
     const showCreateQr = () => {
         // props.history.push()
-        props.getQualityTemplateById(templateId)
+        if(templateId)
+            props.getQualityTemplateById(templateId)
     }
 
     useEffect(() => {
@@ -186,20 +174,21 @@ const PreProcessingReport = (props) => {
             console.log(props)
             setShowCreateQrScreen(true)
             // history.push('/company/quality/reports/create/inward')
-            props.history.push({pathname: '/company/quality/reports/create/inward', state: {selectedItemForQr: selectedItemForQr, templateDetails: props.template.data, action: 'create'}})
+            props.history.push({ pathname: '/company/quality/reports/create/preprocessing', state: { selectedItemForQr: selectedItemForQr, templateDetails: props.template.data, action: 'create' } })
         }
     }, [props.template.loading, props.template.error]);
 
     const showTemplateList = (record, key) => {
         console.log(record, key)
         setSelectedItemForQr(record)
-        props.fetchTemplatesLinkList({ partyId: record.party.nPartyId });
+        setShowCreateModal(true)
+        props.fetchTemplatesLinkList({ partyId: record.npartyId });
     }
 
     const showReportView = (record, key) => {
         console.log(record, key)
         const templateDetails = qualityReportList.find(qr => qr.coilNumber === record.coilNumber && qr.inwardId === record.inwardEntryId)
-        props.history.push({pathname: '/company/quality/reports/create/inward', state: {selectedItemForQr: record, templateDetails: templateDetails, action: 'view'}})
+        props.history.push({ pathname: '/company/quality/reports/create/preprocessing', state: { selectedItemForQr: record, templateDetails: templateDetails, action: 'view' } })
     }
 
     useEffect(() => {
@@ -217,7 +206,7 @@ const PreProcessingReport = (props) => {
     const onEdit = (record, key, e) => {
         console.log(record, key)
         const templateDetails = qualityReportList.find(qr => qr.coilNumber === record.coilNumber && qr.inwardId === record.inwardEntryId)
-        props.history.push({pathname: '/company/quality/reports/create/inward', state: {selectedItemForQr: record, templateDetails: templateDetails, action: 'edit'}})
+        props.history.push({ pathname: '/company/quality/reports/create/preprocessing', state: { selectedItemForQr: record, templateDetails: templateDetails, action: 'edit' } })
     };
 
     const handleChange = (e) => {
@@ -260,127 +249,130 @@ const PreProcessingReport = (props) => {
 
     return (
         <>
-            
-                <div className="gx-flex-row gx-flex-1">
-                    <div className="table-operations gx-col">
-                        <Select
-                            id="select"
-                            showSearch
-                            style={{ width: 200 }}
-                            placeholder="Select a customer"
-                            optionFilterProp="children"
-                            onChange={handleChange}
-                            value={templateId}
-                            // onFocus={handleFocus}
-                            // onBlur={handleBlur}
-                            filterOption={(input, option) =>
-                                option.props.children
-                                    .toLowerCase()
-                                    .indexOf(input.toLowerCase()) >= 0
-                            }
-                        >
 
-                            {partyList.length > 0 &&
-                                partyList.map((party) => (
-                                    <Select.Option key={party.nPartyId} value={party.nPartyId}>{party.partyName}</Select.Option>
-                                ))}
-                        </Select>
-                    </div>
-                    <div className="table-operations gx-col">
-                        <SearchBox
-                            styleName="gx-flex-1"
-                            placeholder="Search for customers"
-                            value={searchValue}
-                            onChange={(e) => setSearchValue(e.target.value)}>
-                        </SearchBox>
-
-                    </div>
-                </div>
-                <div className="gx-flex-row gx-flex-1">
-                    <Table
-                        className="gx-table-responsive"
-                        columns={columns}
-                        dataSource={filteredPreProcessingList}
+            <div className="gx-flex-row gx-flex-1">
+                <div className="table-operations gx-col">
+                    <Select
+                        id="select"
+                        showSearch
+                        style={{ width: 200 }}
+                        placeholder="Select a customer"
+                        optionFilterProp="children"
                         onChange={handleChange}
-                        pagination={{
-                            pageSize: 15,
-                            onChange: (page) => {
-                                setPageNo(page);
-                                props.fetchPreProcessingList(page, 15, searchValue);
-                            },
-                            current: pageNo,
-                            total: totalPageItems,
-                        }}
-                    />
+                        value={templateId}
+                        // onFocus={handleFocus}
+                        // onBlur={handleBlur}
+                        filterOption={(input, option) =>
+                            option.props.children
+                                .toLowerCase()
+                                .indexOf(input.toLowerCase()) >= 0
+                        }
+                    >
+
+                        {partyList.length > 0 &&
+                            partyList.map((party) => (
+                                <Select.Option key={party.nPartyId} value={party.nPartyId}>{party.partyName}</Select.Option>
+                            ))}
+                    </Select>
                 </div>
+                <div className="table-operations gx-col">
+                    <SearchBox
+                        styleName="gx-flex-1"
+                        placeholder="Search for customers"
+                        value={searchValue}
+                        onChange={(e) => setSearchValue(e.target.value)}>
+                    </SearchBox>
 
-                <Modal
-                    title={`Batch No: ${selectedItemForQr?.batchNumber}`}
-                    visible={showCreateModal}
-                    onOk={() => showCreateQr(true)}
-                    onCancel={() => setShowCreateModal(false)}
-                >
-                    <Row>
-                        <Col span={24}>
-                            <Row>
-                                <Col span={12}>
-                                    <strong>Customer Name</strong>
-                                    <p>{selectedItemForQr?.party?.partyName}</p>
-                                </Col>
-                                <Col span={12} style={{ right: 0, position: 'absolute' }}>
-                                    <strong>Stage</strong>
-                                    <p>PreProcessing</p>
-                                </Col>
-                            </Row>
+                </div>
+            </div>
+            <div className="gx-flex-row gx-flex-1">
+                {filteredPreProcessingList && filteredPreProcessingList.length > 0 && <Table
+                    className="gx-table-responsive"
+                    columns={columns}
+                    dataSource={filteredPreProcessingList}
+                    onChange={handleChange}
+                    pagination={{
+                        pageSize: 15,
+                        onChange: (changePage) => {
+                            setPageNo(changePage);
+                            // props.fetchQualityReportStageList({ stage: "preprocessing", page: changePage, pageSize: 15, partyId: '' });
+                            // props.fetchPreProcessingList(page, 15, searchValue);
+                        },
+                        current: pageNo,
+                        total: totalPageItems,
+                    }}
+                />
+                }
+            </div>
 
-                            <Row>
-                                <Col span={6}>
-                                    <strong>Coil No.</strong>
-                                    <p>{selectedItemForQr?.coilNumber}</p>
-                                </Col>
-                                <Col span={6}>
-                                    <strong>Batch No.</strong>
-                                    <p>{selectedItemForQr?.batchNumber}</p>
-                                </Col>
-                                <Col span={6}>
-                                    <strong>Thickness</strong>
-                                    <p>{selectedItemForQr?.fThickness}</p>
-                                </Col>
-                                <Col span={6} >
-                                    <strong>Weight</strong>
-                                    <p>PreProcessing</p>
-                                </Col>
-                            </Row>
-                            <Divider />
-                            <Row>
-                                <strong>Template ID & Name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Linking Parameter</strong>
-                                <Select
-                                    id="select"
-                                    showSearch
-                                    style={{ width: "100%" }}
-                                    placeholder="Select a customer"
-                                    optionFilterProp="children"
-                                    onChange={handleChange}
-                                    value={templateId}
-                                    // onFocus={handleFocus}
-                                    // onBlur={handleBlur}
-                                    filterOption={(input, option) =>
-                                        option.props.children
-                                            .toLowerCase()
-                                            .indexOf(input.toLowerCase()) >= 0
-                                    }
-                                >
+            <Modal
+                title={`Batch No: ${selectedItemForQr?.customerBatchNo}`}
+                visible={showCreateModal}
+                onOk={() => showCreateQr(true)}
+                onCancel={() => setShowCreateModal(false)}
+                destroyOnClose={true}
+            >
+                <Row>
+                    <Col span={24}>
+                        <Row>
+                            <Col span={12}>
+                                <strong>Customer Name</strong>
+                                <p>{selectedItemForQr?.party?.partyName || " "}</p>
+                            </Col>
+                            <Col span={12} style={{ right: 0, position: 'absolute' }}>
+                                <strong>Stage</strong>
+                                <p>PreProcessing</p>
+                            </Col>
+                        </Row>
 
-                                    {templateLinkList.length > 0 &&
-                                        templateLinkList.map((link) => (
-                                            <Select.Option value={link.templateId}>{`${link.templateId}-${link.templateName}`}</Select.Option>
-                                        ))}
-                                </Select>
-                            </Row>
-                        </Col>
-                    </Row>
-                </Modal>
-            
+                        <Row>
+                            <Col span={6}>
+                                <strong>Coil No.</strong>
+                                <p>{selectedItemForQr?.coilNo}</p>
+                            </Col>
+                            <Col span={6}>
+                                <strong>Batch No.</strong>
+                                <p>{selectedItemForQr?.customerBatchNo}</p>
+                            </Col>
+                            <Col span={6}>
+                                <strong>Thickness</strong>
+                                <p>{selectedItemForQr?.fthickness}</p>
+                            </Col>
+                            <Col span={6} >
+                                <strong>Weight</strong>
+                                <p>{selectedItemForQr?.targetWeight}</p>
+                            </Col>
+                        </Row>
+                        <Divider />
+                        <Row>
+                            <strong>Template ID & Name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Linking Parameter</strong>
+                            <Select
+                                id="select"
+                                showSearch
+                                style={{ width: "100%" }}
+                                placeholder="Select a customer"
+                                optionFilterProp="children"
+                                onChange={handleChange}
+                                value={templateId}
+                                // onFocus={handleFocus}
+                                // onBlur={handleBlur}
+                                filterOption={(input, option) =>
+                                    option.props.children
+                                        .toLowerCase()
+                                        .indexOf(input.toLowerCase()) >= 0
+                                }
+                            >
+
+                                {templateLinkList.length > 0 &&
+                                    templateLinkList.map((link) => (
+                                        <Select.Option value={link.templateId}>{`${link.templateId}-${link.templateName}`}</Select.Option>
+                                    ))}
+                            </Select>
+                        </Row>
+                    </Col>
+                </Row>
+            </Modal>
+
         </>
     )
 }
@@ -397,5 +389,8 @@ export default connect(mapStateToProps, {
     fetchTemplatesLinkList,
     getQualityTemplateById,
     fetchQualityReportList,
+    getQualityReportById,
+    updateQualityReport,
+    deleteQualityReport,
     fetchQualityReportStageList
 })(withRouter(PreProcessingReport));

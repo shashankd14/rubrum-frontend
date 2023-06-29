@@ -9,6 +9,9 @@ import {
     fetchTemplatesLinkList,
     getQualityTemplateById,
     fetchQualityReportList,
+    getQualityReportById,
+    updateQualityReport,
+    deleteQualityReport,
     fetchQualityReportStageList
 } from "../../../../appRedux/actions";
 import moment from "moment";
@@ -47,84 +50,73 @@ const PreDispatchReport = (props) => {
 
     const columns = [
         {
-            title: "Coil Number",
-            dataIndex: "coilNumber",
-            key: "coilNumber",
+            title: "Delivery Date",
+            dataIndex: "deliveryDate",
+            key: "deliveryDate",
             filters: [],
-            sorter: (a, b) => a.coilNumber.length - b.coilNumber.length,
-            sortOrder: sortedInfo.columnKey === "coilNumber" && sortedInfo.order,
+            sorter: (a, b) => a.deliveryDate.length - b.deliveryDate.length,
+            sortOrder: sortedInfo.columnKey === "deliveryDate" && sortedInfo.order,
+        },
+        {
+            title: "Delivery Chalan",
+            dataIndex: "deliveryChalanNo",
+            key: "deliveryChalanNo",
+            filters: [],
+            sorter: (a, b) => a.deliveryChalanNo.length - b.deliveryChalanNo.length,
+            sortOrder: sortedInfo.columnKey === "deliveryChalanNo" && sortedInfo.order,
         },
         {
             title: "Batch No",
-            dataIndex: "batchNumber",
-            key: "batchNumber",
-            filteredValue: filteredInfo ? filteredInfo["batchNumber"] : null,
-            onFilter: (value, record) => record.batchNumber == value,
-            filters:
-                props.inward.inwardList.length > 0
-                    ? [
-                        ...new Set(
-                            props.inward.inwardList.map((item) => item.batchNumber)
-                        ),
-                    ].map((partyName) => ({ text: partyName, value: partyName }))
-                    : [],
-            sorter: (a, b) => a.batchNumber.length - b.batchNumber.length,
-            sortOrder: sortedInfo.columnKey === "batchNumber" && sortedInfo.order,
+            dataIndex: "customerBatchNo",
+            key: "customerBatchNo",
+            filteredValue: filteredInfo ? filteredInfo["customerBatchNo"] : null,
+            onFilter: (value, record) => record.customerBatchNo == value,
+            sorter: (a, b) => a.customerBatchNo.length - b.customerBatchNo.length,
+            sortOrder: sortedInfo.columnKey === "customerBatchNo" && sortedInfo.order,
         },
         {
-            title: "Plan Date",
-            dataIndex: "dReceivedDate",
-            render(value) {
-                return moment(value).format("Do MMM YYYY");
-            },
-            key: "dReceivedDate",
+            title: "Qty Delivered",
+            dataIndex: "qtyDelivered",
+            key: "qtyDelivered",
             filters: [],
-            sorter: (a, b) => a.dReceivedDate - b.dReceivedDate,
-            sortOrder: sortedInfo.columnKey === "dReceivedDate" && sortedInfo.order,
+            sorter: (a, b) => a.qtyDelivered - b.qtyDelivered,
+            sortOrder: sortedInfo.columnKey === "qtyDelivered" && sortedInfo.order,
         },
         {
-            title: "Material",
-            dataIndex: "material.description",
-            key: "material.description",
-            filteredValue: filteredInfo ? filteredInfo["material.description"] : null,
-            onFilter: (value, record) => record.material.description == value,
-            filters:
-                props.inward.inwardList.length > 0
-                    ? [
-                        ...new Set(
-                            props.inward.inwardList.map((item) => item.material.description)
-                        ),
-                    ].map((material) => ({ text: material, value: material }))
-                    : [],
+            title: "Vehicle No.",
+            dataIndex: "vehicleNo",
+            key: "vehicleNo",
+            filteredValue: filteredInfo ? filteredInfo["vehicleNo"] : null,
+            onFilter: (value, record) => record.vehicleNo == value,
             sorter: (a, b) =>
-                a.material.description.length - b.material.description.length,
+                a.vehicleNo.length - b.vehicleNo.length,
             sortOrder:
-                sortedInfo.columnKey === "material.description" && sortedInfo.order,
+                sortedInfo.columnKey === "vehicleNo" && sortedInfo.order,
         },
         {
-            title: "Status",
-            dataIndex: "status.statusName",
-            key: "status.statusName",
+            title: "End Users",
+            dataIndex: "endUserTags",
+            key: "endUserTags",
             filters: [],
-            sorter: (a, b) => a.status.statusName.length - b.status.statusName.length,
+            sorter: (a, b) => a.endUserTags.length - b.endUserTags.length,
             sortOrder:
-                sortedInfo.columnKey === "status.statusName" && sortedInfo.order,
+                sortedInfo.columnKey === "endUserTags" && sortedInfo.order,
         },
         {
-            title: "Thickness",
-            dataIndex: "fThickness",
-            key: "fThickness",
+            title: "Customer Invoice No.",
+            dataIndex: "customerInvoiceNo",
+            key: "customerInvoiceNo",
             filters: [],
-            sorter: (a, b) => a.fThickness - b.fThickness,
-            sortOrder: sortedInfo.columnKey === "fThickness" && sortedInfo.order,
+            sorter: (a, b) => a.customerInvoiceNo - b.customerInvoiceNo,
+            sortOrder: sortedInfo.columnKey === "customerInvoiceNo" && sortedInfo.order,
         },
         {
-            title: "Weight",
-            dataIndex: "fQuantity",
-            key: "fQuantity",
+            title: "Customer Invoice Date",
+            dataIndex: "customerInvoiceDate",
+            key: "customerInvoiceDate",
             filters: [],
-            sorter: (a, b) => a.fQuantity - b.fQuantity,
-            sortOrder: sortedInfo.columnKey === "fQuantity" && sortedInfo.order,
+            sorter: (a, b) => a.customerInvoiceDate - b.customerInvoiceDate,
+            sortOrder: sortedInfo.columnKey === "customerInvoiceDate" && sortedInfo.order,
         },
         {
             title: "Action",
@@ -186,20 +178,21 @@ const PreDispatchReport = (props) => {
             console.log(props)
             setShowCreateQrScreen(true)
             // history.push('/company/quality/reports/create/inward')
-            props.history.push({pathname: '/company/quality/reports/create/inward', state: {selectedItemForQr: selectedItemForQr, templateDetails: props.template.data, action: 'create'}})
+            props.history.push({pathname: '/company/quality/reports/create/predispatch', state: {selectedItemForQr: selectedItemForQr, templateDetails: props.template.data, action: 'create'}})
         }
     }, [props.template.loading, props.template.error]);
 
     const showTemplateList = (record, key) => {
         console.log(record, key)
         setSelectedItemForQr(record)
-        props.fetchTemplatesLinkList({ partyId: record.party.nPartyId });
+        setShowCreateModal(true)
+        props.fetchTemplatesLinkList({ partyId: record.npartyId });
     }
 
     const showReportView = (record, key) => {
         console.log(record, key)
         const templateDetails = qualityReportList.find(qr => qr.coilNumber === record.coilNumber && qr.inwardId === record.inwardEntryId)
-        props.history.push({pathname: '/company/quality/reports/create/inward', state: {selectedItemForQr: record, templateDetails: templateDetails, action: 'view'}})
+        props.history.push({pathname: '/company/quality/reports/create/predispatch', state: {selectedItemForQr: record, templateDetails: templateDetails, action: 'view'}})
     }
 
     useEffect(() => {
@@ -217,7 +210,7 @@ const PreDispatchReport = (props) => {
     const onEdit = (record, key, e) => {
         console.log(record, key)
         const templateDetails = qualityReportList.find(qr => qr.coilNumber === record.coilNumber && qr.inwardId === record.inwardEntryId)
-        props.history.push({pathname: '/company/quality/reports/create/inward', state: {selectedItemForQr: record, templateDetails: templateDetails, action: 'edit'}})
+        props.history.push({pathname: '/company/quality/reports/create/predispatch', state: {selectedItemForQr: record, templateDetails: templateDetails, action: 'edit'}})
     };
 
     const handleChange = (e) => {
@@ -315,10 +308,11 @@ const PreDispatchReport = (props) => {
                 </div>
 
                 <Modal
-                    title={`Batch No: ${selectedItemForQr?.batchNumber}`}
+                    title={`Batch No: ${selectedItemForQr?.customerBatchNo}`}
                     visible={showCreateModal}
                     onOk={() => showCreateQr(true)}
                     onCancel={() => setShowCreateModal(false)}
+                    destroyOnClose={true}
                 >
                     <Row>
                         <Col span={24}>
@@ -329,26 +323,36 @@ const PreDispatchReport = (props) => {
                                 </Col>
                                 <Col span={12} style={{ right: 0, position: 'absolute' }}>
                                     <strong>Stage</strong>
-                                    <p>Processing</p>
+                                    <p>Pre Dispatch</p>
                                 </Col>
                             </Row>
 
                             <Row>
                                 <Col span={6}>
                                     <strong>Coil No.</strong>
-                                    <p>{selectedItemForQr?.coilNumber}</p>
+                                    <p>{selectedItemForQr?.coilNo}</p>
                                 </Col>
                                 <Col span={6}>
                                     <strong>Batch No.</strong>
-                                    <p>{selectedItemForQr?.batchNumber}</p>
+                                    <p>{selectedItemForQr?.customerBatchNo}</p>
                                 </Col>
                                 <Col span={6}>
-                                    <strong>Thickness</strong>
-                                    <p>{selectedItemForQr?.fThickness}</p>
+                                    <strong>Delivery Date</strong>
+                                    <p>{selectedItemForQr?.deliveryDate}</p>
                                 </Col>
                                 <Col span={6} >
-                                    <strong>Weight</strong>
-                                    <p>Processing</p>
+                                    <strong>Qty Delivered</strong>
+                                    <p>{selectedItemForQr?.qtyDelivered}</p>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col span={12}>
+                                    <strong>Customer Invoice Date</strong>
+                                    <p>{selectedItemForQr?.customerInvoiceDate}</p>
+                                </Col>
+                                <Col span={12} style={{ right: 0, position: 'absolute' }}>
+                                    <strong>Customer Invoice No.</strong>
+                                    <p>{selectedItemForQr?.customerInvoiceNo}</p>
                                 </Col>
                             </Row>
                             <Divider />
@@ -397,5 +401,8 @@ export default connect(mapStateToProps, {
     fetchTemplatesLinkList,
     getQualityTemplateById,
     fetchQualityReportList,
+    getQualityReportById,
+    updateQualityReport,
+    deleteQualityReport,
     fetchQualityReportStageList
 })(withRouter(PreDispatchReport));

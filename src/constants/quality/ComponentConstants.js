@@ -86,8 +86,8 @@ export const QUALITY_LINKED_TEMPLATE_COLUMNS = [
 export const QUALITY_REPORT_CREATE_COLUMNS = [
     {
         title: "Coil No.",
-        dataIndex: "coilNumber",
-        key: "coilNumber",
+        dataIndex: "coilNo",
+        key: "coilNo",
     },
     {
         title: "Customer Name",
@@ -96,8 +96,8 @@ export const QUALITY_REPORT_CREATE_COLUMNS = [
     },
     {
         title: "Thickness",
-        dataIndex: "fThickness",
-        key: "fThickness",
+        dataIndex: "fthickness",
+        key: "fthickness",
     },
     {
         title: "Width",
@@ -111,13 +111,13 @@ export const QUALITY_REPORT_CREATE_COLUMNS = [
     },
     {
         title: "Material Grade",
-        dataIndex: "materialGrade.gradeName",
-        key: "materialGrade.gradeName",
+        dataIndex: "materialGrade",
+        key: "materialGrade",
     },
     {
         title: "Net Weight",
-        dataIndex: "inStockWeight",
-        key: "inStockWeight",
+        dataIndex: "targetWeight",
+        key: "targetWeight",
     },
 ]
 

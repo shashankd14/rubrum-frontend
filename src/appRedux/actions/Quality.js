@@ -82,6 +82,8 @@ import {
   DELETE_QUALITY_REPORT_REQUEST,
   DELETE_QUALITY_REPORT_SUCCESS,
   DELETE_QUALITY_REPORT_ERROR,
+  UPDATE_TEMPLATE_PROCESSING_FORM_DATA,
+  UPDATE_QR_PROCESSING_FORM_DATA,
 } from "constants/ActionTypes";
 
 
@@ -565,10 +567,10 @@ export const getQualityReportById = payload => {
   }
 };
 
-export const getQualityReportByIdSuccess = (templateDetails) => {
+export const getQualityReportByIdSuccess = (reportById) => {
   return {
     type: GET_QUALITY_REPORT_BY_ID_SUCCESS,
-    templateDetails
+    reportById
   }
 };
 
@@ -618,3 +620,19 @@ export const deleteQualityReportError = error => {
     error
   }
 };
+
+export const updateTemplateFormData = payload => {
+  return {
+    type: UPDATE_TEMPLATE_PROCESSING_FORM_DATA,
+    formData: payload.formData,
+    action: payload.action
+  }
+}
+
+export const updateQRFormData = payload => {
+  return {
+    type: UPDATE_QR_PROCESSING_FORM_DATA,
+    formData: payload.formData,
+    action: payload.action
+  }
+}

@@ -82,6 +82,8 @@ import {
   DELETE_KQP_LINK_REQUEST,
   DELETE_KQP_LINK_SUCCESS,
   DELETE_KQP_LINK_ERROR,
+  UPDATE_TEMPLATE_PROCESSING_FORM_DATA,
+  UPDATE_QR_PROCESSING_FORM_DATA,
 } from "constants/ActionTypes";
 
 const INIT_STATE = {
@@ -104,6 +106,7 @@ const INIT_STATE = {
 
 
 export default (state = INIT_STATE, action) => {
+  console.log("reducer", state, action)
   switch (action.type) {
     case TEMPLATE_NAME: {
       return {
@@ -378,6 +381,26 @@ export default (state = INIT_STATE, action) => {
         error: true,
         loading: false,
       }
+    case GET_QUALITY_REPORT_BY_ID_REQUEST:
+      return {
+        ...state,
+        loading: true,
+        operation: "qualityReportById"
+      }
+    case GET_QUALITY_REPORT_BY_ID_SUCCESS:
+      return {
+        ...state,
+        error: false,
+        loading: false,
+        data: action.reportById,
+        operation: "qualityReportById"
+      }
+    case GET_QUALITY_REPORT_BY_ID_ERROR:
+      return {
+        ...state,
+        error: true,
+        loading: false,
+      }
 
     case FETCH_KQP_LIST:
       return {
@@ -564,7 +587,14 @@ export default (state = INIT_STATE, action) => {
         error: true,
         loading: false
       }
-
+    case UPDATE_TEMPLATE_PROCESSING_FORM_DATA:
+      return {
+        ...state,
+      }
+    case UPDATE_QR_PROCESSING_FORM_DATA:
+      return {
+        ...state,
+      }
     default:
       return state;
   }

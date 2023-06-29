@@ -42,6 +42,7 @@ const CreateTemplate = (props) => {
     }, [props.match])
 
     useEffect(() => {
+        console.log(props)
         if (!props.templateDetails.loading && !props.templateDetails.error && props.templateDetails.operation === 'templateById') {
             console.log(props.templateDetails)
             setTemplateName(props.templateDetails.data.templateName);

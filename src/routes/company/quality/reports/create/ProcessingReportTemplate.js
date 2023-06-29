@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { Link, useHistory, useLocation, withRouter } from "react-router-dom";
-import { Button, Card, Col, Icon, Input, Modal, Radio, Row, Select } from 'antd'
+import { useHistory } from "react-router";
+import { Button, Card, Col, Icon, Input, Radio, Row, Select } from 'antd'
 import Dragger from 'antd/lib/upload/Dragger'
 import { PROCESSES } from "../../../../../constants/quality/ComponentConstants";
-import SlittingForm from './process/SlittingForm';
 
 
-const ProcessingTemplate = (props) => {
+const ProcessingReportTemplate = (props) => {
 
   const Option = Select.Option;
   const history = useHistory();
@@ -47,18 +46,10 @@ const ProcessingTemplate = (props) => {
       "fileName": "",
       "fileList": []
     },
-    formData: {
-      "id": "formData",
-      "type": "customerApproval",
-      "value": "",
-      "fileName": "",
-      "fileList": []
-    },
 
   });
 
   const [isDisabled, setIsDisabled] = useState(false);
-  const [showCreateModal, setShowCreateModal] = useState(false);
 
   useEffect(() => {
     // console.log(props)
@@ -93,13 +84,6 @@ const ProcessingTemplate = (props) => {
     props.handleCreate(templateData)
   }
 
-  const updateFormData = (formData) => {
-    console.log(formData)
-    templateData['formData']['value'] = formData;
-  }
-
-  
-
   return (
     <div>
       <Col span={24} className="gx-pt-4">
@@ -125,9 +109,9 @@ const ProcessingTemplate = (props) => {
           <Col span={8}>
             <div style={{ display: 'grid', marginTop: 33 }}>
               {templateData[1].value && <Button
-                onClick={
-                  () => setShowCreateModal(true)
-                }
+              onClick={
+              () =>  history.push(`/company/quality/templates/create/process/${templateData[1].value.toLowerCase()}`)
+              }
               >
                 {`Fill ${templateData[1].value.charAt(0).toUpperCase() + templateData[1].value.slice(1).toLowerCase()} Process form first`}
               </Button>}
@@ -233,20 +217,8 @@ const ProcessingTemplate = (props) => {
           </div>
         </Row>}
       </Col>
-      <Modal
-        title={`${templateData[1].value.charAt(0).toUpperCase() + templateData[1].value.slice(1).toLowerCase()} Process`}
-        style={{top: 20}}
-        width={1080}
-        visible={showCreateModal}
-        okButtonProps={{ hidden: true }}
-        cancelButtonProps={{ hidden: true }}
-        onCancel={() => setShowCreateModal(false)}
-        destroyOnClose={true}
-      >
-        <SlittingForm onSave={updateFormData}></SlittingForm>
-      </Modal>
     </div>
   )
 }
 
-export default withRouter(ProcessingTemplate)
+export default ProcessingReportTemplate

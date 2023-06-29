@@ -16,4 +16,8 @@ export const sidebarMenuItems = {
     party: "Party",
     rates: "Rates",
     tags: "Tags",
+    quality: "Quality",
+    Templates: "Templates",
+    Reports: "Reports",
+    KQP: "KQP",
 }

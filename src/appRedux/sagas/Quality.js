@@ -16,6 +16,7 @@ import {
     SAVE_QUALITY_REPORT_REQUEST,
     GET_QUALITY_REPORT_BY_ID_REQUEST,
     UPDATE_QUALITY_REPORT_REQUEST,
+    DELETE_QUALITY_REPORT_REQUEST,
     FETCH_KQP_LIST,
     SAVE_KQP_REQUEST,
     GET_KQP_BY_ID_REQUEST,
@@ -318,14 +319,17 @@ function* updateQualityTemplateLinkById(data) {
 function* fetchQualityReportStageList(req) {
     console.log(req.payload)
     try {
-        const fetchQRList =  yield fetch(`${baseUrl}api/quality/qir/listpage`, {
+        const endP = (req.payload.stage.includes('processing') || req.payload.stage.includes('inward') )? 'listpage' : 'dispatchlist'
+        const url = `${baseUrl}api/quality/qir/${req.payload.stage}/${endP}`
+        console.log('url', url)
+        const fetchQRList =  yield fetch( url, {
             method: 'GET',
             headers: getHeaders()
         });
         if(fetchQRList.status === 200) {
             const fetchQRListResponse = yield fetchQRList.json();
-            console.log('fetchQRListResponse', req.payload.stage === "inwardlist" ? fetchQRListResponse.content : fetchQRListResponse)
-            yield put(fetchQualityReportStageListSuccess(req.payload.stage === "inwardlist" ? fetchQRListResponse.content : fetchQRListResponse));
+            console.log('fetchQRListResponse', fetchQRListResponse)
+            yield put(fetchQualityReportStageListSuccess(fetchQRListResponse));
         } else if (fetchQRList.status === 401) {
             yield put(userSignOutSuccess());
         } else
@@ -389,7 +393,8 @@ function* saveQualityReport(data) {
     try {
         // let data = new FormData();
         console.log(data.payload)
-        const qualityTemplate = yield fetch(`${baseUrl}api/quality/inspectionreport/save`, {
+        // /api/quality/qir/save
+        const qualityTemplate = yield fetch(`${baseUrl}api/quality/qir/save`, {
             method: 'POST',
             body: data.payload,
             // headers: {'Content-Type': 'multipart/form-data', ...getHeaders()}
@@ -411,7 +416,7 @@ function* saveQualityReport(data) {
 function* getQualityReportById(data) {
     try {
         // let data = new FormData();
-        const qualityTemplate = yield fetch(`${baseUrl}api/quality/inspectionreport/${data.payload}`, {
+        const qualityTemplate = yield fetch(`${baseUrl}api/quality/qir/${data.payload}`, {
             method: 'GET',
             headers: getHeaders()
         });
@@ -429,6 +434,27 @@ function* getQualityReportById(data) {
 }
 
 function* updateQualityReportById(data) {
+    try {
+        // let data = new FormData();
+        const qualityTemplate = yield fetch(`${baseUrl}api/quality/inspectionreport/update`, {
+            method: 'PUT',
+            body: data.payload,
+            headers: getHeaders()
+        });
+        if (qualityTemplate.status == 200) {
+            let qualityTemplateResponse = yield qualityTemplate.json()
+            yield put(updateQualityReportSuccess(qualityTemplateResponse));
+        } else if (qualityTemplate.status === 401) {
+            yield put(userSignOutSuccess());
+        } else
+            yield put(updateQualityReportError('error'));
+    } catch (error) {
+        console.log(error)
+        yield put(updateQualityReportError(error));
+    }
+}
+
+function* deleteQualityReportById(data) {
     try {
         // let data = new FormData();
         const qualityTemplate = yield fetch(`${baseUrl}api/quality/inspectionreport/update`, {
@@ -674,6 +700,7 @@ export function* watchFetchRequests() {
     yield takeLatest(SAVE_QUALITY_REPORT_REQUEST, saveQualityReport);
     yield takeLatest(GET_QUALITY_REPORT_BY_ID_REQUEST, getQualityReportById);
     yield takeLatest(UPDATE_QUALITY_REPORT_REQUEST, updateQualityReportById);
+    yield takeLatest(DELETE_QUALITY_REPORT_REQUEST, deleteQualityReportById);
     yield takeLatest(FETCH_KQP_LIST, fetchKqpList);
     yield takeLatest(SAVE_KQP_REQUEST, saveKqp);
     yield takeLatest(GET_KQP_BY_ID_REQUEST, getKqpById);

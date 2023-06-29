@@ -15,11 +15,11 @@ import {
     
 } from "../../../../../appRedux/actions"
 import TextArea from "antd/lib/input/TextArea";
-import InwardTemplate from "../../templates/create/InwardTemplate";
-import PreProcessingTemplate from "../../templates/create/PreProcessingTemplate";
-import ProcessingTemplate from "../../templates/create/ProcessingTemplate";
-import PreDispatchTemplate from "../../templates/create/PreDispatchTemplate";
-import PostDispatchTemplate from "../../templates/create/PostDispatchTemplate";
+import InwardReportTemplate from "./InwardReportTemplate";
+import PreProcessingReportTemplate from "./PreProcessingReportTemplate";
+import ProcessingReportTemplate from "./ProcessingReportTemplate";
+import PreDispatchReportTemplate from "./PreDispatchReportTemplate";
+import PostDispatchReportTemplate from "./PostDispatchReportTemplate";
 
 
 const CreateReport = (props) => {
@@ -121,17 +121,21 @@ const CreateReport = (props) => {
         if (templateName) {
             request.append("templateName", templateName);
         }
-        
+        const coilNumber = stageName == 'INWARD' ? props.location.state.selectedItemForQr.coilNumber : props.location.state.selectedItemForQr.coilNo;
+        const batchNumber = stageName == 'INWARD' ? props.location.state.selectedItemForQr.batchNumber : props.location.state.selectedItemForQr.customerBatchNo;
         request.append("stageName", stageName);
         request.append("userId", localStorage.getItem("userId").toString());
         request.append("templateDetails", JSON.stringify(templateDetails));
-        request.append("coilNumber", materialDetails[0].coilNumber);
-        request.append("inwardId", materialDetails[0].inwardEntryId);
+        request.append("coilNo", coilNumber + '');
+        request.append("customerBatchNo", batchNumber);
+        // request.append("planId", props.location.state.selectedItemForQr.planId);
+        // request.append("deliveryChalanNo", props.location.state.selectedItemForQr.coilNumber);
+        request.append("inwardId", props.location.state.selectedItemForQr.inwardEntryId);
         if (action == 'create')
             props.saveQualityReport(request);
         else if (action == 'edit')
             props.updateQualityReport(request);
-        // props.history.push('/company/quality/reports')
+        props.history.push('/company/quality/reports')
     }
 
     return (
@@ -153,11 +157,11 @@ const CreateReport = (props) => {
                     disabled
                 />
             </div>
-            {stageName === "INWARD" ? <InwardTemplate handleCreate={handleCreate} action={action} templateDetails={templateInfo} from="qr"></InwardTemplate>
-                : stageName === "PRE_PROCESSING" ? <PreProcessingTemplate handleCreate={handleCreate} action={action} templateDetails={templateInfo} from="qr"></PreProcessingTemplate>
-                    : stageName === "PROCESSING" ? <ProcessingTemplate handleCreate={handleCreate} action={action} templateDetails={templateInfo} from="qr"></ProcessingTemplate>
-                        : stageName === "PRE_DISPATCH" ? <PreDispatchTemplate handleCreate={handleCreate} action={action} templateDetails={templateInfo} from="qr"></PreDispatchTemplate>
-                            : stageName === "POST_DISPATCH" ? <PostDispatchTemplate handleCreate={handleCreate} action={action} templateDetails={templateInfo} from="qr"></PostDispatchTemplate>
+            {stageName === "INWARD" ? <InwardReportTemplate handleCreate={handleCreate} action={action} templateDetails={templateInfo} from="qr"></InwardReportTemplate>
+                : stageName === "PRE_PROCESSING" ? <PreProcessingReportTemplate handleCreate={handleCreate} action={action} templateDetails={templateInfo} from="qr"></PreProcessingReportTemplate>
+                    : stageName === "PROCESSING" ? <ProcessingReportTemplate handleCreate={handleCreate} action={action} templateDetails={templateInfo} from="qr"></ProcessingReportTemplate>
+                        : stageName === "PRE_DISPATCH" ? <PreDispatchReportTemplate handleCreate={handleCreate} action={action} templateDetails={templateInfo} from="qr"></PreDispatchReportTemplate>
+                            : stageName === "POST_DISPATCH" ? <PostDispatchReportTemplate handleCreate={handleCreate} action={action} templateDetails={templateInfo} from="qr"></PostDispatchReportTemplate>
                                 : <></>
             }
         </div>
@@ -173,4 +177,5 @@ export default connect(mapStateToProps, {
     saveQualityReport,
     getQualityReportById,
     updateQualityReport,
+    deleteQualityReport
 })(CreateReport);
