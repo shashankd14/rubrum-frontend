@@ -86,6 +86,7 @@ import {
     GET_PACKET_WISE_PRICE_DC_SUCCESS,
     GET_PACKET_WISE_PRICE_DC_ERROR
 } from "../../constants/ActionTypes";
+import * as actionTypes from "../../constants/ActionTypes";
 
 const INIT_STATE = {
     inwardList: [],
@@ -138,6 +139,9 @@ const INIT_STATE = {
     instructionUpdateSuccess:false,
     instructionUpdateFailure: false,
     reconcileData:[],
+    QrSuccess:false,
+    QrLoading: false,
+    QrError: false,
     packetwisePriceDC:{}
 };
 
@@ -350,6 +354,9 @@ export default (state = INIT_STATE, action) => {
                 pdfLoading:false,
                 pdfSuccess:false,
                 pdfError:false,
+                QrSuccess:false,
+                QrLoading: false,
+                QrError: false,
                 
             }
         }
@@ -494,6 +501,9 @@ export default (state = INIT_STATE, action) => {
                 unprocessedSuccess:{},
                 instructionUpdateSuccess:false,
                 instructionUpdateFailure: false,
+                QrSuccess:false,
+                QrLoading: false,
+                QrError: false,
             }
         }
         
@@ -737,6 +747,27 @@ export default (state = INIT_STATE, action) => {
                 loading:false,
                 success:false,
                 error: true
+            }
+        }
+        case actionTypes.QR_GENERATE_INWARD: {
+            return {
+                ...state,
+                QrLoading: true,
+            }
+        }
+        case actionTypes.QR_GENERATE_INWARD_SUCCESS: {
+            return {
+                ...state,
+                QrLoading: false,
+                QrSuccess: true,
+            }
+        }
+        case actionTypes.QR_GENERATE_INWARD_ERROR: {
+            return {
+                ...state,
+                QrLoading: false,
+                QrSuccess: false,
+                QrError: true
             }
         }
         case GET_PACKET_WISE_PRICE_DC_REQUEST: {

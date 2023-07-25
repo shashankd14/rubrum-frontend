@@ -2,8 +2,8 @@ import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import moment from "moment";
 
-import {submitInwardEntry, resetInwardForm,updateInward, pdfGenerateInward} from "../../../../appRedux/actions";
-import {Button, Card, Col, Icon, message, Row, Spin} from "antd";
+import {submitInwardEntry, resetInwardForm,updateInward, pdfGenerateInward, QrGenerateInward} from "../../../../appRedux/actions";
+import {Button, Card, Col, Icon, message, Row, Spin, Modal} from "antd";
 import { withRouter } from 'react-router-dom';
 
 import {APPLICATION_DATE_FORMAT} from '../../../../constants/index';
@@ -11,6 +11,7 @@ import {APPLICATION_DATE_FORMAT} from '../../../../constants/index';
 const InwardEntrySummary = (props) => {
     const [generate, setGenerate]= useState(true);
     const [payload, setPayload]= useState({});
+    const [showCreateModal, setShowCreateModal] = useState(false);
     useEffect(() => {
         if(props.inwardUpdateSuccess) {
             message.success('Inward entry has been updated successfully', 2);
@@ -50,6 +51,13 @@ const InwardEntrySummary = (props) => {
     }
     let dimensionEdit = `${props.inward.fWidth} X ${props.inward.fThickness} X ${props.inward.fLength}`;
     let dimension = `${props.inward.width} X ${props.inward.thickness} X ${props.inward.length}`
+
+    const handleGenerateQRCodeClick = (e) => {
+        e.preventDefault();
+        setShowCreateModal(true); // Show the modal when the "Generate QR Code" button is clicked
+       // props.QrGenerateInward(payload);
+      };
+
     return (
         <>
             {props.inwardSubmitLoading ? <Spin className="gx-size-100 gx-flex-row gx-justify-content-center gx-align-items-center" size="large"/> :
@@ -113,7 +121,19 @@ const InwardEntrySummary = (props) => {
                         e.preventDefault();
                         props.pdfGenerateInward(payload)
                     }}>Generate PDF</Button>
+                    <Button type="primary" 
+                    onClick={handleGenerateQRCodeClick}
+                    >Generate QR Code</Button>
                 </Col>
+                <Modal
+                title= 'QR Code'
+                visible={showCreateModal}
+                onCancel={() => setShowCreateModal(false)}
+                onOk={() => setShowCreateModal(false)}
+                destroyOnClose={true}
+                // width={600}
+                // height={1000}
+            ></Modal>
 
             </>
             }
@@ -137,5 +157,6 @@ export default withRouter(connect(mapStateToProps, {
     submitInwardEntry,
     resetInwardForm,
     updateInward,
-    pdfGenerateInward
+    pdfGenerateInward,
+    QrGenerateInward
 })(InwardEntrySummary));
