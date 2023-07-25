@@ -83,6 +83,7 @@ import {
     GET_RECONCILE_REPORT,
     GET_RECONCILE_REPORT_ERROR
 } from "../../constants/ActionTypes";
+import * as actionTypes from "../../constants/ActionTypes";
 
 const INIT_STATE = {
     inwardList: [],
@@ -134,7 +135,10 @@ const INIT_STATE = {
     s3pdfurl:{},
     instructionUpdateSuccess:false,
     instructionUpdateFailure: false,
-    reconcileData:[]
+    reconcileData:[],
+    QrSuccess:false,
+    QrLoading: false,
+    QrError: false,
 };
 
 export default (state = INIT_STATE, action) => {
@@ -346,6 +350,9 @@ export default (state = INIT_STATE, action) => {
                 pdfLoading:false,
                 pdfSuccess:false,
                 pdfError:false,
+                QrSuccess:false,
+                QrLoading: false,
+                QrError: false,
                 
             }
         }
@@ -490,6 +497,9 @@ export default (state = INIT_STATE, action) => {
                 unprocessedSuccess:{},
                 instructionUpdateSuccess:false,
                 instructionUpdateFailure: false,
+                QrSuccess:false,
+                QrLoading: false,
+                QrError: false,
             }
         }
         
@@ -733,6 +743,27 @@ export default (state = INIT_STATE, action) => {
                 loading:false,
                 success:false,
                 error: true
+            }
+        }
+        case actionTypes.QR_GENERATE_INWARD: {
+            return {
+                ...state,
+                QrLoading: true,
+            }
+        }
+        case actionTypes.QR_GENERATE_INWARD_SUCCESS: {
+            return {
+                ...state,
+                QrLoading: false,
+                QrSuccess: true,
+            }
+        }
+        case actionTypes.QR_GENERATE_INWARD_ERROR: {
+            return {
+                ...state,
+                QrLoading: false,
+                QrSuccess: false,
+                QrError: true
             }
         }
         default:
