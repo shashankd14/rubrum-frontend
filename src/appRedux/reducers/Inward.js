@@ -83,6 +83,7 @@ import {
     GET_RECONCILE_REPORT,
     GET_RECONCILE_REPORT_ERROR
 } from "../../constants/ActionTypes";
+import * as actionTypes from "../../constants/ActionTypes";
 
 const INIT_STATE = {
     inwardList: [],
@@ -134,7 +135,10 @@ const INIT_STATE = {
     s3pdfurl:{},
     instructionUpdateSuccess:false,
     instructionUpdateFailure: false,
-    reconcileData:[]
+    reconcileData:[],
+    planQRError: false,
+    planQRLoading:false,
+    planQRSuccess: false,
 };
 
 export default (state = INIT_STATE, action) => {
@@ -733,6 +737,27 @@ export default (state = INIT_STATE, action) => {
                 loading:false,
                 success:false,
                 error: true
+            }
+        }
+        case actionTypes.QR_Code_GENERATE_PLAN: {
+            return {
+                ...state,
+                planQRLoading: true,
+            }
+        }
+        case actionTypes.QR_Code_GENERATE_PLAN_SUCCESS: {
+            return {
+                ...state,
+                planQRLoading: false,
+                planQRSuccess: true,
+            }
+        }
+        case actionTypes.QR_Code_GENERATE_PLAN_ERROR: {
+            return {
+                ...state,
+                planQRLoading: false,
+                planQRSuccess: false,
+                planQRError: true
             }
         }
         default:

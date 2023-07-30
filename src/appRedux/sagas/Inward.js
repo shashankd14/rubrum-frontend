@@ -29,7 +29,8 @@ import {
     PDF_S3_URL,
     GET_RECONCILE_REPORT_SUCCESS,
     GET_RECONCILE_REPORT,
-    GET_RECONCILE_REPORT_ERROR
+    GET_RECONCILE_REPORT_ERROR,
+    QR_Code_GENERATE_PLAN
 } from "../../constants/ActionTypes";
 
 import {
@@ -794,6 +795,26 @@ function* getReconcileReportSaga(action) {
         yield put(getReconcileReportError(error));
     }
 }
+// function* QrGeneratePlan(action) {
+//     try {
+//            const qrGenerate = yield axios.post(`${baseUrl}api/inwardEntry/qrcode/plan`, action.payload, {
+//                 headers: {
+//                     "Content-Type": "application/json",
+//                     ...getHeaders()
+//                 }
+//             });
+//         if (qrGenerate.status === 200) {
+//             const qrGenerateResponse = qrGenerate.data;
+//                 yield put (actions.QrCodeGeneratePlanSuccess(qrGenerateResponse));
+//         } else if (qrGenerate.status === 401){
+//             yield put (userSignOutSuccess());
+//         } else {
+//             yield put (actions.QrCodeGeneratePlanError('error'));
+//         }
+//     } catch (error) {
+//         yield put(actions.QrCodeGeneratePlanError(error));
+//     }
+// }
 
 
 export function* watchFetchRequests() {
@@ -821,6 +842,7 @@ export function* watchFetchRequests() {
     yield takeLatest(PDF_GENERATE_DELIVERY, generateDCPdf);
     yield takeLatest(PDF_S3_URL, getS3PDFUrl);
     yield takeLatest(GET_RECONCILE_REPORT, getReconcileReportSaga);
+   // yield takeLatest(QR_Code_GENERATE_PLAN, QrGeneratePlan);
 }
 
 export default function* inwardSagas() {
