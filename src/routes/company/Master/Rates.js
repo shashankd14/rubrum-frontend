@@ -305,9 +305,13 @@ const Rates = (props) => {
       props.deleteAdditionalRates(record?.id);
     }
   };
-  const onEdit = (record, e) => {
+  const onEdit = (record, e) => {   
     e.preventDefault();
-    if (tabKey === "1") {
+    if (tabKey === "1") { 
+    const list = props.material.materialList.filter(
+      (material) => material.matId === record.matId
+    );
+    setGradeList(list.map((item) => item.materialGrade)?.flat());
       props.fetchRatesListById(record.id);
       setEditRates(true);
       setTimeout(() => {
@@ -441,7 +445,7 @@ const Rates = (props) => {
         (material) => material.matId === type
       );
       setGradeList(list.map((item) => item.materialGrade)?.flat());
-    }
+    } 
   }, [type, checked]);
 
   const handleChange = (pagination, filters, sorter) => {
@@ -463,7 +467,6 @@ const Rates = (props) => {
   };
   const rowSelection = {
     onSelect: (record, selected, selectedRows) => {
-      console.log("record", record, selectedRows);
       setSelectedRows(selectedRows);
     },
   };
@@ -694,8 +697,9 @@ const Rates = (props) => {
             e.preventDefault();
             if (editRates) {
               props.form.validateFields((err, values) => {
-                const data = { values, id: props.rates?.rates?.id };
-                props.updateRates(data);
+                values.partyId = [values.partyId];
+                const data = { values, id: props.rates?.rates?.id  };
+                 props.updateRates(data);
                 props.form.resetFields();
                 setEditRates(false);
                 setShowAddRates(false);
@@ -893,6 +897,7 @@ const Rates = (props) => {
                       })(
                         <Select
                           showSearch
+                          mode='multiple'
                           style={{ width: 300 }}
                           placeholder="Select a Grade"
                         >
