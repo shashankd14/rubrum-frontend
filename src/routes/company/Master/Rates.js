@@ -698,6 +698,7 @@ const Rates = (props) => {
             if (editRates) {
               props.form.validateFields((err, values) => {
                 values.partyId = [values.partyId];
+                values.matGradeId = [values.matGradeId];
                 const data = { values, id: props.rates?.rates?.id  };
                  props.updateRates(data);
                 props.form.resetFields();
@@ -1125,9 +1126,13 @@ const addRatesForm = Form.create({
         ...props.rates?.rates?.matId,
         value: props.rates?.rates?.matId || undefined,
       }),
-      matGradeId: Form.createFormField({
+      matGradeName: Form.createFormField({
         ...props.rates?.rates?.matGradeName,
         value: props.rates?.rates?.matGradeName || undefined,
+      }),
+      matGradeId: Form.createFormField({
+        ...props.rates?.rates?.matGradeId,
+        value: props.rates?.rates?.matGradeId || undefined,
       }),
       thicknessFrom: Form.createFormField({
         ...props.rates?.rates?.thicknessFrom,
