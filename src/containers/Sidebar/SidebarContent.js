@@ -108,6 +108,14 @@ const SidebarContent = () => {
                     </Link>
                   </Menu.Item>}
 
+                  {  
+                  menuLabelList.includes(sidebarMenuItems.packing) && <Menu.Item key="company/master/packing">
+                    <Link to="/company/master/packing">
+                      <i className="icon icon-crypto"/>
+                      <span><IntlMessages id="sidebar.master.packing"/></span>
+                    </Link>
+                  </Menu.Item>}
+
                   {/* <Menu.Item key="company/master/quality">
                     <Link to="/company/master/quality">
                       <i className="icon icon-crypto" />
@@ -140,12 +148,7 @@ const SidebarContent = () => {
                       <span><IntlMessages id="sidebar.master.tags"/></span>
                     </Link>
                   </Menu.Item>}
-                  {menuLabelList.includes(sidebarMenuItems.packing) && <Menu.Item key="company/master/packing">
-                    <Link to="/company/master/packing">
-                      <i className="icon icon-crypto"/>
-                      <span><IntlMessages id="sidebar.master.packing"/></span>
-                    </Link>
-                  </Menu.Item>}
+                  
                 </SubMenu>
                 {menuLabelList.includes(sidebarMenuItems.inward) && <Menu.Item key="company/inward">
                   <Link to="/company/inward">

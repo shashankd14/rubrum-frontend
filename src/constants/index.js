@@ -20,4 +20,5 @@ export const sidebarMenuItems = {
     Templates: "Templates",
     Reports: "Reports",
     KQP: "KQP",
+    packing: "Packing"
 }
