@@ -804,7 +804,6 @@ function* getPacketwisePriceDCSaga(action) {
 
     console.log('Saga: ', action);
     let req_obj ={};
-    let requestType = '';
     if(action.payload?.inwardListForDelivery){
         let packetsData = [];
         for (let item of action.payload.inwardListForDelivery) {
