@@ -457,7 +457,8 @@ const List = (props) => {
             <Button onClick={clearFilters}>Clear All filters</Button>
           </div>
           <div className="gx-flex-row gx-w-50">
-            {menuPartyWiseLabelList.length > 0 && menuPartyWiseLabelList.includes(partyWiseMenuConstants.deliver) && <Button
+             {/* {menuPartyWiseLabelList.length > 0 && menuPartyWiseLabelList.includes(partyWiseMenuConstants.deliver) && <Button */}
+             {menuPartyWiseLabelList.length > 0 && <Button
               type="primary"
               icon={() => <i className="icon icon-add" />}
               size="medium"

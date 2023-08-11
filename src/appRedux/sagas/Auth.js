@@ -170,6 +170,123 @@ function* signInUserWithEmailPassword({payload}) {
       localStorage.setItem("userToken",signeduser.access_token)
       localStorage.setItem("userName",signeduser.userName)
       localStorage.setItem("userId",signeduser.userId)
+
+      console.log('Menus Before setitem',signeduser.menusList);
+    //   signeduser.menusList=   [
+    //     {
+    //         "menuId": 1,
+    //         "menuName": "Inward",
+    //         "parentMenuId": 0,
+    //         "permission": "View,Edit,Delete,Export,Add Inward",
+    //         "displayOrder": 2,
+    //         "menuKey": "Inward"
+    //     },
+    //     {
+    //         "menuId": 3,
+    //         "menuName": "Partywise Register",
+    //         "parentMenuId": 0,
+    //         "permission": "Plan,Retrieve,Cancel Finish,Edit Finish,Add Inward,View,Export,Deliver",
+    //         "displayOrder": 3,
+    //         "menuKey": "Partywise Register"
+    //     },
+    //     {
+    //         "menuId": 4,
+    //         "menuName": "Work-In Progress",
+    //         "parentMenuId": 0,
+    //         "permission": "View,Finish",
+    //         "displayOrder": 5,
+    //         "menuKey": "Work-In Progress"
+    //     },
+    //     {
+    //         "menuId": 5,
+    //         "menuName": "Delivered Items",
+    //         "parentMenuId": 0,
+    //         "permission": "Add Customer Invoice and Date,Delete,View Delivery Info",
+    //         "displayOrder": 4,
+    //         "menuKey": "Delivered Items"
+    //     },
+    //     {
+    //         "menuId": 6,
+    //         "menuName": "Reports",
+    //         "parentMenuId": 0,
+    //         "permission": "Generate Report",
+    //         "displayOrder": 6,
+    //         "menuKey": "Reports"
+    //     },
+    //     {
+    //         "menuId": 7,
+    //         "menuName": "Material",
+    //         "parentMenuId": 2,
+    //         "permission": "Add Material,View,Edit,Delete,Export",
+    //         "displayOrder": 1,
+    //         "menuKey": "Material"
+    //     },
+    //     {
+    //         "menuId": 8,
+    //         "menuName": "Party",
+    //         "parentMenuId": 2,
+    //         "permission": "Add,View,Edit,Delete,Export",
+    //         "displayOrder": 2,
+    //         "menuKey": "Party"
+    //     },
+    //     {
+    //         "menuId": 9,
+    //         "menuName": "Rates",
+    //         "parentMenuId": 2,
+    //         "permission": "Add,Export,Delete,View,Edit",
+    //         "displayOrder": 3,
+    //         "menuKey": "Rates"
+    //     }, 
+    //     {
+    //         "menuId": 10,
+    //         "menuName": "Tags",
+    //         "parentMenuId": 2,
+    //         "permission": "Process Tags,End User Tags,Add,View,Edit,Delete,Export",
+    //         "displayOrder": 5,
+    //         "menuKey": "Tags"
+    //     },
+    //     {
+    //         "menuId": 11,
+    //         "menuName": "User Access",
+    //         "parentMenuId": 0,
+    //         "permission": "Export,Delete,Edit,View,Add",
+    //         "displayOrder": 5,
+    //         "menuKey": "User Access"
+    //     },
+    //     {
+    //         "menuId": 13,
+    //         "menuName": "Templates",
+    //         "parentMenuId": 12,
+    //         "permission": "Add,View,Edit,Delete",
+    //         "displayOrder": 1,
+    //         "menuKey": "Templates"
+    //     },
+    //     {
+    //         "menuId": 14,
+    //         "menuName": "Reports",
+    //         "parentMenuId": 12,
+    //         "permission": "Add,View,Edit,Delete",
+    //         "displayOrder": 2,
+    //         "menuKey": "Reports"
+    //     },
+    //     {
+    //         "menuId": 15,
+    //         "menuName": "KQP",
+    //         "parentMenuId": 12,
+    //         "permission": "Add,View,Edit,Delete",
+    //         "displayOrder": 3,
+    //         "menuKey": "KQP"
+    //     },
+		// {
+    //         "menuId": 16,
+    //         "menuName": "Packing",
+    //         "parentMenuId": 2,
+    //         "permission": "Add,View,Edit,Delete,Export",
+    //         "displayOrder": 5,
+    //         "menuKey": "Packing"
+    //     },
+    // ];
+console.log('Menus after setitem',signeduser.menusList);
       localStorage.setItem("Menus",JSON.stringify(signeduser.menusList))
     } else {
       yield put(showAuthMessage("Failed to Login"));

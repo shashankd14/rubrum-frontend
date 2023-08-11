@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { connect } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import { Popover,Input, Card, message, Select } from "antd";
 import { InfoCircleOutlined, CloseSquareTwoTone } from "@ant-design/icons";
-import { fetchPackingListByParty, postDeliveryConfirm, generateDCPdf,resetInstruction,saveUnprocessedDelivery } from "../../../appRedux/actions";
+import { fetchPackingListByParty, fetchPackingBucketList, getPacketwisePriceDC, postDeliveryConfirm, generateDCPdf,resetInstruction,saveUnprocessedDelivery } from "../../../appRedux/actions";
 import moment from "moment";
+import { Button, Table, Modal } from "antd";
 
 const DeliveryInfo = (props) => {
   const Option = Select.Option;
@@ -15,10 +16,100 @@ const DeliveryInfo = (props) => {
   const [partyRate, setPartyRate] = useState(0);
   const [packingRateId, setPackingRateId] = useState('');
 
+  const [priceModal, setPriceModal] = useState(false);
+  console.log('props: ', props);
+  const dispatch = useDispatch();
+ // const data=useSelector(state=> state.packetwisePriceDC)
+ // console.log("data", data);
+  const handlePacketPrice = (e) =>{
+    setPriceModal(true);
+    const reqObj = {
+      packingRateId,
+      vehicleNo,
+     // inwardListForDelivery: props.inward.inwardListForDelivery,
+      inwardListForDelivery:props.deliveryList.map((item)=> ({
+       instructionId: item.instructionId,
+      remarks: item.remarks || null, 
+      plannedWeight: item.plannedWeight
+      }))
+    }
+    console.log('deliveryList ', props.deliveryList);
+    dispatch(getPacketwisePriceDC(reqObj));
+   //props.getPacketwisePriceDC(reqObj);
+  }
+  const priceColumn = [
+    {
+      title: "Insruction ID",
+      dataIndex: "instructionId",
+      key: "instructionId",
+    },
+    {
+      title: "Coil No.",
+      dataIndex: "coilNo",
+      key: "coilNo",
+    },
+    {
+      title: "Customer Batch No.",
+      dataIndex: "customerBatchNo",
+      key: "customerBatchNo",
+    },
+    {
+      title: "Material Grade Name",
+      dataIndex: "matGradeName",
+      key: "matGradeName",
+    },
+    {
+      title: "Thickness",
+      dataIndex: "thickness",
+      key: "thickness",
+    },
+    {
+      title: "Actual Weight",
+      dataIndex: "actualWeight",
+      key: "actualWeight",
+    },
+    {
+      title: "Base Rate",
+      dataIndex: "basePrice",
+      key: "basePrice",
+    },
+    {
+      title: "Packing Rate",
+      dataIndex: "packingPrice",
+      key: "packingPrice",
+    },
+    {
+      title: "Additional Rate",
+      dataIndex: "additionalPrice",
+      key: "additionalPrice",
+    },
+    {
+      title: "Total Rate",
+      dataIndex: "rate",
+      key: "rate",
+    },
+    {
+      title: "Amount",
+      dataIndex: "totalPrice",
+      key: "totalPrice",
+    },
+  ];
+
+  useEffect(() => {
+    if (priceModal) {
+    const reqObj = {
+      packingRateId,
+      vehicleNo,
+      inwardListForDelivery: props.inward.inwardListForDelivery,
+    };
+    props.getPacketwisePriceDC(reqObj);
+  }},[props.getPacketwisePriceDC, priceModal, packingRateId, vehicleNo, props.inward.inwardListForDelivery])
+
   useEffect(() => {
     const partyId = props.inward.inwardListForDelivery?.map(ele => ele?.party?.nPartyId || '');
     props.fetchPackingListByParty(partyId);
   }, [])
+console.log("props.inward.inwardListForDelivery", props.inward.inwardListForDelivery);
 
   useEffect(()=>{
     let insList = props.inward.inwardListForDelivery?.map(i => {
@@ -95,7 +186,7 @@ useEffect(()=>{
       }
   };
 
- 
+ console.log("props.packing?.packingDeliveryList",props.packing?.packingDeliveryList);
   return (
     <div>
       <h1>Delivery Information</h1>
@@ -206,6 +297,7 @@ useEffect(()=>{
         <div>
           <div style={{ width: "20%", marginBottom: "15px" }}>
             <Select
+               showSearch
                 style={{ width: 300 }}
                 className="Packing Rate"
                 placeholder="Select Packing"
@@ -255,8 +347,45 @@ useEffect(()=>{
                   color: "white",
                   border: "none",
                   cursor: "pointer"
-                }} onClick={handleSubmit} >Confirm & Generate</button>
+                // }} onClick={handleSubmit} >Confirm & Generate</button>
+              }} onClick={handlePacketPrice} >Confirm</button>
             }
+            <Modal
+              title='Packet wise Rate Details'
+              visible={priceModal}
+              width={1000}
+              onCancel={()=> {
+                setPriceModal(false)
+               }}
+               footer={[
+                <Button key="cancel" 
+                type='primary'
+                onClick={() => setPriceModal(false)}>
+                  Cancel
+                </Button>,
+                <Button key="goToRate" 
+                type='primary'
+                // disabled={
+                //   selectedRowData.some(
+                //     (data) =>
+                //       data.basePrice ||
+                //       data.packingPrice ||
+                //       data.additionalPrice ||
+                //       data.totalPrice ||
+                //       data.rate
+                //   )
+                // }
+                onClick={() => props.history.push("/company/master/rates")}>
+                  Go to Rate
+                </Button>,
+                <Button key="ok" type="primary" onClick={handleSubmit}
+                      >
+                  Confirm & Generate
+                </Button>,
+              ]}
+            >
+              <Table columns={priceColumn}  dataSource={props.packetwisePriceDC}/>
+              </Modal> 
             <button
               style={{ marginBottom: "10px", padding: "6px 15px" }}
               onClick={() => {
@@ -283,7 +412,8 @@ useEffect(()=>{
 
 const mapStateToProps = (state) => ({
   inward: state.inward,
-  packing: state.packing
+  packing: state.packing,
+  packetwisePriceDC:state.packetwisePriceDC
 });
 
-export default connect(mapStateToProps, { fetchPackingListByParty, saveUnprocessedDelivery,postDeliveryConfirm, generateDCPdf,resetInstruction})(DeliveryInfo);
+export default connect(mapStateToProps, { fetchPackingListByParty, saveUnprocessedDelivery,getPacketwisePriceDC, postDeliveryConfirm, generateDCPdf,resetInstruction})(DeliveryInfo);

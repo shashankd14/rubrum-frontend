@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Card, Col, Icon, Radio, Row } from 'antd'
 import Dragger from 'antd/lib/upload/Dragger'
+import { useHistory } from 'react-router-dom';
 
 const InwardTemplate = (props) => {
 
@@ -86,6 +87,10 @@ const InwardTemplate = (props) => {
         props.handleCreate(templateData)
     }
 
+    const history = useHistory();
+    const handleCancel = () =>{
+        history.goBack();
+    }
     return (
         <div>
             <Col span={24} className="gx-pt-4">
@@ -169,7 +174,7 @@ const InwardTemplate = (props) => {
                             >
                                 <p>
                                     <Icon type="upload" />
-                                    &nbsp;Click or drag packing intact img
+                                    &nbsp;Click or drag coil bend img
                                 </p>
                             </Dragger>}
                         </div>
@@ -212,7 +217,7 @@ const InwardTemplate = (props) => {
                             >
                                 <p>
                                     <Icon type="upload" />
-                                    &nbsp;Click or drag packing intact img
+                                    &nbsp;Click or drag rust observed img
                                 </p>
                             </Dragger>}
                         </div>
@@ -255,7 +260,7 @@ const InwardTemplate = (props) => {
                             >
                                 <p>
                                     <Icon type="upload" />
-                                    &nbsp;Click or drag packing intact img
+                                    &nbsp;Click or drag safety issue img
                                 </p>
                             </Dragger>}
                         </div>
@@ -298,7 +303,7 @@ const InwardTemplate = (props) => {
                             >
                                 <p>
                                     <Icon type="upload" />
-                                    &nbsp;Click or drag packing intact img
+                                    &nbsp;Click or drag water exposure img
                                 </p>
                             </Dragger>}
                         </div>
@@ -341,7 +346,7 @@ const InwardTemplate = (props) => {
                             >
                                 <p>
                                     <Icon type="upload" />
-                                    &nbsp;Click or drag packing intact img
+                                    &nbsp;Click or drag wire rope damage img
                                 </p>
                             </Dragger>}
                         </div>
@@ -350,7 +355,7 @@ const InwardTemplate = (props) => {
 
                 {props.action !== 'view' && <Row >
                     <div style={{ marginTop: 45 }}>
-                        <Button style={{ marginLeft: 8 }} disabled={isDisabled}>
+                        <Button style={{ marginLeft: 8 }} disabled={isDisabled} onClick={handleCancel}>
                             Cancel
                         </Button>
                         {props.from && props.from === "qr" ? props.action === 'create' ? <Button type="primary" htmlType="submit" onClick={createTemplate} disabled={isDisabled}>

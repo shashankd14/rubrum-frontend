@@ -29,7 +29,8 @@ import {
     PDF_S3_URL,
     GET_RECONCILE_REPORT_SUCCESS,
     GET_RECONCILE_REPORT,
-    GET_RECONCILE_REPORT_ERROR
+    GET_RECONCILE_REPORT_ERROR,
+    GET_PACKET_WISE_PRICE_DC_REQUEST
 } from "../../constants/ActionTypes";
 
 import {
@@ -81,7 +82,10 @@ import {
     getS3PDFUrlSuccess,
     getReconcileReport,
     getReconcileReportError,
-    getReconcileReportSuccess
+    getReconcileReportSuccess,
+    getPacketwisePriceDC,
+    getPacketwisePriceDCSuccess,
+    getPacketwisePriceDCError
 } from "../actions";
 import { CUTTING_INSTRUCTION_PROCESS_ID, SLITTING_INSTRUCTION_PROCESS_ID, SLIT_CUT_INSTRUCTION_PROCESS_ID } from "../../constants";
 import { formItemLayout } from "../../routes/company/Partywise/CuttingModal";
@@ -582,6 +586,7 @@ function* postDeliveryConfirmRequest(payload) {
             taskType:payload.payload?.taskType?payload.payload?.taskType:"",
             deliveryItemDetails: packetsData
         }
+        console.log("req_obj", req_obj);
     }else{
         requestType= 'PUT';
         req_obj =payload.payload
@@ -795,6 +800,60 @@ function* getReconcileReportSaga(action) {
     }
 }
 
+function* getPacketwisePriceDCSaga(action) {
+
+    console.log('Saga: ', action);
+    let req_obj ={};
+    let requestType = '';
+    if(action.payload?.inwardListForDelivery){
+        let packetsData = [];
+        for (let item of action.payload.inwardListForDelivery) {
+            if (item.instructionId) {
+                let tempItem = {};
+                tempItem.instructionId = item.instructionId;
+                tempItem.remarks = item.remarks;
+                tempItem.weight = item.actualWeight || item.plannedWeight;
+                packetsData.push(tempItem);
+            }
+        }
+        req_obj = {
+            vehicleNo: action.payload?.vehicleNo,
+            packingRateId: action.payload?.packingRateId,
+            taskType:action.payload?.taskType?action.payload?.taskType:"",
+            deliveryItemDetails: packetsData
+        }
+    }
+    try {
+        console.log('request: ', req_obj);
+        const postConfirm = yield fetch(`${baseUrl}api/delivery/validatePriceMapping`, {
+            method: 'POST', headers: { "Content-Type": "application/json", ...getHeaders()}, body: JSON.stringify(req_obj)
+        });
+
+        console.log('postConfirm: ', postConfirm)
+        if (postConfirm.status === 200 ) {
+            yield put(getPacketwisePriceDCSuccess(postConfirm));
+        } else if (postConfirm.status === 401) {
+            yield put(userSignOutSuccess());
+        } else
+            yield put(getPacketwisePriceDCError('error'));
+    } catch (error) {
+        yield put(postDeliveryConfirmError(error));
+    }
+}
+// const getPacketwisePriceAPI = (requestData) => {
+//     return fetch(`${baseUrl}api/delivery/validatePriceMapping`, {
+//         method: 'POST', headers: { "Content-Type": "application/json", ...getHeaders()}, body: JSON.stringify(requestData)
+//   });
+// }
+//   function* getPacketwisePriceDCSaga(action) {
+//     try {
+//       const response = yield call(getPacketwisePriceAPI , action.payload); 
+//       yield put(getPacketwisePriceDCSuccess(response.data)); 
+//     } catch (error) {
+//       yield put(getPacketwisePriceDCError(error)); 
+//     }   
+//   }
+
 
 export function* watchFetchRequests() {
     yield takeLatest(FETCH_INWARD_LIST_REQUEST, fetchInwardList);
@@ -821,6 +880,7 @@ export function* watchFetchRequests() {
     yield takeLatest(PDF_GENERATE_DELIVERY, generateDCPdf);
     yield takeLatest(PDF_S3_URL, getS3PDFUrl);
     yield takeLatest(GET_RECONCILE_REPORT, getReconcileReportSaga);
+    yield takeLatest(GET_PACKET_WISE_PRICE_DC_REQUEST, getPacketwisePriceDCSaga);
 }
 
 export default function* inwardSagas() {
