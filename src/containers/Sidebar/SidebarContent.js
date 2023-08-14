@@ -108,12 +108,31 @@ const SidebarContent = () => {
                     </Link>
                   </Menu.Item>}
 
-                    {menuLabelList.includes(sidebarMenuItems.quality) && <Menu.Item key="company/master/quality">
-                        <Link to="/company/master/quality">
-                            <i className="icon icon-crypto"/>
-                            <span><IntlMessages id="sidebar.master.quality"/></span>
+                  {/* <Menu.Item key="company/master/quality">
+                    <Link to="/company/master/quality">
+                      <i className="icon icon-crypto" />
+                      <span><IntlMessages id="sidebar.master.quality" /></span>
+                    </Link>
+                  </Menu.Item> */}
+                    <SubMenu key="quality" className={getNavStyleSubMenuClass(navStyle)} title={
+                      <span>
+                        <i className="icon icon-all-contacts" />
+                        <span><IntlMessages id="sidebar.quality" /></span>
+                      </span>}>
+                      <Menu.Item key="company.quality.reports">
+                        <Link to="/company/quality/reports">
+                          <span><IntlMessages id="sidebar.quality.reports" /></span>
                         </Link>
-                    </Menu.Item>}
+                      </Menu.Item>
+                      <Menu.Item key="company.quality.templates">
+                        <Link to="/company/quality/templates">
+                          <span><IntlMessages id="sidebar.quality.templates" /></span></Link>
+                      </Menu.Item>
+                      <Menu.Item key="company.quality.kqp">
+                        <Link to="/company/quality/kqp">
+                          <span><IntlMessages id="sidebar.quality.kqp" /></span></Link>
+                      </Menu.Item>
+                    </SubMenu>
 
                   {menuLabelList.includes(sidebarMenuItems.tags) && <Menu.Item key="company/master/tags">
                     <Link to="/company/master/tags">

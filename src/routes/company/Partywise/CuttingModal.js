@@ -147,6 +147,7 @@ const CreateCuttingDetailsForm = (props) => {
       dataIndex: "actualLength",
       render: (text, record, index) => (
         <Input
+         style={{width:'60px'}}    // Adjust the width value as needed
           disabled={props.unfinish}
           value={record.actualLength}
           onChange={onInputChange("actualLength", index, record)}
@@ -171,6 +172,7 @@ const CreateCuttingDetailsForm = (props) => {
       dataIndex: "actualNoOfPieces",
       render: (text, record, index) => (
         <Input
+        style={{width:'60px'}}    // Adjust the width value as needed
           disabled={props.unfinish}
           value={record.actualNoOfPieces}
           onChange={onInputChange("actualNoOfPieces", index, record)}
@@ -187,6 +189,7 @@ const CreateCuttingDetailsForm = (props) => {
       dataIndex: "actualWeight",
       render: (text, record, index) => (
         <Input
+          style={{width:'60px'}}    // Adjust the width value as needed
           disabled={props.unfinish}
           value={record.actualWeight}
           onChange={onInputChange("actualWeight", index, record)}
@@ -280,10 +283,18 @@ const CreateCuttingDetailsForm = (props) => {
     },
   ];
   if (props.slitCut) {
-    const widthObj = {
+    let widthObj = {
       title: "Width",
       dataIndex: "plannedWidth",
       key: "plannedWidth",
+      render: (text, record, index) => (
+        <Input
+          style={{width:'60px'}}
+          disabled={props.unfinish}
+          value={record.plannedWidth}
+          onChange={onInputChange("plannedWidth", index, record)}
+        />
+      ),
     };
     columns.splice(4, 0, widthObj);
   }
