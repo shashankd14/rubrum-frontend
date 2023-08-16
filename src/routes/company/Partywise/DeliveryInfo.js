@@ -17,17 +17,25 @@ const DeliveryInfo = (props) => {
   const [packingRateId, setPackingRateId] = useState('');
 
   const [priceModal, setPriceModal] = useState(false);
+  const [validationStatus, setValidationStatus] = useState(false);
+  // useEffect(() => {
+  //   if(props.packetwisePriceDC && typeof props.packetwisePriceDC.validationStatus === 'boolean'){
+  //     setValidationStatus(props.packetwisePriceDC.validationStatus);
+  //   }
+  // },[props.packetwisePriceDC.validationStatus])
+
   console.log('props: ', props);
   const dispatch = useDispatch();
  // const data=useSelector(state=> state.packetwisePriceDC)
  // console.log("data", data);
   const handlePacketPrice = (e) =>{
     setPriceModal(true);
+    debugger;
     const reqObj = {
       packingRateId,
       vehicleNo,
-     // inwardListForDelivery: props.inward.inwardListForDelivery,
-      inwardListForDelivery:props.deliveryList.map((item)=> ({
+      // inwardListForDelivery:props.deliveryList.map((item)=> ({
+        inwardListForDelivery:props.inward.inwardListForDelivery.map((item)=> ({
        instructionId: item.instructionId,
       remarks: item.remarks || null, 
       plannedWeight: item.plannedWeight
@@ -96,14 +104,16 @@ const DeliveryInfo = (props) => {
   ];
 
   useEffect(() => {
-    if (priceModal) {
-    const reqObj = {
-      packingRateId,
-      vehicleNo,
-      inwardListForDelivery: props.inward.inwardListForDelivery,
-    };
-    props.getPacketwisePriceDC(reqObj);
-  }},[props.getPacketwisePriceDC, priceModal, packingRateId, vehicleNo, props.inward.inwardListForDelivery])
+     if (priceModal) {
+    // const reqObj = {
+    //   packingRateId,
+    //   vehicleNo,
+    //   inwardListForDelivery: props.inward.inwardListForDelivery,
+    // };
+   // props.getPacketwisePriceDC(reqObj);
+   handlePacketPrice();
+  }
+},[props.getPacketwisePriceDC, priceModal, packingRateId, vehicleNo, props.inward.inwardListForDelivery])
 
   useEffect(() => {
     const partyId = props.inward.inwardListForDelivery?.map(ele => ele?.party?.nPartyId || '');
@@ -365,20 +375,11 @@ useEffect(()=>{
                 </Button>,
                 <Button key="goToRate" 
                 type='primary'
-                // disabled={
-                //   selectedRowData.some(
-                //     (data) =>
-                //       data.basePrice ||
-                //       data.packingPrice ||
-                //       data.additionalPrice ||
-                //       data.totalPrice ||
-                //       data.rate
-                //   )
-                // }
+                disabled={validationStatus}
                 onClick={() => props.history.push("/company/master/rates")}>
                   Go to Rate
                 </Button>,
-                <Button key="ok" type="primary" onClick={handleSubmit}
+                <Button key="ok" type="primary" onClick={handleSubmit} disabled={!validationStatus}
                       >
                   Confirm & Generate
                 </Button>,
