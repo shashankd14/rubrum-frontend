@@ -275,9 +275,10 @@ function* getQualityTemplateLinkById(data) {
 function* fetchTemplateLinkList(payload) {
     try {
         console.log(payload)
-        const reqUrl = payload ? `${baseUrl}api/quality/templatemap/party/${payload.params.partyId}` : `${baseUrl}api/quality/templatemap`
+      //  const reqUrl = payload ? `${baseUrl}api/quality/templatemap/party/${payload.params.nPartyId}` : `${baseUrl}api/quality/templatemap`
         console.log(payload)
-        const fetchTemplateList = yield fetch(reqUrl, {
+       // const fetchTemplateList = yield fetch(reqUrl, {
+        const fetchTemplateList = yield fetch(`${baseUrl}api/quality/templatemap`, {
             method: 'GET',
             headers: getHeaders()
         });

@@ -9,6 +9,7 @@ import {
     updateQualityTemplateLink,
     fetchEndUserTagsList
 } from "../../../../../appRedux/actions"
+import { useHistory } from 'react-router';
 
 const CreateLinkTemplate = (props) => {
 
@@ -120,6 +121,10 @@ const CreateLinkTemplate = (props) => {
         props.saveQualityTemplateLink(payload)
     }
 
+    const history = useHistory();
+  const handleCancel = () => {
+    history.goBack(); 
+  };
     return (
         <div>
             <Card title="Link Template">
@@ -315,7 +320,7 @@ const CreateLinkTemplate = (props) => {
                 }
                 {action !== 'view' && <Row >
                     <div style={{ marginTop: 45 }}>
-                        <Button style={{ marginLeft: 8 }} disabled={isDisabled}>
+                        <Button style={{ marginLeft: 8 }} onClick={handleCancel}>
                             Cancel
                         </Button>
                         {action === 'create' ? <Button type="primary" htmlType="submit" onClick={createTemplateLink} disabled={isDisabled}>
