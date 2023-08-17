@@ -516,9 +516,9 @@ const Party = (props) => {
                                             })}</Select>
                                         )}
                                     </Form.Item>
-                                    {/* <Form.Item label="Quality Templates">
+                                    <Form.Item label="Quality Templates">
                                         {getFieldDecorator('qualityTemplates', {
-                                            rules: [{ required: true, message: 'Please enter End UserTags!' }],
+                                          //  rules: [{ required: true, message: 'Please enter End UserTags!' }],
                                         })(
                                             <Select
                                              id="qualityTemplates"
@@ -536,7 +536,7 @@ const Party = (props) => {
                                                 return <Option value={item?.id}>{item.templateName}</Option>
                                             })}</Select>
                                         )}
-                                    </Form.Item> */}
+                                    </Form.Item> 
                                 </Form>
                             </Col>
                         </Row>
