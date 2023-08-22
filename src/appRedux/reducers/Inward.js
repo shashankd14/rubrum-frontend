@@ -138,7 +138,7 @@ const INIT_STATE = {
     instructionUpdateSuccess:false,
     instructionUpdateFailure: false,
     reconcileData:[],
-    packetwisePriceDC:[]
+    packetwisePriceDC:{}
 };
 
 export default (state = INIT_STATE, action) => {
@@ -740,13 +740,11 @@ export default (state = INIT_STATE, action) => {
             }
         }
         case GET_PACKET_WISE_PRICE_DC_REQUEST: {
-            console.log('############# State: ', state);
             return {
                 ...state,
             }
         }
         case GET_PACKET_WISE_PRICE_DC_SUCCESS: {
-            console.log('###### Resp: ', action.payload);
             return {
                 ...state,
                 loading:false,

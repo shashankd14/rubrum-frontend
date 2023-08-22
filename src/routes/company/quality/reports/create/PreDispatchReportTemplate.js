@@ -73,7 +73,7 @@ const PreDispatchReportTemplate = (props) => {
       templateDetailsData.forEach((td) => {
         val[td.id] = td;
       });
-      console.log("val",val)
+      console.log(val)
       setTemplateData(val)
     }
   }, [props.templateDetails]);

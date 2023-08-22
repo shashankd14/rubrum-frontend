@@ -819,19 +819,19 @@ function* getPacketwisePriceDCSaga(action) {
             vehicleNo: action.payload?.vehicleNo,
             packingRateId: action.payload?.packingRateId,
             taskType:action.payload?.taskType?action.payload?.taskType:"",
+           //taskType:action.payload?.taskType,
             deliveryItemDetails: packetsData
         }
     }
     try {
         console.log('request: ', req_obj);
-        const postConfirm = yield fetch(`${baseUrl}api/delivery/validatePriceMapping`, {
+        const response = yield call(fetch, `${baseUrl}api/delivery/validatePriceMapping`, {
             method: 'POST', headers: { "Content-Type": "application/json", ...getHeaders()}, body: JSON.stringify(req_obj)
         });
-
-        console.log('postConfirm: ', postConfirm)
-        if (postConfirm.status === 200 ) {
-            yield put(getPacketwisePriceDCSuccess(postConfirm));
-        } else if (postConfirm.status === 401) {
+        const respData=yield response.json();
+        if (response.status === 200 ) {
+            yield put(getPacketwisePriceDCSuccess(respData));
+        } else if (response.status === 401) {
             yield put(userSignOutSuccess());
         } else
             yield put(getPacketwisePriceDCError('error'));
@@ -839,20 +839,6 @@ function* getPacketwisePriceDCSaga(action) {
         yield put(postDeliveryConfirmError(error));
     }
 }
-// const getPacketwisePriceAPI = (requestData) => {
-//     return fetch(`${baseUrl}api/delivery/validatePriceMapping`, {
-//         method: 'POST', headers: { "Content-Type": "application/json", ...getHeaders()}, body: JSON.stringify(requestData)
-//   });
-// }
-//   function* getPacketwisePriceDCSaga(action) {
-//     try {
-//       const response = yield call(getPacketwisePriceAPI , action.payload); 
-//       yield put(getPacketwisePriceDCSuccess(response.data)); 
-//     } catch (error) {
-//       yield put(getPacketwisePriceDCError(error)); 
-//     }   
-//   }
-
 
 export function* watchFetchRequests() {
     yield takeLatest(FETCH_INWARD_LIST_REQUEST, fetchInwardList);

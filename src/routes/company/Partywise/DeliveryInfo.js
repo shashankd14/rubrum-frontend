@@ -18,32 +18,27 @@ const DeliveryInfo = (props) => {
 
   const [priceModal, setPriceModal] = useState(false);
   const [validationStatus, setValidationStatus] = useState(false);
-  // useEffect(() => {
-  //   if(props.packetwisePriceDC && typeof props.packetwisePriceDC.validationStatus === 'boolean'){
-  //     setValidationStatus(props.packetwisePriceDC.validationStatus);
-  //   }
-  // },[props.packetwisePriceDC.validationStatus])
+  useEffect(() => {
+    if(props.packetwisePriceDC && typeof props.packetwisePriceDC.validationStatus === 'boolean'){
+      setValidationStatus(props.packetwisePriceDC.validationStatus);
+    }
+  },[props.packetwisePriceDC.validationStatus])
 
   console.log('props: ', props);
   const dispatch = useDispatch();
- // const data=useSelector(state=> state.packetwisePriceDC)
- // console.log("data", data);
   const handlePacketPrice = (e) =>{
     setPriceModal(true);
-    debugger;
     const reqObj = {
       packingRateId,
       vehicleNo,
-      // inwardListForDelivery:props.deliveryList.map((item)=> ({
         inwardListForDelivery:props.inward.inwardListForDelivery.map((item)=> ({
        instructionId: item.instructionId,
       remarks: item.remarks || null, 
-      plannedWeight: item.plannedWeight
+      actualWeight: item.plannedWeight || item.actualWeight
       }))
     }
     console.log('deliveryList ', props.deliveryList);
     dispatch(getPacketwisePriceDC(reqObj));
-   //props.getPacketwisePriceDC(reqObj);
   }
   const priceColumn = [
     {
@@ -105,15 +100,9 @@ const DeliveryInfo = (props) => {
 
   useEffect(() => {
      if (priceModal) {
-    // const reqObj = {
-    //   packingRateId,
-    //   vehicleNo,
-    //   inwardListForDelivery: props.inward.inwardListForDelivery,
-    // };
-   // props.getPacketwisePriceDC(reqObj);
    handlePacketPrice();
   }
-},[props.getPacketwisePriceDC, priceModal, packingRateId, vehicleNo, props.inward.inwardListForDelivery])
+},[priceModal])
 
   useEffect(() => {
     const partyId = props.inward.inwardListForDelivery?.map(ele => ele?.party?.nPartyId || '');
@@ -196,7 +185,6 @@ useEffect(()=>{
       }
   };
 
- console.log("props.packing?.packingDeliveryList",props.packing?.packingDeliveryList);
   return (
     <div>
       <h1>Delivery Information</h1>
@@ -379,13 +367,17 @@ useEffect(()=>{
                 onClick={() => props.history.push("/company/master/rates")}>
                   Go to Rate
                 </Button>,
-                <Button key="ok" type="primary" onClick={handleSubmit} disabled={!validationStatus}
-                      >
+                <Button key="ok" type="primary" 
+                onClick={handleSubmit} 
+                disabled={!validationStatus}
+                 >
                   Confirm & Generate
                 </Button>,
               ]}
             >
-              <Table columns={priceColumn}  dataSource={props.packetwisePriceDC}/>
+              <Table 
+              columns={priceColumn}  
+              dataSource={props.packetwisePriceDC?.priceDetailsList}/>
               </Modal> 
             <button
               style={{ marginBottom: "10px", padding: "6px 15px" }}
@@ -411,10 +403,13 @@ useEffect(()=>{
   );
 };
 
-const mapStateToProps = (state) => ({
-  inward: state.inward,
-  packing: state.packing,
-  packetwisePriceDC:state.packetwisePriceDC
-});
+const mapStateToProps = (state) => {
+  const mappedProps = {
+    inward: state.inward,
+    packing: state.packing,
+    packetwisePriceDC:state.inward?.packetwisePriceDC
+  };
+  return mappedProps;
+};
 
 export default connect(mapStateToProps, { fetchPackingListByParty, saveUnprocessedDelivery,getPacketwisePriceDC, postDeliveryConfirm, generateDCPdf,resetInstruction})(DeliveryInfo);
