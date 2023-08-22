@@ -67,22 +67,22 @@ const DeliveryInfo = (props) => {
       key: "thickness",
     },
     {
-      title: "Actual Weight",
+      title: "Actual Weight\n(in KG)",
       dataIndex: "actualWeight",
       key: "actualWeight",
     },
     {
-      title: "Base Rate",
+      title: "Base Rate\n(per ton)",
       dataIndex: "basePrice",
       key: "basePrice",
     },
     {
-      title: "Packing Rate",
+      title: "Packing Rate\n(per ton)",
       dataIndex: "packingPrice",
       key: "packingPrice",
     },
     {
-      title: "Additional Rate",
+      title: "Additional Rate\n(per ton)",
       dataIndex: "additionalPrice",
       key: "additionalPrice",
     },
