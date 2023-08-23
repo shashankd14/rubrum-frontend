@@ -87,7 +87,7 @@ const DeliveryInfo = (props) => {
       key: "additionalPrice",
     },
     {
-      title: "Total Rate",
+      title: "Total Rate\n(per ton)",
       dataIndex: "rate",
       key: "rate",
     },
