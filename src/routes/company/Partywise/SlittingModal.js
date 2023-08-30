@@ -1101,7 +1101,6 @@ const CreateSlittingDetailsForm = (props) => {
   const [tagsName, setTagsName] = useState();
   const [packetClassification, setPacketClassification] = useState([]);
   const [editedRecordState, setEditedRecordState] = useState([]);
-  const [showQRModal, setShowQRModal] = useState(false);
   const dispatch = useDispatch();
   const onDelete = ({ record, key, e }) => {
     e.preventDefault();
@@ -1336,6 +1335,7 @@ const CreateSlittingDetailsForm = (props) => {
         partDetailsId: partId,
       };
       props.pdfGenerateInward(payload);
+      dispatch(QrCodeGeneratePlan(payload));
       loading = "";
     } else if (
       props.inward.instructionSaveSlittingSuccess &&
@@ -1479,11 +1479,6 @@ const CreateSlittingDetailsForm = (props) => {
     }
   };
 
-  const handleGenerateQR = (e) => {
-    e.preventDefault();
-    setShowQRModal(true);
-   // dispatch(QrCodeGeneratePlan());
-  };
   const handleWeight = (e, record) => {
     e.preventDefault();
     // if (
@@ -1574,8 +1569,7 @@ const CreateSlittingDetailsForm = (props) => {
     setTableData([...tableData, newData]);
   };
   const getFooterButtons = (type) => {
-   // return [
-    const buttons = [
+    return [
       <Button key="back" onClick={handleCancel}>
         Cancel
       </Button>,
@@ -1597,21 +1591,6 @@ const CreateSlittingDetailsForm = (props) => {
           : "OK"}
       </Button>
     ];
-    if (type === "Slitting" && !props.wip) {
-      // If the type is "Slitting" and props.wip is false (indicating "Save & Generate" and "Generate QR"button)
-      buttons.push(
-        <Button 
-          key="submit" 
-          type="primary"
-          loading={loading}
-          //disabled={props?.inward?.loading}
-          onClick={handleGenerateQR}>
-          Generate QR Code
-        </Button>
-      );
-    }
-  
-    return buttons;
   };
   
 //console.log("props.inward.loading, ", props.inward.loading,"props.wip", props.wip);
@@ -1889,12 +1868,6 @@ const CreateSlittingDetailsForm = (props) => {
         )}
       </Tabs>
     </Modal>
-    <Modal
-      title="QR Code"
-      visible={showQRModal}
-      onCancel={()=> setShowQRModal(false)}
-      onOk={()=> setShowQRModal(false)}
-    ></Modal>
     </>
   );
 };
@@ -1966,4 +1939,5 @@ export default connect(mapStateToProps, {
   deleteInstructionById,
   pdfGenerateInward,
   resetIsDeleted,
+  QrCodeGeneratePlan,
 })(SlittingDetailsForm);

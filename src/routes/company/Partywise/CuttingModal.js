@@ -14,7 +14,7 @@ import {
   message,
 } from "antd";
 import React, { useEffect, useState } from "react";
-import { connect, useDispatch } from "react-redux";
+import { connect, useDispatch} from "react-redux";
 import moment from "moment";
 import {
   setProcessDetails,
@@ -107,7 +107,6 @@ const CreateCuttingDetailsForm = (props) => {
   const [tagsList, setTagsList] = useState([]);
   const [packetClassification, setPacketClassification] = useState([]);
   const [editedRecordState, setEditedRecordState] = useState([]);
-  const [showQRModal, setShowQRModal] = useState(false);
   const dispatch =useDispatch();
   const [tableData, setTableData] = useState(
     props.wip
@@ -943,6 +942,7 @@ const CreateCuttingDetailsForm = (props) => {
         }
         loading = "";
         props.pdfGenerateInward(payload);
+        dispatch(QrCodeGeneratePlan(payload));
       }
     } else {
       setTimeout(() => {
@@ -1255,6 +1255,7 @@ const CreateCuttingDetailsForm = (props) => {
         };
         setSlitPartId(partId);
         props.pdfGenerateInward(payload);
+        dispatch(QrCodeGeneratePlan(payload))
       } else if (
         saveInstruction.length === 0 &&
         props.inward?.saveSlit[0]?.partDetailsId === slitPartId
@@ -1385,13 +1386,7 @@ const CreateCuttingDetailsForm = (props) => {
     };
     setTableData([...tableData, newData]);
   };
-  const handleGenerateQR = (e) =>{
-    e.preventDefault();
-    setShowQRModal(true);
-   // dispatch(QrCodeGeneratePlan());
-  }
   const getFooterButtons = () => {
-    const showGenerateQRButton = cuts.length > 0 && !props.wip;
     return [<Button key="back" onClick={handleCancel}>
         Cancel
       </Button>,
@@ -1410,17 +1405,6 @@ const CreateCuttingDetailsForm = (props) => {
             : "Save & Generate"
           : "OK"}
       </Button>,
-      //Add "Generate QR" button conditionally
-      showGenerateQRButton && (
-        <Button
-          key="submit"
-          type="primary"
-          loading={loading}
-          onClick={handleGenerateQR}
-        >
-        Generate QR Code
-        </Button>
-      ),
     ];
   };
   return (
@@ -1926,12 +1910,6 @@ const CreateCuttingDetailsForm = (props) => {
         </Tabs>
       </Card>
     </Modal>
-    <Modal
-      title="QR Code"
-      visible={showQRModal}
-      onCancel={()=> setShowQRModal(false)}
-      onOk={()=> setShowQRModal(false)}
-    ></Modal>
     </>
   );
 };
@@ -1989,4 +1967,5 @@ export default connect(mapStateToProps, {
   deleteInstructionById,
   instructionGroupsave,
   pdfGenerateInward,
+  QrCodeGeneratePlan,
 })(CuttingDetailsForm);
