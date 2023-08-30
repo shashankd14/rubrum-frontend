@@ -86,6 +86,7 @@ import {
     GET_PACKET_WISE_PRICE_DC_SUCCESS,
     GET_PACKET_WISE_PRICE_DC_ERROR
 } from "../../constants/ActionTypes";
+import * as actionTypes from "../../constants/ActionTypes";
 
 const INIT_STATE = {
     inwardList: [],
@@ -138,6 +139,9 @@ const INIT_STATE = {
     instructionUpdateSuccess:false,
     instructionUpdateFailure: false,
     reconcileData:[],
+    planQRError: false,
+    planQRLoading:false,
+    planQRSuccess: false,
     packetwisePriceDC:{}
 };
 
@@ -739,6 +743,27 @@ export default (state = INIT_STATE, action) => {
                 error: true
             }
         }
+        case actionTypes.QR_Code_GENERATE_PLAN: {
+            return {
+                ...state,
+                planQRLoading: true,
+            }
+        }
+        case actionTypes.QR_Code_GENERATE_PLAN_SUCCESS: {
+            return {
+                ...state,
+                planQRLoading: false,
+                planQRSuccess: true,
+            }
+        }
+        case actionTypes.QR_Code_GENERATE_PLAN_ERROR: {
+            return {
+                ...state,
+                planQRLoading: false,
+                planQRSuccess: false,
+                planQRError: true
+            }
+        }
         case GET_PACKET_WISE_PRICE_DC_REQUEST: {
             return {
                 ...state,
@@ -760,7 +785,6 @@ export default (state = INIT_STATE, action) => {
                 error: true
             }
         }
-        
         default:
             return state;
     }

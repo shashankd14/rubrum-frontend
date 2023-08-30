@@ -30,6 +30,7 @@ import {
     GET_RECONCILE_REPORT_SUCCESS,
     GET_RECONCILE_REPORT,
     GET_RECONCILE_REPORT_ERROR,
+    QR_Code_GENERATE_PLAN,
     GET_PACKET_WISE_PRICE_DC_REQUEST
 } from "../../constants/ActionTypes";
 
@@ -90,6 +91,7 @@ import {
 import { CUTTING_INSTRUCTION_PROCESS_ID, SLITTING_INSTRUCTION_PROCESS_ID, SLIT_CUT_INSTRUCTION_PROCESS_ID } from "../../constants";
 import { formItemLayout } from "../../routes/company/Partywise/CuttingModal";
 import { userSignOutSuccess } from "../../appRedux/actions/Auth";
+import * as actions from "../actions";
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
 
@@ -800,6 +802,33 @@ function* getReconcileReportSaga(action) {
     }
 }
 
+function* QrGeneratePlan(action) {
+    try {
+            const response = yield call(fetch, `${baseUrl}api/instruction/qrcode/plan`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                ...getHeaders()
+            },
+            body: JSON.stringify(action.payload)
+        });
+        if (response.status === 200) {
+            const qrGenerateResponse = yield response.json();
+           let qrWindow = window.open('', "_blank")
+            qrWindow.document.write(
+                "<iframe id='qr' width='100%' height='600%' src='data:application/pdf;base64, " +
+                encodeURI(qrGenerateResponse.encodedBase64String) + "'></iframe>"
+            )
+            yield put(actions.QrCodeGeneratePlanSuccess(qrGenerateResponse));
+        } else if (response.status === 401) {
+            yield put(userSignOutSuccess());
+        } else {
+            yield put(actions.QrCodeGeneratePlanError('error'));
+        }
+    } catch (error) {
+        yield put(actions.QrCodeGeneratePlanError(error));
+    }
+}
 function* getPacketwisePriceDCSaga(action) {
 
     console.log('Saga: ', action);
@@ -865,6 +894,7 @@ export function* watchFetchRequests() {
     yield takeLatest(PDF_GENERATE_DELIVERY, generateDCPdf);
     yield takeLatest(PDF_S3_URL, getS3PDFUrl);
     yield takeLatest(GET_RECONCILE_REPORT, getReconcileReportSaga);
+    yield takeLatest(QR_Code_GENERATE_PLAN, QrGeneratePlan);
     yield takeLatest(GET_PACKET_WISE_PRICE_DC_REQUEST, getPacketwisePriceDCSaga);
 }
 

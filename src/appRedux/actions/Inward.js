@@ -97,6 +97,7 @@ import {
     GET_PACKET_WISE_PRICE_DC_ERROR
 } from "../../constants/ActionTypes";
 
+import * as actionTypes from '../../constants/ActionTypes';
 export const fetchInwardList = (page, pageSize, searchValue, partyId) => ({
     type: FETCH_INWARD_LIST_REQUEST,
     page,
@@ -479,6 +480,20 @@ export const getReconcileReportSuccess = (payload) => ({
 });
 export const getReconcileReportError = (error) => ({
     type: GET_RECONCILE_REPORT_ERROR,
+    error
+});
+export const QrCodeGeneratePlan = (payload) => ({
+    type: actionTypes.QR_Code_GENERATE_PLAN,
+    payload
+});
+
+export const QrCodeGeneratePlanSuccess = (payload) => ({
+    type: actionTypes.QR_Code_GENERATE_PLAN_SUCCESS,
+    payload
+});
+
+export const QrCodeGeneratePlanError = (error) => ({
+    type: actionTypes.QR_Code_GENERATE_PLAN_ERROR,
     error
 });
 
