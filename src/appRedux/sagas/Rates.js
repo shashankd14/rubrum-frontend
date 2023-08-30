@@ -95,13 +95,12 @@ function* savePriceMaster(action) {
     const data= [{ 
         partyId:action.rates.partyId,
         processId:action?.rates?.processId,
-        matGradeId:action?.rates?.matGradeId,
+        matGradeId:action?.rates?.matGradeId.flat(),
         thicknessFrom:action?.rates?.thicknessFrom,
         thicknessTo:action?.rates?.thicknessTo,
         price:action?.rates?.price
     }]
-
-    try {
+     try {
         const addRates = yield fetch(`${baseUrl}api/pricemaster/save`, {
             method: 'POST',
             body: JSON.stringify(data),
@@ -148,14 +147,14 @@ function* addPackingRates(action) {
 function* updateRates(action) {
     const data= [{ 
         id:action?.rates?.id,
-        partyId:action.rates.values.partyId,
+        partyId:action?.rates?.values.partyId,
         processId:action?.rates?.values.processId,
         matGradeId:action?.rates?.values.matGradeId,
         thicknessFrom:action?.rates?.values.thicknessFrom,
         thicknessTo:action?.rates?.values.thicknessTo,
         price:action?.rates?.values.price
     }]
-    try {
+     try {
         const updateRates = yield fetch(`${baseUrl}api/pricemaster/update`, {
             method: 'PUT',
             body: JSON.stringify(data),

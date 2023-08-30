@@ -69,7 +69,8 @@ function* addParty(action) {
             state,
             pincode,
             phone,tags,endUsertags,
-            qualityTemplates
+            qualityTemplates,
+            showAmtDcPdfFlg
         } = action.party;
 
         const getEmail = (mail) => {
@@ -123,7 +124,8 @@ function* addParty(action) {
             ...getAddress(addressKeys),
             ...getPhone(phone),
             endUserTags: getEndUserTags(),
-            templateIdList: qualityTemplateIds()
+            templateIdList: qualityTemplateIds(),
+            showAmtDcPdfFlg
         }
         const addParty = yield fetch(`${baseUrl}api/party/save`, {
             method: 'POST',
@@ -162,7 +164,8 @@ function* updateParty(action) {
                 phone,
                 tags,
                 endUsertags,
-                qualityTemplates
+                qualityTemplates,
+                showAmtDcPdfFlg
             },
             id
         } = action.party;
@@ -220,7 +223,8 @@ function* updateParty(action) {
             ...getEmail(email),
             ...getAddress(addressKeys),
             ...getPhone(phone),
-            templateIdList: qualityTemplateIds()
+            templateIdList: qualityTemplateIds(),
+            showAmtDcPdfFlg
         }
         const updateParty = yield fetch(`${baseUrl}api/party/update`, {
             method: 'PUT',

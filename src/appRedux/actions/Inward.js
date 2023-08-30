@@ -91,7 +91,10 @@ import {
     PDF_S3_URL_ERROR,
     GET_RECONCILE_REPORT,
     GET_RECONCILE_REPORT_SUCCESS,
-    GET_RECONCILE_REPORT_ERROR
+    GET_RECONCILE_REPORT_ERROR,
+    GET_PACKET_WISE_PRICE_DC_REQUEST,
+    GET_PACKET_WISE_PRICE_DC_SUCCESS,
+    GET_PACKET_WISE_PRICE_DC_ERROR
 } from "../../constants/ActionTypes";
 
 import * as actionTypes from '../../constants/ActionTypes';
@@ -491,6 +494,19 @@ export const QrCodeGeneratePlanSuccess = (payload) => ({
 
 export const QrCodeGeneratePlanError = (error) => ({
     type: actionTypes.QR_Code_GENERATE_PLAN_ERROR,
+    error
+});
+
+export const getPacketwisePriceDC = (payload) => ({
+    type: GET_PACKET_WISE_PRICE_DC_REQUEST,
+    payload
+});
+export const getPacketwisePriceDCSuccess = (payload) => ({
+    type: GET_PACKET_WISE_PRICE_DC_SUCCESS,
+    payload
+});
+export const getPacketwisePriceDCError = (error) => ({
+    type: GET_PACKET_WISE_PRICE_DC_ERROR,
     error
 });
 
