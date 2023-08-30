@@ -827,6 +827,8 @@ function* QrGeneratePlan(action) {
         }
     } catch (error) {
         yield put(actions.QrCodeGeneratePlanError(error));
+    }
+}
 function* getPacketwisePriceDCSaga(action) {
 
     console.log('Saga: ', action);
