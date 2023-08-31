@@ -142,6 +142,9 @@ const INIT_STATE = {
     planQRError: false,
     planQRLoading:false,
     planQRSuccess: false,
+    QrSuccess:false,
+    QrLoading: false,
+    QrError: false,
     packetwisePriceDC:{}
 };
 
@@ -354,6 +357,9 @@ export default (state = INIT_STATE, action) => {
                 pdfLoading:false,
                 pdfSuccess:false,
                 pdfError:false,
+                QrSuccess:false,
+                QrLoading: false,
+                QrError: false,
                 
             }
         }
@@ -498,6 +504,9 @@ export default (state = INIT_STATE, action) => {
                 unprocessedSuccess:{},
                 instructionUpdateSuccess:false,
                 instructionUpdateFailure: false,
+                QrSuccess:false,
+                QrLoading: false,
+                QrError: false,
             }
         }
         
@@ -764,6 +773,28 @@ export default (state = INIT_STATE, action) => {
                 planQRError: true
             }
         }
+        
+        case actionTypes.QR_GENERATE_INWARD: {
+            return {
+                ...state,
+                QrLoading: true,
+            }
+        }
+        case actionTypes.QR_GENERATE_INWARD_SUCCESS: {
+            return {
+                ...state,
+                QrLoading: false,
+                QrSuccess: true,
+            }
+        }
+        case actionTypes.QR_GENERATE_INWARD_ERROR: {
+            return {
+                ...state,
+                QrLoading: false,
+                QrSuccess: false,
+                QrError: true
+            }
+        }
         case GET_PACKET_WISE_PRICE_DC_REQUEST: {
             return {
                 ...state,
@@ -785,6 +816,7 @@ export default (state = INIT_STATE, action) => {
                 error: true
             }
         }
+        
         default:
             return state;
     }

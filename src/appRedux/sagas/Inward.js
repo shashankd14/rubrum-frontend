@@ -31,6 +31,7 @@ import {
     GET_RECONCILE_REPORT,
     GET_RECONCILE_REPORT_ERROR,
     QR_Code_GENERATE_PLAN,
+    QR_GENERATE_INWARD,
     GET_PACKET_WISE_PRICE_DC_REQUEST
 } from "../../constants/ActionTypes";
 
@@ -86,7 +87,8 @@ import {
     getReconcileReportSuccess,
     getPacketwisePriceDC,
     getPacketwisePriceDCSuccess,
-    getPacketwisePriceDCError
+    getPacketwisePriceDCError,
+    QrGenerateInwardSuccess
 } from "../actions";
 import { CUTTING_INSTRUCTION_PROCESS_ID, SLITTING_INSTRUCTION_PROCESS_ID, SLIT_CUT_INSTRUCTION_PROCESS_ID } from "../../constants";
 import { formItemLayout } from "../../routes/company/Partywise/CuttingModal";
@@ -801,6 +803,29 @@ function* getReconcileReportSaga(action) {
         yield put(getReconcileReportError(error));
     }
 }
+function* QrGenerateInward(action) {
+    try {
+        const qrGenerateInward = yield fetch(`${baseUrl}api/inwardEntry/qrcode/inward`, {
+            method: 'POST',
+            headers: { "Content-Type": "application/json", ...getHeaders()},
+            body: JSON.stringify(action.payload.payloadObj)
+        });
+        if (qrGenerateInward.status === 200) {
+            const qrGenerateInwardResponse = yield qrGenerateInward.json();
+            let pdfWindow = window.open("")
+               pdfWindow.document.write(
+                  "<iframe width='100%' height='600%' src='data:application/pdf;base64, " +
+                    encodeURI(qrGenerateInwardResponse.encodedBase64String) + "'></iframe>"
+               )                 
+            yield put(QrGenerateInwardSuccess(qrGenerateInwardResponse));
+        } else if (qrGenerateInward.status === 401) {
+            yield put(userSignOutSuccess());
+        } else
+            yield put(actions.QrGenerateInwardError('error'));
+    } catch (error) {
+        yield put(actions.QrGenerateInwardError(error));
+    }
+}
 
 function* QrGeneratePlan(action) {
     try {
@@ -895,6 +920,7 @@ export function* watchFetchRequests() {
     yield takeLatest(PDF_S3_URL, getS3PDFUrl);
     yield takeLatest(GET_RECONCILE_REPORT, getReconcileReportSaga);
     yield takeLatest(QR_Code_GENERATE_PLAN, QrGeneratePlan);
+    yield takeLatest(QR_GENERATE_INWARD, QrGenerateInward);
     yield takeLatest(GET_PACKET_WISE_PRICE_DC_REQUEST, getPacketwisePriceDCSaga);
 }
 
