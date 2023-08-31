@@ -204,10 +204,10 @@ function* updateParty(action) {
         const getEndUserTags=()=>{
             return endUsertags.map(tagId => ({tagId}))
         }
-        const qualityTemplateIds =()=>{
-            return qualityTemplates.map(templateId => ({templateId
-            }))
-        }
+        // const qualityTemplateIds =()=>{
+        //     return qualityTemplates.map(templateId => ({templateId
+        //     }))
+        // }
 
         const reqBody = {
             nPartyId: id,
