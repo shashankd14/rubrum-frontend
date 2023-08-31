@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {connect} from 'react-redux';
-import {Button, Card, Divider, Table, Modal, Row, Col, Form, Input, Select} from "antd";
+import {Button, Card, Divider, Table, Modal, Row, Col, Form, Input, Select,Checkbox} from "antd";
 import moment from 'moment';
 import SearchBox from "../../../components/SearchBox";
 
@@ -36,6 +36,7 @@ const Party = (props) => {
     const [editParty, setEditParty] = useState(false);
     const [searchValue, setSearchValue] = useState('');
     const [filteredInwardList, setFilteredInwardList] = useState(props.party?.partyList || []);
+    const [showAmtDcPdfFlg, setShowAmtDcPdfFlg] = useState(props.party?.showAmtDcPdfFlg==='Y'); // Default value
 
     const {getFieldDecorator, getFieldValue} = props.form;
 
@@ -106,8 +107,16 @@ const Party = (props) => {
         render (value) {
             return value?.map(item => item.tagName)
         },
-        key: 'tags',
+        key: 'endUsertags',
         filters: []
+    },
+    {
+        title: 'Include Rates in DC',
+        dataIndex: 'showAmtDcPdfFlg',
+        key: 'showAmtDcPdfFlg' ,
+        filters: [],
+        sorter: (a, b) => a.showAmtDcPdfFlg.length - b.showAmtDcPdfFlg.length,
+        sortOrder: sortedInfo.columnKey === 'showAmtDcPdfFlg' && sortedInfo.order,
     },
     {
         title: 'Action',
@@ -289,20 +298,28 @@ const Party = (props) => {
                                     </>}
                                     {viewPartyDate?.packetClassificationTags && <p><strong>Tags:</strong>{viewPartyDate?.packetClassificationTags?.map(item=> item.tagName)}</p>}
                                     {viewPartyDate?.endUserTags && <p><strong>EndUser Tags:</strong>{viewPartyDate?.endUserTags?.map(item=> item.tagName)}</p>}
+                                    {viewPartyDate?.showAmtDcPdfFlg && <p><strong>Include Rates in Delivery Challan :</strong> {viewPartyDate?.showAmtDcPdfFlg||'N'}</p>}
                                 </Card>
                             </Col>
                         </Row>
                     </Card>
                 </Modal>
                 <Modal
-                    title='Add Party'
+                    title={editParty?'Edit Party':'Add Party'}
                     visible={showAddParty}
                     onOk={(e) => {
                         if (editParty) {
                             props.form.validateFields((err, values) => {
                                 if (!err) {
-                                  console.log('Received values of form: ', values);
-                                  const data = { values, id: props.party?.party?.nPartyId };
+                                  console.log('Received values of form: ', showAmtDcPdfFlg);
+                                  // const data = { values, id: props.party?.party?.nPartyId };
+                                 const data = {
+                                    values: {
+                                      ...values,
+                                      showAmtDcPdfFlg: showAmtDcPdfFlg ? 'Y' : 'N',
+                                    },
+                                    id: props.party?.party?.nPartyId
+                                  }
                                   props.updateParty(data);
                                   props.form.resetFields();
                                   setShowAddParty(false);
@@ -313,7 +330,11 @@ const Party = (props) => {
                             props.form.validateFields((err, values) => {
                                 if (!err) {
                                  e.preventDefault();
-                                  props.addParty(values);
+                                  // props.addParty(values);
+                                 props.addParty({
+                                    ...values,
+                                    showAmtDcPdfFlg: showAmtDcPdfFlg ? 'Y' : 'N',
+                                  });
                                   props.form.resetFields();
                                   setShowAddParty(false);
                                 }
@@ -518,7 +539,7 @@ const Party = (props) => {
                                     </Form.Item>
                                     <Form.Item label="Quality Templates">
                                         {getFieldDecorator('qualityTemplates', {
-                                          //  rules: [{ required: true, message: 'Please enter End UserTags!' }],
+                                            rules: [{ required: true, message: 'Please enter Quality Templates!' }],
                                         })(
                                             <Select
                                              id="qualityTemplates"
@@ -533,10 +554,17 @@ const Party = (props) => {
                                             }
                                              onChange={handleSelectChange}
                                              >{props?.quality?.data?.map(item => {
-                                                return <Option value={item?.id}>{item.templateName}</Option>
+                                                return <Option value={item?.templateId}>{item.templateName}</Option>
                                             })}</Select>
                                         )}
-                                    </Form.Item> 
+                                    </Form.Item>
+                                    <Form.Item label = "Include Rates in Delivery Challan">
+                                    <Checkbox
+                                        id="showAmtDcPdfFlg"
+                                        checked={showAmtDcPdfFlg}
+                                      onChange={(e) => setShowAmtDcPdfFlg(e.target.checked)}
+                                    />
+                                    </Form.Item>
                                 </Form>
                             </Col>
                         </Row>
@@ -630,6 +658,10 @@ const addPartyForm = Form.create({
             qualityTemplates: Form.createFormField({
                 ...props.party?.party?.templateIdList,
                 value: party?.templateIdList?.map(item=> item.templateId) || [],
+            }),
+            showAmtDcPdfFlg: Form.createFormField({
+                ...party?.showAmtDcPdfFlg,
+                value: party?.showAmtDcPdfFlg || 'N',
             })
         };
     }
