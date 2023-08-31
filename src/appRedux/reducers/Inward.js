@@ -139,6 +139,9 @@ const INIT_STATE = {
     instructionUpdateSuccess:false,
     instructionUpdateFailure: false,
     reconcileData:[],
+    planQRError: false,
+    planQRLoading:false,
+    planQRSuccess: false,
     QrSuccess:false,
     QrLoading: false,
     QrError: false,
@@ -749,6 +752,28 @@ export default (state = INIT_STATE, action) => {
                 error: true
             }
         }
+        case actionTypes.QR_Code_GENERATE_PLAN: {
+            return {
+                ...state,
+                planQRLoading: true,
+            }
+        }
+        case actionTypes.QR_Code_GENERATE_PLAN_SUCCESS: {
+            return {
+                ...state,
+                planQRLoading: false,
+                planQRSuccess: true,
+            }
+        }
+        case actionTypes.QR_Code_GENERATE_PLAN_ERROR: {
+            return {
+                ...state,
+                planQRLoading: false,
+                planQRSuccess: false,
+                planQRError: true
+            }
+        }
+        
         case actionTypes.QR_GENERATE_INWARD: {
             return {
                 ...state,

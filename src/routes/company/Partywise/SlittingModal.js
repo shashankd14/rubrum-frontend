@@ -16,7 +16,7 @@ import {
 } from "antd";
 import React, { useEffect, useState } from "react";
 import SweetAlert from "react-bootstrap-sweetalert";
-import { connect } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 import moment from "moment";
 import { APPLICATION_DATE_FORMAT } from "../../../constants";
 import {
@@ -27,6 +27,7 @@ import {
   deleteInstructionById,
   pdfGenerateInward,
   resetIsDeleted,
+  QrCodeGeneratePlan,
 } from "../../../appRedux/actions/Inward";
 import IntlMessages from "util/IntlMessages";
 import { set } from "nprogress";
@@ -1100,6 +1101,7 @@ const CreateSlittingDetailsForm = (props) => {
   const [tagsName, setTagsName] = useState();
   const [packetClassification, setPacketClassification] = useState([]);
   const [editedRecordState, setEditedRecordState] = useState([]);
+  const dispatch = useDispatch();
   const onDelete = ({ record, key, e }) => {
     e.preventDefault();
 
@@ -1333,6 +1335,7 @@ const CreateSlittingDetailsForm = (props) => {
         partDetailsId: partId,
       };
       props.pdfGenerateInward(payload);
+      dispatch(QrCodeGeneratePlan(payload));
       loading = "";
     } else if (
       props.inward.instructionSaveSlittingSuccess &&
@@ -1475,6 +1478,7 @@ const CreateSlittingDetailsForm = (props) => {
       }
     }
   };
+
   const handleWeight = (e, record) => {
     e.preventDefault();
     // if (
@@ -1585,10 +1589,13 @@ const CreateSlittingDetailsForm = (props) => {
           : type !== "Slitting"
           ? "Proceed for Cut"
           : "OK"}
-      </Button>,
+      </Button>
     ];
   };
+  
+//console.log("props.inward.loading, ", props.inward.loading,"props.wip", props.wip);
   return (
+    <>
     <Modal
       title={
         props?.unfinish
@@ -1850,7 +1857,7 @@ const CreateSlittingDetailsForm = (props) => {
                 <p>Available Length(mm): {props.coil.availableLength}</p>
                 <p>Available Weight(kg) : {props.coil.fpresent}</p>
                 <p>
-                  Available Width((mm) :{" "}
+                  Available Width (mm) :{" "}
                   {props.coil.fpresent > 0
                     ? props.coilDetails.fWidth || props.coilDetails.plannedWidth
                     : 0}
@@ -1861,6 +1868,7 @@ const CreateSlittingDetailsForm = (props) => {
         )}
       </Tabs>
     </Modal>
+    </>
   );
 };
 
@@ -1931,4 +1939,5 @@ export default connect(mapStateToProps, {
   deleteInstructionById,
   pdfGenerateInward,
   resetIsDeleted,
+  QrCodeGeneratePlan,
 })(SlittingDetailsForm);
