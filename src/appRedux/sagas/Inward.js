@@ -86,7 +86,8 @@ import {
     getReconcileReportSuccess,
     getPacketwisePriceDC,
     getPacketwisePriceDCSuccess,
-    getPacketwisePriceDCError
+    getPacketwisePriceDCError,
+    QrGenerateInwardSuccess
 } from "../actions";
 import { CUTTING_INSTRUCTION_PROCESS_ID, SLITTING_INSTRUCTION_PROCESS_ID, SLIT_CUT_INSTRUCTION_PROCESS_ID } from "../../constants";
 import { formItemLayout } from "../../routes/company/Partywise/CuttingModal";
@@ -803,35 +804,26 @@ function* getReconcileReportSaga(action) {
     }
 }
 function* QrGenerateInward(action) {
-    let qrGenerate;
     try {
-        // inward QR
-        if (action.payload.type === 'inward') {
-            qrGenerate = yield axios.post(`${baseUrl}api/inwardEntry/qrcode/inward`, action.payload.payloadObj, {
-                headers: {
-                    "Content-Type": "application/json",
-                    ...getHeaders()
-                }
-            });
-        } else {
-            qrGenerate = yield axios.post(`${baseUrl}api/instruction/qrcode/plan`, action.payload, {
-                headers: {
-                    "Content-Type": "application/json",
-                    ...getHeaders()
-                }
-            });
-        }
-
-        if (qrGenerate.status === 200) {
-            const QrGenerateResponse = qrGenerate.data;
-            yield put(actions.QrGenerateSuccess(QrGenerateResponse));
-        } else if (qrGenerate.status === 401) {
+        const qrGenerateInward = yield fetch(`${baseUrl}api/inwardEntry/qrcode/inward`, {
+            method: 'POST',
+            headers: { "Content-Type": "application/json", ...getHeaders()},
+            body: JSON.stringify(action.payload.payloadObj)
+        });
+        if (qrGenerateInward.status === 200) {
+            const qrGenerateInwardResponse = yield qrGenerateInward.json();
+            let pdfWindow = window.open("")
+               pdfWindow.document.write(
+                  "<iframe width='100%' height='600%' src='data:application/pdf;base64, " +
+                    encodeURI(qrGenerateInwardResponse.encodedBase64String) + "'></iframe>"
+               )                 
+            yield put(QrGenerateInwardSuccess(qrGenerateInwardResponse));
+        } else if (qrGenerateInward.status === 401) {
             yield put(userSignOutSuccess());
-        } else {
-            yield put(actions.QrGenerateError('error'));
-        }
+        } else
+            yield put(actions.QrGenerateInwardError('error'));
     } catch (error) {
-        yield put(actions.QrGenerateError(error));
+        yield put(actions.QrGenerateInwardError(error));
     }
 }
 

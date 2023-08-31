@@ -396,6 +396,9 @@ const List = (props) => {
         <div>
           <a href={props?.inward.s3pdfurl?.inward_pdf} target="_blank">
             Inward PDF
+          </a> &nbsp;&nbsp;&nbsp;
+          <a href={props?.inward.s3pdfurl?.qrcode_inward_pdf} target="_blank">
+            Inward QR Code
           </a>
         </div>
         {props.inward.s3pdfurl?.plan_pdfs?.length > 0 && (

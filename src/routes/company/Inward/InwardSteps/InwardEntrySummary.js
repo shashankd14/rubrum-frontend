@@ -52,12 +52,6 @@ const InwardEntrySummary = (props) => {
     let dimensionEdit = `${props.inward.fWidth} X ${props.inward.fThickness} X ${props.inward.fLength}`;
     let dimension = `${props.inward.width} X ${props.inward.thickness} X ${props.inward.length}`
 
-    const handleGenerateQRCodeClick = (e) => {
-        e.preventDefault();
-        setShowCreateModal(true); // Show the modal when the "Generate QR Code" button is clicked
-       // props.QrGenerateInward(payload);
-      };
-
     return (
         <>
             {props.inwardSubmitLoading ? <Spin className="gx-size-100 gx-flex-row gx-justify-content-center gx-align-items-center" size="large"/> :
@@ -120,21 +114,9 @@ const InwardEntrySummary = (props) => {
                     <Button type="primary" disabled={generate} onClick={(e) => {
                         e.preventDefault();
                         props.pdfGenerateInward(payload)
-                    }}>Generate PDF</Button>
-                    <Button type="primary" 
-                    onClick={handleGenerateQRCodeClick}
-                    >Generate QR Code</Button>
+                        props.QrGenerateInward(payload);
+                    }}>Generate PDF & QR</Button>
                 </Col>
-                <Modal
-                title= 'QR Code'
-                visible={showCreateModal}
-                onCancel={() => setShowCreateModal(false)}
-                onOk={() => setShowCreateModal(false)}
-                destroyOnClose={true}
-                // width={600}
-                // height={1000}
-            ></Modal>
-
             </>
             }
         </>

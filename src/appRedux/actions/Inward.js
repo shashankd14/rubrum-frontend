@@ -487,12 +487,12 @@ export const QrGenerateInward = (payload) => ({
     payload
 });
 
-export const QrGenerateSuccess = (payload) => ({
+export const QrGenerateInwardSuccess = (payload) => ({
     type: actionTypes.QR_GENERATE_INWARD_SUCCESS,
     payload
 });
 
-export const QrGenerateError = (error) => ({
+export const QrGenerateInwardError = (error) => ({
     type: actionTypes.QR_GENERATE_INWARD_ERROR,
     error
 });
