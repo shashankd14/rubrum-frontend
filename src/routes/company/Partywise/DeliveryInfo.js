@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { connect } from "react-redux";
+import { connect, useDispatch, useSelector  } from "react-redux";
 import { Popover,Input, Card, message, Select } from "antd";
 import { InfoCircleOutlined, CloseSquareTwoTone } from "@ant-design/icons";
-import { fetchPackingListByParty, postDeliveryConfirm, generateDCPdf,resetInstruction,saveUnprocessedDelivery } from "../../../appRedux/actions";
+import { fetchPackingListByParty, fetchPackingBucketList, getPacketwisePriceDC, postDeliveryConfirm, generateDCPdf,resetInstruction,saveUnprocessedDelivery } from "../../../appRedux/actions";
 import moment from "moment";
+import { Button, Table, Modal } from "antd";
 
 const DeliveryInfo = (props) => {
   const Option = Select.Option;
@@ -294,6 +295,7 @@ useEffect(()=>{
         <div>
           <div style={{ width: "20%", marginBottom: "15px" }}>
             <Select
+              showSearch
                 style={{ width: 300 }}
                 className="Packing Rate"
                 placeholder="Select Packing"
@@ -343,8 +345,40 @@ useEffect(()=>{
                   color: "white",
                   border: "none",
                   cursor: "pointer"
-                }} onClick={handleSubmit} >Confirm & Generate</button>
+                // }} onClick={handleSubmit} >Confirm & Generate</button>
+                }} onClick={handlePacketPrice}>Confirm</button>
             }
+           <Modal
+              title='Packet wise Rate Details'
+              visible={priceModal}
+              width={1000}
+              onCancel={()=> {
+                setPriceModal(false)
+               }}
+               footer={[
+                <Button key="cancel" 
+                type='primary'
+                onClick={() => setPriceModal(false)}>
+                  Cancel
+                </Button>,
+                <Button key="goToRate" 
+                type='primary'
+                disabled={validationStatus}
+                onClick={() => props.history.push("/company/master/rates")}>
+                  Go to Rate
+                </Button>,
+                <Button key="ok" type="primary" 
+                onClick={handleSubmit} 
+                disabled={!validationStatus}
+                 >
+                  Confirm & Generate
+                </Button>,
+              ]}
+            >
+              <Table 
+              columns={priceColumn}  
+              dataSource={props.packetwisePriceDC?.priceDetailsList}/>
+              </Modal> 
             <button
               style={{ marginBottom: "10px", padding: "6px 15px" }}
               onClick={() => {
@@ -369,9 +403,13 @@ useEffect(()=>{
   );
 };
 
-const mapStateToProps = (state) => ({
-  inward: state.inward,
-  packing: state.packing
-});
+const mapStateToProps = (state) => {
+  const mappedProps = {
+    inward: state.inward,
+    packing: state.packing,
+    packetwisePriceDC:state.inward?.packetwisePriceDC
+  };
+  return mappedProps;
+};
 
-export default connect(mapStateToProps, { fetchPackingListByParty, saveUnprocessedDelivery,postDeliveryConfirm, generateDCPdf,resetInstruction})(DeliveryInfo);
+export default connect(mapStateToProps, { fetchPackingListByParty, getPacketwisePriceDC, saveUnprocessedDelivery,postDeliveryConfirm, generateDCPdf,resetInstruction})(DeliveryInfo);
