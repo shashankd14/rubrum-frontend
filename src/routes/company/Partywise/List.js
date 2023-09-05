@@ -396,31 +396,39 @@ const List = (props) => {
         <div>
           <a href={props?.inward.s3pdfurl?.inward_pdf} target="_blank">
             Inward PDF
-          </a> &nbsp;&nbsp;&nbsp;
+          </a> &emsp;&emsp;&emsp;
           <a href={props?.inward.s3pdfurl?.qrcode_inward_pdf} target="_blank">
             Inward QR Code
           </a>
-        </div>
+        </div><br/>
         {props.inward.s3pdfurl?.plan_pdfs?.length > 0 && (
           <div>
-            <p>Plan PDF</p>
+            <span>Plan PDF</span> &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; <span>Plan QR Code</span><br/>
             {props.inward.s3pdfurl?.plan_pdfs?.map((item) => (
               <>
                 <a href={item?.pdfS3Url} target="_blank">
+                  {item.id}
+                </a>&emsp;&emsp;&emsp;
+                <a href={item?.qrcodeS3Url} target="_blank">
                   {item.id}
                 </a>
                 <br />
               </>
             ))}
           </div>
-        )}
+        )}<br/>
         {props.inward.s3pdfurl?.dc_pdfs?.length > 0 && (
           <div>
-            <p>DC PDF</p>
+            <span>DC PDF</span> &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; <span>DC QR Code</span><br/>
             {props.inward.s3pdfurl?.dc_pdfs?.map((item) => (
+              <>
               <a href={item?.pdfS3Url} target="_blank">
                 {item.id}
               </a>
+              <a href={item?.qrcodeS3Url} target="_blank">
+                {item.id}
+              </a>
+              </>
             ))}
           </div>
         )}
