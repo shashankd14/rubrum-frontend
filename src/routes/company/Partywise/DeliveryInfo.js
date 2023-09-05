@@ -15,6 +15,94 @@ const DeliveryInfo = (props) => {
   const [partyRate, setPartyRate] = useState(0);
   const [packingRateId, setPackingRateId] = useState('');
 
+  const [priceModal, setPriceModal] = useState(false);
+  const [validationStatus, setValidationStatus] = useState(false);
+  useEffect(() => {
+    if(props.packetwisePriceDC && typeof props.packetwisePriceDC.validationStatus === 'boolean'){
+      setValidationStatus(props.packetwisePriceDC.validationStatus);
+    }
+  },[props.packetwisePriceDC.validationStatus])
+
+  console.log('props: ', props);
+  const dispatch = useDispatch();
+  const handlePacketPrice = (e) =>{
+    setPriceModal(true);
+    const reqObj = {
+      packingRateId,
+      vehicleNo,
+        inwardListForDelivery:props.inward.inwardListForDelivery.map((item)=> ({
+       instructionId: item.instructionId,
+      remarks: item.remarks || null, 
+      actualWeight: item.plannedWeight || item.actualWeight
+      }))
+    }
+    console.log('deliveryList ', props.deliveryList);
+    dispatch(getPacketwisePriceDC(reqObj));
+  }
+  const priceColumn = [
+    {
+      title: "Insruction ID",
+      dataIndex: "instructionId",
+      key: "instructionId",
+    },
+    {
+      title: "Coil No.",
+      dataIndex: "coilNo",
+      key: "coilNo",
+    },
+    {
+      title: "Customer Batch No.",
+      dataIndex: "customerBatchNo",
+      key: "customerBatchNo",
+    },
+    {
+      title: "Material Grade Name",
+      dataIndex: "matGradeName",
+      key: "matGradeName",
+    },
+    {
+      title: "Thickness",
+      dataIndex: "thickness",
+      key: "thickness",
+    },
+    {
+      title: "Actual Weight\n(in KG)",
+      dataIndex: "actualWeight",
+      key: "actualWeight",
+    },
+    {
+      title: "Base Rate\n(per ton)",
+      dataIndex: "basePrice",
+      key: "basePrice",
+    },
+    {
+      title: "Packing Rate\n(per ton)",
+      dataIndex: "packingPrice",
+      key: "packingPrice",
+    },
+    {
+      title: "Additional Rate\n(per ton)",
+      dataIndex: "additionalPrice",
+      key: "additionalPrice",
+    },
+    {
+      title: "Total Rate\n(per ton)",
+      dataIndex: "rate",
+      key: "rate",
+    },
+    {
+      title: "Amount",
+      dataIndex: "totalPrice",
+      key: "totalPrice",
+    },
+  ];
+
+  useEffect(() => {
+     if (priceModal) {
+   handlePacketPrice();
+  }
+},[priceModal])
+
   useEffect(() => {
     const partyId = props.inward.inwardListForDelivery?.map(ele => ele?.party?.nPartyId || '');
     props.fetchPackingListByParty(partyId);
