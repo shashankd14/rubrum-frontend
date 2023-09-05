@@ -64,8 +64,8 @@
   },
   "scripts": {
     "phase2": "env-cmd -f ./config/phase1.env react-app-rewired start",
-    "start": "env-cmd -f ./config/phase2.env react-app-rewired start",
-    "build": "env-cmd -f ./config/phase2.env react-app-rewired build",
+    "start": "env-cmd -f ./config/phase1.env react-app-rewired start",
+    "build": "env-cmd -f ./config/phase1.env react-app-rewired build",
     "build2": "env-cmd -f ./config/phase1.env react-app-rewired build",
     "test": "react-app-rewired --env=jsdom",
     "less": "lessc --js src/styles/wieldy.less public/css/style.css"

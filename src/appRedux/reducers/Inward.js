@@ -81,10 +81,7 @@ import {
     PDF_S3_URL_ERROR,
     GET_RECONCILE_REPORT_SUCCESS,
     GET_RECONCILE_REPORT,
-    GET_RECONCILE_REPORT_ERROR,
-    GET_PACKET_WISE_PRICE_DC_REQUEST,
-    GET_PACKET_WISE_PRICE_DC_SUCCESS,
-    GET_PACKET_WISE_PRICE_DC_ERROR
+    GET_RECONCILE_REPORT_ERROR
 } from "../../constants/ActionTypes";
 
 const INIT_STATE = {
@@ -137,8 +134,7 @@ const INIT_STATE = {
     s3pdfurl:{},
     instructionUpdateSuccess:false,
     instructionUpdateFailure: false,
-    reconcileData:[],
-    packetwisePriceDC:{}
+    reconcileData:[]
 };
 
 export default (state = INIT_STATE, action) => {
@@ -739,28 +735,6 @@ export default (state = INIT_STATE, action) => {
                 error: true
             }
         }
-        case GET_PACKET_WISE_PRICE_DC_REQUEST: {
-            return {
-                ...state,
-            }
-        }
-        case GET_PACKET_WISE_PRICE_DC_SUCCESS: {
-            return {
-                ...state,
-                loading:false,
-                success:true,
-                packetwisePriceDC: action.payload,
-            }
-        }
-        case GET_PACKET_WISE_PRICE_DC_ERROR: {
-            return {
-                ...state,
-                loading:false,
-                success:false,
-                error: true
-            }
-        }
-        
         default:
             return state;
     }
