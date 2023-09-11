@@ -26,8 +26,32 @@ const DeliveryInfo = (props) => {
 
   console.log('props: ', props);
   const dispatch = useDispatch();
+  
   const handlePacketPrice = (e) =>{
     setPriceModal(true);
+
+    const iList= props?.inward.inwardListForDelivery.filter(item =>  item?.inwardEntryId && item?.status?.statusName ==="RECEIVED")
+   
+    if(iList?.length){
+      const payload={
+        inwardEntryId: iList.map(item => item.inwardEntryId),
+        motherCoilDispatch: true
+      }
+      setFullHandling(true)
+      props.saveUnprocessedDelivery(payload)
+      const reqObj = {
+        packingRateId,
+        vehicleNo,
+          inwardListForDelivery:props.inward.inwardListForDelivery.map((item)=> ({
+         instructionId: item.instructionId,
+        remarks: item.remarks || null, 
+        actualWeight: item.plannedWeight || item.actualWeight
+        }))
+      }
+      console.log('deliveryList ', props.deliveryList);
+      dispatch(getPacketwisePriceDC(reqObj));
+    }
+    else {
     const reqObj = {
       packingRateId,
       vehicleNo,
@@ -39,6 +63,8 @@ const DeliveryInfo = (props) => {
     }
     console.log('deliveryList ', props.deliveryList);
     dispatch(getPacketwisePriceDC(reqObj));
+  }
+  setPriceModal(true);
   }
   const priceColumn = [
     {
@@ -99,12 +125,6 @@ const DeliveryInfo = (props) => {
   ];
 
   useEffect(() => {
-     if (priceModal) {
-   handlePacketPrice();
-  }
-},[priceModal])
-
-  useEffect(() => {
     const partyId = props.inward.inwardListForDelivery?.map(ele => ele?.party?.nPartyId || '');
     props.fetchPackingListByParty(partyId);
   }, [])
@@ -154,9 +174,11 @@ useEffect(()=>{
       packingRateId,
       inwardListForDelivery: fullHandlingList
     }
-    props.postDeliveryConfirm(reqObj);
+   // props.postDeliveryConfirm(reqObj);
+    props.getPacketwisePriceDC(reqObj);
   }
 },[props.inward.unprocessedSuccess])
+
   const handleRemark = (elem, id) => {
     let index = remarksList.findIndex(elem => elem.id === id)
     let newRemarksList = remarksList
@@ -166,20 +188,23 @@ useEffect(()=>{
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const iList= props?.inward.inwardListForDelivery.filter(item =>  item?.inwardEntryId && item?.status?.statusName ==="RECEIVED")
-   
-    if(iList?.length){
-      const payload={
-        inwardEntryId: iList.map(item => item.inwardEntryId),
-        motherCoilDispatch: true
-      }
-      setFullHandling(true)
-      props.saveUnprocessedDelivery(payload)
-    }else {
         const reqObj = {
           packingRateId,
           vehicleNo,
           inwardListForDelivery: props.inward.inwardListForDelivery
+        }
+        props.postDeliveryConfirm(reqObj);
+      if(props.inward?.unprocessedSuccess?.length){
+        const fullHandlingList = props.inward?.unprocessedSuccess.map(item => {
+          if(item?.process?.processId === 8){
+            return item
+          }
+        }) 
+        const reqObj = {
+          vehicleNo,
+          taskType:"FULL_HANDLING",
+          packingRateId,
+          inwardListForDelivery: fullHandlingList
         }
         props.postDeliveryConfirm(reqObj);
       }
