@@ -85,7 +85,6 @@ import {
     getReconcileReport,
     getReconcileReportError,
     getReconcileReportSuccess,
-    getPacketwisePriceDC,
     getPacketwisePriceDCSuccess,
     getPacketwisePriceDCError,
     QrGenerateInwardSuccess
@@ -590,7 +589,6 @@ function* postDeliveryConfirmRequest(payload) {
             taskType:payload.payload?.taskType?payload.payload?.taskType:"",
             deliveryItemDetails: packetsData
         }
-        console.log("req_obj", req_obj);
     }else{
         requestType= 'PUT';
         req_obj =payload.payload
@@ -803,6 +801,7 @@ function* getReconcileReportSaga(action) {
         yield put(getReconcileReportError(error));
     }
 }
+
 function* QrGenerateInward(action) {
     try {
         const qrGenerateInward = yield fetch(`${baseUrl}api/inwardEntry/qrcode/inward`, {
@@ -854,6 +853,7 @@ function* QrGeneratePlan(action) {
         yield put(actions.QrCodeGeneratePlanError(error));
     }
 }
+
 function* getPacketwisePriceDCSaga(action) {
 
     console.log('Saga: ', action);

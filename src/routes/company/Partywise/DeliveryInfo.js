@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { connect, useDispatch, useSelector } from "react-redux";
+import { connect, useDispatch, useSelector  } from "react-redux";
 import { Popover,Input, Card, message, Select } from "antd";
 import { InfoCircleOutlined, CloseSquareTwoTone } from "@ant-design/icons";
 import { fetchPackingListByParty, fetchPackingBucketList, getPacketwisePriceDC, postDeliveryConfirm, generateDCPdf,resetInstruction,saveUnprocessedDelivery } from "../../../appRedux/actions";
@@ -128,7 +128,6 @@ const DeliveryInfo = (props) => {
     const partyId = props.inward.inwardListForDelivery?.map(ele => ele?.party?.nPartyId || '');
     props.fetchPackingListByParty(partyId);
   }, [])
-console.log("props.inward.inwardListForDelivery", props.inward.inwardListForDelivery);
 
   useEffect(()=>{
     let insList = props.inward.inwardListForDelivery?.map(i => {
@@ -210,6 +209,7 @@ useEffect(()=>{
       }
   };
 
+ 
   return (
     <div>
       <h1>Delivery Information</h1>
@@ -320,7 +320,7 @@ useEffect(()=>{
         <div>
           <div style={{ width: "20%", marginBottom: "15px" }}>
             <Select
-               showSearch
+              showSearch
                 style={{ width: 300 }}
                 className="Packing Rate"
                 placeholder="Select Packing"
@@ -371,9 +371,9 @@ useEffect(()=>{
                   border: "none",
                   cursor: "pointer"
                 // }} onClick={handleSubmit} >Confirm & Generate</button>
-              }} onClick={handlePacketPrice} >Confirm</button>
+                }} onClick={handlePacketPrice}>Confirm</button>
             }
-            <Modal
+           <Modal
               title='Packet wise Rate Details'
               visible={priceModal}
               width={1000}
@@ -437,4 +437,4 @@ const mapStateToProps = (state) => {
   return mappedProps;
 };
 
-export default connect(mapStateToProps, { fetchPackingListByParty, saveUnprocessedDelivery,getPacketwisePriceDC, postDeliveryConfirm, generateDCPdf,resetInstruction})(DeliveryInfo);
+export default connect(mapStateToProps, { fetchPackingListByParty, getPacketwisePriceDC, saveUnprocessedDelivery,postDeliveryConfirm, generateDCPdf,resetInstruction})(DeliveryInfo);
