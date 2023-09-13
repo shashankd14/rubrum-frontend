@@ -471,9 +471,9 @@ const List = (props) => {
                 } else {
                   const newList = selectedRowData.filter((item) => {
                     if (item?.instruction?.length) {
-                      return !item.childInstructions && item.instructionId;
+                      return !item.childInstructions && item.inwardEntryId && selectedRowData.length === 1;
                     } else {
-                      return item;
+                      return true;
                     }
                   });
                   props.setInwardSelectedForDelivery(newList);

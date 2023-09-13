@@ -30,8 +30,8 @@ const DeliveryInfo = (props) => {
   const handlePacketPrice = (e) =>{
     setPriceModal(true);
 
-    const iList= props?.inward.inwardListForDelivery.filter(item =>  item?.inwardEntryId && item?.status?.statusName ==="RECEIVED")
-   
+    const iList= props?.inward.inwardListForDelivery.filter(item =>  (item?.inwardEntryId && item?.status?.statusName ==="RECEIVED") || (item?.instruction?.length && !item.childInstructions && !item.instructionId && item?.status?.statusName ==="READY TO DELIVER"))
+
     if(iList?.length){
       const payload={
         inwardEntryId: iList.map(item => item.inwardEntryId),
@@ -215,7 +215,7 @@ useEffect(()=>{
       <h1>Delivery Information</h1>
       <Card>
         {props.inward.inwardList.length > 0 ? (
-          props.inward.inwardListForDelivery.map((elem) => (elem?.instructionId || elem?.status?.statusName ==="RECEIVED") && (
+          props.inward.inwardListForDelivery.map((elem) => (elem?.instructionId || elem?.status?.statusName ==="RECEIVED" || elem?.status?.statusName ==="READY TO DELIVER") && (
             <div key={elem?.instructionId || elem?.inwardEntryId}
               style={{
                 border: "1px solid black",
