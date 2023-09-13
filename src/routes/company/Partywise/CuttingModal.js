@@ -14,7 +14,7 @@ import {
   message,
 } from "antd";
 import React, { useEffect, useState } from "react";
-import { connect } from "react-redux";
+import { connect, useDispatch} from "react-redux";
 import moment from "moment";
 import {
   setProcessDetails,
@@ -24,6 +24,7 @@ import {
   deleteInstructionById,
   instructionGroupsave,
   pdfGenerateInward,
+  QrCodeGeneratePlan
 } from "../../../appRedux/actions/Inward";
 import { APPLICATION_DATE_FORMAT } from "../../../constants";
 
@@ -106,6 +107,7 @@ const CreateCuttingDetailsForm = (props) => {
   const [tagsList, setTagsList] = useState([]);
   const [packetClassification, setPacketClassification] = useState([]);
   const [editedRecordState, setEditedRecordState] = useState([]);
+  const dispatch =useDispatch();
   const [tableData, setTableData] = useState(
     props.wip
       ? props.childCoil
@@ -756,6 +758,7 @@ const CreateCuttingDetailsForm = (props) => {
         });
     }
   }, [props.inward.process.length, props.inward.process.no]);
+ // console.log("prps.inward", props.inward);
   useEffect(() => {
     setcurrentWeight(props.coilDetails.fpresent);
   }, [props.coilDetails.fpresent]);
@@ -939,6 +942,7 @@ const CreateCuttingDetailsForm = (props) => {
         }
         loading = "";
         props.pdfGenerateInward(payload);
+        dispatch(QrCodeGeneratePlan(payload));
       }
     } else {
       setTimeout(() => {
@@ -1251,6 +1255,7 @@ const CreateCuttingDetailsForm = (props) => {
         };
         setSlitPartId(partId);
         props.pdfGenerateInward(payload);
+        dispatch(QrCodeGeneratePlan(payload))
       } else if (
         saveInstruction.length === 0 &&
         props.inward?.saveSlit[0]?.partDetailsId === slitPartId
@@ -1403,6 +1408,7 @@ const CreateCuttingDetailsForm = (props) => {
     ];
   };
   return (
+    <>
     <Modal
       title={
         props.wip
@@ -1904,6 +1910,7 @@ const CreateCuttingDetailsForm = (props) => {
         </Tabs>
       </Card>
     </Modal>
+    </>
   );
 };
 
@@ -1960,4 +1967,5 @@ export default connect(mapStateToProps, {
   deleteInstructionById,
   instructionGroupsave,
   pdfGenerateInward,
+  QrCodeGeneratePlan,
 })(CuttingDetailsForm);

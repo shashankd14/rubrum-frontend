@@ -396,6 +396,9 @@ const List = (props) => {
         <div>
           <a href={props?.inward.s3pdfurl?.inward_pdf} target="_blank">
             Inward PDF
+          </a> &nbsp;&nbsp;&nbsp;
+          <a href={props?.inward.s3pdfurl?.qrcode_inward_pdf} target="_blank">
+            Inward QR Code
           </a>
         </div>
         {props.inward.s3pdfurl?.plan_pdfs?.length > 0 && (
@@ -468,9 +471,9 @@ const List = (props) => {
                 } else {
                   const newList = selectedRowData.filter((item) => {
                     if (item?.instruction?.length) {
-                      return !item.childInstructions && item.instructionId;
+                      return !item.childInstructions && item.inwardEntryId && selectedRowData.length === 1;
                     } else {
-                      return item;
+                      return true;
                     }
                   });
                   props.setInwardSelectedForDelivery(newList);
