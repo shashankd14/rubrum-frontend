@@ -1,3 +1,5 @@
+//src-routes-company-quality-templates-LinkedTemplateList.js
+
 import React, { useEffect, useState } from 'react'
 import { connect } from "react-redux";
 import { Button, Select, Table } from 'antd';
@@ -6,6 +8,7 @@ import SearchBox from '../../../../components/SearchBox';
 import IntlMessages from '../../../../util/IntlMessages';
 
 import {
+    fetchPartyList,
     fetchTemplatesLinkList,
     fetchTemplatesLinkListSuccess
 } from "../../../../appRedux/actions";
@@ -29,13 +32,15 @@ const LinkedTemplateList = (props) => {
 
     useEffect(() => {
         console.log("data load")
+        props.fetchPartyList();
         props.fetchTemplatesLinkList();
     }, []);
 
    
 
     useEffect(() => {
-        if (!props.template.loading && !props.template.error) {
+        // if (!props.template.loading && !props.template.error) {
+        if (!props.template.loading && !props.template.error && props.template.operation === 'templateLinkList') {
             console.log(props.template)
             setTemplateList(props.template.data)
         }
@@ -96,7 +101,8 @@ const LinkedTemplateList = (props) => {
                     pageSize: "15",
                     onChange: (page) => {
                         setPageNo(page);
-                        props.fetchTemplatesList(page, 15, searchValue);
+                       // props.fetchTemplatesList(page, 15, searchValue);
+                       props.fetchTemplatesLinkList(page, 15, searchValue);
                     },
                     current: pageNo,
                     total: totalPageItems,
@@ -108,9 +114,11 @@ const LinkedTemplateList = (props) => {
 
 const mapStateToProps = (state) => ({
     template: state.quality,
+    party: state.party,
 });
 
 export default connect(mapStateToProps, {
+    fetchPartyList,
     fetchTemplatesLinkList,
     fetchTemplatesLinkListSuccess
 })(LinkedTemplateList);

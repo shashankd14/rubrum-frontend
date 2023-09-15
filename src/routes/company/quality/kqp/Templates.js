@@ -1,3 +1,6 @@
+
+//src-routes-company-kqp-Template.js
+
 import React, { useEffect, useState } from "react";
 import { connect } from 'react-redux';
 import { useLocation } from 'react-router-dom';
@@ -9,7 +12,9 @@ import TemplateList from "./TemplateList";
 import LinkedTemplateList from "./LinkedTemplateList";
 
 import { 
-  deleteQualityTemplate
+  deleteQualityTemplate,
+  deleteKqp,
+  deleteKqpLink
 } from "../../../../appRedux/actions"
 
 const Templates = (props) => {
@@ -45,7 +50,8 @@ const Templates = (props) => {
                 className="gx-link"
                 onClick={() =>
                     // console.log("Delete", record)
-                    props.deleteQualityTemplate(record.kqpId)
+                    //props.deleteQualityTemplate(record.kqpId)
+                    props.deleteKqp(record.kqpId)
                 }
             >
                 Delete
@@ -80,7 +86,7 @@ const templateLinkListAactionColumn = {
               className="gx-link"
               onClick={() =>
                   // console.log("Delete", record)
-                  props.deleteQualityTemplate(record.templateId)
+                  props.deleteKqpLink(record.templateId)
               }
           >
               Delete
@@ -132,5 +138,7 @@ const mapStateToProps = state => ({
 });
 
 export default connect(mapStateToProps, {
-  deleteQualityTemplate
+  deleteQualityTemplate,
+  deleteKqp,
+  deleteKqpLink
 })(Templates);

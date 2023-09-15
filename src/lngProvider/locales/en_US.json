@@ -348,7 +348,7 @@
   "quality.templates.input.action.select.label": "Search Customer",
   "quality.templates.input.action.select.placeholder": "Search Customer",
   "quality.templates.input.action.search.label": "Search",
-  "quality.templates.input.action.search.placeholder": "Search for users",
+  "quality.templates.input.action.search.placeholder": "Search by templateID",
   "quality.templates.button.action.print.label": "Print",
   "quality.templates.button.action.export.label": "Export",
   "quality.templates.button.action.create.label": "Create Template",
