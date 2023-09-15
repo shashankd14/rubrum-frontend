@@ -1,3 +1,5 @@
+//src-appredux-saga-quality.js
+
 import { all, put, fork, takeLatest } from "redux-saga/effects";
 import { getUserToken } from './common';
 import {
@@ -217,6 +219,7 @@ function* deleteQualityTemplateById(data) {
             method: 'DELETE',
             headers: getHeaders()
         });
+        window.location.reload();
         if (qualityTemplate.status == 200) {
             let qualityTemplateResponse = yield qualityTemplate.json()
             yield put(deleteQualityTemplateSuccess(qualityTemplateResponse));
@@ -273,11 +276,16 @@ function* getQualityTemplateLinkById(data) {
 }
 
 function* fetchTemplateLinkList(payload) {
+    // try {
+    //     console.log(payload)
+    //     const reqUrl = payload ? `${baseUrl}api/quality/templatemap/party/${payload.params.partyId}` : `${baseUrl}api/quality/templatemap`
+    //     console.log(payload)
+    //     const fetchTemplateList = yield fetch(reqUrl, {
+    //         method: 'GET',
+    //         headers: getHeaders()
+    //     });
     try {
-        console.log(payload)
-        const reqUrl = payload ? `${baseUrl}api/quality/templatemap/party/${payload.params.partyId}` : `${baseUrl}api/quality/templatemap`
-        console.log(payload)
-        const fetchTemplateList = yield fetch(reqUrl, {
+        const fetchTemplateList = yield fetch(`${baseUrl}api/quality/templatemap`, {
             method: 'GET',
             headers: getHeaders()
         });
@@ -566,6 +574,7 @@ function* deleteKqpById(data) {
             method: 'DELETE',
             headers: getHeaders()
         });
+        window.location.reload();
         if (qualityTemplate.status == 200) {
             let qualityTemplateResponse = yield qualityTemplate.json()
             yield put(deleteKqpSuccess(qualityTemplateResponse));

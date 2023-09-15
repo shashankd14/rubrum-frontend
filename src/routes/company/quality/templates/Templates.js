@@ -1,3 +1,5 @@
+//src-routes-company-quality-templates-Templates.js
+
 import React, { useEffect, useState } from "react";
 import { connect } from 'react-redux';
 import { useLocation } from 'react-router-dom';
@@ -71,7 +73,7 @@ const templateLinkListAactionColumn = {
       <span>
           <span
               className="gx-link"
-              onClick={() => props.history.push(`/company/quality/templates/link/edit/${record.id}`)}
+              onClick={() => props.history.push(`/company/quality/templates/link/edit/${record.templateId}`)}
           >
               Edit Link
           </span>

@@ -1,3 +1,5 @@
+//src-routes-company-quality-templates-TemplateList.js
+
 import React, { useEffect, useState } from 'react'
 import { useHistory } from "react-router";
 import { connect } from "react-redux";
@@ -20,9 +22,11 @@ const TemplateList = (props) => {
     const [searchValue, setSearchValue] = useState("");
     const [pageNo, setPageNo] = useState(1);
     const [totalPageItems, setTotalItems] = useState(0);
-    const [templateList, setTemplateList] = useState([]);
-    const [partyList, setPartyList] = useState([]);
+   // const [templateList, setTemplateList] = useState([]);
+   const [templateList, setTemplateList] = useState([])
+    const [partyList, setPartyList] = useState(props.template?.data || []);
     const [customerValue, setCustomerValue] = useState("");
+    const [filteredInwardList, setFilteredInwardList] = useState(props.template?.data || []);
 
     useEffect(() => {
         props.fetchPartyList();
@@ -34,8 +38,8 @@ const TemplateList = (props) => {
     useEffect(() => {
         console.log("init")
         setTemplateList([]);
-        setSearchValue([]);
-        setPageNo([]);
+       // setSearchValue([]);
+       // setPageNo([]);
     }, []);
 
     useEffect(() => {
@@ -53,15 +57,22 @@ const TemplateList = (props) => {
     }, [props.party.loading, props.party.error]);
 
     useEffect(() => {
-        if (searchValue) {
-            if (searchValue.length >= 3) {
-                setPageNo(1);
-                // props.fetchInwardList(1, 20, searchValue, customerValue);
-            }
+        const { template } = props;
+        if(searchValue) {
+            debugger;
+            console.log("searchValue", searchValue);
+            const filteredData = template?.data?.filter(template => {
+                if(template.templateId?.toString() === searchValue ||
+                template.templateName?.toLowerCase().includes(searchValue.toLowerCase()) )  {
+                    return template;
+                }
+            });
+            setTemplateList(filteredData);
+            console.log("filteredData", filteredData);
         } else {
-            setPageNo(1);
-            //   props.fetchInwardList(1, 20, searchValue, customerValue);
+            setTemplateList(template.data);
         }
+           
     }, [searchValue]);
 
     const handleChange = () => {
