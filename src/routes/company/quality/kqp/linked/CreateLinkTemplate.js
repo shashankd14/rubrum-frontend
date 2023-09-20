@@ -6,7 +6,8 @@ import {
     fetchKqpList,
     saveKqpLink,
     getKqpLinkById,
-    fetchEndUserTagsList
+    fetchEndUserTagsList,
+    fetchMaterialList
 } from "../../../../../appRedux/actions"
 
 const CreateLinkTemplate = (props) => {
@@ -18,11 +19,11 @@ const CreateLinkTemplate = (props) => {
     const [templateList, setTemplateList] = useState([]);
     const [defaultSelected, setDefaultSelected] = useState([]);
     const [selectedCustomers, setSelectedCustomers] = useState([]);
-    const [selectedEndUserTags, setSelectedEndUserTags] = useState([]);
+    const [selectedEndUserTags, setSelectedEndUserTags] = useState();
     const [action, setAction] = useState("create");
     const [partyList, setPartyList] = useState([]);
     const [isDisabled, setIsDisabled] = useState(false);
-
+    const [selectedMatGrade, setSelectedMatGrade] = useState ();
     useEffect(() => {
         if (props.match) {
             const urlPaths = props.match.url.split('/')
@@ -35,6 +36,7 @@ const CreateLinkTemplate = (props) => {
             props.fetchKqpList();
             props.fetchPartyList();
             props.fetchEndUserTagsList();
+            props.fetchMaterialList();
         }
     }, [])
 
@@ -87,6 +89,14 @@ const CreateLinkTemplate = (props) => {
         setSelectedEndUserTags(e)
     }
 
+    const onMatGradeSelection = (e) => {
+        setSelectedMatGrade(e)
+    }
+
+    const onThicknessSelection = (e) => {
+        setThickness(e);
+    }
+
     const onCustomerDeselection = (e) => {
         console.log(e)
         console.log('selectedCustomers', selectedCustomers)
@@ -107,17 +117,23 @@ const CreateLinkTemplate = (props) => {
             props.history.push('/company/quality/templates?view=links')
         }
     }, [props.template.loading, props.template.error]);
+ 
+const [thickness, setThickness] = useState("");
+  const [width, setWidth] = useState("");
+  const [length, setLength] = useState("");
 
     const createTemplateLink = () => {
         const payload = JSON.stringify({
-            templateId: selectedTemplateId,
-            endUserTagId: -1,
-            matGradeId: -1,
+            kqpId: selectedTemplateId,
+            endUserTagId: selectedEndUserTags,
+            matGradeId: 14,
             userId: localStorage.getItem("userId"),
-            thickness: -1,
+            thickness: thickness,
+            width: width,
+            length: length,
             partyIdList: selectedCustomers,
         })
-        props.saveQualityTemplateLink(payload)
+        props.saveKqpLink(payload)
     }
 
     return (
@@ -230,6 +246,7 @@ const CreateLinkTemplate = (props) => {
                                         id="endUsertags"
                                         showSearch
                                         mode="multiple"
+                                        placeholder="Select End User tag"
                                         style={{ width: '100%' }}
                                         maxTagCount={3}
                                         filterOption={(input, option) => {
@@ -259,29 +276,56 @@ const CreateLinkTemplate = (props) => {
                                         style={{ width: '100%' }}
                                         placeholder="Select Material Grade"
                                         optionFilterProp="children"
-                                        onChange={onCustomerSelection}
+                                     //   onChange={onMatGradeSelection}
                                         // onFocus={handleFocus}
                                         // onBlur={handleBlur}
                                         maxTagCount={3}
-                                        filterOption={(input, option) =>
-                                            option.props.children
-                                                .toLowerCase()
-                                                .indexOf(input.toLowerCase()) >= 0
-                                        }
-                                        // value={selectedCustomers}
-                                        allowClear
-                                    >
+                                    //     filterOption={(input, option) =>
+                                    //         option.props.children
+                                    //             .toLowerCase()
+                                    //             .indexOf(input.toLowerCase()) >= 0
+                                    //     }
+                                    //     //onChange={onMatGradeSelection}
+                                    //     value={selectedMatGrade}
+                                    //     // value={selectedCustomers}
+                                    //     allowClear
+                                    // >
 
-                                    </Select>
+                                    // </Select>
+                                    filterOption={(input, option) => {
+                                        return option?.props?.children?.toLowerCase().includes(input.toLowerCase());
+                                    }}
+                                    filterSort={(optionA, optionB) =>
+                                        optionA?.props?.children.toLowerCase().localeCompare(optionB?.props?.children.toLowerCase())
+                                    }
+                                    onChange={onMatGradeSelection}
+                                    value={selectedMatGrade}
+                                >  
+                                 {/*{props?.materialList?.materialGrade?.map(item => {*/}
+                                    {props?.material?.materialGrade?.map(item => { 
+                                        debugger;
+                                        console.log("materialList", props.material)
+                                    return <Option value={item?.gradeId}>{item.gradeName}</Option>
+                                })}</Select>
+
                                 </div>
                             </Col>
                         </Row>
                         <Row>
                             <Col span={12}>
                                 <div style={{ marginTop: 30, display: "flex" }}>
-                                    <label>Thickness</label>
+                                     <label>Thickness</label> 
                                 </div>
-                                <div>
+                                 <div> 
+                                <Input
+                                id="thicknessInput"
+                                style={{ width: '100%' }}
+                                placeholder="Enter Thickness"
+                                value={thickness}
+                                onChange={(e) => setThickness(e.target.value)}
+                            />
+                               </div> 
+                                 {/* <div>
                                     <Select
                                         id="select"
                                         mode="multiple"
@@ -303,7 +347,7 @@ const CreateLinkTemplate = (props) => {
                                     >
 
                                     </Select>
-                                </div>
+                                </div>  */}
                             </Col>
                         </Row>
                         <Row>
@@ -312,7 +356,14 @@ const CreateLinkTemplate = (props) => {
                                     <label>Width</label>
                                 </div>
                                 <div>
-                                    <Select
+                                <Input
+                                    id="widthInput"
+                                    style={{ width: '100%' }}
+                                    placeholder="Enter Width"
+                                    value={width}
+                                    onChange={(e) => setWidth(e.target.value)}
+                                />
+                                {/* <Select
                                         id="select"
                                         mode="multiple"
                                         showSearch
@@ -332,7 +383,7 @@ const CreateLinkTemplate = (props) => {
                                         allowClear
                                     >
 
-                                    </Select>
+                                    </Select> */}
                                 </div>
                             </Col>
                         </Row>
@@ -342,7 +393,14 @@ const CreateLinkTemplate = (props) => {
                                     <label>Length</label>
                                 </div>
                                 <div>
-                                    <Select
+                                <Input
+                                    id="lengthInput"
+                                    style={{ width: '100%' }}
+                                    placeholder="Enter Length"
+                                    value={length}
+                                    onChange={(e) => setLength(e.target.value)}
+                                />
+                                {/* <Select
                                         id="select"
                                         mode="multiple"
                                         showSearch
@@ -362,7 +420,7 @@ const CreateLinkTemplate = (props) => {
                                         allowClear
                                     >
 
-                                    </Select>
+                                    </Select> */}
                                 </div>
                             </Col>
                         </Row>
@@ -385,11 +443,12 @@ const CreateLinkTemplate = (props) => {
         </div>
     )
 }
-
 const mapStateToProps = state => ({
     template: state.quality,
     party: state.party,
     packetClassification: state.packetClassification,
+    //material: state.materialList,
+    material: state.material,
 });
 
 export default connect(mapStateToProps, {
@@ -398,4 +457,5 @@ export default connect(mapStateToProps, {
     saveKqpLink,
     getKqpLinkById,
     fetchEndUserTagsList,
+    fetchMaterialList
 })(CreateLinkTemplate);

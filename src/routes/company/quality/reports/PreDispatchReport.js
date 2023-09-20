@@ -205,6 +205,7 @@ const PreDispatchReport = (props) => {
 
     const onDelete = (record, key, e) => {
         console.log(record, key);
+        props.deleteQualityReport(record.qirId);
     };
 
     const onEdit = (record, key, e) => {

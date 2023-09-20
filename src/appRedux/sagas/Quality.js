@@ -465,21 +465,21 @@ function* updateQualityReportById(data) {
 function* deleteQualityReportById(data) {
     try {
         // let data = new FormData();
-        const qualityTemplate = yield fetch(`${baseUrl}api/quality/inspectionreport/update`, {
-            method: 'PUT',
+        const qualityTemplate = yield fetch(`${baseUrl}api/quality/qir/${data.payload}`, {
+            method: 'DELETE',
             body: data.payload,
             headers: getHeaders()
         });
         if (qualityTemplate.status == 200) {
             let qualityTemplateResponse = yield qualityTemplate.json()
-            yield put(updateQualityReportSuccess(qualityTemplateResponse));
+            yield put(deleteQualityReportSuccess(qualityTemplateResponse));
         } else if (qualityTemplate.status === 401) {
             yield put(userSignOutSuccess());
         } else
-            yield put(updateQualityReportError('error'));
+            yield put(deleteQualityReportError('error'));
     } catch (error) {
         console.log(error)
-        yield put(updateQualityReportError(error));
+        yield put(deleteQualityReportError(error));
     }
 }
 
@@ -611,12 +611,13 @@ function* fetchKqpLinkList(action) {
 function* saveKqpLink(data) {
     try {
         // let data = new FormData();
-        console.log(data.payload)
+        console.log("data.payload", data.payload);
         const qualityTemplate = yield fetch(`${baseUrl}api/quality/kqppartymap/save`, {
             method: 'POST',
             body: data.payload,
             // headers: {'Content-Type': 'multipart/form-data', ...getHeaders()}
-            headers: getHeaders()
+           // headers: getHeaders()
+            headers: { 'Content-Type': 'application/json', ...getHeaders() }
         });
         if (qualityTemplate.status == 200) {
             let qualityTemplateResponse = yield qualityTemplate.json()

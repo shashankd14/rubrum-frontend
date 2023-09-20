@@ -59,7 +59,6 @@ const TemplateList = (props) => {
     useEffect(() => {
         const { template } = props;
         if(searchValue) {
-            debugger;
             console.log("searchValue", searchValue);
             const filteredData = template?.data?.filter(template => {
                 if(template.templateId?.toString() === searchValue ||
