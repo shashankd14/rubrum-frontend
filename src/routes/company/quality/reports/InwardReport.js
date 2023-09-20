@@ -130,17 +130,20 @@ const InwardReport = (props) => {
                     </span>
                     <Divider type="vertical" />
                     <span
-                        className={`gx-link ${!record.qirId && disabledEle}`}
+                        //className={`gx-link ${!record.qirId && disabledEle}`}
+                        className={`gx-link ${record.qirId && disabledEle}`}
                         onClick={(e) => showReportView(record, index, e)}
                     >
                         View
                     </span>
                     <Divider type="vertical" />
-                    <span className={`gx-link ${!record.qirId && disabledEle}`} onClick={(e) => onEdit(record, index, e)}>
+                    {/* <span className={`gx-link ${!record.qirId && disabledEle}`} onClick={(e) => onEdit(record, index, e)}> */}
+                    <span className={`gx-link ${record.qirId && disabledEle}`} onClick={(e) => onEdit(record, index, e)}>
                         Edit
                     </span>
                     <Divider type="vertical" />
-                    <span className={`gx-link ${!record.qirId && disabledEle}`} onClick={(e) => onDelete(record, index, e)}>
+                    {/* <span className={`gx-link ${!record.qirId && disabledEle}`} onClick={(e) => onDelete(record, index, e)}> */}
+                    <span className={`gx-link ${record.qirId && disabledEle}`} onClick={(e) => onDelete(record, index, e)}>
                         Delete
                     </span>
                 </span>
@@ -155,6 +158,18 @@ const InwardReport = (props) => {
         props.fetchPartyList();
         props.fetchTemplatesList();
     }, []);
+
+    // useEffect(() => {
+    //     if (searchValue) {
+    //       if (searchValue.length >= 3) {
+    //         setPageNo(1);
+    //         props.fetchQualityReportStageList(1, 15, searchValue);
+    //       }
+    //     } else {
+    //       setPageNo(1);
+    //       props.fetchQualityReportStageList(1, 15, searchValue);
+    //     }
+    //   }, [searchValue]);
 
     useEffect(() => {
         console.log(props)
@@ -192,11 +207,12 @@ const InwardReport = (props) => {
     const showTemplateList = (record, key) => {
         console.log(record, key)
         setSelectedItemForQr(record)
+        setShowCreateModal(true);
         props.fetchTemplatesLinkList({ partyId: record.npartyId });
     }
 
     const showReportView = (record, key) => {
-        console.log(record, key)
+        console.log("record, key", record, key)
         setSelectedItemForQr(record)
         setAction('view');
         props.getQualityReportById(record.qirId);
@@ -205,9 +221,12 @@ const InwardReport = (props) => {
 
     const onDelete = (record, key, e) => {
         console.log(record, key);
+        console.log("record.qirId", record.qirId);
+        props.deleteQualityReport(record.qirId);
     };
 
     const onEdit = (record, key, e) => {
+        debugger;
         console.log(record, key)
         setSelectedItemForQr(record)
         setAction('edit');

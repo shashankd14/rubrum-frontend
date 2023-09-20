@@ -180,6 +180,7 @@ const ProcessingReport = (props) => {
     const showTemplateList = (record, key) => {
         console.log(record, key)
         setSelectedItemForQr(record)
+        setShowCreateModal(true);
         props.fetchTemplatesLinkList({ partyId: record.npartyId });
     }
 
@@ -199,6 +200,7 @@ const ProcessingReport = (props) => {
 
     const onDelete = (record, key, e) => {
         console.log(record, key);
+        props.deleteQualityReport(record.qirId);
     };
 
     const onEdit = (record, key, e) => {

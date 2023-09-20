@@ -201,6 +201,7 @@ const PreProcessingReport = (props) => {
 
     const onDelete = (record, key, e) => {
         console.log(record, key);
+        props.deleteQualityReport(record.qirId);
     };
 
     const onEdit = (record, key, e) => {
@@ -295,7 +296,7 @@ const PreProcessingReport = (props) => {
                         pageSize: 15,
                         onChange: (changePage) => {
                             setPageNo(changePage);
-                            // props.fetchQualityReportStageList({ stage: "preprocessing", page: changePage, pageSize: 15, partyId: '' });
+                             props.fetchQualityReportStageList({ stage: "preprocessing", page: changePage, pageSize: 15, partyId: '' });
                             // props.fetchPreProcessingList(page, 15, searchValue);
                         },
                         current: pageNo,

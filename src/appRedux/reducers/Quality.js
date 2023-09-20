@@ -595,6 +595,24 @@ export default (state = INIT_STATE, action) => {
       return {
         ...state,
       }
+      case DELETE_QUALITY_REPORT_REQUEST:
+      return {
+        ...state,
+        loading: true
+      }
+    case DELETE_QUALITY_REPORT_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        data: action.templateDetails,
+        //operation: "templateById"
+      }
+    case DELETE_QUALITY_REPORT_ERROR:
+      return {
+        ...state,
+        error: true,
+        loading: false
+      }
     default:
       return state;
   }

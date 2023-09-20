@@ -34,8 +34,8 @@ const TemplateList = (props) => {
     useEffect(() => {
         console.log("init")
         setTemplateList([]);
-        setSearchValue([]);
-        setPageNo([]);
+        //setSearchValue([]);
+        //setPageNo([]);
     }, []);
 
     useEffect(() => {
@@ -52,16 +52,33 @@ const TemplateList = (props) => {
         }
     }, [props.party.loading, props.party.error]);
 
+    // useEffect(() => {
+    //     if (searchValue) {
+    //         if (searchValue.length >= 3) {
+    //             setPageNo(1);
+    //             // props.fetchInwardList(1, 20, searchValue, customerValue);
+    //         }
+    //     } else {
+    //         setPageNo(1);
+    //         //   props.fetchInwardList(1, 20, searchValue, customerValue);
+    //     }
+    // }, [searchValue]);
+    
     useEffect(() => {
-        if (searchValue) {
-            if (searchValue.length >= 3) {
-                setPageNo(1);
-                // props.fetchInwardList(1, 20, searchValue, customerValue);
-            }
+        const { template } = props;
+        if(searchValue) {
+            const filteredData = template?.data?.filter(template => {
+                if(template.kqpId?.toString() === searchValue ||
+                template.kqpName?.toLowerCase().includes(searchValue.toLowerCase()) )  {
+                    return template;
+                }
+            });
+            setTemplateList(filteredData);
+            console.log("filteredData", filteredData);
         } else {
-            setPageNo(1);
-            //   props.fetchInwardList(1, 20, searchValue, customerValue);
+            setTemplateList(template.data);
         }
+           
     }, [searchValue]);
 
     const handleChange = () => {
@@ -141,7 +158,7 @@ const TemplateList = (props) => {
                     pageSize: "15",
                     onChange: (page) => {
                         setPageNo(page);
-                        props.fetchTemplatesList(page, 15, searchValue);
+                        props.fetchKqpList(page, 15, searchValue);
                     },
                     current: pageNo,
                     total: totalPageItems,

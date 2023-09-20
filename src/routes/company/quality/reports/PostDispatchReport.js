@@ -45,6 +45,7 @@ const PostDispatchReport = (props) => {
     const [selectedItemForQr, setSelectedItemForQr] = useState({})
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showCreateQrScreen, setShowCreateQrScreen] = useState(false);
+    const [action, setAction] = useState(undefined);
 
 
 
@@ -193,6 +194,10 @@ const PostDispatchReport = (props) => {
         console.log(record, key)
         const templateDetails = qualityReportList.find(qr => qr.coilNumber === record.coilNumber && qr.inwardId === record.inwardEntryId)
         props.history.push({pathname: '/company/quality/reports/create/postdispatch', state: {selectedItemForQr: record, templateDetails: templateDetails, action: 'view'}})
+        // setSelectedItemForQr(record)
+        // setAction('view');
+        // props.getQualityReportById(record.qirId);
+
     }
 
     useEffect(() => {
@@ -205,6 +210,8 @@ const PostDispatchReport = (props) => {
 
     const onDelete = (record, key, e) => {
         console.log(record, key);
+        console.log("record.qirId", record.qirId);
+        props.deleteQualityReport(record.qirId);
     };
 
     const onEdit = (record, key, e) => {
