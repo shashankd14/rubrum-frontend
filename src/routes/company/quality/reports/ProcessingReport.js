@@ -45,7 +45,7 @@ const ProcessingReport = (props) => {
     const [selectedItemForQr, setSelectedItemForQr] = useState({})
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showCreateQrScreen, setShowCreateQrScreen] = useState(false);
-
+    const [action, setAction] = useState(undefined);
 
 
     const columns = [
@@ -188,6 +188,10 @@ const ProcessingReport = (props) => {
         console.log(record, key)
         const templateDetails = qualityReportList.find(qr => qr.coilNumber === record.coilNumber && qr.inwardId === record.inwardEntryId)
         props.history.push({ pathname: '/company/quality/reports/create/processing', state: { selectedItemForQr: record, templateDetails: templateDetails, action: 'view' } })
+        // setSelectedItemForQr(record)
+        // setAction('view');
+        // props.getQualityReportById(record.qirId);
+
     }
 
     useEffect(() => {
@@ -234,18 +238,20 @@ const ProcessingReport = (props) => {
         }
     }, [props.party.loading, props.party.error]);
 
-    // useEffect(() => {
-    //     if (searchValue) {
-    //         if (searchValue.length >= 3) {
-    //             setPageNo(1);
-    //             props.fetchInwardList(1, 15, searchValue);
-    //         }
-    //     } else {
-    //         setPageNo(1);
-    //         props.fetchInwardList(1, 15, searchValue);
-    //     }
-    // }, [searchValue]);
+    useEffect(() => {
+        const { template } = props;
+        if(searchValue) {
+            const filteredData = filteredProcessingList.filter(item => 
+                (item.coilNo.toLowerCase().includes(searchValue.toLowerCase())) ||
+                (item.customerBatchNo.toLowerCase().includes(searchValue.toLowerCase())));
 
+            setFilteredProcessingList(filteredData);
+            console.log("filteredData", filteredData);
+        } else {
+            setFilteredProcessingList(template.data);
+        }
+           
+    }, [searchValue]);
 
     return (
         <>
@@ -278,7 +284,7 @@ const ProcessingReport = (props) => {
                 <div className="table-operations gx-col">
                     <SearchBox
                         styleName="gx-flex-1"
-                        placeholder="Search for customers"
+                        placeholder="Search by Coil no. or Customer batch no"
                         value={searchValue}
                         onChange={(e) => setSearchValue(e.target.value)}>
                     </SearchBox>
@@ -290,12 +296,12 @@ const ProcessingReport = (props) => {
                     className="gx-table-responsive"
                     columns={columns}
                     dataSource={filteredProcessingList}
-                    onChange={handleChange}
                     pagination={{
                         pageSize: 15,
                         onChange: (page) => {
                             setPageNo(page);
-                            props.fetchProcessingList(page, 15, searchValue);
+                           // props.fetchProcessingList(page, 15, searchValue);
+                            props.fetchQualityReportStageList(page, 15, searchValue);
                         },
                         current: pageNo,
                         total: totalPageItems,
