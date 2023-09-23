@@ -191,7 +191,7 @@ const PostDispatchReport = (props) => {
     }
 
     const showReportView = (record, key) => {
-        console.log(record, key)
+         console.log("record, key", record, key);
         const templateDetails = qualityReportList.find(qr => qr.coilNumber === record.coilNumber && qr.inwardId === record.inwardEntryId)
         props.history.push({pathname: '/company/quality/reports/create/postdispatch', state: {selectedItemForQr: record, templateDetails: templateDetails, action: 'view'}})
         // setSelectedItemForQr(record)
@@ -245,18 +245,20 @@ const PostDispatchReport = (props) => {
         }
     }, [props.party.loading, props.party.error]);
 
-    // useEffect(() => {
-    //     if (searchValue) {
-    //         if (searchValue.length >= 3) {
-    //             setPageNo(1);
-    //             props.fetchInwardList(1, 15, searchValue);
-    //         }
-    //     } else {
-    //         setPageNo(1);
-    //         props.fetchInwardList(1, 15, searchValue);
-    //     }
-    // }, [searchValue]);
+    useEffect(() => {
+        const { template } = props;
+        if(searchValue) {
+            const filteredData = filteredPostDispatchList.filter(item => 
+                (item.coilNo.toLowerCase().includes(searchValue.toLowerCase())) ||
+                (item.customerBatchNo.toLowerCase().includes(searchValue.toLowerCase())));
 
+            setFilteredPostDispatchList(filteredData);
+            console.log("filteredData", filteredData);
+        } else {
+            setFilteredPostDispatchList(template.data);
+        }
+           
+    }, [searchValue]);
 
     return (
         <>
@@ -289,7 +291,7 @@ const PostDispatchReport = (props) => {
                     <div className="table-operations gx-col">
                         <SearchBox
                             styleName="gx-flex-1"
-                            placeholder="Search for customers"
+                            placeholder="Search by Coil no. or Customer batch no"
                             value={searchValue}
                             onChange={(e) => setSearchValue(e.target.value)}>
                         </SearchBox>
@@ -301,12 +303,12 @@ const PostDispatchReport = (props) => {
                         className="gx-table-responsive"
                         columns={columns}
                         dataSource={filteredPostDispatchList}
-                        onChange={handleChange}
                         pagination={{
                             pageSize: 15,
                             onChange: (page) => {
                                 setPageNo(page);
-                                props.fetchPostDispatchList(page, 15, searchValue);
+                               // props.fetchPostDispatchList(page, 15, searchValue);
+                               props.fetchQualityReportStageList(page, 15, searchValue);
                             },
                             current: pageNo,
                             total: totalPageItems,

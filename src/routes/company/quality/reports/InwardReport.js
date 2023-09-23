@@ -172,6 +172,22 @@ const InwardReport = (props) => {
     //   }, [searchValue]);
 
     useEffect(() => {
+        const { template } = props;
+        if(searchValue) {
+            const filteredData = filteredInwardList.filter(item => 
+            (item.coilNo.toLowerCase().includes(searchValue.toLowerCase())) ||
+            (item.customerBatchNo.toLowerCase().includes(searchValue.toLowerCase())));
+
+            setFilteredInwardList(filteredData);
+            console.log("filteredData", filteredData);
+        } else {
+            setFilteredInwardList(template.data);
+        }  
+           
+    }, [searchValue]);
+
+
+    useEffect(() => {
         console.log(props)
         if (!props.template.loading && !props.template.error && props.template.operation == "fetchQualityReport") {
             console.log(props.template)
@@ -196,7 +212,6 @@ const InwardReport = (props) => {
             props.history.push({ pathname: '/company/quality/reports/create/inward', state: { selectedItemForQr: selectedItemForQr, templateDetails: props.template.data, action: action } })
         }
     }, [props.template.loading, props.template.error, props.template.operation]);
-
     const showCreateQr = () => {
         // props.history.push()
         setAction('create');
@@ -214,6 +229,8 @@ const InwardReport = (props) => {
     const showReportView = (record, key) => {
         console.log("record, key", record, key)
         setSelectedItemForQr(record)
+        // const templateDetails = qualityReportList.find(qr => qr.coilNumber === record.coilNumber && qr.inwardId === record.inwardEntryId)
+        // props.history.push({pathname: '/company/quality/reports/create/postdispatch', state: {selectedItemForQr: record, templateDetails: templateDetails, action: 'view'}})
         setAction('view');
         props.getQualityReportById(record.qirId);
 
@@ -226,7 +243,6 @@ const InwardReport = (props) => {
     };
 
     const onEdit = (record, key, e) => {
-        debugger;
         console.log(record, key)
         setSelectedItemForQr(record)
         setAction('edit');
@@ -277,7 +293,7 @@ const InwardReport = (props) => {
                 <div className="table-operations gx-col">
                     <SearchBox
                         styleName="gx-flex-1"
-                        placeholder="Search for customers"
+                        placeholder="Search by Coil no. or Customer batch no"
                         value={searchValue}
                         onChange={(e) => setSearchValue(e.target.value)}>
                     </SearchBox>
@@ -289,7 +305,6 @@ const InwardReport = (props) => {
                     className="gx-table-responsive"
                     columns={columns}
                     dataSource={filteredInwardList}
-                    onChange={handleChange}
                     pagination={{
                         pageSize: 15,
                         onChange: (page) => {

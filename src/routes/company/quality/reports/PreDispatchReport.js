@@ -239,17 +239,20 @@ const PreDispatchReport = (props) => {
         }
     }, [props.party.loading, props.party.error]);
 
-    // useEffect(() => {
-    //     if (searchValue) {
-    //         if (searchValue.length >= 3) {
-    //             setPageNo(1);
-    //             props.fetchInwardList(1, 15, searchValue);
-    //         }
-    //     } else {
-    //         setPageNo(1);
-    //         props.fetchInwardList(1, 15, searchValue);
-    //     }
-    // }, [searchValue]);
+    useEffect(() => {
+        const { template } = props;
+        if(searchValue) {
+            const filteredData = filteredPreDispatchList.filter(item => 
+                (item.coilNo.toLowerCase().includes(searchValue.toLowerCase())) ||
+                (item.customerBatchNo.toLowerCase().includes(searchValue.toLowerCase())));
+
+            setFilteredPreDispatchList(filteredData);
+            console.log("filteredData", filteredData);
+        } else {
+            setFilteredPreDispatchList(template.data);
+        }
+           
+    }, [searchValue]);
 
 
     return (
@@ -283,7 +286,7 @@ const PreDispatchReport = (props) => {
                     <div className="table-operations gx-col">
                         <SearchBox
                             styleName="gx-flex-1"
-                            placeholder="Search for customers"
+                            placeholder="Search by Coil no. or Customer batch no"
                             value={searchValue}
                             onChange={(e) => setSearchValue(e.target.value)}>
                         </SearchBox>
@@ -295,12 +298,12 @@ const PreDispatchReport = (props) => {
                         className="gx-table-responsive"
                         columns={columns}
                         dataSource={filteredPreDispatchList}
-                        onChange={handleChange}
                         pagination={{
                             pageSize: 15,
                             onChange: (page) => {
                                 setPageNo(page);
-                                props.fetchPreDispatchList(page, 15, searchValue);
+                                //props.fetchPreDispatchList(page, 15, searchValue);
+                                props.fetchQualityReportStageList(page, 15, searchValue);
                             },
                             current: pageNo,
                             total: totalPageItems,

@@ -235,17 +235,20 @@ const PreProcessingReport = (props) => {
         }
     }, [props.party.loading, props.party.error]);
 
-    // useEffect(() => {
-    //     if (searchValue) {
-    //         if (searchValue.length >= 3) {
-    //             setPageNo(1);
-    //             props.fetchInwardList(1, 15, searchValue);
-    //         }
-    //     } else {
-    //         setPageNo(1);
-    //         props.fetchInwardList(1, 15, searchValue);
-    //     }
-    // }, [searchValue]);
+    useEffect(() => {
+        const { template } = props;
+        if(searchValue) {
+            const filteredData = filteredPreProcessingList.filter(item => 
+                (item.coilNo.toLowerCase().includes(searchValue.toLowerCase())) ||
+                (item.customerBatchNo.toLowerCase().includes(searchValue.toLowerCase())));
+
+            setFilteredPreProcessingList(filteredData);
+            console.log("filteredData", filteredData);
+        } else {
+            setFilteredPreProcessingList(template.data);
+        }
+           
+    }, [searchValue]);
 
 
     return (
@@ -279,7 +282,7 @@ const PreProcessingReport = (props) => {
                 <div className="table-operations gx-col">
                     <SearchBox
                         styleName="gx-flex-1"
-                        placeholder="Search for customers"
+                        placeholder="Search by Coil no. or Customer batch no"
                         value={searchValue}
                         onChange={(e) => setSearchValue(e.target.value)}>
                     </SearchBox>
@@ -291,7 +294,6 @@ const PreProcessingReport = (props) => {
                     className="gx-table-responsive"
                     columns={columns}
                     dataSource={filteredPreProcessingList}
-                    onChange={handleChange}
                     pagination={{
                         pageSize: 15,
                         onChange: (changePage) => {
