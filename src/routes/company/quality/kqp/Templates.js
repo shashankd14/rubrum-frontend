@@ -77,7 +77,7 @@ const templateLinkListAactionColumn = {
       <span>
           <span
               className="gx-link"
-              onClick={() => props.history.push(`/company/quality/kqp/link/edit/${record.id}`)}
+              onClick={() => props.history.push(`/company/quality/kqp/link/edit/${record.kqpId}`)}
           >
               Edit Link
           </span>
@@ -86,7 +86,7 @@ const templateLinkListAactionColumn = {
               className="gx-link"
               onClick={() =>
                   // console.log("Delete", record)
-                  props.deleteKqpLink(record.templateId)
+                  props.deleteKqpLink(record.kqpId)
               }
           >
               Delete

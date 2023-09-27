@@ -4,6 +4,8 @@ import { Button, Card, Col, Icon, Input, Modal, Radio, Row, Select } from 'antd'
 import Dragger from 'antd/lib/upload/Dragger'
 import { PROCESSES } from "../../../../../constants/quality/ComponentConstants";
 import SlittingForm from './process/SlittingForm';
+import CuttingForm from './process/CuttingForm';
+import SlitAndCutForm from './process/SlitAndCutForm';
 
 
 const ProcessingTemplate = (props) => {
@@ -243,7 +245,12 @@ const ProcessingTemplate = (props) => {
         onCancel={() => setShowCreateModal(false)}
         destroyOnClose={true}
       >
-        <SlittingForm onSave={updateFormData}></SlittingForm>
+       {(templateData[1].value==='SLITTING') ? (<SlittingForm onSave={updateFormData}></SlittingForm>
+        ) : (templateData[1].value==='CUTTING') ? (
+        <CuttingForm onSave={updateFormData}></CuttingForm>
+        ) : (
+          <SlitAndCutForm onSave={updateFormData}></SlitAndCutForm>
+         )}
       </Modal>
     </div>
   )

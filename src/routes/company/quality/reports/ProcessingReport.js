@@ -211,6 +211,9 @@ const ProcessingReport = (props) => {
         console.log(record, key)
         const templateDetails = qualityReportList.find(qr => qr.coilNumber === record.coilNumber && qr.inwardId === record.inwardEntryId)
         props.history.push({ pathname: '/company/quality/reports/create/processing', state: { selectedItemForQr: record, templateDetails: templateDetails, action: 'edit' } })
+        setSelectedItemForQr(record)
+        setAction('edit');
+        props.getQualityReportById(record.qirId);
     };
 
     const handleChange = (e) => {

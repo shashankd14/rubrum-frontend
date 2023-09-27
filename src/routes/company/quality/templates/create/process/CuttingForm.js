@@ -124,6 +124,9 @@ const CuttingForm = (props) => {
 
     const saveForm = () => {
         cutFormData['cutInspectionData'] = cutInspectionData
+        //
+        cutFormData['CutInspectionData'] = cutInspectionData
+        props.onSave(cutInspectionData);
     }
 
     const handleInspectionTableChange = (tableData) => {
