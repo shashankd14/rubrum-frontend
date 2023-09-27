@@ -126,7 +126,7 @@ const [thickness, setThickness] = useState("");
         const payload = JSON.stringify({
             kqpId: selectedTemplateId,
             endUserTagId: selectedEndUserTags,
-            matGradeId: 14,
+            matGradeId: selectedMatGrade,
             userId: localStorage.getItem("userId"),
             thickness: thickness,
             width: width,
@@ -135,6 +135,18 @@ const [thickness, setThickness] = useState("");
         })
         props.saveKqpLink(payload)
     }
+
+    const [materialOptions, setMaterialOptions] = useState([]);
+    useEffect(() => {
+        const options = props.material.materialList.flatMap(item =>
+            item.materialGrade.map(grade => (
+                <Option key={grade.gradeId} value={grade.gradeId}>
+                    {grade.gradeName}
+                </Option>
+            ))
+        );
+        setMaterialOptions(options);
+    }, [props.material.materialList]);
 
     return (
         <div>
@@ -301,12 +313,8 @@ const [thickness, setThickness] = useState("");
                                     onChange={onMatGradeSelection}
                                     value={selectedMatGrade}
                                 >  
-                                 {/*{props?.materialList?.materialGrade?.map(item => {*/}
-                                    {props?.material?.materialGrade?.map(item => { 
-                                        debugger;
-                                        console.log("materialList", props.material)
-                                    return <Option value={item?.gradeId}>{item.gradeName}</Option>
-                                })}</Select>
+                                     {materialOptions}
+                                </Select>
 
                                 </div>
                             </Col>

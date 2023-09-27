@@ -246,6 +246,8 @@ const SlitAndCutForm = (props) => {
         slitCutFormData['slitInspectionData'] = slitInspectionData
         slitCutFormData['cutInspectionData'] = cutInspectionData
         slitCutFormData['finalInspectionData'] = finalInspectionData
+        //
+        props.onSave(slitCutFormData);
     }
 
     const handleSlitInspectionTableChange = (tableData) => {

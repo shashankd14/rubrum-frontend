@@ -7,7 +7,8 @@ import {
     saveQualityTemplateLink,
     getQualityTemplateLinkById,
     updateQualityTemplateLink,
-    fetchEndUserTagsList
+    fetchEndUserTagsList,
+    fetchMaterialGrades
 } from "../../../../../appRedux/actions"
 
 const CreateLinkTemplate = (props) => {
@@ -23,6 +24,7 @@ const CreateLinkTemplate = (props) => {
     const [action, setAction] = useState("create");
     const [partyList, setPartyList] = useState([]);
     const [isDisabled, setIsDisabled] = useState(false);
+    const [materialGrades, setMaterialGrades] = useState([]);
 
     useEffect(() => {
         if (props.match) {
@@ -36,6 +38,7 @@ const CreateLinkTemplate = (props) => {
             props.fetchTemplatesList();
             props.fetchPartyList();
             props.fetchEndUserTagsList();
+            props.fetchMaterialGrades();
         }
     }, [])
 
@@ -86,6 +89,9 @@ const CreateLinkTemplate = (props) => {
     const onEnduserTagSelection = (e) => {
         setSelectedEndUserTags(e)
     }
+    const onMaterialGradeSelection = (e) => {
+        setMaterialGrades(e)
+    }
 
     const onCustomerDeselection = (e) => {
         console.log(e)
@@ -111,14 +117,26 @@ const CreateLinkTemplate = (props) => {
     const createTemplateLink = () => {
         const payload = JSON.stringify({
             templateId: selectedTemplateId,
-            endUserTagId: -1,
-            matGradeId: -1,
+            endUserTagId: selectedEndUserTags,
+            matGradeId: materialGrades,
             userId: localStorage.getItem("userId"),
             thickness: -1,
             partyIdList: selectedCustomers,
         })
         props.saveQualityTemplateLink(payload)
     }
+    
+    const [materialOptions, setMaterialOptions] = useState([]);
+    useEffect(() => {
+        const options = props.material.materialList.flatMap(item =>
+            item.materialGrade.map(grade => (
+                <Option key={grade.gradeId} value={grade.gradeId}>
+                    {grade.gradeName}
+                </Option>
+            ))
+        );
+        setMaterialOptions(options);
+    }, [props.material.materialList]);
 
     return (
         <div>
@@ -233,6 +251,7 @@ const CreateLinkTemplate = (props) => {
                                     </Select> */}
                                     <Select
                                         id="endUsertags"
+                                        placeholder="Select End User Tag"
                                         showSearch
                                         mode="multiple"
                                         style={{ width: '100%' }}
@@ -264,7 +283,8 @@ const CreateLinkTemplate = (props) => {
                                         style={{ width: '100%' }}
                                         placeholder="Select Material Grade"
                                         optionFilterProp="children"
-                                        onChange={onCustomerSelection}
+                                        onChange={onMaterialGradeSelection}
+                                        value={materialGrades}
                                         // onFocus={handleFocus}
                                         // onBlur={handleBlur}
                                         maxTagCount={3}
@@ -276,7 +296,7 @@ const CreateLinkTemplate = (props) => {
                                         // value={selectedCustomers}
                                         allowClear
                                     >
-
+                                        {materialOptions}
                                     </Select>
                                 </div>
                             </Col>
@@ -336,6 +356,7 @@ const mapStateToProps = state => ({
     template: state.quality,
     party: state.party,
     packetClassification: state.packetClassification,
+    material:state.material
 });
 
 export default connect(mapStateToProps, {
@@ -345,4 +366,5 @@ export default connect(mapStateToProps, {
     getQualityTemplateLinkById,
     updateQualityTemplateLink,
     fetchEndUserTagsList,
+    fetchMaterialGrades
 })(CreateLinkTemplate);

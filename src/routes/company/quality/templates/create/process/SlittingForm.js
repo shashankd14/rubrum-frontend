@@ -94,6 +94,11 @@ const SlittingForm = (props) => {
             editable: true
         },
         {
+            title: 'Burr Height Range',
+            dataIndex: 'burrHeight',
+            editable: true
+        },
+        {
             title: 'Burr Height',
             dataIndex: 'burrHeight',
             editable: true
@@ -129,6 +134,11 @@ const SlittingForm = (props) => {
         {
             title: 'Actual Width',
             dataIndex: 'actualWidth',
+            editable: true
+        },
+        {
+            title: 'Burr Height Range',
+            dataIndex: 'burrHeight',
             editable: true
         },
         {
