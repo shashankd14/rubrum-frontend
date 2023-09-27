@@ -124,6 +124,14 @@ const Rates = (props) => {
     },
     {
       title: "Material description",
+      dataIndex: "materialDescription",
+      key: "materialDescription",
+      filters: [],
+      sorter: (a, b) => a.matGradeName - b.matGradeName,
+      sortOrder: sortedInfo.columnKey === "materialDescription" && sortedInfo.order,
+    },
+    {
+      title: "Material Grade",
       dataIndex: "matGradeName",
       key: "matGradeName",
       filters: [],
