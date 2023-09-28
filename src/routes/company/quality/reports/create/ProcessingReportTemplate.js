@@ -83,6 +83,9 @@ const ProcessingReportTemplate = (props) => {
   const createTemplate = () => {
     props.handleCreate(templateData)
   }
+  const handleCancel = () => {
+    history.goBack(); 
+  };
 
   return (
     <div>
@@ -204,14 +207,14 @@ const ProcessingReportTemplate = (props) => {
         </Row>
         {props.action !== 'view' && <Row >
           <div style={{ marginTop: 45 }}>
-            <Button style={{ marginLeft: 8 }} disabled={isDisabled}>
+            <Button style={{ marginLeft: 8 }} onClick={handleCancel}>
               Cancel
             </Button>
             {props.action === 'create' ? <Button type="primary" htmlType="submit" onClick={createTemplate} disabled={isDisabled}>
-              Create Template
+              Create Report
             </Button> :
               <Button type="primary" htmlType="submit" onClick={createTemplate} disabled={isDisabled}>
-                Update Template
+                Update Report
               </Button>
             }
           </div>
