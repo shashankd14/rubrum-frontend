@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Card, Col, Icon, Input, Radio, Row } from 'antd'
 import Dragger from 'antd/lib/upload/Dragger'
+import { useHistory } from 'react-router';
 
 const PreProcessingReportTemplate = (props) => {
   const [templateData, setTemplateData] = useState({
@@ -89,6 +90,11 @@ const PreProcessingReportTemplate = (props) => {
   const createTemplate = () => {
     props.handleCreate(templateData)
   }
+
+  const history = useHistory();
+    const handleCancel = () =>{
+        history.goBack();
+    }
 
   return (
     <div>
@@ -270,7 +276,7 @@ const PreProcessingReportTemplate = (props) => {
         </Row>
         {props.action !== 'view' && <Row >
           <div style={{ marginTop: 45 }}>
-            <Button style={{ marginLeft: 8 }} disabled={isDisabled}>
+            <Button style={{ marginLeft: 8 }} onClick={handleCancel}>
               Cancel
             </Button>
             {props.action === 'create' ? <Button type="primary" htmlType="submit" onClick={createTemplate} disabled={isDisabled}>

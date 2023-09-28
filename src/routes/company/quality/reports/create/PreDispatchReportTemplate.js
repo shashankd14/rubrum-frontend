@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Card, Col, Icon, Input, Radio, Row } from 'antd'
 import Dragger from 'antd/lib/upload/Dragger'
+import { useHistory } from 'react-router';
 
 const PreDispatchReportTemplate = (props) => {
   const [templateData, setTemplateData] = useState({
@@ -96,6 +97,10 @@ const PreDispatchReportTemplate = (props) => {
   const createTemplate = () => {
     props.handleCreate(templateData)
   }
+  const history = useHistory();
+  const handleCancel = () => {
+    history.goBack(); 
+  };
 
   return (
     <div>
@@ -149,7 +154,7 @@ const PreDispatchReportTemplate = (props) => {
               >
                 <p>
                   <Icon type="upload" />
-                  &nbsp;Click or drag packing intact img
+                  &nbsp;Click or drag strapping img
                 </p>
               </Dragger>}
             </div>
@@ -175,7 +180,7 @@ const PreDispatchReportTemplate = (props) => {
                 >
                   <p>
                     <Icon type="upload" />
-                    &nbsp;Click or drag packing intact img
+                    &nbsp;Click or drag weighment slip img
                   </p>
                 </Dragger> </>}
               {props.action === 'create' && <Dragger
@@ -188,7 +193,7 @@ const PreDispatchReportTemplate = (props) => {
               >
                 <p>
                   <Icon type="upload" />
-                  &nbsp;Click or drag packing intact img
+                  &nbsp;Click or drag weighment slip img
                 </p>
               </Dragger>}
             </div>
@@ -252,14 +257,14 @@ const PreDispatchReportTemplate = (props) => {
         </Row>
         {props.action !== 'view' && <Row >
           <div style={{ marginTop: 45 }}>
-            <Button style={{ marginLeft: 8 }} disabled={isDisabled}>
+            <Button style={{ marginLeft: 8 }} onClick={handleCancel}>
               Cancel
             </Button>
             {props.action === 'create' ? <Button type="primary" htmlType="submit" onClick={createTemplate} disabled={isDisabled}>
-              Create Template
+              Create Report
             </Button> :
               <Button type="primary" htmlType="submit" onClick={createTemplate} disabled={isDisabled}>
-                Update Template
+                Update Report
               </Button>
             }
           </div>

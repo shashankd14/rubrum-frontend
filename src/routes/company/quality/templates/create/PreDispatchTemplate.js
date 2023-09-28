@@ -149,7 +149,7 @@ const PreDispatchTemplate = (props) => {
               >
                 <p>
                   <Icon type="upload" />
-                  &nbsp;Click or drag packing intact img
+                  &nbsp;Click or drag strapping img
                 </p>
               </Dragger>}
             </div>
@@ -188,7 +188,7 @@ const PreDispatchTemplate = (props) => {
               >
                 <p>
                   <Icon type="upload" />
-                  &nbsp;Click or drag packing intact img
+                  &nbsp;Click or drag weighment slip img
                 </p>
               </Dragger>}
             </div>
