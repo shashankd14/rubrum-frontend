@@ -1,3 +1,7 @@
+//src-routes-company-quality-reports-InwardReport.js
+//src-routes-company-quality-reports-create-ButtonSlider.css
+//src-routes-company-quality-reports-create-ButtonSlider.js
+
 import React, { useEffect, useState } from 'react'
 import { connect } from "react-redux";
 import { Link, useHistory, useLocation, withRouter } from "react-router-dom";
@@ -20,6 +24,8 @@ import SearchBox from "../../../../components/SearchBox";
 
 import IntlMessages from "../../../../util/IntlMessages";
 import { compose } from 'redux';
+import ButtonSlider from './create/ButtonSlider';
+
 
 const InwardReport = (props) => {
 
@@ -48,6 +54,24 @@ const InwardReport = (props) => {
     const [action, setAction] = useState(undefined);
 
     const disabledEle = 'disabled-ele';
+
+    const renderStatusColumn = (record) => {
+        const qirId = record.qirId;
+    
+        if (qirId === null) {
+          return (
+            <button className="cylinder-button">
+              ToDo
+            </button>
+          );
+        } else {
+          return (
+            <button className="cylinder-button">
+              Completed
+            </button>
+          );
+        }
+      };
 
     const columns = [
         {
@@ -99,6 +123,7 @@ const InwardReport = (props) => {
             sorter: (a, b) => a.status.length - b.status.length,
             sortOrder:
                 sortedInfo.columnKey === "status" && sortedInfo.order,
+                render: (text, record) => renderStatusColumn(record),
         },
         {
             title: "Thickness",
