@@ -110,39 +110,71 @@ const Rates = (props) => {
       title: "Party Name",
       dataIndex: "partyName",
       key: "partyName",
-      filters: [],
-      sorter: (a, b) => a.partyName - b.partyName,
-      sortOrder: sortedInfo.columnKey === "partyName" && sortedInfo.order,
+      filteredValue: filteredInfo ? filteredInfo["partyName"] : null,
+        filters: [...new Set(props.rates.ratesList.map(item => item.partyName))].map(material => {
+            return ({ text: material || '', value: material || '' })}),
+        onFilter: (value, record) => record.partyName == value,
+        sorter: (a, b) => a.partyName?.length - b.partyName?.length,
+        sortOrder: sortedInfo.columnKey === 'partyName' && sortedInfo.order,
     },
     {
       title: "Process Name",
       dataIndex: "processName",
       key: "processName",
-      filters: [],
-      sorter: (a, b) => a.processName - b.processName,
-      sortOrder: sortedInfo.columnKey === "processName" && sortedInfo.order,
+      filteredValue: filteredInfo ? filteredInfo["processName"] : null,
+        filters: [...new Set(props.rates.ratesList.map(item => item.processName))].map(material => {
+            return ({ text: material || '', value: material || '' })}),
+        onFilter: (value, record) => record.processName == value,
+        sorter: (a, b) => a.processName?.length - b.processName?.length,
+        sortOrder: sortedInfo.columnKey === 'processName' && sortedInfo.order,
     },
     {
       title: "Material description",
       dataIndex: "materialDescription",
       key: "materialDescription",
-      filters: [],
-      sorter: (a, b) => a.matGradeName - b.matGradeName,
-      sortOrder: sortedInfo.columnKey === "materialDescription" && sortedInfo.order,
+      filteredValue: filteredInfo ? filteredInfo["materialDescription"] : null,
+        filters: [...new Set(props.rates.ratesList.map(item => item.materialDescription))].map(material => {
+            return ({ text: material || '', value: material || '' })}),
+        onFilter: (value, record) => record.materialDescription == value,
+        sorter: (a, b) => a.materialDescription?.length - b.materialDescription?.length,
+        sortOrder: sortedInfo.columnKey === 'materialDescription' && sortedInfo.order,
     },
     {
       title: "Material Grade",
       dataIndex: "matGradeName",
       key: "matGradeName",
-      filters: [],
-      sorter: (a, b) => a.matGradeName - b.matGradeName,
-      sortOrder: sortedInfo.columnKey === "matGradeName" && sortedInfo.order,
+      filteredValue: filteredInfo ? filteredInfo["matGradeName"] : null,
+        filters: [...new Set(props.rates.ratesList.map(item => item.matGradeName))].map(material => {
+            return ({ text: material || '', value: material || '' })}),
+        onFilter: (value, record) => record.matGradeName == value,
+        sorter: (a, b) => a.matGradeName?.length - b.matGradeName?.length,
+        sortOrder: sortedInfo.columnKey === 'matGradeName' && sortedInfo.order,
     },
     {
       title: "Thickness Range",
       dataIndex: "thicknessFrom",
-      render: (text, record, index) =>
-        record.thicknessFrom + "-" + record.thicknessTo,
+      render: (text, record) => `${record.thicknessFrom}-${record.thicknessTo}`,
+      filteredValue: filteredInfo ? filteredInfo["thicknessFrom"] : null,
+       filters: [
+           ...new Set(
+           props.rates.ratesList.map(
+          (item) => `${item.thicknessFrom}-${item.thicknessTo}`
+          )
+          ),
+         ].map((thicknessRange) => {
+        return { text: thicknessRange || '', value: thicknessRange || '' };
+        }),
+      onFilter: (value, record) => {
+       const [from, to] = value.split('-');
+       const thicknessFrom = parseFloat(from);
+       const thicknessTo = parseFloat(to);
+      return (
+      thicknessFrom <= record.thicknessFrom && thicknessTo >= record.thicknessTo
+       );
+     },
+      sorter: (a, b) =>
+      a.thicknessFrom - b.thicknessFrom || a.thicknessTo - b.thicknessTo,
+      sortOrder: sortedInfo.columnKey === 'thicknessFrom' && sortedInfo.order,
     },
     {
       title: "Thickness rate",
@@ -201,6 +233,34 @@ const Rates = (props) => {
       key: "price",
       sorter: (a, b) => a.price - b.price,
       sortOrder: sortedInfo.columnKey === "price" && sortedInfo.order,
+    },
+    {
+      title: "Lamination-SS (labour)",
+      dataIndex: "laminationSSlabour",
+      key: "laminationSSlabour",
+      sorter: (a, b) => a.laminationSSlabour - b.laminationSSlabour,
+      sortOrder: sortedInfo.columnKey === "laminationSSlabour" && sortedInfo.order,
+    },
+    {
+      title: "Lamination-SS (material)",
+      dataIndex: "laminationSSmaterial",
+      key: "laminationSSmaterial",
+      sorter: (a, b) => a.laminationSSmaterial - b.laminationSSmaterial,
+      sortOrder: sortedInfo.columnKey === "laminationSSmaterial" && sortedInfo.order,
+    },
+    {
+      title: "Lamination-DS (labour)",
+      dataIndex: "laminationDSlabour",
+      key: "laminationDSlabour",
+      sorter: (a, b) => a.laminationDSlabour - b.laminationDSlabour,
+      sortOrder: sortedInfo.columnKey === "laminationDSlabour" && sortedInfo.order,
+    },
+    {
+      title: "Lamination-DS (material)",
+      dataIndex: "laminationDSmaterial",
+      key: "laminationDSmaterial",
+      sorter: (a, b) => a.laminationDSmaterial - b.laminationDSmaterial,
+      sortOrder: sortedInfo.columnKey === "laminationDSmaterial" && sortedInfo.order,
     },
 
     {
@@ -428,6 +488,7 @@ const Rates = (props) => {
           if (
             rate?.id?.toString() === searchValue ||
             rate?.partyId?.toString() === searchValue ||
+           ( rate?.partyName?.toLowerCase().includes(searchValue.toLowerCase())) ||
             rate?.matGradeId?.toString() === searchValue ||
             rate?.processId?.toString() === searchValue ||
             rate?.price?.toString() === searchValue
@@ -500,6 +561,9 @@ const Rates = (props) => {
     );
     setAdditionalPriceList(list);
   };
+  const clearFilters = (value) => {
+    setFilteredInfo(null);
+  };
   return (
     <div>
       <h1>
@@ -510,6 +574,7 @@ const Rates = (props) => {
           <div className="table-operations gx-col">
             <Button>Delete</Button>
             <Button>Export</Button>
+            <Button onClick={clearFilters}>Clear All Filters</Button>
           </div>
           <div className="gx-flex-row gx-w-50">
             {tabKey === "2" && (
@@ -924,7 +989,7 @@ const Rates = (props) => {
                       rules: [
                         {
                           required: true,
-                          message: "Please input the GST Number!",
+                          message: "Please input the minimum thickness!",
                         },
                       ],
                     })(<Input id="thicknessFrom" />)}
@@ -934,7 +999,7 @@ const Rates = (props) => {
                       rules: [
                         {
                           required: true,
-                          message: "Please input the GST Number!",
+                          message: "Please input the maximum thickness!",
                         },
                       ],
                     })(<Input id="thicknessTo" />)}
@@ -944,7 +1009,7 @@ const Rates = (props) => {
                       rules: [
                         {
                           required: true,
-                          message: "Please input the GST Number!",
+                          message: "Please input the thickness rate!",
                         },
                       ],
                     })(<Input id="price" />)}
