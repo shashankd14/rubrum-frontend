@@ -144,6 +144,14 @@ const List = (props) => {
       },
     },
     {
+      title: "No.of Pcs",
+      dataIndex: "plannedNoOfPieces",
+      key: "plannedNoOfPieces",
+      filters: [],
+      sorter: (a, b) => a.plannedNoOfPieces - b.plannedNoOfPieces,
+      sortOrder: sortedInfo.columnKey === "plannedNoOfPieces" && sortedInfo.order,
+    },
+    {
       title: "Present Weight",
       dataIndex: "inStockWeight",
       key: "inStockWeight",
