@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { connect } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 import {
   Button,
   Card,
@@ -19,7 +19,7 @@ import { CheckboxChangeEvent } from "antd/es/checkbox";
 import moment from "moment";
 import SearchBox from "../../../components/SearchBox";
 import EditAdditionalRates from "./editAdditionalRates";
-
+import { LeftOutlined, RightOutlined, EllipsisOutlined } from '@ant-design/icons';
 import IntlMessages from "../../../util/IntlMessages";
 import {
   fetchRatesList,
@@ -68,6 +68,9 @@ const Rates = (props) => {
   });
   const [filteredInfo, setFilteredInfo] = useState(null);
   const [searchValue, setSearchValue] = useState("");
+  const [searchThickness, setSearchThickness] = useState("");
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: props.rates.totalItems || 0, });
+  const [pageNo, setPageNo] = useState(1);
   const [showAddRates, setShowAddRates] = useState(false);
   const [showAddPackingRates, setShowAddPackingRates] = useState(false);
   const [viewMaterial, setViewMaterial] = useState(false);
@@ -78,7 +81,7 @@ const Rates = (props) => {
   const [viewPackingRateData, setViewPackingRateData] = useState({});
   const [type, setType] = useState([]);
   const [filteredInwardList, setFilteredInwardList] = useState(
-    props.rates?.ratesList || []
+    []
   );
   const [filteredPackingRateList, setfilteredPackingRateList] = useState();
   const [gradeList, setGradeList] = useState([]);
@@ -95,6 +98,8 @@ const Rates = (props) => {
   const [editPriceModal, setEditPriceModal] = useState(false);
   const [staticSelected, setStaticSelected] = useState();
   const [selectedParty, setSelectedParty] = useState("");
+  const [totalPageItems, setTotalItems] = useState(0); 
+  const { ratesList, totalItems } = props.rates;
   const columns = [
     {
       title: "Rate Id",
@@ -413,14 +418,20 @@ const Rates = (props) => {
   }, [showAddRates]);
 
   useEffect(() => {
-    props.fetchPackingRatesList();
+   // props.fetchPackingRatesList();
+   props.fetchRatesList({
+    pageNo: pagination.current,
+    pageSize: pagination.pageSize,
+    searchText: searchValue,
+    thicknessRange: searchThickness,
+  });
   }, [showAddPackingRates]);
 
-  useEffect(() => {
-    const { ratesList } = props.rates;
+  // useEffect(() => {
+  //   const { ratesList } = props.rates;
 
-    setFilteredInwardList(ratesList);
-  }, [props.rates.ratesList]);
+  //   setFilteredInwardList(ratesList);
+  // }, [props.rates.ratesList]);
 
   useEffect(() => {
     const { packingRateList } = props.rates;
@@ -428,15 +439,21 @@ const Rates = (props) => {
     setfilteredPackingRateList(packingRateList)
   }, [props.rates.packingRateList]);
 
-  useEffect(() => {
-    if (props.rates.loading) {
-      message.loading("Loading..");
-    }
-  }, [props.rates.loading]);
+  // useEffect(() => {
+  //   if (props.rates.loading) {
+  //     message.loading("Loading..");
+  //   }
+  // }, [props.rates.loading]);
 
   useEffect(() => {
     if (props.rates.addSuccess || props.rates.deleteSuccess) {
-      props.fetchRatesList();
+      props.fetchRatesList({
+        pageNo: pagination.current,
+        pageSize: pagination.pageSize,
+        searchText: searchValue,
+        thicknessRange: searchThickness,
+      });
+     // props.fetchRatesList();
       props.resetRates();
     }
     if (props?.rates?.staticList) {
@@ -458,6 +475,7 @@ const Rates = (props) => {
     props.rates.deleteAdditionalSuccess,
     props.rates?.addAdditionalSuccess,
   ]);
+
   useEffect(() => {
     const list = props?.rates?.additionalRatesList.filter(
       (item) =>
@@ -467,6 +485,7 @@ const Rates = (props) => {
     );
     setAdditionalPriceList(list);
   }, [props?.rates?.additionalRatesList]);
+
   useEffect(() => {
     const { rates } = props;
     if (searchValue) {
@@ -503,6 +522,19 @@ const Rates = (props) => {
       setfilteredPackingRateList(rates.packingRateList);
     }
   }, [searchValue]);
+
+  // useEffect(() => {
+  //   if (searchValue) {
+  //     if (searchValue.length >= 3) {
+  //       setPageNo(1);
+  //       props.fetchRatesList(1, 15, searchValue);
+  //     }
+  //   } else {
+  //     setPageNo(1);
+  //     props.fetchRatesList(1, 15, searchValue);
+  //   }
+  // }, [searchValue]);
+
   useEffect(() => {
     if (checked) {
       const list = props.material.materialList.filter((item) =>
@@ -517,9 +549,16 @@ const Rates = (props) => {
     } 
   }, [type, checked]);
 
+  useEffect(() => {
+    if (totalItems) {
+      setTotalItems(totalItems);
+    }
+  }, [totalItems]);
+
   const handleChange = (pagination, filters, sorter) => {
     setSortedInfo(sorter);
     setFilteredInfo(filters);
+    setPagination(pagination)
   };
 
   const handleMaterialTypeChange = (e) => {
@@ -564,6 +603,53 @@ const Rates = (props) => {
   const clearFilters = (value) => {
     setFilteredInfo(null);
   };
+
+  useEffect(() => {
+    setFilteredInwardList(props.rates.ratesList || []);
+  }, [props.rates.ratesList]);
+
+  const fetchData = () => {
+    props.fetchRatesList({
+      pageNo: pagination.current,
+      pageSize: pagination.pageSize,
+      searchText: searchValue,
+      thicknessRange: searchThickness,
+    });
+  };
+  useEffect(() => {
+    fetchData();
+  }, [pagination]);
+
+  useEffect(() => {
+    if (searchValue.length >= 2){
+    props.fetchRatesList({
+      pageNo: 1,
+      pageSize: pagination.pageSize,
+      searchText: searchValue,
+      thicknessRange: '',
+    });
+    const filteredData = props.rates?.ratesList?.filter((rate) => {
+      if (
+         ( rate?.partyName?.toLowerCase().includes(searchValue.toLowerCase())) ||
+        (rate?.processName?.toLowerCase().includes(searchValue.toLowerCase())) ||
+        (rate?.materialDescription?.toLowerCase().includes(searchValue.toLowerCase())) ||
+        (rate?.matGradeName?.toLowerCase().includes(searchValue.toLowerCase()))
+      ) {
+        return rate;
+      }
+    });
+    setFilteredInwardList(filteredData);
+  }
+  }, [ searchValue]);
+  useEffect(() => {
+    props.fetchRatesList({
+      pageNo: 1,
+      pageSize: pagination.pageSize,
+      searchText: '',
+      thicknessRange: searchThickness,
+      })
+  }, [ searchThickness]);
+
   return (
     <div>
       <h1>
@@ -619,9 +705,15 @@ const Rates = (props) => {
             )}
             <SearchBox
               styleName="gx-flex-1"
-              placeholder="Search for process name or material or party name..."
+              placeholder="Search for party name, process name or material ..."
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
+            />&nbsp;
+            <SearchBox
+              styleName="gx-flex-1"
+              placeholder="Search for thickness range..."
+              value={searchThickness}
+              onChange={(e) => setSearchThickness(e.target.value)}
             />
           </div>
         </div>
@@ -633,6 +725,24 @@ const Rates = (props) => {
               columns={columns}
               dataSource={filteredInwardList}
               onChange={handleChange}
+              pagination={{
+                ...pagination,
+                total: props.rates.totalItems || 0, 
+                itemRender: (current, type, originalElement) => {
+                  if (type === 'prev') {
+                    return <LeftOutlined />;
+                  }
+                  if (type === 'next') {
+                    return <RightOutlined />;
+                  }
+                  if (type === 'jump-prev' || type === 'jump-next') {
+                    return <EllipsisOutlined />;
+                  }
+                  return originalElement;
+                },
+                showLessItems: true, 
+                pageSizeOptions: ['10', '20', '50'],
+              }}
             />
           </TabPane>
           <TabPane tab="Additional Rates" key="2" className="additionalTab">
