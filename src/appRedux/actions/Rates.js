@@ -47,13 +47,15 @@ import {FETCH_RATES_LIST_ERROR,
     UPDATE_ADDITIONAL_RATES_ERROR
 } from "../../constants/ActionTypes";
 
-export const fetchRatesList = () => ({
+export const fetchRatesList = (pagination) => ({
     type: FETCH_RATES_LIST_REQUEST,
+    pagination
 });
 
-export const fetchRatesListSuccess = (ratesList) => ({
+export const fetchRatesListSuccess = (ratesList, totalItems) => ({
     type: FETCH_RATES_LIST_SUCCESS,
-    ratesList
+    ratesList,
+    totalItems
 });
 
 export const fetchRatesListError = (error) => ({

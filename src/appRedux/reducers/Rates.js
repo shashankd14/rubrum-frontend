@@ -64,7 +64,8 @@ const INIT_STATE = {
     additionalRates:{},
     deleteAdditionalSuccess: false,
     updateAdditionalSuccess:false,
-    updateAdditionalFailure: false
+    updateAdditionalFailure: false,
+    totalItems: 0,
 };
 
 export default (state = INIT_STATE, action) => {
@@ -79,7 +80,8 @@ export default (state = INIT_STATE, action) => {
             return {
                 ...state,
                 loading: false,
-                ratesList: action.ratesList
+                ratesList: action.ratesList.content,
+                totalItems: action.ratesList.totalItems
             }
         }
         case FETCH_RATES_LIST_ERROR: {
