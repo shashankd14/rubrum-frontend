@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { connect } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 import {
   Button,
   Card,
@@ -19,7 +19,7 @@ import { CheckboxChangeEvent } from "antd/es/checkbox";
 import moment from "moment";
 import SearchBox from "../../../components/SearchBox";
 import EditAdditionalRates from "./editAdditionalRates";
-
+import { LeftOutlined, RightOutlined, EllipsisOutlined } from '@ant-design/icons';
 import IntlMessages from "../../../util/IntlMessages";
 import {
   fetchRatesList,
@@ -68,6 +68,9 @@ const Rates = (props) => {
   });
   const [filteredInfo, setFilteredInfo] = useState(null);
   const [searchValue, setSearchValue] = useState("");
+  const [searchThickness, setSearchThickness] = useState("");
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: props.rates.totalItems || 0, });
+  const [pageNo, setPageNo] = useState(1);
   const [showAddRates, setShowAddRates] = useState(false);
   const [showAddPackingRates, setShowAddPackingRates] = useState(false);
   const [viewMaterial, setViewMaterial] = useState(false);
@@ -78,7 +81,7 @@ const Rates = (props) => {
   const [viewPackingRateData, setViewPackingRateData] = useState({});
   const [type, setType] = useState([]);
   const [filteredInwardList, setFilteredInwardList] = useState(
-    props.rates?.ratesList || []
+    []
   );
   const [filteredPackingRateList, setfilteredPackingRateList] = useState();
   const [gradeList, setGradeList] = useState([]);
@@ -95,6 +98,8 @@ const Rates = (props) => {
   const [editPriceModal, setEditPriceModal] = useState(false);
   const [staticSelected, setStaticSelected] = useState();
   const [selectedParty, setSelectedParty] = useState("");
+  const [totalPageItems, setTotalItems] = useState(0); 
+  const { ratesList, totalItems } = props.rates;
   const columns = [
     {
       title: "Rate Id",
@@ -110,31 +115,71 @@ const Rates = (props) => {
       title: "Party Name",
       dataIndex: "partyName",
       key: "partyName",
-      filters: [],
-      sorter: (a, b) => a.partyName - b.partyName,
-      sortOrder: sortedInfo.columnKey === "partyName" && sortedInfo.order,
+      filteredValue: filteredInfo ? filteredInfo["partyName"] : null,
+        filters: [...new Set(props.rates.ratesList.map(item => item.partyName))].map(material => {
+            return ({ text: material || '', value: material || '' })}),
+        onFilter: (value, record) => record.partyName == value,
+        sorter: (a, b) => a.partyName?.length - b.partyName?.length,
+        sortOrder: sortedInfo.columnKey === 'partyName' && sortedInfo.order,
     },
     {
       title: "Process Name",
       dataIndex: "processName",
       key: "processName",
-      filters: [],
-      sorter: (a, b) => a.processName - b.processName,
-      sortOrder: sortedInfo.columnKey === "processName" && sortedInfo.order,
+      filteredValue: filteredInfo ? filteredInfo["processName"] : null,
+        filters: [...new Set(props.rates.ratesList.map(item => item.processName))].map(material => {
+            return ({ text: material || '', value: material || '' })}),
+        onFilter: (value, record) => record.processName == value,
+        sorter: (a, b) => a.processName?.length - b.processName?.length,
+        sortOrder: sortedInfo.columnKey === 'processName' && sortedInfo.order,
     },
     {
       title: "Material description",
+      dataIndex: "materialDescription",
+      key: "materialDescription",
+      filteredValue: filteredInfo ? filteredInfo["materialDescription"] : null,
+        filters: [...new Set(props.rates.ratesList.map(item => item.materialDescription))].map(material => {
+            return ({ text: material || '', value: material || '' })}),
+        onFilter: (value, record) => record.materialDescription == value,
+        sorter: (a, b) => a.materialDescription?.length - b.materialDescription?.length,
+        sortOrder: sortedInfo.columnKey === 'materialDescription' && sortedInfo.order,
+    },
+    {
+      title: "Material Grade",
       dataIndex: "matGradeName",
       key: "matGradeName",
-      filters: [],
-      sorter: (a, b) => a.matGradeName - b.matGradeName,
-      sortOrder: sortedInfo.columnKey === "matGradeName" && sortedInfo.order,
+      filteredValue: filteredInfo ? filteredInfo["matGradeName"] : null,
+        filters: [...new Set(props.rates.ratesList.map(item => item.matGradeName))].map(material => {
+            return ({ text: material || '', value: material || '' })}),
+        onFilter: (value, record) => record.matGradeName == value,
+        sorter: (a, b) => a.matGradeName?.length - b.matGradeName?.length,
+        sortOrder: sortedInfo.columnKey === 'matGradeName' && sortedInfo.order,
     },
     {
       title: "Thickness Range",
       dataIndex: "thicknessFrom",
-      render: (text, record, index) =>
-        record.thicknessFrom + "-" + record.thicknessTo,
+      render: (text, record) => `${record.thicknessFrom}-${record.thicknessTo}`,
+      filteredValue: filteredInfo ? filteredInfo["thicknessFrom"] : null,
+       filters: [
+           ...new Set(
+           props.rates.ratesList.map(
+          (item) => `${item.thicknessFrom}-${item.thicknessTo}`
+          )
+          ),
+         ].map((thicknessRange) => {
+        return { text: thicknessRange || '', value: thicknessRange || '' };
+        }),
+      onFilter: (value, record) => {
+       const [from, to] = value.split('-');
+       const thicknessFrom = parseFloat(from);
+       const thicknessTo = parseFloat(to);
+      return (
+      thicknessFrom <= record.thicknessFrom && thicknessTo >= record.thicknessTo
+       );
+     },
+      sorter: (a, b) =>
+      a.thicknessFrom - b.thicknessFrom || a.thicknessTo - b.thicknessTo,
+      sortOrder: sortedInfo.columnKey === 'thicknessFrom' && sortedInfo.order,
     },
     {
       title: "Thickness rate",
@@ -194,7 +239,6 @@ const Rates = (props) => {
       sorter: (a, b) => a.price - b.price,
       sortOrder: sortedInfo.columnKey === "price" && sortedInfo.order,
     },
-
     {
       title: "Action",
       dataIndex: "",
@@ -345,14 +389,20 @@ const Rates = (props) => {
   }, [showAddRates]);
 
   useEffect(() => {
-    props.fetchPackingRatesList();
+   // props.fetchPackingRatesList();
+   props.fetchRatesList({
+    pageNo: pagination.current,
+    pageSize: pagination.pageSize,
+    searchText: searchValue,
+    thicknessRange: searchThickness,
+  });
   }, [showAddPackingRates]);
 
-  useEffect(() => {
-    const { ratesList } = props.rates;
+  // useEffect(() => {
+  //   const { ratesList } = props.rates;
 
-    setFilteredInwardList(ratesList);
-  }, [props.rates.ratesList]);
+  //   setFilteredInwardList(ratesList);
+  // }, [props.rates.ratesList]);
 
   useEffect(() => {
     const { packingRateList } = props.rates;
@@ -360,15 +410,21 @@ const Rates = (props) => {
     setfilteredPackingRateList(packingRateList)
   }, [props.rates.packingRateList]);
 
-  useEffect(() => {
-    if (props.rates.loading) {
-      message.loading("Loading..");
-    }
-  }, [props.rates.loading]);
+  // useEffect(() => {
+  //   if (props.rates.loading) {
+  //     message.loading("Loading..");
+  //   }
+  // }, [props.rates.loading]);
 
   useEffect(() => {
     if (props.rates.addSuccess || props.rates.deleteSuccess) {
-      props.fetchRatesList();
+      props.fetchRatesList({
+        pageNo: pagination.current,
+        pageSize: pagination.pageSize,
+        searchText: searchValue,
+        thicknessRange: searchThickness,
+      });
+     // props.fetchRatesList();
       props.resetRates();
     }
     if (props?.rates?.staticList) {
@@ -390,6 +446,7 @@ const Rates = (props) => {
     props.rates.deleteAdditionalSuccess,
     props.rates?.addAdditionalSuccess,
   ]);
+
   useEffect(() => {
     const list = props?.rates?.additionalRatesList.filter(
       (item) =>
@@ -399,6 +456,7 @@ const Rates = (props) => {
     );
     setAdditionalPriceList(list);
   }, [props?.rates?.additionalRatesList]);
+
   useEffect(() => {
     const { rates } = props;
     if (searchValue) {
@@ -420,6 +478,7 @@ const Rates = (props) => {
           if (
             rate?.id?.toString() === searchValue ||
             rate?.partyId?.toString() === searchValue ||
+           ( rate?.partyName?.toLowerCase().includes(searchValue.toLowerCase())) ||
             rate?.matGradeId?.toString() === searchValue ||
             rate?.processId?.toString() === searchValue ||
             rate?.price?.toString() === searchValue
@@ -434,6 +493,19 @@ const Rates = (props) => {
       setfilteredPackingRateList(rates.packingRateList);
     }
   }, [searchValue]);
+
+  // useEffect(() => {
+  //   if (searchValue) {
+  //     if (searchValue.length >= 3) {
+  //       setPageNo(1);
+  //       props.fetchRatesList(1, 15, searchValue);
+  //     }
+  //   } else {
+  //     setPageNo(1);
+  //     props.fetchRatesList(1, 15, searchValue);
+  //   }
+  // }, [searchValue]);
+
   useEffect(() => {
     if (checked) {
       const list = props.material.materialList.filter((item) =>
@@ -448,9 +520,16 @@ const Rates = (props) => {
     } 
   }, [type, checked]);
 
+  useEffect(() => {
+    if (totalItems) {
+      setTotalItems(totalItems);
+    }
+  }, [totalItems]);
+
   const handleChange = (pagination, filters, sorter) => {
     setSortedInfo(sorter);
     setFilteredInfo(filters);
+    setPagination(pagination)
   };
 
   const handleMaterialTypeChange = (e) => {
@@ -492,6 +571,54 @@ const Rates = (props) => {
     );
     setAdditionalPriceList(list);
   };
+  const clearFilters = (value) => {
+    setFilteredInfo(null);
+  };
+
+  useEffect(() => {
+    setFilteredInwardList(props.rates.ratesList || []);
+  }, [props.rates.ratesList]);
+
+  const fetchData = () => {
+    props.fetchRatesList({
+      pageNo: pagination.current,
+      pageSize: pagination.pageSize,
+      searchText: searchValue,
+      thicknessRange: searchThickness,
+    });
+  };
+  useEffect(() => {
+    fetchData();
+  }, [pagination]);
+
+  useEffect(() => {
+    props.fetchRatesList({
+      pageNo: 1,
+      pageSize: pagination.pageSize,
+      searchText: searchValue,
+      thicknessRange: '',
+    });
+    const filteredData = props.rates?.ratesList?.filter((rate) => {
+      if (
+         ( rate?.partyName?.toLowerCase().includes(searchValue.toLowerCase())) ||
+        (rate?.processName?.toLowerCase().includes(searchValue.toLowerCase())) ||
+        (rate?.materialDescription?.toLowerCase().includes(searchValue.toLowerCase())) ||
+        (rate?.matGradeName?.toLowerCase().includes(searchValue.toLowerCase()))
+      ) {
+        return rate;
+      }
+    });
+    setFilteredInwardList(filteredData);
+  }, [ searchValue]);
+  useEffect(() => {
+    props.fetchRatesList({
+      pageNo: 1,
+      pageSize: pagination.pageSize,
+      searchText: '',
+      thicknessRange: searchThickness,
+      })
+  }, [ searchThickness]);
+
   return (
     <div>
       <h1>
@@ -502,6 +629,7 @@ const Rates = (props) => {
           <div className="table-operations gx-col">
             <Button>Delete</Button>
             <Button>Export</Button>
+            <Button onClick={clearFilters}>Clear All Filters</Button>
           </div>
           <div className="gx-flex-row gx-w-50">
             {tabKey === "2" && (
@@ -546,10 +674,18 @@ const Rates = (props) => {
             )}
             <SearchBox
               styleName="gx-flex-1"
-              placeholder="Search for process name or material or party name..."
+              placeholder="Search for party name, process name or material ..."
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
+            />&nbsp;
+            {tabKey==="1" && (
+              <SearchBox
+              styleName="gx-flex-1"
+              placeholder="Search for thickness range..."
+              value={searchThickness}
+              onChange={(e) => setSearchThickness(e.target.value)}
             />
+            )}
           </div>
         </div>
         <Tabs defaultActiveKey="1" tabPosition={mode} onChange={callback}>
@@ -560,6 +696,24 @@ const Rates = (props) => {
               columns={columns}
               dataSource={filteredInwardList}
               onChange={handleChange}
+              pagination={{
+                ...pagination,
+                total: props.rates.totalItems || 0, 
+                itemRender: (current, type, originalElement) => {
+                  if (type === 'prev') {
+                    return <LeftOutlined />;
+                  }
+                  if (type === 'next') {
+                    return <RightOutlined />;
+                  }
+                  if (type === 'jump-prev' || type === 'jump-next') {
+                    return <EllipsisOutlined />;
+                  }
+                  return originalElement;
+                },
+                showLessItems: true, 
+                pageSizeOptions: ['10', '20', '50'],
+              }}
             />
           </TabPane>
           <TabPane tab="Additional Rates" key="2" className="additionalTab">
@@ -916,7 +1070,7 @@ const Rates = (props) => {
                       rules: [
                         {
                           required: true,
-                          message: "Please input the GST Number!",
+                          message: "Please input the minimum thickness!",
                         },
                       ],
                     })(<Input id="thicknessFrom" />)}
@@ -926,7 +1080,7 @@ const Rates = (props) => {
                       rules: [
                         {
                           required: true,
-                          message: "Please input the GST Number!",
+                          message: "Please input the maximum thickness!",
                         },
                       ],
                     })(<Input id="thicknessTo" />)}
@@ -936,7 +1090,7 @@ const Rates = (props) => {
                       rules: [
                         {
                           required: true,
-                          message: "Please input the GST Number!",
+                          message: "Please input the thickness rate!",
                         },
                       ],
                     })(<Input id="price" />)}
