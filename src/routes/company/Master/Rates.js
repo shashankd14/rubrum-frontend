@@ -621,7 +621,6 @@ const Rates = (props) => {
   }, [pagination]);
 
   useEffect(() => {
-    if (searchValue.length >= 2){
     props.fetchRatesList({
       pageNo: 1,
       pageSize: pagination.pageSize,
@@ -639,7 +638,6 @@ const Rates = (props) => {
       }
     });
     setFilteredInwardList(filteredData);
-  }
   }, [ searchValue]);
   useEffect(() => {
     props.fetchRatesList({
@@ -709,12 +707,14 @@ const Rates = (props) => {
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
             />&nbsp;
+              {tabKey === "1" && (
             <SearchBox
               styleName="gx-flex-1"
               placeholder="Search for thickness range..."
               value={searchThickness}
               onChange={(e) => setSearchThickness(e.target.value)}
             />
+              )}
           </div>
         </div>
         <Tabs defaultActiveKey="1" tabPosition={mode} onChange={callback}>
