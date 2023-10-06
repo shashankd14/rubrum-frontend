@@ -54,11 +54,20 @@ const getHeaders = () => ({
     Authorization: getUserToken()
 });
 
-function* fetchRatesList() {
+ function* fetchRatesList(action) {
     try {
-        const fetchRatesList =  yield fetch(`${baseUrl}api/pricemaster`, {
-            method: 'GET',
-            headers: getHeaders()
+        const { pageNo, pageSize, searchText, thicknessRange } = action.pagination;
+
+        const data = {
+            pageNo,
+            pageSize,
+            searchText,
+            thicknessRange
+        }
+        const fetchRatesList =  yield fetch(`${baseUrl}api/pricemaster/list`,{
+            method: 'POST',
+            body: JSON.stringify(data),
+           headers: { "Content-Type": "application/json", ...getHeaders() },
         });
         if(fetchRatesList.status === 200) {
             const fetchRatesListResponse = yield fetchRatesList.json();
