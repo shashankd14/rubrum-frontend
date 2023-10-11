@@ -53,6 +53,7 @@ const List = (props) => {
   const [totalPageItems, setTotalItems] = React.useState(0);
   const [showRetrieve, setShowRetrieve] = React.useState(false);
   const [selectedCoil, setSelectedCoil] = React.useState([]);
+  const [pageSize, setPageSize] = useState(15);
   const columns = [
     {
       title: "Coil Number",
@@ -310,7 +311,8 @@ const List = (props) => {
   const handleCustomerChange = (value) => {
     if (value) {
       setCustomerValue(value);
-      props.fetchInwardList(1, 15, searchValue, value);
+      setPageNo(1);
+      props.fetchInwardList(1, pageSize, searchValue, value);
     } else {
       setCustomerValue("");
       setFilteredInwardList(inwardList);
@@ -463,9 +465,9 @@ const List = (props) => {
                 props.party.partyList.map((party) => (
                   <Option value={party.nPartyId}>{party.partyName}</Option>
                 ))}
-            </Select>
-            {menuPartyWiseLabelList.length > 0 && menuPartyWiseLabelList.includes(partyWiseMenuConstants.export) && <Button onClick={exportSelectedData}>Export</Button>}
-            <Button onClick={clearFilters}>Clear All filters</Button>
+            </Select>&emsp;
+            {menuPartyWiseLabelList.length > 0 && menuPartyWiseLabelList.includes(partyWiseMenuConstants.export) && <Button onClick={exportSelectedData} style={{marginBottom: "1px"}}>Export</Button>}
+            <Button onClick={clearFilters} style={{marginBottom: "1px"}}>Clear All filters</Button>
           </div>
           <div className="gx-flex-row gx-w-50">
             {menuPartyWiseLabelList.length > 0 && menuPartyWiseLabelList.includes(partyWiseMenuConstants.deliver) && <Button
@@ -547,7 +549,7 @@ const List = (props) => {
             pageSize: "15",
             onChange: (page) => {
               setPageNo(page);
-              props.fetchInwardList(page, 15, searchValue);
+              props.fetchInwardList(page, pageSize, searchValue, customerValue);
             },
             current: pageNo,
             total: totalPageItems,
