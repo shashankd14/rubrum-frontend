@@ -7,7 +7,10 @@ import {
     saveKqpLink,
     getKqpLinkById,
     fetchEndUserTagsList,
-    fetchMaterialList
+    fetchMaterialList,
+    getThicknessListQM,
+    getWidthListQM,
+    getLengthListQM,
 } from "../../../../../appRedux/actions"
 
 const CreateLinkTemplate = (props) => {
@@ -23,7 +26,10 @@ const CreateLinkTemplate = (props) => {
     const [action, setAction] = useState("create");
     const [partyList, setPartyList] = useState([]);
     const [isDisabled, setIsDisabled] = useState(false);
-    const [selectedMatGrade, setSelectedMatGrade] = useState ();
+    const [selectedMatGrade, setSelectedMatGrade] = useState ([]);
+    const [thickness, setThickness] = useState();
+    const [width, setWidth] = useState();
+    const [length, setLength] = useState();
     useEffect(() => {
         if (props.match) {
             const urlPaths = props.match.url.split('/')
@@ -37,6 +43,9 @@ const CreateLinkTemplate = (props) => {
             props.fetchPartyList();
             props.fetchEndUserTagsList();
             props.fetchMaterialList();
+            props.getThicknessListQM();
+            props.getWidthListQM();
+            props.getLengthListQM();
         }
     }, [])
 
@@ -96,6 +105,12 @@ const CreateLinkTemplate = (props) => {
     const onThicknessSelection = (e) => {
         setThickness(e);
     }
+    const onWidthSelection = (e) => {
+        setWidth(e);
+    }
+    const onLengthSelection = (e) => {
+        setLength(e);
+    }
 
     const onCustomerDeselection = (e) => {
         console.log(e)
@@ -103,6 +118,13 @@ const CreateLinkTemplate = (props) => {
         console.log('filteredCustomers', selectedCustomers.filter(c => c !== e))
         console.log('partyList', partyList)
         setSelectedCustomers(selectedCustomers.filter(c => c !== e))
+    }
+    const onMatGradeDeselection = (e) => {
+        console.log(e)
+        console.log('selectedCustomers', selectedCustomers)
+        console.log('filteredCustomers', selectedMatGrade.filter(c => c !== e))
+        console.log('partyList', partyList)
+        setSelectedMatGrade(selectedMatGrade.filter(c => c !== e))
     }
 
     useEffect(() => {
@@ -118,9 +140,6 @@ const CreateLinkTemplate = (props) => {
         }
     }, [props.template.loading, props.template.error]);
  
-const [thickness, setThickness] = useState("");
-  const [width, setWidth] = useState("");
-  const [length, setLength] = useState("");
 
     const createTemplateLink = () => {
         const payload = JSON.stringify({
@@ -147,7 +166,15 @@ const [thickness, setThickness] = useState("");
         );
         setMaterialOptions(options);
     }, [props.material.materialList]);
-
+    
+    const selectAllOptions = () => {
+        const allOptionValues = partyList.map((party) => party.nPartyId);
+        setSelectedCustomers(allOptionValues);
+      };
+      const selectAllOptionsMatGrade = () => {
+        const allOptionValues = props.material.materialList.map((item) => item.gradeId);
+        setSelectedMatGrade(allOptionValues);
+      };
     return (
         <div>
             <Card title="Link Template">
@@ -175,7 +202,8 @@ const [thickness, setThickness] = useState("");
                 <Row>
                     <Col span={12}>
                         <div style={{ marginTop: 30, display: "flex" }}>
-                            <label>Assign Customer</label>
+                            <label>Assign Customer</label>&emsp;
+                            <button onClick={selectAllOptions} style={{marginBottom:'5px'}}>Select All</button>
                         </div>
                         <div >
                             <Select
@@ -223,6 +251,64 @@ const [thickness, setThickness] = useState("");
                 </Row>
                 
                     <>
+                    <Row>
+                            <Col span={12}>
+                                <div style={{ marginTop: 30, display: "flex" }}>
+                                    <label>Material Grade</label>&emsp;
+                                    {/* <button onClick={selectAllOptionsMatGrade} style={{marginBottom:'5px'}}>Select All</button> */}
+                                </div>
+                                <div>
+                                    <Select
+                                        id="select"
+                                        mode="multiple"
+                                        showSearch
+                                        style={{ width: '100%' }}
+                                        placeholder="Select Material Grade"
+                                        optionFilterProp="children"
+                                     //   onChange={onMatGradeSelection}
+                                        // onFocus={handleFocus}
+                                        // onBlur={handleBlur}
+                                        maxTagCount={3}
+                                    //     filterOption={(input, option) =>
+                                    //         option.props.children
+                                    //             .toLowerCase()
+                                    //             .indexOf(input.toLowerCase()) >= 0
+                                    //     }
+                                    //     //onChange={onMatGradeSelection}
+                                    //     value={selectedMatGrade}
+                                    //     // value={selectedCustomers}
+                                    //     allowClear
+                                    // >
+
+                                    // </Select>
+                                    filterOption={(input, option) => {
+                                        return option?.props?.children?.toLowerCase().includes(input.toLowerCase());
+                                    }}
+                                    filterSort={(optionA, optionB) =>
+                                        optionA?.props?.children.toLowerCase().localeCompare(optionB?.props?.children.toLowerCase())
+                                    }
+                                    onChange={onMatGradeSelection}
+                                    value={selectedMatGrade}
+                                >  
+                                     {materialOptions}
+                                </Select>
+                                </div>
+                            </Col>
+                             {/* <Col span={12}>
+                        <div id="custTags" style={{ marginTop: 30, display: "flex" }}>
+                            {props?.material?.materialList?.length > 0  &&
+                               props?.material?.materialList?.filter((e) => selectedMatGrade.includes(e.gradeId)).map((grade) => (
+                                    <Tag
+                                        closable
+                                        onClose={() => onMatGradeDeselection(grade.gradeId)}
+                                    >
+                                        {grade.gradeName}
+                                    </Tag>
+                                ))}
+
+                        </div>
+                    </Col>  */}
+                        </Row>
                         <Row>
                             <Col span={12}>
                                 <div style={{ marginTop: 30, display: "flex" }}>
@@ -278,70 +364,18 @@ const [thickness, setThickness] = useState("");
                         <Row>
                             <Col span={12}>
                                 <div style={{ marginTop: 30, display: "flex" }}>
-                                    <label>Material Grade</label>
-                                </div>
-                                <div>
-                                    <Select
-                                        id="select"
-                                        mode="multiple"
-                                        showSearch
-                                        style={{ width: '100%' }}
-                                        placeholder="Select Material Grade"
-                                        optionFilterProp="children"
-                                     //   onChange={onMatGradeSelection}
-                                        // onFocus={handleFocus}
-                                        // onBlur={handleBlur}
-                                        maxTagCount={3}
-                                    //     filterOption={(input, option) =>
-                                    //         option.props.children
-                                    //             .toLowerCase()
-                                    //             .indexOf(input.toLowerCase()) >= 0
-                                    //     }
-                                    //     //onChange={onMatGradeSelection}
-                                    //     value={selectedMatGrade}
-                                    //     // value={selectedCustomers}
-                                    //     allowClear
-                                    // >
-
-                                    // </Select>
-                                    filterOption={(input, option) => {
-                                        return option?.props?.children?.toLowerCase().includes(input.toLowerCase());
-                                    }}
-                                    filterSort={(optionA, optionB) =>
-                                        optionA?.props?.children.toLowerCase().localeCompare(optionB?.props?.children.toLowerCase())
-                                    }
-                                    onChange={onMatGradeSelection}
-                                    value={selectedMatGrade}
-                                >  
-                                     {materialOptions}
-                                </Select>
-
-                                </div>
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col span={12}>
-                                <div style={{ marginTop: 30, display: "flex" }}>
                                      <label>Thickness</label> 
                                 </div>
-                                 <div> 
-                                <Input
-                                id="thicknessInput"
-                                style={{ width: '100%' }}
-                                placeholder="Enter Thickness"
-                                value={thickness}
-                                onChange={(e) => setThickness(e.target.value)}
-                            />
-                               </div> 
-                                 {/* <div>
+                                  <div>
                                     <Select
                                         id="select"
-                                        mode="multiple"
+                                       // mode="multiple"
                                         showSearch
                                         style={{ width: '100%' }}
                                         placeholder="Select Thickness"
                                         optionFilterProp="children"
-                                        onChange={onCustomerSelection}
+                                        value={thickness}
+                                        onChange={onThicknessSelection}
                                         // onFocus={handleFocus}
                                         // onBlur={handleBlur}
                                         maxTagCount={3}
@@ -350,12 +384,15 @@ const [thickness, setThickness] = useState("");
                                                 .toLowerCase()
                                                 .indexOf(input.toLowerCase()) >= 0
                                         }
-                                        // value={selectedCustomers}
                                         allowClear
                                     >
-
+                                         {props?.template?.thicknessList?.map(thickness => (
+                                        <Select.Option key={thickness} value={thickness}>
+                                            {thickness}
+                                        </Select.Option>
+                                        ))} 
                                     </Select>
-                                </div>  */}
+                                </div>  
                             </Col>
                         </Row>
                         <Row>
@@ -364,21 +401,15 @@ const [thickness, setThickness] = useState("");
                                     <label>Width</label>
                                 </div>
                                 <div>
-                                <Input
-                                    id="widthInput"
-                                    style={{ width: '100%' }}
-                                    placeholder="Enter Width"
-                                    value={width}
-                                    onChange={(e) => setWidth(e.target.value)}
-                                />
-                                {/* <Select
+                                <Select
                                         id="select"
-                                        mode="multiple"
+                                       // mode="multiple"
                                         showSearch
                                         style={{ width: '100%' }}
                                         placeholder="Select Width"
                                         optionFilterProp="children"
-                                        onChange={onCustomerSelection}
+                                        value={width}
+                                        onChange={onWidthSelection}
                                         // onFocus={handleFocus}
                                         // onBlur={handleBlur}
                                         maxTagCount={3}
@@ -387,11 +418,14 @@ const [thickness, setThickness] = useState("");
                                                 .toLowerCase()
                                                 .indexOf(input.toLowerCase()) >= 0
                                         }
-                                        // value={selectedCustomers}
                                         allowClear
                                     >
-
-                                    </Select> */}
+                                        {props?.template?.widthList?.map(width => (
+                                        <Select.Option key={width} value={width}>
+                                            {width}
+                                        </Select.Option>
+                                        ))} 
+                                    </Select> 
                                 </div>
                             </Col>
                         </Row>
@@ -401,21 +435,15 @@ const [thickness, setThickness] = useState("");
                                     <label>Length</label>
                                 </div>
                                 <div>
-                                <Input
-                                    id="lengthInput"
-                                    style={{ width: '100%' }}
-                                    placeholder="Enter Length"
-                                    value={length}
-                                    onChange={(e) => setLength(e.target.value)}
-                                />
-                                {/* <Select
+                                <Select
                                         id="select"
-                                        mode="multiple"
+                                       // mode="multiple"
                                         showSearch
                                         style={{ width: '100%' }}
                                         placeholder="Select Length"
                                         optionFilterProp="children"
-                                        onChange={onCustomerSelection}
+                                        value={length}
+                                        onChange={onLengthSelection}
                                         // onFocus={handleFocus}
                                         // onBlur={handleBlur}
                                         maxTagCount={3}
@@ -427,8 +455,12 @@ const [thickness, setThickness] = useState("");
                                         // value={selectedCustomers}
                                         allowClear
                                     >
-
-                                    </Select> */}
+                                         {props?.template?.lengthList?.map(length => (
+                                        <Select.Option key={length} value={length}>
+                                            {length}
+                                        </Select.Option>
+                                        ))} 
+                                    </Select> 
                                 </div>
                             </Col>
                         </Row>
@@ -465,5 +497,8 @@ export default connect(mapStateToProps, {
     saveKqpLink,
     getKqpLinkById,
     fetchEndUserTagsList,
-    fetchMaterialList
+    fetchMaterialList,
+    getThicknessListQM,
+    getWidthListQM,
+    getLengthListQM,
 })(CreateLinkTemplate);

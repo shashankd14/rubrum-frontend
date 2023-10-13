@@ -72,11 +72,14 @@ const InwardReport = (props) => {
             title: "Inward Date",
             dataIndex: "planDate",
             render(value) {
-                return moment(value).format("Do MMM YYYY");
+               // return moment(value).format("Do MMM YYYY");
+               const formattedDate = moment(value, "DD/MM/YYYY").format("Do MMM YYYY");
+                return <span>{formattedDate}</span>;
             },
             key: "planDate",
             filters: [],
-            sorter: (a, b) => a.planDate - b.planDate,
+            //sorter: (a, b) => a.planDate - b.planDate,
+            sorter: (a, b) => moment(a.planDate, "DD/MM/YYYY").valueOf() - moment(b.planDate, "DD/MM/YYYY").valueOf(),
             sortOrder: sortedInfo.columnKey === "planDate" && sortedInfo.order,
         },
         {

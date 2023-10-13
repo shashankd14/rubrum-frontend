@@ -122,20 +122,20 @@ const TemplateList = (props) => {
                     {actions.create &&
                         <Button
                             style={{ background: "#003366", color: "#FFFFFF" }}
-                            size="medium"
+                            size="default"
                             className="gx-float-right"
                             onClick={handleCreate}
                         >
                             {intl.formatMessage({ id: actions.create.label })}
                         </Button>}
                     {actions.export && <Button
-                        size="medium"
+                        size="default"
                         className="gx-float-right"
                     >
                         {intl.formatMessage({ id: actions.export.label })}
                     </Button>}
                     {actions.print && <Button
-                        size="medium"
+                        size="default"
                         className="gx-float-right"
                     >
                         {intl.formatMessage({ id: actions.print.label })}
@@ -146,6 +146,10 @@ const TemplateList = (props) => {
                 className="gx-table-responsive"
                 columns={props.columns}
                 dataSource={templateList}
+                // dataSource={templateList.map((record) => ({
+                //     ...record,
+                //     key: record.templateId, 
+                //   }))}
                 rowSelection={rowSelection}
                 pagination={{
                     pageSize: "15",

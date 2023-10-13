@@ -85,10 +85,14 @@ import {
   UPDATE_TEMPLATE_PROCESSING_FORM_DATA,
   UPDATE_QR_PROCESSING_FORM_DATA,
 } from "constants/ActionTypes";
+import * as actionTypes from "../../constants/ActionTypes";
 
 const INIT_STATE = {
   templateName: '',
   operation: "",
+  thicknessList:[],
+  widthList:[],
+  lengthList:[],
   formFields: {
     inward: [],
     preProcessing: [],
@@ -613,6 +617,67 @@ export default (state = INIT_STATE, action) => {
         error: true,
         loading: false
       }
+      //get List of thickness QM dropdown
+      case actionTypes.GET_THICKNESS_LIST_QM_REQUEST:
+        return {
+          ...state,
+          error: false,
+          loading: true
+        }
+      case actionTypes.GET_THICKNESS_LIST_QM_SUCCESS:
+        return {
+          ...state,
+          error: false,
+          loading: false,
+          thicknessList: action.thicknessList,
+        }
+      case actionTypes.GET_THICKNESS_LIST_QM_ERROR:
+        return {
+          ...state,
+          error: true,
+          loading: false
+        }
+      //get List of width QM dropdown
+      case actionTypes.GET_WIDTH_LIST_QM_REQUEST:
+        return {
+          ...state,
+          error: false,
+          loading: true
+        }
+      case actionTypes.GET_WIDTH_LIST_QM_SUCCESS:
+        console.log("widthList***********", action.widthList)
+        return {
+          ...state,
+          error: false,
+          loading: false,
+          widthList: action.widthList,
+        }
+      case actionTypes.GET_WIDTH_LIST_QM_ERROR:
+        return {
+          ...state,
+          error: true,
+          loading: false
+        }
+      //get List of length QM dropdown
+      case actionTypes.GET_LENGTH_LIST_QM_REQUEST:
+        return {
+          ...state,
+          error: false,
+          loading: true
+        }
+      case actionTypes.GET_LENGTH_LIST_QM_SUCCESS:
+        return {
+          ...state,
+          error: false,
+          loading: false,
+          lengthList: action.lengthList,
+        }
+      case actionTypes.GET_LENGTH_LIST_QM_ERROR:
+        return {
+          ...state,
+          error: true,
+          loading: false
+        }
     default:
       return state;
   }
