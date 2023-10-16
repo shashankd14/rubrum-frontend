@@ -95,14 +95,17 @@ const LinkedTemplateList = (props) => {
                 className="gx-table-responsive"
                 columns={props.columns}
                 dataSource={templateList}
+                // dataSource={templateList.map((record) => ({
+                //     ...record,
+                //     key: record.Id, 
+                //   }))}
                 onChange={handleChange}
                 rowSelection={rowSelection}
                 pagination={{
                     pageSize: "15",
                     onChange: (page) => {
                         setPageNo(page);
-                       // props.fetchTemplatesList(page, 15, searchValue);
-                       props.fetchTemplatesLinkList(page, 15, searchValue);
+                        props.fetchTemplatesLinkList(page, 15, searchValue);
                     },
                     current: pageNo,
                     total: totalPageItems,

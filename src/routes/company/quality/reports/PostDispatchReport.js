@@ -339,7 +339,7 @@ const PostDispatchReport = (props) => {
                             <Row>
                                 <Col span={6}>
                                     <strong>Coil No.</strong>
-                                    <p>{selectedItemForQr?.coilNumber}</p>
+                                    <p>{selectedItemForQr?.coilNo}</p>
                                 </Col>
                                 <Col span={6}>
                                     <strong>Batch No.</strong>

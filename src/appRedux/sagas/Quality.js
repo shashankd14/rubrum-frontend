@@ -29,6 +29,9 @@ import {
     GET_KQP_LINK_BY_ID_REQUEST,
     UPDATE_KQP_LINK_REQUEST,
     DELETE_KQP_LINK_REQUEST,
+    GET_THICKNESS_LIST_QM_REQUEST,
+    GET_WIDTH_LIST_QM_REQUEST,
+    GET_LENGTH_LIST_QM_REQUEST,
 } from "../../constants/ActionTypes";
 import {
     saveTemplateError,
@@ -85,6 +88,12 @@ import {
     updateQualityReportError,
     deleteQualityReportSuccess,
     deleteQualityReportError,
+    getThicknessListQMSuccess,
+    getThicknessListQMError,
+    getWidthListQMSuccess,
+    getWidthListQMError,
+    getLengthListQMSuccess,
+    getLengthListQMError,
 } from "../actions/Quality";
 import { userSignOutSuccess } from "../../appRedux/actions/Auth";
 import { forEach } from "lodash";
@@ -276,19 +285,17 @@ function* getQualityTemplateLinkById(data) {
 }
 
 function* fetchTemplateLinkList(payload) {
-    // try {
-    //     console.log(payload)
-    //     const reqUrl = payload ? `${baseUrl}api/quality/templatemap/party/${payload.params.partyId}` : `${baseUrl}api/quality/templatemap`
-    //     console.log(payload)
-    //     const fetchTemplateList = yield fetch(reqUrl, {
-    //         method: 'GET',
-    //         headers: getHeaders()
-    //     });
-    try {
-        const fetchTemplateList = yield fetch(`${baseUrl}api/quality/templatemap`, {
+    try{
+       const reqUrl = (payload && payload.params && payload.params.partyId) ? `${baseUrl}api/quality/templatemap/party/${payload.params.partyId}` : `${baseUrl}api/quality/templatemap`
+        const fetchTemplateList = yield fetch(reqUrl, {
             method: 'GET',
             headers: getHeaders()
         });
+    // try {
+    //     const fetchTemplateList = yield fetch(`${baseUrl}api/quality/templatemap`, {
+    //         method: 'GET',
+    //         headers: getHeaders()
+    //     });
         if (fetchTemplateList.status === 200) {
             const fetchTemplateListResponse = yield fetchTemplateList.json();
             yield put(fetchTemplatesLinkListSuccess(fetchTemplateListResponse));
@@ -692,7 +699,60 @@ function* deleteKqpLinkById(data) {
         yield put(deleteKqpLinkError(error));
     }
 }
-
+//get List of thickness QM dropdown
+function* getThicknessList(action) {
+    try {
+        const fetchThicknessList = yield fetch(`${baseUrl}api/quality/templatemap/getallthickness`, {
+            method: 'GET',
+            headers: getHeaders()
+        });
+        if(fetchThicknessList.status === 200){
+            const fetchThicknessListResponse = yield fetchThicknessList.json();
+            yield put(getThicknessListQMSuccess(fetchThicknessListResponse));
+        } else if (fetchThicknessList === 401){
+            yield put(userSignOutSuccess());
+        } else 
+            yield put(getThicknessListQMError('error'));
+    } catch (error) {
+        yield put(getThicknessListQMError(error));
+    }
+}
+//get List of width QM dropdown
+function* getWidthList(action) {
+    try {
+        const fetchWidthList = yield fetch(`${baseUrl}api/quality/templatemap/getallwidth`, {
+            method: 'GET',
+            headers: getHeaders()
+        });
+        if(fetchWidthList.status === 200){
+            const fetchWidthListResponse = yield fetchWidthList.json();
+            yield put(getWidthListQMSuccess(fetchWidthListResponse));
+        } else if (fetchWidthList === 401){
+            yield put(userSignOutSuccess());
+        } else 
+            yield put(getWidthListQMError('error'));
+    } catch (error) {
+        yield put(getWidthListQMError(error));
+    }
+}
+//get List of length QM dropdown
+function* getLengthList(action) {
+    try {
+        const fetchLengthList = yield fetch(`${baseUrl}api/quality/templatemap/getalllength`, {
+            method: 'GET',
+            headers: getHeaders()
+        });
+        if(fetchLengthList.status === 200){
+            const fetchLengthListResponse = yield fetchLengthList.json();
+            yield put(getLengthListQMSuccess(fetchLengthListResponse));
+        } else if (fetchLengthList === 401){
+            yield put(userSignOutSuccess());
+        } else 
+            yield put(getLengthListQMError('error'));
+    } catch (error) {
+        yield put(getLengthListQMError(error));
+    }
+}
 
 export function* watchFetchRequests() {
     yield takeLatest(SAVE_TEMPLATE_REQUEST, saveTemplate);
@@ -721,6 +781,9 @@ export function* watchFetchRequests() {
     yield takeLatest(GET_KQP_LINK_BY_ID_REQUEST, getKqpLinkById);
     yield takeLatest(UPDATE_KQP_LINK_REQUEST, updateKqpLinkById);
     yield takeLatest(DELETE_KQP_LINK_REQUEST, deleteKqpLinkById);
+    yield takeLatest(GET_THICKNESS_LIST_QM_REQUEST, getThicknessList);
+    yield takeLatest(GET_WIDTH_LIST_QM_REQUEST, getWidthList);
+    yield takeLatest(GET_LENGTH_LIST_QM_REQUEST, getLengthList);
 }
 
 export default function* qualitySagas() {

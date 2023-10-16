@@ -11,7 +11,8 @@ import TemplateList from "./TemplateList";
 import LinkedTemplateList from "./LinkedTemplateList";
 
 import { 
-  deleteQualityTemplate
+  deleteQualityTemplate,
+  deleteQualityTemplateLink
 } from "../../../../appRedux/actions"
 
 const Templates = (props) => {
@@ -82,7 +83,8 @@ const templateLinkListAactionColumn = {
               className="gx-link"
               onClick={() =>
                   // console.log("Delete", record)
-                  props.deleteQualityTemplate(record.templateId)
+                  //props.deleteQualityTemplate(record.templateId)
+                  props.deleteQualityTemplateLink(record.templateId)
               }
           >
               Delete
@@ -134,5 +136,6 @@ const mapStateToProps = state => ({
 });
 
 export default connect(mapStateToProps, {
-  deleteQualityTemplate
+  deleteQualityTemplate,
+  deleteQualityTemplateLink
 })(Templates);
