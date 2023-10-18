@@ -42,7 +42,31 @@ const LinkedTemplateList = (props) => {
         // if (!props.template.loading && !props.template.error) {
         if (!props.template.loading && !props.template.error && props.template.operation === 'templateLinkList') {
             console.log(props.template)
-            setTemplateList(props.template.data)
+
+            const jsonData =props.template.data;
+            const groupedData = {};
+            jsonData.forEach((item) => {
+                const { templateId, templateName, stageName, partyName } = item;
+              
+                const key = `${templateId}-${templateName}-${stageName}`;
+              
+                if (!groupedData[key]) {
+                  // If the group doesn't exist yet, create it
+                  groupedData[key] = {
+                    templateId,
+                    templateName,
+                    stageName,
+                    parties: [],
+                  };
+                }
+              
+                // Add the partyName to the parties array in the group
+                groupedData[key].parties.push(partyName);
+              });
+              const groupedArray = Object.values(groupedData);
+              console.log(groupedArray);
+           // setTemplateList(props.template.data)
+           setTemplateList(groupedArray)
         }
     }, [props.template.loading, props.template.error]);
 
@@ -102,7 +126,7 @@ const LinkedTemplateList = (props) => {
                 onChange={handleChange}
                 rowSelection={rowSelection}
                 pagination={{
-                    pageSize: "15",
+                    pageSize: 15,
                     onChange: (page) => {
                         setPageNo(page);
                         props.fetchTemplatesLinkList(page, 15, searchValue);

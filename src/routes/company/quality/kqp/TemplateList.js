@@ -155,7 +155,7 @@ const TemplateList = (props) => {
                 dataSource={templateList}
                 rowSelection={rowSelection}
                 pagination={{
-                    pageSize: "15",
+                    pageSize: 15,
                     onChange: (page) => {
                         setPageNo(page);
                         props.fetchKqpList(page, 15, searchValue);
