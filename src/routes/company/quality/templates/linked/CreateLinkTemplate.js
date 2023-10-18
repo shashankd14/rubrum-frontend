@@ -11,6 +11,7 @@ import {
     fetchMaterialGrades,
     getThicknessListQM
 } from "../../../../../appRedux/actions"
+import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 
 const CreateLinkTemplate = (props) => {
 
@@ -33,13 +34,14 @@ const CreateLinkTemplate = (props) => {
             const urlPaths = props.match.url.split('/')
             console.log(urlPaths)
             setSelectedTemplateId(urlPaths[urlPaths.length - 1])
-            if (urlPaths[urlPaths.length - 2] == 'view' || urlPaths[urlPaths.length - 2] == 'edit') {
+            if (urlPaths[urlPaths.length - 2] === 'view' || urlPaths[urlPaths.length - 2] === 'edit') {
                 setAction(urlPaths[urlPaths.length - 2])
+                props.getQualityTemplateLinkById(urlPaths[urlPaths.length - 1]);
                 
             } else {
                 setAction('create');
             }
-            props.getQualityTemplateLinkById(urlPaths[urlPaths.length - 1]);
+           
             props.fetchTemplatesList();
             props.fetchPartyList();
             props.fetchEndUserTagsList();
@@ -49,30 +51,56 @@ const CreateLinkTemplate = (props) => {
     }, [])
 
     useEffect(() => {
-        if (!props.template.loading && !props.template.error && props.template.operation === 'templateList') {
+        if (!props.template.loading && !props.template.error && props.template.operation === 'templateList') { 
             setTemplateList([...props.template.data])
             setSelectedTemplateDetails(selectedTemplateId)
-            // const filteredTemplate = props.template.data.filter(t => t.templateId == selectedTemplateId)
-            // setSelectedTemplate(filteredTemplate?.length === 1 ? filteredTemplate[0] : undefined)
-            // setDefaultSelected(filteredTemplate?.length === 1 ? [filteredTemplate[0].templateId] : [])
         }
-    }, [props.template.loading, props.template.error]);
+    }, [props.template.loading, props.template.error, props.template.operation]);
+
+    useEffect(() => {
+        if (!props.template.loading && !props.template.error && props.template.operation === 'templateLinkById') {
+            const urlPaths = props.match.url.split('/')
+                 setSelectedTemplateId(urlPaths[urlPaths.length - 1])
+            
+            const jsonData =  props.template.data;
+            const groupedData = {};
+            jsonData.forEach((item) => {
+                const { templateId, templateName, partyId, endUserTagIdList, thicknessList,   matGradeIdList } = item;
+              
+                if (!groupedData[templateId]) {
+                  groupedData[templateId] = {
+                    templateId,
+                    templateName,
+                    partyIdList: [],
+                    endUserTagIdList:JSON.parse(item.endUserTagIdList),
+                    thicknessList:JSON.parse(item.thicknessList), 
+                    matGradeIdList:JSON.parse(item.matGradeIdList),
+                  };
+                } 
+                groupedData[templateId].partyIdList.push(partyId);
+              });
+              
+              const groupedArray = Object.values(groupedData);  
+              setSelectedCustomers(groupedArray.map((item) => item.partyIdList).flat());
+              setSelectedEndUserTags(groupedArray.map((item) => item.endUserTagIdList).flat());
+              setThicknessList(groupedArray.map((item) => item.thicknessList).flat());
+            setSelectedTemplateDetails(selectedTemplateId)
+        }
+    }, [props.template.loading, props.template.error, props.template.operation]);
 
     useEffect(() => {
         if (!props.party.loading && !props.party.error) {
-            // console.log(props.party)
             setPartyList(props.party.partyList)
         }
     }, [props.party.loading, props.party.error]);
 
     const setSelectedTemplateDetails = (templateId) => {
         const filteredTemplate = props.template.data.filter(t => t.templateId == templateId)
-        setSelectedTemplate(filteredTemplate?.length === 1 ? filteredTemplate[0] : undefined)
-        setDefaultSelected(filteredTemplate?.length === 1 ? [filteredTemplate[0].templateId] : [])
+        setSelectedTemplate(filteredTemplate?.length >= 1 ? filteredTemplate[0] : undefined)
+        setDefaultSelected(filteredTemplate?.length >=1 ? [filteredTemplate[0].templateId] : [])
     }
 
     const handeTemplateChange = (e) => {
-        // setTemplateList([...props.template.data])
         console.log(e)
         setSelectedTemplateId(e)
         setSelectedTemplateDetails(e);
@@ -114,8 +142,7 @@ const CreateLinkTemplate = (props) => {
 
     useEffect(() => {
         if (!props.template.loading && !props.template.error && props.template.operation === 'templateLinkSave') {
-            console.log(props.template)
-            //props.history.push('/company/quality/templates?view=links')
+            console.log(props.template) 
             props.history.push('/company/quality/templates')
         }
     }, [props.template.loading, props.template.error]);
@@ -129,11 +156,9 @@ const CreateLinkTemplate = (props) => {
             thicknessList: thicknessList,
             partyIdList: selectedCustomers,
         })
-        props.saveQualityTemplateLink(payload)
         if (action == 'create')
             props.saveQualityTemplateLink(payload);
         else if (action == 'edit') {
-            payload["templateId"] = props.template.data.templateId;
             props.saveQualityTemplateLink(payload);
         }
     }
@@ -154,7 +179,10 @@ const CreateLinkTemplate = (props) => {
         const allOptionValues = partyList.map((party) => party.nPartyId);
         setSelectedCustomers(allOptionValues);
       };
-   
+   const history = useHistory();
+   const handleCancel = () =>{
+    history.goBack();
+  }
     return (
         <div>
             <Card title="Link Template">
@@ -168,7 +196,7 @@ const CreateLinkTemplate = (props) => {
                             onChange={handeTemplateChange}
                             value={defaultSelected}
                             onSearch={searchTemplate}
-                        // onBlur={() => setTemplateList([...props.template.data])}
+                            disabled={(action==="edit")} 
                         >
                             {templateList.map((template) => (
                                 <Option key={`${template.templateId}${template.templateName}`} value={template.templateId}>
@@ -208,10 +236,8 @@ const CreateLinkTemplate = (props) => {
                                         .toLowerCase()
                                         .indexOf(input.toLowerCase()) >= 0
                                 }
-                               
                                 allowClear
                             >
-
                                 {partyList.length > 0 &&
                                     partyList.map((party) => (
                                         <Select.Option key={party.nPartyId} value={party.nPartyId}>{party.partyName}</Select.Option>
@@ -260,7 +286,6 @@ const CreateLinkTemplate = (props) => {
                                                 .toLowerCase()
                                                 .indexOf(input.toLowerCase()) >= 0
                                         }
-                                        // value={selectedCustomers}
                                         allowClear
                                     >
                                         {materialOptions}
@@ -274,31 +299,6 @@ const CreateLinkTemplate = (props) => {
                                     <label>End User Tags</label>
                                 </div>
                                 <div>
-                                    {/* <Select
-                                        id="select"
-                                        mode="multiple"
-                                        showSearch
-                                        style={{ width: '100%' }}
-                                        placeholder="Select End User Tags"
-                                        optionFilterProp="children"
-                                        onChange={onCustomerSelection}
-                                        // onFocus={handleFocus}
-                                        // onBlur={handleBlur}
-                                        maxTagCount={3}
-                                        filterOption={(input, option) =>
-                                            option.props.children
-                                                .toLowerCase()
-                                                .indexOf(input.toLowerCase()) >= 0
-                                        }
-                                        value={selectedCustomers}
-                                        allowClear
-                                    >
-
-                                        {partyList.length > 0 &&
-                                            partyList.map((party) => (
-                                                <Select.Option value={party.nPartyId}>{party.partyName}</Select.Option>
-                                            ))}
-                                    </Select> */}
                                     <Select
                                         id="endUsertags"
                                         placeholder="Select End User Tag"
@@ -343,7 +343,6 @@ const CreateLinkTemplate = (props) => {
                                                 .toLowerCase()
                                                 .indexOf(input.toLowerCase()) >= 0
                                         }
-                                        // value={selectedCustomers}
                                         allowClear
                                     >
                                       {props?.template?.thicknessList?.map(thickness => (
@@ -359,7 +358,8 @@ const CreateLinkTemplate = (props) => {
                 }
                 {action !== 'view' && <Row >
                     <div style={{ marginTop: 45 }}>
-                        <Button style={{ marginLeft: 8 }} disabled={isDisabled}>
+                        {/* <Button style={{ marginLeft: 8 }} disabled={isDisabled}> */}
+                        <Button style={{ marginLeft: 8 }} onClick={handleCancel}>
                             Cancel
                         </Button>
                         {action === 'create' ? <Button type="primary" htmlType="submit" onClick={createTemplateLink} disabled={isDisabled}>

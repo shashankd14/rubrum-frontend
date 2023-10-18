@@ -47,7 +47,6 @@ const Templates = (props) => {
             <span
                 className="gx-link"
                 onClick={() =>
-                    // console.log("Delete", record)
                     props.deleteQualityTemplate(record.templateId)
                 }
             >
@@ -82,8 +81,6 @@ const templateLinkListAactionColumn = {
           <span
               className="gx-link"
               onClick={() =>
-                  // console.log("Delete", record)
-                  //props.deleteQualityTemplate(record.templateId)
                   props.deleteQualityTemplateLink(record.templateId)
               }
           >

@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { connect } from "react-redux";
-import { Button, Select, Table } from 'antd';
+import { Button, Table } from 'antd';
 import { useIntl } from "react-intl";
-import SearchBox from '../../../../components/SearchBox';
-import IntlMessages from '../../../../util/IntlMessages';
+import SearchBox from '../../../../components/SearchBox'; 
 
 import {
     fetchKqpLinkList,
@@ -31,13 +30,33 @@ const LinkedTemplateList = (props) => {
         console.log("data load")
         props.fetchKqpLinkList();
     }, []);
-
-   
-
     useEffect(() => {
         if (!props.template.loading && !props.template.error && props.template.operation === 'kqpLinkList') {
             console.log(props.template)
-            setTemplateList(props.template.data)
+            const jsonData =props.template.data;
+            const groupedData = {};
+            jsonData.forEach((item) => {
+                const { kqpId, kqpName, stageName, partyName } = item;
+              
+                const key = `${kqpId}-${kqpName}-${stageName}`;
+              
+                if (!groupedData[key]) {
+                  // If the group doesn't exist yet, create it
+                  groupedData[key] = {
+                    kqpId,
+                    kqpName,
+                    stageName,
+                    parties: [],
+                  };
+                }
+              
+                // Add the partyName to the parties array in the group
+                groupedData[key].parties.push(partyName);
+              });
+              const groupedArray = Object.values(groupedData);
+              console.log(groupedArray);
+            // setTemplateList(props.template.data)
+            setTemplateList(groupedArray)
         }
     }, [props.template.loading, props.template.error]);
 
@@ -93,7 +112,7 @@ const LinkedTemplateList = (props) => {
                 onChange={handleChange}
                 rowSelection={rowSelection}
                 pagination={{
-                    pageSize: "15",
+                    pageSize: 15,
                     onChange: (page) => {
                         setPageNo(page);
                         props.fetchTemplatesList(page, 15, searchValue);

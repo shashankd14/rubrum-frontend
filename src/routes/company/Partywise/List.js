@@ -547,7 +547,7 @@ const List = (props) => {
           // }}
           
           pagination={{
-            pageSize: "15",
+            pageSize: 15,
             onChange: (page) => {
               setPageNo(page);
               props.fetchInwardList(page, pageSize, searchValue, customerValue);

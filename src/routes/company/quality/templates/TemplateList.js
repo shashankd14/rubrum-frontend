@@ -152,7 +152,7 @@ const TemplateList = (props) => {
                 //   }))}
                 rowSelection={rowSelection}
                 pagination={{
-                    pageSize: "15",
+                    pageSize: 15,
                     onChange: (page) => {
                         setPageNo(page);
                         props.fetchTemplatesList(page, 15, searchValue);

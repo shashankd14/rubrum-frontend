@@ -32,6 +32,7 @@ import {
     GET_THICKNESS_LIST_QM_REQUEST,
     GET_WIDTH_LIST_QM_REQUEST,
     GET_LENGTH_LIST_QM_REQUEST,
+    DELETE_QUALITY_TEMPLATE_LINK_REQUEST,
 } from "../../constants/ActionTypes";
 import {
     saveTemplateError,
@@ -687,6 +688,7 @@ function* deleteKqpLinkById(data) {
             method: 'DELETE',
             headers: getHeaders()
         });
+        window.location.reload();
         if (qualityTemplate.status == 200) {
             let qualityTemplateResponse = yield qualityTemplate.json()
             yield put(deleteKqpLinkSuccess(qualityTemplateResponse));
@@ -697,6 +699,27 @@ function* deleteKqpLinkById(data) {
     } catch (error) {
         console.log(error)
         yield put(deleteKqpLinkError(error));
+    }
+}
+//delete templateMap by id
+function* deleteQualityTemplateLinkById(data) {
+    try {
+        // let data = new FormData();
+        const qualityTemplate = yield fetch(`${baseUrl}api/quality/templatemap/${data.payload}`, {
+            method: 'DELETE',
+            headers: getHeaders()
+        });
+        window.location.reload();
+        if (qualityTemplate.status == 200) {
+            let qualityTemplateResponse = yield qualityTemplate.json()
+            yield put(deleteQualityTemplateLinkSuccess(qualityTemplateResponse));
+        } else if (qualityTemplate.status === 401) {
+            yield put(userSignOutSuccess());
+        } else
+            yield put(deleteQualityTemplateLinkError('error'));
+    } catch (error) {
+        console.log(error)
+        yield put(deleteQualityTemplateLinkError(error));
     }
 }
 //get List of thickness QM dropdown
@@ -784,6 +807,7 @@ export function* watchFetchRequests() {
     yield takeLatest(GET_THICKNESS_LIST_QM_REQUEST, getThicknessList);
     yield takeLatest(GET_WIDTH_LIST_QM_REQUEST, getWidthList);
     yield takeLatest(GET_LENGTH_LIST_QM_REQUEST, getLengthList);
+    yield takeLatest(DELETE_QUALITY_TEMPLATE_LINK_REQUEST, deleteQualityTemplateLinkById);
 }
 
 export default function* qualitySagas() {

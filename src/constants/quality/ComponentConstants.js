@@ -68,19 +68,18 @@ export const QUALITY_LINKED_TEMPLATE_COLUMNS = [
         sorter: (a, b) => a.coilNumber?.length - b.coilNumber?.length,
     },
     {
-        title: "Customer Name",
-        dataIndex: "partyName",
-        key: "customerName",
-        filters: [],
-        sorter: (a, b) => a.coilNumber?.length - b.coilNumber?.length,
+        title: "Customer Name", 
+        dataIndex: "parties",
+        key: "parties",
+        render: (parties) => parties.join(', ')
     },
-    {
-        title: "End User Tags",
-        dataIndex: "endUserTags",
-        key: "endUserTags",
-        filters: [],
-        sorter: (a, b) => a.coilNumber?.length - b.coilNumber?.length,
-    }
+    // {
+    //     title: "End User Tags",
+    //     dataIndex: "endUserTags",
+    //     key: "endUserTags",
+    //     filters: [],
+    //     sorter: (a, b) => a.coilNumber?.length - b.coilNumber?.length,
+    // }
 ]
 
 export const QUALITY_REPORT_CREATE_COLUMNS = [
@@ -127,7 +126,7 @@ export const QUALITY_REPORT_INWARD_COLUMNS = [
         dataIndex: "coilNumber",
         key: "coilNumber",
         filters: [],
-        sorter: (a, b) => a.coilNumber.length - b.coilNumber.length,
+        sorter: (a, b) => a.coilNumber.length - b.coilNumber.length
         // sortOrder: sortedInfo.columnKey === "coilNumber" && sortedInfo.order,
     },
     {
@@ -202,7 +201,7 @@ export const QUALITY_REPORT_INWARD_COLUMNS = [
         sorter: (a, b) => a.fQuantity - b.fQuantity,
         // sortOrder: sortedInfo.columnKey === "fQuantity" && sortedInfo.order,
     },
-    ,
+     
 ]
 
 export const KQP_COLUMNS = [
@@ -251,6 +250,14 @@ export const KQP_LINK_COLUMNS = [
         key: "stageName",
         filters: [],
         sorter: (a, b) => a.stageName - b.stageName,
+    },
+    {
+        title: "Customer Name",
+        dataIndex: "parties",
+        key: "parties",
+        render: (parties) => parties.join(', '),
+        // onFilter: (value, record) => record.partyName == value,
+        // sorter: (a, b) => a.partyName.length - b.partyName.length,
     },
     
 ]

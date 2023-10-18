@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { connect } from 'react-redux';
-import { Button, Card, Form, Input, Row, Select, Tabs } from 'antd'
+import { Button, Card, Input, Row, Select } from 'antd'
 import { useIntl } from "react-intl";
 import IntlMessages from '../../../../../util/IntlMessages'
 import { QUALITY_TEMPLATE_ACTIONS, QUALITY_TEMPLATE_COLUMNS, QUALITY_LINKED_TEMPLATE_ACTIONS, STAGES } from "../../../../../constants/quality/ComponentConstants";
@@ -81,14 +81,14 @@ const CreateTemplate = (props) => {
             "kqpSummary": kqpSummary,
             "stageName": stageName
         };
-        if (action == 'create')
+        if (action === 'create')
             props.saveKqp(JSON.stringify(request));
-        else if (action == 'edit') {
+        else if (action === 'edit') {
             request["kqpId"] = props.templateDetails.data.kqpId;
             props.updateKqp(JSON.stringify(request));
         }
             
-        // props.history.push('/company/quality/kqp')
+         props.history.push('/company/quality/kqp')
     }
 
     return (
@@ -97,8 +97,12 @@ const CreateTemplate = (props) => {
                 <IntlMessages id="quality.kqp.create.new" />
             </h1>
             <Card>
-                <div className="gx-flex-row gx-flex-1">
-                    <div className="table-operations gx-col">
+            <div className="gx-flex-row gx-flex-1">
+                    <div className="gx-w-50">
+                {/* <div className="gx-flex-row gx-flex-1">*/}
+                    <div className="table-operations gx-col"> 
+                    <Row>
+                       
                         <label>KQP Name </label>
                         <Input
                             id="kqpName"
@@ -108,12 +112,14 @@ const CreateTemplate = (props) => {
                             disabled={action === "view"}
                         />
                         {kqpNameErr && <p style={{ color: "red" }}>Please enter KQP Name</p>}
+                        </Row></div>
                     </div>
                     <div className="gx-w-50">
-                        <label>Stage Name</label>
+                    <div className="table-operations gx-col"> 
+                        <label>Stage Name</label><br/>
                         <Select
                             id="stage"
-                            style={{ width: "100%" }}
+                            style={{ width: "50%" }}
                             onChange={handeStageChange}
                             value={stageName}
                             disabled={action === "view"}
@@ -124,23 +130,28 @@ const CreateTemplate = (props) => {
                                 </Option>
                             ))}
                         </Select>
+                        </div>
                     </div>
 
                 </div>
                 <div className="gx-flex-row gx-flex-1">
                     <div className="gx-w-50">
+                    <div className="table-operations gx-col"> 
                         <Row>
                             <label>KQP Description</label>
-                            <TextArea value={kqpDescription} onChange={handeDescriptionChange} disabled={action === "view"}></TextArea>
+                            <TextArea  value={kqpDescription} onChange={handeDescriptionChange} disabled={action === "view"}></TextArea>
                         </Row>
+                        </div>
                     </div>
                 </div>
                 <div className="gx-flex-row gx-flex-1">
                     <div className="gx-w-50">
+                    <div className="table-operations gx-col"> 
                         <Row>
                             <label>KQP Summary</label>
                             <TextArea value={kqpSummary} onChange={handeSummaryChange} disabled={action === "view"}></TextArea>
                         </Row>
+                        </div>
                     </div>
                 </div>
                 { action != 'view' && <div className="gx-flex-row gx-flex-1">
