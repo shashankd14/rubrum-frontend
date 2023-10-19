@@ -164,7 +164,7 @@ useEffect(()=>{
           
                 <div className="gx-flex-row gx-flex-1">
                     <div className="gx-flex-row gx-w-50">
-                        <Button type="primary" icon={() => <i className="icon icon-add"/>} size="medium"
+                        <Button type="primary" icon={() => <i className="icon icon-add"/>} size="default"
                                 onClick={()=> setShowAddTags(true)}
                         >Add Tag</Button>
                         {/* <SearchBox styleName="gx-flex-1" placeholder="Search for process name or party name..." value={searchValue} onChange={(e) => setSearchValue(e.target.value)}/> */}

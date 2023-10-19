@@ -161,7 +161,7 @@ const Quality = (props) => {
             <Button
               type="primary"
               icon={() => <i className="icon icon-add" />}
-              size="medium"
+              size="default"
               onClick={() => {
                 // setshowCreateTemplate(true);
                 // history.push(`${pathname}/createTemplate`);

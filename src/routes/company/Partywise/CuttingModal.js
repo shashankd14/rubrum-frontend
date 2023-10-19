@@ -1438,7 +1438,7 @@ const CreateCuttingDetailsForm = (props) => {
               type="primary"
               onClick={bundleListClick}
               icon={() => <i className="icon icon-add" />}
-              size="medium"
+              size="default"
               disabled={selectedRowKeys.length < 1 ? true : false}
             >
               Bundle
@@ -1514,7 +1514,7 @@ const CreateCuttingDetailsForm = (props) => {
                         >
                           <Button
                             type="primary"
-                            size="medium"
+                            size="default"
                             onClick={(e) => getCuts(e, 0)}
                           >
                             Confirm
@@ -1583,7 +1583,7 @@ const CreateCuttingDetailsForm = (props) => {
                           >
                             <Button
                               type="primary"
-                              size="medium"
+                              size="default"
                               disabled={getConfirmDisabled(idx)}
                               onClick={(e) => getCuts(e, idx)}
                             >

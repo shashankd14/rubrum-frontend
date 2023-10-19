@@ -230,7 +230,7 @@ const Material = (props) => {
                         <Button onClick={clearFilters}>Clear All filters</Button>
                     </div>
                     <div className="gx-flex-row gx-w-50">
-                        <Button type="primary" icon={() => <i className="icon icon-add"/>} size="medium"
+                        <Button type="primary" icon={() => <i className="icon icon-add"/>} size="default"
                                 onClick={() => {
                                     props.form.resetFields();
                                     props.resetMaterial();

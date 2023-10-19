@@ -121,21 +121,27 @@ const CreateReport = (props) => {
         if (templateName) {
             request.append("templateName", templateName);
         }
-        const coilNumber = stageName == 'INWARD' ? props.location.state.selectedItemForQr.coilNumber : props.location.state.selectedItemForQr.coilNo;
+        //const coilNumber = stageName == 'INWARD' ? props.location.state.selectedItemForQr.coilNumber : props.location.state.selectedItemForQr.coilNo;
         const batchNumber = stageName == 'INWARD' ? props.location.state.selectedItemForQr.batchNumber : props.location.state.selectedItemForQr.customerBatchNo;
         request.append("stageName", stageName);
         request.append("userId", localStorage.getItem("userId").toString());
         request.append("templateDetails", JSON.stringify(templateDetails));
-        request.append("coilNo", coilNumber + '');
+       // request.append("coilNo", coilNumber + '');
+        request.append("coilNo", props.location.state.selectedItemForQr.coilNo);
         request.append("customerBatchNo", batchNumber);
         // request.append("planId", props.location.state.selectedItemForQr.planId);
         // request.append("deliveryChalanNo", props.location.state.selectedItemForQr.coilNumber);
         request.append("inwardId", props.location.state.selectedItemForQr.inwardEntryId);
-        if (action == 'create')
+        if (action == 'create'){
             props.saveQualityReport(request);
-        else if (action == 'edit')
-            props.updateQualityReport(request);
+        }
+        else if (action == 'edit'){
+            const qirIdToUpdate = props.templateDetails.data.qirId
+            request.append("qirId", qirIdToUpdate);
+            props.saveQualityReport(request);
+            //props.updateQualityReport(request);
         props.history.push('/company/quality/reports')
+        }   
     }
 
     return (

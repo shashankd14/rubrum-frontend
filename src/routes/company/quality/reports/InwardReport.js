@@ -133,20 +133,20 @@ const InwardReport = (props) => {
                     </span>
                     <Divider type="vertical" />
                     <span
-                        //className={`gx-link ${!record.qirId && disabledEle}`}
-                        className={`gx-link ${record.qirId && disabledEle}`}
+                        className={`gx-link ${!record.qirId && disabledEle}`}
+                        //className={`gx-link ${record.qirId && disabledEle}`}
                         onClick={(e) => showReportView(record, index, e)}
                     >
                         View
                     </span>
                     <Divider type="vertical" />
-                    {/* <span className={`gx-link ${!record.qirId && disabledEle}`} onClick={(e) => onEdit(record, index, e)}> */}
-                    <span className={`gx-link ${record.qirId && disabledEle}`} onClick={(e) => onEdit(record, index, e)}>
+                    <span className={`gx-link ${!record.qirId && disabledEle}`} onClick={(e) => onEdit(record, index, e)}>
+                    {/* <span className={`gx-link ${record.qirId && disabledEle}`} onClick={(e) => onEdit(record, index, e)}> */}
                         Edit
                     </span>
                     <Divider type="vertical" />
-                    {/* <span className={`gx-link ${!record.qirId && disabledEle}`} onClick={(e) => onDelete(record, index, e)}> */}
-                    <span className={`gx-link ${record.qirId && disabledEle}`} onClick={(e) => onDelete(record, index, e)}>
+                    <span className={`gx-link ${!record.qirId && disabledEle}`} onClick={(e) => onDelete(record, index, e)}>
+                    {/* <span className={`gx-link ${record.qirId && disabledEle}`} onClick={(e) => onDelete(record, index, e)}> */}
                         Delete
                     </span>
                 </span>
@@ -191,7 +191,6 @@ const InwardReport = (props) => {
 
 
     useEffect(() => {
-        console.log(props)
         if (!props.template.loading && !props.template.error && props.template.operation == "fetchQualityReport") {
             console.log(props.template)
             setQualityReportList(props.template.data)

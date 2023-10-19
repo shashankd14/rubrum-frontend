@@ -249,7 +249,7 @@ const Party = (props) => {
                         <Button onClick={exportSelectedData}>Export</Button>
                     </div>
                     <div className="gx-flex-row gx-w-50">
-                        <Button type="primary" icon={() => <i className="icon icon-add"/>} size="medium"
+                        <Button type="primary" icon={() => <i className="icon icon-add"/>} size="default"
                                 onClick={() => {
                                     props.resetParty();
                                     props.form.resetFields()
