@@ -135,7 +135,7 @@ const PostDispatchTemplate = (props) => {
           </Col>
           <Col span={8}>
             <div style={{ display: 'grid', marginTop: 45 }}>
-              {props.action === 'view' && props.templateDetails.packingIntactPreSingedURL && <img src={props.templateDetails.packingIntactPreSingedURL} style={{ width: 50 }} />}
+              {props.action === 'view' && props.templateDetails.unloadingImproperPreSingedURL && <img src={props.templateDetails.unloadingImproperPreSingedURL} style={{ width: 50 }} />}
               {props.action === 'edit' && <> {props.templateDetails.packingIntactPreSingedURL && <img src={props.templateDetails.packingIntactPreSingedURL} style={{ width: 50 }} />}
                 <Dragger
                   name='packingIntact'

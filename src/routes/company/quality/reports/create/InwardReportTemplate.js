@@ -106,8 +106,9 @@ const InwardReportTemplate = (props) => {
                     </Col>
                     <Col span={8}>
                         <div style={{ display: 'grid', marginTop: 45 }}>
-                            {props.action === 'view' && props.templateDetails.packingIntactPreSingedURL && <img src={props.templateDetails.packingIntactPreSingedURL} style={{ width: 50 }} />}
-                            {props.action === 'edit' && <> {props.templateDetails.packingIntactPreSingedURL && <img src={props.templateDetails.packingIntactPreSingedURL} style={{ width: 50 }} />}
+                           {props.action === 'create' && props.templateDetails.packingIntactPreSingedURL && <img src={props.templateDetails.packingIntactPreSingedURL} alt="PackingIntact" style={{ width: 50 }} />}
+                            {props.action === 'view' && props.templateDetails.packingIntactPreSingedURL && <img src={props.templateDetails.packingIntactPreSingedURL} alt="PackingIntact" style={{ width: 50 }} />}
+                            {props.action === 'edit' && <> {props.templateDetails.packingIntactPreSingedURL && <img src={props.templateDetails.packingIntactPreSingedURL} alt="PackingIntact" style={{ width: 50 }} />}
                                 <Dragger
                                     name='packingIntact'
                                     height={50}
@@ -149,8 +150,9 @@ const InwardReportTemplate = (props) => {
                     </Col>
                     <Col span={8}>
                         <div style={{ display: 'grid', marginTop: 45 }}>
-                            {props.action === 'view' && props.templateDetails.coilBendPreSingedURL && <img src={props.templateDetails.coilBendPreSingedURL} style={{ width: 50 }} />}
-                            {props.action === 'edit' && <> {props.templateDetails.coilBendPreSingedURL && <img src={props.templateDetails.coilBendPreSingedURL} style={{ width: 50 }} />}
+                            {props.action === 'create' && props.templateDetails.coilBendPreSingedURL && <img src={props.templateDetails.coilBendPreSingedURL} alt="CoilBend" style={{ width: 50 }} />}
+                            {props.action === 'view' && props.templateDetails.coilBendPreSingedURL && <img src={props.templateDetails.coilBendPreSingedURL} alt="CoilBend" style={{ width: 50 }} />}
+                            {props.action === 'edit' && <> {props.templateDetails.coilBendPreSingedURL && <img src={props.templateDetails.coilBendPreSingedURL} alt="CoilBend" style={{ width: 50 }} />}
                                 <Dragger
                                     name='packingIntact'
                                     height={50}
@@ -192,8 +194,9 @@ const InwardReportTemplate = (props) => {
                     </Col>
                     <Col span={8}>
                         <div style={{ display: 'grid', marginTop: 45 }}>
-                            {props.action === 'view' && props.templateDetails.rustObservedPreSingedURL && <img src={props.templateDetails.rustObservedPreSingedURL} alt="Forest" style={{ width: 50 }} />}
-                            {props.action === 'edit' && <> {props.templateDetails.rustObservedPreSingedURL && <img src={props.templateDetails.rustObservedPreSingedURL} alt="Forest" style={{ width: 50 }} />}
+                            {props.action === 'create' && props.templateDetails.rustObservedPreSingedURL && <img src={props.templateDetails.rustObservedPreSingedURL} alt="rustObserved" style={{ width: 50 }} />}
+                            {props.action === 'view' && props.templateDetails.rustObservedPreSingedURL && <img src={props.templateDetails.rustObservedPreSingedURL} alt="rustObserved" style={{ width: 50 }} />}
+                            {props.action === 'edit' && <> {props.templateDetails.rustObservedPreSingedURL && <img src={props.templateDetails.rustObservedPreSingedURL} alt="rustObserved" style={{ width: 50 }} />}
                                 <Dragger
                                     name='packingIntact'
                                     height={50}
@@ -235,8 +238,9 @@ const InwardReportTemplate = (props) => {
                     </Col>
                     <Col span={8}>
                         <div style={{ display: 'grid', marginTop: 45 }}>
-                            {props.action === 'view' && props.templateDetails.safetyIssuesPreSingedURL && <img src={props.templateDetails.safetyIssuesPreSingedURL} alt="Forest" style={{ width: 50 }} />}
-                            {props.action === 'edit' && <> {props.templateDetails.safetyIssuesPreSingedURL && <img src={props.templateDetails.safetyIssuesPreSingedURL} alt="Forest" style={{ width: 50 }} />}
+                            {props.action === 'create' && props.templateDetails.safetyIssuesPreSingedURL && <img src={props.templateDetails.safetyIssuesPreSingedURL} alt="safetyIssue" style={{ width: 50 }} />}
+                            {props.action === 'view' && props.templateDetails.safetyIssuesPreSingedURL && <img src={props.templateDetails.safetyIssuesPreSingedURL} alt="safetyIssue" style={{ width: 50 }} />}
+                            {props.action === 'edit' && <> {props.templateDetails.safetyIssuesPreSingedURL && <img src={props.templateDetails.safetyIssuesPreSingedURL} alt="safetyIssue" style={{ width: 50 }} />}
                                 <Dragger
                                     name='packingIntact'
                                     height={50}
@@ -278,8 +282,9 @@ const InwardReportTemplate = (props) => {
                     </Col>
                     <Col span={8}>
                         <div style={{ display: 'grid', marginTop: 45 }}>
-                            {props.action === 'view' && props.templateDetails.waterExposurePreSingedURL && <img src={props.templateDetails.waterExposurePreSingedURL} alt="Forest" style={{ width: 50 }} />}
-                            {props.action === 'edit' && <> {props.templateDetails.waterExposurePreSingedURL && <img src={props.templateDetails.waterExposurePreSingedURL} alt="Forest" style={{ width: 50 }} />}
+                            {props.action === 'create' && props.templateDetails.waterExposurePreSingedURL && <img src={props.templateDetails.waterExposurePreSingedURL} alt="waterExposure" style={{ width: 50 }} />}
+                            {props.action === 'view' && props.templateDetails.waterExposurePreSingedURL && <img src={props.templateDetails.waterExposurePreSingedURL} alt="waterExposure" style={{ width: 50 }} />}
+                            {props.action === 'edit' && <> {props.templateDetails.waterExposurePreSingedURL && <img src={props.templateDetails.waterExposurePreSingedURL} alt="waterExposure" style={{ width: 50 }} />}
                                 <Dragger
                                     name='packingIntact'
                                     height={50}
@@ -321,8 +326,9 @@ const InwardReportTemplate = (props) => {
                     </Col>
                     <Col span={8}>
                         <div style={{ display: 'grid', marginTop: 45 }}>
-                            {props.action === 'view' && props.templateDetails.wireRopeDamagesPreSingedURL && <img src={props.templateDetails.wireRopeDamagesPreSingedURL} alt="Forest" style={{ width: 50 }} />}
-                            {props.action === 'edit' && <> {props.templateDetails.wireRopeDamagesPreSingedURL && <img src={props.templateDetails.wireRopeDamagesPreSingedURL} alt="Forest" style={{ width: 50 }} />}
+                            {props.action === 'create' && props.templateDetails.wireRopeDamagesPreSingedURL && <img src={props.templateDetails.wireRopeDamagesPreSingedURL} alt="wirwRopeDamage" style={{ width: 50 }} />}
+                            {props.action === 'view' && props.templateDetails.wireRopeDamagesPreSingedURL && <img src={props.templateDetails.wireRopeDamagesPreSingedURL} alt="wirwRopeDamage" style={{ width: 50 }} />}
+                            {props.action === 'edit' && <> {props.templateDetails.wireRopeDamagesPreSingedURL && <img src={props.templateDetails.wireRopeDamagesPreSingedURL} alt="wirwRopeDamage" style={{ width: 50 }} />}
                                 <Dragger
                                     name='packingIntact'
                                     height={50}

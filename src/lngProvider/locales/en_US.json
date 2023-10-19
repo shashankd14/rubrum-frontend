@@ -354,6 +354,6 @@
   "quality.templates.button.action.create.label": "Create Template",
   "quality.kqp.button.action.create.label": "Create KQP",
   "quality.templates.create.new": "Create New Template",
-  "quality.kqp.create.new": "Create New Template",
+  "quality.kqp.create.new": "Create New KQP",
   "quality.reports.create.new": "Create Quality Report"
 }

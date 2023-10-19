@@ -665,7 +665,7 @@ const Rates = (props) => {
               <Button
                 type="primary"
                 icon={() => <i className="icon icon-add" />}
-                size="medium"
+                size="default"
                 onClick={() => {
                   setShowAdditionalRates(true);
                 }}
@@ -677,7 +677,7 @@ const Rates = (props) => {
               <Button
                 type="primary"
                 icon={() => <i className="icon icon-add" />}
-                size="medium"
+                size="default"
                 onClick={() => {
                   props.resetRates();
                   props.form.resetFields();
@@ -691,7 +691,7 @@ const Rates = (props) => {
               <Button
                 type="primary"
                 icon={() => <i className="icon icon-add" />}
-                size="medium"
+                size="default"
                 onClick={() => {
                   props.resetPackingRates();
                   props.form.resetFields();

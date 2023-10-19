@@ -474,7 +474,7 @@ const List = (props) => {
             {menuPartyWiseLabelList.length > 0 && menuPartyWiseLabelList.includes(partyWiseMenuConstants.deliver) && <Button
               type="primary"
               icon={() => <i className="icon icon-add" />}
-              size="medium"
+              size="default"
               onClick={() => {
                 console.log("selected rows", selectedRowData, selectedCBKeys, selectedCoil);
                 if (selectedCoil?.length > 1) {
@@ -498,7 +498,7 @@ const List = (props) => {
             {menuPartyWiseLabelList.length > 0 && menuPartyWiseLabelList.includes(partyWiseMenuConstants.addInward) && <Button
               type="primary"
               icon={() => <i className="icon icon-add" />}
-              size="medium"
+              size="default"
               onClick={() => {
                 props.history.push("/company/inward/create");
               }}
