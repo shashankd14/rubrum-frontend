@@ -12,7 +12,7 @@ import {
     updateQualityReport,
     deleteQualityReport,
     getCoilPlanDetails,
-    
+    fetchInwardList
 } from "../../../../../appRedux/actions"
 import TextArea from "antd/lib/input/TextArea";
 import InwardReportTemplate from "./InwardReportTemplate";
@@ -20,7 +20,6 @@ import PreProcessingReportTemplate from "./PreProcessingReportTemplate";
 import ProcessingReportTemplate from "./ProcessingReportTemplate";
 import PreDispatchReportTemplate from "./PreDispatchReportTemplate";
 import PostDispatchReportTemplate from "./PostDispatchReportTemplate";
-
 
 const CreateReport = (props) => {
 
@@ -36,6 +35,8 @@ const CreateReport = (props) => {
     const [templateInfo, setTemplateInfo] = useState("");
     const [isDisabled, setIsDisabled] = useState(false);
     const [materialDetails, setMaterialDetails] = useState();
+    const [inwardInfo, setInwardInfo] = useState();
+    const [filteredInwardList, setFilteredInwardList] = useState([]);
 
     const Option = Select.Option;
 
@@ -56,8 +57,12 @@ const CreateReport = (props) => {
 
     useEffect(() => {
         console.log(props.location.state)
+       // props.fetchInwardList();
+       // if(props.location.state?.selectedItemForQr && props.inward?.inwardList){
         if(props.location.state?.selectedItemForQr)
-            setMaterialDetails([props.location.state.selectedItemForQr])
+       // const filteredData = props.inward.inwardList.filter(item => item.coilNumber === props.location.state.selectedItemForQr.coilNo); 
+        // setFilteredInwardList(filteredData);
+         setMaterialDetails([props.location.state.selectedItemForQr])
         if(props.location.state?.templateDetails){
             setTemplateName(props.location.state.templateDetails.templateName);
             setStageName(props.location.state.templateDetails.stageName)
@@ -66,7 +71,7 @@ const CreateReport = (props) => {
         if(props.location.state?.action)
             setAction(props.location.state.action)
             
-    }, [props.location.state])
+    }, [props.location.state, props.inward.inwardList])
 
     useEffect(() => {
         if (!props.inward.loading && props.inward.planSuccess) {
@@ -134,6 +139,7 @@ const CreateReport = (props) => {
         request.append("inwardId", props.location.state.selectedItemForQr.inwardEntryId);
         if (action == 'create'){
             props.saveQualityReport(request);
+            props.history.push('/company/quality/reports')
         }
         else if (action == 'edit'){
             const qirIdToUpdate = props.templateDetails.data.qirId
@@ -153,6 +159,7 @@ const CreateReport = (props) => {
                 className="gx-table-responsive"
                 columns={QUALITY_REPORT_CREATE_COLUMNS}
                 dataSource={materialDetails}
+                //dataSource={filteredInwardList}
                 pagination={false}
             />
             <div style={{marginTop: 10}}>
@@ -183,5 +190,6 @@ export default connect(mapStateToProps, {
     saveQualityReport,
     getQualityReportById,
     updateQualityReport,
-    deleteQualityReport
+    deleteQualityReport,
+    fetchInwardList
 })(CreateReport);

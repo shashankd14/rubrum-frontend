@@ -152,7 +152,8 @@ const TemplateList = (props) => {
             <Table
                 className="gx-table-responsive"
                 columns={props.columns}
-                dataSource={templateList}
+                //dataSource={templateList}
+                dataSource={templateList.length > 0? templateList : []}
                 rowSelection={rowSelection}
                 pagination={{
                     pageSize: 15,

@@ -89,8 +89,8 @@ const PostDispatchReportTemplate = (props) => {
           </Col>
           <Col span={8}>
                         <div style={{ display: 'grid', marginTop: 45 }}>
-                            {props.action === 'view' && props.templateDetails.unloadingImproperPreSingedURL && <img src={props.templateDetails.unloadingImproperPreSingedURL} style={{ width: 50 }} />}
-                            {props.action === 'edit' && <> {props.templateDetails.unloadingImproperPreSingedURL && <img src={props.templateDetails.unloadingImproperPreSingedURL} style={{ width: 50 }} />}
+                            {props.action === 'view' && props.templateDetails.unloadingImproperPreSingedURL && <img src={props.templateDetails.unloadingImproperPreSingedURL} alt='unloadingImproper' style={{ width: 50 }} />}
+                            {props.action === 'edit' && <> {props.templateDetails.unloadingImproperPreSingedURL && <img src={props.templateDetails.unloadingImproperPreSingedURL} alt='unloadingImproper' style={{ width: 50 }} />}
                                 <Dragger
                                     name='packingIntact'
                                     height={50}
@@ -133,8 +133,8 @@ const PostDispatchReportTemplate = (props) => {
           </Col>
           <Col span={8}>
             <div style={{ display: 'grid', marginTop: 45 }}>
-              {props.action === 'view' && props.templateDetails.packingIntactPreSingedURL && <img src={props.templateDetails.packingIntactPreSingedURL} style={{ width: 50 }} />}
-              {props.action === 'edit' && <> {props.templateDetails.packingIntactPreSingedURL && <img src={props.templateDetails.packingIntactPreSingedURL} style={{ width: 50 }} />}
+              {props.action === 'view' && props.templateDetails.packingIntactPreSingedURL && <img src={props.templateDetails.packingIntactPreSingedURL} alt='packingDamage' style={{ width: 50 }} />}
+              {props.action === 'edit' && <> {props.templateDetails.packingIntactPreSingedURL && <img src={props.templateDetails.packingIntactPreSingedURL} alt='packingDamage' style={{ width: 50 }} />}
                 <Dragger
                   name='packingIntact'
                   height={50}
@@ -172,8 +172,8 @@ const PostDispatchReportTemplate = (props) => {
           </Col>
           <Col span={8}>
             <div style={{ display: 'grid', marginTop: 45 }}>
-              {props.action === 'view' && props.templateDetails.ackReceiptPreSingedURL && <img src={props.templateDetails.ackReceiptPreSingedURL} style={{ width: 50 }} />}
-              {props.action === 'edit' && <> {props.templateDetails.ackReceiptPreSingedURL && <img src={props.templateDetails.ackReceiptPreSingedURL} style={{ width: 50 }} />}
+              {props.action === 'view' && props.templateDetails.ackReceiptPreSingedURL && <img src={props.templateDetails.ackReceiptPreSingedURL} alt='receipt' style={{ width: 50 }} />}
+              {props.action === 'edit' && <> {props.templateDetails.ackReceiptPreSingedURL && <img src={props.templateDetails.ackReceiptPreSingedURL} alt='receipt' style={{ width: 50 }} />}
                 <Dragger
                   name='packingIntact'
                   height={50}
@@ -215,8 +215,8 @@ const PostDispatchReportTemplate = (props) => {
           </Col>
           <Col span={8}>
             <div style={{ display: 'grid', marginTop: 45 }}>
-              {props.action === 'view' && props.templateDetails.weighmentPreSingedURL && <img src={props.templateDetails.weighmentPreSingedURL} style={{ width: 50 }} />}
-              {props.action === 'edit' && <> {props.templateDetails.weighmentPreSingedURL && <img src={props.templateDetails.weighmentPreSingedURL} style={{ width: 50 }} />}
+              {props.action === 'view' && props.templateDetails.weighmentPreSingedURL && <img src={props.templateDetails.weighmentPreSingedURL} alt='weighment' style={{ width: 50 }} />}
+              {props.action === 'edit' && <> {props.templateDetails.weighmentPreSingedURL && <img src={props.templateDetails.weighmentPreSingedURL} alt='weighment'style={{ width: 50 }} />}
                 <Dragger
                   name='packingIntact'
                   height={50}

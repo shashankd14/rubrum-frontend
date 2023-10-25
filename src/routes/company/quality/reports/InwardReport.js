@@ -20,6 +20,7 @@ import SearchBox from "../../../../components/SearchBox";
 
 import IntlMessages from "../../../../util/IntlMessages";
 import { compose } from 'redux';
+import StatusButton from './create/StatusButton';
 
 const InwardReport = (props) => {
 
@@ -48,6 +49,23 @@ const InwardReport = (props) => {
     const [action, setAction] = useState(undefined);
 
     const disabledEle = 'disabled-ele';
+    const renderStatusColumn = (record) => {
+        const qirId = record.qirId;
+
+        if (qirId === null) {
+          return (
+            <button className="cylinder-button">
+              ToDo
+            </button>
+          );
+        } else {
+          return (
+            <button className="cylinder-button">
+              Completed
+            </button>
+          );
+        }
+      };
 
     const columns = [
         {
@@ -95,15 +113,6 @@ const InwardReport = (props) => {
                 sortedInfo.columnKey === "materialGrade" && sortedInfo.order,
         },
         {
-            title: "Status",
-            dataIndex: "status",
-            key: "status",
-            filters: [],
-            sorter: (a, b) => a.status.length - b.status.length,
-            sortOrder:
-                sortedInfo.columnKey === "status" && sortedInfo.order,
-        },
-        {
             title: "Thickness",
             dataIndex: "fthickness",
             key: "fthickness",
@@ -118,6 +127,16 @@ const InwardReport = (props) => {
             filters: [],
             sorter: (a, b) => a.targetWeight - b.targetWeight,
             sortOrder: sortedInfo.columnKey === "targetWeight" && sortedInfo.order,
+        },
+        {
+            title: "Status",
+            dataIndex: "status",
+            key: "status",
+            filters: [],
+            sorter: (a, b) => a.status.length - b.status.length,
+            sortOrder:
+                sortedInfo.columnKey === "status" && sortedInfo.order,
+                render: (text, record) => renderStatusColumn(record),
         },
         {
             title: "Action",
@@ -218,7 +237,10 @@ const InwardReport = (props) => {
         // props.history.push()
         setAction('create');
         if (templateId)
+        {
+            setTemplateId(templateId);
             props.getQualityTemplateById(templateId)
+        }
     }
 
     const showTemplateList = (record, key) => {
