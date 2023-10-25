@@ -145,7 +145,7 @@ const TemplateList = (props) => {
             <Table
                 className="gx-table-responsive"
                 columns={props.columns}
-                dataSource={templateList}
+                dataSource={templateList.length > 0? templateList : []}
                 // dataSource={templateList.map((record) => ({
                 //     ...record,
                 //     key: record.templateId, 
