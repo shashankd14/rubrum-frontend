@@ -1,3 +1,4 @@
+//PostDispatchReport
 import React, { useEffect, useState } from 'react'
 import { connect } from "react-redux";
 import {Link, useHistory, useLocation, withRouter} from "react-router-dom";
@@ -46,8 +47,7 @@ const PostDispatchReport = (props) => {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showCreateQrScreen, setShowCreateQrScreen] = useState(false);
     const [action, setAction] = useState(undefined);
-
-
+    const disabledEle = 'disabled-ele';
 
     const columns = [
         {
@@ -126,24 +126,28 @@ const PostDispatchReport = (props) => {
             render: (text, record, index) => (
                 <span>
                     <span
-                        className="gx-link"
+                        className={`gx-link ${record.qirId && disabledEle}`}
                         onClick={(e) => showTemplateList(record, index, e)}
                     >
                         Create QR
                     </span>
                     <Divider type="vertical" />
                     <span
-                        className="gx-link"
+                        className={`gx-link ${!record.qirId && disabledEle}`}
                         onClick={(e) => showReportView(record, index, e)}
                     >
                         View
                     </span>
                     <Divider type="vertical" />
-                    <span className="gx-link" onClick={(e) => onEdit(record, index, e)}>
+                    <span 
+                    className={`gx-link ${!record.qirId && disabledEle}`}
+                    onClick={(e) => onEdit(record, index, e)}>
                         Edit
                     </span>
                     <Divider type="vertical" />
-                    <span className="gx-link" onClick={(e) => onDelete(record, index, e)}>
+                    <span 
+                    className={`gx-link ${!record.qirId && disabledEle}`}
+                    onClick={(e) => onDelete(record, index, e)}>
                         Delete
                     </span>
                 </span>
@@ -158,30 +162,11 @@ const PostDispatchReport = (props) => {
         props.fetchTemplatesList();
     }, []);
 
-    useEffect(() => {
-        if (!props.template.loading && !props.template.error && props.template.operation == "fetchQualityReport") {
-            console.log(props.template)
-            setQualityReportList(props.template.data)
-        } else if (!props.template.loading && !props.template.error && props.template.operation == "fetchQualityReportStage") {
-            console.log(props.template)
-            setFilteredPostDispatchList(props.template.data)
-        }
-    }, [props.template.loading, props.template.error, props.template.operation]);
-
 
     const showCreateQr = () => {
         // props.history.push()
         props.getQualityTemplateById(templateId)
     }
-
-    useEffect(() => {
-        if (!props.template.loading && !props.template.error && props.template.operation === 'templateById') {
-            console.log(props)
-            setShowCreateQrScreen(true)
-            // history.push('/company/quality/reports/create/inward')
-            props.history.push({pathname: '/company/quality/reports/create/postdispatch', state: {selectedItemForQr: selectedItemForQr, templateDetails: props.template.data, action: 'create'}})
-        }
-    }, [props.template.loading, props.template.error]);
 
     const showTemplateList = (record, key) => {
         console.log(record, key)
@@ -192,21 +177,38 @@ const PostDispatchReport = (props) => {
 
     const showReportView = (record, key) => {
          console.log("record, key", record, key);
-        const templateDetails = qualityReportList.find(qr => qr.coilNumber === record.coilNumber && qr.inwardId === record.inwardEntryId)
-        props.history.push({pathname: '/company/quality/reports/create/postdispatch', state: {selectedItemForQr: record, templateDetails: templateDetails, action: 'view'}})
-        // setSelectedItemForQr(record)
-        // setAction('view');
-        // props.getQualityReportById(record.qirId);
+        // const templateDetails = qualityReportList.find(qr => qr.coilNumber === record.coilNumber && qr.inwardId === record.inwardEntryId)
+        // props.history.push({pathname: '/company/quality/reports/create/postdispatch', state: {selectedItemForQr: record, templateDetails: templateDetails, action: 'view'}})
+         setSelectedItemForQr(record)
+        setAction('view');
+        props.getQualityReportById(record.qirId);
 
     }
 
     useEffect(() => {
-        if (!props.template.loading && !props.template.error && props.template.operation == "templateLinkList") {
+        if (!props.template.loading && !props.template.error && props.template.operation == "fetchQualityReport") {
+            console.log(props.template)
+            setQualityReportList(props.template.data)
+        } else if (!props.template.loading && !props.template.error && props.template.operation == "fetchQualityReportStage") {
+            console.log(props.template)
+             setFilteredPostDispatchList(props.template.data)
+        } else if (!props.template.loading && !props.template.error && props.template.operation === 'templateById') {
+            console.log(props)
+            setShowCreateQrScreen(true)
+            // history.push('/company/quality/reports/create/postdispatch')
+            props.history.push({ pathname: '/company/quality/reports/create/postdispatch', state: { selectedItemForQr: selectedItemForQr, templateDetails: props.template.data, action: 'create' } })
+        } else if (!props.template.loading && !props.template.error && props.template.operation == "templateLinkList") {
             console.log(props.template)
             setTemplateLinkList(props.template.data)
             setShowCreateModal(true)
+        } else if (!props.template.loading && !props.template.error && props.template.operation === 'templateList') {
+            console.log(props.template)
+            setTemplateList(props.template.data)
+        } else if (!props.template.loading && !props.template.error && props.template.operation == "qualityReportById") {
+            console.log("qualityReportById", props.template)
+            props.history.push({ pathname: '/company/quality/reports/create/postdispatch', state: { selectedItemForQr: selectedItemForQr, templateDetails: props.template.data, action: action } })
         }
-    }, [props.template.loading, props.template.error]);
+    }, [props.template.loading, props.template.error, props.template.operation]);
 
     const onDelete = (record, key, e) => {
         console.log(record, key);
@@ -216,8 +218,11 @@ const PostDispatchReport = (props) => {
 
     const onEdit = (record, key, e) => {
         console.log(record, key)
-        const templateDetails = qualityReportList.find(qr => qr.coilNumber === record.coilNumber && qr.inwardId === record.inwardEntryId)
-        props.history.push({pathname: '/company/quality/reports/create/postdispatch', state: {selectedItemForQr: record, templateDetails: templateDetails, action: 'edit'}})
+        setSelectedItemForQr(record);
+        setAction('edit');
+        props.getQualityReportById(record.qirId);
+        // const templateDetails = qualityReportList.find(qr => qr.coilNumber === record.coilNumber && qr.inwardId === record.inwardEntryId)
+        // props.history.push({pathname: '/company/quality/reports/create/postdispatch', state: {selectedItemForQr: record, templateDetails: templateDetails, action: 'edit'}})
     };
 
     const handleChange = (e) => {
@@ -307,7 +312,6 @@ const PostDispatchReport = (props) => {
                             pageSize: 15,
                             onChange: (page) => {
                                 setPageNo(page);
-                               // props.fetchPostDispatchList(page, 15, searchValue);
                                props.fetchQualityReportStageList(page, 15, searchValue);
                             },
                             current: pageNo,

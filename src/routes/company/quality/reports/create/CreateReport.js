@@ -93,6 +93,7 @@ const CreateReport = (props) => {
     }
 
     const handleCreate = (data) => {
+        debugger;
         // if (!templateName || templateName === "") {
         //     setTemplateNameErr(true);
         //     document.getElementById('templateName').focus();
@@ -129,18 +130,20 @@ const CreateReport = (props) => {
        // request.append("coilNo", coilNumber + '');
         request.append("coilNo", props.location.state.selectedItemForQr.coilNo);
         request.append("customerBatchNo", batchNumber);
-        // request.append("planId", props.location.state.selectedItemForQr.planId);
-        // request.append("deliveryChalanNo", props.location.state.selectedItemForQr.coilNumber);
+        request.append("planId", props.location.state.selectedItemForQr.planId);
+        request.append("deliveryChalanNo", props.location.state.selectedItemForQr.deliveryChalanNo);
         request.append("inwardId", props.location.state.selectedItemForQr.inwardEntryId);
         if (action == 'create'){
             props.saveQualityReport(request);
+            props.history.push('/company/quality/reports')
         }
         else if (action == 'edit'){
+            debugger;
             const qirIdToUpdate = props.templateDetails.data.qirId
             request.append("qirId", qirIdToUpdate);
             props.saveQualityReport(request);
-            //props.updateQualityReport(request);
-        props.history.push('/company/quality/reports')
+            console.log("request11111111111", request);
+            props.history.push('/company/quality/reports')
         }   
     }
 

@@ -129,8 +129,8 @@ const PreDispatchReportTemplate = (props) => {
           </Col>
           <Col span={8}>
             <div style={{ display: 'grid', marginTop: 45 }}>
-              {props.action === 'view' && props.templateDetails.strappingPreSingedURL && <img src={props.templateDetails.strappingPreSingedURL} style={{ width: 50 }} />}
-              {props.action === 'edit' && <> {props.templateDetails.strappingPreSingedURL && <img src={props.templateDetails.strappingPreSingedURL} style={{ width: 50 }} />}
+              {props.action === 'view' && props.templateDetails.strappingPreSingedURL && <img src={props.templateDetails.strappingPreSingedURL} alt='strapping' style={{ width: 50 }} />}
+              {props.action === 'edit' && <> {props.templateDetails.strappingPreSingedURL && <img src={props.templateDetails.strappingPreSingedURL} alt='strapping' style={{ width: 50 }} />}
                 <Dragger
                   name='packingIntact'
                   height={50}
@@ -168,8 +168,8 @@ const PreDispatchReportTemplate = (props) => {
           </Col>
           <Col span={8}>
             <div style={{ display: 'grid', marginTop: 45 }}>
-              {props.action === 'view' && props.templateDetails.weighmentSlipPreSingedURL && <img src={props.templateDetails.weighmentSlipPreSingedURL} style={{ width: 50 }} />}
-              {props.action === 'edit' && <> {props.templateDetails.weighmentSlipPreSingedURL && <img src={props.templateDetails.weighmentSlipPreSingedURL} style={{ width: 50 }} />}
+              {props.action === 'view' && props.templateDetails.weighmentSlipPreSingedURL && <img src={props.templateDetails.weighmentSlipPreSingedURL} alt='weighment' style={{ width: 50 }} />}
+              {props.action === 'edit' && <> {props.templateDetails.weighmentSlipPreSingedURL && <img src={props.templateDetails.weighmentSlipPreSingedURL} alt='weighment' style={{ width: 50 }} />}
                 <Dragger
                   name='packingIntact'
                   height={50}

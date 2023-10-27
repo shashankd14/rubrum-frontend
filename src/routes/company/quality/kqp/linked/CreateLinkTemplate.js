@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux';
-import { Button, Card, Col,  Row, Select,  Tag } from 'antd'
+import { Button, Card, Col,  Row, Select,  Tag, Checkbox } from 'antd'
 import {
     fetchPartyList,
     fetchKqpList,
@@ -31,6 +31,9 @@ const CreateLinkTemplate = (props) => {
     const [thickness, setThicknessList] = useState([]);
     const [width, setWidthList] = useState([]);
     const [length, setLengthList] = useState([]);
+    const [anyThicknessFlag, setAnyThicknessFlag] = useState(props.template?.anyThicknessFlag==='N');
+    const [anyLengthFlag, setAnyLengthFlag] = useState();
+    const [anyWidthFlag, setAnyWidthFlag] = useState();
 
     useEffect(() => { 
          if (props.match) {
@@ -64,7 +67,7 @@ const CreateLinkTemplate = (props) => {
             const jsonData =  props.template.data;
             const groupedData = {};
             jsonData.forEach((item) => {
-                const { kqpId, kqpName, partyId, endUserTagIdList, thicknessList, widthList, lengthList, matGradeIdList } = item;
+                const { kqpId, kqpName, partyId, anyThicknessFlag, endUserTagIdList, thicknessList, widthList, lengthList, matGradeIdList } = item;
               
                 if (!groupedData[kqpId]) {
                   groupedData[kqpId] = {
@@ -76,6 +79,8 @@ const CreateLinkTemplate = (props) => {
                     widthList:JSON.parse(item.widthList),
                     lengthList:JSON.parse(item.lengthList),
                     matGradeIdList:JSON.parse(item.matGradeIdList),
+                   // anyThicknessFlag: anyThicknessFlag === 'N' ? false : true,
+                    anyThicknessFlag: anyThicknessFlag? 'Y' : 'N',
                   };
                 }
               
@@ -161,6 +166,7 @@ const CreateLinkTemplate = (props) => {
  
 
     const createTemplateLink = () => {
+        debugger;
         const payload = JSON.stringify({
             kqpId: selectedTemplateId,
             endUserTagIdList: selectedEndUserTags,
@@ -170,6 +176,7 @@ const CreateLinkTemplate = (props) => {
             widthList: width,
             lengthList: length,
             partyIdList: selectedCustomers,
+            anyThicknessFlag: anyThicknessFlag? 'N' : 'Y',
         }) 
         if (action === 'create')
             props.saveKqpLink(payload);
@@ -330,7 +337,12 @@ const CreateLinkTemplate = (props) => {
                         <Row>
                             <Col span={12}>
                                 <div style={{ marginTop: 30, display: "flex" }}>
-                                     <label>Thickness</label> 
+                                <label>Thickness</label> &emsp;&emsp;&emsp; <label>Any</label>&nbsp; 
+                                    <Checkbox
+                                        id="anyThicknessFlag"
+                                        checked={anyThicknessFlag}
+                                        onChange={(e) => setAnyThicknessFlag(e.target.checked)}
+                                    />
                                 </div>
                                   <div>
                                     <Select
@@ -351,7 +363,7 @@ const CreateLinkTemplate = (props) => {
                                         allowClear
                                     >
                                          {props?.template?.thicknessList?.map(thickness => (
-                                        <Select.Option key={thickness} value={thickness}>
+                                        <Select.Option key={thickness} value={thickness} disabled={anyThicknessFlag}>
                                             {thickness}
                                         </Select.Option>
                                         ))} 
