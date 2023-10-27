@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux';
-import { Button, Card, Col, Form, Input, Row, Select, Tabs, Tag } from 'antd'
+import { Button, Card, Col, Form, Input, Row, Select, Tabs, Tag, Checkbox } from 'antd'
 import {
     fetchPartyList,
     fetchTemplatesList,
@@ -28,6 +28,8 @@ const CreateLinkTemplate = (props) => {
     const [isDisabled, setIsDisabled] = useState(false);
     const [materialGrades, setMaterialGrades] = useState([]);
     const [thicknessList, setThicknessList] = useState([]);
+    const [anyThicknessFlag, setAnyThicknessFlag] = useState(props.template?.anyThicknessFlag==='N'); 
+   //const [anyThicknessFlag, setAnyThicknessFlag] = useState();
 
     useEffect(() => {
         if (props.match) {
@@ -71,6 +73,7 @@ const CreateLinkTemplate = (props) => {
                   groupedData[templateId] = {
                     templateId,
                     templateName,
+                    anyThicknessFlag: anyThicknessFlag? 'Y' : 'N',
                     partyIdList: [],
                     endUserTagIdList:JSON.parse(item.endUserTagIdList),
                     thicknessList:JSON.parse(item.thicknessList), 
@@ -155,6 +158,7 @@ const CreateLinkTemplate = (props) => {
             userId: localStorage.getItem("userId"),
             thicknessList: thicknessList,
             partyIdList: selectedCustomers,
+            anyThicknessFlag: anyThicknessFlag? 'Y' : 'N',
         })
         if (action == 'create')
             props.saveQualityTemplateLink(payload);
@@ -183,6 +187,7 @@ const CreateLinkTemplate = (props) => {
    const handleCancel = () =>{
     history.goBack();
   }
+
     return (
         <div>
             <Card title="Link Template">
@@ -323,7 +328,12 @@ const CreateLinkTemplate = (props) => {
                         <Row>
                             <Col span={12}>
                                 <div style={{ marginTop: 30, display: "flex" }}>
-                                    <label>Thickness</label>
+                                    <label>Thickness</label> &emsp;&emsp;&emsp; <label>Any</label>&nbsp; 
+                                    <Checkbox
+                                        id="anyThicknessFlag"
+                                        checked={anyThicknessFlag}
+                                      onChange={(e) => setAnyThicknessFlag(e.target.checked)}
+                                    />
                                 </div>
                                 <div>
                                     <Select
@@ -346,7 +356,7 @@ const CreateLinkTemplate = (props) => {
                                         allowClear
                                     >
                                       {props?.template?.thicknessList?.map(thickness => (
-                                        <Select.Option key={thickness} value={thickness}>
+                                        <Select.Option key={thickness} value={thickness} disabled={anyThicknessFlag}>
                                             {thickness}
                                         </Select.Option>
                                         ))}

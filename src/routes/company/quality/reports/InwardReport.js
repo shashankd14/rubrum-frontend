@@ -353,7 +353,7 @@ const InwardReport = (props) => {
                         <Row>
                             <Col span={12}>
                                 <strong>Customer Name</strong>
-                                <p>{selectedItemForQr?.party?.partyName}</p>
+                                <p>{selectedItemForQr?.partyName}</p>
                             </Col>
                             <Col span={12} style={{ right: 0, position: 'absolute' }}>
                                 <strong>Stage</strong>

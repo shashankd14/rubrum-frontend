@@ -90,7 +90,7 @@ export const QUALITY_REPORT_CREATE_COLUMNS = [
     },
     {
         title: "Customer Name",
-        dataIndex: "party.partyName",
+        dataIndex: "partyName",
         key: "party.partyName",
     },
     {
