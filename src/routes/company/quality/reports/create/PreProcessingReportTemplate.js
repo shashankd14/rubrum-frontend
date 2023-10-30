@@ -79,6 +79,7 @@ const PreProcessingReportTemplate = (props) => {
 //   setTemplateData(val)
 // }
 useEffect(() => {
+  debugger; 
   setIsDisabled(props.action === 'view')
   if (props.action !== 'create') {
     const templateDetailsData = JSON.parse(props.templateDetails.templateDetails)
@@ -138,6 +139,7 @@ useEffect(() => {
               <Input
                 id="exactWidth"
                 onChange={(e) => onOptionChange(7, e)}
+                value={templateData[7]?.value}
                 required
                 disabled={isDisabled}
               />

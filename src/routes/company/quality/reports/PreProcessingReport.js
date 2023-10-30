@@ -49,6 +49,23 @@ const PreProcessingReport = (props) => {
     const [action, setAction] = useState(undefined);
     const disabledEle = 'disabled-ele';
 
+    const renderStatusColumn = (record) => {
+        const qirId = record.qirId;
+
+        if (qirId === null) {
+          return (
+            <button className="cylinder-button">
+              ToDo
+            </button>
+          );
+        } else {
+          return (
+            <button className="cylinder-button">
+              Completed
+            </button>
+          );
+        }
+      };
 
     const columns = [
         {
@@ -108,13 +125,14 @@ const PreProcessingReport = (props) => {
             sortOrder: sortedInfo.columnKey === "targetWeight" && sortedInfo.order,
         },
         {
-            title: "Report Status",
-            dataIndex: "status.statusName",
-            key: "status.statusName",
+            title: "Status",
+            dataIndex: "status",
+            key: "status",
             filters: [],
-            sorter: (a, b) => a.status.statusName.length - b.status.statusName.length,
+            sorter: (a, b) => a.status.length - b.status.length,
             sortOrder:
                 sortedInfo.columnKey === "status.statusName" && sortedInfo.order,
+                render: (text, record) => renderStatusColumn(record),
         },
         {
             title: "Action",
@@ -180,7 +198,7 @@ const PreProcessingReport = (props) => {
             setTemplateList(props.template.data)
         } else if (!props.template.loading && !props.template.error && props.template.operation == "qualityReportById") {
             console.log("qualityReportById", props.template)
-            props.history.push({ pathname: '/company/quality/reports/create/predispatch', state: { selectedItemForQr: selectedItemForQr, templateDetails: props.template.data, action: action } })
+            props.history.push({ pathname: '/company/quality/reports/create/preprocessing', state: { selectedItemForQr: selectedItemForQr, templateDetails: props.template.data, action: action } })
         }
     }, [props.template.loading, props.template.error, props.template.operation]);
 
@@ -197,6 +215,7 @@ const PreProcessingReport = (props) => {
     }
 
     const showReportView = (record, key) => {
+        debugger;
         console.log(record, key)
        setAction('view')
         props.getQualityReportById(record.qirId);
@@ -319,7 +338,7 @@ const PreProcessingReport = (props) => {
                         <Row>
                             <Col span={12}>
                                 <strong>Customer Name</strong>
-                                <p>{selectedItemForQr?.party?.partyName || " "}</p>
+                                <p>{selectedItemForQr?.partyName}</p>
                             </Col>
                             <Col span={12} style={{ right: 0, position: 'absolute' }}>
                                 <strong>Stage</strong>

@@ -1,3 +1,4 @@
+//src-routes-company-quality-reports-ProcessingReport.js
 import React, { useEffect, useState } from 'react'
 import { connect } from "react-redux";
 import { Link, useHistory, useLocation, withRouter } from "react-router-dom";
@@ -46,7 +47,25 @@ const ProcessingReport = (props) => {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showCreateQrScreen, setShowCreateQrScreen] = useState(false);
     const [action, setAction] = useState(undefined);
+    const disabledEle = 'disabled-ele';
 
+    const renderStatusColumn = (record) => {
+        const qirId = record.qirId;
+
+        if (qirId === null) {
+          return (
+            <button className="cylinder-button">
+              ToDo
+            </button>
+          );
+        } else {
+          return (
+            <button className="cylinder-button">
+              Completed
+            </button>
+          );
+        }
+      };
 
     const columns = [
         {
@@ -70,11 +89,12 @@ const ProcessingReport = (props) => {
             title: "Plan Date",
             dataIndex: "planDate",
             render(value) {
-                return moment(value).format("Do MMM YYYY");
-            },
-            key: "planDate",
-            filters: [],
-            sorter: (a, b) => a.planDate - b.planDate,
+                const formattedDate = moment(value, "DD/MM/YYYY").format("Do MMM YYYY");
+                 return <span>{formattedDate}</span>;
+             },
+             key: "planDate",
+             filters: [],
+            sorter: (a, b) => moment(a.planDate, "DD/MM/YYYY").valueOf() - moment(b.planDate, "DD/MM/YYYY").valueOf(),
             sortOrder: sortedInfo.columnKey === "planDate" && sortedInfo.order,
         },
         {
@@ -105,13 +125,14 @@ const ProcessingReport = (props) => {
             sortOrder: sortedInfo.columnKey === "targetWeight" && sortedInfo.order,
         },
         {
-            title: "Report Status",
-            dataIndex: "status.statusName",
-            key: "status.statusName",
+            title: "Status",
+            dataIndex: "status",
+            key: "status",
             filters: [],
-            sorter: (a, b) => a.status.statusName.length - b.status.statusName.length,
+            sorter: (a, b) => a.status.length - b.status.length,
             sortOrder:
                 sortedInfo.columnKey === "status.statusName" && sortedInfo.order,
+                render: (text, record) => renderStatusColumn(record),
         },
         {
             title: "Action",
@@ -120,24 +141,28 @@ const ProcessingReport = (props) => {
             render: (text, record, index) => (
                 <span>
                     <span
-                        className="gx-link"
+                        className={`gx-link ${record.qirId && disabledEle }`}
                         onClick={(e) => showTemplateList(record, index, e)}
                     >
                         Create QR
                     </span>
                     <Divider type="vertical" />
                     <span
-                        className="gx-link"
+                        className={`gx-link ${!record.qirId && disabledEle }`}
                         onClick={(e) => showReportView(record, index, e)}
                     >
                         View
                     </span>
                     <Divider type="vertical" />
-                    <span className="gx-link" onClick={(e) => onEdit(record, index, e)}>
+                    <span 
+                    className={`gx-link ${!record.qirId && disabledEle }`}
+                    onClick={(e) => onEdit(record, index, e)}>
                         Edit
                     </span>
                     <Divider type="vertical" />
-                    <span className="gx-link" onClick={(e) => onDelete(record, index, e)}>
+                    <span 
+                    className={`gx-link ${!record.qirId && disabledEle }`}
+                    onClick={(e) => onDelete(record, index, e)}>
                         Delete
                     </span>
                 </span>
@@ -158,7 +183,21 @@ const ProcessingReport = (props) => {
             setQualityReportList(props.template.data)
         } else if (!props.template.loading && !props.template.error && props.template.operation == "fetchQualityReportStage") {
             console.log(props.template)
-            setFilteredProcessingList(props.template.data)
+             setFilteredProcessingList(props.template.data)
+        } else if (!props.template.loading && !props.template.error && props.template.operation === 'templateById') {
+            console.log(props)
+            setShowCreateQrScreen(true)
+            props.history.push({ pathname: '/company/quality/reports/create/preprocessing', state: { selectedItemForQr: selectedItemForQr, templateDetails: props.template.data, action: 'create' } })
+        } else if (!props.template.loading && !props.template.error && props.template.operation == "templateLinkList") {
+            console.log(props.template)
+            setTemplateLinkList(props.template.data)
+            setShowCreateModal(true)
+        } else if (!props.template.loading && !props.template.error && props.template.operation === 'templateList') {
+            console.log(props.template)
+            setTemplateList(props.template.data)
+        } else if (!props.template.loading && !props.template.error && props.template.operation == "qualityReportById") {
+            console.log("qualityReportById", props.template)
+            props.history.push({ pathname: '/company/quality/reports/create/preprocessing', state: { selectedItemForQr: selectedItemForQr, templateDetails: props.template.data, action: action } })
         }
     }, [props.template.loading, props.template.error, props.template.operation]);
 
@@ -167,15 +206,6 @@ const ProcessingReport = (props) => {
         // props.history.push()
         props.getQualityTemplateById(templateId)
     }
-
-    useEffect(() => {
-        if (!props.template.loading && !props.template.error && props.template.operation === 'templateById') {
-            console.log(props)
-            setShowCreateQrScreen(true)
-            // history.push('/company/quality/reports/create/inward')
-            props.history.push({ pathname: '/company/quality/reports/create/processing', state: { selectedItemForQr: selectedItemForQr, templateDetails: props.template.data, action: 'create' } })
-        }
-    }, [props.template.loading, props.template.error]);
 
     const showTemplateList = (record, key) => {
         console.log(record, key)
@@ -186,21 +216,13 @@ const ProcessingReport = (props) => {
 
     const showReportView = (record, key) => {
         console.log(record, key)
-        const templateDetails = qualityReportList.find(qr => qr.coilNumber === record.coilNumber && qr.inwardId === record.inwardEntryId)
-        props.history.push({ pathname: '/company/quality/reports/create/processing', state: { selectedItemForQr: record, templateDetails: templateDetails, action: 'view' } })
+        // const templateDetails = qualityReportList.find(qr => qr.coilNumber === record.coilNumber && qr.inwardId === record.inwardEntryId)
+        // props.history.push({ pathname: '/company/quality/reports/create/processing', state: { selectedItemForQr: record, templateDetails: templateDetails, action: 'view' } })
         // setSelectedItemForQr(record)
-        // setAction('view');
-        // props.getQualityReportById(record.qirId);
+        setAction('view');
+        props.getQualityReportById(record.qirId);
 
     }
-
-    useEffect(() => {
-        if (!props.template.loading && !props.template.error && props.template.operation == "templateLinkList") {
-            console.log(props.template)
-            setTemplateLinkList(props.template.data)
-            setShowCreateModal(true)
-        }
-    }, [props.template.loading, props.template.error]);
 
     const onDelete = (record, key, e) => {
         console.log(record, key);
@@ -209,8 +231,8 @@ const ProcessingReport = (props) => {
 
     const onEdit = (record, key, e) => {
         console.log(record, key)
-        const templateDetails = qualityReportList.find(qr => qr.coilNumber === record.coilNumber && qr.inwardId === record.inwardEntryId)
-        props.history.push({ pathname: '/company/quality/reports/create/processing', state: { selectedItemForQr: record, templateDetails: templateDetails, action: 'edit' } })
+        // const templateDetails = qualityReportList.find(qr => qr.coilNumber === record.coilNumber && qr.inwardId === record.inwardEntryId)
+        // props.history.push({ pathname: '/company/quality/reports/create/processing', state: { selectedItemForQr: record, templateDetails: templateDetails, action: 'edit' } })
         setSelectedItemForQr(record)
         setAction('edit');
         props.getQualityReportById(record.qirId);
@@ -324,7 +346,7 @@ const ProcessingReport = (props) => {
                         <Row>
                             <Col span={12}>
                                 <strong>Customer Name</strong>
-                                <p>{selectedItemForQr?.party?.partyName || " "}</p>
+                                <p>{selectedItemForQr?.partyName}</p>
                             </Col>
                             <Col span={12} style={{ right: 0, position: 'absolute' }}>
                                 <strong>Stage</strong>
