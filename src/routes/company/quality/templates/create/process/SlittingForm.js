@@ -93,11 +93,11 @@ const SlittingForm = (props) => {
             dataIndex: 'actualWidth',
             editable: true
         },
-        {
-            title: 'Burr Height Range',
-            dataIndex: 'burrHeight',
-            editable: true
-        },
+        // {
+        //     title: 'Burr Height Range',
+        //     dataIndex: 'burrHeight',
+        //     editable: true
+        // },
         {
             title: 'Burr Height',
             dataIndex: 'burrHeight',
@@ -136,11 +136,11 @@ const SlittingForm = (props) => {
             dataIndex: 'actualWidth',
             editable: true
         },
-        {
-            title: 'Burr Height Range',
-            dataIndex: 'burrHeight',
-            editable: true
-        },
+        // {
+        //     title: 'Burr Height Range',
+        //     dataIndex: 'burrHeight',
+        //     editable: true
+        // },
         {
             title: 'Burr Height',
             dataIndex: 'burrHeight',

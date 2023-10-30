@@ -47,6 +47,23 @@ const PreDispatchReport = (props) => {
     const [showCreateQrScreen, setShowCreateQrScreen] = useState(false);
     const [action, setAction] = useState(undefined);
     const disabledEle = 'disabled-ele';
+    const renderStatusColumn = (record) => {
+        const qirId = record.qirId;
+
+        if (qirId === null) {
+          return (
+            <button className="cylinder-button">
+              ToDo
+            </button>
+          );
+        } else {
+          return (
+            <button className="cylinder-button">
+              Completed
+            </button>
+          );
+        }
+      };
 
     const columns = [
         {
@@ -119,6 +136,16 @@ const PreDispatchReport = (props) => {
             sortOrder: sortedInfo.columnKey === "customerInvoiceDate" && sortedInfo.order,
         },
         {
+            title: "Status",
+            dataIndex: "status",
+            key: "status",
+            filters: [],
+            sorter: (a, b) => a.status.length - b.status.length,
+            sortOrder:
+                sortedInfo.columnKey === "status.statusName" && sortedInfo.order,
+                render: (text, record) => renderStatusColumn(record),
+        },
+        {
             title: "Action",
             dataIndex: "",
             key: "x",
@@ -162,16 +189,6 @@ const PreDispatchReport = (props) => {
         props.fetchTemplatesList();
     }, []);
 
-    // useEffect(() => {
-    //     if (!props.template.loading && !props.template.error && props.template.operation == "fetchQualityReport") {
-    //         console.log(props.template)
-    //         setQualityReportList(props.template.data)
-    //     } else if (!props.template.loading && !props.template.error && props.template.operation == "fetchQualityReportStage") {
-    //         console.log(props.template)
-    //         setFilteredPreDispatchList(props.template.data)
-    //     }
-    // }, [props.template.loading, props.template.error, props.template.operation]);
-
     useEffect(() => {
         if (!props.template.loading && !props.template.error && props.template.operation == "fetchQualityReport") {
             console.log(props.template)
@@ -203,15 +220,6 @@ const PreDispatchReport = (props) => {
         // props.history.push()
         props.getQualityTemplateById(templateId)
     }
-
-    // useEffect(() => {
-    //     if (!props.template.loading && !props.template.error && props.template.operation === 'templateById') {
-    //         console.log(props)
-    //         setShowCreateQrScreen(true)
-    //         // history.push('/company/quality/reports/create/inward')
-    //         props.history.push({pathname: '/company/quality/reports/create/predispatch', state: {selectedItemForQr: selectedItemForQr, templateDetails: props.template.data, action: 'create'}})
-    //     }
-    // }, [props.template.loading, props.template.error]);
 
     const showTemplateList = (record, key) => {
         setSelectedItemForQr(record)
@@ -261,13 +269,6 @@ const PreDispatchReport = (props) => {
         }
     }, [props.inward.loading, props.inward.success]);
 
-    // useEffect(() => {
-    //     if (!props.template.loading && !props.template.error && props.template.operation === 'templateList') {
-    //         console.log(props.template)
-    //         setTemplateList(props.template.data)
-    //     }
-    // }, [props.template.loading, props.template.error]);
-
     useEffect(() => {
         if (!props.party.loading && !props.party.error) {
             console.log(props.party)
@@ -290,7 +291,6 @@ const PreDispatchReport = (props) => {
            
     }, [searchValue]);
 
-console.log("selectedItemForQr11111111", selectedItemForQr?.partyName);
     return (
         <>
             

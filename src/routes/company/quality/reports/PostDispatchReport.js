@@ -48,6 +48,23 @@ const PostDispatchReport = (props) => {
     const [showCreateQrScreen, setShowCreateQrScreen] = useState(false);
     const [action, setAction] = useState(undefined);
     const disabledEle = 'disabled-ele';
+    const renderStatusColumn = (record) => {
+        const qirId = record.qirId;
+
+        if (qirId === null) {
+          return (
+            <button className="cylinder-button">
+              ToDo
+            </button>
+          );
+        } else {
+          return (
+            <button className="cylinder-button">
+              Completed
+            </button>
+          );
+        }
+      };
 
     const columns = [
         {
@@ -118,6 +135,16 @@ const PostDispatchReport = (props) => {
             filters: [],
             sorter: (a, b) => a.customerInvoiceDate - b.customerInvoiceDate,
             sortOrder: sortedInfo.columnKey === "customerInvoiceDate" && sortedInfo.order,
+        },
+        {
+            title: "Status",
+            dataIndex: "status",
+            key: "status",
+            filters: [],
+            sorter: (a, b) => a.status.length - b.status.length,
+            sortOrder:
+                sortedInfo.columnKey === "status.statusName" && sortedInfo.order,
+                render: (text, record) => renderStatusColumn(record),
         },
         {
             title: "Action",
@@ -332,7 +359,7 @@ const PostDispatchReport = (props) => {
                             <Row>
                                 <Col span={12}>
                                     <strong>Customer Name</strong>
-                                    <p>{selectedItemForQr?.party?.partyName}</p>
+                                    <p>{selectedItemForQr?.partyName}</p>
                                 </Col>
                                 <Col span={12} style={{ right: 0, position: 'absolute' }}>
                                     <strong>Stage</strong>

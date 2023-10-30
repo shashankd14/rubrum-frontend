@@ -29,7 +29,9 @@ const CreateLinkTemplate = (props) => {
     const [materialGrades, setMaterialGrades] = useState([]);
     const [thicknessList, setThicknessList] = useState([]);
     const [anyThicknessFlag, setAnyThicknessFlag] = useState(props.template?.anyThicknessFlag==='N'); 
-   //const [anyThicknessFlag, setAnyThicknessFlag] = useState();
+    const [anyMatGradeFlag, setanyMatGradeFlag] = useState(props.template?.anyMatGradeFlag==='N');
+    const [anyEndusertagFlag, setanyEndusertagFlag] = useState(props.template?.anyEndusertagFlag==='N');
+    const [anyPartyFlag, setanyPartyFlag] = useState(props.template?.anyPartyFlag==='N');
 
     useEffect(() => {
         if (props.match) {
@@ -67,13 +69,16 @@ const CreateLinkTemplate = (props) => {
             const jsonData =  props.template.data;
             const groupedData = {};
             jsonData.forEach((item) => {
-                const { templateId, templateName, partyId, endUserTagIdList, thicknessList,   matGradeIdList } = item;
+                const { templateId, templateName, partyId, endUserTagIdList, thicknessList, matGradeIdList, anyThicknessFlag, anyPartyFlag, anyEndusertagFlag, anyMatGradeFlag } = item;
               
                 if (!groupedData[templateId]) {
                   groupedData[templateId] = {
                     templateId,
                     templateName,
                     anyThicknessFlag: anyThicknessFlag? 'Y' : 'N',
+                    anyPartyFlag: anyPartyFlag? 'Y' : 'N',
+                    anyEndusertagFlag: anyEndusertagFlag? 'Y' : 'N',
+                    anyMatGradeFlag: anyMatGradeFlag? 'Y' : 'N',
                     partyIdList: [],
                     endUserTagIdList:JSON.parse(item.endUserTagIdList),
                     thicknessList:JSON.parse(item.thicknessList), 
@@ -158,7 +163,10 @@ const CreateLinkTemplate = (props) => {
             userId: localStorage.getItem("userId"),
             thicknessList: thicknessList,
             partyIdList: selectedCustomers,
-            anyThicknessFlag: anyThicknessFlag? 'Y' : 'N',
+            anyThicknessFlag: anyThicknessFlag? 'N' : 'Y',
+            anyPartyFlag: anyPartyFlag? 'N' : 'Y',
+            anyEndusertagFlag: anyEndusertagFlag? 'N' : 'Y',
+            anyMatGradeFlag: anyMatGradeFlag? 'N' : 'Y',
         })
         if (action == 'create')
             props.saveQualityTemplateLink(payload);
@@ -179,15 +187,28 @@ const CreateLinkTemplate = (props) => {
         setMaterialOptions(options);
     }, [props.material.materialList]);
 
-    const selectAllOptions = () => {
+    const selectAllCustomers = () => {
         const allOptionValues = partyList.map((party) => party.nPartyId);
         setSelectedCustomers(allOptionValues);
+      };
+      const selectAllEndUserTags = () => {
+        const allOptionValues = props.packetClassification?.endUserTags.map((tag) => tag.tagId);
+        setSelectedEndUserTags(allOptionValues);
+      };
+      const selectAllMaterialGrades = () => {
+        const allOptionValues = props.material?.materialList.flatMap(item => item.materialGrade.map(grade => grade.gradeId));
+        console.log("mat.materialGrade?.gradeId", props.material?.materialList.gradeId)
+        setMaterialGrades(allOptionValues);
+      };
+      const selectAllThickness = () => {
+        const allOptionValues = (props.template?.thicknessList)
+        setThicknessList(allOptionValues);
       };
    const history = useHistory();
    const handleCancel = () =>{
     history.goBack();
   }
-
+//console.log("props.material?.materialList",props.material?.materialList);
     return (
         <div>
             <Card title="Link Template">
@@ -221,7 +242,20 @@ const CreateLinkTemplate = (props) => {
                     <Col span={12}>
                         <div style={{ marginTop: 30, display: "flex" }}>
                             <label>Assign Customer</label>&emsp;
-                            <button onClick={selectAllOptions} style={{marginBottom:'5px'}}>Select All</button>
+                            {/* <button onClick={selectAllOptions} style={{marginBottom:'5px'}}>Select All</button> */}
+                            &emsp;&emsp;&emsp; <label>Select All</label>&nbsp; 
+                                    <Checkbox
+                                        id="allOptions"
+                                        checked={selectedCustomers.length===partyList.length}
+                                        onChange={selectAllCustomers}
+                                        disabled = {anyPartyFlag}
+                                    />
+                             &emsp;&emsp;&emsp; <label>Any</label>&nbsp; 
+                                    <Checkbox
+                                        id="anyPartyFlag"
+                                        checked={anyPartyFlag}
+                                        onChange={(e) => setanyPartyFlag(e.target.checked)}
+                                    />
                         </div>
                         <div >
                             <Select
@@ -245,7 +279,7 @@ const CreateLinkTemplate = (props) => {
                             >
                                 {partyList.length > 0 &&
                                     partyList.map((party) => (
-                                        <Select.Option key={party.nPartyId} value={party.nPartyId}>{party.partyName}</Select.Option>
+                                        <Select.Option key={party.nPartyId} value={party.nPartyId} disabled={anyPartyFlag}>{party.partyName}</Select.Option>
                                     ))}
                             </Select>
                         </div>
@@ -272,6 +306,19 @@ const CreateLinkTemplate = (props) => {
                             <Col span={12}>
                                 <div style={{ marginTop: 30, display: "flex" }}>
                                     <label>Material Grade</label>
+                                    &emsp;&emsp;&emsp; <label>Select All</label>&nbsp; 
+                                    <Checkbox
+                                        id="allOptions"
+                                        checked={selectAllMaterialGrades.length===props.material.length}
+                                        onChange={selectAllMaterialGrades}
+                                        disabled = {anyMatGradeFlag}
+                                    />
+                             &emsp;&emsp;&emsp; <label>Any</label>&nbsp; 
+                                    <Checkbox
+                                        id="anyMatGradeFlag"
+                                        checked={anyMatGradeFlag}
+                                        onChange={(e) => setanyMatGradeFlag(e.target.checked)}
+                                    />
                                 </div>
                                 <div>
                                     <Select
@@ -283,6 +330,7 @@ const CreateLinkTemplate = (props) => {
                                         optionFilterProp="children"
                                         onChange={onMaterialGradeSelection}
                                         value={materialGrades}
+                                        disabled = {anyMatGradeFlag}
                                         // onFocus={handleFocus}
                                         // onBlur={handleBlur}
                                         maxTagCount={3}
@@ -302,6 +350,19 @@ const CreateLinkTemplate = (props) => {
                             <Col span={12}>
                                 <div style={{ marginTop: 30, display: "flex" }}>
                                     <label>End User Tags</label>
+                                    &emsp;&emsp;&emsp; <label>Select All</label>&nbsp; 
+                                    <Checkbox
+                                        id="allOptions"
+                                        checked={selectedEndUserTags.length===props.packetClassification.length}
+                                        onChange={selectAllEndUserTags}
+                                        disabled = {anyEndusertagFlag}
+                                    />
+                                  &emsp;&emsp;&emsp; <label>Any</label>&nbsp; 
+                                    <Checkbox
+                                        id="anyEndusertagFlag"
+                                        checked={anyEndusertagFlag}
+                                        onChange={(e) => setanyEndusertagFlag(e.target.checked)}
+                                    />
                                 </div>
                                 <div>
                                     <Select
@@ -319,8 +380,9 @@ const CreateLinkTemplate = (props) => {
                                         }
                                         onChange={onEnduserTagSelection}
                                         value={selectedEndUserTags}
+                                        allowClear
                                     >{props?.packetClassification?.endUserTags?.map(item => {
-                                        return <Option value={item?.tagId}>{item.tagName}</Option>
+                                        return <Option value={item?.tagId} disabled={anyEndusertagFlag}>{item.tagName}</Option>
                                     })}</Select>
                                 </div>
                             </Col>
@@ -328,11 +390,19 @@ const CreateLinkTemplate = (props) => {
                         <Row>
                             <Col span={12}>
                                 <div style={{ marginTop: 30, display: "flex" }}>
-                                    <label>Thickness</label> &emsp;&emsp;&emsp; <label>Any</label>&nbsp; 
+                                    <label>Thickness</label> 
+                                    &emsp;&emsp;&emsp; <label>Select All</label>&nbsp; 
+                                    <Checkbox
+                                        id="allOptions"
+                                        checked={thicknessList.length===props.template.thicknessList.length}
+                                        onChange={selectAllThickness}
+                                        disabled = {anyThicknessFlag}
+                                    />
+                                  &emsp;&emsp;&emsp; <label>Any</label>&nbsp; 
                                     <Checkbox
                                         id="anyThicknessFlag"
                                         checked={anyThicknessFlag}
-                                      onChange={(e) => setAnyThicknessFlag(e.target.checked)}
+                                        onChange={(e) => setAnyThicknessFlag(e.target.checked)}
                                     />
                                 </div>
                                 <div>
