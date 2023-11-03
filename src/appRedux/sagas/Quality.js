@@ -33,6 +33,7 @@ import {
     GET_WIDTH_LIST_QM_REQUEST,
     GET_LENGTH_LIST_QM_REQUEST,
     DELETE_QUALITY_TEMPLATE_LINK_REQUEST,
+    GET_PACKET_DETAILS_QUALITY_PROCESS_REQUEST,
 } from "../../constants/ActionTypes";
 import {
     saveTemplateError,
@@ -95,6 +96,8 @@ import {
     getWidthListQMError,
     getLengthListQMSuccess,
     getLengthListQMError,
+    getQualityPacketDetailsSuccess,
+    getQualityPacketDetailsError,
 } from "../actions/Quality";
 import { userSignOutSuccess } from "../../appRedux/actions/Auth";
 import { forEach } from "lodash";
@@ -478,6 +481,7 @@ function* deleteQualityReportById(data) {
             body: data.payload,
             headers: getHeaders()
         });
+        window.location.reload();
         if (qualityTemplate.status == 200) {
             let qualityTemplateResponse = yield qualityTemplate.json()
             yield put(deleteQualityReportSuccess(qualityTemplateResponse));
@@ -777,6 +781,27 @@ function* getLengthList(action) {
     }
 }
 
+//Get packetDetails in quality processStage
+function* getPacketDetailsQuality(data) {
+    try {
+        const qualityTemplate = yield fetch(`${baseUrl}api/quality/qir/fetchpacketdtls`, {
+            method: 'POST',
+            body: data.payload,
+            headers: { 'Content-Type': 'application/json', ...getHeaders() }
+        });
+        if (qualityTemplate.status == 200) {
+            let qualityTemplateResponse = yield qualityTemplate.json()
+            yield put(getQualityPacketDetailsSuccess(qualityTemplateResponse));
+        } else if (qualityTemplate.status === 401) {
+            yield put(userSignOutSuccess());
+        } else
+            yield put(getQualityPacketDetailsError('error'));
+    } catch (error) {
+        console.log(error)
+        yield put(getQualityPacketDetailsError(error));
+    }
+}
+
 export function* watchFetchRequests() {
     yield takeLatest(SAVE_TEMPLATE_REQUEST, saveTemplate);
     yield takeLatest(FETCH_TEMPLATE_LIST, fetchTemplateList);
@@ -808,6 +833,7 @@ export function* watchFetchRequests() {
     yield takeLatest(GET_WIDTH_LIST_QM_REQUEST, getWidthList);
     yield takeLatest(GET_LENGTH_LIST_QM_REQUEST, getLengthList);
     yield takeLatest(DELETE_QUALITY_TEMPLATE_LINK_REQUEST, deleteQualityTemplateLinkById);
+    yield takeLatest(GET_PACKET_DETAILS_QUALITY_PROCESS_REQUEST, getPacketDetailsQuality);
 }
 
 export default function* qualitySagas() {

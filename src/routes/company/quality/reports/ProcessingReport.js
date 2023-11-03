@@ -143,11 +143,17 @@ const ProcessingReport = (props) => {
                     <span
                         className={`gx-link ${record.qirId && disabledEle }`}
                         onClick={(e) => showTemplateList(record, index, e)}
+                        // className="gx-link"
+                        // onClick={record.qirId ? (e) => showReportView(record, index, e) : null}
+                        // style={!record.qirId ? {} : { opacity: 0.5, pointerEvents: 'none' }}
                     >
                         Create QR
                     </span>
                     <Divider type="vertical" />
                     <span
+                        // className="gx-link"
+                        // onClick={record.qirId ? (e) => showReportView(record, index, e) : null}
+                        // style={record.qirId ? {} : { opacity: 0.5, pointerEvents: 'none' }}
                         className={`gx-link ${!record.qirId && disabledEle }`}
                         onClick={(e) => showReportView(record, index, e)}
                     >
@@ -155,14 +161,22 @@ const ProcessingReport = (props) => {
                     </span>
                     <Divider type="vertical" />
                     <span 
+                        // className="gx-link"
+                        // onClick={record.qirId ? (e) => showReportView(record, index, e) : null}
+                        // style={record.qirId ? {} : { opacity: 0.5, pointerEvents: 'none' }}
                     className={`gx-link ${!record.qirId && disabledEle }`}
-                    onClick={(e) => onEdit(record, index, e)}>
+                    onClick={(e) => onEdit(record, index, e)}
+                    >
                         Edit
                     </span>
                     <Divider type="vertical" />
                     <span 
+                    // className="gx-link"
+                    // onClick={record.qirId ? (e) => showReportView(record, index, e) : null}
+                    // style={record.qirId ? {} : { opacity: 0.5, pointerEvents: 'none' }}
                     className={`gx-link ${!record.qirId && disabledEle }`}
-                    onClick={(e) => onDelete(record, index, e)}>
+                    onClick={(e) => onDelete(record, index, e)}
+                    >
                         Delete
                     </span>
                 </span>
@@ -185,25 +199,26 @@ const ProcessingReport = (props) => {
             console.log(props.template)
              setFilteredProcessingList(props.template.data)
         } else if (!props.template.loading && !props.template.error && props.template.operation === 'templateById') {
-            console.log(props)
+            console.log(selectedItemForQr)
             setShowCreateQrScreen(true)
-            props.history.push({ pathname: '/company/quality/reports/create/preprocessing', state: { selectedItemForQr: selectedItemForQr, templateDetails: props.template.data, action: 'create' } })
+            props.history.push({ pathname: '/company/quality/reports/create/processing', state: { selectedItemForQr: selectedItemForQr, templateDetails: props.template.data, action: 'create' } })
         } else if (!props.template.loading && !props.template.error && props.template.operation == "templateLinkList") {
-            console.log(props.template)
-            setTemplateLinkList(props.template.data)
+            var tempData = props.template.data;
+            setTemplateLinkList(tempData.filter(x=> x.stageName==="PROCESSING"))
             setShowCreateModal(true)
         } else if (!props.template.loading && !props.template.error && props.template.operation === 'templateList') {
             console.log(props.template)
             setTemplateList(props.template.data)
         } else if (!props.template.loading && !props.template.error && props.template.operation == "qualityReportById") {
             console.log("qualityReportById", props.template)
-            props.history.push({ pathname: '/company/quality/reports/create/preprocessing', state: { selectedItemForQr: selectedItemForQr, templateDetails: props.template.data, action: action } })
+            props.history.push({ pathname: '/company/quality/reports/create/processing', state: { selectedItemForQr: selectedItemForQr, templateDetails: props.template.data, action: action } })
         }
     }, [props.template.loading, props.template.error, props.template.operation]);
 
 
     const showCreateQr = () => {
         // props.history.push()
+        console.log(selectedItemForQr?.coilNo);
         props.getQualityTemplateById(templateId)
     }
 
@@ -211,7 +226,7 @@ const ProcessingReport = (props) => {
         console.log(record, key)
         setSelectedItemForQr(record)
         setShowCreateModal(true);
-        props.fetchTemplatesLinkList({ partyId: record.npartyId });
+        props.fetchTemplatesLinkList({ partyId: record.npartyId});
     }
 
     const showReportView = (record, key) => {
@@ -227,6 +242,7 @@ const ProcessingReport = (props) => {
     const onDelete = (record, key, e) => {
         console.log(record, key);
         props.deleteQualityReport(record.qirId);
+       // props.history.push("/company/quality/reports");
     };
 
     const onEdit = (record, key, e) => {
@@ -350,7 +366,7 @@ const ProcessingReport = (props) => {
                             </Col>
                             <Col span={12} style={{ right: 0, position: 'absolute' }}>
                                 <strong>Stage</strong>
-                                <p>PreProcessing</p>
+                                <p>Processing</p>
                             </Col>
                         </Row>
 

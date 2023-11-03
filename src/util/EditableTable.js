@@ -109,6 +109,12 @@ class EditableTable extends React.Component {
     })
   }
 
+  componentDidUpdate(prevProps) {
+    if (this.props.dataSource !== prevProps.dataSource) {
+      this.setState({ dataSource: this.props.dataSource });
+    }
+  }
+
   handleDelete = key => {
     const dataSource = [...this.state.dataSource];
     this.setState({ dataSource: dataSource.filter(item => item.key !== key) });

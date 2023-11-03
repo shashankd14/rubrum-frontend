@@ -680,3 +680,19 @@ export const getLengthListQMError = (error) => ({
   type: actionTypes.GET_LENGTH_LIST_QM_ERROR,
   error
 });
+
+//Get packetDetails in quality processStage
+export const getQualityPacketDetails = (payload) => ({
+  type: actionTypes.GET_PACKET_DETAILS_QUALITY_PROCESS_REQUEST,
+  payload
+});
+
+export const getQualityPacketDetailsSuccess = (packetDetails) => ({
+  type: actionTypes.GET_PACKET_DETAILS_QUALITY_PROCESS_SUCCESS,
+  packetDetails
+});
+
+export const getQualityPacketDetailsError = (error) => ({
+  type: actionTypes.GET_PACKET_DETAILS_QUALITY_PROCESS_ERROR,
+  error
+});

@@ -44581,12 +44581,13 @@ textarea.gx-chat-textarea {
 }
 
 #slittingform .ant-input{
-  background: #003366;
-  opacity: .05;
-  /* color: #545454; */
+  /*background: #003366;*/
+  background: #f5f5f5;
+  /*opacity: .05;*/
+   color: #545454; 
 }
 #slittingform input::placeholder {
-  color: #545454;
+  color: #000000;
 }
 
 #custTags .ant-tag {

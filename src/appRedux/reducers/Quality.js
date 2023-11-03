@@ -93,6 +93,7 @@ const INIT_STATE = {
   thicknessList:[],
   widthList:[],
   lengthList:[],
+  packetDetails:[],
   formFields: {
     inward: [],
     preProcessing: [],
@@ -673,6 +674,26 @@ export default (state = INIT_STATE, action) => {
           lengthList: action.lengthList,
         }
       case actionTypes.GET_LENGTH_LIST_QM_ERROR:
+        return {
+          ...state,
+          error: true,
+          loading: false
+        }
+      //Get packetDetails in quality processStage
+      case actionTypes.GET_PACKET_DETAILS_QUALITY_PROCESS_REQUEST:
+        return {
+          ...state,
+          error: false,
+          loading: true
+        }
+      case actionTypes.GET_PACKET_DETAILS_QUALITY_PROCESS_SUCCESS:
+        return {
+          ...state,
+          error: false,
+          loading: false,
+          packetDetails: action.packetDetails,
+        }
+      case actionTypes.GET_PACKET_DETAILS_QUALITY_PROCESS_ERROR:
         return {
           ...state,
           error: true,
