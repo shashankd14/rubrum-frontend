@@ -1,20 +1,34 @@
-import { Button, Card, Col, DatePicker, Input, Popconfirm, Row } from 'antd'
+import { Button, Card, Col, DatePicker, Input, Row } from 'antd'
 import TextArea from 'antd/lib/input/TextArea';
 import React, { useState } from 'react'
-import { connect } from 'react-redux';
 import EditableTable from '../../../../../../util/EditableTable';
-import { 
-    updateTemplateFormData, 
- } from "../../../../../../appRedux/actions"
 
 
-const SlittingForm = (props) => {
+const SlitAndCutForm = (props) => {
 
+    var allowableLowerWidth=0;
+    var allowableHigherWidth = 0;
+    const templateData = JSON.parse(props?.templateDetails?.data?.templateDetails);
+    // Access the 'formData' property
+    const formDataObject = templateData.find(item => item.id === 'formData');
+
+    if (formDataObject) {
+        // Access the "value" property which contains the "formData" object
+        const formData = formDataObject.value;
+      
+        // Access the "slitInspectionData" array
+        const slitInspectionData = formData.slitInspectionData;
+      
+        // Access the "allowableLowerWidth" of the first sub-row (element at index 0)
+         allowableLowerWidth = slitInspectionData[0].allowableLowerWidth;
+         allowableHigherWidth = slitInspectionData[0].allowableHigherWidth; 
+       
+      }
     const [slitDataSource, setSlitDataSource] = useState([{
         slitNo: "",
         slitSize: "",
-        allowableLowerWidth: "",
-        allowableHigherWidth: "",
+        allowableLowerWidth: allowableLowerWidth,
+        allowableHigherWidth: allowableHigherWidth,
         actualWidth: "",
         burrHeight: "",
         remarks: "",
@@ -23,19 +37,32 @@ const SlittingForm = (props) => {
     const [finalDataSource, setFinalDataSource] = useState([{
         slitNo: "",
         slitSize: "",
-        allowableLowerWidth: "",
-        allowableHigherWidth: "",
+        allowableLowerWidth: allowableHigherWidth,
+        allowableHigherWidth: allowableHigherWidth,
         actualWidth: "",
         burrHeight: "",
         remarks: "",
     }]);
 
-    const [isDisabled, setIsDisabled] = useState(props.isDisabled)
+    const [cutDataSource, setCutDataSource] = useState([{
+        slitNo: "",
+        thickness: "",
+        width: "",
+        length: "",
+        actualThickness: "",
+        actualWidth: "",
+        actualLength: "",
+        actualThickness: "",
+        burrHeight: "",
+        diagonalDifference: "",
+        remarks: "",
+    }]);
 
     const [slitInspectionData, setSlitInspectionData] = useState([])
+    const [cutInspectionData, setCutInspectionData] = useState([])
     const [finalInspectionData, setFinalInspectionData] = useState([])
-    const [slitFormData, setSlitFormData] = useState({
-        processType: "slitting",
+    const [slitCutFormData, setSlitFormData] = useState({
+        processType: "slitcut",
         customerName: "",
         operation: "",
         processDate: "",
@@ -79,28 +106,18 @@ const SlittingForm = (props) => {
             editable: true
         },
         {
-            title: 'Allowable Lower Slit Size',
+            title: 'Allowable Lower Width',
             dataIndex: 'allowableLowerWidth',
             editable: true
         },
         {
-            title: 'Allowable Higher Slit Size',
+            title: 'Allowable Higher Width',
             dataIndex: 'allowableHigherWidth',
             editable: true
         },
         {
             title: 'Actual Width',
             dataIndex: 'actualWidth',
-            editable: true
-        },
-        {
-            title: 'Allowable Lower Burr Height',
-            dataIndex: 'allowableLowerburrHeight',
-            editable: true
-        },
-        {
-            title: 'Allowable Higher Burr Height',
-            dataIndex: 'allowableHeigherburrHeight',
             editable: true
         },
         {
@@ -127,12 +144,12 @@ const SlittingForm = (props) => {
             editable: true
         },
         {
-            title: 'Allowable Lower Slit Size',
+            title: 'Allowable Lower Width',
             dataIndex: 'allowableLowerWidth',
             editable: true
         },
         {
-            title: 'Allowable Higher Slit Size',
+            title: 'Allowable Higher Width',
             dataIndex: 'allowableHigherWidth',
             editable: true
         },
@@ -142,18 +159,61 @@ const SlittingForm = (props) => {
             editable: true
         },
         {
-            title: 'Allowable Lower Burr Height',
-            dataIndex: 'allowableLowerburrHeight',
+            title: 'Burr Height',
+            dataIndex: 'burrHeight',
             editable: true
         },
         {
-            title: 'Allowable Higher Burr Height',
-            dataIndex: 'allowableHeigherburrHeight',
+            title: 'Remarks',
+            dataIndex: 'remarks',
+            editable: true
+        },
+    ];
+
+    const cutColumns = [
+        {
+            title: 'Slit No.',
+            dataIndex: 'slitNo',
+            editable: true,
+        },
+        {
+            title: 'Thickness',
+            dataIndex: 'thickness',
+            editable: true
+        },
+        {
+            title: 'Width',
+            dataIndex: 'width',
+            editable: true
+        },
+        {
+            title: 'Length',
+            dataIndex: 'length',
+            editable: true
+        },
+        {
+            title: 'Actual Thickness',
+            dataIndex: 'actualThickness',
+            editable: true
+        },
+        {
+            title: 'Actual Width',
+            dataIndex: 'actualWidth',
+            editable: true
+        },
+        {
+            title: 'Actual Length',
+            dataIndex: 'actualLength',
             editable: true
         },
         {
             title: 'Burr Height',
             dataIndex: 'burrHeight',
+            editable: true
+        },
+        {
+            title: 'Diagonal Difference',
+            dataIndex: 'diagonalDifference',
             editable: true
         },
         {
@@ -185,26 +245,45 @@ const SlittingForm = (props) => {
         remarks: "",
     }
 
+    const emptyCutRecord = {
+        key: 0,
+        slitNo: "",
+        slitSize: "",
+        allowableLowerWidth: "",
+        allowableHigherWidth: "",
+        actualWidth: "",
+        burrHeight: "",
+        remarks: "",
+    }
+
     const onOptionChange = (key, changeEvent) => {
-        slitFormData[key] = changeEvent.target.value;
+        slitCutFormData[key] = changeEvent.target.value;
     }
 
     const saveForm = () => {
-        slitFormData['slitInspectionData'] = slitInspectionData
-        slitFormData['finalInspectionData'] = finalInspectionData
-        props.onSave(slitFormData)
-        // props.updateTemplateFormData({action: 'slit', formData: slitFormData})
+        slitCutFormData['slitInspectionData'] = slitInspectionData
+        slitCutFormData['cutInspectionData'] = cutInspectionData
+        slitCutFormData['finalInspectionData'] = finalInspectionData
+        //
+        props.onSave(slitCutFormData);
     }
 
-    const handleInspectionTableChange = (tableData) => {
-        console.log('handleInspectionTableChange', tableData)
+    const handleSlitInspectionTableChange = (tableData) => {
+        console.log('handleSlitInspectionTableChange', tableData)
         setSlitInspectionData(tableData)
+    } 
+
+    const handleCutInspectionTableChange = (tableData) => {
+        console.log('handleCutInspectionTableChange', tableData)
+        setCutInspectionData(tableData)
     } 
 
     const handleFinalInspectionTableChange = (tableData) => {
         console.log('handleFinalInspectionTableChange', tableData)
         setFinalInspectionData(tableData)
     } 
+
+
     return (
         <div id="slittingform">
             <Card title="Slitting Process Form">
@@ -212,35 +291,35 @@ const SlittingForm = (props) => {
                     <Row>
                         <Col span={24}>
                             <label>Customer Name</label>
-                            <Input disabled value={slitFormData.customerName} onChange={(e) => onOptionChange('customerName', e)}></Input>
+                            <Input placeholder='Enter customer name' disabled value={slitCutFormData.customerName} onChange={(e) => onOptionChange('customerName', e)}></Input>
                         </Col>
                     </Row>
                     <Row>
                         <Col span={12}>
                             <label>Process Date</label>
-                            <DatePicker disabled value={slitFormData.processDate} onChange={(e) => onOptionChange('processDate', e)}> </DatePicker>
+                            <DatePicker disabled value={slitCutFormData.processDate} onChange={(e) => onOptionChange('processDate', e)}> </DatePicker>
                         </Col>
                         <Col span={12}>
                             <label>Batch Number</label>
-                            <Input disabled value={slitFormData.batchNumber} onChange={(e) => onOptionChange('batchNumber', e)}></Input>
+                            <Input disabled value={slitCutFormData.batchNumber} onChange={(e) => onOptionChange('batchNumber', e)}></Input>
                         </Col>
 
                     </Row>
                     <Row>
                         <Col span={12}>
                             <label>Grade</label>
-                            <Input disabled value={slitFormData.grade} onChange={(e) => onOptionChange('grade', e)}></Input>
+                            <Input disabled value={slitCutFormData.grade} onChange={(e) => onOptionChange('grade', e)}></Input>
                         </Col>
                         <Col span={12}>
                             <label>Coil Thickness (IN MM)</label>
-                            <Input disabled value={slitFormData.thickness} onChange={(e) => onOptionChange('thickness', e)}></Input>
+                            <Input disabled value={slitCutFormData.thickness} onChange={(e) => onOptionChange('thickness', e)}></Input>
                         </Col>
 
                     </Row>
                     <Row>
                         <Col span={24}>
                             <label>Physical Appearance</label>
-                            <Input disabled value={slitFormData.physicalAppearance} onChange={(e) => onOptionChange('physicalAppearance', e)}></Input>
+                            <Input disabled value={slitCutFormData.physicalAppearance} onChange={(e) => onOptionChange('physicalAppearance', e)}></Input>
                         </Col>
                     </Row>
 
@@ -249,40 +328,43 @@ const SlittingForm = (props) => {
                     <Row>
                         <Col span={24}>
                             <label>Operation</label>
-                            <Input disabled value={slitFormData.operation} onChange={(e) => onOptionChange('operation', e)}></Input>
+                            <Input disabled value={slitCutFormData.operation} onChange={(e) => onOptionChange('operation', e)}></Input>
                         </Col>
                     </Row>
                     <Row>
                         <Col span={12}>
                             <label>Mother Coil No.</label>
-                            <Input disabled value={slitFormData.motherCoilNumber} onChange={(e) => onOptionChange('motherCoilNumber', e)}></Input>
+                            <Input disabled value={slitCutFormData.motherCoilNumber} onChange={(e) => onOptionChange('motherCoilNumber', e)}></Input>
                         </Col>
                         <Col span={12}>
                             <label>AspenCoil No.</label>
-                            <Input disabled value={slitFormData.aspenCoilNumber} onChange={(e) => onOptionChange('aspenCoilNumber', e)}></Input>
+                            <Input disabled value={slitCutFormData.aspenCoilNumber} onChange={(e) => onOptionChange('aspenCoilNumber', e)}></Input>
                         </Col>
 
                     </Row>
                     <Row>
                         <Col span={12}>
                             <label>Coil Width (IN MM)</label>
-                            <Input disabled value={slitFormData.width} onChange={(e) => onOptionChange('width', e)}></Input>
+                            <Input disabled value={slitCutFormData.width} onChange={(e) => onOptionChange('width', e)}></Input>
                         </Col>
                         <Col span={12}>
                             <label>Coil Weight (IN KGs)</label>
-                            <Input disabled value={slitFormData.weight} onChange={(e) => onOptionChange('weight', e)}></Input>
+                            <Input disabled value={slitCutFormData.weight} onChange={(e) => onOptionChange('weight', e)}></Input>
                         </Col>
                     </Row>
                     <Row>
                         <Col span={24}>
                             <label>Report Date</label>
-                            <DatePicker style={{ width: "100%" }} disabled value={slitFormData.reportDate} onChange={(e) => onOptionChange('reportDate', e)}></DatePicker>
+                            <DatePicker style={{ width: "100%" }} disabled value={slitCutFormData.reportDate} onChange={(e) => onOptionChange('reportDate', e)}></DatePicker>
                         </Col>
                     </Row>
 
                 </Card.Grid>
-                <Card.Grid style={gridStyle} >
-                    <EditableTable  columns={slitColumns} emptyRecord={emptySlitRecord} dataSource={slitDataSource} handleChange={handleInspectionTableChange}/>
+                <Card.Grid style={gridStyle}>
+                    <EditableTable columns={slitColumns} emptyRecord={emptySlitRecord} dataSource={slitDataSource} handleChange={handleSlitInspectionTableChange}/>
+                </Card.Grid>
+                <Card.Grid style={gridStyle}>
+                    <EditableTable columns={cutColumns} emptyRecord={emptyCutRecord} dataSource={cutDataSource} handleChange={handleCutInspectionTableChange}/>
                 </Card.Grid>
                 <Card.Grid style={gridStyle}>
                     <Row>
@@ -296,17 +378,17 @@ const SlittingForm = (props) => {
                     <Row>
                         <Col span={24}>
                             <label>Final Judgement</label>
-                            <TextArea value={slitFormData.finalJudgement} onChange={(e) => onOptionChange('finalJudgement', e)}></TextArea>
+                            <TextArea value={slitCutFormData.finalJudgement} onChange={(e) => onOptionChange('finalJudgement', e)}></TextArea>
                         </Col>
                     </Row>
                     <Row>
                         <Col span={12}>
                             <label>Quality Engineer</label>
-                            <Input value={slitFormData.qualityEngineer} onChange={(e) => onOptionChange('qualityEngineer', e)}></Input>
+                            <Input value={slitCutFormData.qualityEngineer} onChange={(e) => onOptionChange('qualityEngineer', e)}></Input>
                         </Col>
                         <Col span={12}>
                             <label>Quality Head</label>
-                            <Input value={slitFormData.qualityHead} onChange={(e) => onOptionChange('qualityHead', e)}></Input>
+                            <Input value={slitCutFormData.qualityHead} onChange={(e) => onOptionChange('qualityHead', e)}></Input>
                         </Col>
                     </Row>
                 </Card.Grid>
@@ -323,10 +405,4 @@ const SlittingForm = (props) => {
     )
 }
 
-const mapStateToProps = state => ({
-    templateDetails: state.quality,
-});
-
-export default connect(mapStateToProps, {
-    updateTemplateFormData,
-})(SlittingForm);
+export default SlitAndCutForm

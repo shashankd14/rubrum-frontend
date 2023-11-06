@@ -75,7 +75,6 @@ const ProcessingTemplate = (props) => {
       setTemplateData(val)
     }
   }, [props.templateDetails]);
-
   const onFilesChange = (type, file) => {
     console.log(type, file)
     templateData[type].fileList = file.fileList.slice(-1)
@@ -99,8 +98,6 @@ const ProcessingTemplate = (props) => {
     console.log(formData)
     templateData['formData']['value'] = formData;
   }
-
-  
 
   return (
     <div>

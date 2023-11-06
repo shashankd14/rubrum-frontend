@@ -17,7 +17,6 @@ import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 const CreateLinkTemplate = (props) => {
 
     const Option = Select.Option;
-
     const [selectedTemplate, setSelectedTemplate] = useState();
     const [selectedTemplateId, setSelectedTemplateId] = useState();
     const [templateList, setTemplateList] = useState([]); 
@@ -31,12 +30,12 @@ const CreateLinkTemplate = (props) => {
     const [thickness, setThicknessList] = useState([]);
     const [width, setWidthList] = useState([]);
     const [length, setLengthList] = useState([]);
-    const [anyThicknessFlag, setAnyThicknessFlag] = useState(props.template?.anyThicknessFlag==='N');
-    const [anyLengthFlag, setAnyLengthFlag] = useState(props.template?.anyLengthFlag==='N');
-    const [anyWidthFlag, setAnyWidthFlag] = useState(props.template?.anyWidthFlag==='N');
-    const [anyMatGradeFlag, setanyMatGradeFlag] = useState(props.template?.anyMatGradeFlag==='N');
-    const [anyEndusertagFlag, setanyEndusertagFlag] = useState(props.template?.anyEndusertagFlag==='N');
-    const [anyPartyFlag, setanyPartyFlag] = useState(props.template?.anyPartyFlag==='N');
+    const [anyThicknessFlag, setAnyThicknessFlag] = useState(props.template?.data?.anyThicknessFlag==='N');
+    const [anyLengthFlag, setAnyLengthFlag] = useState(props.template.data?.anyLengthFlag==='N');
+    const [anyWidthFlag, setAnyWidthFlag] = useState(props.template.data?.anyWidthFlag==='N');
+    const [anyMatGradeFlag, setanyMatGradeFlag] = useState(props.template.data?.anyMatGradeFlag==='N');
+    const [anyEndusertagFlag, setanyEndusertagFlag] = useState(props.template?.data?.anyEndusertagFlag==='N');
+    const [anyPartyFlag, setanyPartyFlag] = useState(props.template?.data?.anyPartyFlag==='N');
 
     useEffect(() => { 
          if (props.match) {
@@ -72,6 +71,13 @@ const CreateLinkTemplate = (props) => {
             jsonData.forEach((item) => {
                 const { kqpId, kqpName, partyId, anyThicknessFlag, anyLengthFlag, anyWidthFlag, anyPartyFlag, anyEndusertagFlag, anyMatGradeFlag, endUserTagIdList, thicknessList, widthList, lengthList, matGradeIdList } = item;
               
+                setAnyThicknessFlag(anyThicknessFlag ==='N');
+                setAnyLengthFlag(anyLengthFlag ==='N');
+                setAnyWidthFlag(setAnyWidthFlag ==='N');
+                setanyPartyFlag(setanyPartyFlag ==='N');
+                setanyEndusertagFlag(setanyEndusertagFlag ==='N');
+                setanyMatGradeFlag(setanyPartyFlag ==='N');
+                
                 if (!groupedData[kqpId]) {
                   groupedData[kqpId] = {
                     kqpId,
@@ -82,7 +88,6 @@ const CreateLinkTemplate = (props) => {
                     widthList:JSON.parse(item.widthList),
                     lengthList:JSON.parse(item.lengthList),
                     matGradeIdList:JSON.parse(item.matGradeIdList),
-                   // anyThicknessFlag: anyThicknessFlag === 'N' ? false : true,
                     anyThicknessFlag: anyThicknessFlag? 'N' : 'Y',
                     anyLengthFlag: anyLengthFlag? 'N' : 'Y',
                     anyWidthFlag: anyWidthFlag? 'N' : 'Y',
@@ -302,7 +307,7 @@ const CreateLinkTemplate = (props) => {
 
                                 {partyList.length > 0 &&
                                     partyList.map((party) => (
-                                        <Select.Option value={party.nPartyId} disabled = {anyWidthFlag}>{party.partyName}</Select.Option>
+                                        <Select.Option value={party.nPartyId} disabled = {anyPartyFlag}>{party.partyName}</Select.Option>
                                     ))}
                             </Select>
                         </div>

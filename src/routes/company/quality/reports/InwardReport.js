@@ -222,8 +222,8 @@ const InwardReport = (props) => {
             // history.push('/company/quality/reports/create/inward')
             props.history.push({ pathname: '/company/quality/reports/create/inward', state: { selectedItemForQr: selectedItemForQr, templateDetails: props.template.data, action: 'create' } })
         } else if (!props.template.loading && !props.template.error && props.template.operation == "templateLinkList") {
-            console.log(props.template)
-            setTemplateLinkList(props.template.data)
+            var tempData = props.template.data;
+            setTemplateLinkList(tempData.filter(x=> x.stageName==="INWARD"))
             setShowCreateModal(true)
         } else if (!props.template.loading && !props.template.error && props.template.operation === 'templateList') {
             console.log(props.template)
@@ -247,7 +247,7 @@ const InwardReport = (props) => {
         console.log(record, key)
         setSelectedItemForQr(record)
         setShowCreateModal(true);
-        props.fetchTemplatesLinkList({ partyId: record.npartyId });
+        props.fetchTemplatesLinkList({ partyId: record.npartyId});
     }
 
     const showReportView = (record, key) => {

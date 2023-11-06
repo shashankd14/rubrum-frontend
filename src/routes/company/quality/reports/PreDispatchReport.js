@@ -202,8 +202,8 @@ const PreDispatchReport = (props) => {
             // history.push('/company/quality/reports/create/predispatch')
             props.history.push({ pathname: '/company/quality/reports/create/predispatch', state: { selectedItemForQr: selectedItemForQr, templateDetails: props.template.data, action: 'create' } })
         } else if (!props.template.loading && !props.template.error && props.template.operation == "templateLinkList") {
-            console.log(props.template)
-            setTemplateLinkList(props.template.data)
+            var tempData = props.template.data;
+            setTemplateLinkList(tempData.filter(x=> x.stageName==="PRE_DISPATCH"))
             setShowCreateModal(true)
         } else if (!props.template.loading && !props.template.error && props.template.operation === 'templateList') {
             console.log(props.template)

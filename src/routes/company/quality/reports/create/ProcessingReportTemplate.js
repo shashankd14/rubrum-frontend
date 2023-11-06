@@ -1,9 +1,18 @@
 import React, { useEffect, useState } from 'react'
-import { useHistory } from "react-router";
-import { Button, Card, Col, Icon, Input, Radio, Row, Select } from 'antd'
+import { Button, Card, Col, Icon, Input, Radio, Row, Select, Modal } from 'antd'
 import Dragger from 'antd/lib/upload/Dragger'
 import { PROCESSES } from "../../../../../constants/quality/ComponentConstants";
-
+import SlittingForm from '../create/process/SlittingForm';
+import CuttingForm from '../create/process/CuttingForm';
+import SlitAndCutForm from '../create/process/SlitAndCutForm';
+import { connect, useDispatch } from 'react-redux';
+import { 
+  getQualityPacketDetails,
+  fetchQualityReportList,
+  fetchQualityReportStageList,
+  getCoilPlanDetails
+} from "../../../../../appRedux/actions"
+import { Link, useLocation, useHistory, withRouter } from "react-router-dom";
 
 const ProcessingReportTemplate = (props) => {
 
@@ -46,10 +55,19 @@ const ProcessingReportTemplate = (props) => {
       "fileName": "",
       "fileList": []
     },
-
+    formData: {
+      "id": "formData",
+      "type": "customerApproval",
+      "value": "",
+      "fileName": "",
+      "fileList": []
+    },
   });
 
   const [isDisabled, setIsDisabled] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  
+  const dispatch = useDispatch()
 
   useEffect(() => {
     // console.log(props)
@@ -64,7 +82,6 @@ const ProcessingReportTemplate = (props) => {
       setTemplateData(val)
     }
   }, [props.templateDetails]);
-
   const onFilesChange = (type, file) => {
     console.log(type, file)
     templateData[type].fileList = file.fileList.slice(-1)
@@ -83,9 +100,27 @@ const ProcessingReportTemplate = (props) => {
   const createTemplate = () => {
     props.handleCreate(templateData)
   }
+
+  const updateFormData = (formData) => {
+    debugger;
+    console.log(formData)
+    templateData['formData']['value'] = formData;
+  }
+
   const handleCancel = () => {
     history.goBack(); 
   };
+
+const handleClick = () => {
+  setShowCreateModal(true);
+  console.log(props);
+  const payload = JSON.stringify({
+          coilNo : props.location.state.selectedItemForQr.coilNo,
+          partDetailsId : props.location.state.selectedItemForQr.planId
+      });
+      props.getCoilPlanDetails(props.location.state.selectedItemForQr.coilNo);
+      dispatch(getQualityPacketDetails(payload));
+}
 
   return (
     <div>
@@ -111,10 +146,14 @@ const ProcessingReportTemplate = (props) => {
           </Col>
           <Col span={8}>
             <div style={{ display: 'grid', marginTop: 33 }}>
+              {/* {templateData[1].value && <Button
+              onClick={() =>  history.push(`/company/quality/reports/create/process/${templateData[1].value.toLowerCase()}`)}
+              >
+                {`FillXXX ${templateData[1].value.charAt(0).toUpperCase() + templateData[1].value.slice(1).toLowerCase()} Process form first`}
+              </Button>} */}
               {templateData[1].value && <Button
-              onClick={
-              () =>  history.push(`/company/quality/templates/create/process/${templateData[1].value.toLowerCase()}`)
-              }
+               // onClick={() => setShowCreateModal(true)}
+               onClick={handleClick}
               >
                 {`Fill ${templateData[1].value.charAt(0).toUpperCase() + templateData[1].value.slice(1).toLowerCase()} Process form first`}
               </Button>}
@@ -167,6 +206,7 @@ const ProcessingReportTemplate = (props) => {
                 onChange={(e) => onOptionChange(5, e)}
                 required
                 disabled={isDisabled}
+                value={templateData[5].value}
               />
             </div>
           </Col>
@@ -220,8 +260,34 @@ const ProcessingReportTemplate = (props) => {
           </div>
         </Row>}
       </Col>
+      <Modal
+        title={`${templateData[1].value.charAt(0).toUpperCase() + templateData[1].value.slice(1).toLowerCase()} Process`}
+        style={{top: 20}}
+        width={1080}
+        visible={showCreateModal}
+        okButtonProps={{ hidden: true }}
+        cancelButtonProps={{ hidden: true }}
+        onCancel={() => setShowCreateModal(false)}
+        destroyOnClose={true}
+      >
+         {(templateData[1].value==='SLITTING') ? (<SlittingForm onSave={updateFormData}></SlittingForm>
+        ) : (templateData[1].value==='CUTTING') ? (
+        <CuttingForm onSave={updateFormData}></CuttingForm>
+        ) : (
+          <SlitAndCutForm onSave={updateFormData}></SlitAndCutForm>
+         )}  
+      </Modal>
     </div>
   )
 }
+const mapStateToProps = (state) => ({
+    template: state.quality,
+});
 
-export default ProcessingReportTemplate
+export default connect(mapStateToProps, {
+  fetchQualityReportList,
+  fetchQualityReportStageList,
+  getCoilPlanDetails
+})(withRouter(ProcessingReportTemplate));
+
+//export default ProcessingReportTemplate
