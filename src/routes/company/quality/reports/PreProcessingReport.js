@@ -141,29 +141,32 @@ const PreProcessingReport = (props) => {
             render: (text, record, index) => (
                 <span>
                     <span
-                        className={`gx-link ${record.qirId && disabledEle }`}
-                        onClick={(e) => showTemplateList(record, index, e)}
+                        className="gx-link"
+                        onClick={!record.qirId ? (e) => showTemplateList(record, index, e) : null}
+                        style={!record.qirId ? {} : { opacity: 0.5, pointerEvents: 'none' }}
                     >
                         Create QR
                     </span>
                     <Divider type="vertical" />
                     <span
-                       className={`gx-link ${!record.qirId && disabledEle}`}
-                        onClick={(e) => showReportView(record, index, e)}
+                       className="gx-link"
+                       onClick={record.qirId ? (e) => showReportView(record, index, e) : null}
+                       style={record.qirId ? {} : { opacity: 0.5, pointerEvents: 'none' }}
                     >
                         View
                     </span>
                     <Divider type="vertical" />
                     <span 
-                    className={`gx-link ${!record.qirId && disabledEle}`}
-                    onClick={(e) => onEdit(record, index, e)}>
+                    className="gx-link"
+                    onClick={record.qirId ? (e) => onEdit(record, index, e) : null}
+                    style={record.qirId ? {} : { opacity: 0.5, pointerEvents: 'none' }}>
                         Edit
                     </span>
                     <Divider type="vertical" />
                     <span 
-                    //className="gx-link" 
-                    className={`gx-link ${!record.qirId && disabledEle}`}
-                    onClick={(e) => onDelete(record, index, e)}>
+                    className="gx-link"
+                    onClick={record.qirId ? (e) => onDelete(record, index, e) : null}
+                    style={record.qirId ? {} : { opacity: 0.5, pointerEvents: 'none' }}>
                         Delete
                     </span>
                 </span>

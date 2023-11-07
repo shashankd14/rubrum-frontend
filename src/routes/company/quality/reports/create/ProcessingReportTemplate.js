@@ -108,7 +108,9 @@ const ProcessingReportTemplate = (props) => {
   }
 
   const handleCancel = () => {
-    history.goBack(); 
+    debugger;
+    //history.goBack(); 
+    props.history.push('/company/quality/reports')
   };
 
 const handleClick = () => {
@@ -245,7 +247,7 @@ const handleClick = () => {
             </div>
           </Col>
         </Row>
-        {props.action !== 'view' && <Row >
+        {/* {props.action !== 'view' && <Row >
           <div style={{ marginTop: 45 }}>
             <Button style={{ marginLeft: 8 }} onClick={handleCancel}>
               Cancel
@@ -258,7 +260,25 @@ const handleClick = () => {
               </Button>
             }
           </div>
-        </Row>}
+        </Row>} */}
+          <Row>
+          <div style={{ marginTop: 45 }}>
+            {props.action === 'view' ? (
+             <Button type="primary" style={{ marginLeft: 8 }} onClick={handleCancel}>
+                 Back
+            </Button>
+           ) : (
+            <Button style={{ marginLeft: 8 }} onClick={handleCancel}>
+               Cancel
+           </Button>
+           )}
+           {props.action !== 'view' && (
+             <Button type="primary" htmlType="submit" onClick={createTemplate} disabled={isDisabled}>
+          {props.action === 'create' ? 'Create Report' : 'Update Report'}
+           </Button>
+         )}
+    </div>
+  </Row>
       </Col>
       <Modal
         title={`${templateData[1].value.charAt(0).toUpperCase() + templateData[1].value.slice(1).toLowerCase()} Process`}
