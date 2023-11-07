@@ -79,6 +79,7 @@ const SlittingForm = (props) => {
   const [slitInspectionData, setSlitInspectionData] = useState([]);
   const [finalInspectionData, setFinalInspectionData] = useState([]);
 
+  const instructionDate = props.templateDetails.packetDetails?.map(item=>item.instructionDate)
   useEffect(() => {
     // Update customerName in slitFormData when props change
     setSlitFormData((prevFormData) => ({
@@ -131,12 +132,12 @@ const SlittingForm = (props) => {
     {
       title: 'Slit No.',
       dataIndex: 'instructionId',
-      editable: true,
+      editable: false,
     },
     {
       title: 'Slit Size',
       dataIndex: 'plannedNoOfPieces',
-      editable: true,
+      editable: false,
     },
     {
       title: 'Allowable Lower Slit Size',
@@ -179,12 +180,12 @@ const SlittingForm = (props) => {
     {
       title: 'Slit No.',
       dataIndex: 'instructionId',
-      editable: true,
+      editable: false,
     },
     {
       title: 'Slit Size',
       dataIndex: 'plannedNoOfPieces',
-      editable: true,
+      editable: false,
     },
     {
       title: 'Allowable Lower Slit Size',
@@ -250,10 +251,16 @@ const SlittingForm = (props) => {
   };
 
   const saveForm = () => {
+    debugger;
     slitFormData['slitInspectionData'] = slitInspectionData;
     slitFormData['finalInspectionData'] = finalInspectionData;
     props.onSave(slitFormData);
     props.updateQRFormData({ action: 'slit', formData: slitFormData });
+   // props.history.push("/company/quality/reports/create/processing");
+  };
+  const onCancel = () => {
+    debugger;
+    //props.history.push("/company/quality/reports/create/processing");
   };
 
   const handleInspectionTableChange = (tableData) => {
@@ -268,21 +275,17 @@ const SlittingForm = (props) => {
   // const handlePrint = () => {
   //   window.print(); // Opens the print dialog
   // };
-  function openPrintPreview() {
-    const printWindow = window.open('', '_blank');
-    printWindow.document.write('<html><head><title>Print</title></head><body>');
-    const printableContent = document.getElementById('printable-content'); // This is the ID of the content to print
-    printWindow.document.write(printableContent.innerHTML);
-    printWindow.document.write('</body></html>');
-    printWindow.document.close();
-    printWindow.print();
-    printWindow.close();
-  }
-  //console.log("props.inward?.plan?.instruction?.instructionDate", props.inward?.plan);
-  // const instructionDates = props.inward?.plan?.instruction.map(item => item.instructionDate);
-   console.log("props.templateDetails.packetDetails?.instructionDate", props.templateDetails.packetDetails?.map(item=>item.instructionDate));
-   const instructionDate = props.templateDetails.packetDetails?.map(item=>item.instructionDate)
-   console.log(instructionDate)
+  // function openPrintPreview() {
+  //   const printWindow = window.open('', '_blank');
+  //   printWindow.document.write('<html><head><title>Print</title></head><body>');
+  //   const printableContent = document.getElementById('printable-content'); // This is the ID of the content to print
+  //   printWindow.document.write(printableContent.innerHTML);
+  //   printWindow.document.write('</body></html>');
+  //   printWindow.document.close();
+  //   printWindow.print();
+  //   printWindow.close();
+  // }
+  
   return (
     <div id='slittingform'>
       <Card title='Slitting Process Form'>
@@ -394,8 +397,7 @@ const SlittingForm = (props) => {
               <label>Report Date</label>
               <DatePicker
                 style={{ width: '100%' }}
-                disabled
-                value={slitFormData.reportDate}
+                defaultValue={moment()}
                 onChange={(e) => onOptionChange('reportDate', e)}
               ></DatePicker>
             </Col>
@@ -452,12 +454,12 @@ const SlittingForm = (props) => {
           </Row>
         </Card.Grid>
         <div style={{ marginTop: 45 }}>
-          <Button style={{ marginLeft: 8 }}>Cancel</Button>
+          <Button style={{ marginLeft: 8 }} onClick={onCancel}>Cancel</Button>
           <Button type='primary' htmlType='submit' onClick={saveForm}>
             Save
           </Button>
       {/* <Button type="primary" onClick={handlePrint}>Print</Button> */}
-      <Button type="primary" onClick={openPrintPreview}>Print</Button>
+      {/* <Button type="primary" onClick={openPrintPreview}>Print</Button> */}
         </div>
       </Card>
     </div>

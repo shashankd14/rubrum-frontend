@@ -70,7 +70,10 @@ const CreateLinkTemplate = (props) => {
             const groupedData = {};
             jsonData.forEach((item) => {
                 const { templateId, templateName, partyId, endUserTagIdList, thicknessList, matGradeIdList, anyThicknessFlag, anyPartyFlag, anyEndusertagFlag, anyMatGradeFlag } = item;
-              
+                setAnyThicknessFlag(anyThicknessFlag ==='N');
+                setanyPartyFlag(anyPartyFlag ==='N');
+                setanyEndusertagFlag(anyEndusertagFlag ==='N');
+                setanyMatGradeFlag(anyMatGradeFlag ==='N');
                 if (!groupedData[templateId]) {
                   groupedData[templateId] = {
                     templateId,
@@ -92,6 +95,7 @@ const CreateLinkTemplate = (props) => {
               setSelectedCustomers(groupedArray.map((item) => item.partyIdList).flat());
               setSelectedEndUserTags(groupedArray.map((item) => item.endUserTagIdList).flat());
               setThicknessList(groupedArray.map((item) => item.thicknessList).flat());
+              setMaterialGrades(groupedArray.map((item) => item.matGradeIdList).flat());
             setSelectedTemplateDetails(selectedTemplateId)
         }
     }, [props.template.loading, props.template.error, props.template.operation]);

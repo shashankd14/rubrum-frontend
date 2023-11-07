@@ -73,10 +73,10 @@ const CreateLinkTemplate = (props) => {
               
                 setAnyThicknessFlag(anyThicknessFlag ==='N');
                 setAnyLengthFlag(anyLengthFlag ==='N');
-                setAnyWidthFlag(setAnyWidthFlag ==='N');
-                setanyPartyFlag(setanyPartyFlag ==='N');
-                setanyEndusertagFlag(setanyEndusertagFlag ==='N');
-                setanyMatGradeFlag(setanyPartyFlag ==='N');
+                setAnyWidthFlag(anyWidthFlag ==='N');
+                setanyPartyFlag(anyPartyFlag ==='N');
+                setanyEndusertagFlag(anyEndusertagFlag ==='N');
+                setanyMatGradeFlag(anyMatGradeFlag ==='N');
                 
                 if (!groupedData[kqpId]) {
                   groupedData[kqpId] = {

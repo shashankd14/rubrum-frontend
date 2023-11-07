@@ -1,70 +1,117 @@
 import { Button, Card, Col, DatePicker, Input, Row } from 'antd'
 import TextArea from 'antd/lib/input/TextArea';
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import EditableTable from '../../../../../../util/EditableTable';
-
+import moment from 'moment';
+import { connect } from 'react-redux';
+import {
+    updateQRFormData,
+    getQualityPacketDetails,
+    fetchQualityReportList,
+    fetchQualityReportStageList,
+    getCoilPlanDetails,
+  } from '../../../../../../appRedux/actions';
 
 const SlitAndCutForm = (props) => {
-
-    var allowableLowerWidth=0;
+     //fetch slit data from QT
+    var allowableLowerWidth = 0;
     var allowableHigherWidth = 0;
-    const templateData = JSON.parse(props?.templateDetails?.data?.templateDetails);
-    // Access the 'formData' property
-    const formDataObject = templateData.find(item => item.id === 'formData');
+    var allowableLowerburrHeight = 0;
+    var allowableHeigherburrHeight = 0;
+    
+    const templateData = JSON.parse(
+        props?.templateDetails?.data?.templateDetails
+    );
+    
+    const formDataObject = templateData.find((item) => item.id === 'formData');
 
     if (formDataObject) {
-        // Access the "value" property which contains the "formData" object
         const formData = formDataObject.value;
-      
-        // Access the "slitInspectionData" array
         const slitInspectionData = formData.slitInspectionData;
-      
-        // Access the "allowableLowerWidth" of the first sub-row (element at index 0)
-         allowableLowerWidth = slitInspectionData[0].allowableLowerWidth;
-         allowableHigherWidth = slitInspectionData[0].allowableHigherWidth; 
-       
-      }
-    const [slitDataSource, setSlitDataSource] = useState([{
-        slitNo: "",
-        slitSize: "",
+        allowableLowerWidth = slitInspectionData[0].allowableLowerWidth;
+        allowableHigherWidth = slitInspectionData[0].allowableHigherWidth;
+        allowableHeigherburrHeight = slitInspectionData[0].allowableHeigherburrHeight;
+        allowableLowerburrHeight = slitInspectionData[0].allowableLowerburrHeight;
+    } 
+    const [slitDataSource, setSlitDataSource] = useState([]);
+    const [finalDataSource, setFinalDataSource] = useState([]);
+    const [toleranceDataSource, setToleranceDataSource] = useState([]);
+
+    //fetch tolerance data from QT-cut
+    var toleranceThickness = 0;
+    var toleranceWidth = 0;
+    var toleranceLength = 0;
+    var toleranceBurrHeight = 0;
+    var toleranceDiagonalDifference = 0;
+    
+    const templateDataCut = JSON.parse(
+      props?.templateDetails?.data?.templateDetails
+    );
+    const formDataObjectCut = templateDataCut.find((item) => item.id === 'formData');
+    if (formDataObject) {
+        debugger
+      const formData = formDataObjectCut.value;
+      const toleranceInspectionData = formData.toleranceInspectionData;
+      toleranceThickness = toleranceInspectionData[0].toleranceThickness;
+      toleranceWidth = toleranceInspectionData[0].toleranceWidth;
+      toleranceBurrHeight = toleranceInspectionData[0].toleranceBurrHeight;
+      toleranceLength = toleranceInspectionData[0].toleranceLength;
+      toleranceDiagonalDifference = toleranceInspectionData[0].toleranceDiagonalDifference;
+    } 
+  
+  useEffect(() => {
+    if (props.templateDetails.packetDetails) {
+      const mappedData = props.templateDetails.packetDetails.map(item => ({
+        instructionId: item.instructionId,
+        plannedNoOfPieces: item.plannedNoOfPieces,
         allowableLowerWidth: allowableLowerWidth,
         allowableHigherWidth: allowableHigherWidth,
         actualWidth: "",
+        allowableLowerburrHeight: allowableLowerburrHeight,
+        allowableHeigherburrHeight: allowableHeigherburrHeight,
         burrHeight: "",
         remarks: "",
-    }]);
+      }));
+      setFinalDataSource(mappedData);
+      setSlitDataSource(mappedData);
+    }
+  }, [props.templateDetails.packetDetails]);
 
-    const [finalDataSource, setFinalDataSource] = useState([{
-        slitNo: "",
-        slitSize: "",
-        allowableLowerWidth: allowableHigherWidth,
-        allowableHigherWidth: allowableHigherWidth,
-        actualWidth: "",
-        burrHeight: "",
-        remarks: "",
-    }]);
-
-    const [cutDataSource, setCutDataSource] = useState([{
-        slitNo: "",
-        thickness: "",
-        width: "",
-        length: "",
-        actualThickness: "",
-        actualWidth: "",
-        actualLength: "",
-        actualThickness: "",
-        burrHeight: "",
-        diagonalDifference: "",
-        remarks: "",
-    }]);
+  const [dataSource, setDataSource] = useState([]);
+  useEffect(() => {
+      debugger;
+      if (props.templateDetails.packetDetails) {
+        const mappedData = props.templateDetails.packetDetails.map(item => ({
+          //thickness: item.thickness,
+          thickness:5,
+          plannedLength: item.plannedLength,
+          plannedWidth: item.plannedWidth,
+          actualThickness: "",
+          actualWidth: "",
+          actualLength: "",
+          burrHeight: "",
+          diagonalDifference: "",
+          remarks: "",
+          toleranceThickness: toleranceThickness,
+          toleranceWidth: toleranceWidth,
+          toleranceLength: toleranceLength,
+          toleranceBurrHeight: toleranceBurrHeight,
+          toleranceDiagonalDifference: toleranceDiagonalDifference,
+        }));
+        setDataSource(mappedData);
+        setToleranceDataSource(mappedData);
+        console.log("mappedData", mappedData)
+      }
+    }, [props.templateDetails.packetDetails]);
 
     const [slitInspectionData, setSlitInspectionData] = useState([])
     const [cutInspectionData, setCutInspectionData] = useState([])
     const [finalInspectionData, setFinalInspectionData] = useState([])
+    const [toleranceInspectionData, setToleranceInspectionData] = useState([])
     const [slitCutFormData, setSlitFormData] = useState({
-        processType: "slitcut",
+        processType: "SlitCut",
         customerName: "",
-        operation: "",
+        operation: "SlitCut",
         processDate: "",
         batchNumber: "",
         motherCoilNumber: "",
@@ -79,7 +126,21 @@ const SlitAndCutForm = (props) => {
         qualityEngineer: "",
         qualityHead: "",
     })
-
+    useEffect(() => {
+        setSlitFormData((prevFormData) => ({
+          ...prevFormData,
+          customerName: props.inward?.plan?.party?.partyName || '', 
+          processDate: props.inward?.plan?.instruction?.instructionDate || '',
+          batchNumber: props.inward?.plan?.batchNumber || '',
+          motherCoilNumber: props.inward?.plan?.customerCoilId || '',
+          aspenCoilNumber: props.inward?.plan?.coilNumber || '',
+          grade: props.inward?.plan?.materialGrade?.gradeName || '',
+          thickness: props.inward?.plan?.fThickness || '',
+          width: props.inward?.plan?.fWidth || '',
+          weight: props.inward?.plan?.grossWeight || '',
+        }));
+      }, [props.inward?.plan?.party]);
+    const instructionDate = props.templateDetails.packetDetails?.map(item=>item.instructionDate)
     const gridCardStyle = {
         width: '50%',
         height: 300,
@@ -97,29 +158,39 @@ const SlitAndCutForm = (props) => {
     const slitColumns = [
         {
             title: 'Slit No.',
-            dataIndex: 'slitNo',
-            editable: true,
+            dataIndex: 'instructionId',
+            editable: false,
         },
         {
             title: 'Slit Size',
-            dataIndex: 'slitSize',
-            editable: true
+            dataIndex: 'plannedNoOfPieces',
+            editable: false
         },
         {
-            title: 'Allowable Lower Width',
+            title: 'Allowable Lower Slit Size',
             dataIndex: 'allowableLowerWidth',
-            editable: true
+            editable: false
         },
         {
-            title: 'Allowable Higher Width',
+            title: 'Allowable Higher Slit Size',
             dataIndex: 'allowableHigherWidth',
-            editable: true
+            editable: false
         },
         {
             title: 'Actual Width',
             dataIndex: 'actualWidth',
             editable: true
         },
+        {
+            title: 'Allowable Lower Burr Height',
+            dataIndex: 'allowableLowerburrHeight',
+            editable: false,
+          },
+          {
+            title: 'Allowable Higher Burr Height',
+            dataIndex: 'allowableHeigherburrHeight',
+            editable: false,
+          },
         {
             title: 'Burr Height',
             dataIndex: 'burrHeight',
@@ -135,29 +206,39 @@ const SlitAndCutForm = (props) => {
     const finalColumns = [
         {
             title: 'Slit No.',
-            dataIndex: 'slitNo',
-            editable: true,
+            dataIndex: 'instructionId',
+            editable: false,
         },
         {
             title: 'Slit Size',
-            dataIndex: 'slitSize',
-            editable: true
+            dataIndex: 'plannedNoOfPieces',
+            editable: false
         },
         {
-            title: 'Allowable Lower Width',
+            title: 'Allowable Lower Slit Size',
             dataIndex: 'allowableLowerWidth',
-            editable: true
+            editable: false
         },
         {
-            title: 'Allowable Higher Width',
+            title: 'Allowable Higher Slit Size',
             dataIndex: 'allowableHigherWidth',
-            editable: true
+            editable: false
         },
         {
             title: 'Actual Width',
             dataIndex: 'actualWidth',
             editable: true
         },
+        {
+            title: 'Allowable Lower Burr Height',
+            dataIndex: 'allowableLowerburrHeight',
+            editable: false,
+          },
+          {
+            title: 'Allowable Higher Burr Height',
+            dataIndex: 'allowableHeigherburrHeight',
+            editable: false,
+          },
         {
             title: 'Burr Height',
             dataIndex: 'burrHeight',
@@ -171,25 +252,25 @@ const SlitAndCutForm = (props) => {
     ];
 
     const cutColumns = [
-        {
-            title: 'Slit No.',
-            dataIndex: 'slitNo',
-            editable: true,
-        },
+        // {
+        //     title: 'Slit No.',
+        //     dataIndex: 'slitNo',
+        //     editable: true,
+        // },
         {
             title: 'Thickness',
             dataIndex: 'thickness',
-            editable: true
+            editable: false
         },
         {
             title: 'Width',
-            dataIndex: 'width',
-            editable: true
+            dataIndex: 'plannedWidth',
+            editable: false
         },
         {
             title: 'Length',
-            dataIndex: 'length',
-            editable: true
+            dataIndex: 'plannedLength',
+            editable: false
         },
         {
             title: 'Actual Thickness',
@@ -222,7 +303,33 @@ const SlitAndCutForm = (props) => {
             editable: true
         },
     ];
-
+    const toleranceColumns = [
+        {
+            title: 'Tolerance Thickness',
+            dataIndex: 'toleranceThickness',
+            editable: false
+        },
+        {
+            title: 'Tolerance Width',
+            dataIndex: 'toleranceWidth',
+            editable: false
+        },
+        {
+            title: 'Tolerance Length',
+            dataIndex: 'toleranceLength',
+            editable: false
+        },
+        {
+            title: 'Tolerance Burr Height',
+            dataIndex: 'toleranceBurrHeight',
+            editable: false
+        },
+        {
+            title: 'Tolerance Diagonal Difference',
+            dataIndex: 'toleranceDiagonalDifference',
+            editable: false
+        }
+    ];
     const emptySlitRecord = {
         key: 0,
         slitNo: "",
@@ -255,6 +362,14 @@ const SlitAndCutForm = (props) => {
         burrHeight: "",
         remarks: "",
     }
+    const toleranceEmptyRecord = {
+        key: 0,
+        toleranceThickness: "",
+        toleranceWidth: "",
+        toleranceLength: "",
+        toleranceBurrHeight: "",
+        toleranceDiagonalDifference: "",
+    }
 
     const onOptionChange = (key, changeEvent) => {
         slitCutFormData[key] = changeEvent.target.value;
@@ -264,8 +379,9 @@ const SlitAndCutForm = (props) => {
         slitCutFormData['slitInspectionData'] = slitInspectionData
         slitCutFormData['cutInspectionData'] = cutInspectionData
         slitCutFormData['finalInspectionData'] = finalInspectionData
-        //
+        slitCutFormData['toleranceInspectionData'] = toleranceInspectionData
         props.onSave(slitCutFormData);
+        props.updateQRFormData({ action: 'slit_cut', formData: slitCutFormData });
     }
 
     const handleSlitInspectionTableChange = (tableData) => {
@@ -282,37 +398,40 @@ const SlitAndCutForm = (props) => {
         console.log('handleFinalInspectionTableChange', tableData)
         setFinalInspectionData(tableData)
     } 
-
+    const handleToleranceTableChange = (tableData) => {
+        console.log('handleInspectionTableChange', tableData)
+        setToleranceInspectionData(tableData)
+    } 
 
     return (
         <div id="slittingform">
-            <Card title="Slitting Process Form">
+            <Card title="Slit & Cut Process Form">
                 <Card.Grid style={gridCardStyle}>
                     <Row>
                         <Col span={24}>
                             <label>Customer Name</label>
-                            <Input placeholder='Enter customer name' disabled value={slitCutFormData.customerName} onChange={(e) => onOptionChange('customerName', e)}></Input>
+                            <Input disabled value={props.inward?.plan?.party?.partyName} onChange={(e) => onOptionChange('customerName', e)}></Input>
                         </Col>
                     </Row>
                     <Row>
                         <Col span={12}>
                             <label>Process Date</label>
-                            <DatePicker disabled value={slitCutFormData.processDate} onChange={(e) => onOptionChange('processDate', e)}> </DatePicker>
+                            <DatePicker disabled value={moment(instructionDate, 'YYYY-MM-DD HH:mm:ss')} onChange={(e) => onOptionChange('processDate', e)}> </DatePicker>
                         </Col>
                         <Col span={12}>
                             <label>Batch Number</label>
-                            <Input disabled value={slitCutFormData.batchNumber} onChange={(e) => onOptionChange('batchNumber', e)}></Input>
+                            <Input disabled value={props.inward?.plan?.batchNumber} onChange={(e) => onOptionChange('batchNumber', e)}></Input>
                         </Col>
 
                     </Row>
                     <Row>
                         <Col span={12}>
                             <label>Grade</label>
-                            <Input disabled value={slitCutFormData.grade} onChange={(e) => onOptionChange('grade', e)}></Input>
+                            <Input disabled value={props.inward?.plan?.materialGrade?.gradeName} onChange={(e) => onOptionChange('grade', e)}></Input>
                         </Col>
                         <Col span={12}>
                             <label>Coil Thickness (IN MM)</label>
-                            <Input disabled value={slitCutFormData.thickness} onChange={(e) => onOptionChange('thickness', e)}></Input>
+                            <Input disabled value={props.inward?.plan?.fThickness} onChange={(e) => onOptionChange('thickness', e)}></Input>
                         </Col>
 
                     </Row>
@@ -328,34 +447,34 @@ const SlitAndCutForm = (props) => {
                     <Row>
                         <Col span={24}>
                             <label>Operation</label>
-                            <Input disabled value={slitCutFormData.operation} onChange={(e) => onOptionChange('operation', e)}></Input>
+                            <Input disabled value="Slit & Cut" onChange={(e) => onOptionChange('operation', e)}></Input>
                         </Col>
                     </Row>
                     <Row>
                         <Col span={12}>
                             <label>Mother Coil No.</label>
-                            <Input disabled value={slitCutFormData.motherCoilNumber} onChange={(e) => onOptionChange('motherCoilNumber', e)}></Input>
+                            <Input disabled value={props.inward?.plan?.customerCoilId} onChange={(e) => onOptionChange('motherCoilNumber', e)}></Input>
                         </Col>
                         <Col span={12}>
                             <label>AspenCoil No.</label>
-                            <Input disabled value={slitCutFormData.aspenCoilNumber} onChange={(e) => onOptionChange('aspenCoilNumber', e)}></Input>
+                            <Input disabled value={props.inward?.plan?.coilNumber} onChange={(e) => onOptionChange('aspenCoilNumber', e)}></Input>
                         </Col>
 
                     </Row>
                     <Row>
                         <Col span={12}>
                             <label>Coil Width (IN MM)</label>
-                            <Input disabled value={slitCutFormData.width} onChange={(e) => onOptionChange('width', e)}></Input>
+                            <Input disabled value={props.inward?.plan?.fWidth} onChange={(e) => onOptionChange('width', e)}></Input>
                         </Col>
                         <Col span={12}>
                             <label>Coil Weight (IN KGs)</label>
-                            <Input disabled value={slitCutFormData.weight} onChange={(e) => onOptionChange('weight', e)}></Input>
+                            <Input disabled value={props.inward?.plan?.grossWeight} onChange={(e) => onOptionChange('weight', e)}></Input>
                         </Col>
                     </Row>
                     <Row>
                         <Col span={24}>
                             <label>Report Date</label>
-                            <DatePicker style={{ width: "100%" }} disabled value={slitCutFormData.reportDate} onChange={(e) => onOptionChange('reportDate', e)}></DatePicker>
+                            <DatePicker style={{ width: "100%" }} defaultValue={moment()} onChange={(e) => onOptionChange('reportDate', e)}></DatePicker>
                         </Col>
                     </Row>
 
@@ -364,15 +483,18 @@ const SlitAndCutForm = (props) => {
                     <EditableTable columns={slitColumns} emptyRecord={emptySlitRecord} dataSource={slitDataSource} handleChange={handleSlitInspectionTableChange}/>
                 </Card.Grid>
                 <Card.Grid style={gridStyle}>
-                    <EditableTable columns={cutColumns} emptyRecord={emptyCutRecord} dataSource={cutDataSource} handleChange={handleCutInspectionTableChange}/>
-                </Card.Grid>
-                <Card.Grid style={gridStyle}>
                     <Row>
                         <Col span={24}>
                             <label style={{fontSize: 20}}>Final Quality Inspection Report</label>
                         </Col>
                     </Row>
                     <EditableTable columns={finalColumns} emptyRecord={emptyFinalRecord} dataSource={finalDataSource} handleChange={handleFinalInspectionTableChange}/>
+                </Card.Grid>
+                <Card.Grid style={gridStyle}>
+                    <EditableTable columns={cutColumns} emptyRecord={emptyCutRecord} dataSource={dataSource} handleChange={handleCutInspectionTableChange}/>
+                </Card.Grid>
+                <Card.Grid style={gridStyle}>
+                    <EditableTable columns={toleranceColumns} emptyRecord={toleranceEmptyRecord} dataSource={toleranceDataSource} handleChange={handleToleranceTableChange}/>
                 </Card.Grid>
                 <Card.Grid style={gridStyle}>
                     <Row>
@@ -405,4 +527,15 @@ const SlitAndCutForm = (props) => {
     )
 }
 
-export default SlitAndCutForm
+const mapStateToProps = (state) => ({
+    templateDetails: state.quality,
+    inward: state.inward,
+  });
+  
+  export default connect(mapStateToProps, {
+    updateQRFormData,
+    getQualityPacketDetails,
+    fetchQualityReportList,
+    fetchQualityReportStageList,
+    getCoilPlanDetails,
+  })(SlitAndCutForm);

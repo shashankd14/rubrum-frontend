@@ -141,41 +141,41 @@ const ProcessingReport = (props) => {
             render: (text, record, index) => (
                 <span>
                     <span
-                        className={`gx-link ${record.qirId && disabledEle }`}
-                        onClick={(e) => showTemplateList(record, index, e)}
-                        // className="gx-link"
-                        // onClick={record.qirId ? (e) => showReportView(record, index, e) : null}
-                        // style={!record.qirId ? {} : { opacity: 0.5, pointerEvents: 'none' }}
+                        // className={`gx-link ${record.qirId && disabledEle }`}
+                        // onClick={(e) => showTemplateList(record, index, e)}
+                        className="gx-link"
+                        onClick={!record.qirId ? (e) => showTemplateList(record, index, e) : null}
+                        style={!record.qirId ? {} : { opacity: 0.5, pointerEvents: 'none' }}
                     >
                         Create QR
                     </span>
                     <Divider type="vertical" />
                     <span
-                        // className="gx-link"
-                        // onClick={record.qirId ? (e) => showReportView(record, index, e) : null}
-                        // style={record.qirId ? {} : { opacity: 0.5, pointerEvents: 'none' }}
-                        className={`gx-link ${!record.qirId && disabledEle }`}
-                        onClick={(e) => showReportView(record, index, e)}
+                        className="gx-link"
+                        onClick={record.qirId ? (e) => showReportView(record, index, e) : null}
+                        style={record.qirId ? {} : { opacity: 0.5, pointerEvents: 'none' }}
+                        // className={`gx-link ${!record.qirId && disabledEle }`}
+                        // onClick={(e) => showReportView(record, index, e)}
                     >
                         View
                     </span>
                     <Divider type="vertical" />
                     <span 
-                        // className="gx-link"
-                        // onClick={record.qirId ? (e) => showReportView(record, index, e) : null}
-                        // style={record.qirId ? {} : { opacity: 0.5, pointerEvents: 'none' }}
-                    className={`gx-link ${!record.qirId && disabledEle }`}
-                    onClick={(e) => onEdit(record, index, e)}
+                        className="gx-link"
+                        onClick={record.qirId ? (e) => onEdit(record, index, e) : null}
+                        style={record.qirId ? {} : { opacity: 0.5, pointerEvents: 'none' }}
+                    // className={`gx-link ${!record.qirId && disabledEle }`}
+                    // onClick={(e) => onEdit(record, index, e)}
                     >
                         Edit
                     </span>
                     <Divider type="vertical" />
                     <span 
-                    // className="gx-link"
-                    // onClick={record.qirId ? (e) => showReportView(record, index, e) : null}
-                    // style={record.qirId ? {} : { opacity: 0.5, pointerEvents: 'none' }}
-                    className={`gx-link ${!record.qirId && disabledEle }`}
-                    onClick={(e) => onDelete(record, index, e)}
+                    className="gx-link"
+                    onClick={record.qirId ? (e) => onDelete(record, index, e) : null}
+                    style={record.qirId ? {} : { opacity: 0.5, pointerEvents: 'none' }}
+                    // className={`gx-link ${!record.qirId && disabledEle }`}
+                    // onClick={(e) => onDelete(record, index, e)}
                     >
                         Delete
                     </span>
