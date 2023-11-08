@@ -13,11 +13,16 @@ import {
   } from '../../../../../../appRedux/actions';
 
 const CuttingForm = (props) => {
-    var toleranceThickness = 0;
-    var toleranceWidth = 0;
-    var toleranceLength = 0;
-    var toleranceBurrHeight = 0;
-    var toleranceDiagonalDifference = 0;
+    var toleranceThicknessFrom = 0;
+    var toleranceThicknessTo = 0;
+    var toleranceWidthFrom = 0;
+    var toleranceWidthTo = 0;
+    var toleranceLengthFrom = 0;
+    var toleranceLengthTo = 0;
+    var toleranceBurrHeightFrom = 0;
+    var toleranceBurrHeightTo = 0;
+    var toleranceDiagonalDifferenceFrom = 0;
+    var toleranceDiagonalDifferenceTo = 0;
     
     const templateData = JSON.parse(
       props?.templateDetails?.data?.templateDetails
@@ -27,11 +32,16 @@ const CuttingForm = (props) => {
         debugger
       const formData = formDataObject.value;
       const toleranceInspectionData = formData.toleranceInspectionData;
-      toleranceThickness = toleranceInspectionData[0].toleranceThickness;
-      toleranceWidth = toleranceInspectionData[0].toleranceWidth;
-      toleranceBurrHeight = toleranceInspectionData[0].toleranceBurrHeight;
-      toleranceLength = toleranceInspectionData[0].toleranceLength;
-      toleranceDiagonalDifference = toleranceInspectionData[0].toleranceDiagonalDifference;
+      toleranceThicknessFrom = toleranceInspectionData[0].toleranceThicknessFrom; 
+      toleranceThicknessTo = toleranceInspectionData[0].toleranceThicknessTo;
+      toleranceWidthFrom = toleranceInspectionData[0].toleranceWidthFrom;
+      toleranceWidthTo = toleranceInspectionData[0].toleranceWidthTo;
+      toleranceBurrHeightFrom = toleranceInspectionData[0].toleranceBurrHeightFrom; 
+      toleranceBurrHeightTo = toleranceInspectionData[0].toleranceBurrHeightTo;
+      toleranceLengthFrom = toleranceInspectionData[0].toleranceLengthFrom;
+      toleranceLengthTo = toleranceInspectionData[0].toleranceLengthTo;
+      toleranceDiagonalDifferenceFrom = toleranceInspectionData[0].toleranceDiagonalDifferenceFrom; 
+      toleranceDiagonalDifferenceTo = toleranceInspectionData[0].toleranceDiagonalDifferenceTo;
     } 
     const [dataSource, setDataSource] = useState([]);
     const [toleranceDataSource, setToleranceDataSource] = useState([]);
@@ -50,14 +60,21 @@ const CuttingForm = (props) => {
             burrHeight: "",
             diagonalDifference: "",
             remarks: "",
-            toleranceThickness: toleranceThickness,
-            toleranceWidth: toleranceWidth,
-            toleranceLength: toleranceLength,
-            toleranceBurrHeight: toleranceBurrHeight,
-            toleranceDiagonalDifference: toleranceDiagonalDifference,
+            toleranceThicknessFrom: toleranceThicknessFrom,
+            toleranceThicknessTo: toleranceThicknessTo,
+            toleranceWidthFrom: toleranceWidthFrom,
+            toleranceWidthTo: toleranceWidthTo,
+            toleranceLengthFrom: toleranceLengthFrom,
+            toleranceLengthTo: toleranceLengthTo,
+            toleranceBurrHeightFrom: toleranceBurrHeightFrom,
+            toleranceBurrHeightTo: toleranceBurrHeightTo,
+            toleranceDiagonalDifferenceFrom: toleranceDiagonalDifferenceFrom,
+            toleranceDiagonalDifferenceTo: toleranceDiagonalDifferenceTo,
           }));
           setDataSource(mappedData);
           setToleranceDataSource(mappedData);
+          //
+          setToleranceInspectionData(toleranceDataSource);
           console.log("mappedData", mappedData)
         }
       }, [props.templateDetails.packetDetails]);
@@ -65,8 +82,8 @@ const CuttingForm = (props) => {
     const instructionDate = props.templateDetails.packetDetails?.map(item=>item.instructionDate)
 
     const [cutInspectionData, setCutInspectionData] = useState([])
-    const [toleranceInspectionData, setToleranceInspectionData] = useState([])
 
+    const [toleranceInspectionData, setToleranceInspectionData] = useState([])
     const [cutFormData, setCutFormData] = useState({
         processType: "cutting",
         customerName: "",
@@ -99,6 +116,24 @@ const CuttingForm = (props) => {
           weight: props.inward?.plan?.grossWeight || '',
         }));
       }, [props.inward?.plan?.party]);
+
+    //   useEffect(() => {
+    //     debugger;
+    //     setToleranceInspectionData((prevFormData) => ({
+    //         ...prevFormData,
+    //         toleranceThicknessFrom: toleranceThicknessFrom,
+    //         toleranceThicknessTo: toleranceThicknessTo,
+    //         toleranceWidthFrom: toleranceWidthFrom,
+    //         toleranceWidthTo: toleranceWidthTo,
+    //         toleranceLengthFrom: toleranceLengthFrom,
+    //         toleranceLengthTo: toleranceLengthTo,
+    //         toleranceBurrHeightFrom: toleranceBurrHeightFrom,
+    //         toleranceBurrHeightTo: toleranceBurrHeightTo,
+    //         toleranceDiagonalDifferenceFrom: toleranceDiagonalDifferenceFrom,
+    //         toleranceDiagonalDifferenceTo: toleranceDiagonalDifferenceTo,
+    //       }));
+    //   }, [toleranceDataSource]);
+
     const gridCardStyle = {
         width: '50%',
         height: 300,
@@ -167,34 +202,59 @@ const CuttingForm = (props) => {
     ];
     const toleranceColumns = [
         {
-            title: 'Tolerance Thickness',
-            dataIndex: 'toleranceThickness',
+            title: 'Thickness From',
+            dataIndex: 'toleranceThicknessFrom',
             editable: false
         },
         {
-            title: 'Tolerance Width',
-            dataIndex: 'toleranceWidth',
+            title: 'Thickness To',
+            dataIndex: 'toleranceThicknessTo',
             editable: false
         },
         {
-            title: 'Tolerance Length',
-            dataIndex: 'toleranceLength',
+            title: 'Width From',
+            dataIndex: 'toleranceWidthFrom',
             editable: false
         },
         {
-            title: 'Tolerance Burr Height',
-            dataIndex: 'toleranceBurrHeight',
+            title: 'Width To',
+            dataIndex: 'toleranceWidthTo',
             editable: false
         },
         {
-            title: 'Tolerance Diagonal Difference',
-            dataIndex: 'toleranceDiagonalDifference',
+            title: 'Length From',
+            dataIndex: 'toleranceLengthFrom',
+            editable: false
+        },
+        {
+            title: 'Length To',
+            dataIndex: 'toleranceLengthTo',
+            editable: false
+        },
+        {
+            title: 'Burr Height From',
+            dataIndex: 'toleranceBurrHeightFrom',
+            editable: false
+        },
+        {
+            title: 'Burr Height To',
+            dataIndex: 'toleranceBurrHeightTo',
+            editable: false
+        },
+        {
+            title: 'Diagonal Difference From',
+            dataIndex: 'toleranceDiagonalDifferenceFrom',
+            editable: false
+        },
+        {
+            title: 'Diagonal Difference To',
+            dataIndex: 'toleranceDiagonalDifferenceTo',
             editable: false
         }
     ];
+
     const emptyRecord = {
         key: 0,
-       // slitNo: "",
         slitSize: "",
         allowableLowerWidth: "",
         allowableHigherWidth: "",
@@ -204,11 +264,16 @@ const CuttingForm = (props) => {
     }
     const toleranceEmptyRecord = {
         key: 0,
-        toleranceThickness: "",
-        toleranceWidth: "",
-        toleranceLength: "",
-        toleranceBurrHeight: "",
-        toleranceDiagonalDifference: "",
+        toleranceThicknessFrom: "",
+        toleranceThicknessTo: "",
+        toleranceWidthFrom: "",
+        toleranceWidthTo: "",
+        toleranceLengthFrom: "",
+        toleranceLengthTo: "",
+        toleranceBurrHeightFrom: "",
+        toleranceBurrHeightTo: "",
+        toleranceDiagonalDifferenceFrom: "",
+        toleranceDiagonalDifferenceTo: "",
     }
 
     const onOptionChange = (key, changeEvent) => {
@@ -216,8 +281,10 @@ const CuttingForm = (props) => {
     }
 
     const saveForm = () => {
+        debugger;
         cutFormData['cutInspectionData'] = cutInspectionData
         cutFormData['toleranceInspectionData'] = toleranceInspectionData
+        //cutFormData['toleranceDataSource'] = toleranceDataSource
         props.onSave(cutFormData);
         props.updateQRFormData({ action: 'cut', formData: cutFormData });
     }
@@ -308,10 +375,15 @@ const CuttingForm = (props) => {
 
                 </Card.Grid>
                 <Card.Grid style={gridStyle}>
-                    <EditableTable columns={columns} emptyRecord={emptyRecord} dataSource={dataSource} handleChange={handleInspectionTableChange}/>
+                    <Row>
+                        <Col span={24}>
+                            <label style={{fontSize: 20}}>Cutting Tolerance</label>
+                        </Col>
+                    </Row>
+                    <EditableTable columns={toleranceColumns} emptyRecord={toleranceEmptyRecord} dataSource={toleranceDataSource} handleChange={handleToleranceTableChange}/>
                 </Card.Grid>
                 <Card.Grid style={gridStyle}>
-                    <EditableTable columns={toleranceColumns} emptyRecord={toleranceEmptyRecord} dataSource={toleranceDataSource} handleChange={handleToleranceTableChange}/>
+                    <EditableTable columns={columns} emptyRecord={emptyRecord} dataSource={dataSource} handleChange={handleInspectionTableChange}/>
                 </Card.Grid>
                 <Card.Grid style={gridStyle}>
                     <Row>

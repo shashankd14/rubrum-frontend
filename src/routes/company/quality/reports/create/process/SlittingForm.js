@@ -38,24 +38,33 @@ const SlittingForm = (props) => {
     allowableHeigherburrHeight = slitInspectionData[0].allowableHeigherburrHeight;
     allowableLowerburrHeight = slitInspectionData[0].allowableLowerburrHeight;
   } 
+  //Slit tolerance
+  var toleranceThicknessFrom = 0;
+  var toleranceThicknessTo = 0;
+  var toleranceSlitSizeFrom = 0;
+  var toleranceSlitSizeTo = 0;
+  var toleranceBurrHeightFrom = 0;
+  var toleranceBurrHeightTo = 0;
+    
+    const templateDataTolerance = JSON.parse(
+      props?.templateDetails?.data?.templateDetails
+    );
+    const formDataObjectTolerance = templateDataTolerance.find((item) => item.id === 'formData');
+    if (formDataObject) {
+        debugger
+      const formData = formDataObjectTolerance.value;
+      const toleranceInspectionData = formData.toleranceInspectionData;
+      toleranceThicknessFrom = toleranceInspectionData[0].toleranceThicknessFrom; 
+      toleranceThicknessTo = toleranceInspectionData[0].toleranceThicknessTo;
+      toleranceSlitSizeFrom = toleranceInspectionData[0].toleranceSlitSizeFrom;
+      toleranceSlitSizeTo = toleranceInspectionData[0].toleranceSlitSizeTo;
+      toleranceBurrHeightFrom = toleranceInspectionData[0].toleranceBurrHeightFrom; 
+      toleranceBurrHeightTo = toleranceInspectionData[0].toleranceBurrHeightTo;
+    } 
 
-//   const [slitDataSource, setSlitDataSource] = useState([
-//     {
-//       slitNo: '',
-//       slitSize: '',
-//       allowableLowerWidth: allowableLowerWidth,
-//       allowableHigherWidth: allowableHigherWidth,
-//       allowableLowerburrHeight: allowableLowerburrHeight,
-//       allowableHeigherburrHeight: allowableHeigherburrHeight,
-//       actualWidth: '',
-//       burrHeight: '',
-//       remarks: '',
-//     },
-//   ]);
-    const [slitDataSource, setSlitDataSource] = useState([]);
-
+  const [slitDataSource, setSlitDataSource] = useState([]);
   const [finalDataSource, setFinalDataSource] = useState([]);
-  
+  const [toleranceDataSource, setToleranceDataSource] = useState([]);
   useEffect(() => {
     if (props.templateDetails.packetDetails) {
       const mappedData = props.templateDetails.packetDetails.map(item => ({
@@ -68,9 +77,16 @@ const SlittingForm = (props) => {
         allowableHeigherburrHeight: allowableHeigherburrHeight,
         burrHeight: "",
         remarks: "",
+        toleranceThicknessFrom: toleranceThicknessFrom,
+        toleranceThicknessTo: toleranceThicknessTo,
+        toleranceSlitSizeFrom: toleranceSlitSizeFrom,
+        toleranceSlitSizeTo: toleranceSlitSizeTo,
+        toleranceBurrHeightFrom: toleranceBurrHeightFrom,
+        toleranceBurrHeightTo: toleranceBurrHeightTo
       }));
       setFinalDataSource(mappedData);
       setSlitDataSource(mappedData);
+      setToleranceDataSource(mappedData);
     }
   }, [props.templateDetails.packetDetails]);
 
@@ -78,6 +94,7 @@ const SlittingForm = (props) => {
 
   const [slitInspectionData, setSlitInspectionData] = useState([]);
   const [finalInspectionData, setFinalInspectionData] = useState([]);
+  const [toleranceInspectionData, setToleranceInspectionData] = useState([])
 
   const instructionDate = props.templateDetails.packetDetails?.map(item=>item.instructionDate)
   useEffect(() => {
@@ -223,6 +240,38 @@ const SlittingForm = (props) => {
       editable: true,
     },
   ];
+  const toleranceColumnsSlit = [
+    {
+        title: 'Thickness From',
+        dataIndex: 'toleranceThicknessFrom',
+        editable: false
+    },
+    {
+        title: 'Thickness To',
+        dataIndex: 'toleranceThicknessTo',
+        editable: false
+    },
+    {
+        title: 'Slit Size From',
+        dataIndex: 'toleranceSlitSizeFrom',
+        editable: false
+    },
+    {
+        title: 'Slit Size To',
+        dataIndex: 'toleranceSlitSizeTo',
+        editable: false
+    },
+    {
+        title: 'Burr Height From',
+        dataIndex: 'toleranceBurrHeightFrom',
+        editable: false
+    },
+    {
+        title: 'Burr Height To',
+        dataIndex: 'toleranceBurrHeightTo',
+        editable: false
+    }
+];
 
   const emptySlitRecord = {
     key: 0,
@@ -246,6 +295,17 @@ const SlittingForm = (props) => {
     remarks: '',
   };
 
+  const toleranceEmptyRecord = {
+    key: 0,
+    toleranceThicknessFrom: "",
+    toleranceThicknessTo: "",
+    toleranceSlitSizeFrom: "",
+    toleranceSlitSizeTo: "",
+    toleranceBurrHeightFrom: "",
+    toleranceBurrHeightTo: "",
+}
+
+
   const onOptionChange = (key, changeEvent) => {
     slitFormData[key] = changeEvent.target.value;
   };
@@ -254,6 +314,7 @@ const SlittingForm = (props) => {
     debugger;
     slitFormData['slitInspectionData'] = slitInspectionData;
     slitFormData['finalInspectionData'] = finalInspectionData;
+    slitFormData['toleranceInspectionData'] = toleranceInspectionData
     props.onSave(slitFormData);
     props.updateQRFormData({ action: 'slit', formData: slitFormData });
    // props.history.push("/company/quality/reports/create/processing");
@@ -272,6 +333,11 @@ const SlittingForm = (props) => {
     console.log('handleFinalInspectionTableChange', tableData);
     setFinalInspectionData(tableData);
   };
+
+  const handleToleranceTableChangeSlit = (tableData) => {
+    console.log('handleInspectionTableChange', tableData)
+    setToleranceInspectionData(tableData)
+} 
   // const handlePrint = () => {
   //   window.print(); // Opens the print dialog
   // };
@@ -403,6 +469,14 @@ const SlittingForm = (props) => {
             </Col>
           </Row>
         </Card.Grid>
+        <Card.Grid style={gridStyle}>
+                     <Row>
+                        <Col span={24}>
+                            <label style={{fontSize: 20}}>Tolerance</label>
+                        </Col>
+                    </Row>
+                    <EditableTable columns={toleranceColumnsSlit} emptyRecord={toleranceEmptyRecord} dataSource={toleranceDataSource} handleChange={handleToleranceTableChangeSlit}/>
+                </Card.Grid>
         <Card.Grid style={gridStyle}>
           <EditableTable
             columns={slitColumns}
