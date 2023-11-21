@@ -146,11 +146,17 @@ const List = (props) => {
     },
     {
       title: "No.of Pcs",
-      dataIndex: "plannedNoOfPieces",
-      key: "plannedNoOfPieces",
+      dataIndex: "actualNoOfPieces",
+      key: "actualNoOfPieces",
       filters: [],
-      sorter: (a, b) => a.plannedNoOfPieces - b.plannedNoOfPieces,
-      sortOrder: sortedInfo.columnKey === "plannedNoOfPieces" && sortedInfo.order,
+      sorter: (a, b) => a.actualNoOfPieces - b.actualNoOfPieces,
+      sortOrder: sortedInfo.columnKey === "actualNoOfPieces" && sortedInfo.order,
+      render: (text, record) => {
+        if (record.status && record.status.statusName === "DISPATCHED") {
+          return 0;
+        }
+        return text;
+      },
     },
     {
       title: "Present Weight",
