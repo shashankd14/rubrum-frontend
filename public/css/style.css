@@ -44617,3 +44617,15 @@ textarea.gx-chat-textarea {
   border-radius: 4px;
   padding: 4px 11px;
 }
+
+.table-container {
+  max-height: 300px; 
+  overflow-y: auto; /* Enable vertical scrolling */
+}
+
+.ant-table-thead {
+  position: sticky;
+  top: 0;
+  background-color: #fff; 
+  z-index: 1;
+}

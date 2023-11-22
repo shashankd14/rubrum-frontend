@@ -235,7 +235,8 @@ const ProcessingTemplate = (props) => {
       <Modal
         title={`${templateData[1].value.charAt(0).toUpperCase() + templateData[1].value.slice(1).toLowerCase()} Process`}
         style={{top: 20}}
-        width={1080}
+        //width={1080}
+        width={1180}
         visible={showCreateModal}
         okButtonProps={{ hidden: true }}
         cancelButtonProps={{ hidden: true }}

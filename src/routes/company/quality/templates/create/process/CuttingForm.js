@@ -18,13 +18,17 @@ const CuttingForm = (props) => {
         remarks: "",
     }]);
     const [toleranceDataSource, setToleranceDataSource] = useState([{
-        toleranceThickness: "",
-        toleranceWidth: "",
-        toleranceLength: "",
-        toleranceBurrHeight: "",
-        toleranceDiagonalDifference: "",
+        toleranceThicknessFrom: "",
+        toleranceThicknessTo: "",
+        toleranceWidthFrom: "",
+        toleranceWidthTo: "",
+        toleranceLengthFrom: "",
+        toleranceLengthTo: "",
+        toleranceBurrHeightFrom: "",
+        toleranceBurrHeightTo: "",
+        toleranceDiagonalDifferenceFrom: "",
+        toleranceDiagonalDifferenceTo: "",
     }]);
-
     const [cutInspectionData, setCutInspectionData] = useState([])
     const [toleranceInspectionData, setToleranceInspectionData] = useState([])
     const [cutFormData, setCutFormData] = useState({
@@ -115,35 +119,59 @@ const CuttingForm = (props) => {
 
     const toleranceColumns = [
         {
-            title: 'Tolerance Thickness',
-            dataIndex: 'toleranceThickness',
+            title: 'Thickness From',
+            dataIndex: 'toleranceThicknessFrom',
             editable: true
         },
         {
-            title: 'Tolerance Width',
-            dataIndex: 'toleranceWidth',
+            title: 'Thickness To',
+            dataIndex: 'toleranceThicknessTo',
             editable: true
         },
         {
-            title: 'Tolerance Length',
-            dataIndex: 'toleranceLength',
+            title: 'Width From',
+            dataIndex: 'toleranceWidthFrom',
             editable: true
         },
         {
-            title: 'Tolerance Burr Height',
-            dataIndex: 'toleranceBurrHeight',
+            title: 'Width To',
+            dataIndex: 'toleranceWidthTo',
             editable: true
         },
         {
-            title: 'Tolerance Diagonal Difference',
-            dataIndex: 'toleranceDiagonalDifference',
+            title: 'Length From',
+            dataIndex: 'toleranceLengthFrom',
+            editable: true
+        },
+        {
+            title: 'Length To',
+            dataIndex: 'toleranceLengthTo',
+            editable: true
+        },
+        {
+            title: 'Burr Height From',
+            dataIndex: 'toleranceBurrHeightFrom',
+            editable: true
+        },
+        {
+            title: 'Burr Height To',
+            dataIndex: 'toleranceBurrHeightTo',
+            editable: true
+        },
+        {
+            title: 'Diagonal Difference From',
+            dataIndex: 'toleranceDiagonalDifferenceFrom',
+            editable: true
+        },
+        {
+            title: 'Diagonal Difference To',
+            dataIndex: 'toleranceDiagonalDifferenceTo',
             editable: true
         }
     ];
 
     const emptyRecord = {
         key: 0,
-        slitNo: "",
         slitSize: "",
         allowableLowerWidth: "",
         allowableHigherWidth: "",
@@ -153,11 +181,16 @@ const CuttingForm = (props) => {
     }
     const toleranceEmptyRecord = {
         key: 0,
-        toleranceThickness: "",
-        toleranceWidth: "",
-        toleranceLength: "",
-        toleranceBurrHeight: "",
-        toleranceDiagonalDifference: "",
+        toleranceThicknessFrom: "",
+        toleranceThicknessTo: "",
+        toleranceWidthFrom: "",
+        toleranceWidthTo: "",
+        toleranceLengthFrom: "",
+        toleranceLengthTo: "",
+        toleranceBurrHeightFrom: "",
+        toleranceBurrHeightTo: "",
+        toleranceDiagonalDifferenceFrom: "",
+        toleranceDiagonalDifferenceTo: "",
     }
 
     const onOptionChange = (key, changeEvent) => {
@@ -256,10 +289,15 @@ const CuttingForm = (props) => {
 
                 </Card.Grid>
                 <Card.Grid style={gridStyle}>
-                    <EditableTable columns={columns} emptyRecord={emptyRecord} dataSource={dataSource} handleChange={handleInspectionTableChange}/>
+                     <Row>
+                        <Col span={24}>
+                            <label style={{fontSize: 20}}>Tolerance</label>
+                        </Col>
+                    </Row>
+                    <EditableTable columns={toleranceColumns} emptyRecord={toleranceEmptyRecord} dataSource={toleranceDataSource} handleChange={handleToleranceTableChange}/>
                 </Card.Grid>
                 <Card.Grid style={gridStyle}>
-                    <EditableTable columns={toleranceColumns} emptyRecord={toleranceEmptyRecord} dataSource={toleranceDataSource} handleChange={handleToleranceTableChange}/>
+                    <EditableTable columns={columns} emptyRecord={emptyRecord} dataSource={dataSource} handleChange={handleInspectionTableChange}/>
                 </Card.Grid>
                 <Card.Grid style={gridStyle}>
                     <Row>

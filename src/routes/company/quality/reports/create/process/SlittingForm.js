@@ -1,9 +1,10 @@
-import { Button, Card, Col, DatePicker, Input, Popconfirm, Row } from 'antd';
+import { Button, Card, Col, DatePicker, Input, Popconfirm, Row, Icon, Upload } from 'antd';
 import TextArea from 'antd/lib/input/TextArea';
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import moment from 'moment';
 import EditableTable from '../../../../../../util/EditableTable';
+import Dragger from 'antd/lib/upload/Dragger'
 import {
   updateQRFormData,
   getQualityPacketDetails,
@@ -11,6 +12,7 @@ import {
   fetchQualityReportStageList,
   getCoilPlanDetails,
 } from '../../../../../../appRedux/actions';
+import { useLocation } from 'react-router-dom/cjs/react-router-dom.min';
 
 const SlittingForm = (props) => {
   var allowableLowerWidth = 0;
@@ -38,39 +40,62 @@ const SlittingForm = (props) => {
     allowableHeigherburrHeight = slitInspectionData[0].allowableHeigherburrHeight;
     allowableLowerburrHeight = slitInspectionData[0].allowableLowerburrHeight;
   } 
+  //Slit tolerance
+  var toleranceThicknessFrom = 0;
+  var toleranceThicknessTo = 0;
+  var toleranceSlitSizeFrom = 0;
+  var toleranceSlitSizeTo = 0;
+  var toleranceBurrHeightFrom = 0;
+  var toleranceBurrHeightTo = 0;
+    
+    const templateDataTolerance = JSON.parse(
+      props?.templateDetails?.data?.templateDetails
+    );
+    const formDataObjectTolerance = templateDataTolerance.find((item) => item.id === 'formData');
+    if (formDataObject) {
+        debugger
+      const formData = formDataObjectTolerance.value;
+      const toleranceInspectionData = formData.toleranceInspectionData;
+      toleranceThicknessFrom = toleranceInspectionData[0].toleranceThicknessFrom; 
+      toleranceThicknessTo = toleranceInspectionData[0].toleranceThicknessTo;
+      toleranceSlitSizeFrom = toleranceInspectionData[0].toleranceSlitSizeFrom;
+      toleranceSlitSizeTo = toleranceInspectionData[0].toleranceSlitSizeTo;
+      toleranceBurrHeightFrom = toleranceInspectionData[0].toleranceBurrHeightFrom; 
+      toleranceBurrHeightTo = toleranceInspectionData[0].toleranceBurrHeightTo;
+    } 
 
-//   const [slitDataSource, setSlitDataSource] = useState([
-//     {
-//       slitNo: '',
-//       slitSize: '',
-//       allowableLowerWidth: allowableLowerWidth,
-//       allowableHigherWidth: allowableHigherWidth,
-//       allowableLowerburrHeight: allowableLowerburrHeight,
-//       allowableHeigherburrHeight: allowableHeigherburrHeight,
-//       actualWidth: '',
-//       burrHeight: '',
-//       remarks: '',
-//     },
-//   ]);
-    const [slitDataSource, setSlitDataSource] = useState([]);
-
+  const [slitDataSource, setSlitDataSource] = useState([]);
   const [finalDataSource, setFinalDataSource] = useState([]);
-  
+  const [toleranceDataSource, setToleranceDataSource] = useState([]);
   useEffect(() => {
     if (props.templateDetails.packetDetails) {
-      const mappedData = props.templateDetails.packetDetails.map(item => ({
+      const mappedData = props.templateDetails.packetDetails.map((item, i) => ({
+        key: i,
         instructionId: item.instructionId,
         plannedNoOfPieces: item.plannedNoOfPieces,
-        allowableLowerWidth: allowableLowerWidth,
-        allowableHigherWidth: allowableHigherWidth,
+        // allowableLowerWidth: allowableLowerWidth,
+        // allowableHigherWidth: allowableHigherWidth,
+        actualThickness:"",
         actualWidth: "",
-        allowableLowerburrHeight: allowableLowerburrHeight,
-        allowableHeigherburrHeight: allowableHeigherburrHeight,
+        // allowableLowerburrHeight: allowableLowerburrHeight,
+        // allowableHeigherburrHeight: allowableHeigherburrHeight,
         burrHeight: "",
-        remarks: "",
+        remarks: ""
       }));
+      const toleranceData = [{
+        key: 0,
+        toleranceThicknessFrom: toleranceThicknessFrom,
+        toleranceThicknessTo: toleranceThicknessTo,
+        toleranceSlitSizeFrom: toleranceSlitSizeFrom,
+        toleranceSlitSizeTo: toleranceSlitSizeTo,
+        toleranceBurrHeightFrom: toleranceBurrHeightFrom,
+        toleranceBurrHeightTo: toleranceBurrHeightTo,
+      }];
+      debugger;
       setFinalDataSource(mappedData);
       setSlitDataSource(mappedData);
+      setToleranceDataSource(toleranceData);
+      setToleranceInspectionData(toleranceData);
     }
   }, [props.templateDetails.packetDetails]);
 
@@ -78,6 +103,7 @@ const SlittingForm = (props) => {
 
   const [slitInspectionData, setSlitInspectionData] = useState([]);
   const [finalInspectionData, setFinalInspectionData] = useState([]);
+  const [toleranceInspectionData, setToleranceInspectionData] = useState([])
 
   const instructionDate = props.templateDetails.packetDetails?.map(item=>item.instructionDate)
   useEffect(() => {
@@ -140,29 +166,14 @@ const SlittingForm = (props) => {
       editable: false,
     },
     {
-      title: 'Allowable Lower Slit Size',
-      dataIndex: 'allowableLowerWidth',
-      editable: false,
-    },
-    {
-      title: 'Allowable Higher Slit Size',
-      dataIndex: 'allowableHigherWidth',
-      editable: false,
-    },
-    {
-      title: 'Actual Width',
+      title: 'Actual Slit Size',
       dataIndex: 'actualWidth',
       editable: true,
     },
     {
-      title: 'Allowable Lower Burr Height',
-      dataIndex: 'allowableLowerburrHeight',
-      editable: false,
-    },
-    {
-      title: 'Allowable Higher Burr Height',
-      dataIndex: 'allowableHeigherburrHeight',
-      editable: false,
+      title: 'Actual Thickness',
+      dataIndex: 'actualThickness',
+      editable: true,
     },
     {
       title: 'Burr Height',
@@ -188,29 +199,14 @@ const SlittingForm = (props) => {
       editable: false,
     },
     {
-      title: 'Allowable Lower Slit Size',
-      dataIndex: 'allowableLowerWidth',
-      editable: false,
-    },
-    {
-      title: 'Allowable Higher Slit Size',
-      dataIndex: 'allowableHigherWidth',
-      editable: false,
-    },
-    {
-      title: 'Actual Width',
+      title: 'Actual Slit Size',
       dataIndex: 'actualWidth',
       editable: true,
     },
     {
-      title: 'Allowable Lower Burr Height',
-      dataIndex: 'allowableLowerburrHeight',
-      editable: false,
-    },
-    {
-      title: 'Allowable Higher Burr Height',
-      dataIndex: 'allowableHeigherburrHeight',
-      editable: false,
+      title: 'Actual Thickness',
+      dataIndex: 'actualThickness',
+      editable: true,
     },
     {
       title: 'Burr Height',
@@ -223,6 +219,38 @@ const SlittingForm = (props) => {
       editable: true,
     },
   ];
+  const toleranceColumnsSlit = [
+    {
+        title: 'Thickness From',
+        dataIndex: 'toleranceThicknessFrom',
+        editable: false
+    },
+    {
+        title: 'Thickness To',
+        dataIndex: 'toleranceThicknessTo',
+        editable: false
+    },
+    {
+        title: 'Slit Size From',
+        dataIndex: 'toleranceSlitSizeFrom',
+        editable: false
+    },
+    {
+        title: 'Slit Size To',
+        dataIndex: 'toleranceSlitSizeTo',
+        editable: false
+    },
+    {
+        title: 'Burr Height From',
+        dataIndex: 'toleranceBurrHeightFrom',
+        editable: false
+    },
+    {
+        title: 'Burr Height To',
+        dataIndex: 'toleranceBurrHeightTo',
+        editable: false
+    }
+];
 
   const emptySlitRecord = {
     key: 0,
@@ -246,6 +274,16 @@ const SlittingForm = (props) => {
     remarks: '',
   };
 
+  const toleranceEmptyRecord = {
+    key: 0,
+    toleranceThicknessFrom: "",
+    toleranceThicknessTo: "",
+    toleranceSlitSizeFrom: "",
+    toleranceSlitSizeTo: "",
+    toleranceBurrHeightFrom: "",
+    toleranceBurrHeightTo: "",
+}
+const location = useLocation();
   const onOptionChange = (key, changeEvent) => {
     slitFormData[key] = changeEvent.target.value;
   };
@@ -254,6 +292,7 @@ const SlittingForm = (props) => {
     debugger;
     slitFormData['slitInspectionData'] = slitInspectionData;
     slitFormData['finalInspectionData'] = finalInspectionData;
+    slitFormData['toleranceInspectionData'] = toleranceInspectionData
     props.onSave(slitFormData);
     props.updateQRFormData({ action: 'slit', formData: slitFormData });
    // props.history.push("/company/quality/reports/create/processing");
@@ -272,20 +311,18 @@ const SlittingForm = (props) => {
     console.log('handleFinalInspectionTableChange', tableData);
     setFinalInspectionData(tableData);
   };
-  // const handlePrint = () => {
-  //   window.print(); // Opens the print dialog
-  // };
-  // function openPrintPreview() {
-  //   const printWindow = window.open('', '_blank');
-  //   printWindow.document.write('<html><head><title>Print</title></head><body>');
-  //   const printableContent = document.getElementById('printable-content'); // This is the ID of the content to print
-  //   printWindow.document.write(printableContent.innerHTML);
-  //   printWindow.document.write('</body></html>');
-  //   printWindow.document.close();
-  //   printWindow.print();
-  //   printWindow.close();
-  // }
-  
+
+  const handleToleranceTableChangeSlit = (tableData) => {
+    console.log('handleInspectionTableChange', tableData)
+    setToleranceInspectionData(tableData)
+} 
+
+//  const onFilesChange = (type, file) => {
+//    console.log(type, file)
+//    slitFormData.fileName = file.fileList.slice(-1)[0].name;
+//    console.log(slitFormData);
+//    setSlitFormData({ ...slitFormData });
+//  }
   return (
     <div id='slittingform'>
       <Card title='Slitting Process Form'>
@@ -304,7 +341,6 @@ const SlittingForm = (props) => {
             <Col span={12}>
               <label>Process Date</label>
                <DatePicker
-                //value={props.inward?.plan?.instruction?.instructionDate}
                 value={moment(instructionDate, 'YYYY-MM-DD HH:mm:ss')}
                 onChange={(e) => onOptionChange('processDate', e)}
               >
@@ -404,6 +440,19 @@ const SlittingForm = (props) => {
           </Row>
         </Card.Grid>
         <Card.Grid style={gridStyle}>
+                    <Row>
+                        <Col span={24} style={{ textAlign: 'center' }}>
+                            <label style={{ fontSize: 20, textAlign: 'center' }}>Template Name - {location.state.templateDetails.templateName}</label>
+                        </Col>
+                    </Row>
+                     <Row>
+                        <Col span={24}>
+                            <label style={{fontSize: 20}}>Tolerance Data</label>
+                        </Col>
+                    </Row>
+                    <EditableTable columns={toleranceColumnsSlit} emptyRecord={toleranceEmptyRecord} dataSource={toleranceDataSource} handleChange={handleToleranceTableChangeSlit}/>
+                </Card.Grid>
+        <Card.Grid style={gridStyle}>
           <EditableTable
             columns={slitColumns}
             emptyRecord={emptySlitRecord}
@@ -453,13 +502,36 @@ const SlittingForm = (props) => {
             </Col>
           </Row>
         </Card.Grid>
+        <Card.Grid style={gridStyle}>
+          <Row>
+          <Col span={8}>
+            <div style={{ display: 'grid', marginTop: 15 }}>
+              {props.action === 'view' && props.templateDetails.packingIntactPreSingedURL && <img src={props.templateDetails.packingIntactPreSingedURL} style={{ width: 50 }} />}
+              {props.action === 'edit' && <> {props.templateDetails.packingIntactPreSingedURL && <img src={props.templateDetails.packingIntactPreSingedURL} style={{ width: 50 }} />}
+                
+                 </>}
+                 <Dragger
+                  name='packingIntact'
+                  height={50}
+                  beforeUpload={() => false}
+                  action=''
+                //  onChange={(e) => onFilesChange(1, e)}
+                // fileList={templateData[1].fileList}
+                >
+                  <p>
+                    <Icon type="upload" />
+                    &nbsp;Click or drag img
+                  </p>
+                </Dragger>
+            </div>
+          </Col>
+          </Row>
+        </Card.Grid>
         <div style={{ marginTop: 45 }}>
           <Button style={{ marginLeft: 8 }} onClick={onCancel}>Cancel</Button>
           <Button type='primary' htmlType='submit' onClick={saveForm}>
             Save
           </Button>
-      {/* <Button type="primary" onClick={handlePrint}>Print</Button> */}
-      {/* <Button type="primary" onClick={openPrintPreview}>Print</Button> */}
         </div>
       </Card>
     </div>

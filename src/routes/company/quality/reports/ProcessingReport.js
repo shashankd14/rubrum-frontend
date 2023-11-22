@@ -179,6 +179,14 @@ const ProcessingReport = (props) => {
                     >
                         Delete
                     </span>
+                    <Divider type="vertical" />
+                    <span
+                        className="gx-link"
+                        // onClick={!record.qirId ? (e) => showTemplateList(record, index, e) : null}
+                        // style={!record.qirId ? {} : { opacity: 0.5, pointerEvents: 'none' }}
+                    >
+                       PDF
+                    </span>
                 </span>
             ),
         },

@@ -138,6 +138,8 @@ const CreateReport = (props) => {
         request.append("planId", props.location.state.selectedItemForQr.planId);
         request.append("deliveryChalanNo", props.location.state.selectedItemForQr.deliveryChalanNo);
         request.append("inwardId", props.location.state.selectedItemForQr.inwardEntryId);
+        // request.append("processId", props.location.state.selectedItemForQr.processId)
+        // console.log("pppppppppppppppp", props.location.state.selectedItemForQr.processId)
         if (action == 'create'){
             props.saveQualityReport(request);
             props.history.push('/company/quality/reports')
