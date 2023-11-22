@@ -139,7 +139,7 @@ const handleClick = () => {
                 value={templateData[1].value}
               >
                 {PROCESSES.map((stage) => (
-                  <Option value={stage.value}>
+                  <Option key={stage.value} value={stage.value}>
                     {stage.label}
                   </Option>
                 ))}
@@ -216,10 +216,10 @@ const handleClick = () => {
         <Row>
           <Col span={8}>
             <div style={{ display: 'grid', marginTop: 15 }}>
-              {props.action === 'view' && props.templateDetails.packingIntactPreSingedURL && <img src={props.templateDetails.packingIntactPreSingedURL} style={{ width: 50 }} />}
-              {props.action === 'edit' && <> {props.templateDetails.packingIntactPreSingedURL && <img src={props.templateDetails.packingIntactPreSingedURL} style={{ width: 50 }} />}
+              {props.action === 'view' && props.templateDetails.processingReport1URL && <img src={props.templateDetails.processingReport1URL} alt="ProcessingReport" style={{ width: 50 }} />}
+              {props.action === 'edit' && <> {props.templateDetails.processingReport1URL && <img src={props.templateDetails.processingReport1URL} alt="ProcessingReport" style={{ width: 50 }} />}
                 <Dragger
-                  name='packingIntact'
+                  name='processingReport1'
                   height={50}
                   beforeUpload={() => false}
                   action=''
@@ -232,11 +232,113 @@ const handleClick = () => {
                   </p>
                 </Dragger> </>}
               {props.action === 'create' && <Dragger
-                name='packingIntact'
+                name='processingReport1'
                 height={50}
                 beforeUpload={() => false}
                 action=''
                 onChange={(e) => onFilesChange(1, e)}
+              // fileList={templateData[1].fileList}
+              >
+                <p>
+                  <Icon type="upload" />
+                  &nbsp;Click or drag img
+                </p>
+              </Dragger>}
+            </div>
+          </Col>
+        </Row>
+        <Row>
+          <Col span={8}>
+            <div style={{ display: 'grid', marginTop: 15 }}>
+              {props.action === 'view' && props.templateDetails.processingReport2URL && <img src={props.templateDetails.processingReport2URL} alt="ProcessingReport" style={{ width: 50 }} />}
+              {props.action === 'edit' && <> {props.templateDetails.processingReport2URL && <img src={props.templateDetails.processingReport2URL} alt="ProcessingReport" style={{ width: 50 }} />}
+                <Dragger
+                  name='processingReport2'
+                  height={50}
+                  beforeUpload={() => false}
+                  action=''
+                  onChange={(e) => onFilesChange(2, e)}
+                // fileList={templateData[1].fileList}
+                >
+                  <p>
+                    <Icon type="upload" />
+                    &nbsp;Click or drag img
+                  </p>
+                </Dragger> </>}
+              {props.action === 'create' && <Dragger
+                name='processingReport2'
+                height={50}
+                beforeUpload={() => false}
+                action=''
+                onChange={(e) => onFilesChange(2, e)}
+              // fileList={templateData[1].fileList}
+              >
+                <p>
+                  <Icon type="upload" />
+                  &nbsp;Click or drag img
+                </p>
+              </Dragger>}
+            </div>
+          </Col>
+        </Row>
+        <Row>
+          <Col span={8}>
+            <div style={{ display: 'grid', marginTop: 15 }}>
+              {props.action === 'view' && props.templateDetails.processingReport3URL && <img src={props.templateDetails.processingReport3URL} alt="ProcessingReport" style={{ width: 50 }} />}
+              {props.action === 'edit' && <> {props.templateDetails.processingReport3URL && <img src={props.templateDetails.processingReport31URL} alt="ProcessingReport" style={{ width: 50 }} />}
+                <Dragger
+                  name='processingReport3'
+                  height={50}
+                  beforeUpload={() => false}
+                  action=''
+                  onChange={(e) => onFilesChange(3, e)}
+                // fileList={templateData[1].fileList}
+                >
+                  <p>
+                    <Icon type="upload" />
+                    &nbsp;Click or drag img
+                  </p>
+                </Dragger> </>}
+              {props.action === 'create' && <Dragger
+                name='processingReport3'
+                height={50}
+                beforeUpload={() => false}
+                action=''
+                onChange={(e) => onFilesChange(3, e)}
+              // fileList={templateData[1].fileList}
+              >
+                <p>
+                  <Icon type="upload" />
+                  &nbsp;Click or drag img
+                </p>
+              </Dragger>}
+            </div>
+          </Col>
+        </Row>
+        <Row>
+          <Col span={8}>
+            <div style={{ display: 'grid', marginTop: 15 }}>
+              {props.action === 'view' && props.templateDetails.processingReport4URL && <img src={props.templateDetails.processingReport4URL} alt="ProcessingReport" style={{ width: 50 }} />}
+              {props.action === 'edit' && <> {props.templateDetails.processingReport4URL && <img src={props.templateDetails.processingReport4URL} alt="ProcessingReport" style={{ width: 50 }} />}
+                <Dragger
+                  name='processingReport4'
+                  height={50}
+                  beforeUpload={() => false}
+                  action=''
+                  onChange={(e) => onFilesChange(4, e)}
+                // fileList={templateData[1].fileList}
+                >
+                  <p>
+                    <Icon type="upload" />
+                    &nbsp;Click or drag img
+                  </p>
+                </Dragger> </>}
+              {props.action === 'create' && <Dragger
+                name='processingReport4'
+                height={50}
+                beforeUpload={() => false}
+                action=''
+                onChange={(e) => onFilesChange(4, e)}
               // fileList={templateData[1].fileList}
               >
                 <p>

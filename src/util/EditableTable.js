@@ -1,7 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import 'antd/dist/antd.css';
-import { Table, Input, Button, Form, Popconfirm } from 'antd';
+import { Table, Input, Button, Form, Popconfirm, Divider } from 'antd';
+import { useHistory, withRouter } from 'react-router-dom';
 
 const EditableContext = React.createContext();
 
@@ -102,9 +103,13 @@ class EditableTable extends React.Component {
         dataIndex: 'operation',
         render: (text, record) =>
             this.state.dataSource.length >= 1 ? (
+              <div>
+                <a onClick={() => this.handleEdit(record.key)}>Edit</a>
+                <Divider type="vertical" />
                 <Popconfirm title="Sure to delete?" onConfirm={() => this.handleDelete(record.key)}>
                     <a>Delete</a>
                 </Popconfirm>
+                </div>
             ) : null,
     })
   }
@@ -118,6 +123,13 @@ class EditableTable extends React.Component {
   handleDelete = key => {
     const dataSource = [...this.state.dataSource];
     this.setState({ dataSource: dataSource.filter(item => item.key !== key) });
+  };
+
+  handleEdit = (key) => {
+    const { history } = this.props;
+    //history.push(`/company/quality/templates/edit/${key}`);
+    history.push("/company/quality/templates");
+    console.log(`Editing record with key: ${key}`);
   };
 
   handleAdd = () => {
@@ -165,7 +177,7 @@ class EditableTable extends React.Component {
       };
     });
     return (
-      <div>
+      <div className="table-container">
         {/* <Button onClick={this.handleAdd} type="primary" style={{ marginBottom: 16 }}>
           Add a row
         </Button> */}
@@ -182,4 +194,4 @@ class EditableTable extends React.Component {
   }
 }
 
-export default EditableTable
+export default withRouter(EditableTable)

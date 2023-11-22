@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react'
 import EditableTable from '../../../../../../util/EditableTable';
 import moment from 'moment';
 import { connect } from 'react-redux';
+import { useLocation } from 'react-router-dom/cjs/react-router-dom.min';
 import {
     updateQRFormData,
     getQualityPacketDetails,
@@ -36,7 +37,6 @@ const SlitAndCutForm = (props) => {
     const [slitDataSource, setSlitDataSource] = useState([]);
     const [finalDataSource, setFinalDataSource] = useState([]);
     const [toleranceDataSource, setToleranceDataSource] = useState([]);
-    //const [toleranceInspectionDataSlit, setToleranceInspectionDataSlit] = useState([])
 
     //fetch tolerance data from QT-cut
     var toleranceThicknessFrom = 0;
@@ -93,26 +93,31 @@ const SlitAndCutForm = (props) => {
 
   useEffect(() => {
     if (props.templateDetails.packetDetails) {
-      const mappedData = props.templateDetails.packetDetails.map(item => ({
+      const mappedData = props.templateDetails.packetDetails.map((item, i) => ({
+        key: i,
         instructionId: item.instructionId,
         plannedNoOfPieces: item.plannedNoOfPieces,
-        allowableLowerWidth: allowableLowerWidth,
-        allowableHigherWidth: allowableHigherWidth,
+        // allowableLowerWidth: allowableLowerWidth,
+        // allowableHigherWidth: allowableHigherWidth,
+        actualThickness:"",
         actualWidth: "",
-        allowableLowerburrHeight: allowableLowerburrHeight,
-        allowableHeigherburrHeight: allowableHeigherburrHeight,
+        // allowableLowerburrHeight: allowableLowerburrHeight,
+        // allowableHeigherburrHeight: allowableHeigherburrHeight,
         burrHeight: "",
-        remarks: "",
+        remarks: ""
+      }));
+      const toleranceData = [{
         toleranceThicknessFrom: toleranceThicknessFromSlit,
         toleranceThicknessTo: toleranceThicknessToSlit,
         toleranceSlitSizeFrom: toleranceSlitSizeFromSlit,
         toleranceSlitSizeTo: toleranceSlitSizeToSlit,
         toleranceBurrHeightFrom: toleranceBurrHeightFromSlit,
         toleranceBurrHeightTo: toleranceBurrHeightToSlit
-      }));
+      }]
       setFinalDataSource(mappedData);
       setSlitDataSource(mappedData);
-      setToleranceDataSourceSlit(mappedData);
+      setToleranceDataSourceSlit(toleranceData);
+      setToleranceInspectionDataSlit(toleranceData);
     }
   }, [props.templateDetails.packetDetails]);
 
@@ -120,9 +125,9 @@ const SlitAndCutForm = (props) => {
   useEffect(() => {
       debugger;
       if (props.templateDetails.packetDetails) {
-        const mappedData = props.templateDetails.packetDetails.map(item => ({
-          //thickness: item.thickness,
-          thickness:5,
+        const mappedData = props.templateDetails.packetDetails.map((item, i) => ({
+            key: i,
+          thickness:props.inward?.plan?.fThickness,
           plannedLength: item.plannedLength,
           plannedWidth: item.plannedWidth,
           actualThickness: "",
@@ -130,8 +135,10 @@ const SlitAndCutForm = (props) => {
           actualLength: "",
           burrHeight: "",
           diagonalDifference: "",
-          remarks: "",
-          toleranceThicknessFrom: toleranceThicknessFrom,
+          remarks: ""
+        }));
+        const toleranceData = [{
+            toleranceThicknessFrom: toleranceThicknessFrom,
             toleranceThicknessTo: toleranceThicknessTo,
             toleranceWidthFrom: toleranceWidthFrom,
             toleranceWidthTo: toleranceWidthTo,
@@ -141,29 +148,13 @@ const SlitAndCutForm = (props) => {
             toleranceBurrHeightTo: toleranceBurrHeightTo,
             toleranceDiagonalDifferenceFrom: toleranceDiagonalDifferenceFrom,
             toleranceDiagonalDifferenceTo: toleranceDiagonalDifferenceTo,
-        }));
+        }]
         setDataSource(mappedData);
-        setToleranceDataSource(mappedData);
+        setToleranceDataSource(toleranceData);
+        setToleranceInspectionData(toleranceData);
         console.log("mappedData", mappedData)
       }
     }, [props.templateDetails.packetDetails]);
-
-    useEffect(() => {
-        setSlitFormData((prevFormData) => ({
-            ...prevFormData,
-            toleranceThicknessFrom: toleranceThicknessFrom,
-              toleranceThicknessTo: toleranceThicknessTo,
-              toleranceWidthFrom: toleranceWidthFrom,
-              toleranceWidthTo: toleranceWidthTo,
-              toleranceLengthFrom: toleranceLengthFrom,
-              toleranceLengthTo: toleranceLengthTo,
-              toleranceBurrHeightFrom: toleranceBurrHeightFrom,
-              toleranceBurrHeightTo: toleranceBurrHeightTo,
-              toleranceDiagonalDifferenceFrom: toleranceDiagonalDifferenceFrom,
-              toleranceDiagonalDifferenceTo: toleranceDiagonalDifferenceTo,
-          }));
-          
-      }, []);
 
     const [slitInspectionData, setSlitInspectionData] = useState([])
     const [cutInspectionData, setCutInspectionData] = useState([])
@@ -230,29 +221,14 @@ const SlitAndCutForm = (props) => {
             editable: false
         },
         {
-            title: 'Allowable Lower Slit Size',
-            dataIndex: 'allowableLowerWidth',
-            editable: false
-        },
-        {
-            title: 'Allowable Higher Slit Size',
-            dataIndex: 'allowableHigherWidth',
-            editable: false
-        },
-        {
-            title: 'Actual Width',
+            title: 'Actual Slit Size',
             dataIndex: 'actualWidth',
             editable: true
         },
         {
-            title: 'Allowable Lower Burr Height',
-            dataIndex: 'allowableLowerburrHeight',
-            editable: false,
-          },
-          {
-            title: 'Allowable Higher Burr Height',
-            dataIndex: 'allowableHeigherburrHeight',
-            editable: false,
+            title: 'Actual Thickness',
+            dataIndex: 'actualThickness',
+            editable: true,
           },
         {
             title: 'Burr Height',
@@ -278,29 +254,14 @@ const SlitAndCutForm = (props) => {
             editable: false
         },
         {
-            title: 'Allowable Lower Slit Size',
-            dataIndex: 'allowableLowerWidth',
-            editable: false
-        },
-        {
-            title: 'Allowable Higher Slit Size',
-            dataIndex: 'allowableHigherWidth',
-            editable: false
-        },
-        {
-            title: 'Actual Width',
+            title: 'Actual Slit Size',
             dataIndex: 'actualWidth',
             editable: true
         },
         {
-            title: 'Allowable Lower Burr Height',
-            dataIndex: 'allowableLowerburrHeight',
-            editable: false,
-          },
-          {
-            title: 'Allowable Higher Burr Height',
-            dataIndex: 'allowableHeigherburrHeight',
-            editable: false,
+            title: 'Actual Thickness',
+            dataIndex: 'actualThickness',
+            editable: true,
           },
         {
             title: 'Burr Height',
@@ -507,7 +468,7 @@ const SlitAndCutForm = (props) => {
     const onOptionChange = (key, changeEvent) => {
         slitCutFormData[key] = changeEvent.target.value;
     }
-
+    const location = useLocation();
     const saveForm = () => {
         slitCutFormData['slitInspectionData'] = slitInspectionData
         slitCutFormData['cutInspectionData'] = cutInspectionData
@@ -619,9 +580,14 @@ const SlitAndCutForm = (props) => {
 
                 </Card.Grid>
                 <Card.Grid style={gridStyle}>
+                    <Row>
+                        <Col span={24} style={{ textAlign: 'center' }}>
+                            <label style={{ fontSize: 20, textAlign: 'center' }}>Template Name - {location.state.templateDetails.templateName}</label>
+                        </Col>
+                    </Row>
                      <Row>
                         <Col span={24}>
-                            <label style={{fontSize: 20}}>Slitting Tolerance</label>
+                            <label style={{fontSize: 20}}>Slitting Tolerance Data</label>
                         </Col>
                     </Row>
                     <EditableTable columns={toleranceColumnsSlit} emptyRecord={toleranceEmptyRecordSlit} dataSource={toleranceDataSourceSlit} handleChange={handleToleranceTableChangeSlit}/>
@@ -629,7 +595,7 @@ const SlitAndCutForm = (props) => {
                 <Card.Grid style={gridStyle}>
                     <Row>
                         <Col span={24}>
-                            <label style={{fontSize: 20}}>Cutting Tolerance</label>
+                            <label style={{fontSize: 20}}>Cutting Tolerance Data</label>
                         </Col>
                     </Row>
                     <EditableTable columns={toleranceColumns} emptyRecord={toleranceEmptyRecord} dataSource={toleranceDataSource} handleChange={handleToleranceTableChange}/>

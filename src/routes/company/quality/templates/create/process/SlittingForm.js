@@ -13,8 +13,9 @@ const SlittingForm = (props) => {
     const [slitDataSource, setSlitDataSource] = useState([{
         slitNo: "",
         slitSize: "",
-        allowableLowerWidth: "",
-        allowableHigherWidth: "",
+        // allowableLowerWidth: "",
+        // allowableHigherWidth: "",
+        actualThickness: "",
         actualWidth: "",
         burrHeight: "",
         remarks: "",
@@ -23,9 +24,10 @@ const SlittingForm = (props) => {
     const [finalDataSource, setFinalDataSource] = useState([{
         slitNo: "",
         slitSize: "",
-        allowableLowerWidth: "",
-        allowableHigherWidth: "",
+        // allowableLowerWidth: "",
+        // allowableHigherWidth: "",
         actualWidth: "",
+        actualThickness: "",
         burrHeight: "",
         remarks: "",
     }]);
@@ -87,31 +89,36 @@ const SlittingForm = (props) => {
             dataIndex: 'slitSize',
             editable: true
         },
-        {
-            title: 'Allowable Lower Slit Size',
-            dataIndex: 'allowableLowerWidth',
-            editable: true
-        },
-        {
-            title: 'Allowable Higher Slit Size',
-            dataIndex: 'allowableHigherWidth',
-            editable: true
-        },
+        // {
+        //     title: 'Allowable Lower Slit Size',
+        //     dataIndex: 'allowableLowerWidth',
+        //     editable: true
+        // },
+        // {
+        //     title: 'Allowable Higher Slit Size',
+        //     dataIndex: 'allowableHigherWidth',
+        //     editable: true
+        // },
         {
             title: 'Actual Width',
             dataIndex: 'actualWidth',
             editable: true
         },
         {
-            title: 'Allowable Lower Burr Height',
-            dataIndex: 'allowableLowerburrHeight',
-            editable: true
+          title: 'Actual Thickness',
+          dataIndex: 'actualThickness',
+          editable: true,
         },
-        {
-            title: 'Allowable Higher Burr Height',
-            dataIndex: 'allowableHeigherburrHeight',
-            editable: true
-        },
+        // {
+        //     title: 'Allowable Lower Burr Height',
+        //     dataIndex: 'allowableLowerburrHeight',
+        //     editable: true
+        // },
+        // {
+        //     title: 'Allowable Higher Burr Height',
+        //     dataIndex: 'allowableHeigherburrHeight',
+        //     editable: true
+        // },
         {
             title: 'Burr Height',
             dataIndex: 'burrHeight',
@@ -135,31 +142,36 @@ const SlittingForm = (props) => {
             dataIndex: 'slitSize',
             editable: true
         },
-        {
-            title: 'Allowable Lower Slit Size',
-            dataIndex: 'allowableLowerWidth',
-            editable: true
-        },
-        {
-            title: 'Allowable Higher Slit Size',
-            dataIndex: 'allowableHigherWidth',
-            editable: true
-        },
+        // {
+        //     title: 'Allowable Lower Slit Size',
+        //     dataIndex: 'allowableLowerWidth',
+        //     editable: true
+        // },
+        // {
+        //     title: 'Allowable Higher Slit Size',
+        //     dataIndex: 'allowableHigherWidth',
+        //     editable: true
+        // },
         {
             title: 'Actual Width',
             dataIndex: 'actualWidth',
             editable: true
         },
         {
-            title: 'Allowable Lower Burr Height',
-            dataIndex: 'allowableLowerburrHeight',
-            editable: true
+          title: 'Actual Thickness',
+          dataIndex: 'actualThickness',
+          editable: true,
         },
-        {
-            title: 'Allowable Higher Burr Height',
-            dataIndex: 'allowableHeigherburrHeight',
-            editable: true
-        },
+        // {
+        //     title: 'Allowable Lower Burr Height',
+        //     dataIndex: 'allowableLowerburrHeight',
+        //     editable: true
+        // },
+        // {
+        //     title: 'Allowable Higher Burr Height',
+        //     dataIndex: 'allowableHeigherburrHeight',
+        //     editable: true
+        // },
         {
             title: 'Burr Height',
             dataIndex: 'burrHeight',

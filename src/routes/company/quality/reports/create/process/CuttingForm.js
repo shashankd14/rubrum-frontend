@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import EditableTable from '../../../../../../util/EditableTable';
 import { connect } from 'react-redux';
 import moment from 'moment';
+import { useLocation } from 'react-router-dom/cjs/react-router-dom.min';
 import {
     updateQRFormData,
     getQualityPacketDetails,
@@ -49,9 +50,9 @@ const CuttingForm = (props) => {
     useEffect(() => {
         debugger;
         if (props.templateDetails.packetDetails) {
-          const mappedData = props.templateDetails.packetDetails.map(item => ({
-           // thickness: item.thickness,
-           thickness:5,
+          const mappedData = props.templateDetails.packetDetails.map((item, i) => ({
+            key: i,
+            thickness:props.inward?.plan?.fThickness,
             plannedLength: item.plannedLength,
             plannedWidth: item.plannedWidth,
             actualThickness: "",
@@ -59,7 +60,9 @@ const CuttingForm = (props) => {
             actualLength: "",
             burrHeight: "",
             diagonalDifference: "",
-            remarks: "",
+            remarks: ""
+          }));
+          const toleranceData = [{
             toleranceThicknessFrom: toleranceThicknessFrom,
             toleranceThicknessTo: toleranceThicknessTo,
             toleranceWidthFrom: toleranceWidthFrom,
@@ -70,11 +73,11 @@ const CuttingForm = (props) => {
             toleranceBurrHeightTo: toleranceBurrHeightTo,
             toleranceDiagonalDifferenceFrom: toleranceDiagonalDifferenceFrom,
             toleranceDiagonalDifferenceTo: toleranceDiagonalDifferenceTo,
-          }));
+          }]
           setDataSource(mappedData);
-          setToleranceDataSource(mappedData);
+          setToleranceDataSource(toleranceData);
           //
-          setToleranceInspectionData(toleranceDataSource);
+          setToleranceInspectionData(toleranceData);
           console.log("mappedData", mappedData)
         }
       }, [props.templateDetails.packetDetails]);
@@ -116,23 +119,6 @@ const CuttingForm = (props) => {
           weight: props.inward?.plan?.grossWeight || '',
         }));
       }, [props.inward?.plan?.party]);
-
-    //   useEffect(() => {
-    //     debugger;
-    //     setToleranceInspectionData((prevFormData) => ({
-    //         ...prevFormData,
-    //         toleranceThicknessFrom: toleranceThicknessFrom,
-    //         toleranceThicknessTo: toleranceThicknessTo,
-    //         toleranceWidthFrom: toleranceWidthFrom,
-    //         toleranceWidthTo: toleranceWidthTo,
-    //         toleranceLengthFrom: toleranceLengthFrom,
-    //         toleranceLengthTo: toleranceLengthTo,
-    //         toleranceBurrHeightFrom: toleranceBurrHeightFrom,
-    //         toleranceBurrHeightTo: toleranceBurrHeightTo,
-    //         toleranceDiagonalDifferenceFrom: toleranceDiagonalDifferenceFrom,
-    //         toleranceDiagonalDifferenceTo: toleranceDiagonalDifferenceTo,
-    //       }));
-    //   }, [toleranceDataSource]);
 
     const gridCardStyle = {
         width: '50%',
@@ -298,6 +284,7 @@ const CuttingForm = (props) => {
         setToleranceInspectionData(tableData)
     } 
 
+    const location = useLocation();
     return (
         <div id="slittingform">
             <Card title="Cutting Process Form">
@@ -376,8 +363,13 @@ const CuttingForm = (props) => {
                 </Card.Grid>
                 <Card.Grid style={gridStyle}>
                     <Row>
+                        <Col span={24} style={{ textAlign: 'center' }}>
+                            <label style={{ fontSize: 20, textAlign: 'center' }}>Template Name - {location.state.templateDetails.templateName}</label>
+                        </Col>
+                    </Row>
+                    <Row>
                         <Col span={24}>
-                            <label style={{fontSize: 20}}>Cutting Tolerance</label>
+                            <label style={{fontSize: 20}}>Cutting Tolerance Data</label>
                         </Col>
                     </Row>
                     <EditableTable columns={toleranceColumns} emptyRecord={toleranceEmptyRecord} dataSource={toleranceDataSource} handleChange={handleToleranceTableChange}/>
