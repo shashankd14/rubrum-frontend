@@ -17,63 +17,86 @@ const LinkedTemplateList = (props) => {
     const [pageNo, setPageNo] = useState(1);
     const [totalPageItems, setTotalItems] = useState(0);
     const [templateList, setTemplateList] = useState([]);
-
+    const [filteredTemplateList, setFilteredTemplateList] = useState([]);
 
     useEffect(() => {
         console.log("init")
-        setTemplateList([]);
-        setSearchValue([]);
-        setPageNo([]);
+        // setTemplateList([]);
+        // setSearchValue([]);
+        // setPageNo([]);
     }, []);
 
     useEffect(() => {
         console.log("data load")
-        props.fetchKqpLinkList();
+        props.fetchKqpLinkList(1, 15, searchValue);
     }, []);
     useEffect(() => {
         if (!props.template.loading && !props.template.error && props.template.operation === 'kqpLinkList') {
-            console.log(props.template)
-            const jsonData =props.template.data;
+            const jsonData = props.template.data;
             const groupedData = {};
             jsonData.forEach((item) => {
                 const { kqpId, kqpName, stageName, partyName } = item;
-              
+    
                 const key = `${kqpId}-${kqpName}-${stageName}`;
-              
+    
                 if (!groupedData[key]) {
-                  // If the group doesn't exist yet, create it
-                  groupedData[key] = {
-                    kqpId,
-                    kqpName,
-                    stageName,
-                    parties: [],
-                  };
+                    // If the group doesn't exist yet, create it
+                    groupedData[key] = {
+                        kqpId,
+                        kqpName,
+                        stageName,
+                        parties: [],
+                    };
                 }
-              
                 // Add the partyName to the parties array in the group
                 groupedData[key].parties.push(partyName);
-              });
-              const groupedArray = Object.values(groupedData);
-              console.log(groupedArray);
-            // setTemplateList(props.template.data)
-            setTemplateList(groupedArray)
-        }
-    }, [props.template.loading, props.template.error]);
-
-    useEffect(() => {
-        if (searchValue) {
-            if (searchValue.length >= 3) {
+            });
+            const groupedArray = Object.values(groupedData);
+            console.log(groupedArray);
+    
+            // Update the totalPageItems state
+            setTotalItems(groupedArray.length);
+            setTemplateList(groupedArray);
+            
+            // Filter the data based on the searchValue
+            if (searchValue && searchValue.length >= 2) {
+                // Filter the templateList based on the searchValue
+                const filteredList = groupedArray.filter(item => {
+                    if(item.kqpId?.toString() === searchValue ||
+                    item.kqpName?.toLowerCase().includes(searchValue.toLowerCase()) )  {
+                    return item;
+                }
+            });
+                setFilteredTemplateList(filteredList);
                 setPageNo(1);
-                // props.fetchInwardList(1, 20, searchValue, customerValue);
+            } else {
+                
+                setFilteredTemplateList(groupedArray);
             }
-        } else {
-            setPageNo(1);
-            //   props.fetchInwardList(1, 20, searchValue, customerValue);
         }
-    }, [searchValue]);
+    }, [props.template.loading, props.template.error, props.template.operation]);
 
-    const handleChange = () => {
+    // useEffect(() => {
+    //     if (searchValue) {
+    //         if (searchValue.length >= 3) {
+    //             setPageNo(1);
+    //             // props.fetchKqpLinkList(1, 20, searchValue, customerValue);
+    //             props.fetchKqpLinkList(1, 20, searchValue);
+    //         }
+    //     } else {
+    //         setPageNo(1);
+    //            props.fetchKqpLinkList(1, 20);
+    //     }
+    // }, [searchValue]);
+    const handleSearch = (value, page) => {
+        setSearchValue(value);
+        setPageNo(1); 
+        props.fetchKqpLinkList(page, 15, searchValue); 
+    };
 
+    const handleChange = (pagination, filters, sorter, extra) => {
+        setPageNo(pagination.current);
+        props.fetchKqpLinkList(pagination.current, 15, searchValue);
     }
 
     const rowSelection = {}
@@ -86,7 +109,7 @@ const LinkedTemplateList = (props) => {
                         styleName="gx-flex-1"
                         placeholder={intl.formatMessage({ id: actions.search.placeholder })}
                         value={searchValue}
-                        onChange={(e) => setSearchValue(e.target.value)}>
+                        onChange={(e) => handleSearch(e.target.value)}>
                     </SearchBox>}
 
                 </div>
@@ -108,14 +131,14 @@ const LinkedTemplateList = (props) => {
             <Table
                 className="gx-table-responsive"
                 columns={props.columns}
-                dataSource={templateList}
+                dataSource={filteredTemplateList}
                 onChange={handleChange}
                 rowSelection={rowSelection}
                 pagination={{
                     pageSize: 15,
                     onChange: (page) => {
                         setPageNo(page);
-                        props.fetchTemplatesList(page, 15, searchValue);
+                        props.fetchKqpLinkList(page, 15, searchValue);
                     },
                     current: pageNo,
                     total: totalPageItems,
