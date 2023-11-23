@@ -317,12 +317,6 @@ const location = useLocation();
     setToleranceInspectionData(tableData)
 } 
 
-//  const onFilesChange = (type, file) => {
-//    console.log(type, file)
-//    slitFormData.fileName = file.fileList.slice(-1)[0].name;
-//    console.log(slitFormData);
-//    setSlitFormData({ ...slitFormData });
-//  }
   return (
     <div id='slittingform'>
       <Card title='Slitting Process Form'>
@@ -480,7 +474,7 @@ const location = useLocation();
             <Col span={24}>
               <label>Final Judgement</label>
               <TextArea
-                value={slitFormData.finalJudgement}
+                //value={slitFormData.finalJudgement}
                 onChange={(e) => onOptionChange('finalJudgement', e)}
               ></TextArea>
             </Col>
@@ -489,42 +483,17 @@ const location = useLocation();
             <Col span={12}>
               <label>Quality Engineer</label>
               <Input
-                value={slitFormData.qualityEngineer}
+                //value={slitFormData.qualityEngineer}
                 onChange={(e) => onOptionChange('qualityEngineer', e)}
               ></Input>
             </Col>
             <Col span={12}>
               <label>Quality Head</label>
               <Input
-                value={slitFormData.qualityHead}
+                //value={slitFormData.qualityHead}
                 onChange={(e) => onOptionChange('qualityHead', e)}
               ></Input>
             </Col>
-          </Row>
-        </Card.Grid>
-        <Card.Grid style={gridStyle}>
-          <Row>
-          <Col span={8}>
-            <div style={{ display: 'grid', marginTop: 15 }}>
-              {props.action === 'view' && props.templateDetails.packingIntactPreSingedURL && <img src={props.templateDetails.packingIntactPreSingedURL} style={{ width: 50 }} />}
-              {props.action === 'edit' && <> {props.templateDetails.packingIntactPreSingedURL && <img src={props.templateDetails.packingIntactPreSingedURL} style={{ width: 50 }} />}
-                
-                 </>}
-                 <Dragger
-                  name='packingIntact'
-                  height={50}
-                  beforeUpload={() => false}
-                  action=''
-                //  onChange={(e) => onFilesChange(1, e)}
-                // fileList={templateData[1].fileList}
-                >
-                  <p>
-                    <Icon type="upload" />
-                    &nbsp;Click or drag img
-                  </p>
-                </Dragger>
-            </div>
-          </Col>
           </Row>
         </Card.Grid>
         <div style={{ marginTop: 45 }}>

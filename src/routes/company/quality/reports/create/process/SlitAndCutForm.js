@@ -628,17 +628,17 @@ const SlitAndCutForm = (props) => {
                     <Row>
                         <Col span={24}>
                             <label>Final Judgement</label>
-                            <TextArea value={slitCutFormData.finalJudgement} onChange={(e) => onOptionChange('finalJudgement', e)}></TextArea>
+                            <TextArea  onChange={(e) => onOptionChange('finalJudgement', e)}></TextArea>
                         </Col>
                     </Row>
                     <Row>
                         <Col span={12}>
                             <label>Quality Engineer</label>
-                            <Input value={slitCutFormData.qualityEngineer} onChange={(e) => onOptionChange('qualityEngineer', e)}></Input>
+                            <Input onChange={(e) => onOptionChange('qualityEngineer', e)}></Input>
                         </Col>
                         <Col span={12}>
                             <label>Quality Head</label>
-                            <Input value={slitCutFormData.qualityHead} onChange={(e) => onOptionChange('qualityHead', e)}></Input>
+                            <Input onChange={(e) => onOptionChange('qualityHead', e)}></Input>
                         </Col>
                     </Row>
                 </Card.Grid>
