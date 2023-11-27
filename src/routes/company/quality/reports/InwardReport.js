@@ -13,8 +13,6 @@ import {
     updateQualityReport,
     deleteQualityReport,
     fetchQualityReportStageList,
-    pdfGenerateInward,
-    pdfGenerateQMreportInward
 } from "../../../../appRedux/actions";
 import moment from "moment";
 import { useIntl } from "react-intl";
@@ -444,6 +442,4 @@ export default connect(mapStateToProps, {
     updateQualityReport,
     deleteQualityReport,
     fetchQualityReportStageList,
-    pdfGenerateInward,
-    pdfGenerateQMreportInward
 })(withRouter(InwardReport));
