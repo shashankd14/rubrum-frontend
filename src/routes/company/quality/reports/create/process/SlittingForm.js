@@ -53,7 +53,6 @@ const SlittingForm = (props) => {
     );
     const formDataObjectTolerance = templateDataTolerance.find((item) => item.id === 'formData');
     if (formDataObject) {
-        debugger
       const formData = formDataObjectTolerance.value;
       const toleranceInspectionData = formData.toleranceInspectionData;
       toleranceThicknessFrom = toleranceInspectionData[0].toleranceThicknessFrom; 
@@ -91,7 +90,6 @@ const SlittingForm = (props) => {
         toleranceBurrHeightFrom: toleranceBurrHeightFrom,
         toleranceBurrHeightTo: toleranceBurrHeightTo,
       }];
-      debugger;
       setFinalDataSource(mappedData);
       setSlitDataSource(mappedData);
       setToleranceDataSource(toleranceData);
@@ -289,31 +287,25 @@ const location = useLocation();
   };
 
   const saveForm = () => {
-    debugger;
     slitFormData['slitInspectionData'] = slitInspectionData;
     slitFormData['finalInspectionData'] = finalInspectionData;
     slitFormData['toleranceInspectionData'] = toleranceInspectionData
     props.onSave(slitFormData);
     props.updateQRFormData({ action: 'slit', formData: slitFormData });
-   // props.history.push("/company/quality/reports/create/processing");
   };
   const onCancel = () => {
-    debugger;
-    //props.history.push("/company/quality/reports/create/processing");
+    props.history.push("/company/quality/reports/create/processing");
   };
 
   const handleInspectionTableChange = (tableData) => {
-    console.log('handleInspectionTableChange', tableData);
     setSlitInspectionData(tableData);
   };
 
   const handleFinalInspectionTableChange = (tableData) => {
-    console.log('handleFinalInspectionTableChange', tableData);
     setFinalInspectionData(tableData);
   };
 
   const handleToleranceTableChangeSlit = (tableData) => {
-    console.log('handleInspectionTableChange', tableData)
     setToleranceInspectionData(tableData)
 } 
 
@@ -369,8 +361,8 @@ const location = useLocation();
             <Col span={24}>
               <label>Physical Appearance</label>
               <Input
-                disabled
-                value={slitFormData.physicalAppearance}
+               // disabled
+               // value={slitFormData.physicalAppearance}
                 onChange={(e) => onOptionChange('physicalAppearance', e)}
               ></Input>
             </Col>
@@ -391,7 +383,7 @@ const location = useLocation();
             <Col span={12}>
               <label>Mother Coil No.</label>
               <Input
-                value={props.inward?.plan?.customerCoilId}
+               // value={props.inward?.plan?.customerCoilId}
                 onChange={(e) => onOptionChange('motherCoilNumber', e)}
               ></Input>
             </Col>

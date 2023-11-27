@@ -40,7 +40,13 @@ import {
   resetPackingRates,
   deleteRates,
   deleteAdditionalRates,
-  fetchPackingBucketList
+  fetchPackingBucketList,
+  getLaminationChargesList,
+  getLaminationChargesById,
+  addLminationCharges,
+  updateLminationCharges,
+  deleteLminationCharges,
+  resetLaminationChargesRequest
 } from "../../../appRedux/actions";
 import { onDeleteContact } from "../../../appRedux/actions";
 import AdditionalRates from "./addAdditionalRates";
@@ -66,6 +72,15 @@ const Rates = (props) => {
     order: "descend",
     columnKey: "age",
   });
+  const laminationDD = [
+    {laminationDetailsId : 1, laminationDetailsDesc : "Single Side lamination charges per meter (labour)"},
+    {laminationDetailsId : 2, laminationDetailsDesc : "Single Side lamination charges per meter (material)"},
+    {laminationDetailsId : 3, laminationDetailsDesc : "Single Side lamination charges per meter (labour and material)"},
+    {laminationDetailsId : 4, laminationDetailsDesc : "Double Side lamination charges per meter (labour)"},
+    {laminationDetailsId : 5, laminationDetailsDesc : "Double Side lamination charges per meter (material)"},
+    {laminationDetailsId : 6, laminationDetailsDesc : "Double Side lamination charges per meter (labour and material)"},
+  ]
+  const [selectedOption, setSelectedOption] = useState(laminationDD[0].laminationDetailsId);
   const [filteredInfo, setFilteredInfo] = useState(null);
   const [searchValue, setSearchValue] = useState("");
   const [searchThickness, setSearchThickness] = useState("");
@@ -100,6 +115,12 @@ const Rates = (props) => {
   const [selectedParty, setSelectedParty] = useState("");
   const [totalPageItems, setTotalItems] = useState(0); 
   const { ratesList, totalItems } = props.rates;
+  const [showAddLaminationCharges, setShowAddLaminationCharges] = useState(false);
+  const [editLaminationCharges, setEditLaminationCharges] = useState(false);
+  const [viewLaminationChargesData, setViewLaminationChargesData] = useState({});
+  const [viewLaminationCharges, setViewLaminationCharges] = useState(false);
+  const [laminationChargesList, setLaminationChargesList] = useState([]);
+  const [laminationStaticSelected, setLaminationStaticSelected] = useState();
   const columns = [
     {
       title: "Rate Id",
@@ -356,6 +377,52 @@ const Rates = (props) => {
 },
 ];
 
+const laminationChargesColumn = [{
+  title: 'Lamination ID',
+  dataIndex: 'laminationId',
+  key: 'laminationId',
+  filters: [],
+  sorter: (a, b) => {
+      return a.laminationId - b.laminationId
+  },
+  sortOrder: sortedInfo.columnKey === 'laminationId' && sortedInfo.order,
+},
+{
+  title: 'Party Name',
+  dataIndex: 'partyName',
+  key: 'partyName',
+  filters: [],
+  sorter: (a, b) => {
+      return a.partyName - b.partyName
+  },
+  sortOrder: sortedInfo.columnKey === 'partyName' && sortedInfo.order,
+},
+{
+title: 'Charges',
+dataIndex: 'charges',
+key: 'charges',
+filters: [],
+sorter: (a, b) => {
+    return a.laminationSSmaterial - b.laminationSSmaterial
+},
+sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
+},
+{
+  title: 'Action',
+  dataIndex: '',
+  key: 'x',
+  render: (text, record, index) => (
+      <span>
+          <span className="gx-link" onClick={(e) => onView(record, e)}>View</span>
+          <Divider type="vertical"/>
+          <span className="gx-link" onClick={(e) => onEdit(record,e)}>Edit</span>
+          <Divider type="vertical"/>
+          <span className="gx-link"onClick={(e) => onDelete(record,e)}>Delete</span>
+      </span>
+  ),
+},
+];
+
   const onView = (record, e) => {
     e.preventDefault();
     if (tabKey === "1") {
@@ -364,6 +431,9 @@ const Rates = (props) => {
     } else if (tabKey === "3") {
       setViewPackingRateData(record);
       setViewPackingRate(true);
+    } else if (tabKey === "4") {
+      setViewLaminationChargesData(record);
+      setViewLaminationCharges(true);
     } else {
       setViewMaterialData(record);
       setViewAdditionalRates(true);
@@ -374,6 +444,9 @@ const Rates = (props) => {
     e.preventDefault();
     if (tabKey === "1") {
       props.deleteRates(record?.id);
+    } else if (tabKey === "4"){
+      debugger
+      props.deleteLminationCharges(record.laminationId)
     } else {
       props.deleteAdditionalRates(record?.id);
     }
@@ -391,10 +464,19 @@ const Rates = (props) => {
         setShowAddRates(true);
       }, 1000);
     } else if (tabKey === "3") {
+      debugger
       props.fetchPackingRatesById(record.packingRateId);
       setEditPackingRates(true);
       setTimeout(() => {
         setShowAddPackingRates(true);
+      }, 1000);
+    } else if (tabKey === "4") {
+      debugger
+     props.getLaminationChargesById(record.laminationId);
+     // props.getLaminationChargesById();
+      setEditLaminationCharges(true);
+      setTimeout(() => {
+        setShowAddLaminationCharges(true);
       }, 1000);
     } else {
       props.fetchAdditionalPriceListById(record.id);
@@ -403,7 +485,7 @@ const Rates = (props) => {
       }, 1000);
     }
   };
-
+console.log("lEEEEEEEEEEEE", editLaminationCharges);
   useEffect(() => {
     props.fetchPartyList();
     props.fetchMaterialList();
@@ -411,6 +493,7 @@ const Rates = (props) => {
     props.fetchAdditionalPriceList();
     props.fetchPackingRatesList();
     props.fetchPackingBucketList();
+    props.getLaminationChargesList();
   }, []);
 
   useEffect(() => {
@@ -435,9 +518,12 @@ const Rates = (props) => {
 
   useEffect(() => {
     const { packingRateList } = props.rates;
-
     setfilteredPackingRateList(packingRateList)
   }, [props.rates.packingRateList]);
+  
+  useEffect(() => {
+      setLaminationChargesList(props.rates?.laminationChargesList || [])
+  }, [props.rates.laminationChargesList]);
 
   // useEffect(() => {
   //   if (props.rates.loading) {
@@ -485,6 +571,15 @@ const Rates = (props) => {
     );
     setAdditionalPriceList(list);
   }, [props?.rates?.additionalRatesList]);
+  useEffect(() => {
+    const list = props?.rates?.laminationChargesList.filter(
+      (item) =>
+        item?.laminationDetailsId === laminationStaticSelected &&
+       // item.processId === selectedProcessId &&
+        item?.partyId === selectedParty
+    );
+    setLaminationChargesList(list);
+  }, [props?.rates?.laminationChargesList]);
 
   useEffect(() => {
     const { rates } = props;
@@ -600,6 +695,15 @@ const Rates = (props) => {
     );
     setAdditionalPriceList(list);
   };
+  const handleLaminationChange = (e) => {
+    setLaminationStaticSelected(e);
+    const list = props?.rates?.laminationChargesList.filter(
+      (item) =>
+        item?.laminationDetailsId === e &&
+        item?.partyId === selectedParty
+    );
+    setLaminationChargesList(list);
+  };
   const clearFilters = (value) => {
     setFilteredInfo(null);
   };
@@ -648,6 +752,13 @@ const Rates = (props) => {
       })
   }, [ searchThickness]);
 
+  const handleDropdownChange = (value) => {
+    setSelectedOption(value);
+  };
+  const filteredLaminations = props.laminationCharges.filter(
+    (item) => item.partyId === selectedParty
+  );
+console.log("eeeeeeeeeeeeeeee", props.laminationChargesView)
   return (
     <div>
       <h1>
@@ -699,6 +810,20 @@ const Rates = (props) => {
                 }}
               >
                 Add Packing Rates
+              </Button>
+            )}
+            {tabKey === "4" && (
+              <Button
+                type="primary"
+                icon={() => <i className="icon icon-add" />}
+                size="default"
+                onClick={() => {
+                 props.resetLaminationChargesRequest();
+                  props.form.resetFields();
+                  setShowAddLaminationCharges(true);
+                }}
+              >
+                Add Lamination Charges
               </Button>
             )}
             <SearchBox
@@ -754,7 +879,7 @@ const Rates = (props) => {
               onChange={handlePartyChange}
             >
               {props.party?.partyList?.map((party) => (
-                <Option value={party.nPartyId}>{party.partyName}</Option>
+                <Option key={party.nPartyId} value={party.nPartyId}>{party.partyName}</Option>
               ))}
             </Select>
             <Select
@@ -764,7 +889,7 @@ const Rates = (props) => {
               onChange={handleProcessChange}
             >
               {props.process?.processList?.map((process) => (
-                <Option value={process.processId}>
+                <Option key={process.processId} value={process.processId}>
                   {process?.processName}
                 </Option>
               ))}
@@ -778,7 +903,7 @@ const Rates = (props) => {
                   onChange={handleStaticChange}
                 >
                   {staticList?.map((item) => (
-                    <Option value={item.id}>{item.priceDesc}</Option>
+                    <Option key={item.id} value={item.id}>{item.priceDesc}</Option>
                   ))}
                 </Select>
               </>
@@ -796,12 +921,47 @@ const Rates = (props) => {
             )}
           </TabPane>
           <TabPane tab="Packing Rate" key="3">
-            <Table rowSelection={[]}
+            <Table 
               className="gx-table-responsive"
               columns={packingRateColumn}
               dataSource={filteredPackingRateList}
               onChange={handleChange}
               />
+          </TabPane>
+          <TabPane tab="Lamination Charges" key="4">
+          <Select
+              style={{ width: 300 }}
+              className="additional_price_select"
+              placeholder="Select Party"
+              name="partyName"
+              onChange={handlePartyChange}
+            >
+              {props.party?.partyList?.map((party) => (
+                <Option key={party.nPartyId} value={party.nPartyId}>{party.partyName}</Option>
+              ))}
+            </Select>
+            {props.laminationCharges.length > 0 && (
+              <>
+                <Select
+                  style={{ width: 400 }}
+                  placeholder="Select lamination"
+                  className="additional_price_select"
+                  onChange={handleLaminationChange}
+                >
+                  {filteredLaminations?.map((item) => (
+                    <Option key={item.laminationDetailsId} value={item.laminationDetailsId}>{item.laminationDetailsDesc}</Option>
+                  ))}
+                </Select>
+              </>
+            )}
+            {laminationChargesList.length > 0 && (
+            <Table 
+              className="gx-table-responsive"
+              columns={laminationChargesColumn}
+              dataSource={laminationChargesList}
+              onChange={handleChange}
+              />
+            )}
           </TabPane>
         </Tabs>
         <Modal
@@ -946,7 +1106,7 @@ const Rates = (props) => {
                             style={{ width: "100%" }}
                           >
                             {props.party?.partyList?.map((party) => (
-                              <Option value={party.nPartyId}>
+                              <Option key={party.nPartyId} value={party.nPartyId}>
                                 {party.partyName}
                               </Option>
                             ))}
@@ -969,7 +1129,7 @@ const Rates = (props) => {
                             onChange={handleMaterialTypeChange}
                           >
                             {props.material?.materialList?.map((material) => (
-                              <Option value={material.matId}>
+                              <Option key={material.matId} value={material.matId}>
                                 {material.description}
                               </Option>
                             ))}
@@ -991,7 +1151,7 @@ const Rates = (props) => {
                             style={{ width: "100%" }}
                           >
                             {gradeList?.map((material) => (
-                              <Option value={material.gradeId}>
+                              <Option key={material.gradeId} value={material.gradeId}>
                                 {material.gradeName}
                               </Option>
                             ))}
@@ -1016,7 +1176,7 @@ const Rates = (props) => {
                           placeholder="Select a Party"
                         >
                           {props.party?.partyList?.map((party) => (
-                            <Option value={party.nPartyId}>
+                            <Option key={party.nPartyId} value={party.nPartyId}>
                               {party.partyName}
                             </Option>
                           ))}
@@ -1039,7 +1199,7 @@ const Rates = (props) => {
                         placeholder="Select a Process"
                       >
                         {props.process?.processList?.map((process) => (
-                          <Option value={process.processId}>
+                          <Option key={process.processId} value={process.processId}>
                             {process.processName}
                           </Option>
                         ))}
@@ -1064,7 +1224,7 @@ const Rates = (props) => {
                           onChange={handleMaterialTypeChange}
                         >
                           {props.material?.materialList?.map((material) => (
-                            <Option value={material.matId}>
+                            <Option key={material.matId} value={material.matId}>
                               {material.description}
                             </Option>
                           ))}
@@ -1086,7 +1246,7 @@ const Rates = (props) => {
                           placeholder="Select a Grade"
                         >
                           {gradeList?.map((material) => (
-                            <Option value={material.gradeId}>
+                            <Option key={material.gradeId} value={material.gradeId}>
                               {material.gradeName}
                             </Option>
                           ))}
@@ -1169,6 +1329,7 @@ const Rates = (props) => {
               const values = props.form.getFieldsValue();
               console.log('Received values of form: ', values);
               if (values.packingBucketId !== '' && values.rPartyId !== '' && values.packingRate !== '' && values.packingRateDesc !== '') {
+               debugger
                 const packingRateId = props?.packingRates?.packingRateId;
                 props.updatePackingRates({ ...values, packingRateId });
                 setEditPackingRates(false);
@@ -1176,6 +1337,7 @@ const Rates = (props) => {
               }
             } else {
               const values = props.form.getFieldsValue();
+              debugger
               console.log('Received values of form: ', values);
               if (values.packingBucketId !== '' && values.rPartyId !== '' && values.packingRate !== '' && values.packingRateDesc !== '') {
                 props.addPackingRates(values);
@@ -1216,7 +1378,7 @@ const Rates = (props) => {
                             optionA?.props?.children.toLowerCase().localeCompare(optionB?.props?.children.toLowerCase())
                         }
                         >{props?.packing?.bucketList?.map(item => {
-                            return <Option value={item?.bucketId}>{item?.packingBucketId}</Option>
+                            return <Option key={item?.bucketId} value={item?.bucketId}>{item?.packingBucketId}</Option>
                         })}</Select>
                     )}
                 </Form.Item>
@@ -1239,7 +1401,7 @@ const Rates = (props) => {
                       }
                     >
                       {props.party?.partyList?.map((party) => (
-                        <Option value={party.nPartyId}>
+                        <Option key={party.nPartyId} value={party.nPartyId}>
                           {party.partyName}
                         </Option>
                       ))}
@@ -1265,7 +1427,149 @@ const Rates = (props) => {
             </Row>
           </Card>
         </Modal>
+      {/* Lamination Charges */}
+      <Modal
+          title="Lamination Charges Details"
+          visible={viewLaminationCharges}
+          onOk={() => setViewLaminationCharges(false)}
+          onCancel={() => setViewLaminationCharges(false)}
+          width={700}
+        >
+          <Card className="gx-card">
+            <Row>
+              <Col span={24}>
+                <Card>
+                <p>
+                    <strong>Party Name:</strong>{" "}
+                    {viewLaminationChargesData?.partyName}
+                  </p>
+                  <p>
+                    <strong>Lamination Details Name:</strong> {" "} 
+                    {viewLaminationChargesData?.laminationDetailsDesc}
+                  </p>
+                  <p>
+                    <strong>Lamination Charges:</strong> {" "} 
+                    {viewLaminationChargesData?.charges}
+                  </p>
+                </Card>
+              </Col>
+            </Row>
+          </Card>
+        </Modal>
 
+      <Modal
+          title={editLaminationCharges ? "Edit Lamination Charges" : "Add Lamination Charges"}
+          visible={showAddLaminationCharges}
+          onOk={(e) => {
+            e.preventDefault();
+            if (editLaminationCharges) {
+              const values = props.form.getFieldsValue();
+              console.log('Received values of form: ', values);
+               if (values.laminationDetailsId !== '' && values.lPartyId !== '' && values.charges !== '') {
+                debugger
+                 const laminationId = props?.rates?.laminationCharges?.laminationId;
+                 console.log("1111111", laminationId);
+                 props.updateLminationCharges({...values, laminationId});
+                setEditLaminationCharges(false);
+                setShowAddLaminationCharges(false);
+               }
+            } else {
+              const values = props.form.getFieldsValue();
+              console.log('Received values of form: ', values);
+              debugger
+              if (values.laminationDetailsId !== '' && values.lPartyId !== '' && values.charges !== '') {
+                props.addLminationCharges(values);
+                setShowAddLaminationCharges(false);
+               }
+            }
+            props.form.resetFields();
+          }}
+          width={750}
+          onCancel={() => {
+            props.form.resetFields();
+            setShowAddLaminationCharges(false);
+            setEditLaminationCharges(false);
+          }}
+        >
+          <Card className="gx-card">
+            <Row>
+              <Col
+                lg={24}
+                md={24}
+                sm={24}
+                xs={24}
+                className="gx-align-self-center"
+              >
+                <Form {...formItemLayout} className="gx-pt-4">
+                <Form.Item label="Party Name">
+                  {getFieldDecorator("lPartyId", {
+                    rules: [{
+                        required: true,
+                        message: "Please select party name!",
+                      }],
+                  })(
+                    <Select
+                      id="lPartyId"
+                      showSearch
+                     // mode='multiple'
+                      style={{ width: "100%" }}
+                      filterOption={(input, option) => {
+                        return option?.props?.children?.toLowerCase().includes(input.toLowerCase());
+                      }}
+                      filterSort={(optionA, optionB) =>
+                        optionA?.props?.children.toLowerCase().localeCompare(optionB?.props?.children.toLowerCase())
+                      }
+                    >
+                      {props.party?.partyList?.map((party) => (
+                        <Option key={party.nPartyId} value={party.nPartyId}>
+                          {party.partyName}
+                        </Option>
+                      ))}
+                    </Select>
+                  )}
+                </Form.Item>
+
+                <Form.Item label="Select Lamination Details">
+                  {getFieldDecorator("laminationDetailsId", {
+                    rules: [{
+                        required: true,
+                        message: "Please select lamination!",
+                      }],
+                  })(
+                    <Select
+                      id="laminationDetailsId"
+                      showSearch
+                     // mode='multiple'
+                      style={{ width: "100%" }}
+                      onChange={handleDropdownChange}
+                      value={selectedOption}
+                      filterOption={(input, option) => {
+                        return option?.props?.children?.toLowerCase().includes(input.toLowerCase());
+                      }}
+                      filterSort={(optionA, optionB) =>
+                        optionA?.props?.children.toLowerCase().localeCompare(optionB?.props?.children.toLowerCase())
+                      }
+                    >
+                       {laminationDD.map((option) => (
+                          <option key={option.laminationDetailsId} value={option.laminationDetailsId}>
+                            {option.laminationDetailsDesc}
+                          </option>
+                        ))}
+                    </Select>
+                  )}
+                </Form.Item>
+                <Form.Item label="Lamination Charges" >
+                      {getFieldDecorator('charges', {
+                          rules: [{ required: true, message: 'Please enter charges' }],
+                          })(
+                          <Input id="charges" />
+                      )}
+                  </Form.Item>
+                </Form>
+              </Col>
+            </Row>
+          </Card>
+        </Modal>
 
         {showAdditionalRates && (
           <AdditionalRates
@@ -1291,7 +1595,9 @@ const mapStateToProps = (state) => ({
   process: state.process,
   aRates: state.rates.additionalRates,
   packing: state.packing,
-  packingRates: state.rates.packingRates
+  packingRates: state.rates.packingRates,
+  laminationCharges: state.rates.laminationChargesList,
+  laminationChargesView: state.rates.laminationChargesById
 });
 
 const addRatesForm = Form.create({
@@ -1373,6 +1679,46 @@ const addRatesForm = Form.create({
         ...props.packingRates?.packingRateDesc,
         value: props.packingRates?.packingRateDesc || "",
       }),
+      // lPartyId: Form.createFormField({
+      //   ...props.laminationCharges?.partyId,
+      //   value: props.laminationCharges?.partyId || "",
+      // }),
+      // laminationDetailsId: Form.createFormField({
+      //   ...props.laminationCharges?.laminationDetailsId,
+      //   value: props.laminationCharges?.laminationDetailsId || "",
+      // }),
+      // charges: Form.createFormField({
+      //   ...props.laminationCharges?.charges,
+      //   value: props.laminationCharges?.charges || "",
+      // }),
+      // laminationId: Form.createFormField({
+      //   ...props.laminationCharges?.laminationId,
+      //   value: props.laminationCharges?.laminationId || "",
+      // }),
+      // laminationDetailsDesc: Form.createFormField({
+      //   ...props.laminationCharges?.laminationDetailsDesc,
+      //   value: props.laminationCharges?.laminationDetailsDesc || "",
+      // }),
+      lPartyId: Form.createFormField({
+        ...props.laminationChargesView?.partyId,
+        value: props.laminationChargesView?.partyId || "",
+      }),
+      laminationDetailsId: Form.createFormField({
+        ...props.laminationChargesView?.laminationDetailsId,
+        value: props.laminationChargesView?.laminationDetailsId || "",
+      }),
+      charges: Form.createFormField({
+        ...props.laminationChargesView?.charges,
+        value: props.laminationChargesView?.charges || "",
+      }),
+      laminationId: Form.createFormField({
+        ...props.laminationChargesView?.laminationId,
+        value: props.laminationChargesView?.laminationId || "",
+      }),
+      laminationDetailsDesc: Form.createFormField({
+        ...props.laminationChargesView?.laminationDetailsDesc,
+        value: props.laminationChargesView?.laminationDetailsDesc || "",
+      }),
     };
   },
 })(Rates);
@@ -1396,5 +1742,11 @@ export default connect(mapStateToProps, {
   getStaticList,
   fetchAdditionalPriceList,
   fetchAdditionalPriceListById,
-  fetchPackingBucketList
+  fetchPackingBucketList,
+  getLaminationChargesList,
+  getLaminationChargesById,
+  addLminationCharges,
+  updateLminationCharges,
+  deleteLminationCharges,
+  resetLaminationChargesRequest
 })(addRatesForm);

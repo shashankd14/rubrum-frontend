@@ -30,7 +30,6 @@ const CuttingForm = (props) => {
     );
     const formDataObject = templateData.find((item) => item.id === 'formData');
     if (formDataObject) {
-        debugger
       const formData = formDataObject.value;
       const toleranceInspectionData = formData.toleranceInspectionData;
       toleranceThicknessFrom = toleranceInspectionData[0].toleranceThicknessFrom; 
@@ -48,7 +47,6 @@ const CuttingForm = (props) => {
     const [toleranceDataSource, setToleranceDataSource] = useState([]);
     
     useEffect(() => {
-        debugger;
         if (props.templateDetails.packetDetails) {
           const mappedData = props.templateDetails.packetDetails.map((item, i) => ({
             key: i,
@@ -267,7 +265,6 @@ const CuttingForm = (props) => {
     }
 
     const saveForm = () => {
-        debugger;
         cutFormData['cutInspectionData'] = cutInspectionData
         cutFormData['toleranceInspectionData'] = toleranceInspectionData
         //cutFormData['toleranceDataSource'] = toleranceDataSource
@@ -320,7 +317,7 @@ const CuttingForm = (props) => {
                     <Row>
                         <Col span={24}>
                             <label>Physical Appearance</label>
-                            <Input disabled value={cutFormData.physicalAppearance} onChange={(e) => onOptionChange('physicalAppearance', e)}></Input>
+                            <Input onChange={(e) => onOptionChange('physicalAppearance', e)}></Input>
                         </Col>
                     </Row>
 
@@ -335,7 +332,7 @@ const CuttingForm = (props) => {
                     <Row>
                         <Col span={12}>
                             <label>Mother Coil No.</label>
-                            <Input disabled value={props.inward?.plan?.customerCoilId} onChange={(e) => onOptionChange('motherCoilNumber', e)}></Input>
+                            <Input onChange={(e) => onOptionChange('motherCoilNumber', e)}></Input>
                         </Col>
                         <Col span={12}>
                             <label>AspenCoil No.</label>

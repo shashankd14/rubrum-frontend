@@ -12,7 +12,9 @@ import {
     getQualityReportById,
     updateQualityReport,
     deleteQualityReport,
-    fetchQualityReportStageList
+    fetchQualityReportStageList,
+    pdfGenerateInward,
+    pdfGenerateQMreportInward
 } from "../../../../appRedux/actions";
 import moment from "moment";
 import { useIntl } from "react-intl";
@@ -176,7 +178,6 @@ const InwardReport = (props) => {
                     <Divider type="vertical" />
                     <span
                         className="gx-link"
-                        // onClick={!record.qirId ? (e) => showTemplateList(record, index, e) : null}
                         // style={!record.qirId ? {} : { opacity: 0.5, pointerEvents: 'none' }}
                     >
                        PDF
@@ -214,7 +215,6 @@ const InwardReport = (props) => {
             (item.customerBatchNo.toLowerCase().includes(searchValue.toLowerCase())));
 
             setFilteredInwardList(filteredData);
-            console.log("filteredData", filteredData);
         } else {
             setFilteredInwardList(template.data);
         }  
@@ -229,6 +229,7 @@ const InwardReport = (props) => {
         } else if (!props.template.loading && !props.template.error && props.template.operation == "fetchQualityReportStage") {
             console.log(props.template)
             setFilteredInwardList(props.template.data)
+            console.log(props.template.data)
         } else if (!props.template.loading && !props.template.error && props.template.operation === 'templateById') {
             console.log(props)
             setShowCreateQrScreen(true)
@@ -442,5 +443,7 @@ export default connect(mapStateToProps, {
     getQualityReportById,
     updateQualityReport,
     deleteQualityReport,
-    fetchQualityReportStageList
+    fetchQualityReportStageList,
+    pdfGenerateInward,
+    pdfGenerateQMreportInward
 })(withRouter(InwardReport));

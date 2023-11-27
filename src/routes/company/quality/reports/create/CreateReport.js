@@ -98,7 +98,6 @@ const CreateReport = (props) => {
     }
 
     const handleCreate = (data) => {
-        debugger;
         // if (!templateName || templateName === "") {
         //     setTemplateNameErr(true);
         //     document.getElementById('templateName').focus();
@@ -127,6 +126,9 @@ const CreateReport = (props) => {
         if (templateName) {
             request.append("templateName", templateName);
         }
+        if (stageName === 'PROCESSING'){
+            request.append("processId", data[1].processId)
+        }
         //const coilNumber = stageName == 'INWARD' ? props.location.state.selectedItemForQr.coilNumber : props.location.state.selectedItemForQr.coilNo;
         const batchNumber = stageName == 'INWARD' ? props.location.state.selectedItemForQr.batchNumber : props.location.state.selectedItemForQr.customerBatchNo;
         request.append("stageName", stageName);
@@ -138,18 +140,14 @@ const CreateReport = (props) => {
         request.append("planId", props.location.state.selectedItemForQr.planId);
         request.append("deliveryChalanNo", props.location.state.selectedItemForQr.deliveryChalanNo);
         request.append("inwardId", props.location.state.selectedItemForQr.inwardEntryId);
-        // request.append("processId", props.location.state.selectedItemForQr.processId)
-        // console.log("pppppppppppppppp", props.location.state.selectedItemForQr.processId)
         if (action == 'create'){
             props.saveQualityReport(request);
             props.history.push('/company/quality/reports')
         }
         else if (action == 'edit'){
-            debugger;
             const qirIdToUpdate = props.templateDetails.data.qirId
             request.append("qirId", qirIdToUpdate);
             props.saveQualityReport(request);
-            console.log("request11111111111", request);
             props.history.push('/company/quality/reports')
         }   
     }

@@ -470,7 +470,7 @@ const List = (props) => {
             >
               {props.party.partyList.length > 0 &&
                 props.party.partyList.map((party) => (
-                  <Option value={party.nPartyId}>{party.partyName}</Option>
+                  <Option key={party.nPartyId} value={party.nPartyId}>{party.partyName}</Option>
                 ))}
             </Select>&emsp;
             {menuPartyWiseLabelList.length > 0 && menuPartyWiseLabelList.includes(partyWiseMenuConstants.export) && <Button onClick={exportSelectedData} style={{marginBottom: "1px"}}>Export</Button>}
