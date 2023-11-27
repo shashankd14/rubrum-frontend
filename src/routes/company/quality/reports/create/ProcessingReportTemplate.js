@@ -70,7 +70,6 @@ const ProcessingReportTemplate = (props) => {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    // console.log(props)
     setIsDisabled(props.action === 'view')
     if (props.action !== 'create') {
       const templateDetailsData = JSON.parse(props.templateDetails.templateDetails)
@@ -78,12 +77,10 @@ const ProcessingReportTemplate = (props) => {
       templateDetailsData.forEach((td) => {
         val[td.id] = td;
       });
-      console.log(val)
       setTemplateData(val)
     }
   }, [props.templateDetails]);
   const onFilesChange = (type, file) => {
-    console.log(type, file)
     templateData[type].fileList = file.fileList.slice(-1)
     templateData[type].fileName = templateData[type].fileList[0].name;
     console.log(templateData)
@@ -91,31 +88,36 @@ const ProcessingReportTemplate = (props) => {
   }
 
   const onOptionChange = (type, value) => {
-    console.log(type, value)
     templateData[type].value = value.target ? value.target.value : value
-    console.log(templateData)
+    templateData[type].processId = getProcessId(value);
     setTemplateData({ ...templateData })
   }
 
+  function getProcessId(value) {
+    if (value === 'CUTTING') {
+      return 1;
+    } else if (value === 'SLITTING') {
+      return 2;
+    } else {
+      return 3;
+    }
+  }
   const createTemplate = () => {
     props.handleCreate(templateData)
   }
 
   const updateFormData = (formData) => {
-    debugger;
-    console.log(formData)
     templateData['formData']['value'] = formData;
+    setShowCreateModal(false);
   }
 
   const handleCancel = () => {
-    debugger;
     //history.goBack(); 
     props.history.push('/company/quality/reports')
   };
 
 const handleClick = () => {
   setShowCreateModal(true);
-  console.log(props);
   const payload = JSON.stringify({
           coilNo : props.location.state.selectedItemForQr.coilNo,
           partDetailsId : props.location.state.selectedItemForQr.planId

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { connect, useDispatch, useSelector } from "react-redux";
-import { Popover,Input, Card, message, Select } from "antd";
+import { Popover,Input, Card, message, Select, Row, Col } from "antd";
 import { InfoCircleOutlined, CloseSquareTwoTone } from "@ant-design/icons";
-import { fetchPackingListByParty, fetchPackingBucketList, getPacketwisePriceDC, postDeliveryConfirm, generateDCPdf,resetInstruction,saveUnprocessedDelivery } from "../../../appRedux/actions";
+import { fetchPackingListByParty, fetchPackingBucketList, getLaminationChargesByPartyId, getPacketwisePriceDC, postDeliveryConfirm, generateDCPdf,resetInstruction,saveUnprocessedDelivery } from "../../../appRedux/actions";
 import moment from "moment";
 import { Button, Table, Modal } from "antd";
 
@@ -15,6 +15,8 @@ const DeliveryInfo = (props) => {
   const [thickness, setThickness] = useState();
   const [partyRate, setPartyRate] = useState(0);
   const [packingRateId, setPackingRateId] = useState('');
+  const [laminationCharges, setLaminationCharges] = useState(0);
+  const [laminationId, setLaminationId] = useState('');
 
   const [priceModal, setPriceModal] = useState(false);
   const [validationStatus, setValidationStatus] = useState(false);
@@ -127,6 +129,7 @@ const DeliveryInfo = (props) => {
   useEffect(() => {
     const partyId = props.inward.inwardListForDelivery?.map(ele => ele?.party?.nPartyId || '');
     props.fetchPackingListByParty(partyId);
+    props.getLaminationChargesByPartyId(partyId);
   }, [])
 console.log("props.inward.inwardListForDelivery", props.inward.inwardListForDelivery);
 
@@ -318,6 +321,7 @@ useEffect(()=>{
       </Card>
       {props.inward.inwardList.length > 0 ? (
         <div>
+         <div style={{ display: "flex",  }}>
           <div style={{ width: "20%", marginBottom: "15px" }}>
             <Select
                showSearch
@@ -337,10 +341,44 @@ useEffect(()=>{
                   <Option value={party.packingRateId}>{party.packingBucketName}</Option>
                 ))}
             </Select>
+            </div> &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+            <div style={{ width: "20%", marginBottom: "15px", flex: 5}}>
+            <Select
+               showSearch
+                style={{ width: 400 }}
+                className="Packing Rate"
+                placeholder="Select Lamination Charges"
+                name="partyName"
+                onChange={(value) => {
+                  const charges = props.laminationCharges?.filter((party) => {
+                    return party.laminationDetailsId === value
+                  })[0]
+                  setLaminationCharges(charges?.charges || 0);
+                  setLaminationId(value);
+                }}
+              >
+                {props.laminationCharges?.map((party) => (
+                  <Option value={party.laminationDetailsId}>{party.laminationDetailsDesc}</Option>
+                ))}
+            </Select>
+            </div>
           </div>
-          {!!partyRate && <div>
-            <p>Party Rate: {partyRate}</p>
-          </div>}
+          <Row>
+            <Col span={8}>
+            {!!partyRate && (
+              <div style={{ marginRight: "270px" }}>
+                <p>Party Rate: {partyRate}</p>
+              </div>
+            )}
+            </Col>
+             <Col >
+            {!!laminationCharges && (
+              <div>
+                <p>Lamination Charges: {laminationCharges}</p>
+              </div>
+            )}
+            </Col>
+          </Row>
           <div style={{ width: "20%", marginBottom: "15px" }}>
             <Input
               placeholder="Vehicle Number"
@@ -432,9 +470,10 @@ const mapStateToProps = (state) => {
   const mappedProps = {
     inward: state.inward,
     packing: state.packing,
-    packetwisePriceDC:state.inward?.packetwisePriceDC
+    packetwisePriceDC:state.inward?.packetwisePriceDC,
+    laminationCharges: state.rates.laminationChargesParty
   };
   return mappedProps;
 };
 
-export default connect(mapStateToProps, { fetchPackingListByParty, saveUnprocessedDelivery,getPacketwisePriceDC, postDeliveryConfirm, generateDCPdf,resetInstruction})(DeliveryInfo);
+export default connect(mapStateToProps, { fetchPackingListByParty, getLaminationChargesByPartyId, saveUnprocessedDelivery,getPacketwisePriceDC, postDeliveryConfirm, generateDCPdf,resetInstruction})(DeliveryInfo);

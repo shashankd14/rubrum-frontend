@@ -73,7 +73,7 @@ return (
                         mode="multiple"
                         style={{ width: '100%' }}
                         >                                                
-                        {props.party?.partyList?.map(party => <Option value={party.nPartyId}>{party.partyName}</Option>)}
+                        {props.party?.partyList?.map(party => <Option key={party.nPartyId} value={party.nPartyId}>{party.partyName}</Option>)}
                         </Select>
                         )}
                     </Form.Item>
@@ -88,7 +88,7 @@ return (
                         style={{width: 300}}
                         placeholder="Select a Process"
                        >
-                        {props.process?.processList?.map(process => <Option value={process.processId}>{process.processName}</Option>)}
+                        {props.process?.processList?.map(process => <Option key={process.processId} value={process.processId}>{process.processName}</Option>)}
                        </Select>
                     )}
                     </Form.Item>

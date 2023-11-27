@@ -97,6 +97,7 @@ const ProcessingTemplate = (props) => {
   const updateFormData = (formData) => {
     console.log(formData)
     templateData['formData']['value'] = formData;
+    setShowCreateModal(false);
   }
 
   return (

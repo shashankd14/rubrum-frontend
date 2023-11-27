@@ -44,8 +44,10 @@ import {FETCH_RATES_LIST_ERROR,
     DELETE_ADDITIONAL_RATES_BY_ID_SUCCESS,
     UPDATE_ADDITIONAL_RATES_REQUEST,
     UPDATE_ADDITIONAL_RATES_SUCCESS,
-    UPDATE_ADDITIONAL_RATES_ERROR
+    UPDATE_ADDITIONAL_RATES_ERROR,
+    DELETE_LAMINATION_CHARGES_ERROR
 } from "../../constants/ActionTypes";
+import * as actionTypes from "../../constants/ActionTypes";
 
 export const fetchRatesList = (pagination) => ({
     type: FETCH_RATES_LIST_REQUEST,
@@ -264,5 +266,105 @@ export const updateAdditionalRatesSuccess = () => ({
 
 export const updateAdditionalRatesError = (error) => ({
     type: UPDATE_ADDITIONAL_RATES_ERROR,
+    error
+});
+
+//Lamination Charges
+export const getLaminationChargesList = () => ({
+    type: actionTypes.GET_LAMINATION_CHARGES_LIST_REQUEST,
+});
+
+export const getLaminationChargesListSuccess = (laminationChargesList) => ({
+    type: actionTypes.GET_LAMINATION_CHARGES_LIST_SUCCESS,
+    laminationChargesList
+});
+
+export const getLaminationChargesListError = (error) => ({
+    type: actionTypes.GET_LAMINATION_CHARGES_LIST_ERROR,
+    error
+});
+
+export const getLaminationChargesById = (laminationId) => ({
+    type: actionTypes.GET_BY_ID_LAMINATION_CHARGES_REQUEST,
+    laminationId
+});
+export const getLaminationChargesByIdSuccess = (laminationChargesById) => ({
+    type: actionTypes.GET_BY_ID_LAMINATION_CHARGES_SUCCESS,
+    laminationChargesById
+});
+export const getLaminationChargesByIdError = (error) => ({
+    type: actionTypes.GET_BY_ID_LAMINATION_CHARGES_ERROR,
+    error
+});
+
+export const addLminationCharges = (payload) => ({
+    type: actionTypes.SAVE_LAMINATION_CHARGES_REQUEST,
+    payload
+});
+
+export const addLminationChargesSuccess = () => ({
+    type: actionTypes.SAVE_LAMINATION_CHARGES_SUCCESS,
+});
+
+export const addLminationChargesError = (error) => ({
+    type: actionTypes.SAVE_LAMINATION_CHARGES_ERROR,
+    error
+});
+export const resetLaminationChargesRequest = () => ({
+    type: actionTypes.RESET_LAMINATION_CHARGES_REQUEST,
+    
+});
+
+export const updateLminationCharges = (payload) => ({
+    type: actionTypes.UPDATE_LAMINATION_CHARGES_REQUEST,
+    payload
+});
+
+export const updateLminationChargesSuccess = () => ({
+    type: actionTypes.UPDATE_LAMINATION_CHARGES_SUCCESS,
+});
+
+export const updateLminationChargesError = (error) => ({
+    type: actionTypes.UPDATE_LAMINATION_CHARGES_ERROR,
+    error
+});
+
+export const deleteLminationCharges = (payload) => ({
+    type: actionTypes.DELETE_LAMINATION_CHARGES_REQUEST,
+    payload
+});
+
+export const deleteLminationChargesSuccess = (rates) => ({
+    type: actionTypes.DELETE_LAMINATION_CHARGES_SUCCESS,
+    rates
+});
+
+export const deleteLminationChargesError = (error) => ({
+    type: DELETE_LAMINATION_CHARGES_ERROR,
+    error
+});
+
+export const getLaminationChargesByPartyId = (partyId) => ({
+    type: actionTypes.GET_BY_PARTY_ID_LAMINATION_CHARGES_REQUEST,
+    partyId
+});
+export const getLaminationChargesByPartyIdSuccess = (laminationChargesParty) => ({
+    type: actionTypes.GET_BY_PARTY_ID_LAMINATION_CHARGES_SUCCESS,
+    laminationChargesParty
+});
+export const getLaminationChargesByPartyIdError = (error) => ({
+    type: actionTypes.GET_BY_PARTY_ID_LAMINATION_CHARGES_ERROR,
+    error
+});
+
+export const getLaminationChargesDropDown = () => ({
+    type: actionTypes.GET_LAMINATION_CHARGES_DROPDOWN_REQUEST,
+});
+export const getLaminationChargesDropDownSuccess = (laminationDropDown) => ({
+    type: actionTypes.GET_LAMINATION_CHARGES_DROPDOWN_SUCCESS,
+    laminationDropDown
+});
+export const getLaminationChargesDropDownError = (error) => ({
+    type: actionTypes.GET_LAMINATION_CHARGES_DROPDOWN_ERROR,
     error
 });

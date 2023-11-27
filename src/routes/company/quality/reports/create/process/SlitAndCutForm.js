@@ -152,7 +152,6 @@ const SlitAndCutForm = (props) => {
         setDataSource(mappedData);
         setToleranceDataSource(toleranceData);
         setToleranceInspectionData(toleranceData);
-        console.log("mappedData", mappedData)
       }
     }, [props.templateDetails.packetDetails]);
 
@@ -485,21 +484,16 @@ const SlitAndCutForm = (props) => {
     } 
 
     const handleCutInspectionTableChange = (tableData) => {
-        console.log('handleCutInspectionTableChange', tableData)
         setCutInspectionData(tableData)
     } 
 
     const handleFinalInspectionTableChange = (tableData) => {
-        console.log('handleFinalInspectionTableChange', tableData)
         setFinalInspectionData(tableData)
     } 
     const handleToleranceTableChange = (tableData) => {
-        console.log('handleInspectionTableChange', tableData)
         setToleranceInspectionData(tableData)
     } 
     const handleToleranceTableChangeSlit = (tableData) => {
-        console.log('handleInspectionTableChange', tableData)
-       // setToleranceDataSourceSlit(tableData)
        setToleranceInspectionDataSlit(tableData);
     }
 
@@ -538,7 +532,7 @@ const SlitAndCutForm = (props) => {
                     <Row>
                         <Col span={24}>
                             <label>Physical Appearance</label>
-                            <Input disabled value={slitCutFormData.physicalAppearance} onChange={(e) => onOptionChange('physicalAppearance', e)}></Input>
+                            <Input onChange={(e) => onOptionChange('physicalAppearance', e)}></Input>
                         </Col>
                     </Row>
 
@@ -553,7 +547,7 @@ const SlitAndCutForm = (props) => {
                     <Row>
                         <Col span={12}>
                             <label>Mother Coil No.</label>
-                            <Input disabled value={props.inward?.plan?.customerCoilId} onChange={(e) => onOptionChange('motherCoilNumber', e)}></Input>
+                            <Input onChange={(e) => onOptionChange('motherCoilNumber', e)}></Input>
                         </Col>
                         <Col span={12}>
                             <label>AspenCoil No.</label>
