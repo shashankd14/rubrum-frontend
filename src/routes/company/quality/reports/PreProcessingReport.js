@@ -13,7 +13,8 @@ import {
     getQualityReportById,
     updateQualityReport,
     deleteQualityReport,
-    fetchQualityReportStageList
+    fetchQualityReportStageList,
+    pdfGenerateQMreportInward
 } from "../../../../appRedux/actions";
 import moment from "moment";
 import { useIntl } from "react-intl";
@@ -172,6 +173,7 @@ const PreProcessingReport = (props) => {
                     <Divider type="vertical" />
                     <span
                         className="gx-link"
+                        onClick={() => onPdf(record.planId)}
                         // onClick={!record.qirId ? (e) => showTemplateList(record, index, e) : null}
                         // style={!record.qirId ? {} : { opacity: 0.5, pointerEvents: 'none' }}
                     >
@@ -281,6 +283,18 @@ const PreProcessingReport = (props) => {
            
     }, [searchValue]);
 
+    const [payload, setPayload] = useState({});
+    const onPdf = (planId) => {
+        debugger
+        setPayload({
+            partDetailsId:{groupIds: null, partDetailsId:planId},
+            type:'preProcessing'
+        })
+       // props.pdfGenerateQMreportInward(payload);
+    }
+    useEffect(() => {
+        props.pdfGenerateQMreportInward(payload);
+      }, [payload]);
 
     return (
         <>
@@ -425,5 +439,6 @@ export default connect(mapStateToProps, {
     getQualityReportById,
     updateQualityReport,
     deleteQualityReport,
-    fetchQualityReportStageList
+    fetchQualityReportStageList,
+    pdfGenerateQMreportInward
 })(withRouter(PreProcessingReport));
