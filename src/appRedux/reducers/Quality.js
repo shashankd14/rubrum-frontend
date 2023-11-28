@@ -106,7 +106,10 @@ const INIT_STATE = {
   },
   loading: false,
   data: [],
-  error: false
+  error: false,
+  pdfLoadingInward: false,
+  pdfSuccessInward: false,
+  pdfErrorInward: false
 };
 
 
@@ -698,6 +701,25 @@ export default (state = INIT_STATE, action) => {
           ...state,
           error: true,
           loading: false
+        }
+         //inward QM report pdf
+      case actionTypes.GENERATE_INWARD_PDF_QUALITY_MODULE_REPORT_REQUEST:
+        return{
+          ...state,
+          pdfLoadingInward: true
+        }
+      case actionTypes.GENERATE_INWARD_PDF_QUALITY_MODULE_REPORT_SUCCESS:
+        return{
+          ...state,
+          pdfLoadingInward: false,
+          pdfSuccessInward: true
+        }
+      case actionTypes.GENERATE_INWARD_PDF_QUALITY_MODULE_REPORT_ERROR:
+        return{
+          ...state,
+          pdfLoadingInward: false,
+          pdfSuccessInward: false,
+          pdfErrorInward: true
         }
     default:
       return state;

@@ -13,6 +13,7 @@ import {
     updateQualityReport,
     deleteQualityReport,
     fetchQualityReportStageList,
+    pdfGenerateQMreportInward
 } from "../../../../appRedux/actions";
 import moment from "moment";
 import { useIntl } from "react-intl";
@@ -176,6 +177,7 @@ const InwardReport = (props) => {
                     <Divider type="vertical" />
                     <span
                         className="gx-link"
+                        onClick={() => onPdf(record.inwardEntryId)}
                         // style={!record.qirId ? {} : { opacity: 0.5, pointerEvents: 'none' }}
                     >
                        PDF
@@ -297,6 +299,18 @@ const InwardReport = (props) => {
         }
     }, [props.party.loading, props.party.error]);
 
+    const [payload, setPayload] = useState({});
+    const onPdf = (inwardEntryId) => {
+        debugger
+        setPayload({
+            inwardId:{inwardId:inwardEntryId},
+            type:'inward'
+        })
+       // props.pdfGenerateQMreportInward(payload);
+    }
+    useEffect(() => {
+        props.pdfGenerateQMreportInward(payload);
+      }, [payload]);
 
     return (
         <>
@@ -442,4 +456,5 @@ export default connect(mapStateToProps, {
     updateQualityReport,
     deleteQualityReport,
     fetchQualityReportStageList,
+    pdfGenerateQMreportInward
 })(withRouter(InwardReport));

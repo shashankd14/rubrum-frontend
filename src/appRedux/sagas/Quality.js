@@ -34,6 +34,7 @@ import {
     GET_LENGTH_LIST_QM_REQUEST,
     DELETE_QUALITY_TEMPLATE_LINK_REQUEST,
     GET_PACKET_DETAILS_QUALITY_PROCESS_REQUEST,
+    GENERATE_INWARD_PDF_QUALITY_MODULE_REPORT_REQUEST,
 } from "../../constants/ActionTypes";
 import {
     saveTemplateError,
@@ -98,6 +99,8 @@ import {
     getLengthListQMError,
     getQualityPacketDetailsSuccess,
     getQualityPacketDetailsError,
+    pdfGenerateQMreportInwardSuccess,
+    pdfGenerateQMreportInwardError,
 } from "../actions/Quality";
 import { userSignOutSuccess } from "../../appRedux/actions/Auth";
 import { forEach } from "lodash";
@@ -801,6 +804,62 @@ function* getPacketDetailsQuality(data) {
         yield put(getQualityPacketDetailsError(error));
     }
 }
+//QM report inward pdf
+function* generateQMreportInwardPdf(action) {
+    debugger
+    //try {
+        // const pdfGenerate =  yield fetch(`${baseUrl}api/pdf/inward`, {
+        //     method: 'POST',
+        //     headers: { "Content-Type": "application/json", ...getHeaders()},
+        //     body: JSON.stringify(action.payload)
+        // });
+        let pdfGenerate
+    try {
+        // inward pdf
+        if(action.payload.type === 'inward'){
+            pdfGenerate = yield fetch(`${baseUrl}api/pdf/inward`, {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                    ...getHeaders()
+                  },
+                body: JSON.stringify(action.payload.inwardId)
+            });
+        }else if(action.payload.type === 'preProcessing'){
+            pdfGenerate = yield fetch(`${baseUrl}api/pdf`, {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                    ...getHeaders()
+                  },
+                body: JSON.stringify(action.payload.partDetailsId)
+            });
+        } else if(action.payload.type === 'preDispatch'){
+            pdfGenerate = yield fetch(`${baseUrl}api/pdf/delivery`, {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                    ...getHeaders()
+                  },
+                body: JSON.stringify(action.payload.partDetailsId)
+            });
+        }
+        if(pdfGenerate.status === 200) {
+            const pdfGenerateResponse = yield pdfGenerate.json();
+            let pdfWindow = window.open("")
+               pdfWindow.document.write(
+                  "<iframe width='100%' height='600%' src='data:application/pdf;base64, " +
+                    encodeURI(pdfGenerateResponse.encodedBase64String) + "'></iframe>"
+               )                 
+            yield put(pdfGenerateQMreportInwardSuccess(pdfGenerateResponse));
+        } else if (pdfGenerate.status === 401) {
+            yield put(userSignOutSuccess());
+        } else
+            yield put(pdfGenerateQMreportInwardError('error'));
+    } catch (error) {
+        yield put(pdfGenerateQMreportInwardError(error));
+    }
+}
 
 export function* watchFetchRequests() {
     yield takeLatest(SAVE_TEMPLATE_REQUEST, saveTemplate);
@@ -834,6 +893,7 @@ export function* watchFetchRequests() {
     yield takeLatest(GET_LENGTH_LIST_QM_REQUEST, getLengthList);
     yield takeLatest(DELETE_QUALITY_TEMPLATE_LINK_REQUEST, deleteQualityTemplateLinkById);
     yield takeLatest(GET_PACKET_DETAILS_QUALITY_PROCESS_REQUEST, getPacketDetailsQuality);
+    yield takeLatest(GENERATE_INWARD_PDF_QUALITY_MODULE_REPORT_REQUEST, generateQMreportInwardPdf);
 }
 
 export default function* qualitySagas() {

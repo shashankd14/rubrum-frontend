@@ -696,3 +696,19 @@ export const getQualityPacketDetailsError = (error) => ({
   type: actionTypes.GET_PACKET_DETAILS_QUALITY_PROCESS_ERROR,
   error
 });
+
+//Generate QM Report Inward pdf
+export const pdfGenerateQMreportInward = (payload) => ({
+  type: actionTypes.GENERATE_INWARD_PDF_QUALITY_MODULE_REPORT_REQUEST,
+  payload
+});
+
+export const pdfGenerateQMreportInwardSuccess = (payload) => ({
+  type: actionTypes.GENERATE_INWARD_PDF_QUALITY_MODULE_REPORT_SUCCESS,
+  payload
+});
+
+export const pdfGenerateQMreportInwardError = (error) => ({
+  type: actionTypes.GENERATE_INWARD_PDF_QUALITY_MODULE_REPORT_ERROR,
+  error
+});
