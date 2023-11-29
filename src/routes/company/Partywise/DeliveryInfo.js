@@ -43,6 +43,7 @@ const DeliveryInfo = (props) => {
       props.saveUnprocessedDelivery(payload)
       const reqObj = {
         packingRateId,
+        laminationId: props.laminationCharges[0]?.laminationId,
         vehicleNo,
           inwardListForDelivery:props.inward.inwardListForDelivery.map((item)=> ({
          instructionId: item.instructionId,
@@ -57,6 +58,7 @@ const DeliveryInfo = (props) => {
     const reqObj = {
       packingRateId,
       vehicleNo,
+      laminationId: props.laminationCharges[0]?.laminationId,
         inwardListForDelivery:props.inward.inwardListForDelivery.map((item)=> ({
        instructionId: item.instructionId,
       remarks: item.remarks || null, 
@@ -115,6 +117,11 @@ const DeliveryInfo = (props) => {
       key: "additionalPrice",
     },
     {
+      title: "Lamination Charges\n(per ton)",
+      dataIndex: "laminationCharges",
+      key: "laminationCharges",
+    },
+    {
       title: "Total Rate\n(per ton)",
       dataIndex: "rate",
       key: "rate",
@@ -131,7 +138,6 @@ const DeliveryInfo = (props) => {
     props.fetchPackingListByParty(partyId);
     props.getLaminationChargesByPartyId(partyId);
   }, [])
-console.log("props.inward.inwardListForDelivery", props.inward.inwardListForDelivery);
 
   useEffect(()=>{
     let insList = props.inward.inwardListForDelivery?.map(i => {
@@ -175,6 +181,7 @@ useEffect(()=>{
       vehicleNo,
       taskType:"FULL_HANDLING",
       packingRateId,
+      laminationId: props.laminationCharges[0]?.laminationId,
       inwardListForDelivery: fullHandlingList
     }
    // props.postDeliveryConfirm(reqObj);
@@ -194,6 +201,7 @@ useEffect(()=>{
         const reqObj = {
           packingRateId,
           vehicleNo,
+          laminationId: props.laminationCharges[0]?.laminationId,
           inwardListForDelivery: props.inward.inwardListForDelivery
         }
         props.postDeliveryConfirm(reqObj);
@@ -207,12 +215,12 @@ useEffect(()=>{
           vehicleNo,
           taskType:"FULL_HANDLING",
           packingRateId,
+          laminationId: props.laminationCharges[0]?.laminationId,
           inwardListForDelivery: fullHandlingList
         }
         props.postDeliveryConfirm(reqObj);
       }
   };
-
   return (
     <div>
       <h1>Delivery Information</h1>
@@ -414,7 +422,7 @@ useEffect(()=>{
             <Modal
               title='Packet wise Rate Details'
               visible={priceModal}
-              width={1000}
+              width={1300}
               onCancel={()=> {
                 setPriceModal(false)
                }}

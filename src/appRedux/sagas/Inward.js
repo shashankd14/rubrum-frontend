@@ -587,7 +587,7 @@ function* postDeliveryConfirmRequest(payload) {
         req_obj = {
             vehicleNo: payload.payload?.vehicleNo,
             packingRateId: payload.payload?.packingRateId,
-            laminationDetailsId: payload.payload?.laminationDetailsId,
+            laminationId: payload.payload?.laminationId,
             taskType:payload.payload?.taskType?payload.payload?.taskType:"",
             deliveryItemDetails: packetsData
         }
@@ -873,7 +873,7 @@ function* getPacketwisePriceDCSaga(action) {
         req_obj = {
             vehicleNo: action.payload?.vehicleNo,
             packingRateId: action.payload?.packingRateId,
-            laminationDetailsId: action.payload?.laminationCharges,
+            laminationId: action.payload?.laminationId,
             taskType:action.payload?.taskType?action.payload?.taskType:"",
            //taskType:action.payload?.taskType,
             deliveryItemDetails: packetsData
