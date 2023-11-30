@@ -473,7 +473,6 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
     } else if (tabKey === "4") {
       debugger
      props.getLaminationChargesById(record.laminationId);
-     // props.getLaminationChargesById();
       setEditLaminationCharges(true);
       setTimeout(() => {
         setShowAddLaminationCharges(true);
@@ -485,7 +484,6 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
       }, 1000);
     }
   };
-console.log("lEEEEEEEEEEEE", editLaminationCharges);
   useEffect(() => {
     props.fetchPartyList();
     props.fetchMaterialList();
@@ -499,6 +497,10 @@ console.log("lEEEEEEEEEEEE", editLaminationCharges);
   useEffect(() => {
     props.fetchRatesList();
   }, [showAddRates]);
+
+  useEffect(() => {
+    props.getLaminationChargesList();
+  }, [showAddLaminationCharges, editLaminationCharges]);
 
   useEffect(() => {
    // props.fetchPackingRatesList();
@@ -1102,6 +1104,7 @@ console.log("eeeeeeeeeeeeeeee", props.laminationChargesView)
                         })(
                           <Select
                             id="partyId"
+                            showSearch
                             mode="multiple"
                             style={{ width: "100%" }}
                           >
@@ -1124,6 +1127,7 @@ console.log("eeeeeeeeeeeeeeee", props.laminationChargesView)
                         })(
                           <Select
                             id="materialType"
+                            showSearch
                             mode="multiple"
                             style={{ width: "100%" }}
                             onChange={handleMaterialTypeChange}
