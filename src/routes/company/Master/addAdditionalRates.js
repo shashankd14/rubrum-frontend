@@ -369,27 +369,6 @@ const AdditionalRates = (props) => {
                   </Select>
                 )}
               </Form.Item>
-              {/* Lamination charges */}
-              <Form.Item label="Single side lamination charges per meter (Labour)">
-                    {getFieldDecorator("laminationSSlabour", {
-                      
-                    })(<Input id="laminationSSlabour" />)}
-                  </Form.Item>
-              <Form.Item label="Single side lamination charges per meter (Material)">
-                    {getFieldDecorator("laminationSSmaterial", {
-                      
-                    })(<Input id="laminationSSmaterial" />)}
-              </Form.Item>
-              <Form.Item label="Double side lamination charges per meter (Labour)">
-                    {getFieldDecorator("laminationDSlabour", {
-                      
-                    })(<Input id="laminationDSlabour" />)}
-                  </Form.Item>
-              <Form.Item label="Double side lamination charges per meter (Material)">
-                    {getFieldDecorator("laminationDSmaterial", {
-                      
-                    })(<Input id="laminationDSmaterial" />)}
-              </Form.Item>
               {/* Slit specific fields - start */}
               {processId === 2 || processId === 3 ? (
                 <>
