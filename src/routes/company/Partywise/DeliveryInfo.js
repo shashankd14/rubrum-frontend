@@ -43,7 +43,7 @@ const DeliveryInfo = (props) => {
       props.saveUnprocessedDelivery(payload)
       const reqObj = {
         packingRateId,
-        laminationId: props.laminationCharges[0]?.laminationId,
+        laminationId,
         vehicleNo,
           inwardListForDelivery:props.inward.inwardListForDelivery.map((item)=> ({
          instructionId: item.instructionId,
@@ -58,7 +58,7 @@ const DeliveryInfo = (props) => {
     const reqObj = {
       packingRateId,
       vehicleNo,
-      laminationId: props.laminationCharges[0]?.laminationId,
+      laminationId,
         inwardListForDelivery:props.inward.inwardListForDelivery.map((item)=> ({
        instructionId: item.instructionId,
       remarks: item.remarks || null, 
@@ -181,7 +181,7 @@ useEffect(()=>{
       vehicleNo,
       taskType:"FULL_HANDLING",
       packingRateId,
-      laminationId: props.laminationCharges[0]?.laminationId,
+      laminationId,
       inwardListForDelivery: fullHandlingList
     }
    // props.postDeliveryConfirm(reqObj);
@@ -201,7 +201,7 @@ useEffect(()=>{
         const reqObj = {
           packingRateId,
           vehicleNo,
-          laminationId: props.laminationCharges[0]?.laminationId,
+          laminationId,
           inwardListForDelivery: props.inward.inwardListForDelivery
         }
         props.postDeliveryConfirm(reqObj);
@@ -215,7 +215,7 @@ useEffect(()=>{
           vehicleNo,
           taskType:"FULL_HANDLING",
           packingRateId,
-          laminationId: props.laminationCharges[0]?.laminationId,
+          laminationId,
           inwardListForDelivery: fullHandlingList
         }
         props.postDeliveryConfirm(reqObj);
@@ -359,14 +359,14 @@ useEffect(()=>{
                 name="partyName"
                 onChange={(value) => {
                   const charges = props.laminationCharges?.filter((party) => {
-                    return party.laminationDetailsId === value
+                    return party.laminationId === value
                   })[0]
                   setLaminationCharges(charges?.charges || 0);
                   setLaminationId(value);
                 }}
               >
                 {props.laminationCharges?.map((party) => (
-                  <Option value={party.laminationDetailsId}>{party.laminationDetailsDesc}</Option>
+                  <Option value={party.laminationId}>{party.laminationDetailsDesc}</Option>
                 ))}
             </Select>
             </div>

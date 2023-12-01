@@ -261,35 +261,6 @@ const Rates = (props) => {
       sortOrder: sortedInfo.columnKey === "price" && sortedInfo.order,
     },
     {
-      title: "Lamination-SS (labour)",
-      dataIndex: "laminationSSlabour",
-      key: "laminationSSlabour",
-      sorter: (a, b) => a.laminationSSlabour - b.laminationSSlabour,
-      sortOrder: sortedInfo.columnKey === "laminationSSlabour" && sortedInfo.order,
-    },
-    {
-      title: "Lamination-SS (material)",
-      dataIndex: "laminationSSmaterial",
-      key: "laminationSSmaterial",
-      sorter: (a, b) => a.laminationSSmaterial - b.laminationSSmaterial,
-      sortOrder: sortedInfo.columnKey === "laminationSSmaterial" && sortedInfo.order,
-    },
-    {
-      title: "Lamination-DS (labour)",
-      dataIndex: "laminationDSlabour",
-      key: "laminationDSlabour",
-      sorter: (a, b) => a.laminationDSlabour - b.laminationDSlabour,
-      sortOrder: sortedInfo.columnKey === "laminationDSlabour" && sortedInfo.order,
-    },
-    {
-      title: "Lamination-DS (material)",
-      dataIndex: "laminationDSmaterial",
-      key: "laminationDSmaterial",
-      sorter: (a, b) => a.laminationDSmaterial - b.laminationDSmaterial,
-      sortOrder: sortedInfo.columnKey === "laminationDSmaterial" && sortedInfo.order,
-    },
-
-    {
       title: "Action",
       dataIndex: "",
       key: "x",
