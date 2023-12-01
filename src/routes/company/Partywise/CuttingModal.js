@@ -662,12 +662,14 @@ const CreateCuttingDetailsForm = (props) => {
           remainWeight = currentWeight - values.weight;
           let slitcuts = [];
           slitcuts.push({
-            processId: 1,
+            processId: props.slitCut === true? 2 : 1,
+            //processId:1,
             instructionDate: moment().format("YYYY-MM-DD HH:mm:ss"),
             plannedLength: props.inward.process.length,
             plannedNoOfPieces: props.inward.process.no,
             plannedWeight: props.inward.process.weight.toFixed(2),
-            isSlitAndCut: false,
+            isSlitAndCut: props.slitCut,
+           //isSlitAndCut: false,
             status: 1,
             createdBy: "1",
             updatedBy: "1",
@@ -947,7 +949,7 @@ const CreateCuttingDetailsForm = (props) => {
     } else {
       setTimeout(() => {
         message.success("Cutting Instruction Saved", 2).then(() => {
-          props.setShowCuttingModal(false);
+         // props.setShowCuttingModal(false);
           props.resetInstruction();
         });
       }, 1000);
@@ -1333,23 +1335,26 @@ const CreateCuttingDetailsForm = (props) => {
           },
           instructionRequestDTOs: [
             {
-              processId: 1,
+              processId: props.slitCut === true? 2 : 1,
+            // processId: 2,
               instructionDate: "2022-04-28 21:04:49",
               plannedLength: record?.plannedLength,
               actualLength: record?.actualLength,
               actualNoOfPieces: record?.actualNoOfPieces,
               actualWeight: record?.actualWeight,
-              plannedNoOfPieces: record?.plannedWidth,
-              isSlitAndCut: false,
-              plannedNoOfPieces: "1",
+              plannedWidth: record?.plannedWidth,
+             // plannedNoOfPieces: record?.plannedWidth,
+             plannedNoOfPieces: record?.plannedNoOfPieces,
+              isSlitAndCut: props.slitCut,
+             // plannedNoOfPieces: "1",
               status: 1,
               createdBy: "1",
               updatedBy: "1",
               groupId: null,
               plannedWeight:
-                props?.coilDetails?.scrapWeight === null
+                ((props?.coilDetails?.scrapWeight === null
                   ? 0
-                  : props?.coilDetails?.scrapWeight,
+                  : props?.coilDetails?.scrapWeight) || (record.actualWeight)),
               inwardId: props?.coilDetails?.inwardEntryId,
               parentInstructionId: "",
               endUserTagId: record?.endUserTagsentity?.tagId,
@@ -1368,7 +1373,7 @@ const CreateCuttingDetailsForm = (props) => {
         instruction: instructionList,
       };
       props.updateInstruction(coil);
-    
+      props.setShowCuttingModal(false);
   };
   const addRow = () => {
     const newData = {
@@ -1438,7 +1443,7 @@ const CreateCuttingDetailsForm = (props) => {
               type="primary"
               onClick={bundleListClick}
               icon={() => <i className="icon icon-add" />}
-              size="medium"
+              size="default"
               disabled={selectedRowKeys.length < 1 ? true : false}
             >
               Bundle
@@ -1514,7 +1519,7 @@ const CreateCuttingDetailsForm = (props) => {
                         >
                           <Button
                             type="primary"
-                            size="medium"
+                            size="default"
                             onClick={(e) => getCuts(e, 0)}
                           >
                             Confirm
@@ -1583,7 +1588,7 @@ const CreateCuttingDetailsForm = (props) => {
                           >
                             <Button
                               type="primary"
-                              size="medium"
+                              size="default"
                               disabled={getConfirmDisabled(idx)}
                               onClick={(e) => getCuts(e, idx)}
                             >
