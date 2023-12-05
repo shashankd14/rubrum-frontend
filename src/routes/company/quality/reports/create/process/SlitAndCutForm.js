@@ -26,14 +26,14 @@ const SlitAndCutForm = (props) => {
     
     const formDataObject = templateData.find((item) => item.id === 'formData');
 
-    if (formDataObject) {
-        const formData = formDataObject.value;
-        const slitInspectionData = formData.slitInspectionData;
-        allowableLowerWidth = slitInspectionData[0].allowableLowerWidth;
-        allowableHigherWidth = slitInspectionData[0].allowableHigherWidth;
-        allowableHeigherburrHeight = slitInspectionData[0].allowableHeigherburrHeight;
-        allowableLowerburrHeight = slitInspectionData[0].allowableLowerburrHeight;
-    } 
+    // if (formDataObject) {
+    //     const formData = formDataObject.value;
+    //     const slitInspectionData = formData.slitInspectionData;
+    //     allowableLowerWidth = slitInspectionData[0].allowableLowerWidth;
+    //     allowableHigherWidth = slitInspectionData[0].allowableHigherWidth;
+    //     allowableHeigherburrHeight = slitInspectionData[0].allowableHeigherburrHeight;
+    //     allowableLowerburrHeight = slitInspectionData[0].allowableLowerburrHeight;
+    // } 
     const [slitDataSource, setSlitDataSource] = useState([]);
     const [finalDataSource, setFinalDataSource] = useState([]);
     const [toleranceDataSource, setToleranceDataSource] = useState([]);
@@ -80,7 +80,6 @@ const SlitAndCutForm = (props) => {
   );
   const formDataObjectTolerance = templateDataTolerance.find((item) => item.id === 'formData');
   if (formDataObject) {
-      debugger
     const formData = formDataObjectTolerance.value;
     const toleranceInspectionData = formData.toleranceInspectionDataSlit;
     toleranceThicknessFromSlit = toleranceInspectionData[0].toleranceThicknessFrom; 
@@ -90,19 +89,20 @@ const SlitAndCutForm = (props) => {
     toleranceBurrHeightFromSlit = toleranceInspectionData[0].toleranceBurrHeightFrom; 
     toleranceBurrHeightToSlit = toleranceInspectionData[0].toleranceBurrHeightTo;
   } 
-
+//Slit table
   useEffect(() => {
-    if (props.templateDetails.packetDetails) {
-      const mappedData = props.templateDetails.packetDetails.map((item, i) => ({
+    const packetDetails = props.templateDetails?.packetDetails
+      if (packetDetails) {
+        const slittingProcess = packetDetails.filter((process) => process.process.processName === "SLITTING");
+        if (slittingProcess.length > 0){
+            const mappedData = slittingProcess.map((item, i) => ({
+    // if (props.templateDetails.packetDetails) {
+    //   const mappedData = props.templateDetails.packetDetails.map((item, i) => ({
         key: i,
         instructionId: item.instructionId,
-        plannedNoOfPieces: item.plannedNoOfPieces,
-        // allowableLowerWidth: allowableLowerWidth,
-        // allowableHigherWidth: allowableHigherWidth,
+        plannedWidth: item.plannedWidth,
         actualThickness:"",
         actualWidth: "",
-        // allowableLowerburrHeight: allowableLowerburrHeight,
-        // allowableHeigherburrHeight: allowableHeigherburrHeight,
         burrHeight: "",
         remarks: ""
       }));
@@ -118,14 +118,17 @@ const SlitAndCutForm = (props) => {
       setSlitDataSource(mappedData);
       setToleranceDataSourceSlit(toleranceData);
       setToleranceInspectionDataSlit(toleranceData);
-    }
+    }}
   }, [props.templateDetails.packetDetails]);
 
   const [dataSource, setDataSource] = useState([]);
+  //Cut table
   useEffect(() => {
-      debugger;
-      if (props.templateDetails.packetDetails) {
-        const mappedData = props.templateDetails.packetDetails.map((item, i) => ({
+    const packetDetails = props.templateDetails?.packetDetails
+      if (packetDetails) {
+        const slitAndCutProcess = packetDetails.filter((process) => process.process.processName === "SLIT AND CUT");
+        if (slitAndCutProcess.length > 0){
+            const mappedData = slitAndCutProcess.map((item, i) => ({
             key: i,
           thickness:props.inward?.plan?.fThickness,
           plannedLength: item.plannedLength,
@@ -152,7 +155,7 @@ const SlitAndCutForm = (props) => {
         setDataSource(mappedData);
         setToleranceDataSource(toleranceData);
         setToleranceInspectionData(toleranceData);
-      }
+      }}
     }, [props.templateDetails.packetDetails]);
 
     const [slitInspectionData, setSlitInspectionData] = useState([])
@@ -216,7 +219,7 @@ const SlitAndCutForm = (props) => {
         },
         {
             title: 'Slit Size',
-            dataIndex: 'plannedNoOfPieces',
+            dataIndex: 'plannedWidth',
             editable: false
         },
         {
@@ -249,7 +252,7 @@ const SlitAndCutForm = (props) => {
         },
         {
             title: 'Slit Size',
-            dataIndex: 'plannedNoOfPieces',
+            dataIndex: 'plannedWidth',
             editable: false
         },
         {

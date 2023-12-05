@@ -114,7 +114,7 @@ const templateLinkListAactionColumn = {
   return (
     <div>
       <h1>
-        <IntlMessages id="sidebar.quality.templates" />
+        <IntlMessages id="heading.kqp" />
       </h1>
       <Card>
         <Tabs defaultActiveKey="1" tabPosition={mode} onChange={onTabChange} destroyInactiveTabPane={true} activeKey={tabKey}>

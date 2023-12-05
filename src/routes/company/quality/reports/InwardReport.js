@@ -301,7 +301,6 @@ const InwardReport = (props) => {
 
     const [payload, setPayload] = useState({});
     const onPdf = (inwardEntryId) => {
-        debugger
         setPayload({
             inwardId:{inwardId:inwardEntryId},
             type:'inward'
@@ -350,7 +349,8 @@ const InwardReport = (props) => {
 
                 </div>
             </div>
-            <div className="gx-flex-row gx-flex-1">
+            {/* <div className="gx-flex-row gx-flex-1"> */}
+            <div>
                 {(filteredInwardList.length > 0) && <Table
                     className="gx-table-responsive"
                     columns={columns}

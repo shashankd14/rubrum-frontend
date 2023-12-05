@@ -229,7 +229,6 @@ const PreProcessingReport = (props) => {
     }
 
     const showReportView = (record, key) => {
-        debugger;
         console.log(record, key)
        setAction('view')
         props.getQualityReportById(record.qirId);
@@ -241,7 +240,6 @@ const PreProcessingReport = (props) => {
     };
 
     const onEdit = (record, key, e) => {
-        debugger;
         console.log(record, key)
         setSelectedItemForQr(record);
         // const templateDetails = qualityReportList.find(qr => qr.coilNumber === record.coilNumber && qr.inwardId === record.inwardEntryId)
@@ -285,7 +283,6 @@ const PreProcessingReport = (props) => {
 
     const [payload, setPayload] = useState({});
     const onPdf = (planId) => {
-        debugger
         setPayload({
             partDetailsId:{groupIds: null, partDetailsId:planId},
             type:'preProcessing'
@@ -334,7 +331,8 @@ const PreProcessingReport = (props) => {
 
                 </div>
             </div>
-            <div className="gx-flex-row gx-flex-1">
+            {/* <div className="gx-flex-row gx-flex-1"> */}
+            <div>
                 {filteredPreProcessingList && filteredPreProcessingList.length > 0 && <Table
                     className="gx-table-responsive"
                     columns={columns}

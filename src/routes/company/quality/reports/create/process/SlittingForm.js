@@ -35,10 +35,10 @@ const SlittingForm = (props) => {
     const slitInspectionData = formData.slitInspectionData;
 
     // Access the "allowableLowerWidth" of the first sub-row (element at index 0)
-    allowableLowerWidth = slitInspectionData[0].allowableLowerWidth;
-    allowableHigherWidth = slitInspectionData[0].allowableHigherWidth;
-    allowableHeigherburrHeight = slitInspectionData[0].allowableHeigherburrHeight;
-    allowableLowerburrHeight = slitInspectionData[0].allowableLowerburrHeight;
+    // allowableLowerWidth = slitInspectionData[0].allowableLowerWidth;
+    // allowableHigherWidth = slitInspectionData[0].allowableHigherWidth;
+    // allowableHeigherburrHeight = slitInspectionData[0].allowableHeigherburrHeight;
+    // allowableLowerburrHeight = slitInspectionData[0].allowableLowerburrHeight;
   } 
   //Slit tolerance
   var toleranceThicknessFrom = 0;
@@ -71,13 +71,9 @@ const SlittingForm = (props) => {
       const mappedData = props.templateDetails.packetDetails.map((item, i) => ({
         key: i,
         instructionId: item.instructionId,
-        plannedNoOfPieces: item.plannedNoOfPieces,
-        // allowableLowerWidth: allowableLowerWidth,
-        // allowableHigherWidth: allowableHigherWidth,
+        plannedWidth: item.plannedWidth,
         actualThickness:"",
         actualWidth: "",
-        // allowableLowerburrHeight: allowableLowerburrHeight,
-        // allowableHeigherburrHeight: allowableHeigherburrHeight,
         burrHeight: "",
         remarks: ""
       }));
@@ -160,7 +156,7 @@ const SlittingForm = (props) => {
     },
     {
       title: 'Slit Size',
-      dataIndex: 'plannedNoOfPieces',
+      dataIndex: 'plannedWidth',
       editable: false,
     },
     {
@@ -193,7 +189,7 @@ const SlittingForm = (props) => {
     },
     {
       title: 'Slit Size',
-      dataIndex: 'plannedNoOfPieces',
+      dataIndex: 'plannedWidth',
       editable: false,
     },
     {
