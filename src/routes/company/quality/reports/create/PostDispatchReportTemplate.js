@@ -7,7 +7,7 @@ const PostDispatchReportTemplate = (props) => {
   const [templateData, setTemplateData] = useState({
     1: {
       "id": 1,
-      "type": "unloadingProper",
+      "type": "unloadingImproper",
       "value": "No",
       "fileName": "",
       "fileList": []
@@ -21,7 +21,7 @@ const PostDispatchReportTemplate = (props) => {
     },
     3: {
       "id": 3,
-      "type": "acknowledgementReceipt",
+      "type": "ackReceipt",
       "value": "No",
       "fileName": "",
       "fileList": []
@@ -133,8 +133,8 @@ const PostDispatchReportTemplate = (props) => {
           </Col>
           <Col span={8}>
             <div style={{ display: 'grid', marginTop: 45 }}>
-              {props.action === 'view' && props.templateDetails.packingIntactPreSingedURL && <img src={props.templateDetails.packingIntactPreSingedURL} alt='packingDamage' style={{ width: 50 }} />}
-              {props.action === 'edit' && <> {props.templateDetails.packingIntactPreSingedURL && <img src={props.templateDetails.packingIntactPreSingedURL} alt='packingDamage' style={{ width: 50 }} />}
+              {props.action === 'view' && props.templateDetails.packingDamageTransitPreSingedURL && <img src={props.templateDetails.packingDamageTransitPreSingedURL} alt='packingDamage' style={{ width: 50 }} />}
+              {props.action === 'edit' && <> {props.templateDetails.packingDamageTransitPreSingedURL && <img src={props.templateDetails.packingDamageTransitPreSingedURL} alt='packingDamage' style={{ width: 50 }} />}
                 <Dragger
                   name='packingIntact'
                   height={50}

@@ -344,6 +344,7 @@
   "sidebar.quality": "Quality Module",
   "sidebar.quality.reports": "Quality Reports",
   "sidebar.quality.templates": "Quality Templates",
+  "heading.kqp": "Key Quality Parameter",
   "sidebar.quality.kqp": "KQP Templates",
   "quality.templates.input.action.select.label": "Search Customer",
   "quality.templates.input.action.select.placeholder": "Search Customer",

@@ -806,7 +806,6 @@ function* getPacketDetailsQuality(data) {
 }
 //QM report inward pdf
 function* generateQMreportInwardPdf(action) {
-    debugger
     //try {
         // const pdfGenerate =  yield fetch(`${baseUrl}api/pdf/inward`, {
         //     method: 'POST',

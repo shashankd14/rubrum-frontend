@@ -306,7 +306,6 @@ const ProcessingReport = (props) => {
 
     const [payload, setPayload] = useState({});
     const onPdf = (planId) => {
-        debugger
         setPayload({
             partDetailsId:{groupIds: null, partDetailsId:planId},
             type:'preProcessing'
@@ -355,7 +354,8 @@ const ProcessingReport = (props) => {
 
                 </div>
             </div>
-            <div className="gx-flex-row gx-flex-1">
+            {/* <div className="gx-flex-row gx-flex-1"> */}
+            <div>
                 <Table
                     className="gx-table-responsive"
                     columns={columns}
