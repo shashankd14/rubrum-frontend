@@ -168,9 +168,17 @@ function* signInUserWithEmailPassword({payload}) {
       const signeduser = yield signInUser.json()
       yield put(userSignInSuccess(signeduser.userName));
       localStorage.setItem("userToken",signeduser.access_token)
+      localStorage.setItem("refreshToken",signeduser.refresh_token)
       localStorage.setItem("userName",signeduser.userName)
       localStorage.setItem("userId",signeduser.userId)
       localStorage.setItem("Menus",JSON.stringify(signeduser.menusList))
+    } else if (signInUser.status === 401) {
+      // Token expired, attempt to refresh the token
+      const newTokens  = yield signInUser.json()
+      localStorage.setItem('userToken', newTokens.access_token);
+      localStorage.setItem('refreshToken', newTokens.refresh_token);
+      // Retry the original API request after successful token refresh
+      yield call(signInUserWithEmailPassword, { payload });
     } else {
       yield put(showAuthMessage("Failed to Login"));
     }
@@ -185,6 +193,7 @@ function* signOut() {
     if (signOutUser === undefined) {
       localStorage.removeItem('user_id');
       localStorage.removeItem('userToken');
+      localStorage.setItem("refreshToken");
       localStorage.removeItem('userName');
       yield put(userSignOutSuccess(signOutUser));
     } else {
