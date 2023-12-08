@@ -586,9 +586,11 @@ function* postDeliveryConfirmRequest(payload) {
         req_obj = {
             vehicleNo: payload.payload?.vehicleNo,
             packingRateId: payload.payload?.packingRateId,
+            laminationId: payload.payload?.laminationId,
             taskType:payload.payload?.taskType?payload.payload?.taskType:"",
             deliveryItemDetails: packetsData
         }
+        console.log("req_obj", req_obj);
     }else{
         requestType= 'PUT';
         req_obj =payload.payload
@@ -801,7 +803,6 @@ function* getReconcileReportSaga(action) {
         yield put(getReconcileReportError(error));
     }
 }
-
 function* QrGenerateInward(action) {
     try {
         const qrGenerateInward = yield fetch(`${baseUrl}api/inwardEntry/qrcode/inward`, {
@@ -853,7 +854,6 @@ function* QrGeneratePlan(action) {
         yield put(actions.QrCodeGeneratePlanError(error));
     }
 }
-
 function* getPacketwisePriceDCSaga(action) {
 
     console.log('Saga: ', action);
@@ -872,6 +872,7 @@ function* getPacketwisePriceDCSaga(action) {
         req_obj = {
             vehicleNo: action.payload?.vehicleNo,
             packingRateId: action.payload?.packingRateId,
+            laminationId: action.payload?.laminationId,
             taskType:action.payload?.taskType?action.payload?.taskType:"",
            //taskType:action.payload?.taskType,
             deliveryItemDetails: packetsData
