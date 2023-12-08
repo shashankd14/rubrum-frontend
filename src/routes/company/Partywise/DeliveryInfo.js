@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { connect, useDispatch, useSelector  } from "react-redux";
-import { Popover,Input, Card, message, Select } from "antd";
+import { connect, useDispatch, useSelector } from "react-redux";
+import { Popover,Input, Card, message, Select, Row, Col } from "antd";
 import { InfoCircleOutlined, CloseSquareTwoTone } from "@ant-design/icons";
-import { fetchPackingListByParty, fetchPackingBucketList, getPacketwisePriceDC, postDeliveryConfirm, generateDCPdf,resetInstruction,saveUnprocessedDelivery } from "../../../appRedux/actions";
+import { fetchPackingListByParty, fetchPackingBucketList, getLaminationChargesByPartyId, getPacketwisePriceDC, postDeliveryConfirm, generateDCPdf,resetInstruction,saveUnprocessedDelivery } from "../../../appRedux/actions";
 import moment from "moment";
 import { Button, Table, Modal } from "antd";
 
@@ -15,6 +15,8 @@ const DeliveryInfo = (props) => {
   const [thickness, setThickness] = useState();
   const [partyRate, setPartyRate] = useState(0);
   const [packingRateId, setPackingRateId] = useState('');
+  const [laminationCharges, setLaminationCharges] = useState(0);
+  const [laminationId, setLaminationId] = useState('');
 
   const [priceModal, setPriceModal] = useState(false);
   const [validationStatus, setValidationStatus] = useState(false);
@@ -41,6 +43,7 @@ const DeliveryInfo = (props) => {
       props.saveUnprocessedDelivery(payload)
       const reqObj = {
         packingRateId,
+        laminationId,
         vehicleNo,
           inwardListForDelivery:props.inward.inwardListForDelivery.map((item)=> ({
          instructionId: item.instructionId,
@@ -55,6 +58,7 @@ const DeliveryInfo = (props) => {
     const reqObj = {
       packingRateId,
       vehicleNo,
+      laminationId,
         inwardListForDelivery:props.inward.inwardListForDelivery.map((item)=> ({
        instructionId: item.instructionId,
       remarks: item.remarks || null, 
@@ -113,6 +117,11 @@ const DeliveryInfo = (props) => {
       key: "additionalPrice",
     },
     {
+      title: "Lamination Charges\n(per ton)",
+      dataIndex: "laminationCharges",
+      key: "laminationCharges",
+    },
+    {
       title: "Total Rate\n(per ton)",
       dataIndex: "rate",
       key: "rate",
@@ -127,6 +136,7 @@ const DeliveryInfo = (props) => {
   useEffect(() => {
     const partyId = props.inward.inwardListForDelivery?.map(ele => ele?.party?.nPartyId || '');
     props.fetchPackingListByParty(partyId);
+    props.getLaminationChargesByPartyId(partyId);
   }, [])
 
   useEffect(()=>{
@@ -171,6 +181,7 @@ useEffect(()=>{
       vehicleNo,
       taskType:"FULL_HANDLING",
       packingRateId,
+      laminationId,
       inwardListForDelivery: fullHandlingList
     }
    // props.postDeliveryConfirm(reqObj);
@@ -190,6 +201,7 @@ useEffect(()=>{
         const reqObj = {
           packingRateId,
           vehicleNo,
+          laminationId,
           inwardListForDelivery: props.inward.inwardListForDelivery
         }
         props.postDeliveryConfirm(reqObj);
@@ -203,13 +215,12 @@ useEffect(()=>{
           vehicleNo,
           taskType:"FULL_HANDLING",
           packingRateId,
+          laminationId,
           inwardListForDelivery: fullHandlingList
         }
         props.postDeliveryConfirm(reqObj);
       }
   };
-
- 
   return (
     <div>
       <h1>Delivery Information</h1>
@@ -318,9 +329,10 @@ useEffect(()=>{
       </Card>
       {props.inward.inwardList.length > 0 ? (
         <div>
+         <div style={{ display: "flex",  }}>
           <div style={{ width: "20%", marginBottom: "15px" }}>
             <Select
-              showSearch
+               showSearch
                 style={{ width: 300 }}
                 className="Packing Rate"
                 placeholder="Select Packing"
@@ -337,10 +349,44 @@ useEffect(()=>{
                   <Option value={party.packingRateId}>{party.packingBucketName}</Option>
                 ))}
             </Select>
+            </div> &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+            <div style={{ width: "20%", marginBottom: "15px", flex: 5}}>
+            <Select
+               showSearch
+                style={{ width: 400 }}
+                className="Packing Rate"
+                placeholder="Select Lamination Charges"
+                name="partyName"
+                onChange={(value) => {
+                  const charges = props.laminationCharges?.filter((party) => {
+                    return party.laminationId === value
+                  })[0]
+                  setLaminationCharges(charges?.charges || 0);
+                  setLaminationId(value);
+                }}
+              >
+                {props.laminationCharges?.map((party) => (
+                  <Option value={party.laminationId}>{party.laminationDetailsDesc}</Option>
+                ))}
+            </Select>
+            </div>
           </div>
-          {!!partyRate && <div>
-            <p>Party Rate: {partyRate}</p>
-          </div>}
+          <Row>
+            <Col span={8}>
+            {!!partyRate && (
+              <div style={{ marginRight: "270px" }}>
+                <p>Party Rate: {partyRate}</p>
+              </div>
+            )}
+            </Col>
+             <Col >
+            {!!laminationCharges && (
+              <div>
+                <p>Lamination Charges: {laminationCharges}</p>
+              </div>
+            )}
+            </Col>
+          </Row>
           <div style={{ width: "20%", marginBottom: "15px" }}>
             <Input
               placeholder="Vehicle Number"
@@ -371,12 +417,12 @@ useEffect(()=>{
                   border: "none",
                   cursor: "pointer"
                 // }} onClick={handleSubmit} >Confirm & Generate</button>
-                }} onClick={handlePacketPrice}>Confirm</button>
+              }} onClick={handlePacketPrice} >Confirm</button>
             }
-           <Modal
+            <Modal
               title='Packet wise Rate Details'
               visible={priceModal}
-              width={1000}
+              width={1300}
               onCancel={()=> {
                 setPriceModal(false)
                }}
@@ -432,9 +478,10 @@ const mapStateToProps = (state) => {
   const mappedProps = {
     inward: state.inward,
     packing: state.packing,
-    packetwisePriceDC:state.inward?.packetwisePriceDC
+    packetwisePriceDC:state.inward?.packetwisePriceDC,
+    laminationCharges: state.rates.laminationChargesParty
   };
   return mappedProps;
 };
 
-export default connect(mapStateToProps, { fetchPackingListByParty, getPacketwisePriceDC, saveUnprocessedDelivery,postDeliveryConfirm, generateDCPdf,resetInstruction})(DeliveryInfo);
+export default connect(mapStateToProps, { fetchPackingListByParty, getLaminationChargesByPartyId, saveUnprocessedDelivery,getPacketwisePriceDC, postDeliveryConfirm, generateDCPdf,resetInstruction})(DeliveryInfo);

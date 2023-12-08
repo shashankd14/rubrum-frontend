@@ -48,6 +48,7 @@ import {
     UPDATE_ADDITIONAL_RATES_REQUEST,
     UPDATE_ADDITIONAL_RATES_SUCCESS
 } from "../../constants/ActionTypes";
+import * as actionType from "../../constants/ActionTypes";
 
 const INIT_STATE = {
     ratesList: [],
@@ -66,6 +67,10 @@ const INIT_STATE = {
     updateAdditionalSuccess:false,
     updateAdditionalFailure: false,
     totalItems: 0,
+    laminationChargesList:[],
+    laminationChargesById:{},
+    laminationChargesParty:[],
+    laminationDropDown: []
 };
 
 export default (state = INIT_STATE, action) => {
@@ -408,7 +413,162 @@ export default (state = INIT_STATE, action) => {
                 updateAdditionalFailure:true
             }
         }
+        
+        //Lamination Charges
+        case actionType.RESET_LAMINATION_CHARGES_REQUEST: {
+            return {
+                ...state,
+                laminationCharges: {}
+            }
+        }
+        case actionType.GET_LAMINATION_CHARGES_LIST_REQUEST: {
+            return {
+                ...state,
+                loading: true
+            }
+        }
+        case actionType.GET_LAMINATION_CHARGES_LIST_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                laminationChargesList: action.laminationChargesList
+            }
+        }
+        case actionType.GET_LAMINATION_CHARGES_LIST_ERROR: {
+            return {
+                ...state,
+                loading: false,
+                error: true
+            }
+        }
+
+        case actionType.GET_BY_ID_LAMINATION_CHARGES_REQUEST: {
+            return {
+                ...state,
+                loading: true
+            }
+        }
+        case actionType.GET_BY_ID_LAMINATION_CHARGES_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                laminationChargesById: action.laminationChargesById
+            }
+        }
+        case actionType.GET_BY_ID_LAMINATION_CHARGES_ERROR: {
+            return {
+                ...state,
+                loading: false,
+                error: true
+            }
+        }
+
+        case actionType.SAVE_LAMINATION_CHARGES_REQUEST: {
+            return {
+                ...state,
+                loading: true
+            }
+        }
+        case actionType.SAVE_LAMINATION_CHARGES_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                addSuccess: true
+            }
+        }
+        case actionType.SAVE_LAMINATION_CHARGES_ERROR: {
+            return {
+                ...state,
+                loading: false,
+                error: true,
+            }
+        }
+
+        case actionType.UPDATE_LAMINATION_CHARGES_REQUEST: {
+            return {
+                ...state,
+                loading: true
+            }
+        }
+        case actionType.UPDATE_LAMINATION_CHARGES_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                addSuccess: true
+            }
+        }
+        case actionType.UPDATE_LAMINATION_CHARGES_ERROR: {
+            return {
+                ...state,
+                loading: false,
+                error: true,
+            }
+        }
+
+        case actionType.DELETE_LAMINATION_CHARGES_REQUEST: {
+            return {
+                ...state,
+                loading: true
+            }
+        }
+
+        case actionType.DELETE_LAMINATION_CHARGES_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                deleteSuccess: true
+            }
+        }
+        case actionType.DELETE_LAMINATION_CHARGES_ERROR: {
+            return {
+                ...state,
+                loading: false,
+                error: true,
+            }
+        }
+
+        case actionType.GET_BY_PARTY_ID_LAMINATION_CHARGES_REQUEST: {
+            return {
+                ...state,
+                loading: true
+            }
+        }
+        case actionType.GET_BY_PARTY_ID_LAMINATION_CHARGES_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                laminationChargesParty: action.laminationChargesParty
+            }
+        }
+        case actionType.GET_BY_PARTY_ID_LAMINATION_CHARGES_ERROR: {
+            return {
+                ...state,
+                loading: false,
+                error: true
+            }
+        }
+        case actionType.GET_LAMINATION_CHARGES_DROPDOWN_REQUEST: {
+            return {
+                ...state,
+                loading: true
+            }
+        }
+        case actionType.GET_LAMINATION_CHARGES_DROPDOWN_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                laminationDropDown: action.laminationDropDown
+            }
+        }
+        case actionType.GET_LAMINATION_CHARGES_DROPDOWN_ERROR: {
+            return {
+                ...state,
+                loading: false,
+                error: true
+            }
+        }
         default:
             return state;
     }
 }
+
