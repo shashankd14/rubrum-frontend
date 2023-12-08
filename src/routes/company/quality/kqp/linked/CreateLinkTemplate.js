@@ -245,7 +245,7 @@ const CreateLinkTemplate = (props) => {
       }
     return (
         <div>
-            <Card title="Link Template">
+            <Card title="Link KQP">
                 <Row>
                     <Col span={12}>
                         <label>Qty Template Id/Template Name</label>
