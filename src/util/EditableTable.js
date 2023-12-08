@@ -43,28 +43,83 @@ class EditableCell extends React.Component {
     this.form = form;
     const { children, dataIndex, record, title } = this.props;
     const { editing } = this.state;
-    return editing ? (
-      <Form.Item style={{ margin: 0 }}>
-        {form.getFieldDecorator(dataIndex, {
-          rules: [
-            {
-              required: true,
-              message: `${title} is required.`,
-            },
-          ],
-          initialValue: record[dataIndex],
-        })(<Input ref={node => (this.input = node)} onPressEnter={this.save} onBlur={this.save} />)}
-      </Form.Item>
-    ) : (
-      <div
-        className="editable-cell-value-wrap"
-        style={{ paddingRight: 24 }}
-        onClick={this.toggleEdit}
-      >
-        {children}
-      </div>
-    );
-  };
+    //previous code before validation
+  //   return editing ? (
+  //     <Form.Item style={{ margin: 0 }}>
+  //       {form.getFieldDecorator(dataIndex, {
+  //         rules: [
+  //           {
+  //             required: true,
+  //             message: `${title} is required.`,
+  //           },
+  //         ],
+  //         initialValue: record[dataIndex],
+  //       })(<Input ref={node => (this.input = node)} onPressEnter={this.save} onBlur={this.save} />)}
+  //     </Form.Item>
+  //   ) : (
+  //     <div
+  //       className="editable-cell-value-wrap"
+  //       style={{ paddingRight: 24 }}
+  //       onClick={this.toggleEdit}
+  //     >
+  //       {children}
+  //     </div>
+  //   );
+  // };
+  const rules = [
+    {
+      required: true,
+      message: `${title} is required.`,
+    },
+    {
+      validator: (_, value, callback) => {
+        const actualWidth = parseFloat(value) || 0;
+        const lowerBound = parseFloat(record.plannedWidth) - 0.5;
+        const upperBound = parseFloat(record.plannedWidth) + 0.5;
+        const actualThickness = parseFloat(value) || 0;
+        const lowerBoundThickness = parseFloat(record.thickness) - 0.5;
+        const upperBoundThickness = parseFloat(record.thickness) + 0.5;
+        const actualLength = parseFloat(value) || 0;
+        const lowerBoundLength = parseFloat(record.plannedLength) - 0.5;
+        const upperBoundLength = parseFloat(record.plannedLength) + 0.5;
+
+        if (dataIndex === 'actualWidth' && (actualWidth < lowerBound || actualWidth > upperBound)) {
+          callback(`Don't enter more than ${upperBound} & less than ${lowerBound}`);
+        } else if (dataIndex === 'actualThickness' && (actualThickness < lowerBoundThickness || actualThickness > upperBoundThickness)) {
+          callback(`Don't enter less than ${lowerBoundThickness} & more than ${upperBoundThickness}`);
+        } else if (dataIndex === 'actualLength' && (actualLength < lowerBoundLength || actualLength > upperBoundLength)) {
+          callback(`Don't enter less than ${lowerBoundLength} & more than ${upperBoundLength}`);
+        } 
+        else {
+          callback();
+        }
+      },
+    },
+  ];
+
+  return editing ? (
+    <Form.Item style={{ margin: 0 }}>
+      {form.getFieldDecorator(dataIndex, {
+        rules,
+        initialValue: record[dataIndex],
+      })(
+        <Input
+          ref={node => (this.input = node)}
+          onPressEnter={this.save}
+          onBlur={this.save}
+        />
+      )}
+    </Form.Item>
+  ) : (
+    <div
+      className="editable-cell-value-wrap"
+      style={{ paddingRight: 24 }}
+      onClick={this.toggleEdit}
+    >
+      {children}
+    </div>
+  );
+};
 
   render() {
     const {
