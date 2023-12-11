@@ -649,7 +649,6 @@ export default (state = INIT_STATE, action) => {
           loading: true
         }
       case actionTypes.GET_WIDTH_LIST_QM_SUCCESS:
-        console.log("widthList***********", action.widthList)
         return {
           ...state,
           error: false,
