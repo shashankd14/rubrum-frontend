@@ -71,12 +71,12 @@ const CreateLinkTemplate = (props) => {
             jsonData.forEach((item) => {
                 const { kqpId, kqpName, partyId, anyThicknessFlag, anyLengthFlag, anyWidthFlag, anyPartyFlag, anyEndusertagFlag, anyMatGradeFlag, endUserTagIdList, thicknessList, widthList, lengthList, matGradeIdList } = item;
               
-                setAnyThicknessFlag(anyThicknessFlag ==='N');
-                setAnyLengthFlag(anyLengthFlag ==='N');
-                setAnyWidthFlag(anyWidthFlag ==='N');
-                setanyPartyFlag(anyPartyFlag ==='N');
-                setanyEndusertagFlag(anyEndusertagFlag ==='N');
-                setanyMatGradeFlag(anyMatGradeFlag ==='N');
+                setAnyThicknessFlag(anyThicknessFlag ==='Y');
+                setAnyLengthFlag(anyLengthFlag ==='Y');
+                setAnyWidthFlag(anyWidthFlag ==='Y');
+                setanyPartyFlag(anyPartyFlag ==='Y');
+                setanyEndusertagFlag(anyEndusertagFlag ==='Y');
+                setanyMatGradeFlag(anyMatGradeFlag ==='Y');
                 
                 if (!groupedData[kqpId]) {
                   groupedData[kqpId] = {
@@ -88,12 +88,12 @@ const CreateLinkTemplate = (props) => {
                     widthList:JSON.parse(item.widthList),
                     lengthList:JSON.parse(item.lengthList),
                     matGradeIdList:JSON.parse(item.matGradeIdList),
-                    anyThicknessFlag: anyThicknessFlag? 'N' : 'Y',
-                    anyLengthFlag: anyLengthFlag? 'N' : 'Y',
-                    anyWidthFlag: anyWidthFlag? 'N' : 'Y',
-                    anyPartyFlag: anyPartyFlag? 'N' : 'Y',
-                    anyEndusertagFlag: anyEndusertagFlag? 'N' : 'Y',
-                    anyMatGradeFlag: anyMatGradeFlag? 'N' : 'Y',
+                    anyThicknessFlag: anyThicknessFlag? 'Y' : 'N',
+                    anyLengthFlag: anyLengthFlag? 'Y' : 'N',
+                    anyWidthFlag: anyWidthFlag? 'Y' : 'N',
+                    anyPartyFlag: anyPartyFlag? 'Y' : 'N',
+                    anyEndusertagFlag: anyEndusertagFlag? 'Y' : 'N',
+                    anyMatGradeFlag: anyMatGradeFlag? 'Y' : 'N',
                   };
                 }
               
@@ -189,12 +189,12 @@ const CreateLinkTemplate = (props) => {
             widthList: width,
             lengthList: length,
             partyIdList: selectedCustomers,
-            anyThicknessFlag: anyThicknessFlag? 'N' : 'Y',
-            anyLengthFlag: anyLengthFlag? 'N' : 'Y',
-            anyWidthFlag: anyWidthFlag? 'N' : 'Y',
-            anyPartyFlag: anyPartyFlag? 'N' : 'Y',
-            anyEndusertagFlag: anyEndusertagFlag? 'N' : 'Y',
-            anyMatGradeFlag: anyMatGradeFlag? 'N' : 'Y',
+            anyThicknessFlag: anyThicknessFlag? 'Y' : 'N',
+            anyLengthFlag: anyLengthFlag? 'Y' : 'N',
+            anyWidthFlag: anyWidthFlag? 'Y' : 'N',
+            anyPartyFlag: anyPartyFlag? 'Y' : 'N',
+            anyEndusertagFlag: anyEndusertagFlag? 'Y' : 'N',
+            anyMatGradeFlag: anyMatGradeFlag? 'Y' : 'N',
         }) 
         if (action === 'create')
             props.saveKqpLink(payload);
