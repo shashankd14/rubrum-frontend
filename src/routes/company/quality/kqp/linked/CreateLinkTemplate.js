@@ -65,11 +65,11 @@ const CreateLinkTemplate = (props) => {
     }, [props.template.loading, props.template.error, props.template.operation]);
 
     useEffect(() => {
-        if (!props.template.loading && !props.template.error && props.template.operation === 'kqpLinkById') { 
+        if (!props.template.loading && !props.template.error && props.template.operation === 'kqpLinkById' && props.party.partyList) { 
             const jsonData =  props.template.data;
             const groupedData = {};
             jsonData.forEach((item) => {
-                const { kqpId, kqpName, partyId, anyThicknessFlag, anyLengthFlag, anyWidthFlag, anyPartyFlag, anyEndusertagFlag, anyMatGradeFlag, endUserTagIdList, thicknessList, widthList, lengthList, matGradeIdList } = item;
+                const { kqpId, kqpName, partyId, partyIdList, anyThicknessFlag, anyLengthFlag, anyWidthFlag, anyPartyFlag, anyEndusertagFlag, anyMatGradeFlag, endUserTagIdList, thicknessList, widthList, lengthList, matGradeIdList } = item;
               
                 setAnyThicknessFlag(anyThicknessFlag ==='Y');
                 setAnyLengthFlag(anyLengthFlag ==='Y');
@@ -97,19 +97,34 @@ const CreateLinkTemplate = (props) => {
                   };
                 }
               
-                groupedData[kqpId].partyIdList.push(partyId);
+                // groupedData[kqpId].partyIdList.push(partyIdList);
+                groupedData[kqpId].partyIdList.push(...JSON.parse(partyIdList)); 
               });
               
               const groupedArray = Object.values(groupedData);  
-              setSelectedCustomers(groupedArray.map((item) => item.partyIdList).flat());
+
+              // Match nPartyId with partyIdList and display partyName
+              const matchedParties = props.party.partyList?.map((party) => {
+                const matchedParty = groupedArray.find((item) => item.partyIdList.includes(party.nPartyId));
+                if (matchedParty) {
+                  return {
+                    nPartyId: party.nPartyId,
+                    partyName: party.partyName || null,
+                  };
+                }
+                return null;
+              }).filter(Boolean);
+        
+              setSelectedCustomers(matchedParties.map((party) => party.nPartyId).flat());
+             // setSelectedCustomers(groupedArray.map((item) => item.partyIdList).flat());
               setSelectedEndUserTags(groupedArray.map((item) => item.endUserTagIdList).flat());
               setSelectedMatGrade(groupedArray.map((item) => item.matGradeIdList).flat());
               setThicknessList(groupedArray.map((item) => item.thicknessList).flat());
               setWidthList(groupedArray.map((item) => item.widthList).flat())
               setLengthList(groupedArray.map((item) => item.lengthList).flat()) 
         }
-    }, [props.template.loading, props.template.error, props.template.operation]); 
-
+    }, [props.template.loading, props.template.error, props.template.operation, props.party]); 
+    
     useEffect(() => {
         if (!props.party.loading && !props.party.error) { 
             setPartyList(props.party.partyList)
@@ -179,7 +194,6 @@ const CreateLinkTemplate = (props) => {
  
 
     const createTemplateLink = () => {
-        debugger;
         const payload = JSON.stringify({
             kqpId: selectedTemplateId,
             endUserTagIdList: selectedEndUserTags,
@@ -408,7 +422,7 @@ const CreateLinkTemplate = (props) => {
                                         value={selectedEndUserTags}
                                         allowClear
                                     >{props?.packetClassification?.endUserTags?.map(item => {
-                                        return <Option value={item?.tagId} disabled = {anyEndusertagFlag}>{item.tagName}</Option>
+                                        return <Option kay={item?.tagId} value={item?.tagId} disabled = {anyEndusertagFlag}>{item.tagName}</Option>
                                     })}</Select>
                                 </div>
                             </Col>
