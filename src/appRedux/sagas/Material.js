@@ -50,7 +50,8 @@ function* addMaterial(action) {
             material: description,
             grade,
             hsnCode,
-            materialCode
+            materialCode,
+            requestId: "saveMaterial"
         }
         const addMaterial = yield fetch(`${baseUrl}api/material/save`, {
                 method: 'POST',
@@ -77,7 +78,8 @@ function* updateMaterial(action) {
             material: description,
             grade,
             materialCode,
-            hsnCode
+            hsnCode,
+            requestId: "updateMaterial"
         }
         const updateMaterial = yield fetch(`${baseUrl}api/material/update`, {
                 method: 'PUT',

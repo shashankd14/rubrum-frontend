@@ -289,6 +289,7 @@ function* submitInward(action) {
         // data.append('customerInvoiceDajte',  action.inward.grade);
         data.append('createdBy', 1);
         data.append('updatedBy', 1);
+        data.append('requestId', 'addInward');
 
         const newInwardEntry = yield fetch(`${baseUrl}api/inwardEntry/addNew`, {
             method: 'POST',
@@ -338,7 +339,8 @@ function* updateInward(action) {
         cast : "",
         materialGradeId : action.inward.grade !== undefined ?action.inward.grade: (action.inward.materialGrade.gradeId).toString(),
         createdBy : "1",
-        updatedBy : "2"
+        updatedBy : "2",
+        requestId : "updateInward"
         }
 const newInwardEntry = yield fetch(`${baseUrl}api/inwardEntry/update`, {
             
@@ -532,7 +534,8 @@ function* requestUpdateInstruction(action) {
     const filteredData = ins.filter(each => each.packetClassificationId !== 0 && each.packetClassificationId !== "");
     const req = {
         taskType: editFinish ?"FGtoFG":unfinish ? "FGtoWIP" :"WIPtoFG",
-        instructionDtos: (unfinish || editFinish) ? ins : filteredData
+        instructionDtos: (unfinish || editFinish) ? ins : filteredData,
+        requestId: "instructionUpdate"
     }
     try {
         const updateInstruction = yield fetch(`${baseUrl}api/instruction/update`, {
@@ -589,7 +592,8 @@ function* postDeliveryConfirmRequest(payload) {
             packingRateId: payload.payload?.packingRateId,
             laminationId: payload.payload?.laminationId,
             taskType:payload.payload?.taskType?payload.payload?.taskType:"",
-            deliveryItemDetails: packetsData
+            deliveryItemDetails: packetsData,
+           // requestId: "saveDeliver"
         }
         console.log("req_obj", req_obj);
     }else{
@@ -876,7 +880,8 @@ function* getPacketwisePriceDCSaga(action) {
             laminationId: action.payload?.laminationId,
             taskType:action.payload?.taskType?action.payload?.taskType:"",
            //taskType:action.payload?.taskType,
-            deliveryItemDetails: packetsData
+            deliveryItemDetails: packetsData,
+            requestId: 'validatePriceMapping'
         }
     }
     try {

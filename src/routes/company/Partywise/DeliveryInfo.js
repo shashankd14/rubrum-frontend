@@ -37,7 +37,8 @@ const DeliveryInfo = (props) => {
     if(iList?.length){
       const payload={
         inwardEntryId: iList.map(item => item.inwardEntryId),
-        motherCoilDispatch: true
+        motherCoilDispatch: true,
+        requestId:'unprocessedDelivery'
       }
       setFullHandling(true)
       props.saveUnprocessedDelivery(payload)

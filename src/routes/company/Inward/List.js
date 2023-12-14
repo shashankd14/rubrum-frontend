@@ -148,7 +148,12 @@ const List = (props) => {
   ];
   const onDelete = (record, key, e) => {
     let id = [];
-    id.push(record.inwardEntryId);
+   // record.rquestId = "deleteInward"
+    id.push(record.inwardEntryId)
+    // let payload = {
+    //   requestId:'deleteInward',
+    //   id: id
+    // }
     e.preventDefault();
     props.deleteInwardEntryById(id);
     console.log(record, key);
@@ -163,6 +168,7 @@ const List = (props) => {
     if (props.inward.deleteSuccess) {
       message.success("Successfully deleted the coil", 2).then(() => {
         props.resetDeleteInward();
+        props.fetchInwardList();
       });
     }
   }, [props.inward.deleteSuccess]);

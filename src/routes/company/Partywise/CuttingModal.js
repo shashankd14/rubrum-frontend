@@ -554,6 +554,7 @@ const CreateCuttingDetailsForm = (props) => {
     e.preventDefault();
     const payload = {
       instructionId: record.instructionId,
+      requestId: 'deleteCut'
     };
     if (record.instructionId) {
       setlength(
@@ -661,6 +662,7 @@ const CreateCuttingDetailsForm = (props) => {
           length: "",
           createdBy: "1",
           updatedBy: "1",
+          requestId : "instructionPlanDto"
         };
 
         setValidate(false);
@@ -1094,6 +1096,7 @@ const CreateCuttingDetailsForm = (props) => {
       createdBy: "1",
 
       updatedBy: "1",
+      requestId: 'planDto'
     };
     for (let i = 0; i < packetNo; i++) {
       let cutObj = {
@@ -1106,6 +1109,7 @@ const CreateCuttingDetailsForm = (props) => {
         status: 1,
         createdBy: "1",
         updatedBy: "1",
+        requestId : 'cutObj',
         plannedWidth: cutsWidth,
         inwardId: props.coil.inwardEntryId,
         parentInstructionId: props.coilDetails.instructionId
@@ -1214,6 +1218,7 @@ const CreateCuttingDetailsForm = (props) => {
         instruction: tableData,
         unfinish: props?.unfinish,
         editFinish: props?.editFinish,
+        requestId : 'editUnFinish'
       };
       props.updateInstruction(coil);
       props.setShowCuttingModal(false);
@@ -1228,6 +1233,7 @@ const CreateCuttingDetailsForm = (props) => {
         instruction: instructionList,
         unfinish: props?.unfinish,
         editFinish: props?.editFinish,
+        requestId : 'editUnFinish'
       };
       props.updateInstruction(coil);
       props.setShowSlittingModal(false);
@@ -1252,6 +1258,7 @@ const CreateCuttingDetailsForm = (props) => {
         const coil = {
           number: props.coil.coilNumber,
           instruction: instructionList,
+         requestId : 'editUnFinish'
         };
         props.updateInstruction(coil);
         props.setShowCuttingModal();
@@ -1345,6 +1352,7 @@ const CreateCuttingDetailsForm = (props) => {
             createdBy: "1",
             updatedBy: "1",
             deleteUniqId: 0,
+            requestId : 'partDetailsRequest'
           },
           instructionRequestDTOs: [
             {
@@ -1384,6 +1392,7 @@ const CreateCuttingDetailsForm = (props) => {
       const coil = {
         number: props.coil.coilNumber,
         instruction: instructionList,
+        requestId : 'updateCoil'
       };
       props.updateInstruction(coil);
       props.setShowCuttingModal(false);

@@ -125,7 +125,8 @@ function* addParty(action) {
             ...getPhone(phone),
             endUserTags: getEndUserTags(),
             templateIdList: qualityTemplateIds(),
-            showAmtDcPdfFlg
+            showAmtDcPdfFlg,
+            requestId: "saveParty"
         }
         const addParty = yield fetch(`${baseUrl}api/party/save`, {
             method: 'POST',
@@ -224,7 +225,8 @@ function* updateParty(action) {
             ...getAddress(addressKeys),
             ...getPhone(phone),
             templateIdList: qualityTemplateIds(),
-            showAmtDcPdfFlg
+            showAmtDcPdfFlg,
+            requestId: "updateParty"
         }
         const updateParty = yield fetch(`${baseUrl}api/party/update`, {
             method: 'PUT',

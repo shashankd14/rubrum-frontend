@@ -313,6 +313,7 @@ const SlittingWidths = (props) => {
           length: availLength,
           createdBy: "1",
           updatedBy: "1",
+          requestId: "instructionPlanDto"
         };
         for (let i = 0; i < values.widths.length; i++) {
           for (let j = 0; j < values.nos[i]; j++) {
@@ -1111,6 +1112,7 @@ const CreateSlittingDetailsForm = (props) => {
     } else if (record.instructionId && record.partId) {
       const payload = {
         partId: record.partId,
+        requestId: 'deleteSlit'
       };
       props.deleteInstructionById(payload, "slit");
       setshowDeleteModal(false);
@@ -1511,6 +1513,7 @@ const CreateSlittingDetailsForm = (props) => {
             createdBy: "1",
             updatedBy: "1",
             deleteUniqId: 0,
+            requestId : "partDetailsRequest"
           },
           instructionRequestDTOs: [
             {

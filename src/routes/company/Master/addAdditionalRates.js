@@ -216,10 +216,7 @@ const AdditionalRates = (props) => {
       let payload = {
         partyId: checked ? values?.partyId : [values?.partyId],
         processId: values?.processId,
-        laminationSSlabour:values?.laminationSSlabour,
-        laminationDSlabour:values?.laminationDSlabour,
-        laminationSSmaterial:values?.laminationSSmaterial,
-        laminationDSmaterial:values?.laminationDSmaterial
+        requestId: "saveAddRates"
       };
 
       let payloadArray = [];

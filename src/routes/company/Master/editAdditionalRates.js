@@ -42,10 +42,7 @@ const handleOk=(e)=>{
             additionalPriceId:props?.aRates?.additionalPriceId,
             rangeFrom:values?.rangeFrom,
             rangeTo:values?.rangeTo,
-            laminationSSlabour:values?.laminationSSlabour,
-            laminationDSlabour:values?.laminationDSlabour,
-            laminationSSmaterial:values?.laminationSSmaterial,
-            laminationDSmaterial:values?.laminationDSmaterial
+            requestId: "updateAddRates"
     }]
     props.updateAdditionalRates(payload);
     })
@@ -112,26 +109,6 @@ return (
                         })(
                             <Input id="price" />
                         )}
-                    </Form.Item>
-                    <Form.Item label="Single side lamination charges per meter (Labour)">
-                        {getFieldDecorator("laminationSSlabour", {
-                      
-                        })(<Input id="laminationSSlabour" />)}
-                     </Form.Item>
-                    <Form.Item label="Single side lamination charges per meter (Material)">
-                        {getFieldDecorator("laminationSSmaterial", {
-                      
-                        })(<Input id="laminationSSmaterial" />)}
-                    </Form.Item>
-                    <Form.Item label="Double side lamination charges per meter (Labour)">
-                        {getFieldDecorator("laminationDSlabour", {
-                      
-                     })(<Input id="laminationDSlabour" />)}
-                    </Form.Item>
-                    <Form.Item label="Double side lamination charges per meter (Material)">
-                        {getFieldDecorator("laminationDSmaterial", {
-                      
-                     })(<Input id="laminationDSmaterial" />)}
                     </Form.Item>
                     </Form>
                 </Col>

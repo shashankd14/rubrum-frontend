@@ -414,12 +414,14 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
   const onDelete = (record, e) => {
     e.preventDefault();
     if (tabKey === "1") {
-      props.deleteRates(record?.id);
+      record.requestId = "deletePrice"
+      props.deleteRates(record?.id, record.requestId);
     } else if (tabKey === "4"){
-      debugger
-      props.deleteLminationCharges(record.laminationId)
+      record.requestId = "deleteLamination"
+      props.deleteLminationCharges(record.laminationId, record.requestId)
     } else {
-      props.deleteAdditionalRates(record?.id);
+      record.requestId = "deleteAddRates"
+      props.deleteAdditionalRates(record?.id, record.requestId);
     }
   };
   const onEdit = (record, e) => {   
@@ -1443,7 +1445,6 @@ console.log("eeeeeeeeeeeeeeee", props.laminationChargesView)
                if (values.laminationDetailsId !== '' && values.lPartyId !== '' && values.charges !== '') {
                 debugger
                  const laminationId = props?.rates?.laminationCharges?.laminationId;
-                 console.log("1111111", laminationId);
                  props.updateLminationCharges({...values, laminationId});
                 setEditLaminationCharges(false);
                 setShowAddLaminationCharges(false);

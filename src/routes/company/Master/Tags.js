@@ -86,7 +86,8 @@ const Tags = (props) => {
         e.preventDefault();
             const payload={
                 tagId: record?.tagId,
-                type: tabKey ==="1"?"packetClassification":"endusertags"
+                type: tabKey ==="1"?"packetClassification":"endusertags",
+                requestId: 'updateTag'
             }
          props.deleteTagById(payload);   
         
@@ -96,10 +97,10 @@ const Tags = (props) => {
         if(showEditTags){
             props.form.validateFields((err, values) => {
             if (!err) {
-              
+                values.requestId = 'updateTag';
                const payload={
                 type: tabKey ==="1"?"packetClassification":"endusertags",
-                tagsBody:{...values,tagId: tagId}
+                tagsBody:{...values,tagId: tagId},
                }
                 props.updateTags(payload);
                 setShowEditTags(false)
@@ -108,6 +109,7 @@ const Tags = (props) => {
         }else{
             props.form.validateFields((err, values) => {
                 if (!err) {
+                    values.requestId = 'addTag';
                     let payload=[];
                     payload.push(values)
                  tabKey==="1"?props.addProccessTags(payload): props.addEndUserTags(payload);

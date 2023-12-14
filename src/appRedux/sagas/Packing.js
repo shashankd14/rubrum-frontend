@@ -96,7 +96,8 @@ function* addPacking(action) {
         const packingObj = {
             packingItemId,
             description,
-            unit
+            unit,
+            requestId: "addPacking"
         }
         const addPacking = yield fetch(`${baseUrl}api/packing/item/save`, {
                 method: 'POST',
@@ -122,7 +123,8 @@ function* addPackingBucket(action) {
             packingBucketId: bucketId,
             packingBucketDesc: bucketDesc,
             packingItemIdList: packingItem,
-            qty
+            qty,
+            requestId: "addPackingBucket"
         }
         const addPackingBucket = yield fetch(`${baseUrl}api/packing/bucket/save`, {
                 method: 'POST',
@@ -148,7 +150,8 @@ function* updatePacking(action) {
             id,
             packingItemId,
             description,
-            unit
+            unit,
+            requestId: "updatePacking"
         }
         const updatePacking = yield fetch(`${baseUrl}api/packing/item/update`, {
                 method: 'PUT',
@@ -175,7 +178,8 @@ function* updatePackingBucket(action) {
             packingBucketId: bucketId,
             packingBucketDesc: bucketDesc,
             packingItemIdList: packingItem,
-            qty
+            qty,
+            requestId: "updatePackingBkt"
         }
         const updatePackingBucket = yield fetch(`${baseUrl}api/packing/bucket/update`, {
                 method: 'PUT',

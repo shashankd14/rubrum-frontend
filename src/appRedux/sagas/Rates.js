@@ -128,7 +128,8 @@ function* savePriceMaster(action) {
         matGradeId:action?.rates?.matGradeId.flat(),
         thicknessFrom:action?.rates?.thicknessFrom,
         thicknessTo:action?.rates?.thicknessTo,
-        price:action?.rates?.price
+        price:action?.rates?.price,
+        requestId:"savePrice"
     }]
      try {
         const addRates = yield fetch(`${baseUrl}api/pricemaster/save`, {
@@ -155,7 +156,8 @@ function* addPackingRates(action) {
             packingBucketId,
             partyId,
             packingRate,
-            packingRateDesc
+            packingRateDesc,
+            requestId: "addPackingRate"
         }
 
         const addPackingRates = yield fetch(`${baseUrl}api/packing/rate/save`, {
@@ -182,7 +184,8 @@ function* updateRates(action) {
         matGradeId:action?.rates?.values.matGradeId,
         thicknessFrom:action?.rates?.values.thicknessFrom,
         thicknessTo:action?.rates?.values.thicknessTo,
-        price:action?.rates?.values.price
+        price:action?.rates?.values.price,
+        requestId: "updateRates"
     }]
      try {
         const updateRates = yield fetch(`${baseUrl}api/pricemaster/update`, {
@@ -210,7 +213,8 @@ function* updatePackingRates(action) {
             packingBucketId,
             partyId,
             packingRate,
-            packingRateDesc
+            packingRateDesc,
+            requestId: "updatePackRate"
         };
         const updatePackingRates = yield fetch(`${baseUrl}api/packing/rate/update`, {
             method: 'PUT',
@@ -428,6 +432,7 @@ function* addLaminationCharges(action) {
             partyId,
             laminationDetailsId,
             charges,
+            requestId: "addLamination"
         }
 
         const addLaminationCharges = yield fetch(`${baseUrl}api/lamination/save`, {
@@ -454,7 +459,8 @@ function* updateLaminationCharges(action) {
             laminationId,
             partyId,
             laminationDetailsId,
-            charges
+            charges,
+            requestId: "updateLamination"
         }
         const updateLaminationCharges = yield fetch(`${baseUrl}api/lamination/update`, {
             method: 'PUT',
