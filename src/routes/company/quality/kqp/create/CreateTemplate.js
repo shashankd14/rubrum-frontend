@@ -79,7 +79,8 @@ const CreateTemplate = (props) => {
             "kqpName": kqpName,
             "kqpDesc": kqpDescription,
             "kqpSummary": kqpSummary,
-            "stageName": stageName
+            "stageName": stageName,
+            "requestId": "saveKQP"
         };
         if (action === 'create')
             props.saveKqp(JSON.stringify(request));

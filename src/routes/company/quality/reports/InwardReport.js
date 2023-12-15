@@ -278,6 +278,7 @@ const InwardReport = (props) => {
         console.log(record, key);
         console.log("record.qirId", record.qirId);
         props.deleteQualityReport(record.qirId);
+       // props.deleteQualityReport(record.qirId, record.requestId="deleteInwardQR");
     };
 
     const onEdit = (record, key, e) => {

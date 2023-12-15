@@ -87,6 +87,7 @@ const CreateTemplate = (props) => {
         request.append("stageName", stageName);
         request.append("userId", localStorage.getItem("userId").toString());
         request.append("templateDetails", JSON.stringify(templateDetails));
+        request.append("requestId", "saveQualityTemplate");
         if(action == 'create')
             props.saveQualityTemplate(request);
         else if(action == 'edit')

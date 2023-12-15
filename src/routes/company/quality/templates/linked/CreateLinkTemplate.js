@@ -171,6 +171,7 @@ const CreateLinkTemplate = (props) => {
             anyPartyFlag: anyPartyFlag? 'N' : 'Y',
             anyEndusertagFlag: anyEndusertagFlag? 'N' : 'Y',
             anyMatGradeFlag: anyMatGradeFlag? 'N' : 'Y',
+            requestId: "saveTemplateLink"
         })
         if (action == 'create')
             props.saveQualityTemplateLink(payload);
