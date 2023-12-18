@@ -530,7 +530,12 @@ const SlitAndCutForm = (props) => {
                             <label>Coil Thickness (IN MM)</label>
                             <Input disabled value={props.inward?.plan?.fThickness} onChange={(e) => onOptionChange('thickness', e)}></Input>
                         </Col>
-
+                    </Row>
+                    <Row>
+                        <Col span={24}>
+                            <label>Document ID</label>
+                            <Input value={location.state.selectedItemForQr.planId} onChange={(e) => onOptionChange('partDetailsId', e)}></Input>
+                        </Col>
                     </Row>
                     <Row>
                         <Col span={24}>
@@ -566,6 +571,12 @@ const SlitAndCutForm = (props) => {
                         <Col span={12}>
                             <label>Coil Weight (IN KGs)</label>
                             <Input disabled value={props.inward?.plan?.grossWeight} onChange={(e) => onOptionChange('weight', e)}></Input>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col span={24}>
+                            <label>Target Weight</label>
+                            <Input disabled value={location.state.selectedItemForQr.targetWeight} onChange={(e) => onOptionChange('plannedWeight', e)}></Input>
                         </Col>
                     </Row>
                     <Row>

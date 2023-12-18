@@ -316,6 +316,12 @@ const CuttingForm = (props) => {
                     </Row>
                     <Row>
                         <Col span={24}>
+                            <label>Document ID</label>
+                            <Input value={location.state.selectedItemForQr.planId} onChange={(e) => onOptionChange('partDetailsId', e)}></Input>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col span={24}>
                             <label>Physical Appearance</label>
                             <Input onChange={(e) => onOptionChange('physicalAppearance', e)}></Input>
                         </Col>
@@ -348,6 +354,12 @@ const CuttingForm = (props) => {
                         <Col span={12}>
                             <label>Coil Weight (IN KGs)</label>
                             <Input disabled value={props.inward?.plan?.grossWeight} onChange={(e) => onOptionChange('weight', e)}></Input>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col span={24}>
+                            <label>Target Weight</label>
+                            <Input disabled value={location.state.selectedItemForQr.targetWeight} onChange={(e) => onOptionChange('plannedWeight', e)}></Input>
                         </Col>
                     </Row>
                     <Row>

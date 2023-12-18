@@ -76,6 +76,10 @@ const InwardReport = (props) => {
             filters: [],
             sorter: (a, b) => a.coilNo.length - b.coilNo.length,
             sortOrder: sortedInfo.columnKey === "coilNo" && sortedInfo.order,
+            onCell: (record) => ({
+                className: "gx-link",
+                onClick: () => onPdf(record.inwardEntryId),
+              }),
         },
         {
             title: "Batch Number",
@@ -278,6 +282,7 @@ const InwardReport = (props) => {
         console.log(record, key);
         console.log("record.qirId", record.qirId);
         props.deleteQualityReport(record.qirId);
+       // props.deleteQualityReport(record.qirId, record.requestId="deleteInwardQR");
     };
 
     const onEdit = (record, key, e) => {

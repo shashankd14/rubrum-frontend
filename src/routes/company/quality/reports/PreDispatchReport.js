@@ -244,7 +244,7 @@ const PreDispatchReport = (props) => {
         console.log(record, key)
         // const templateDetails = qualityReportList.find(qr => qr.coilNumber === record.coilNumber && qr.inwardId === record.inwardEntryId)
         // props.history.push({pathname: '/company/quality/reports/create/predispatch', state: {selectedItemForQr: record, templateDetails: templateDetails, action: 'view'}})
-       // selectedItemForQr(record);
+        setSelectedItemForQr(record)
         setAction('view');
         props.getQualityReportById(record.qirId);
     }
