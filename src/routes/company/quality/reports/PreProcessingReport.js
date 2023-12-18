@@ -76,6 +76,10 @@ const PreProcessingReport = (props) => {
             filters: [],
             sorter: (a, b) => a.planId.length - b.planId.length,
             sortOrder: sortedInfo.columnKey === "planId" && sortedInfo.order,
+            onCell: (record) => ({
+                className: "gx-link",
+                onClick: () => onPdf(record.planId),
+              }),
         },
         {
             title: "Batch No",
@@ -230,6 +234,7 @@ const PreProcessingReport = (props) => {
 
     const showReportView = (record, key) => {
         console.log(record, key)
+        setSelectedItemForQr(record)
        setAction('view')
         props.getQualityReportById(record.qirId);
     }

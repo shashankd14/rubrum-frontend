@@ -76,6 +76,10 @@ const ProcessingReport = (props) => {
             filters: [],
             sorter: (a, b) => a.planId.length - b.planId.length,
             sortOrder: sortedInfo.columnKey === "planId" && sortedInfo.order,
+            onCell: (record) => ({
+                className: "gx-link",
+                onClick: () => onPdf(record.planId),
+              }),
         },
         {
             title: "Batch No",
@@ -243,7 +247,7 @@ const ProcessingReport = (props) => {
         console.log(record, key)
         // const templateDetails = qualityReportList.find(qr => qr.coilNumber === record.coilNumber && qr.inwardId === record.inwardEntryId)
         // props.history.push({ pathname: '/company/quality/reports/create/processing', state: { selectedItemForQr: record, templateDetails: templateDetails, action: 'view' } })
-        // setSelectedItemForQr(record)
+         setSelectedItemForQr(record)
         setAction('view');
         props.getQualityReportById(record.qirId);
 
