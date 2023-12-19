@@ -12,7 +12,8 @@ import {
     updateQualityReport,
     deleteQualityReport,
     getCoilPlanDetails,
-    fetchInwardList
+    fetchInwardList,
+    fetchTemplatesLinkList
 } from "../../../../../appRedux/actions"
 import TextArea from "antd/lib/input/TextArea";
 import InwardReportTemplate from "./InwardReportTemplate";
@@ -55,6 +56,8 @@ const CreateReport = (props) => {
         }
     }, [props.match])
 
+    const [matchedTemplateName, setMatchedTemplateName] = useState('');
+   
     useEffect(() => {
         console.log(props.location.state)
        // props.fetchInwardList();
@@ -64,7 +67,14 @@ const CreateReport = (props) => {
         // setFilteredInwardList(filteredData);
          setMaterialDetails([props.location.state.selectedItemForQr])
         if(props.location.state?.templateDetails){
-            setTemplateName(props.location.state.templateDetails.templateName);
+            const linkListData = props.linkListData;
+            const templateIdToMatch = props.location.state.templateDetails.templateId;
+            const matchedTemplate = linkListData.find(template => template.templateId === templateIdToMatch);
+            if (matchedTemplate) {
+                setMatchedTemplateName(matchedTemplate.templateName);
+                setTemplateName(matchedTemplate.templateName);
+            }
+           // setTemplateName(props.location.state.templateDetails.templateName);
             setStageName(props.location.state.templateDetails.stageName)
             setTemplateInfo(props.location.state.templateDetails)
         }
@@ -186,6 +196,7 @@ const CreateReport = (props) => {
 const mapStateToProps = state => ({
     templateDetails: state.quality,
     inward: state.inward,
+    linkListData: state.quality.linkListData
 });
 
 export default connect(mapStateToProps, {
@@ -193,5 +204,6 @@ export default connect(mapStateToProps, {
     getQualityReportById,
     updateQualityReport,
     deleteQualityReport,
-    fetchInwardList
+    fetchInwardList,
+    fetchTemplatesLinkList
 })(CreateReport);
