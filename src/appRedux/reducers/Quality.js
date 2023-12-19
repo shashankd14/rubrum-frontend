@@ -106,6 +106,7 @@ const INIT_STATE = {
   },
   loading: false,
   data: [],
+  linkListData: [],
   error: false,
   pdfLoadingInward: false,
   pdfSuccessInward: false,
@@ -243,7 +244,8 @@ export default (state = INIT_STATE, action) => {
       return {
         ...state,
         error: false,
-        loading: true
+        loading: true,
+        templateLinkList: null
       }
     case FETCH_TEMPLATE_LINK_LIST_SUCCESS:
       return {
@@ -259,6 +261,11 @@ export default (state = INIT_STATE, action) => {
         error: true,
         loading: false
       }
+      case actionTypes.STORE_LINK_LIST_DATA:
+        return {
+          ...state,
+          linkListData: action.payload,
+        };
     case SAVE_QUALITY_TEMPLATE_LINK_REQUEST:
       return {
         ...state,

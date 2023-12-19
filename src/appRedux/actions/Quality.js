@@ -231,7 +231,11 @@ export const fetchTemplatesLinkListError = (error) => ({
   type: FETCH_TEMPLATE_LINK_LIST_ERROR,
   error
 });
-
+//it is used to show templateName in QR view
+export const storeLinkListData = (linkListData) => ({
+  type: actionTypes.STORE_LINK_LIST_DATA,
+  payload: linkListData,
+});
 export const saveQualityTemplateLink = payload => {
   return {
     type: SAVE_QUALITY_TEMPLATE_LINK_REQUEST,

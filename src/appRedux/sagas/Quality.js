@@ -101,6 +101,7 @@ import {
     getQualityPacketDetailsError,
     pdfGenerateQMreportInwardSuccess,
     pdfGenerateQMreportInwardError,
+    storeLinkListData,
 } from "../actions/Quality";
 import { userSignOutSuccess } from "../../appRedux/actions/Auth";
 import { forEach } from "lodash";
@@ -198,6 +199,8 @@ function* fetchTemplateList(action) {
         if (fetchTemplateList.status === 200) {
             const fetchTemplateListResponse = yield fetchTemplateList.json();
             yield put(fetchTemplatesListSuccess(fetchTemplateListResponse));
+            const linkListData = fetchTemplateListResponse
+            yield put(storeLinkListData(linkListData));
         } else if (fetchTemplateList.status === 401) {
             yield put(userSignOutSuccess());
         } else
