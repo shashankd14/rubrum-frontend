@@ -396,23 +396,23 @@ function* fetchQualityReportStageList1(req) {
     }
 }
 
-function* fetchQualityReportList(action) {
-    try {
-        const fetchQRList = yield fetch(`${baseUrl}api/quality/inspectionreport`, {
-            method: 'GET',
-            headers: getHeaders()
-        });
-        if (fetchQRList.status === 200) {
-            const fetchQRListResponse = yield fetchQRList.json();
-            yield put(fetchQualityReportListSuccess(fetchQRListResponse));
-        } else if (fetchQRList.status === 401) {
-            yield put(userSignOutSuccess());
-        } else
-            yield put(fetchQualityReportListError('error'));
-    } catch (error) {
-        yield put(fetchQualityReportListError(error));
-    }
-}
+// function* fetchQualityReportList(action) {
+//     try {
+//         const fetchQRList = yield fetch(`${baseUrl}api/quality/inspectionreport`, {
+//             method: 'GET',
+//             headers: getHeaders()
+//         });
+//         if (fetchQRList.status === 200) {
+//             const fetchQRListResponse = yield fetchQRList.json();
+//             yield put(fetchQualityReportListSuccess(fetchQRListResponse));
+//         } else if (fetchQRList.status === 401) {
+//             yield put(userSignOutSuccess());
+//         } else
+//             yield put(fetchQualityReportListError('error'));
+//     } catch (error) {
+//         yield put(fetchQualityReportListError(error));
+//     }
+// }
 
 function* saveQualityReport(data) {
     try {
@@ -458,26 +458,26 @@ function* getQualityReportById(data) {
     }
 }
 
-function* updateQualityReportById(data) {
-    try {
-        // let data = new FormData();
-        const qualityTemplate = yield fetch(`${baseUrl}api/quality/inspectionreport/update`, {
-            method: 'PUT',
-            body: data.payload,
-            headers: getHeaders()
-        });
-        if (qualityTemplate.status == 200) {
-            let qualityTemplateResponse = yield qualityTemplate.json()
-            yield put(updateQualityReportSuccess(qualityTemplateResponse));
-        } else if (qualityTemplate.status === 401) {
-            yield put(userSignOutSuccess());
-        } else
-            yield put(updateQualityReportError('error'));
-    } catch (error) {
-        console.log(error)
-        yield put(updateQualityReportError(error));
-    }
-}
+// function* updateQualityReportById(data) {
+//     try {
+//         // let data = new FormData();
+//         const qualityTemplate = yield fetch(`${baseUrl}api/quality/inspectionreport/update`, {
+//             method: 'PUT',
+//             body: data.payload,
+//             headers: getHeaders()
+//         });
+//         if (qualityTemplate.status == 200) {
+//             let qualityTemplateResponse = yield qualityTemplate.json()
+//             yield put(updateQualityReportSuccess(qualityTemplateResponse));
+//         } else if (qualityTemplate.status === 401) {
+//             yield put(userSignOutSuccess());
+//         } else
+//             yield put(updateQualityReportError('error'));
+//     } catch (error) {
+//         console.log(error)
+//         yield put(updateQualityReportError(error));
+//     }
+// }
 
 function* deleteQualityReportById(data) {
     try {
@@ -807,17 +807,10 @@ function* getPacketDetailsQuality(data) {
         yield put(getQualityPacketDetailsError(error));
     }
 }
-//QM report inward pdf
+//QM report inward, plan, DC pdf
 function* generateQMreportInwardPdf(action) {
-    //try {
-        // const pdfGenerate =  yield fetch(`${baseUrl}api/pdf/inward`, {
-        //     method: 'POST',
-        //     headers: { "Content-Type": "application/json", ...getHeaders()},
-        //     body: JSON.stringify(action.payload)
-        // });
         let pdfGenerate
     try {
-        // inward pdf
         if(action.payload.type === 'inward'){
             pdfGenerate = yield fetch(`${baseUrl}api/pdf/inward`, {
                 method: 'POST',
@@ -837,13 +830,13 @@ function* generateQMreportInwardPdf(action) {
                 body: JSON.stringify(action.payload.partDetailsId)
             });
         } else if(action.payload.type === 'preDispatch'){
-            pdfGenerate = yield fetch(`${baseUrl}api/pdf/delivery`, {
+            pdfGenerate = yield fetch(`${baseUrl}api/inwardEntry/getdcpdfs`, {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/json",
                     ...getHeaders()
                   },
-                body: JSON.stringify(action.payload.partDetailsId)
+                body: JSON.stringify(action.payload.dcIds)
             });
         }
         if(pdfGenerate.status === 200) {
@@ -875,10 +868,10 @@ export function* watchFetchRequests() {
     yield takeLatest(GET_QUALITY_TEMPLATE_LINK_BY_ID_REQUEST, getQualityTemplateLinkById);
     yield takeLatest(UPDATE_QUALITY_TEMPLATE_LINK_REQUEST, updateQualityTemplateLinkById);
     yield takeLatest(FETCH_QUALITY_REPORT_STAGE_REQUEST, fetchQualityReportStageList);
-    yield takeLatest(FETCH_QUALITY_REPORT_REQUEST, fetchQualityReportList);
+  //  yield takeLatest(FETCH_QUALITY_REPORT_REQUEST, fetchQualityReportList);
     yield takeLatest(SAVE_QUALITY_REPORT_REQUEST, saveQualityReport);
     yield takeLatest(GET_QUALITY_REPORT_BY_ID_REQUEST, getQualityReportById);
-    yield takeLatest(UPDATE_QUALITY_REPORT_REQUEST, updateQualityReportById);
+ //   yield takeLatest(UPDATE_QUALITY_REPORT_REQUEST, updateQualityReportById);
     yield takeLatest(DELETE_QUALITY_REPORT_REQUEST, deleteQualityReportById);
     yield takeLatest(FETCH_KQP_LIST, fetchKqpList);
     yield takeLatest(SAVE_KQP_REQUEST, saveKqp);

@@ -82,6 +82,10 @@ const PreDispatchReport = (props) => {
             filters: [],
             sorter: (a, b) => a.deliveryChalanNo.length - b.deliveryChalanNo.length,
             sortOrder: sortedInfo.columnKey === "deliveryChalanNo" && sortedInfo.order,
+            onCell: (record) => ({
+                className: "gx-link",
+                onClick: () => onPdf(record.deliveryChalanNo),
+              }),
         },
         {
             title: "Batch No",
@@ -299,14 +303,14 @@ const PreDispatchReport = (props) => {
     const [payload, setPayload] = useState({});
     const onPdf = (deliveryChalanNo) => {
         setPayload({
-            instructionIds:{instructionIds:deliveryChalanNo},
+            dcIds:{dcIds:[deliveryChalanNo]},
             type:'preDispatch'
         })
-       // props.pdfGenerateQMreportInward(payload);
-    }
-    useEffect(() => {
         props.pdfGenerateQMreportInward(payload);
-      }, [payload]);
+    }
+    // useEffect(() => {
+    //     props.pdfGenerateQMreportInward(payload);
+    //   }, [payload]);
 
     return (
         <>

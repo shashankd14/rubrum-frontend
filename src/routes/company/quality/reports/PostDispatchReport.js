@@ -83,6 +83,10 @@ const PostDispatchReport = (props) => {
             filters: [],
             sorter: (a, b) => a.deliveryChalanNo.length - b.deliveryChalanNo.length,
             sortOrder: sortedInfo.columnKey === "deliveryChalanNo" && sortedInfo.order,
+            onCell: (record) => ({
+                className: "gx-link",
+                onClick: () => onPdf(record.deliveryChalanNo),
+              }),
         },
         {
             title: "Batch No",
@@ -308,10 +312,9 @@ const PostDispatchReport = (props) => {
 
     const [payload, setPayload] = useState({});
     const onPdf = (deliveryChalanNo) => {
-        debugger
         setPayload({
-            instructionIds:{instructionIds:deliveryChalanNo},
-            type:'postDispatch'
+            dcIds:{dcIds:[deliveryChalanNo]},
+            type:'preDispatch'
         })
        // props.pdfGenerateQMreportInward(payload);
     }
