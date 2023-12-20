@@ -6,7 +6,8 @@ import SearchBox from '../../../../components/SearchBox';
 
 import {
     fetchKqpLinkList,
-    fetchKqpLinkListSuccess
+    fetchKqpLinkListSuccess,
+    fetchPartyList
 } from "../../../../appRedux/actions";
 
 const LinkedTemplateList = (props) => {
@@ -20,7 +21,6 @@ const LinkedTemplateList = (props) => {
     const [filteredTemplateList, setFilteredTemplateList] = useState([]);
 
     useEffect(() => {
-        console.log("init")
         // setTemplateList([]);
         // setSearchValue([]);
         // setPageNo([]);
@@ -35,9 +35,9 @@ const LinkedTemplateList = (props) => {
             const jsonData = props.template.data;
             const groupedData = {};
             jsonData.forEach((item) => {
-                const { kqpId, kqpName, stageName, partyName } = item;
+                const { kqpId, kqpName, stageName, partyName, partyIdList } = item;
     
-                const key = `${kqpId}-${kqpName}-${stageName}`;
+                const key = `${kqpId}-${kqpName}-${stageName}-${partyIdList}`;
     
                 if (!groupedData[key]) {
                     // If the group doesn't exist yet, create it
@@ -48,8 +48,22 @@ const LinkedTemplateList = (props) => {
                         parties: [],
                     };
                 }
-                // Add the partyName to the parties array in the group
-                groupedData[key].parties.push(partyName);
+                //  groupedData[key].parties.push(partyName);
+                 const partyIds = JSON.parse(partyIdList);;
+                 console.log(partyIds)
+                 if (Array.isArray(partyIds)) {
+                 const partyNames = partyIds.map((partyId) => {
+                    // Check if partyId is defined
+                    if (partyId !== undefined) {
+                      const matchedParty = props.party.partyList.find((party) => party.nPartyId === partyId);
+                      return matchedParty ? matchedParty.partyName : null;
+                    } else {
+                      return null; 
+                    }
+                  });
+                  console.log(partyNames)
+                  groupedData[key].parties.push(partyNames);
+                }
             });
             const groupedArray = Object.values(groupedData);
             console.log(groupedArray);
@@ -150,9 +164,11 @@ const LinkedTemplateList = (props) => {
 
 const mapStateToProps = (state) => ({
     template: state.quality,
+    party: state.party
 });
 
 export default connect(mapStateToProps, {
     fetchKqpLinkList,
-    fetchKqpLinkListSuccess
+    fetchKqpLinkListSuccess,
+    fetchPartyList
 })(LinkedTemplateList);
