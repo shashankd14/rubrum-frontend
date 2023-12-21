@@ -838,6 +838,14 @@ function* generateQMreportInwardPdf(action) {
                   },
                 body: JSON.stringify(action.payload.dcIds)
             });
+        } else if(action.payload.type === 'inwardQR'){
+            pdfGenerate = yield fetch(`${baseUrl}api/pdf/qirpdf/${action.payload.qirId}`, {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                    ...getHeaders()
+                  },
+            });
         }
         if(pdfGenerate.status === 200) {
             const pdfGenerateResponse = yield pdfGenerate.json();

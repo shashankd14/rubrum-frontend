@@ -181,8 +181,8 @@ const InwardReport = (props) => {
                     <Divider type="vertical" />
                     <span
                         className="gx-link"
-                        onClick={() => onPdf(record.inwardEntryId)}
-                        // style={!record.qirId ? {} : { opacity: 0.5, pointerEvents: 'none' }}
+                        onClick={() => onQRPdf(record.qirId)}
+                         style={record.qirId ? {} : { opacity: 0.5, pointerEvents: 'none' }}
                     >
                        PDF
                     </span>
@@ -315,6 +315,14 @@ const InwardReport = (props) => {
     useEffect(() => {
         props.pdfGenerateQMreportInward(payload);
       }, [payload]);
+
+      const onQRPdf = (qirId) => {
+        setPayload({
+            qirId:qirId,
+            type:'inwardQR'
+        })
+       // props.pdfGenerateQMreportInward(payload);
+    }
 
     return (
         <>
