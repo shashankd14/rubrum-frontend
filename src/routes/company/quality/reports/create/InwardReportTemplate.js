@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Card, Col, Icon, Input, Radio, Row } from 'antd'
+import { Button, Card, Col, Icon, Radio, Row } from 'antd'
 import Dragger from 'antd/lib/upload/Dragger'
 import { useHistory } from 'react-router';
 
@@ -72,11 +72,6 @@ const InwardReportTemplate = (props) => {
         setTemplateData(val)
     }
 
-    const [comment, setComment] = useState('');
-    const handleCommentChange = (e) => {
-        setComment(e.target.value);
-        props.onCommentChange(e.target.value);
-    };
     const onFilesChange = (type, file) => {
         templateData[type].fileList = file.fileList.slice(-1)
         templateData[type].fileName = templateData[type].fileList[0].name;
@@ -354,24 +349,6 @@ const InwardReportTemplate = (props) => {
                                     &nbsp;Click or drag wire rope damage img
                                 </p>
                             </Dragger>}
-                        </div>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col span={8}>
-                        <div style={{ display: 'grid', marginTop: 50 }}>
-                            <label>Comment:</label>
-                        </div>
-                    </Col>
-                    <Col span={16}>
-                        <div style={{ display: 'grid', marginTop: 45 }}>
-                            <Input
-                                id="comment"
-                                onChange={handleCommentChange}
-                                value={comment}
-                                required
-                               // disabled={isDisabled}
-                            /> 
                         </div>
                     </Col>
                 </Row>

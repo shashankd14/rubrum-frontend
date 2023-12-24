@@ -182,7 +182,7 @@ const InwardReport = (props) => {
                     <span
                         className="gx-link"
                         onClick={() => onQRPdf(record.qirId)}
-                        style={record.qirId ? {} : { opacity: 0.5, pointerEvents: 'none' }}
+                         style={record.qirId ? {} : { opacity: 0.5, pointerEvents: 'none' }}
                     >
                        PDF
                     </span>
@@ -310,6 +310,7 @@ const InwardReport = (props) => {
             inwardId:{inwardId:inwardEntryId},
             type:'inward'
         })
+       // props.pdfGenerateQMreportInward(payload);
     }
     useEffect(() => {
         props.pdfGenerateQMreportInward(payload);
@@ -318,8 +319,9 @@ const InwardReport = (props) => {
       const onQRPdf = (qirId) => {
         setPayload({
             qirId:qirId,
-            type:'QR'
+            type:'inwardQR'
         })
+       // props.pdfGenerateQMreportInward(payload);
     }
 
     return (

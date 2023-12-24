@@ -189,8 +189,9 @@ const PostDispatchReport = (props) => {
                     <Divider type="vertical" />
                     <span
                         className="gx-link"
-                        onClick={() => onQRPdf(record.qirId)}
-                        style={record.qirId ? {} : { opacity: 0.5, pointerEvents: 'none' }}
+                        onClick={() => onPdf(record.deliveryChalanNo)}
+                        // onClick={!record.qirId ? (e) => showTemplateList(record, index, e) : null}
+                        // style={!record.qirId ? {} : { opacity: 0.5, pointerEvents: 'none' }}
                     >
                        PDF
                     </span>
@@ -315,17 +316,11 @@ const PostDispatchReport = (props) => {
             dcIds:{dcIds:[deliveryChalanNo]},
             type:'preDispatch'
         })
+       // props.pdfGenerateQMreportInward(payload);
     }
     useEffect(() => {
         props.pdfGenerateQMreportInward(payload);
       }, [payload]);
-
-      const onQRPdf = (qirId) => {
-        setPayload({
-            qirId:qirId,
-            type:'QR'
-        })
-    }
 
     return (
         <>

@@ -100,12 +100,12 @@ export const QUALITY_REPORT_CREATE_COLUMNS = [
     },
     {
         title: "Width",
-        dataIndex: "fwidth",
+        dataIndex: "fWidth",
         key: "fWidth",
     },
     {
         title: "Material Desc",
-        dataIndex: "materialDesc",
+        dataIndex: "material.description",
         key: "material.description",
     },
     {

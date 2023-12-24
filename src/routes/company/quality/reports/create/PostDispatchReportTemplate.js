@@ -59,12 +59,6 @@ const PostDispatchReportTemplate = (props) => {
     setTemplateData({ ...templateData })
   }
 
-  const [comment, setComment] = useState('');
-    const handleCommentChange = (e) => {
-        setComment(e.target.value);
-        props.onCommentChange(e.target.value);
-    };
-
   const onOptionChange = (type, value) => {
     console.log(type, value)
     templateData[type].value = value.target.value
@@ -146,7 +140,7 @@ const PostDispatchReportTemplate = (props) => {
                   height={50}
                   beforeUpload={() => false}
                   action=''
-                  onChange={(e) => onFilesChange(2, e)}
+                  onChange={(e) => onFilesChange(1, e)}
                 // fileList={templateData[1].fileList}
                 >
                   <p>
@@ -159,7 +153,7 @@ const PostDispatchReportTemplate = (props) => {
                 height={50}
                 beforeUpload={() => false}
                 action=''
-                onChange={(e) => onFilesChange(2, e)}
+                onChange={(e) => onFilesChange(1, e)}
               // fileList={templateData[1].fileList}
               >
                 <p>
@@ -251,24 +245,6 @@ const PostDispatchReportTemplate = (props) => {
               </Dragger>}
             </div>
           </Col>
-        </Row>
-        <Row>
-              <Col span={8}>
-                <div style={{ display: 'grid', marginTop: 50 }}>
-                    <label>Comment:</label>
-                </div>
-              </Col>
-              <Col span={16}>
-                <div style={{ display: 'grid', marginTop: 45 }}>
-                    <Input
-                      id="comment"
-                      onChange={handleCommentChange}
-                      value={comment}
-                      required
-                     // disabled={isDisabled}
-                    /> 
-                </div>
-              </Col>
         </Row>
         {props.action !== 'view' && <Row >
           <div style={{ marginTop: 45 }}>

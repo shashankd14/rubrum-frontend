@@ -86,11 +86,6 @@ const ProcessingReportTemplate = (props) => {
     console.log(templateData)
     setTemplateData({ ...templateData })
   }
-  const [comment, setComment] = useState('');
-    const handleCommentChange = (e) => {
-        setComment(e.target.value);
-        props.onCommentChange(e.target.value);
-    };
 
   const onOptionChange = (type, value) => {
     templateData[type].value = value.target ? value.target.value : value
@@ -355,24 +350,6 @@ const handleClick = () => {
               </Dragger>}
             </div>
           </Col>
-        </Row>
-        <Row>
-            <Col span={8}>
-                <div style={{ display: 'grid', marginTop: 50 }}>
-                    <label>Comment:</label>
-                </div>
-              </Col>
-              <Col span={16}>
-                <div style={{ display: 'grid', marginTop: 45 }}>
-                  <Input
-                    id="comment"
-                    onChange={handleCommentChange}
-                    value={comment}
-                    required
-                   disabled={isDisabled}
-                  /> 
-                </div>
-            </Col>
         </Row>
         {/* {props.action !== 'view' && <Row >
           <div style={{ marginTop: 45 }}>

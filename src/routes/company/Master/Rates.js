@@ -416,6 +416,7 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
     if (tabKey === "1") {
       props.deleteRates(record?.id);
     } else if (tabKey === "4"){
+      debugger
       props.deleteLminationCharges(record.laminationId)
     } else {
       props.deleteAdditionalRates(record?.id);
@@ -434,12 +435,14 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
         setShowAddRates(true);
       }, 1000);
     } else if (tabKey === "3") {
+      debugger
       props.fetchPackingRatesById(record.packingRateId);
       setEditPackingRates(true);
       setTimeout(() => {
         setShowAddPackingRates(true);
       }, 1000);
     } else if (tabKey === "4") {
+      debugger
      props.getLaminationChargesById(record.laminationId);
       setEditLaminationCharges(true);
       setTimeout(() => {
@@ -1301,6 +1304,7 @@ console.log("eeeeeeeeeeeeeeee", props.laminationChargesView)
               const values = props.form.getFieldsValue();
               console.log('Received values of form: ', values);
               if (values.packingBucketId !== '' && values.rPartyId !== '' && values.packingRate !== '' && values.packingRateDesc !== '') {
+               debugger
                 const packingRateId = props?.packingRates?.packingRateId;
                 props.updatePackingRates({ ...values, packingRateId });
                 setEditPackingRates(false);
@@ -1308,6 +1312,7 @@ console.log("eeeeeeeeeeeeeeee", props.laminationChargesView)
               }
             } else {
               const values = props.form.getFieldsValue();
+              debugger
               console.log('Received values of form: ', values);
               if (values.packingBucketId !== '' && values.rPartyId !== '' && values.packingRate !== '' && values.packingRateDesc !== '') {
                 props.addPackingRates(values);
@@ -1436,7 +1441,9 @@ console.log("eeeeeeeeeeeeeeee", props.laminationChargesView)
               const values = props.form.getFieldsValue();
               console.log('Received values of form: ', values);
                if (values.laminationDetailsId !== '' && values.lPartyId !== '' && values.charges !== '') {
+                debugger
                  const laminationId = props?.rates?.laminationCharges?.laminationId;
+                 console.log("1111111", laminationId);
                  props.updateLminationCharges({...values, laminationId});
                 setEditLaminationCharges(false);
                 setShowAddLaminationCharges(false);
@@ -1444,6 +1451,7 @@ console.log("eeeeeeeeeeeeeeee", props.laminationChargesView)
             } else {
               const values = props.form.getFieldsValue();
               console.log('Received values of form: ', values);
+              debugger
               if (values.laminationDetailsId !== '' && values.lPartyId !== '' && values.charges !== '') {
                 props.addLminationCharges(values);
                 setShowAddLaminationCharges(false);
