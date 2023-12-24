@@ -83,6 +83,13 @@ const CreateReport = (props) => {
             
     }, [props.location.state, props.inward.inwardList])
 
+    const [comment, setComment] = useState('');
+
+    const handleCommentChange = (comment) => {
+        setComment(comment);
+        console.log("cc", comment)
+    };
+
     useEffect(() => {
         if (!props.inward.loading && props.inward.planSuccess) {
             console.log(props.inward.plan)
@@ -115,17 +122,22 @@ const CreateReport = (props) => {
         // }
         let request = new FormData();
         const templateDetails = []
+        const planDetails = []
         Object.keys(data).forEach(key => {
             const dataDetail = data[key];
             if (dataDetail?.fileList?.length > 0 && dataDetail.fileList[0]) {
                 request.append(dataDetail.type, dataDetail.fileList[0].originFileObj);
             }
-            templateDetails.push({
-                "id": key,
-                "type": dataDetail.type,
-                "value": dataDetail.value,
-                "fileName": dataDetail?.fileList?.length > 0 ? dataDetail.fileName : "",
-            })
+            if (key !== 'formData'){
+                templateDetails.push({
+                    "id": key,
+                    "type": dataDetail.type,
+                    "value": dataDetail.value,
+                    "fileName": dataDetail?.fileList?.length > 0 ? dataDetail.fileName : "",
+                })
+            }else{
+                planDetails.push(dataDetail.value);
+            }
         })
         if (templateInfo.templateId) {
             request.append("templateId", templateInfo.templateId);
@@ -144,12 +156,14 @@ const CreateReport = (props) => {
         request.append("stageName", stageName);
         request.append("userId", localStorage.getItem("userId").toString());
         request.append("templateDetails", JSON.stringify(templateDetails));
+        request.append("planDetails", JSON.stringify(planDetails));
        // request.append("coilNo", coilNumber + '');
         request.append("coilNo", props.location.state.selectedItemForQr.coilNo);
         request.append("customerBatchNo", batchNumber);
         request.append("planId", props.location.state.selectedItemForQr.planId);
         request.append("deliveryChalanNo", props.location.state.selectedItemForQr.deliveryChalanNo);
         request.append("inwardId", props.location.state.selectedItemForQr.inwardEntryId);
+        request.append("comment", comment);
         if (action == 'create'){
             props.saveQualityReport(request);
             props.history.push('/company/quality/reports')
@@ -182,11 +196,11 @@ const CreateReport = (props) => {
                     disabled
                 />
             </div>
-            {stageName === "INWARD" ? <InwardReportTemplate handleCreate={handleCreate} action={action} templateDetails={templateInfo} from="qr"></InwardReportTemplate>
-                : stageName === "PRE_PROCESSING" ? <PreProcessingReportTemplate handleCreate={handleCreate} action={action} templateDetails={templateInfo} from="qr"></PreProcessingReportTemplate>
-                    : stageName === "PROCESSING" ? <ProcessingReportTemplate handleCreate={handleCreate} action={action} templateDetails={templateInfo} from="qr"></ProcessingReportTemplate>
-                        : stageName === "PRE_DISPATCH" ? <PreDispatchReportTemplate handleCreate={handleCreate} action={action} templateDetails={templateInfo} from="qr"></PreDispatchReportTemplate>
-                            : stageName === "POST_DISPATCH" ? <PostDispatchReportTemplate handleCreate={handleCreate} action={action} templateDetails={templateInfo} from="qr"></PostDispatchReportTemplate>
+            {stageName === "INWARD" ? <InwardReportTemplate handleCreate={handleCreate} action={action} templateDetails={templateInfo} onCommentChange={handleCommentChange} from="qr"></InwardReportTemplate>
+                : stageName === "PRE_PROCESSING" ? <PreProcessingReportTemplate handleCreate={handleCreate} action={action} templateDetails={templateInfo} onCommentChange={handleCommentChange} from="qr"></PreProcessingReportTemplate>
+                    : stageName === "PROCESSING" ? <ProcessingReportTemplate handleCreate={handleCreate} action={action} templateDetails={templateInfo} onCommentChange={handleCommentChange} from="qr"></ProcessingReportTemplate>
+                        : stageName === "PRE_DISPATCH" ? <PreDispatchReportTemplate handleCreate={handleCreate} action={action} templateDetails={templateInfo} onCommentChange={handleCommentChange} from="qr"></PreDispatchReportTemplate>
+                            : stageName === "POST_DISPATCH" ? <PostDispatchReportTemplate handleCreate={handleCreate} action={action} templateDetails={templateInfo} onCommentChange={handleCommentChange} from="qr"></PostDispatchReportTemplate>
                                 : <></>
             }
         </div>

@@ -187,9 +187,8 @@ const ProcessingReport = (props) => {
                     <Divider type="vertical" />
                     <span
                         className="gx-link"
-                        onClick={() => onPdf(record.planId)}
-                        // onClick={!record.qirId ? (e) => showTemplateList(record, index, e) : null}
-                        // style={!record.qirId ? {} : { opacity: 0.5, pointerEvents: 'none' }}
+                        onClick={() => onQRPdf(record.qirId)}
+                        style={record.qirId ? {} : { opacity: 0.5, pointerEvents: 'none' }}
                     >
                        PDF
                     </span>
@@ -314,11 +313,17 @@ const ProcessingReport = (props) => {
             partDetailsId:{groupIds: null, partDetailsId:planId},
             type:'preProcessing'
         })
-       // props.pdfGenerateQMreportInward(payload);
     }
     useEffect(() => {
         props.pdfGenerateQMreportInward(payload);
       }, [payload]);
+
+      const onQRPdf = (qirId) => {
+        setPayload({
+            qirId:qirId,
+            type:'QR'
+        })
+    }
 
     return (
         <>
