@@ -385,7 +385,6 @@ function* fetchQualityReportStageList1(req) {
         const fetchQRList = yield fetch(url, data);
         if (fetchQRList.status === 200) {
             const fetchQRListResponse = yield fetchQRList.json();
-            console.log('fetchQRListResponse', req.payload.stage === "inwardlist" ? fetchQRListResponse.content : fetchQRListResponse)
             yield put(fetchQualityReportStageListSuccess(req.payload.stage === "inwardlist" ? fetchQRListResponse.content : fetchQRListResponse));
         } else if (fetchQRList.status === 401) {
             yield put(userSignOutSuccess());
@@ -838,7 +837,7 @@ function* generateQMreportInwardPdf(action) {
                   },
                 body: JSON.stringify(action.payload.dcIds)
             });
-        } else if(action.payload.type === 'inwardQR'){
+        } else if(action.payload.type === 'QR'){
             pdfGenerate = yield fetch(`${baseUrl}api/pdf/qirpdf/${action.payload.qirId}`, {
                 method: 'POST',
                 headers: {

@@ -1445,7 +1445,7 @@ const CreateCuttingDetailsForm = (props) => {
       }
       visible={props.showCuttingModal}
       onOk={handleOk}
-      width={1020}
+      width={1300}
       onCancel={handleCancel}
       footer={getFooterButtons()}
     >
@@ -1695,6 +1695,9 @@ const CreateCuttingDetailsForm = (props) => {
                   </Row>
                 )}
 
+
+
+{/* left side form */}
                 <Row>
                   {!props.wip && (
                     <Col

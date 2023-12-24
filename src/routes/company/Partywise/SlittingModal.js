@@ -13,6 +13,7 @@ import {
   Radio,
   Select,
   Collapse,
+  Card,
 } from "antd";
 import React, { useEffect, useState } from "react";
 import SweetAlert from "react-bootstrap-sweetalert";
@@ -45,7 +46,7 @@ export const formItemLayout = {
   wrapperCol: {
     xs: { span: 24 },
     sm: { span: 24 },
-    md: { span: 16 },
+    md: { span: 24 },
   },
 };
 
@@ -54,10 +55,12 @@ export const formItemLayoutSlitting = {
     xs: { span: 24 },
     sm: { span: 24 },
     md: { span: 10 },
+  //  lg: { span: 10}
   },
   wrapperCol: {
     xs: { span: 24 },
     sm: { span: 24 },
+   // lg: { span: 10},
     md: { span: 24, offset: 2 },
   },
 };
@@ -608,7 +611,7 @@ const SlittingWidths = (props) => {
               )}
             </Form.Item>
 
-            <Form.Item label="Target Weight(kg)">
+            <Form.Item label="Target Weight(kg)1">
               {getFieldDecorator("targetWeight")(
                 <>
                   <Input
@@ -634,16 +637,16 @@ const SlittingWidths = (props) => {
               )}
             </Form.Item>
             <Row>
-              <Col lg={8} md={8} sm={12} xs={24}>
+              <Col lg={7} md={8} sm={12} xs={24}>
                 <label>Width</label>
               </Col>
-              <Col lg={6} md={6} sm={12} xs={24}>
+              <Col lg={7} md={6} sm={12} xs={24}>
                 <label>Nos</label>
               </Col>
-              <Col lg={8} md={8} sm={12} xs={24}>
+              <Col lg={7} md={8} sm={12} xs={24}>
                 <label>Weight</label>
               </Col>
-              <Col lg={1} md={1} sm={12} xs={24}>
+              <Col lg={3} md={1} sm={12} xs={24}>
                 {/* <label>Action</label> */}
               </Col>
             </Row>
@@ -651,7 +654,7 @@ const SlittingWidths = (props) => {
               {keys.map((k, index) => {
                 return (
                   <Row style={{marginLeft: 0}}>
-                    <Col lg={8} md={8} sm={12} xs={24}>
+                    <Col lg={7} md={8} sm={12} xs={24}>
                       <Form.Item name="widths">
                         {getFieldDecorator(`widths[${index}]`, {
                           rules: [
@@ -670,7 +673,7 @@ const SlittingWidths = (props) => {
                         )}
                       </Form.Item>
                     </Col>
-                    <Col lg={6} md={6} sm={12} xs={24}>
+                    <Col lg={7} md={6} sm={12} xs={24}>
                       <Form.Item name="nos">
                         {getFieldDecorator(`nos[${index}]`, {
                           rules: [
@@ -689,7 +692,7 @@ const SlittingWidths = (props) => {
                         )}
                       </Form.Item>
                     </Col>
-                    <Col lg={8} md={8} sm={12} xs={24}>
+                    <Col lg={7} md={8} sm={12} xs={24}>
                       <Form.Item name="weights">
                         {getFieldDecorator(`weights[${index}]`)(
                           <Input id="weights" disabled={true} />
@@ -698,8 +701,8 @@ const SlittingWidths = (props) => {
                     </Col>
                     <Col lg={1} md={1} sm={12} xs={24}>
                       <div
-                        style={{ height: "40px" }}
-                        className="gx-flex-row gx-align-items-center"
+                        // style={{ height: "40px" }}
+                        // className="gx-flex-row gx-align-items-center"
                       >
                         {keys.length - 1 > 0 ? (
                           <i
@@ -913,7 +916,7 @@ const CreateSlittingDetailsForm = (props) => {
       },
     },
     {
-      title: "Classification",
+      title: "Classification1",
       dataIndex: "packetClassification",
       render: (text, record, index) => {
         return (
@@ -980,9 +983,10 @@ const CreateSlittingDetailsForm = (props) => {
         ),
     },
   ];
+  debugger
   const columnsPlan = [
     {
-      title: "Serial No",
+      title: "Sr. No",
       key: "index",
       render: (text, record, index) => (page - 1) * 10 + index + 1,
     },
@@ -1005,6 +1009,33 @@ const CreateSlittingDetailsForm = (props) => {
       key: "plannedWeight",
     },
 
+    {
+      title: "Classification",
+      dataIndex: "packetClassification",
+      render: (text, record, index) => {
+        return (
+          <Select
+            disabled={props.unfinish}
+            dropdownMatchSelectWidth={false}
+            style={{ width: "100%" }}
+            value={
+              record?.packetClassification?.tagId ||
+              record?.packetClassification?.classificationId
+            }
+            onChange={onInputChange(
+              "packetClassification",
+              index,
+              record,
+              "select"
+            )}
+          >
+            {packetClassification?.map((item) => {
+              return <Option value={item.tagId}>{item.tagName}</Option>;
+            })}
+          </Select>
+        );
+      },
+    },
     {
       title: "End User Tags",
       dataIndex: "endUserTags.tagsName",
@@ -1066,11 +1097,11 @@ const CreateSlittingDetailsForm = (props) => {
       ),
     },
 
-    {
-      title: "Slitting Date",
-      render: () => moment(new Date()).format("DD/MM/YYYY"),
-      key: "instructionDate",
-    },
+    // {
+    //   title: "Slitting Date",
+    //   render: () => moment(new Date()).format("DD/MM/YYYY"),
+    //   key: "instructionDate",
+    // },
   ];
   const [tableData, setTableData] = useState(
     props.wip
@@ -1146,6 +1177,9 @@ const CreateSlittingDetailsForm = (props) => {
     setLength(key);
     // setCuts(data)
   };
+
+  console.log("DDD", props.packetClassification)
+  console.log("DDD", props.inward.plan.instruction)
 
   useEffect(() => {
     if (!props.inward.isDeleted) {
@@ -1609,7 +1643,7 @@ const CreateSlittingDetailsForm = (props) => {
       }
       visible={props.showSlittingModal}
       onOk={handleOk}
-      width={1200}
+      width={1300}
       onCancel={handleCancel}
       footer={
         props.slitCut
@@ -1621,6 +1655,7 @@ const CreateSlittingDetailsForm = (props) => {
           : getFooterButtons("Slitting")
       }
     >
+      <Card className="gx-card">
       <Tabs defaultActiveKey="1" tabPosition={mode}>
         <TabPane tab="Slitting Instruction" key="1">
           {props.wip ? (
@@ -1634,6 +1669,7 @@ const CreateSlittingDetailsForm = (props) => {
                   </Col>
                 </>
               )}
+              
               <Form {...formItemLayout} className="login-form gx-pt-4">
                 <Form.Item>
                   <SlittingWidthsForm
@@ -1736,8 +1772,12 @@ const CreateSlittingDetailsForm = (props) => {
           ) : (
             <Row>
               <Col
-                lg={12}
-                md={16}
+                // lg={10}
+                // md={14}
+                // sm={18}
+                // xs={18}
+                lg={8}
+                //md={16}
                 sm={24}
                 xs={24}
                 span={16}
@@ -1785,11 +1825,13 @@ const CreateSlittingDetailsForm = (props) => {
                   </Form.Item>
                 </Form>
               </Col>
-              <Col lg={12} md={12} sm={24} xs={24}>
+              <Col lg={16} md={12} sm={24} xs={24}>
                 {panelList.length > 0 &&
                   panelList.map((item, index) => (
                     <Collapse accordion>
-                      <Panel header={index + 1} key="1">
+                      {/* <Panel header={index + 1} key="1"> */}
+                      {/* <Panel header={`${index + 1} ${String.fromCharCode(160)} Slitting Date: ${item.instructionDate} ${String.fromCharCode(160)} Yield loss ratio: ${item.yieldLossRatio}`} key={index.toString()}> */}
+                      <Panel header={`${index + 1} ${String.fromCharCode(160)} Slitting Date: 21/12/2023 ${String.fromCharCode(160)} Yield loss ratio: 50`} key={index.toString()}>
                         <Table
                           className="gx-table-responsive"
                           columns={props.wip ? columns : columnsPlan}
@@ -1805,7 +1847,8 @@ const CreateSlittingDetailsForm = (props) => {
                       </Panel>
                     </Collapse>
                   ))}
-
+                <Row style={{paddingLeft: 16}}>
+                  <Col lg={11} md={12} sm={24} xs={24}>
                 <Form.Item label="Total weight(kg)">
                   {getFieldDecorator("tweight", {
                     rules: [{ required: false }],
@@ -1820,6 +1863,24 @@ const CreateSlittingDetailsForm = (props) => {
                     </>
                   )}
                 </Form.Item>
+                </Col>
+                <Col lg={12} md={12} sm={24} xs={24}>
+                <Form.Item label="Total yield loss ratio(kg)">
+                  {getFieldDecorator("tweight", {
+                    rules: [{ required: false }],
+                  })(
+                    <>
+                      <Input
+                        id="tweight"
+                        disabled={true}
+                        value={tweight}
+                        name="tweight"
+                      />
+                    </>
+                  )}
+                </Form.Item> 
+                </Col>
+                </Row>
               </Col>
             </Row>
           )}
@@ -1867,7 +1928,37 @@ const CreateSlittingDetailsForm = (props) => {
             </Row>
           </TabPane>
         )}
+        {!props.wip && (
+          <TabPane tab="Customer Yield Loss Reference" key="3">
+            <Row>
+              <Col lg={12} md={12} sm={24} xs={24}>
+                <p>Coil number : {props.coil.coilNumber}</p>
+                <p>Customer Name : {props.coil.party.partyName}</p>
+                {props.coil.customerBatchId && (
+                  <p>Customer Batch No:{props.coil.customerBatchId}</p>
+                )}
+                <p>Material Desc: {props.coil.material.description}</p>
+                <p>Grade: {props.coil.materialGrade.gradeName}</p>
+              </Col>
+              <Col lg={12} md={12} sm={24} xs={24}>
+                <p>
+                  Inward specs: {props.coil.fThickness}X{props.coil.fWidth}X
+                  {props.coil.fLength}/{props.coil.fQuantity}
+                </p>
+                <p>Available Length(mm): {props.coil.availableLength}</p>
+                <p>Available Weight(kg) : {props.coil.fpresent}</p>
+                <p>
+                  Available Width (mm) :{" "}
+                  {props.coil.fpresent > 0
+                    ? props.coilDetails.fWidth || props.coilDetails.plannedWidth
+                    : 0}
+                </p>
+              </Col>
+            </Row>
+          </TabPane>
+        )}
       </Tabs>
+      </Card>
     </Modal>
     </>
   );
@@ -1877,6 +1968,7 @@ const mapStateToProps = (state) => ({
   party: state.party,
   inward: state.inward,
   processTags: state.packetClassification?.processTags,
+ // packetClassification: state.packetClassification
 });
 
 const SlittingDetailsForm = Form.create({
