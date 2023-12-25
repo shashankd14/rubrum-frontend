@@ -36,7 +36,7 @@ const ProcessingReportTemplate = (props) => {
     },
     3: {
       "id": 3,
-      "type": "packingRequirements",
+      "type": "processingReport3",
       "value": "Yes",
       "fileName": "",
       "fileList": []
@@ -51,6 +51,27 @@ const ProcessingReportTemplate = (props) => {
     5: {
       "id": 5,
       "type": "customerApproval",
+      "value": "",
+      "fileName": "",
+      "fileList": []
+    },
+    6: {
+      "id": 6,
+      "type": "processingReport1",
+      "value": "",
+      "fileName": "",
+      "fileList": []
+    },
+    7: {
+      "id": 7,
+      "type": "processingReport2",
+      "value": "",
+      "fileName": "",
+      "fileList": []
+    },
+    8: {
+      "id": 8,
+      "type": "processingReport4",
       "value": "",
       "fileName": "",
       "fileList": []
@@ -183,7 +204,7 @@ const handleClick = () => {
             </div>
           </Col>
         </Row>
-        <Row>
+        {/* <Row>
           <Col span={8}>
             <div style={{ display: 'grid', marginTop: 45 }}>
               <label>Packing Requirements</label>
@@ -193,7 +214,7 @@ const handleClick = () => {
               </Radio.Group>
             </div>
           </Col>
-        </Row>
+        </Row> */}
 
         <Row>
           <Col span={8}>
@@ -230,7 +251,7 @@ const handleClick = () => {
                   height={50}
                   beforeUpload={() => false}
                   action=''
-                  onChange={(e) => onFilesChange(1, e)}
+                  onChange={(e) => onFilesChange(6, e)}
                 // fileList={templateData[1].fileList}
                 >
                   <p>
@@ -243,7 +264,7 @@ const handleClick = () => {
                 height={50}
                 beforeUpload={() => false}
                 action=''
-                onChange={(e) => onFilesChange(1, e)}
+                onChange={(e) => onFilesChange(6, e)}
               // fileList={templateData[1].fileList}
               >
                 <p>
@@ -264,7 +285,7 @@ const handleClick = () => {
                   height={50}
                   beforeUpload={() => false}
                   action=''
-                  onChange={(e) => onFilesChange(2, e)}
+                  onChange={(e) => onFilesChange(7, e)}
                 // fileList={templateData[1].fileList}
                 >
                   <p>
@@ -277,7 +298,7 @@ const handleClick = () => {
                 height={50}
                 beforeUpload={() => false}
                 action=''
-                onChange={(e) => onFilesChange(2, e)}
+                onChange={(e) => onFilesChange(7, e)}
               // fileList={templateData[1].fileList}
               >
                 <p>
@@ -332,7 +353,7 @@ const handleClick = () => {
                   height={50}
                   beforeUpload={() => false}
                   action=''
-                  onChange={(e) => onFilesChange(4, e)}
+                  onChange={(e) => onFilesChange(8, e)}
                 // fileList={templateData[1].fileList}
                 >
                   <p>
@@ -345,7 +366,7 @@ const handleClick = () => {
                 height={50}
                 beforeUpload={() => false}
                 action=''
-                onChange={(e) => onFilesChange(4, e)}
+                onChange={(e) => onFilesChange(8, e)}
               // fileList={templateData[1].fileList}
               >
                 <p>
