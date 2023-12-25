@@ -112,11 +112,14 @@ useEffect(() => {
     setTemplateData({ ...templateData })
   }
 
-  const [comment, setComment] = useState('');
+  const [comments, setComment] = useState('');
     const handleCommentChange = (e) => {
-        setComment(e.target.value);
-        props.onCommentChange(e.target.value);
+            setComment(e.target.value);
+            props.onCommentChange(e.target.value);
     };
+    useEffect(() => {
+        setComment(props.templateDetails.comments)
+      }, [props.templateDetails.comments]);
 
   const onOptionChange = (type, value) => {
     console.log(type, value)
@@ -322,11 +325,11 @@ useEffect(() => {
               <Col span={16}>
                 <div style={{ display: 'grid', marginTop: 45 }}>
                   <Input
-                    id="comment"
+                    id="comments"
                     onChange={handleCommentChange}
-                    value={comment}
+                    value={comments}
                     required
-                   // disabled={isDisabled}
+                    disabled={isDisabled}
                   /> 
                 </div>
               </Col>

@@ -83,11 +83,10 @@ const CreateReport = (props) => {
             
     }, [props.location.state, props.inward.inwardList])
 
-    const [comment, setComment] = useState('');
+    const [comments, setComment] = useState('');
 
-    const handleCommentChange = (comment) => {
-        setComment(comment);
-        console.log("cc", comment)
+    const handleCommentChange = (comments) => {
+        setComment(comments);
     };
 
     useEffect(() => {
@@ -163,7 +162,7 @@ const CreateReport = (props) => {
         request.append("planId", props.location.state.selectedItemForQr.planId);
         request.append("deliveryChalanNo", props.location.state.selectedItemForQr.deliveryChalanNo);
         request.append("inwardId", props.location.state.selectedItemForQr.inwardEntryId);
-        request.append("comment", comment);
+        request.append("comments", comments);
         if (action == 'create'){
             props.saveQualityReport(request);
             props.history.push('/company/quality/reports')
