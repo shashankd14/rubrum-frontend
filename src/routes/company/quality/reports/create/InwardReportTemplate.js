@@ -71,12 +71,14 @@ const InwardReportTemplate = (props) => {
         console.log(val)
         setTemplateData(val)
     }
-
-    const [comment, setComment] = useState('');
+    const [comments, setComment] = useState('');
     const handleCommentChange = (e) => {
-        setComment(e.target.value);
-        props.onCommentChange(e.target.value);
+            setComment(e.target.value);
+            props.onCommentChange(e.target.value);
     };
+    useEffect(() => {
+        setComment(props.templateDetails.comments)
+      }, [props.templateDetails.comments]);
     const onFilesChange = (type, file) => {
         templateData[type].fileList = file.fileList.slice(-1)
         templateData[type].fileName = templateData[type].fileList[0].name;
@@ -366,11 +368,11 @@ const InwardReportTemplate = (props) => {
                     <Col span={16}>
                         <div style={{ display: 'grid', marginTop: 45 }}>
                             <Input
-                                id="comment"
+                                id="comments"
                                 onChange={handleCommentChange}
-                                value={comment}
+                                value={comments}
                                 required
-                               // disabled={isDisabled}
+                                disabled={isDisabled}
                             /> 
                         </div>
                     </Col>
