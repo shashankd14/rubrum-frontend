@@ -132,7 +132,7 @@ const CreateReport = (props) => {
         // }
         let request = new FormData();
         const templateDetails = []
-        const planDetails = [{"processType":"cutting","customerName":"Adhya Steels","operation":"","processDate":"","batchNumber":"Batch1","motherCoilNumber":"","aspenCoilNumber":"AS27-12","grade":"AU14","thickness":5,"width":1250,"weight":25000,"physicalAppearance":"","reportDate":"","finalJudgement":"","qualityEngineer":"","qualityHead":"","cutInspectionData":[{"key":0,"thickness":5,"plannedLength":200,"plannedWidth":1250,"actualThickness":"5","actualWidth":"1250","actualLength":"200","burrHeight":"1","diagonalDifference":"1","remarks":"ok"}],"toleranceInspectionData":[{"toleranceThicknessFrom":"1","toleranceThicknessTo":"1","toleranceWidthFrom":"1","toleranceWidthTo":"1","toleranceLengthFrom":"1","toleranceLengthTo":"1","toleranceBurrHeightFrom":"1","toleranceBurrHeightTo":"1","toleranceDiagonalDifferenceFrom":"1","toleranceDiagonalDifferenceTo":"1"}]}]
+        const planDetails = []
         Object.keys(data).forEach(key => {
             const dataDetail = data[key];
             if (dataDetail?.fileList?.length > 0 && dataDetail.fileList[0]) {

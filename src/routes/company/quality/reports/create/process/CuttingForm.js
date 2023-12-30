@@ -321,7 +321,6 @@ const CuttingForm = (props) => {
         }));
       }, [cutInspectionData, toleranceInspectionData]);
     const saveForm = () => {
-        debugger
         cutFormData['cutInspectionData'] = cutInspectionData
         cutFormData['toleranceInspectionData'] = toleranceInspectionData
         //cutFormData['toleranceDataSource'] = toleranceDataSource

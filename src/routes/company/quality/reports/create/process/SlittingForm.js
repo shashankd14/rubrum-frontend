@@ -88,7 +88,6 @@ const SlittingForm = (props) => {
         toleranceBurrHeightFrom: toleranceBurrHeightFrom,
         toleranceBurrHeightTo: toleranceBurrHeightTo,
       }];
-      debugger
       setFinalDataSource(mappedData);
       setSlitDataSource(mappedData);
       setToleranceDataSource(toleranceData);
@@ -106,7 +105,6 @@ const SlittingForm = (props) => {
     if(props.templateDetails.operation == "qualityReportById"){
       var qirId = props.templateDetails.data.qirId
       props.getQualityReportById(qirId)
-      debugger
       const planDetails = JSON.parse(props.templateDetails.data.planDetails);
       const slitData = planDetails[1]?.slitInspectionData;
       if (slitData) {
