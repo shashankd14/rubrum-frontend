@@ -1,8 +1,9 @@
 import { Button, Card, Col, DatePicker, Input, Row } from 'antd'
 import TextArea from 'antd/lib/input/TextArea';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import EditableTable from '../../../../../../util/EditableTable';
-
+import { connect } from 'react-redux';
+import {getQualityTemplateById } from '../../../../../../appRedux/actions';
 
 const CuttingForm = (props) => {
 
@@ -31,6 +32,37 @@ const CuttingForm = (props) => {
     }]);
     const [cutInspectionData, setCutInspectionData] = useState([])
     const [toleranceInspectionData, setToleranceInspectionData] = useState([])
+
+    //Code for view cut tolerance table
+    const viewCutTolerance = () => {
+        if(props.templateDetails.operation == "templateById"){
+            debugger
+        var templateId = props.templateDetails.data.templateId
+        props.getQualityTemplateById(templateId)
+             const cutDetails = JSON.parse(props.templateDetails.data.templateDetails);
+          const toleranceDataTable = cutDetails[5]?.value.toleranceInspectionData;
+          const toleranceData = toleranceDataTable.map((item, i) => ({
+            toleranceThicknessFrom: item.toleranceThicknessFrom,
+            toleranceThicknessTo: item.toleranceThicknessTo,
+            toleranceWidthFrom: item.toleranceWidthFrom,
+            toleranceWidthTo: item.toleranceWidthTo,
+            toleranceLengthFrom: item.toleranceLengthFrom,
+            toleranceLengthTo: item.toleranceLengthTo,
+            toleranceBurrHeightFrom: item.toleranceBurrHeightFrom,
+            toleranceBurrHeightTo: item.toleranceBurrHeightTo,
+            toleranceDiagonalDifferenceFrom: item.toleranceDiagonalDifferenceFrom,
+            toleranceDiagonalDifferenceTo: item.toleranceDiagonalDifferenceTo,
+        }));
+          setToleranceDataSource(toleranceData);
+          setToleranceInspectionData(toleranceData);
+        }
+      }
+      useEffect(() => {
+        if(props.templateDetails.operation === "templateById"){
+            viewCutTolerance()
+        }
+      }, [props.templateDetails.operation]);
+
     const [cutFormData, setCutFormData] = useState({
         processType: "cutting",
         customerName: "",
@@ -329,5 +361,10 @@ const CuttingForm = (props) => {
         </div>
     )
 }
-
-export default CuttingForm
+const mapStateToProps = (state) => ({
+    templateDetails: state.quality,
+  });
+  
+  export default connect(mapStateToProps, {
+    getQualityTemplateById
+  })(CuttingForm);

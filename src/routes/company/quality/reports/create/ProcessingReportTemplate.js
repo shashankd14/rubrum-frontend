@@ -136,6 +136,11 @@ const ProcessingReportTemplate = (props) => {
   }
 
   const updateFormData = (formData) => {
+    // templateData['formData']['value'] = formData;
+    // setShowCreateModal(false);
+    if (!templateData['formData']) {
+      templateData['formData'] = {};
+    }
     templateData['formData']['value'] = formData;
     setShowCreateModal(false);
   }
