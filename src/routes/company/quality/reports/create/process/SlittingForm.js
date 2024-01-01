@@ -11,6 +11,7 @@ import {
   fetchQualityReportList,
   fetchQualityReportStageList,
   getCoilPlanDetails,
+  getQualityReportById
 } from '../../../../../../appRedux/actions';
 import { useLocation } from 'react-router-dom/cjs/react-router-dom.min';
 
@@ -66,7 +67,8 @@ const SlittingForm = (props) => {
   const [slitDataSource, setSlitDataSource] = useState([]);
   const [finalDataSource, setFinalDataSource] = useState([]);
   const [toleranceDataSource, setToleranceDataSource] = useState([]);
-  useEffect(() => {
+  //save plan details
+  const saveSlitData = () =>{
     if (props.templateDetails.packetDetails) {
       const mappedData = props.templateDetails.packetDetails.map((item, i) => ({
         key: i,
@@ -91,7 +93,50 @@ const SlittingForm = (props) => {
       setToleranceDataSource(toleranceData);
       setToleranceInspectionData(toleranceData);
     }
-  }, [props.templateDetails.packetDetails]);
+  }
+  useEffect(()=>{
+    if (props.templateDetails.packetDetails && props.templateDetails.operation !== "qualityReportById") {
+        saveSlitData()
+    }
+  },[props.templateDetails.packetDetails, props.templateDetails.operation])
+
+  //view plan Details
+  const viewSlitData = () =>{
+    if(props.templateDetails.operation == "qualityReportById"){
+      var qirId = props.templateDetails.data.qirId
+      props.getQualityReportById(qirId)
+      const planDetails = JSON.parse(props.templateDetails.data.planDetails);
+      const slitData = planDetails[1]?.slitInspectionData;
+      if (slitData) {
+      const mappedData = slitData.map((item, i) => ({
+        key: i,
+        instructionId: item.instructionId,
+        plannedWidth: item.plannedWidth,
+        actualThickness: item.actualThickness,
+        actualWidth: item.actualWidth,
+        burrHeight: item.burrHeight,
+        remarks: item.burrHeight
+      }));
+      const toleranceDataTable = planDetails[1]?.toleranceInspectionData;
+          const toleranceData = toleranceDataTable.map((item, i) => ({
+        toleranceThicknessFrom: item.toleranceThicknessFrom,
+        toleranceThicknessTo: item.toleranceThicknessTo,
+        toleranceSlitSizeFrom: item.toleranceSlitSizeFrom,
+        toleranceSlitSizeTo: item.toleranceSlitSizeTo,
+        toleranceBurrHeightFrom: item.toleranceBurrHeightFrom,
+        toleranceBurrHeightTo: item.toleranceBurrHeightTo,
+      }));
+      setFinalDataSource(mappedData);
+      setSlitDataSource(mappedData);
+      setToleranceDataSource(toleranceData);
+      setToleranceInspectionData(toleranceData);
+    }}
+  }
+  useEffect(() => {
+    if(props.templateDetails.operation === "qualityReportById"){
+        viewSlitData()
+    }
+  }, [props.templateDetails.operation]);
 
   const [isDisabled, setIsDisabled] = useState(props.isDisabled);
 
@@ -518,4 +563,5 @@ export default connect(mapStateToProps, {
   fetchQualityReportList,
   fetchQualityReportStageList,
   getCoilPlanDetails,
+  getQualityReportById
 })(SlittingForm);

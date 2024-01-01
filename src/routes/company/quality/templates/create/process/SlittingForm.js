@@ -1,10 +1,11 @@
 import { Button, Card, Col, DatePicker, Input, Popconfirm, Row } from 'antd'
 import TextArea from 'antd/lib/input/TextArea';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux';
 import EditableTable from '../../../../../../util/EditableTable';
 import { 
     updateTemplateFormData, 
+    getQualityTemplateById
  } from "../../../../../../appRedux/actions"
 
 
@@ -63,6 +64,32 @@ const SlittingForm = (props) => {
         toleranceBurrHeightFrom: "",
         toleranceBurrHeightTo: "",
     }]);
+
+    //Code for view slit tolerance table
+    const viewSlitTolerance = () => {
+        if(props.templateDetails.operation == "templateById"){
+            debugger
+        var templateId = props.templateDetails.data.templateId
+        props.getQualityTemplateById(templateId)
+             const slitDetails = JSON.parse(props.templateDetails.data.templateDetails);
+          const toleranceDataTable = slitDetails[5]?.value.toleranceInspectionData;
+          const toleranceData = toleranceDataTable.map((item, i) => ({
+            toleranceThicknessFrom: item.toleranceThicknessFrom,
+            toleranceThicknessTo: item.toleranceThicknessTo,
+            toleranceSlitSizeFrom: item.toleranceSlitSizeFrom,
+            toleranceSlitSizeTo: item.toleranceSlitSizeTo,
+            toleranceBurrHeightFrom: item.toleranceBurrHeightFrom,
+            toleranceBurrHeightTo: item.toleranceBurrHeightTo
+        }));
+          setToleranceDataSourceSlit(toleranceData);
+          setToleranceInspectionData(toleranceData);
+        }
+      }
+      useEffect(() => {
+        if(props.templateDetails.operation === "templateById"){
+            viewSlitTolerance()
+        }
+      }, [props.templateDetails.operation]);
 
     const gridCardStyle = {
         width: '50%',
@@ -256,7 +283,7 @@ const SlittingForm = (props) => {
         slitFormData['finalInspectionData'] = finalInspectionData
         slitFormData['toleranceInspectionData'] = toleranceInspectionData
         props.onSave(slitFormData)
-        // props.updateTemplateFormData({action: 'slit', formData: slitFormData})
+        props.updateTemplateFormData({action: 'slit', formData: slitFormData})
     }
 
     const handleInspectionTableChange = (tableData) => {
@@ -404,4 +431,5 @@ const mapStateToProps = state => ({
 
 export default connect(mapStateToProps, {
     updateTemplateFormData,
+    getQualityTemplateById
 })(SlittingForm);

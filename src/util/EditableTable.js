@@ -160,10 +160,10 @@ class EditableTable extends React.Component {
             this.state.dataSource.length >= 1 ? (
               <div>
                 <a onClick={() => this.handleEdit(record.key)}>Edit</a>
-                <Divider type="vertical" />
-                <Popconfirm title="Sure to delete?" onConfirm={() => this.handleDelete(record.key)}>
+               {/* <Divider type="vertical" />
+                 <Popconfirm title="Sure to delete?" onConfirm={() => this.handleDelete(record.key)}>
                     <a>Delete</a>
-                </Popconfirm>
+                </Popconfirm> */}
                 </div>
             ) : null,
     })

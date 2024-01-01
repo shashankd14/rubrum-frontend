@@ -68,6 +68,16 @@ const PreProcessingReport = (props) => {
         }
       };
 
+    // Filter out rows with duplicate planIds
+    const uniquePlanIds = new Set();
+        const filteredDataSource = filteredPreProcessingList.filter((item) => {
+        if (!uniquePlanIds.has(item.planId)) {
+            uniquePlanIds.add(item.planId);
+            return true;
+        }
+        return false;
+    });
+
     const columns = [
         {
             title: "Plan ID",
@@ -346,7 +356,8 @@ const PreProcessingReport = (props) => {
                 {filteredPreProcessingList && filteredPreProcessingList.length > 0 && <Table
                     className="gx-table-responsive"
                     columns={columns}
-                    dataSource={filteredPreProcessingList}
+                   // dataSource={filteredPreProcessingList}
+                    dataSource={filteredDataSource}
                     pagination={{
                         pageSize: 15,
                         onChange: (changePage) => {

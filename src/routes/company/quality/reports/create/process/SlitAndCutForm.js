@@ -1,6 +1,6 @@
 import { Button, Card, Col, DatePicker, Input, Row } from 'antd'
 import TextArea from 'antd/lib/input/TextArea';
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import EditableTable from '../../../../../../util/EditableTable';
 import moment from 'moment';
 import { connect } from 'react-redux';
@@ -11,6 +11,7 @@ import {
     fetchQualityReportList,
     fetchQualityReportStageList,
     getCoilPlanDetails,
+    getQualityReportById
   } from '../../../../../../appRedux/actions';
 
 const SlitAndCutForm = (props) => {
@@ -39,16 +40,16 @@ const SlitAndCutForm = (props) => {
     const [toleranceDataSource, setToleranceDataSource] = useState([]);
 
     //fetch tolerance data from QT-cut
-    var toleranceThicknessFrom = 0;
-    var toleranceThicknessTo = 0;
-    var toleranceWidthFrom = 0;
-    var toleranceWidthTo = 0;
-    var toleranceLengthFrom = 0;
-    var toleranceLengthTo = 0;
-    var toleranceBurrHeightFrom = 0;
-    var toleranceBurrHeightTo = 0;
-    var toleranceDiagonalDifferenceFrom = 0;
-    var toleranceDiagonalDifferenceTo = 0;
+    var toleranceThicknessFromCut = 0;
+    var toleranceThicknessToCut = 0;
+    var toleranceWidthFromCut = 0;
+    var toleranceWidthToCut = 0;
+    var toleranceLengthFromCut = 0;
+    var toleranceLengthToCut = 0;
+    var toleranceBurrHeightFromCut = 0;
+    var toleranceBurrHeightToCut = 0;
+    var toleranceDiagonalDifferenceFromCut = 0;
+    var toleranceDiagonalDifferenceToCut = 0;
     
     const templateDataCut = JSON.parse(
       props?.templateDetails?.data?.templateDetails
@@ -57,16 +58,16 @@ const SlitAndCutForm = (props) => {
     if (formDataObject) {
       const formData = formDataObjectCut.value;
       const toleranceInspectionData = formData.toleranceInspectionData;
-      toleranceThicknessFrom = toleranceInspectionData[0].toleranceThicknessFrom; 
-      toleranceThicknessTo = toleranceInspectionData[0].toleranceThicknessTo;
-      toleranceWidthFrom = toleranceInspectionData[0].toleranceWidthFrom;
-      toleranceWidthTo = toleranceInspectionData[0].toleranceWidthTo;
-      toleranceBurrHeightFrom = toleranceInspectionData[0].toleranceBurrHeightFrom; 
-      toleranceBurrHeightTo = toleranceInspectionData[0].toleranceBurrHeightTo;
-      toleranceLengthFrom = toleranceInspectionData[0].toleranceLengthFrom;
-      toleranceLengthTo = toleranceInspectionData[0].toleranceLengthTo;
-      toleranceDiagonalDifferenceFrom = toleranceInspectionData[0].toleranceDiagonalDifferenceFrom; 
-      toleranceDiagonalDifferenceTo = toleranceInspectionData[0].toleranceDiagonalDifferenceTo;
+      toleranceThicknessFromCut = toleranceInspectionData[0].toleranceThicknessFrom; 
+      toleranceThicknessToCut = toleranceInspectionData[0].toleranceThicknessTo;
+      toleranceWidthFromCut = toleranceInspectionData[0].toleranceWidthFrom;
+      toleranceWidthToCut = toleranceInspectionData[0].toleranceWidthTo;
+      toleranceBurrHeightFromCut = toleranceInspectionData[0].toleranceBurrHeightFrom; 
+      toleranceBurrHeightToCut = toleranceInspectionData[0].toleranceBurrHeightTo;
+      toleranceLengthFromCut = toleranceInspectionData[0].toleranceLengthFrom;
+      toleranceLengthToCut = toleranceInspectionData[0].toleranceLengthTo;
+      toleranceDiagonalDifferenceFromCut = toleranceInspectionData[0].toleranceDiagonalDifferenceFrom; 
+      toleranceDiagonalDifferenceToCut = toleranceInspectionData[0].toleranceDiagonalDifferenceTo;
     } 
   //fetch tolerance data from QT-Slit
   var toleranceThicknessFromSlit = 0;
@@ -89,15 +90,13 @@ const SlitAndCutForm = (props) => {
     toleranceBurrHeightFromSlit = toleranceInspectionData[0].toleranceBurrHeightFrom; 
     toleranceBurrHeightToSlit = toleranceInspectionData[0].toleranceBurrHeightTo;
   } 
-//Slit table
-  useEffect(() => {
+// save Slit table
+  const saveSlitData = () =>{
     const packetDetails = props.templateDetails?.packetDetails
       if (packetDetails) {
         const slittingProcess = packetDetails.filter((process) => process.process.processName === "SLITTING");
         if (slittingProcess.length > 0){
             const mappedData = slittingProcess.map((item, i) => ({
-    // if (props.templateDetails.packetDetails) {
-    //   const mappedData = props.templateDetails.packetDetails.map((item, i) => ({
         key: i,
         instructionId: item.instructionId,
         plannedWidth: item.plannedWidth,
@@ -119,11 +118,9 @@ const SlitAndCutForm = (props) => {
       setToleranceDataSourceSlit(toleranceData);
       setToleranceInspectionDataSlit(toleranceData);
     }}
-  }, [props.templateDetails.packetDetails]);
-
-  const [dataSource, setDataSource] = useState([]);
-  //Cut table
-  useEffect(() => {
+  }
+  //save cut table
+  const saveCutData = () =>{
     const packetDetails = props.templateDetails?.packetDetails
       if (packetDetails) {
         const slitAndCutProcess = packetDetails.filter((process) => process.process.processName === "SLIT AND CUT");
@@ -141,23 +138,107 @@ const SlitAndCutForm = (props) => {
           remarks: ""
         }));
         const toleranceData = [{
-            toleranceThicknessFrom: toleranceThicknessFrom,
-            toleranceThicknessTo: toleranceThicknessTo,
-            toleranceWidthFrom: toleranceWidthFrom,
-            toleranceWidthTo: toleranceWidthTo,
-            toleranceLengthFrom: toleranceLengthFrom,
-            toleranceLengthTo: toleranceLengthTo,
-            toleranceBurrHeightFrom: toleranceBurrHeightFrom,
-            toleranceBurrHeightTo: toleranceBurrHeightTo,
-            toleranceDiagonalDifferenceFrom: toleranceDiagonalDifferenceFrom,
-            toleranceDiagonalDifferenceTo: toleranceDiagonalDifferenceTo,
+            toleranceThicknessFrom: toleranceThicknessFromCut,
+            toleranceThicknessTo: toleranceThicknessToCut,
+            toleranceWidthFrom: toleranceWidthFromCut,
+            toleranceWidthTo: toleranceWidthToCut,
+            toleranceLengthFrom: toleranceLengthFromCut,
+            toleranceLengthTo: toleranceLengthToCut,
+            toleranceBurrHeightFrom: toleranceBurrHeightFromCut,
+            toleranceBurrHeightTo: toleranceBurrHeightToCut,
+            toleranceDiagonalDifferenceFrom: toleranceDiagonalDifferenceFromCut,
+            toleranceDiagonalDifferenceTo: toleranceDiagonalDifferenceToCut,
         }]
-        setDataSource(mappedData);
+            setDataSource(mappedData);
+            setToleranceInspectionData(toleranceData);
+            setToleranceDataSource(toleranceData);
+      }}
+  }
+  useEffect(()=>{
+    if (props.templateDetails.packetDetails && props.templateDetails.operation !== "qualityReportById") {
+        saveSlitData();
+        saveCutData();
+    }
+  },[props.templateDetails.packetDetails, props.templateDetails.operation])
+ 
+  //View slitting table
+  const viewSlitData = () =>{
+    if(props.templateDetails.operation == "qualityReportById"){
+        var qirId = props.templateDetails.data.qirId
+        props.getQualityReportById(qirId)
+        const planDetails = JSON.parse(props.templateDetails.data.planDetails);
+        const slitData = planDetails[1]?.slitInspectionData;
+        if (slitData) {
+            const mappedData = slitData.map((item, i) => ({
+        key: i,
+        instructionId: item.instructionId,
+        plannedWidth: item.plannedWidth,
+        actualThickness:item.actualThickness,
+        actualWidth: item.actualWidth,
+        burrHeight: item.burrHeight,
+        remarks: item.remarks
+      }));
+      const toleranceDataTable = planDetails[1]?.toleranceInspectionDataSlit;
+      const toleranceData = toleranceDataTable.map((item, i) => ({
+        toleranceThicknessFrom: item.toleranceThicknessFrom,
+        toleranceThicknessTo: item.toleranceThicknessTo,
+        toleranceSlitSizeFrom: item.toleranceSlitSizeFrom,
+        toleranceSlitSizeTo: item.toleranceSlitSizeTo,
+        toleranceBurrHeightFrom: item.toleranceBurrHeightFrom,
+        toleranceBurrHeightTo: item.toleranceBurrHeightTo
+      }));
+      setFinalDataSource(mappedData);
+      setSlitDataSource(mappedData);
+      setToleranceDataSourceSlit(toleranceData);
+      setToleranceInspectionDataSlit(toleranceData);
+    }}
+  }
+  //view cut table
+  const viewCutData = () =>{
+    if(props.templateDetails.operation == "qualityReportById"){
+        var qirId = props.templateDetails.data.qirId
+        props.getQualityReportById(qirId)
+        const planDetails = JSON.parse(props.templateDetails.data.planDetails);
+        const cutData = planDetails[1]?.cutInspectionData;
+        if (cutData){
+            const mappedDataCut = cutData.map((item, i) => ({
+            key: i,
+          thickness:item.thickness,
+          plannedLength: item.plannedLength,
+          plannedWidth: item.plannedWidth,
+          actualThickness: item.actualThickness,
+          actualWidth: item.actualWidth,
+          actualLength: item.actualLength,
+          burrHeight: item.burrHeight,
+          diagonalDifference: item.diagonalDifference,
+          remarks: item.remarks
+        }));
+        const toleranceDataTable = planDetails[1]?.toleranceInspectionData;
+        const toleranceData = toleranceDataTable.map((item, i) => ({
+            toleranceThicknessFrom: item.toleranceThicknessFrom,
+            toleranceThicknessTo: item.toleranceThicknessTo,
+            toleranceWidthFrom: item.toleranceWidthFrom,
+            toleranceWidthTo: item.toleranceWidthTo,
+            toleranceLengthFrom: item.toleranceLengthFrom,
+            toleranceLengthTo: item.toleranceLengthTo,
+            toleranceBurrHeightFrom: item.toleranceBurrHeightFrom,
+            toleranceBurrHeightTo: item.toleranceBurrHeightTo,
+            toleranceDiagonalDifferenceFrom: item.toleranceDiagonalDifferenceFrom,
+            toleranceDiagonalDifferenceTo: item.toleranceDiagonalDifferenceTo,
+        }));
+        setDataSource(mappedDataCut);
         setToleranceDataSource(toleranceData);
         setToleranceInspectionData(toleranceData);
       }}
-    }, [props.templateDetails.packetDetails]);
+  }
+  useEffect(() => {
+    if(props.templateDetails.operation === "qualityReportById"){
+        viewSlitData();
+        viewCutData();
+    }
+  }, [props.templateDetails.operation]);
 
+    const [dataSource, setDataSource] = useState([]);
     const [slitInspectionData, setSlitInspectionData] = useState([])
     const [cutInspectionData, setCutInspectionData] = useState([])
     const [finalInspectionData, setFinalInspectionData] = useState([])
@@ -674,4 +755,5 @@ const mapStateToProps = (state) => ({
     fetchQualityReportList,
     fetchQualityReportStageList,
     getCoilPlanDetails,
+    getQualityReportById
   })(SlitAndCutForm);

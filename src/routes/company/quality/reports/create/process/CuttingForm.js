@@ -11,6 +11,7 @@ import {
     fetchQualityReportList,
     fetchQualityReportStageList,
     getCoilPlanDetails,
+    getQualityReportById
   } from '../../../../../../appRedux/actions';
 
 const CuttingForm = (props) => {
@@ -46,39 +47,87 @@ const CuttingForm = (props) => {
     const [dataSource, setDataSource] = useState([]);
     const [toleranceDataSource, setToleranceDataSource] = useState([]);
     
-    useEffect(() => {
+    const saveCutData = () => {
         if (props.templateDetails.packetDetails) {
-          const mappedData = props.templateDetails.packetDetails.map((item, i) => ({
+            const mappedData = props.templateDetails.packetDetails.map((item, i) => ({
+              key: i,
+              thickness:props.inward?.plan?.fThickness,
+              plannedLength: item.plannedLength,
+              plannedWidth: item.plannedWidth,
+              actualThickness: "",
+              actualWidth: "",
+              actualLength: "",
+              burrHeight: "",
+              diagonalDifference: "",
+              remarks: ""
+            }));
+            const toleranceData = [{
+              toleranceThicknessFrom: toleranceThicknessFrom,
+              toleranceThicknessTo: toleranceThicknessTo,
+              toleranceWidthFrom: toleranceWidthFrom,
+              toleranceWidthTo: toleranceWidthTo,
+              toleranceLengthFrom: toleranceLengthFrom,
+              toleranceLengthTo: toleranceLengthTo,
+              toleranceBurrHeightFrom: toleranceBurrHeightFrom,
+              toleranceBurrHeightTo: toleranceBurrHeightTo,
+              toleranceDiagonalDifferenceFrom: toleranceDiagonalDifferenceFrom,
+              toleranceDiagonalDifferenceTo: toleranceDiagonalDifferenceTo,
+            }]
+            setDataSource(mappedData);
+            setToleranceDataSource(toleranceData);
+            setToleranceInspectionData(toleranceData);
+          }
+    }
+   
+      useEffect(()=>{
+        if (props.templateDetails.packetDetails && props.templateDetails.operation !== "qualityReportById") {
+            saveCutData()
+        }
+      },[props.templateDetails.packetDetails, props.templateDetails.operation])
+
+      //Code for view plan details
+      const viewCutData = () => {
+        if(props.templateDetails.operation == "qualityReportById"){
+        var qirId = props.templateDetails.data.qirId
+        props.getQualityReportById(qirId)
+             const planDetails = JSON.parse(props.templateDetails.data.planDetails);
+            const cutInspectionData = planDetails[1]?.cutInspectionData;
+            if (cutInspectionData) {
+          const mappedData = cutInspectionData.map((item, i) => ({
             key: i,
-            thickness:props.inward?.plan?.fThickness,
-            plannedLength: item.plannedLength,
-            plannedWidth: item.plannedWidth,
-            actualThickness: "",
-            actualWidth: "",
-            actualLength: "",
-            burrHeight: "",
-            diagonalDifference: "",
-            remarks: ""
+             thickness: item.thickness,
+             plannedLength: item.plannedLength,
+             plannedWidth: item.plannedWidth,
+            actualThickness: item.actualThickness,
+            actualWidth: item.actualWidth,
+            actualLength: item.actualLength,
+            burrHeight: item.burrHeight,
+            diagonalDifference: item.diagonalDifference,
+            remarks: item.remarks
           }));
-          const toleranceData = [{
-            toleranceThicknessFrom: toleranceThicknessFrom,
-            toleranceThicknessTo: toleranceThicknessTo,
-            toleranceWidthFrom: toleranceWidthFrom,
-            toleranceWidthTo: toleranceWidthTo,
-            toleranceLengthFrom: toleranceLengthFrom,
-            toleranceLengthTo: toleranceLengthTo,
-            toleranceBurrHeightFrom: toleranceBurrHeightFrom,
-            toleranceBurrHeightTo: toleranceBurrHeightTo,
-            toleranceDiagonalDifferenceFrom: toleranceDiagonalDifferenceFrom,
-            toleranceDiagonalDifferenceTo: toleranceDiagonalDifferenceTo,
-          }]
+          const toleranceDataTable = planDetails[1]?.toleranceInspectionData;
+          const toleranceData = toleranceDataTable.map((item, i) => ({
+            toleranceThicknessFrom: item.toleranceThicknessFrom,
+            toleranceThicknessTo: item.toleranceThicknessTo,
+            toleranceWidthFrom: item.toleranceWidthFrom,
+            toleranceWidthTo: item.toleranceWidthTo,
+            toleranceLengthFrom: item.toleranceLengthFrom,
+            toleranceLengthTo: item.toleranceLengthTo,
+            toleranceBurrHeightFrom: item.toleranceBurrHeightFrom,
+            toleranceBurrHeightTo: item.toleranceBurrHeightTo,
+            toleranceDiagonalDifferenceFrom: item.toleranceDiagonalDifferenceFrom,
+            toleranceDiagonalDifferenceTo: item.toleranceDiagonalDifferenceTo,
+        }));
           setDataSource(mappedData);
           setToleranceDataSource(toleranceData);
-          //
           setToleranceInspectionData(toleranceData);
-          console.log("mappedData", mappedData)
+        }}
+      }
+      useEffect(() => {
+        if(props.templateDetails.operation === "qualityReportById"){
+            viewCutData()
         }
-      }, [props.templateDetails.packetDetails]);
+      }, [props.templateDetails.operation]);
 
     const instructionDate = props.templateDetails.packetDetails?.map(item=>item.instructionDate)
 
@@ -264,6 +313,13 @@ const CuttingForm = (props) => {
         cutFormData[key] = changeEvent.target.value;
     }
 
+    useEffect(() => {
+        setCutFormData((prevFormData) => ({
+          ...prevFormData,
+          cutInspectionData: cutInspectionData,
+          toleranceInspectionData: toleranceInspectionData,
+        }));
+      }, [cutInspectionData, toleranceInspectionData]);
     const saveForm = () => {
         cutFormData['cutInspectionData'] = cutInspectionData
         cutFormData['toleranceInspectionData'] = toleranceInspectionData
@@ -429,5 +485,6 @@ const mapStateToProps = (state) => ({
     fetchQualityReportList,
     fetchQualityReportStageList,
     getCoilPlanDetails,
+    getQualityReportById
   })(CuttingForm);
   

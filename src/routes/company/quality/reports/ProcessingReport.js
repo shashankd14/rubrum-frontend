@@ -68,6 +68,16 @@ const ProcessingReport = (props) => {
         }
       };
 
+    // Filter out rows with duplicate planIds
+    // const uniquePlanIds = new Set();
+    // const filteredDataSource = filteredProcessingList.filter((item) => {
+    // if (!uniquePlanIds.has(item.planId)) {
+    //     uniquePlanIds.add(item.planId);
+    //     return true;
+    // }
+    // return false;
+    // });
+
     const columns = [
         {
             title: "Plan ID",
@@ -202,6 +212,7 @@ const ProcessingReport = (props) => {
         props.fetchQualityReportList();
         props.fetchPartyList();
         props.fetchTemplatesList();
+        setAction('');
     }, []);
 
     useEffect(() => {
@@ -295,7 +306,8 @@ const ProcessingReport = (props) => {
     useEffect(() => {
         const { template } = props;
         if(searchValue) {
-            const filteredData = filteredProcessingList.filter(item => 
+           const filteredData = filteredProcessingList.filter(item => 
+           //const filteredData = filteredDataSource.filter(item => 
                 (item.coilNo.toLowerCase().includes(searchValue.toLowerCase())) ||
                 (item.customerBatchNo.toLowerCase().includes(searchValue.toLowerCase())));
 
@@ -369,6 +381,7 @@ const ProcessingReport = (props) => {
                     className="gx-table-responsive"
                     columns={columns}
                     dataSource={filteredProcessingList}
+                    //dataSource={filteredDataSource}
                     pagination={{
                         pageSize: 15,
                         onChange: (page) => {

@@ -81,7 +81,7 @@ const CreateReport = (props) => {
         if(props.location.state?.action)
             setAction(props.location.state.action)
             
-    }, [props.location.state, props.inward.inwardList])
+    }, [props.location.state])
 
     const [comments, setComment] = useState('');
 
@@ -113,7 +113,18 @@ const CreateReport = (props) => {
         setKqpSummary(e)
     }
 
+    function getProcessId(value) {
+        if (value === 'CUTTING') {
+          return 1;
+        } else if (value === 'SLITTING') {
+          return 2;
+        } else {
+          return 3;
+        }
+      }
+    
     const handleCreate = (data) => {
+        debugger
         // if (!templateName || templateName === "") {
         //     setTemplateNameErr(true);
         //     document.getElementById('templateName').focus();
@@ -148,7 +159,11 @@ const CreateReport = (props) => {
             request.append("templateName", templateName);
         }
         if (stageName === 'PROCESSING'){
-            request.append("processId", data[1].processId)
+            var processId = data[1].processId
+            if(processId === undefined){
+                request.append("processId", getProcessId(data[1].value))
+            } else {
+                request.append("processId", processId)}
         }
         //const coilNumber = stageName == 'INWARD' ? props.location.state.selectedItemForQr.coilNumber : props.location.state.selectedItemForQr.coilNo;
         const batchNumber = stageName == 'INWARD' ? props.location.state.selectedItemForQr.batchNumber : props.location.state.selectedItemForQr.customerBatchNo;
