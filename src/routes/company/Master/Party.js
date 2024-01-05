@@ -37,6 +37,8 @@ const Party = (props) => {
     const [searchValue, setSearchValue] = useState('');
     const [filteredInwardList, setFilteredInwardList] = useState(props.party?.partyList || []);
     const [showAmtDcPdfFlg, setShowAmtDcPdfFlg] = useState(props.party?.showAmtDcPdfFlg==='Y'); // Default value
+    const [dailyReportsList, setDailyReportsList] = useState([]);
+    const [monthlyReportsList, setMonthlyReportsList] = useState([]); 
 
     const {getFieldDecorator, getFieldValue} = props.form;
 
@@ -239,6 +241,13 @@ const Party = (props) => {
         console.log(e)
     }
 
+    useEffect(() => {
+        // to show checked in checkbox
+        const {party} = props.party
+        setDailyReportsList(party.dailyReportsList || []);
+        setMonthlyReportsList(party.monthlyReportsList || []);
+      }, [party]);
+
     return (
         <div>
             <h1><IntlMessages id="sidebar.company.partyList"/></h1>
@@ -299,6 +308,8 @@ const Party = (props) => {
                                     {viewPartyDate?.packetClassificationTags && <p><strong>Tags:</strong>{viewPartyDate?.packetClassificationTags?.map(item=> item.tagName)}</p>}
                                     {viewPartyDate?.endUserTags && <p><strong>EndUser Tags:</strong>{viewPartyDate?.endUserTags?.map(item=> item.tagName)}</p>}
                                     {viewPartyDate?.showAmtDcPdfFlg && <p><strong>Include Rates in Delivery Challan :</strong> {viewPartyDate?.showAmtDcPdfFlg||'N'}</p>}
+                                    {viewPartyDate?.dailyReportsList && <p><strong>Daily Reports List :</strong> {viewPartyDate?.dailyReportsList}</p>}
+                                    {viewPartyDate?.monthlyReportsList && <p><strong>Monthly Reports List :</strong> {viewPartyDate?.monthlyReportsList}</p>}
                                 </Card>
                             </Col>
                         </Row>
@@ -308,38 +319,36 @@ const Party = (props) => {
                     title={editParty?'Edit Party':'Add Party'}
                     visible={showAddParty}
                     onOk={(e) => {
-                        if (editParty) {
-                            props.form.validateFields((err, values) => {
-                                if (!err) {
-                                  console.log('Received values of form: ', showAmtDcPdfFlg);
-                                  // const data = { values, id: props.party?.party?.nPartyId };
-                                 const data = {
-                                    values: {
-                                      ...values,
-                                      showAmtDcPdfFlg: showAmtDcPdfFlg ? 'Y' : 'N',
-                                    },
-                                    id: props.party?.party?.nPartyId
-                                  }
-                                  props.updateParty(data);
-                                  props.form.resetFields();
-                                  setShowAddParty(false);
-                                  setEditParty(false);
-                                }
-                            });
-                        } else {
-                            props.form.validateFields((err, values) => {
-                                if (!err) {
-                                 e.preventDefault();
-                                  // props.addParty(values);
-                                 props.addParty({
-                                    ...values,
+                        props.form.validateFields((err, values) => {
+                            if (!err) {
+                              if (editParty) {
+                                // Update logic for existing party
+                                const data = {
+                                  values: {
+                                     ...values,
                                     showAmtDcPdfFlg: showAmtDcPdfFlg ? 'Y' : 'N',
-                                  });
-                                  props.form.resetFields();
-                                  setShowAddParty(false);
-                                }
-                            });
-                        }
+                                    dailyReportsList: dailyReportsList.join(','),
+                                    monthlyReportsList: monthlyReportsList.join(','),
+                                  },
+                                  id: props.party?.party?.nPartyId,
+                                };
+                                props.updateParty(data);
+                              } else {
+                                // Add logic for new party
+                                const data = {
+                                   ...values,
+                                  showAmtDcPdfFlg: showAmtDcPdfFlg ? 'Y' : 'N',
+                                  dailyReportsList: dailyReportsList.join(','),
+                                  monthlyReportsList: monthlyReportsList.join(','),
+                                };
+                                props.addParty(data);
+                              }
+                      
+                              props.form.resetFields();
+                              setShowAddParty(false);
+                              setEditParty(false);
+                            }
+                          });
                     }}
                     width={800}
                     onCancel={() => {
@@ -565,6 +574,28 @@ const Party = (props) => {
                                       onChange={(e) => setShowAmtDcPdfFlg(e.target.checked)}
                                     />
                                     </Form.Item>
+                                    <Form.Item label = "Daily Reports">
+                                        <Checkbox.Group
+                                            id="dailyReports"
+                                            value={dailyReportsList}
+                                            onChange={(checkedValues) => {setDailyReportsList(checkedValues)}}
+                                        >
+                                            <Checkbox value="STOCKREPORT">STOCKREPORT</Checkbox>
+                                            <Checkbox value="FGREPORT">FGREPORT</Checkbox>
+                                            <Checkbox value="WIPREPORT">WIPREPORT</Checkbox>
+                                            <Checkbox value="STOCKSUMMARYREPORT">STOCKSUMMARYREPORT</Checkbox>
+                                            <Checkbox value="RMREPORT">RMREPORT</Checkbox>
+                                        </Checkbox.Group>
+                                    </Form.Item>
+                                    <Form.Item label = "Monthly Reports">
+                                        <Checkbox.Group id="monthlyReportsList"
+                                            value={monthlyReportsList}
+                                            onChange={(checkedValues) => {setMonthlyReportsList(checkedValues)}}>
+                                            <Checkbox value="INWARDREPORT">INWARDREPORT</Checkbox>
+                                            <Checkbox value="STOCKREPORT">STOCKREPORT</Checkbox>
+                                            <Checkbox value="OUTWARDREPORT">OUTWARDREPORT</Checkbox>
+                                        </Checkbox.Group>
+                                    </Form.Item>
                                 </Form>
                             </Col>
                         </Row>
@@ -591,6 +622,8 @@ const addPartyForm = Form.create({
         const state = party?.address2?.state ? [party?.address1?.state, party?.address2?.state] : [party?.address1?.state];
         const pincode = party?.address2?.pincode ? [party?.address1?.pincode, party?.address2?.pincode] : [party?.address1?.pincode];
         // const tags = props?.party?.party?.tags.map(item=> item.classificationName)
+        const checkboxValuesDR = party?.dailyReportsList || [];
+        const checkboxValuesMR = party?.monthlyReportsList || [];
         return {
             partyName:Form.createFormField ({
                 ...props.party?.party?.partyName,
@@ -662,7 +695,15 @@ const addPartyForm = Form.create({
             showAmtDcPdfFlg: Form.createFormField({
                 ...party?.showAmtDcPdfFlg,
                 value: party?.showAmtDcPdfFlg || 'N',
-            })
+            }),
+            dailyReportsList: Form.createFormField({
+                ...party?.dailyReportsList,
+               value: Array.isArray(checkboxValuesDR) ? checkboxValuesDR : [],
+            }),
+            monthlyReportsList: Form.createFormField({
+                ...party?.monthlyReportsList,
+               value: Array.isArray(checkboxValuesMR) ? checkboxValuesMR : [],
+            }),
         };
     }
 })(Party);
