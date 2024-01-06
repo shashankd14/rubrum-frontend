@@ -138,16 +138,15 @@ const Party = (props) => {
 
     const onView = (record, e) => {
         e.preventDefault();
-        setViewPartyData(record);
+         setViewPartyData(record);
+        props.fetchPartyListId(record.nPartyId);
         setViewParty(true);
     }
-
     const onDelete = (record,key, e) => {
         let id = []
         id.push(record.inwardEntryId);
         e.preventDefault();
         props.deleteInwardEntryById(id)
-        console.log(record,key)
       }
 
       const onEdit = (record,e)=>{
@@ -308,8 +307,8 @@ const Party = (props) => {
                                     {viewPartyDate?.packetClassificationTags && <p><strong>Tags:</strong>{viewPartyDate?.packetClassificationTags?.map(item=> item.tagName)}</p>}
                                     {viewPartyDate?.endUserTags && <p><strong>EndUser Tags:</strong>{viewPartyDate?.endUserTags?.map(item=> item.tagName)}</p>}
                                     {viewPartyDate?.showAmtDcPdfFlg && <p><strong>Include Rates in Delivery Challan :</strong> {viewPartyDate?.showAmtDcPdfFlg||'N'}</p>}
-                                    {viewPartyDate?.dailyReportsList && <p><strong>Daily Reports List :</strong> {viewPartyDate?.dailyReportsList}</p>}
-                                    {viewPartyDate?.monthlyReportsList && <p><strong>Monthly Reports List :</strong> {viewPartyDate?.monthlyReportsList}</p>}
+                                    {props.partyId.dailyReportsList && <p><strong>Daily Reports List :</strong> {props.partyId?.dailyReportsList}</p>}
+                                    {props.partyId?.monthlyReportsList && <p><strong>Monthly Reports List :</strong> {props.partyId?.monthlyReportsList}</p>}
                                 </Card>
                             </Col>
                         </Row>
@@ -319,36 +318,46 @@ const Party = (props) => {
                     title={editParty?'Edit Party':'Add Party'}
                     visible={showAddParty}
                     onOk={(e) => {
-                        props.form.validateFields((err, values) => {
-                            if (!err) {
-                              if (editParty) {
-                                // Update logic for existing party
-                                const data = {
-                                  values: {
-                                     ...values,
+                        if (editParty) {
+                            debugger
+                            const { dailyReportsList: initialDailyReportsList, monthlyReportsList: initialMonthlyReportsList, ...otherProps } = props.party.party;
+                            // Set the initial state with the values from the API
+                            setDailyReportsList(initialDailyReportsList.split(','));
+                            setMonthlyReportsList(initialMonthlyReportsList.split(','));
+                            e.preventDefault();
+                            props.form.validateFields((err, values) => {
+                                if (!err) {
+                                 const data = {
+                                    values: {
+                                      ...values,
+                                      showAmtDcPdfFlg: showAmtDcPdfFlg ? 'Y' : 'N',
+                                      dailyReportsList: dailyReportsList.join(','),
+                                      monthlyReportsList: monthlyReportsList.join(','),
+                                    },
+                                    id: props.party?.party?.nPartyId
+                                  }
+                                  props.updateParty(data);
+                                  props.form.resetFields();
+                                  setShowAddParty(false);
+                                  setEditParty(false);
+                                }
+                            });
+                        } else {
+                            props.form.validateFields((err, values) => {
+                                if (!err) {
+                                 e.preventDefault();
+                                  // props.addParty(values);
+                                 props.addParty({
+                                    ...values,
                                     showAmtDcPdfFlg: showAmtDcPdfFlg ? 'Y' : 'N',
                                     dailyReportsList: dailyReportsList.join(','),
                                     monthlyReportsList: monthlyReportsList.join(','),
-                                  },
-                                  id: props.party?.party?.nPartyId,
-                                };
-                                props.updateParty(data);
-                              } else {
-                                // Add logic for new party
-                                const data = {
-                                   ...values,
-                                  showAmtDcPdfFlg: showAmtDcPdfFlg ? 'Y' : 'N',
-                                  dailyReportsList: dailyReportsList.join(','),
-                                  monthlyReportsList: monthlyReportsList.join(','),
-                                };
-                                props.addParty(data);
-                              }
-                      
-                              props.form.resetFields();
-                              setShowAddParty(false);
-                              setEditParty(false);
-                            }
-                          });
+                                  });
+                                  props.form.resetFields();
+                                  setShowAddParty(false);
+                                }
+                            });
+                        }
                     }}
                     width={800}
                     onCancel={() => {
@@ -610,6 +619,7 @@ const mapStateToProps = state => ({
     party: state.party,
     packetClassification: state.packetClassification,
     quality: state.quality,
+    partyId: state.party.party
 });
 
 const addPartyForm = Form.create({
@@ -622,8 +632,11 @@ const addPartyForm = Form.create({
         const state = party?.address2?.state ? [party?.address1?.state, party?.address2?.state] : [party?.address1?.state];
         const pincode = party?.address2?.pincode ? [party?.address1?.pincode, party?.address2?.pincode] : [party?.address1?.pincode];
         // const tags = props?.party?.party?.tags.map(item=> item.classificationName)
-        const checkboxValuesDR = party?.dailyReportsList || [];
+       // const checkboxValuesDR = party?.dailyReportsList || [];
+       const checkboxValuesDR = (party?.dailyReportsList || '').split(',').map(value => value.trim());
         const checkboxValuesMR = party?.monthlyReportsList || [];
+        // console.log('Received dailyReportsList:', party?.dailyReportsList);
+        // console.log('Parsed dailyReportsList:', checkboxValuesDR);
         return {
             partyName:Form.createFormField ({
                 ...props.party?.party?.partyName,
@@ -698,7 +711,8 @@ const addPartyForm = Form.create({
             }),
             dailyReportsList: Form.createFormField({
                 ...party?.dailyReportsList,
-               value: Array.isArray(checkboxValuesDR) ? checkboxValuesDR : [],
+               //value: Array.isArray(checkboxValuesDR) ? checkboxValuesDR : [],
+               value:checkboxValuesDR
             }),
             monthlyReportsList: Form.createFormField({
                 ...party?.monthlyReportsList,
