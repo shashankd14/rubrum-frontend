@@ -82,8 +82,8 @@ import {
     GET_RECONCILE_REPORT_SUCCESS,
     GET_RECONCILE_REPORT,
     GET_RECONCILE_REPORT_ERROR,
-    GET_PACKET_WISE_PRICE_DC_REQUEST,
     GET_PACKET_WISE_PRICE_DC_SUCCESS,
+    GET_PACKET_WISE_PRICE_DC_REQUEST,
     GET_PACKET_WISE_PRICE_DC_ERROR
 } from "../../constants/ActionTypes";
 import * as actionTypes from "../../constants/ActionTypes";
@@ -816,7 +816,7 @@ export default (state = INIT_STATE, action) => {
                 error: true
             }
         }
-        
+
         default:
             return state;
     }

@@ -73,7 +73,7 @@ const SignIn =(props)=> {
                   {getFieldDecorator('email', {
                     initialValue: "admin",
                   })(
-                    <Input placeholder="Username"  />
+                    <Input placeholder="Username"/>
                   )}
                 </FormItem>
                 <FormItem>
