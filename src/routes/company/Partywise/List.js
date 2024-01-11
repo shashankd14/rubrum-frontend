@@ -1,3 +1,4 @@
+//src-routes-company-Partywise-List.js
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { Button, Card, Divider, Select, Table, Modal, message } from "antd";
@@ -469,7 +470,7 @@ const List = (props) => {
             >
               {props.party.partyList.length > 0 &&
                 props.party.partyList.map((party) => (
-                  <Option value={party.nPartyId}>{party.partyName}</Option>
+                  <Option key={party.nPartyId} value={party.nPartyId}>{party.partyName}</Option>
                 ))}
             </Select>&emsp;
             {menuPartyWiseLabelList.length > 0 && menuPartyWiseLabelList.includes(partyWiseMenuConstants.export) && <Button onClick={exportSelectedData} style={{marginBottom: "1px"}}>Export</Button>}
@@ -479,7 +480,7 @@ const List = (props) => {
             {menuPartyWiseLabelList.length > 0 && menuPartyWiseLabelList.includes(partyWiseMenuConstants.deliver) && <Button
               type="primary"
               icon={() => <i className="icon icon-add" />}
-              size="medium"
+              size="default"
               onClick={() => {
                 console.log("selected rows", selectedRowData, selectedCBKeys, selectedCoil);
                 if (selectedCoil?.length > 1) {
@@ -503,7 +504,7 @@ const List = (props) => {
             {menuPartyWiseLabelList.length > 0 && menuPartyWiseLabelList.includes(partyWiseMenuConstants.addInward) && <Button
               type="primary"
               icon={() => <i className="icon icon-add" />}
-              size="medium"
+              size="default"
               onClick={() => {
                 props.history.push("/company/inward/create");
               }}
@@ -552,7 +553,7 @@ const List = (props) => {
           // }}
           
           pagination={{
-            pageSize: "15",
+            pageSize: 15,
             onChange: (page) => {
               setPageNo(page);
               props.fetchInwardList(page, pageSize, searchValue, customerValue);

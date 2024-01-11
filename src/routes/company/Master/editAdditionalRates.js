@@ -41,8 +41,11 @@ const handleOk=(e)=>{
             price:values?.aPrice,
             additionalPriceId:props?.aRates?.additionalPriceId,
             rangeFrom:values?.rangeFrom,
-            rangeTo:values?.rangeTo
-
+            rangeTo:values?.rangeTo,
+            laminationSSlabour:values?.laminationSSlabour,
+            laminationDSlabour:values?.laminationDSlabour,
+            laminationSSmaterial:values?.laminationSSmaterial,
+            laminationDSmaterial:values?.laminationDSmaterial
     }]
     props.updateAdditionalRates(payload);
     })
@@ -51,7 +54,7 @@ const handleOk=(e)=>{
 return (
     <Modal
     visible={editPriceModal}
-    width={700}
+    width={800}
     title="Edit Additional Rate"
     onOk={handleOk}
     onCancel={() => setEditPriceModal(false)}
@@ -70,7 +73,7 @@ return (
                         mode="multiple"
                         style={{ width: '100%' }}
                         >                                                
-                        {props.party?.partyList?.map(party => <Option value={party.nPartyId}>{party.partyName}</Option>)}
+                        {props.party?.partyList?.map(party => <Option key={party.nPartyId} value={party.nPartyId}>{party.partyName}</Option>)}
                         </Select>
                         )}
                     </Form.Item>
@@ -85,7 +88,7 @@ return (
                         style={{width: 300}}
                         placeholder="Select a Process"
                        >
-                        {props.process?.processList?.map(process => <Option value={process.processId}>{process.processName}</Option>)}
+                        {props.process?.processList?.map(process => <Option key={process.processId} value={process.processId}>{process.processName}</Option>)}
                        </Select>
                     )}
                     </Form.Item>
@@ -109,6 +112,26 @@ return (
                         })(
                             <Input id="price" />
                         )}
+                    </Form.Item>
+                    <Form.Item label="Single side lamination charges per meter (Labour)">
+                        {getFieldDecorator("laminationSSlabour", {
+                      
+                        })(<Input id="laminationSSlabour" />)}
+                     </Form.Item>
+                    <Form.Item label="Single side lamination charges per meter (Material)">
+                        {getFieldDecorator("laminationSSmaterial", {
+                      
+                        })(<Input id="laminationSSmaterial" />)}
+                    </Form.Item>
+                    <Form.Item label="Double side lamination charges per meter (Labour)">
+                        {getFieldDecorator("laminationDSlabour", {
+                      
+                     })(<Input id="laminationDSlabour" />)}
+                    </Form.Item>
+                    <Form.Item label="Double side lamination charges per meter (Material)">
+                        {getFieldDecorator("laminationDSmaterial", {
+                      
+                     })(<Input id="laminationDSmaterial" />)}
                     </Form.Item>
                     </Form>
                 </Col>

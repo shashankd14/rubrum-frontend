@@ -219,7 +219,7 @@ const UserAccess = (props) => {
                 <Button
                     type="primary"
                     icon={() => <i className="icon icon-add" />}
-                    size="medium"
+                    size="default"
                     onClick={() => {
                         props.form.resetFields();
                         setShowAddUserModal(true);

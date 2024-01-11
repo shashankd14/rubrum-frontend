@@ -157,6 +157,19 @@ const CreateCuttingDetailsForm = (props) => {
       ),
     },
     {
+      title: "Width",
+      dataIndex: "plannedWidth",
+      render: (text, record, index) =>
+        record?.instructionId ? (
+          text
+        ) : (
+          <Input
+            value={record?.plannedWidth}
+            onChange={onInputChange("plannedWidth", index, record)}
+          />
+        ),
+    },
+    {
       title: "No of Sheets",
       dataIndex: "plannedNoOfPieces",
       render: (text, record, index) =>
@@ -284,22 +297,22 @@ const CreateCuttingDetailsForm = (props) => {
         ),
     },
   ];
-  if (props.slitCut) {
-    let widthObj = {
-      title: "Width",
-      dataIndex: "plannedWidth",
-      key: "plannedWidth",
-      render: (text, record, index) => (
-        <Input
-          style={{width:'60px'}}
-          disabled={props.unfinish}
-          value={record.plannedWidth}
-          onChange={onInputChange("plannedWidth", index, record)}
-        />
-      ),
-    };
-    columns.splice(4, 0, widthObj);
-  }
+  // if (props.slitCut) {
+  //   let widthObj = {
+  //     title: "Width",
+  //     dataIndex: "plannedWidth",
+  //     key: "plannedWidth",
+  //     render: (text, record, index) => (
+  //       <Input
+  //         style={{width:'60px'}}
+  //         disabled={props.unfinish}
+  //         value={record.plannedWidth}
+  //         onChange={onInputChange("plannedWidth", index, record)}
+  //       />
+  //     ),
+  //   };
+  //   columns.splice(4, 0, widthObj);
+  // }
   const columnsPlan = [
     {
       title: "Serial No",

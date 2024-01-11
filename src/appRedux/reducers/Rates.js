@@ -46,7 +46,8 @@ import {
     DELETE_ADDITIONAL_RATES_BY_ID_SUCCESS,
     UPDATE_ADDITIONAL_RATES_ERROR,
     UPDATE_ADDITIONAL_RATES_REQUEST,
-    UPDATE_ADDITIONAL_RATES_SUCCESS
+    UPDATE_ADDITIONAL_RATES_SUCCESS,
+    DELETE_LAMINATION_CHARGES_ERROR
 } from "../../constants/ActionTypes";
 import * as actionType from "../../constants/ActionTypes";
 
@@ -413,7 +414,7 @@ export default (state = INIT_STATE, action) => {
                 updateAdditionalFailure:true
             }
         }
-        
+
         //Lamination Charges
         case actionType.RESET_LAMINATION_CHARGES_REQUEST: {
             return {

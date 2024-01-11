@@ -85,10 +85,15 @@ import {
   UPDATE_TEMPLATE_PROCESSING_FORM_DATA,
   UPDATE_QR_PROCESSING_FORM_DATA,
 } from "constants/ActionTypes";
+import * as actionTypes from "../../constants/ActionTypes";
 
 const INIT_STATE = {
   templateName: '',
   operation: "",
+  thicknessList:[],
+  widthList:[],
+  lengthList:[],
+  packetDetails:[],
   formFields: {
     inward: [],
     preProcessing: [],
@@ -101,7 +106,11 @@ const INIT_STATE = {
   },
   loading: false,
   data: [],
-  error: false
+  linkListData: [],
+  error: false,
+  pdfLoadingInward: false,
+  pdfSuccessInward: false,
+  pdfErrorInward: false
 };
 
 
@@ -235,7 +244,8 @@ export default (state = INIT_STATE, action) => {
       return {
         ...state,
         error: false,
-        loading: true
+        loading: true,
+        templateLinkList: null
       }
     case FETCH_TEMPLATE_LINK_LIST_SUCCESS:
       return {
@@ -251,6 +261,11 @@ export default (state = INIT_STATE, action) => {
         error: true,
         loading: false
       }
+      case actionTypes.STORE_LINK_LIST_DATA:
+        return {
+          ...state,
+          linkListData: action.payload,
+        };
     case SAVE_QUALITY_TEMPLATE_LINK_REQUEST:
       return {
         ...state,
@@ -595,6 +610,123 @@ export default (state = INIT_STATE, action) => {
       return {
         ...state,
       }
+      case DELETE_QUALITY_REPORT_REQUEST:
+      return {
+        ...state,
+        loading: true
+      }
+    case DELETE_QUALITY_REPORT_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        data: action.templateDetails,
+        //operation: "templateById"
+      }
+    case DELETE_QUALITY_REPORT_ERROR:
+      return {
+        ...state,
+        error: true,
+        loading: false
+      }
+      //get List of thickness QM dropdown
+      case actionTypes.GET_THICKNESS_LIST_QM_REQUEST:
+        return {
+          ...state,
+          error: false,
+          loading: true
+        }
+      case actionTypes.GET_THICKNESS_LIST_QM_SUCCESS:
+        return {
+          ...state,
+          error: false,
+          loading: false,
+          thicknessList: action.thicknessList,
+        }
+      case actionTypes.GET_THICKNESS_LIST_QM_ERROR:
+        return {
+          ...state,
+          error: true,
+          loading: false
+        }
+      //get List of width QM dropdown
+      case actionTypes.GET_WIDTH_LIST_QM_REQUEST:
+        return {
+          ...state,
+          error: false,
+          loading: true
+        }
+      case actionTypes.GET_WIDTH_LIST_QM_SUCCESS:
+        return {
+          ...state,
+          error: false,
+          loading: false,
+          widthList: action.widthList,
+        }
+      case actionTypes.GET_WIDTH_LIST_QM_ERROR:
+        return {
+          ...state,
+          error: true,
+          loading: false
+        }
+      //get List of length QM dropdown
+      case actionTypes.GET_LENGTH_LIST_QM_REQUEST:
+        return {
+          ...state,
+          error: false,
+          loading: true
+        }
+      case actionTypes.GET_LENGTH_LIST_QM_SUCCESS:
+        return {
+          ...state,
+          error: false,
+          loading: false,
+          lengthList: action.lengthList,
+        }
+      case actionTypes.GET_LENGTH_LIST_QM_ERROR:
+        return {
+          ...state,
+          error: true,
+          loading: false
+        }
+      //Get packetDetails in quality processStage
+      case actionTypes.GET_PACKET_DETAILS_QUALITY_PROCESS_REQUEST:
+        return {
+          ...state,
+          error: false,
+          loading: true
+        }
+      case actionTypes.GET_PACKET_DETAILS_QUALITY_PROCESS_SUCCESS:
+        return {
+          ...state,
+          error: false,
+          loading: false,
+          packetDetails: action.packetDetails,
+        }
+      case actionTypes.GET_PACKET_DETAILS_QUALITY_PROCESS_ERROR:
+        return {
+          ...state,
+          error: true,
+          loading: false
+        }
+         //inward QM report pdf
+      case actionTypes.GENERATE_INWARD_PDF_QUALITY_MODULE_REPORT_REQUEST:
+        return{
+          ...state,
+          pdfLoadingInward: true
+        }
+      case actionTypes.GENERATE_INWARD_PDF_QUALITY_MODULE_REPORT_SUCCESS:
+        return{
+          ...state,
+          pdfLoadingInward: false,
+          pdfSuccessInward: true
+        }
+      case actionTypes.GENERATE_INWARD_PDF_QUALITY_MODULE_REPORT_ERROR:
+        return{
+          ...state,
+          pdfLoadingInward: false,
+          pdfSuccessInward: false,
+          pdfErrorInward: true
+        }
     default:
       return state;
   }

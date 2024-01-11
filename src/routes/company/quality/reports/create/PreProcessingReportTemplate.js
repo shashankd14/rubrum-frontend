@@ -1,6 +1,8 @@
+//PreProcessingReportTemplate
 import React, { useEffect, useState } from 'react'
 import { Button, Card, Col, Icon, Input, Radio, Row } from 'antd'
 import Dragger from 'antd/lib/upload/Dragger'
+import { useHistory } from 'react-router';
 
 const PreProcessingReportTemplate = (props) => {
   const [templateData, setTemplateData] = useState({
@@ -57,19 +59,50 @@ const PreProcessingReportTemplate = (props) => {
 
   const [isDisabled, setIsDisabled] = useState(false);
 
-  useEffect(() => {
-    // console.log(props)
-    setIsDisabled(props.action === 'view')
-    if (props.action !== 'create') {
-      const templateDetailsData = JSON.parse(props.templateDetails.templateDetails)
-      const val = {};
-      templateDetailsData.forEach((td) => {
-        val[td.id] = td;
-      });
-      console.log(val)
-      setTemplateData(val)
-    }
-  }, [props.templateDetails]);
+//   useEffect(() => {
+//     console.log(props)
+//     setIsDisabled(props.action === 'view')
+//     if (props.from === "qr") {
+//         initTemplateForm();
+//     } else if (props.action !== 'create') {
+//         initTemplateForm();
+//     }
+// }, [props.templateDetails]);
+
+// const initTemplateForm = () => {
+//   const templateDetailsData = JSON.parse(props.templateDetails.templateDetails)
+//   const val = {};
+//   templateDetailsData.forEach((td) => {
+//       val[td.id] = td;
+//   });
+//   console.log(val)
+//   setTemplateData(val)
+// }
+useEffect(() => {
+  setIsDisabled(props.action === 'view')
+  if (props.action !== 'create') {
+    const templateDetailsData = JSON.parse(props.templateDetails.templateDetails)
+    const val = {};
+    templateDetailsData.forEach((td) => {
+      val[td.id] = td;
+    });
+    console.log(val)
+    setTemplateData(val)
+  }
+}, [props.templateDetails]);
+  // useEffect(() => {
+  //   // console.log(props)
+  //   setIsDisabled(props.action === 'view')
+  //   if (props.action !== 'create') {
+  //     const templateDetailsData = JSON.parse(props.templateDetails.templateDetails)
+  //     const val = {};
+  //     templateDetailsData.forEach((td) => {
+  //       val[td.id] = td;
+  //     });
+  //     console.log(val)
+  //     setTemplateData(val)
+  //   }
+  // }, [props.templateDetails]);
 
   const onFilesChange = (type, file) => {
     console.log(type, file)
@@ -78,6 +111,15 @@ const PreProcessingReportTemplate = (props) => {
     console.log(templateData)
     setTemplateData({ ...templateData })
   }
+
+  const [comments, setComment] = useState('');
+    const handleCommentChange = (e) => {
+            setComment(e.target.value);
+            props.onCommentChange(e.target.value);
+    };
+    useEffect(() => {
+        setComment(props.templateDetails.comments)
+      }, [props.templateDetails.comments]);
 
   const onOptionChange = (type, value) => {
     console.log(type, value)
@@ -90,6 +132,11 @@ const PreProcessingReportTemplate = (props) => {
     props.handleCreate(templateData)
   }
 
+  const history = useHistory();
+    const handleCancel = () =>{
+        history.goBack();
+    }
+
   return (
     <div>
       <Col span={24} className="gx-pt-4">
@@ -100,6 +147,7 @@ const PreProcessingReportTemplate = (props) => {
               <Input
                 id="exactWidth"
                 onChange={(e) => onOptionChange(7, e)}
+                value={templateData[7]?.value}
                 required
                 disabled={isDisabled}
               />
@@ -140,8 +188,8 @@ const PreProcessingReportTemplate = (props) => {
           </Col>
           <Col span={8}>
             <div style={{ display: 'grid', marginTop: 45 }}>
-              {props.action === 'view' && props.templateDetails.rustObservedPreSingedURL && <img src={props.templateDetails.rustObservedPreSingedURL} style={{ width: 50 }} />}
-              {props.action === 'edit' && <> {props.templateDetails.rustObservedPreSingedURL && <img src={props.templateDetails.rustObservedPreSingedURL} style={{ width: 50 }} />}
+              {props.action === 'view' && props.templateDetails.rustObservedPreSingedURL && <img src={props.templateDetails.rustObservedPreSingedURL} alt = 'rustObserved' style={{ width: 50 }} />}
+              {props.action === 'edit' && <> {props.templateDetails.rustObservedPreSingedURL && <img src={props.templateDetails.rustObservedPreSingedURL} alt = 'rustObserved' style={{ width: 50 }} />}
                 <Dragger
                   name='packingIntact'
                   height={50}
@@ -183,8 +231,8 @@ const PreProcessingReportTemplate = (props) => {
           </Col>
           <Col span={8}>
             <div style={{ display: 'grid', marginTop: 45 }}>
-              {props.action === 'view' && props.templateDetails.safetyIssuesPreSingedURL && <img src={props.templateDetails.safetyIssuesPreSingedURL} style={{ width: 50 }} />}
-              {props.action === 'edit' && <> {props.templateDetails.safetyIssuesPreSingedURL && <img src={props.templateDetails.safetyIssuesPreSingedURL} style={{ width: 50 }} />}
+              {props.action === 'view' && props.templateDetails.safetyIssuesPreSingedURL && <img src={props.templateDetails.safetyIssuesPreSingedURL} alt='safetyIssue' style={{ width: 50 }} />}
+              {props.action === 'edit' && <> {props.templateDetails.safetyIssuesPreSingedURL && <img src={props.templateDetails.safetyIssuesPreSingedURL} alt='safetyIssue' style={{ width: 50 }} />}
                 <Dragger
                   name='packingIntact'
                   height={50}
@@ -237,8 +285,8 @@ const PreProcessingReportTemplate = (props) => {
           </Col>
           <Col span={8}>
             <div style={{ display: 'grid', marginTop: 45 }}>
-              {props.action === 'view' && props.templateDetails.improperStoragePreSingedURL && <img src={props.templateDetails.improperStoragePreSingedURL} style={{ width: 50 }} />}
-              {props.action === 'edit' && <> {props.templateDetails.improperStoragePreSingedURL && <img src={props.templateDetails.improperStoragePreSingedURL} style={{ width: 50 }} />}
+              {props.action === 'view' && props.templateDetails.improperStoragePreSingedURL && <img src={props.templateDetails.improperStoragePreSingedURL} alt='improperStorage' style={{ width: 50 }} />}
+              {props.action === 'edit' && <> {props.templateDetails.improperStoragePreSingedURL && <img src={props.templateDetails.improperStoragePreSingedURL} alt='improperStorage' style={{ width: 50 }} />}
                 <Dragger
                   name='packingIntact'
                   height={50}
@@ -268,9 +316,27 @@ const PreProcessingReportTemplate = (props) => {
             </div>
           </Col>
         </Row>
+        <Row>
+              <Col span={8}>
+                <div style={{ display: 'grid', marginTop: 50 }}>
+                    <label>Comment:</label>
+                </div>
+              </Col>
+              <Col span={16}>
+                <div style={{ display: 'grid', marginTop: 45 }}>
+                  <Input
+                    id="comments"
+                    onChange={handleCommentChange}
+                    value={comments}
+                    required
+                    disabled={isDisabled}
+                  /> 
+                </div>
+              </Col>
+        </Row>
         {props.action !== 'view' && <Row >
           <div style={{ marginTop: 45 }}>
-            <Button style={{ marginLeft: 8 }} disabled={isDisabled}>
+            <Button style={{ marginLeft: 8 }} onClick={handleCancel}>
               Cancel
             </Button>
             {props.action === 'create' ? <Button type="primary" htmlType="submit" onClick={createTemplate} disabled={isDisabled}>

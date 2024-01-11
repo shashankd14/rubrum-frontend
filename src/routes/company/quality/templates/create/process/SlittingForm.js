@@ -1,10 +1,11 @@
 import { Button, Card, Col, DatePicker, Input, Popconfirm, Row } from 'antd'
 import TextArea from 'antd/lib/input/TextArea';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux';
 import EditableTable from '../../../../../../util/EditableTable';
 import { 
     updateTemplateFormData, 
+    getQualityTemplateById
  } from "../../../../../../appRedux/actions"
 
 
@@ -13,8 +14,9 @@ const SlittingForm = (props) => {
     const [slitDataSource, setSlitDataSource] = useState([{
         slitNo: "",
         slitSize: "",
-        allowableLowerWidth: "",
-        allowableHigherWidth: "",
+        // allowableLowerWidth: "",
+        // allowableHigherWidth: "",
+        actualThickness: "",
         actualWidth: "",
         burrHeight: "",
         remarks: "",
@@ -23,9 +25,10 @@ const SlittingForm = (props) => {
     const [finalDataSource, setFinalDataSource] = useState([{
         slitNo: "",
         slitSize: "",
-        allowableLowerWidth: "",
-        allowableHigherWidth: "",
+        // allowableLowerWidth: "",
+        // allowableHigherWidth: "",
         actualWidth: "",
+        actualThickness: "",
         burrHeight: "",
         remarks: "",
     }]);
@@ -34,6 +37,7 @@ const SlittingForm = (props) => {
 
     const [slitInspectionData, setSlitInspectionData] = useState([])
     const [finalInspectionData, setFinalInspectionData] = useState([])
+    const [toleranceInspectionData, setToleranceInspectionData] = useState([])
     const [slitFormData, setSlitFormData] = useState({
         processType: "slitting",
         customerName: "",
@@ -52,6 +56,40 @@ const SlittingForm = (props) => {
         qualityEngineer: "",
         qualityHead: "",
     })
+    const [toleranceDataSourceSlit, setToleranceDataSourceSlit] = useState([{
+        toleranceThicknessFrom: "",
+        toleranceThicknessTo: "",
+        toleranceSlitSizeFrom: "",
+        toleranceSlitSizeTo: "",
+        toleranceBurrHeightFrom: "",
+        toleranceBurrHeightTo: "",
+    }]);
+
+    //Code for view slit tolerance table
+    const viewSlitTolerance = () => {
+        if(props.templateDetails.operation == "templateById"){
+            debugger
+        var templateId = props.templateDetails.data.templateId
+        props.getQualityTemplateById(templateId)
+             const slitDetails = JSON.parse(props.templateDetails.data.templateDetails);
+          const toleranceDataTable = slitDetails[5]?.value.toleranceInspectionData;
+          const toleranceData = toleranceDataTable.map((item, i) => ({
+            toleranceThicknessFrom: item.toleranceThicknessFrom,
+            toleranceThicknessTo: item.toleranceThicknessTo,
+            toleranceSlitSizeFrom: item.toleranceSlitSizeFrom,
+            toleranceSlitSizeTo: item.toleranceSlitSizeTo,
+            toleranceBurrHeightFrom: item.toleranceBurrHeightFrom,
+            toleranceBurrHeightTo: item.toleranceBurrHeightTo
+        }));
+          setToleranceDataSourceSlit(toleranceData);
+          setToleranceInspectionData(toleranceData);
+        }
+      }
+      useEffect(() => {
+        if(props.templateDetails.operation === "templateById"){
+            viewSlitTolerance()
+        }
+      }, [props.templateDetails.operation]);
 
     const gridCardStyle = {
         width: '50%',
@@ -78,21 +116,36 @@ const SlittingForm = (props) => {
             dataIndex: 'slitSize',
             editable: true
         },
-        {
-            title: 'Allowable Lower Width',
-            dataIndex: 'allowableLowerWidth',
-            editable: true
-        },
-        {
-            title: 'Allowable Higher Width',
-            dataIndex: 'allowableHigherWidth',
-            editable: true
-        },
+        // {
+        //     title: 'Allowable Lower Slit Size',
+        //     dataIndex: 'allowableLowerWidth',
+        //     editable: true
+        // },
+        // {
+        //     title: 'Allowable Higher Slit Size',
+        //     dataIndex: 'allowableHigherWidth',
+        //     editable: true
+        // },
         {
             title: 'Actual Width',
             dataIndex: 'actualWidth',
             editable: true
         },
+        {
+          title: 'Actual Thickness',
+          dataIndex: 'actualThickness',
+          editable: true,
+        },
+        // {
+        //     title: 'Allowable Lower Burr Height',
+        //     dataIndex: 'allowableLowerburrHeight',
+        //     editable: true
+        // },
+        // {
+        //     title: 'Allowable Higher Burr Height',
+        //     dataIndex: 'allowableHeigherburrHeight',
+        //     editable: true
+        // },
         {
             title: 'Burr Height',
             dataIndex: 'burrHeight',
@@ -116,21 +169,36 @@ const SlittingForm = (props) => {
             dataIndex: 'slitSize',
             editable: true
         },
-        {
-            title: 'Allowable Lower Width',
-            dataIndex: 'allowableLowerWidth',
-            editable: true
-        },
-        {
-            title: 'Allowable Higher Width',
-            dataIndex: 'allowableHigherWidth',
-            editable: true
-        },
+        // {
+        //     title: 'Allowable Lower Slit Size',
+        //     dataIndex: 'allowableLowerWidth',
+        //     editable: true
+        // },
+        // {
+        //     title: 'Allowable Higher Slit Size',
+        //     dataIndex: 'allowableHigherWidth',
+        //     editable: true
+        // },
         {
             title: 'Actual Width',
             dataIndex: 'actualWidth',
             editable: true
         },
+        {
+          title: 'Actual Thickness',
+          dataIndex: 'actualThickness',
+          editable: true,
+        },
+        // {
+        //     title: 'Allowable Lower Burr Height',
+        //     dataIndex: 'allowableLowerburrHeight',
+        //     editable: true
+        // },
+        // {
+        //     title: 'Allowable Higher Burr Height',
+        //     dataIndex: 'allowableHeigherburrHeight',
+        //     editable: true
+        // },
         {
             title: 'Burr Height',
             dataIndex: 'burrHeight',
@@ -141,6 +209,38 @@ const SlittingForm = (props) => {
             dataIndex: 'remarks',
             editable: true
         },
+    ];
+    const toleranceColumnsSlit = [
+        {
+            title: 'Thickness From',
+            dataIndex: 'toleranceThicknessFrom',
+            editable: true
+        },
+        {
+            title: 'Thickness To',
+            dataIndex: 'toleranceThicknessTo',
+            editable: true
+        },
+        {
+            title: 'Slit Size From',
+            dataIndex: 'toleranceSlitSizeFrom',
+            editable: true
+        },
+        {
+            title: 'Slit Size To',
+            dataIndex: 'toleranceSlitSizeTo',
+            editable: true
+        },
+        {
+            title: 'Burr Height From',
+            dataIndex: 'toleranceBurrHeightFrom',
+            editable: true
+        },
+        {
+            title: 'Burr Height To',
+            dataIndex: 'toleranceBurrHeightTo',
+            editable: true
+        }
     ];
 
     const emptySlitRecord = {
@@ -164,6 +264,15 @@ const SlittingForm = (props) => {
         burrHeight: "",
         remarks: "",
     }
+    const toleranceEmptyRecord = {
+        key: 0,
+        toleranceThicknessFrom: "",
+        toleranceThicknessTo: "",
+        toleranceSlitSizeFrom: "",
+        toleranceSlitSizeTo: "",
+        toleranceBurrHeightFrom: "",
+        toleranceBurrHeightTo: "",
+    }
 
     const onOptionChange = (key, changeEvent) => {
         slitFormData[key] = changeEvent.target.value;
@@ -172,8 +281,9 @@ const SlittingForm = (props) => {
     const saveForm = () => {
         slitFormData['slitInspectionData'] = slitInspectionData
         slitFormData['finalInspectionData'] = finalInspectionData
+        slitFormData['toleranceInspectionData'] = toleranceInspectionData
         props.onSave(slitFormData)
-        // props.updateTemplateFormData({action: 'slit', formData: slitFormData})
+        props.updateTemplateFormData({action: 'slit', formData: slitFormData})
     }
 
     const handleInspectionTableChange = (tableData) => {
@@ -185,8 +295,10 @@ const SlittingForm = (props) => {
         console.log('handleFinalInspectionTableChange', tableData)
         setFinalInspectionData(tableData)
     } 
-
-
+    const handleToleranceTableChangeSlit = (tableData) => {
+        console.log('handleInspectionTableChange', tableData)
+        setToleranceInspectionData(tableData)
+    } 
     return (
         <div id="slittingform">
             <Card title="Slitting Process Form">
@@ -194,7 +306,7 @@ const SlittingForm = (props) => {
                     <Row>
                         <Col span={24}>
                             <label>Customer Name</label>
-                            <Input placeholder='Enter customer name' disabled value={slitFormData.customerName} onChange={(e) => onOptionChange('customerName', e)}></Input>
+                            <Input disabled value={slitFormData.customerName} onChange={(e) => onOptionChange('customerName', e)}></Input>
                         </Col>
                     </Row>
                     <Row>
@@ -263,6 +375,14 @@ const SlittingForm = (props) => {
                     </Row>
 
                 </Card.Grid>
+                <Card.Grid style={gridStyle}>
+                     <Row>
+                        <Col span={24}>
+                            <label style={{fontSize: 20}}>Tolerance</label>
+                        </Col>
+                    </Row>
+                    <EditableTable columns={toleranceColumnsSlit} emptyRecord={toleranceEmptyRecord} dataSource={toleranceDataSourceSlit} handleChange={handleToleranceTableChangeSlit}/>
+                </Card.Grid>
                 <Card.Grid style={gridStyle} >
                     <EditableTable  columns={slitColumns} emptyRecord={emptySlitRecord} dataSource={slitDataSource} handleChange={handleInspectionTableChange}/>
                 </Card.Grid>
@@ -311,4 +431,5 @@ const mapStateToProps = state => ({
 
 export default connect(mapStateToProps, {
     updateTemplateFormData,
+    getQualityTemplateById
 })(SlittingForm);

@@ -34,8 +34,8 @@ const TemplateList = (props) => {
     useEffect(() => {
         console.log("init")
         setTemplateList([]);
-        setSearchValue([]);
-        setPageNo([]);
+        //setSearchValue([]);
+        //setPageNo([]);
     }, []);
 
     useEffect(() => {
@@ -52,16 +52,33 @@ const TemplateList = (props) => {
         }
     }, [props.party.loading, props.party.error]);
 
+    // useEffect(() => {
+    //     if (searchValue) {
+    //         if (searchValue.length >= 3) {
+    //             setPageNo(1);
+    //             // props.fetchInwardList(1, 20, searchValue, customerValue);
+    //         }
+    //     } else {
+    //         setPageNo(1);
+    //         //   props.fetchInwardList(1, 20, searchValue, customerValue);
+    //     }
+    // }, [searchValue]);
+    
     useEffect(() => {
-        if (searchValue) {
-            if (searchValue.length >= 3) {
-                setPageNo(1);
-                // props.fetchInwardList(1, 20, searchValue, customerValue);
-            }
+        const { template } = props;
+        if(searchValue) {
+            const filteredData = template?.data?.filter(template => {
+                if(template.kqpId?.toString() === searchValue ||
+                template.kqpName?.toLowerCase().includes(searchValue.toLowerCase()) )  {
+                    return template;
+                }
+            });
+            setTemplateList(filteredData);
+            console.log("filteredData", filteredData);
         } else {
-            setPageNo(1);
-            //   props.fetchInwardList(1, 20, searchValue, customerValue);
+            setTemplateList(template.data);
         }
+           
     }, [searchValue]);
 
     const handleChange = () => {
@@ -112,20 +129,20 @@ const TemplateList = (props) => {
                     {actions.create &&
                         <Button
                             style={{ background: "#003366", color: "#FFFFFF" }}
-                            size="medium"
+                            size="default"
                             className="gx-float-right"
                             onClick={handleCreate}
                         >
                             {intl.formatMessage({ id: actions.create.label })}
                         </Button>}
                     {actions.export && <Button
-                        size="medium"
+                        size="default"
                         className="gx-float-right"
                     >
                         {intl.formatMessage({ id: actions.export.label })}
                     </Button>}
                     {actions.print && <Button
-                        size="medium"
+                        size="default"
                         className="gx-float-right"
                     >
                         {intl.formatMessage({ id: actions.print.label })}
@@ -135,13 +152,14 @@ const TemplateList = (props) => {
             <Table
                 className="gx-table-responsive"
                 columns={props.columns}
-                dataSource={templateList}
+                //dataSource={templateList}
+                dataSource={templateList.length > 0? templateList : []}
                 rowSelection={rowSelection}
                 pagination={{
-                    pageSize: "15",
+                    pageSize: 15,
                     onChange: (page) => {
                         setPageNo(page);
-                        props.fetchTemplatesList(page, 15, searchValue);
+                        props.fetchKqpList(page, 15, searchValue);
                     },
                     current: pageNo,
                     total: totalPageItems,

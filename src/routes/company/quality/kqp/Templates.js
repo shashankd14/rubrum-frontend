@@ -1,3 +1,6 @@
+
+//src-routes-company-kqp-Template.js
+
 import React, { useEffect, useState } from "react";
 import { connect } from 'react-redux';
 import { useLocation } from 'react-router-dom';
@@ -9,7 +12,9 @@ import TemplateList from "./TemplateList";
 import LinkedTemplateList from "./LinkedTemplateList";
 
 import { 
-  deleteQualityTemplate
+  deleteQualityTemplate,
+  deleteKqp,
+  deleteKqpLink
 } from "../../../../appRedux/actions"
 
 const Templates = (props) => {
@@ -44,8 +49,7 @@ const Templates = (props) => {
             <span
                 className="gx-link"
                 onClick={() =>
-                    // console.log("Delete", record)
-                    props.deleteQualityTemplate(record.kqpId)
+                    props.deleteKqp(record.kqpId)
                 }
             >
                 Delete
@@ -71,7 +75,7 @@ const templateLinkListAactionColumn = {
       <span>
           <span
               className="gx-link"
-              onClick={() => props.history.push(`/company/quality/kqp/link/edit/${record.id}`)}
+              onClick={() => props.history.push(`/company/quality/kqp/link/edit/${record.kqpId}`)}
           >
               Edit Link
           </span>
@@ -79,8 +83,7 @@ const templateLinkListAactionColumn = {
           <span
               className="gx-link"
               onClick={() =>
-                  // console.log("Delete", record)
-                  props.deleteQualityTemplate(record.templateId)
+                  props.deleteKqpLink(record.kqpId)
               }
           >
               Delete
@@ -111,7 +114,7 @@ const templateLinkListAactionColumn = {
   return (
     <div>
       <h1>
-        <IntlMessages id="sidebar.quality.templates" />
+        <IntlMessages id="heading.kqp" />
       </h1>
       <Card>
         <Tabs defaultActiveKey="1" tabPosition={mode} onChange={onTabChange} destroyInactiveTabPane={true} activeKey={tabKey}>
@@ -132,5 +135,7 @@ const mapStateToProps = state => ({
 });
 
 export default connect(mapStateToProps, {
-  deleteQualityTemplate
+  deleteQualityTemplate,
+  deleteKqp,
+  deleteKqpLink
 })(Templates);

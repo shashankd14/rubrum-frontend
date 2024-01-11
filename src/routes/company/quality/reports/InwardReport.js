@@ -12,7 +12,8 @@ import {
     getQualityReportById,
     updateQualityReport,
     deleteQualityReport,
-    fetchQualityReportStageList
+    fetchQualityReportStageList,
+    pdfGenerateQMreportInward
 } from "../../../../appRedux/actions";
 import moment from "moment";
 import { useIntl } from "react-intl";
@@ -20,6 +21,7 @@ import SearchBox from "../../../../components/SearchBox";
 
 import IntlMessages from "../../../../util/IntlMessages";
 import { compose } from 'redux';
+import StatusButton from './create/StatusButton';
 
 const InwardReport = (props) => {
 
@@ -48,6 +50,23 @@ const InwardReport = (props) => {
     const [action, setAction] = useState(undefined);
 
     const disabledEle = 'disabled-ele';
+    const renderStatusColumn = (record) => {
+        const qirId = record.qirId;
+
+        if (qirId === null) {
+          return (
+            <button className="cylinder-button">
+              ToDo
+            </button>
+          );
+        } else {
+          return (
+            <button className="cylinder-button">
+              Completed
+            </button>
+          );
+        }
+      };
 
     const columns = [
         {
@@ -57,6 +76,10 @@ const InwardReport = (props) => {
             filters: [],
             sorter: (a, b) => a.coilNo.length - b.coilNo.length,
             sortOrder: sortedInfo.columnKey === "coilNo" && sortedInfo.order,
+            onCell: (record) => ({
+                className: "gx-link",
+                onClick: () => onPdf(record.inwardEntryId),
+              }),
         },
         {
             title: "Batch Number",
@@ -72,11 +95,14 @@ const InwardReport = (props) => {
             title: "Inward Date",
             dataIndex: "planDate",
             render(value) {
-                return moment(value).format("Do MMM YYYY");
+               // return moment(value).format("Do MMM YYYY");
+               const formattedDate = moment(value, "DD/MM/YYYY").format("Do MMM YYYY");
+                return <span>{formattedDate}</span>;
             },
             key: "planDate",
             filters: [],
-            sorter: (a, b) => a.planDate - b.planDate,
+            //sorter: (a, b) => a.planDate - b.planDate,
+            sorter: (a, b) => moment(a.planDate, "DD/MM/YYYY").valueOf() - moment(b.planDate, "DD/MM/YYYY").valueOf(),
             sortOrder: sortedInfo.columnKey === "planDate" && sortedInfo.order,
         },
         {
@@ -90,15 +116,6 @@ const InwardReport = (props) => {
                 a.materialGrade.length - b.materialGrade.length,
             sortOrder:
                 sortedInfo.columnKey === "materialGrade" && sortedInfo.order,
-        },
-        {
-            title: "Status",
-            dataIndex: "status",
-            key: "status",
-            filters: [],
-            sorter: (a, b) => a.status.length - b.status.length,
-            sortOrder:
-                sortedInfo.columnKey === "status" && sortedInfo.order,
         },
         {
             title: "Thickness",
@@ -117,31 +134,57 @@ const InwardReport = (props) => {
             sortOrder: sortedInfo.columnKey === "targetWeight" && sortedInfo.order,
         },
         {
+            title: "Status",
+            dataIndex: "status",
+            key: "status",
+            filters: [],
+            sorter: (a, b) => a.status.length - b.status.length,
+            sortOrder:
+                sortedInfo.columnKey === "status" && sortedInfo.order,
+                render: (text, record) => renderStatusColumn(record),
+        },
+        {
             title: "Action",
             dataIndex: "",
             key: "x",
             render: (text, record, index) => (
                 <span>
                     <span
-                        className={`gx-link ${record.qirId && disabledEle}`}
-                        onClick={(e) => showTemplateList(record, index, e)}
+                        className="gx-link"
+                        onClick={!record.qirId ? (e) => showTemplateList(record, index, e) : null}
+                        style={!record.qirId ? {} : { opacity: 0.5, pointerEvents: 'none' }}
                     >
                         Create QR
                     </span>
                     <Divider type="vertical" />
                     <span
-                        className={`gx-link ${!record.qirId && disabledEle}`}
-                        onClick={(e) => showReportView(record, index, e)}
+                       className="gx-link"
+                       onClick={record.qirId ? (e) => showReportView(record, index, e) : null}
+                       style={record.qirId ? {} : { opacity: 0.5, pointerEvents: 'none' }}
                     >
                         View
                     </span>
-                    <Divider type="vertical" />
-                    <span className={`gx-link ${!record.qirId && disabledEle}`} onClick={(e) => onEdit(record, index, e)}>
+                        <Divider type="vertical" />
+                        <span 
+                        className="gx-link"
+                        onClick={record.qirId ? (e) => onEdit(record, index, e) : null}
+                        style={record.qirId ? {} : { opacity: 0.5, pointerEvents: 'none' }}>
                         Edit
+                        </span>
+                    <Divider type="vertical" />
+                    <span 
+                    className="gx-link"
+                    onClick={record.qirId ? (e) => onDelete(record, index, e) : null}
+                    style={record.qirId ? {} : { opacity: 0.5, pointerEvents: 'none' }}>
+                        Delete
                     </span>
                     <Divider type="vertical" />
-                    <span className={`gx-link ${!record.qirId && disabledEle}`} onClick={(e) => onDelete(record, index, e)}>
-                        Delete
+                    <span
+                        className="gx-link"
+                        onClick={() => onQRPdf(record.qirId)}
+                        style={record.qirId ? {} : { opacity: 0.5, pointerEvents: 'none' }}
+                    >
+                       PDF
                     </span>
                 </span>
             ),
@@ -156,22 +199,49 @@ const InwardReport = (props) => {
         props.fetchTemplatesList();
     }, []);
 
+    // useEffect(() => {
+    //     if (searchValue) {
+    //       if (searchValue.length >= 3) {
+    //         setPageNo(1);
+    //         props.fetchQualityReportStageList(1, 15, searchValue);
+    //       }
+    //     } else {
+    //       setPageNo(1);
+    //       props.fetchQualityReportStageList(1, 15, searchValue);
+    //     }
+    //   }, [searchValue]);
+
     useEffect(() => {
-        console.log(props)
+        const { template } = props;
+        if(searchValue) {
+            const filteredData = filteredInwardList.filter(item => 
+            (item.coilNo.toLowerCase().includes(searchValue.toLowerCase())) ||
+            (item.customerBatchNo.toLowerCase().includes(searchValue.toLowerCase())));
+
+            setFilteredInwardList(filteredData);
+        } else {
+            setFilteredInwardList(template.data);
+        }  
+           
+    }, [searchValue]);
+
+
+    useEffect(() => {
         if (!props.template.loading && !props.template.error && props.template.operation == "fetchQualityReport") {
             console.log(props.template)
             setQualityReportList(props.template.data)
         } else if (!props.template.loading && !props.template.error && props.template.operation == "fetchQualityReportStage") {
             console.log(props.template)
             setFilteredInwardList(props.template.data)
+            console.log(props.template.data)
         } else if (!props.template.loading && !props.template.error && props.template.operation === 'templateById') {
             console.log(props)
             setShowCreateQrScreen(true)
             // history.push('/company/quality/reports/create/inward')
             props.history.push({ pathname: '/company/quality/reports/create/inward', state: { selectedItemForQr: selectedItemForQr, templateDetails: props.template.data, action: 'create' } })
         } else if (!props.template.loading && !props.template.error && props.template.operation == "templateLinkList") {
-            console.log(props.template)
-            setTemplateLinkList(props.template.data)
+            var tempData = props.template.data;
+            setTemplateLinkList(tempData.filter(x=> x.stageName==="INWARD"))
             setShowCreateModal(true)
         } else if (!props.template.loading && !props.template.error && props.template.operation === 'templateList') {
             console.log(props.template)
@@ -181,23 +251,28 @@ const InwardReport = (props) => {
             props.history.push({ pathname: '/company/quality/reports/create/inward', state: { selectedItemForQr: selectedItemForQr, templateDetails: props.template.data, action: action } })
         }
     }, [props.template.loading, props.template.error, props.template.operation]);
-
     const showCreateQr = () => {
         // props.history.push()
         setAction('create');
         if (templateId)
+        {
+            setTemplateId(templateId);
             props.getQualityTemplateById(templateId)
+        }
     }
 
     const showTemplateList = (record, key) => {
         console.log(record, key)
         setSelectedItemForQr(record)
-        props.fetchTemplatesLinkList({ partyId: record.npartyId });
+        setShowCreateModal(true);
+        props.fetchTemplatesLinkList({ partyId: record.npartyId});
     }
 
     const showReportView = (record, key) => {
-        console.log(record, key)
+        console.log("record, key", record, key)
         setSelectedItemForQr(record)
+        // const templateDetails = qualityReportList.find(qr => qr.coilNumber === record.coilNumber && qr.inwardId === record.inwardEntryId)
+        // props.history.push({pathname: '/company/quality/reports/create/postdispatch', state: {selectedItemForQr: record, templateDetails: templateDetails, action: 'view'}})
         setAction('view');
         props.getQualityReportById(record.qirId);
 
@@ -205,6 +280,9 @@ const InwardReport = (props) => {
 
     const onDelete = (record, key, e) => {
         console.log(record, key);
+        console.log("record.qirId", record.qirId);
+        props.deleteQualityReport(record.qirId);
+       // props.deleteQualityReport(record.qirId, record.requestId="deleteInwardQR");
     };
 
     const onEdit = (record, key, e) => {
@@ -226,6 +304,23 @@ const InwardReport = (props) => {
         }
     }, [props.party.loading, props.party.error]);
 
+    const [payload, setPayload] = useState({});
+    const onPdf = (inwardEntryId) => {
+        setPayload({
+            inwardId:{inwardId:inwardEntryId},
+            type:'inward'
+        })
+    }
+    useEffect(() => {
+        props.pdfGenerateQMreportInward(payload);
+      }, [payload]);
+
+      const onQRPdf = (qirId) => {
+        setPayload({
+            qirId:qirId,
+            type:'QR'
+        })
+    }
 
     return (
         <>
@@ -258,19 +353,19 @@ const InwardReport = (props) => {
                 <div className="table-operations gx-col">
                     <SearchBox
                         styleName="gx-flex-1"
-                        placeholder="Search for customers"
+                        placeholder="Search by Coil no. or Customer batch no"
                         value={searchValue}
                         onChange={(e) => setSearchValue(e.target.value)}>
                     </SearchBox>
 
                 </div>
             </div>
-            <div className="gx-flex-row gx-flex-1">
+            {/* <div className="gx-flex-row gx-flex-1"> */}
+            <div>
                 {(filteredInwardList.length > 0) && <Table
                     className="gx-table-responsive"
                     columns={columns}
                     dataSource={filteredInwardList}
-                    onChange={handleChange}
                     pagination={{
                         pageSize: 15,
                         onChange: (page) => {
@@ -295,7 +390,7 @@ const InwardReport = (props) => {
                         <Row>
                             <Col span={12}>
                                 <strong>Customer Name</strong>
-                                <p>{selectedItemForQr?.party?.partyName}</p>
+                                <p>{selectedItemForQr?.partyName}</p>
                             </Col>
                             <Col span={12} style={{ right: 0, position: 'absolute' }}>
                                 <strong>Stage</strong>
@@ -371,5 +466,6 @@ export default connect(mapStateToProps, {
     getQualityReportById,
     updateQualityReport,
     deleteQualityReport,
-    fetchQualityReportStageList
+    fetchQualityReportStageList,
+    pdfGenerateQMreportInward
 })(withRouter(InwardReport));

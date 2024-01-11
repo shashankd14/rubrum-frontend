@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Card, Col, Icon, Radio, Row } from 'antd'
+import { Button, Card, Col, Icon, Input, Radio, Row } from 'antd'
 import Dragger from 'antd/lib/upload/Dragger'
+import { useHistory } from 'react-router';
 
 const InwardReportTemplate = (props) => {
 
@@ -70,7 +71,14 @@ const InwardReportTemplate = (props) => {
         console.log(val)
         setTemplateData(val)
     }
-
+    const [comments, setComment] = useState('');
+    const handleCommentChange = (e) => {
+            setComment(e.target.value);
+            props.onCommentChange(e.target.value);
+    };
+    useEffect(() => {
+        setComment(props.templateDetails.comments)
+      }, [props.templateDetails.comments]);
     const onFilesChange = (type, file) => {
         templateData[type].fileList = file.fileList.slice(-1)
         templateData[type].fileName = templateData[type].fileList[0].name;
@@ -85,6 +93,10 @@ const InwardReportTemplate = (props) => {
     const createTemplate = () => {
         props.handleCreate(templateData)
     }
+    const history = useHistory();
+    const handleCancel = () => {
+      history.goBack(); 
+    };
 
     return (
         <div>
@@ -101,8 +113,8 @@ const InwardReportTemplate = (props) => {
                     </Col>
                     <Col span={8}>
                         <div style={{ display: 'grid', marginTop: 45 }}>
-                            {props.action === 'view' && props.templateDetails.packingIntactPreSingedURL && <img src={props.templateDetails.packingIntactPreSingedURL} style={{ width: 50 }} />}
-                            {props.action === 'edit' && <> {props.templateDetails.packingIntactPreSingedURL && <img src={props.templateDetails.packingIntactPreSingedURL} style={{ width: 50 }} />}
+                            {props.action === 'view' && props.templateDetails.packingIntactPreSingedURL && <img src={props.templateDetails.packingIntactPreSingedURL} alt="PackingIntact" style={{ width: 50 }} />}
+                            {props.action === 'edit' && <> {props.templateDetails.packingIntactPreSingedURL && <img src={props.templateDetails.packingIntactPreSingedURL} alt="PackingIntact" style={{ width: 50 }} />}
                                 <Dragger
                                     name='packingIntact'
                                     height={50}
@@ -144,8 +156,8 @@ const InwardReportTemplate = (props) => {
                     </Col>
                     <Col span={8}>
                         <div style={{ display: 'grid', marginTop: 45 }}>
-                            {props.action === 'view' && props.templateDetails.coilBendPreSingedURL && <img src={props.templateDetails.packingIntactPreSingedURL} style={{ width: 50 }} />}
-                            {props.action === 'edit' && <> {props.templateDetails.coilBendPreSingedURL && <img src={props.templateDetails.packingIntactPreSingedURL} style={{ width: 50 }} />}
+                            {props.action === 'view' && props.templateDetails.coilBendPreSingedURL && <img src={props.templateDetails.coilBendPreSingedURL} alt="CoilBend" style={{ width: 50 }} />}
+                            {props.action === 'edit' && <> {props.templateDetails.coilBendPreSingedURL && <img src={props.templateDetails.coilBendPreSingedURL} alt="CoilBend" style={{ width: 50 }} />}
                                 <Dragger
                                     name='packingIntact'
                                     height={50}
@@ -169,7 +181,7 @@ const InwardReportTemplate = (props) => {
                             >
                                 <p>
                                     <Icon type="upload" />
-                                    &nbsp;Click or drag packing intact img
+                                    &nbsp;Click or drag coil bend img
                                 </p>
                             </Dragger>}
                         </div>
@@ -187,8 +199,8 @@ const InwardReportTemplate = (props) => {
                     </Col>
                     <Col span={8}>
                         <div style={{ display: 'grid', marginTop: 45 }}>
-                            {props.action === 'view' && props.templateDetails.rustObservedPreSingedURL && <img src={props.templateDetails.rustObservedPreSingedURL} alt="Forest" style={{ width: 50 }} />}
-                            {props.action === 'edit' && <> {props.templateDetails.rustObservedPreSingedURL && <img src={props.templateDetails.rustObservedPreSingedURL} alt="Forest" style={{ width: 50 }} />}
+                            {props.action === 'view' && props.templateDetails.rustObservedPreSingedURL && <img src={props.templateDetails.rustObservedPreSingedURL} alt="rustObserved" style={{ width: 50 }} />}
+                            {props.action === 'edit' && <> {props.templateDetails.rustObservedPreSingedURL && <img src={props.templateDetails.rustObservedPreSingedURL} alt="rustObserved" style={{ width: 50 }} />}
                                 <Dragger
                                     name='packingIntact'
                                     height={50}
@@ -212,7 +224,7 @@ const InwardReportTemplate = (props) => {
                             >
                                 <p>
                                     <Icon type="upload" />
-                                    &nbsp;Click or drag packing intact img
+                                    &nbsp;Click or drag rust Observed img
                                 </p>
                             </Dragger>}
                         </div>
@@ -230,8 +242,8 @@ const InwardReportTemplate = (props) => {
                     </Col>
                     <Col span={8}>
                         <div style={{ display: 'grid', marginTop: 45 }}>
-                            {props.action === 'view' && props.templateDetails.safetyIssuesPreSingedURL && <img src={props.templateDetails.safetyIssuesPreSingedURL} alt="Forest" style={{ width: 50 }} />}
-                            {props.action === 'edit' && <> {props.templateDetails.safetyIssuesPreSingedURL && <img src={props.templateDetails.safetyIssuesPreSingedURL} alt="Forest" style={{ width: 50 }} />}
+                            {props.action === 'view' && props.templateDetails.safetyIssuesPreSingedURL && <img src={props.templateDetails.safetyIssuesPreSingedURL} alt="safetyIssue" style={{ width: 50 }} />}
+                            {props.action === 'edit' && <> {props.templateDetails.safetyIssuesPreSingedURL && <img src={props.templateDetails.safetyIssuesPreSingedURL} alt="safetyIssue" style={{ width: 50 }} />}
                                 <Dragger
                                     name='packingIntact'
                                     height={50}
@@ -255,7 +267,7 @@ const InwardReportTemplate = (props) => {
                             >
                                 <p>
                                     <Icon type="upload" />
-                                    &nbsp;Click or drag packing intact img
+                                    &nbsp;Click or drag safety issue img
                                 </p>
                             </Dragger>}
                         </div>
@@ -273,8 +285,8 @@ const InwardReportTemplate = (props) => {
                     </Col>
                     <Col span={8}>
                         <div style={{ display: 'grid', marginTop: 45 }}>
-                            {props.action === 'view' && props.templateDetails.waterExposurePreSingedURL && <img src={props.templateDetails.waterExposurePreSingedURL} alt="Forest" style={{ width: 50 }} />}
-                            {props.action === 'edit' && <> {props.templateDetails.waterExposurePreSingedURL && <img src={props.templateDetails.waterExposurePreSingedURL} alt="Forest" style={{ width: 50 }} />}
+                            {props.action === 'view' && props.templateDetails.waterExposurePreSingedURL && <img src={props.templateDetails.waterExposurePreSingedURL} alt="waterExposure" style={{ width: 50 }} />}
+                            {props.action === 'edit' && <> {props.templateDetails.waterExposurePreSingedURL && <img src={props.templateDetails.waterExposurePreSingedURL} alt="waterExposure" style={{ width: 50 }} />}
                                 <Dragger
                                     name='packingIntact'
                                     height={50}
@@ -298,7 +310,7 @@ const InwardReportTemplate = (props) => {
                             >
                                 <p>
                                     <Icon type="upload" />
-                                    &nbsp;Click or drag packing intact img
+                                    &nbsp;Click or drag water exposure img
                                 </p>
                             </Dragger>}
                         </div>
@@ -316,8 +328,8 @@ const InwardReportTemplate = (props) => {
                     </Col>
                     <Col span={8}>
                         <div style={{ display: 'grid', marginTop: 45 }}>
-                            {props.action === 'view' && props.templateDetails.wireRopeDamagesPreSingedURL && <img src={props.templateDetails.wireRopeDamagesPreSingedURL} alt="Forest" style={{ width: 50 }} />}
-                            {props.action === 'edit' && <> {props.templateDetails.wireRopeDamagesPreSingedURL && <img src={props.templateDetails.wireRopeDamagesPreSingedURL} alt="Forest" style={{ width: 50 }} />}
+                            {props.action === 'view' && props.templateDetails.wireRopeDamagesPreSingedURL && <img src={props.templateDetails.wireRopeDamagesPreSingedURL} alt="wirwRopeDamage" style={{ width: 50 }} />}
+                            {props.action === 'edit' && <> {props.templateDetails.wireRopeDamagesPreSingedURL && <img src={props.templateDetails.wireRopeDamagesPreSingedURL} alt="wirwRopeDamage" style={{ width: 50 }} />}
                                 <Dragger
                                     name='packingIntact'
                                     height={50}
@@ -341,16 +353,34 @@ const InwardReportTemplate = (props) => {
                             >
                                 <p>
                                     <Icon type="upload" />
-                                    &nbsp;Click or drag packing intact img
+                                    &nbsp;Click or drag wire rope damage img
                                 </p>
                             </Dragger>}
+                        </div>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col span={8}>
+                        <div style={{ display: 'grid', marginTop: 50 }}>
+                            <label>Comment:</label>
+                        </div>
+                    </Col>
+                    <Col span={16}>
+                        <div style={{ display: 'grid', marginTop: 45 }}>
+                            <Input
+                                id="comments"
+                                onChange={handleCommentChange}
+                                value={comments}
+                                required
+                                disabled={isDisabled}
+                            /> 
                         </div>
                     </Col>
                 </Row>
 
                 {props.action !== 'view' && <Row >
                     <div style={{ marginTop: 45 }}>
-                        <Button style={{ marginLeft: 8 }} disabled={isDisabled}>
+                        <Button style={{ marginLeft: 8 }} onClick={handleCancel}>
                             Cancel
                         </Button>
                         {props.from && props.from === "qr" ? props.action === 'create' ? <Button type="primary" htmlType="submit" onClick={createTemplate} disabled={isDisabled}>

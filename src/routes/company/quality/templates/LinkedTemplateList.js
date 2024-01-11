@@ -1,3 +1,5 @@
+//src-routes-company-quality-templates-LinkedTemplateList.js
+
 import React, { useEffect, useState } from 'react'
 import { connect } from "react-redux";
 import { Button, Select, Table } from 'antd';
@@ -6,6 +8,7 @@ import SearchBox from '../../../../components/SearchBox';
 import IntlMessages from '../../../../util/IntlMessages';
 
 import {
+    fetchPartyList,
     fetchTemplatesLinkList,
     fetchTemplatesLinkListSuccess
 } from "../../../../appRedux/actions";
@@ -29,15 +32,41 @@ const LinkedTemplateList = (props) => {
 
     useEffect(() => {
         console.log("data load")
+        props.fetchPartyList();
         props.fetchTemplatesLinkList();
     }, []);
 
    
 
     useEffect(() => {
-        if (!props.template.loading && !props.template.error) {
+        // if (!props.template.loading && !props.template.error) {
+        if (!props.template.loading && !props.template.error && props.template.operation === 'templateLinkList') {
             console.log(props.template)
-            setTemplateList(props.template.data)
+
+            const jsonData =props.template.data;
+            const groupedData = {};
+            jsonData.forEach((item) => {
+                const { templateId, templateName, stageName, partyName } = item;
+              
+                const key = `${templateId}-${templateName}-${stageName}`;
+              
+                if (!groupedData[key]) {
+                  // If the group doesn't exist yet, create it
+                  groupedData[key] = {
+                    templateId,
+                    templateName,
+                    stageName,
+                    parties: [],
+                  };
+                }
+              
+                // Add the partyName to the parties array in the group
+                groupedData[key].parties.push(partyName);
+              });
+              const groupedArray = Object.values(groupedData);
+              console.log(groupedArray);
+           // setTemplateList(props.template.data)
+           setTemplateList(groupedArray)
         }
     }, [props.template.loading, props.template.error]);
 
@@ -73,13 +102,13 @@ const LinkedTemplateList = (props) => {
                 </div>
                 <div className="gx-w-50">
                     {actions.export && <Button
-                        size="medium"
+                        size="default"
                         className="gx-float-right"
                     >
                         {intl.formatMessage({ id: actions.export.label })}
                     </Button>}
                     {actions.print && <Button
-                        size="medium"
+                        size="default"
                         className="gx-float-right"
                     >
                         {intl.formatMessage({ id: actions.print.label })}
@@ -90,13 +119,17 @@ const LinkedTemplateList = (props) => {
                 className="gx-table-responsive"
                 columns={props.columns}
                 dataSource={templateList}
+                // dataSource={templateList.map((record) => ({
+                //     ...record,
+                //     key: record.Id, 
+                //   }))}
                 onChange={handleChange}
                 rowSelection={rowSelection}
                 pagination={{
-                    pageSize: "15",
+                    pageSize: 15,
                     onChange: (page) => {
                         setPageNo(page);
-                        props.fetchTemplatesList(page, 15, searchValue);
+                        props.fetchTemplatesLinkList(page, 15, searchValue);
                     },
                     current: pageNo,
                     total: totalPageItems,
@@ -108,9 +141,11 @@ const LinkedTemplateList = (props) => {
 
 const mapStateToProps = (state) => ({
     template: state.quality,
+    party: state.party,
 });
 
 export default connect(mapStateToProps, {
+    fetchPartyList,
     fetchTemplatesLinkList,
     fetchTemplatesLinkListSuccess
 })(LinkedTemplateList);

@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { connect } from "react-redux";
-import { Button, Select, Table } from 'antd';
+import { Button, Table } from 'antd';
 import { useIntl } from "react-intl";
-import SearchBox from '../../../../components/SearchBox';
-import IntlMessages from '../../../../util/IntlMessages';
+import SearchBox from '../../../../components/SearchBox'; 
 
 import {
     fetchKqpLinkList,
-    fetchKqpLinkListSuccess
+    fetchKqpLinkListSuccess,
+    fetchPartyList
 } from "../../../../appRedux/actions";
 
 const LinkedTemplateList = (props) => {
@@ -18,43 +18,99 @@ const LinkedTemplateList = (props) => {
     const [pageNo, setPageNo] = useState(1);
     const [totalPageItems, setTotalItems] = useState(0);
     const [templateList, setTemplateList] = useState([]);
-
+    const [filteredTemplateList, setFilteredTemplateList] = useState([]);
 
     useEffect(() => {
-        console.log("init")
-        setTemplateList([]);
-        setSearchValue([]);
-        setPageNo([]);
+        // setTemplateList([]);
+        // setSearchValue([]);
+        // setPageNo([]);
     }, []);
 
     useEffect(() => {
         console.log("data load")
-        props.fetchKqpLinkList();
+        props.fetchKqpLinkList(1, 15, searchValue);
     }, []);
-
-   
-
     useEffect(() => {
         if (!props.template.loading && !props.template.error && props.template.operation === 'kqpLinkList') {
-            console.log(props.template)
-            setTemplateList(props.template.data)
-        }
-    }, [props.template.loading, props.template.error]);
-
-    useEffect(() => {
-        if (searchValue) {
-            if (searchValue.length >= 3) {
+            const jsonData = props.template.data;
+            const groupedData = {};
+            jsonData.forEach((item) => {
+                const { kqpId, kqpName, stageName, partyName, partyIdList } = item;
+    
+                const key = `${kqpId}-${kqpName}-${stageName}-${partyIdList}`;
+    
+                if (!groupedData[key]) {
+                    // If the group doesn't exist yet, create it
+                    groupedData[key] = {
+                        kqpId,
+                        kqpName,
+                        stageName,
+                        parties: [],
+                    };
+                }
+                //  groupedData[key].parties.push(partyName);
+                 const partyIds = JSON.parse(partyIdList);;
+                 console.log(partyIds)
+                 if (Array.isArray(partyIds)) {
+                 const partyNames = partyIds.map((partyId) => {
+                    // Check if partyId is defined
+                    if (partyId !== undefined) {
+                      const matchedParty = props.party.partyList.find((party) => party.nPartyId === partyId);
+                      return matchedParty ? matchedParty.partyName : null;
+                    } else {
+                      return null; 
+                    }
+                  });
+                  console.log(partyNames)
+                  groupedData[key].parties.push(partyNames);
+                }
+            });
+            const groupedArray = Object.values(groupedData);
+            console.log(groupedArray);
+    
+            // Update the totalPageItems state
+            setTotalItems(groupedArray.length);
+            setTemplateList(groupedArray);
+            
+            // Filter the data based on the searchValue
+            if (searchValue && searchValue.length >= 2) {
+                // Filter the templateList based on the searchValue
+                const filteredList = groupedArray.filter(item => {
+                    if(item.kqpId?.toString() === searchValue ||
+                    item.kqpName?.toLowerCase().includes(searchValue.toLowerCase()) )  {
+                    return item;
+                }
+            });
+                setFilteredTemplateList(filteredList);
                 setPageNo(1);
-                // props.fetchInwardList(1, 20, searchValue, customerValue);
+            } else {
+                
+                setFilteredTemplateList(groupedArray);
             }
-        } else {
-            setPageNo(1);
-            //   props.fetchInwardList(1, 20, searchValue, customerValue);
         }
-    }, [searchValue]);
+    }, [props.template.loading, props.template.error, props.template.operation]);
 
-    const handleChange = () => {
+    // useEffect(() => {
+    //     if (searchValue) {
+    //         if (searchValue.length >= 3) {
+    //             setPageNo(1);
+    //             // props.fetchKqpLinkList(1, 20, searchValue, customerValue);
+    //             props.fetchKqpLinkList(1, 20, searchValue);
+    //         }
+    //     } else {
+    //         setPageNo(1);
+    //            props.fetchKqpLinkList(1, 20);
+    //     }
+    // }, [searchValue]);
+    const handleSearch = (value, page) => {
+        setSearchValue(value);
+        setPageNo(1); 
+        props.fetchKqpLinkList(page, 15, searchValue); 
+    };
 
+    const handleChange = (pagination, filters, sorter, extra) => {
+        setPageNo(pagination.current);
+        props.fetchKqpLinkList(pagination.current, 15, searchValue);
     }
 
     const rowSelection = {}
@@ -67,19 +123,19 @@ const LinkedTemplateList = (props) => {
                         styleName="gx-flex-1"
                         placeholder={intl.formatMessage({ id: actions.search.placeholder })}
                         value={searchValue}
-                        onChange={(e) => setSearchValue(e.target.value)}>
+                        onChange={(e) => handleSearch(e.target.value)}>
                     </SearchBox>}
 
                 </div>
                 <div className="gx-w-50">
                     {actions.export && <Button
-                        size="medium"
+                        size="default"
                         className="gx-float-right"
                     >
                         {intl.formatMessage({ id: actions.export.label })}
                     </Button>}
                     {actions.print && <Button
-                        size="medium"
+                        size="default"
                         className="gx-float-right"
                     >
                         {intl.formatMessage({ id: actions.print.label })}
@@ -89,14 +145,14 @@ const LinkedTemplateList = (props) => {
             <Table
                 className="gx-table-responsive"
                 columns={props.columns}
-                dataSource={templateList}
+                dataSource={filteredTemplateList}
                 onChange={handleChange}
                 rowSelection={rowSelection}
                 pagination={{
-                    pageSize: "15",
+                    pageSize: 15,
                     onChange: (page) => {
                         setPageNo(page);
-                        props.fetchTemplatesList(page, 15, searchValue);
+                        props.fetchKqpLinkList(page, 15, searchValue);
                     },
                     current: pageNo,
                     total: totalPageItems,
@@ -108,9 +164,11 @@ const LinkedTemplateList = (props) => {
 
 const mapStateToProps = (state) => ({
     template: state.quality,
+    party: state.party
 });
 
 export default connect(mapStateToProps, {
     fetchKqpLinkList,
-    fetchKqpLinkListSuccess
+    fetchKqpLinkListSuccess,
+    fetchPartyList
 })(LinkedTemplateList);

@@ -1,3 +1,5 @@
+//src-routes-company-quality-templates-Templates.js
+
 import React, { useEffect, useState } from "react";
 import { connect } from 'react-redux';
 import { useLocation } from 'react-router-dom';
@@ -9,7 +11,8 @@ import TemplateList from "./TemplateList";
 import LinkedTemplateList from "./LinkedTemplateList";
 
 import { 
-  deleteQualityTemplate
+  deleteQualityTemplate,
+  deleteQualityTemplateLink
 } from "../../../../appRedux/actions"
 
 const Templates = (props) => {
@@ -44,7 +47,6 @@ const Templates = (props) => {
             <span
                 className="gx-link"
                 onClick={() =>
-                    // console.log("Delete", record)
                     props.deleteQualityTemplate(record.templateId)
                 }
             >
@@ -71,7 +73,7 @@ const templateLinkListAactionColumn = {
       <span>
           <span
               className="gx-link"
-              onClick={() => props.history.push(`/company/quality/templates/link/edit/${record.id}`)}
+              onClick={() => props.history.push(`/company/quality/templates/link/edit/${record.templateId}`)}
           >
               Edit Link
           </span>
@@ -79,8 +81,7 @@ const templateLinkListAactionColumn = {
           <span
               className="gx-link"
               onClick={() =>
-                  // console.log("Delete", record)
-                  props.deleteQualityTemplate(record.templateId)
+                  props.deleteQualityTemplateLink(record.templateId)
               }
           >
               Delete
@@ -132,5 +133,6 @@ const mapStateToProps = state => ({
 });
 
 export default connect(mapStateToProps, {
-  deleteQualityTemplate
+  deleteQualityTemplate,
+  deleteQualityTemplateLink
 })(Templates);

@@ -122,7 +122,7 @@ const CreateTemplate = (props) => {
                             disabled={action !== "create"}
                         >
                             {STAGES.map((stage) => (
-                                <Option value={stage.value}>
+                                <Option value={stage.value} key={stage.value} >
                                     {stage.label}
                                 </Option>
                             ))}

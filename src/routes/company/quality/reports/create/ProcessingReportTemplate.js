@@ -1,9 +1,18 @@
 import React, { useEffect, useState } from 'react'
-import { useHistory } from "react-router";
-import { Button, Card, Col, Icon, Input, Radio, Row, Select } from 'antd'
+import { Button, Card, Col, Icon, Input, Radio, Row, Select, Modal } from 'antd'
 import Dragger from 'antd/lib/upload/Dragger'
 import { PROCESSES } from "../../../../../constants/quality/ComponentConstants";
-
+import SlittingForm from '../create/process/SlittingForm';
+import CuttingForm from '../create/process/CuttingForm';
+import SlitAndCutForm from '../create/process/SlitAndCutForm';
+import { connect, useDispatch } from 'react-redux';
+import { 
+  getQualityPacketDetails,
+  fetchQualityReportList,
+  fetchQualityReportStageList,
+  getCoilPlanDetails
+} from "../../../../../appRedux/actions"
+import { Link, useLocation, useHistory, withRouter } from "react-router-dom";
 
 const ProcessingReportTemplate = (props) => {
 
@@ -27,7 +36,7 @@ const ProcessingReportTemplate = (props) => {
     },
     3: {
       "id": 3,
-      "type": "packingRequirements",
+      "type": "processingReport3",
       "value": "Yes",
       "fileName": "",
       "fileList": []
@@ -46,13 +55,42 @@ const ProcessingReportTemplate = (props) => {
       "fileName": "",
       "fileList": []
     },
-
+    6: {
+      "id": 6,
+      "type": "processingReport1",
+      "value": "",
+      "fileName": "",
+      "fileList": []
+    },
+    7: {
+      "id": 7,
+      "type": "processingReport2",
+      "value": "",
+      "fileName": "",
+      "fileList": []
+    },
+    8: {
+      "id": 8,
+      "type": "processingReport4",
+      "value": "",
+      "fileName": "",
+      "fileList": []
+    },
+    formData: {
+      "id": "formData",
+      "type": "customerApproval",
+      "value": "",
+      "fileName": "",
+      "fileList": []
+    },
   });
 
   const [isDisabled, setIsDisabled] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  
+  const dispatch = useDispatch()
 
   useEffect(() => {
-    // console.log(props)
     setIsDisabled(props.action === 'view')
     if (props.action !== 'create') {
       const templateDetailsData = JSON.parse(props.templateDetails.templateDetails)
@@ -60,29 +98,67 @@ const ProcessingReportTemplate = (props) => {
       templateDetailsData.forEach((td) => {
         val[td.id] = td;
       });
-      console.log(val)
       setTemplateData(val)
     }
   }, [props.templateDetails]);
-
   const onFilesChange = (type, file) => {
-    console.log(type, file)
     templateData[type].fileList = file.fileList.slice(-1)
     templateData[type].fileName = templateData[type].fileList[0].name;
     console.log(templateData)
     setTemplateData({ ...templateData })
   }
+  const [comments, setComment] = useState('');
+    const handleCommentChange = (e) => {
+            setComment(e.target.value);
+            props.onCommentChange(e.target.value);
+    };
+    useEffect(() => {
+        setComment(props.templateDetails.comments)
+      }, [props.templateDetails.comments]);
 
   const onOptionChange = (type, value) => {
-    console.log(type, value)
     templateData[type].value = value.target ? value.target.value : value
-    console.log(templateData)
+    templateData[type].processId = getProcessId(value);
     setTemplateData({ ...templateData })
   }
 
+  function getProcessId(value) {
+    if (value === 'CUTTING') {
+      return 1;
+    } else if (value === 'SLITTING') {
+      return 2;
+    } else {
+      return 3;
+    }
+  }
   const createTemplate = () => {
     props.handleCreate(templateData)
   }
+
+  const updateFormData = (formData) => {
+    // templateData['formData']['value'] = formData;
+    // setShowCreateModal(false);
+    if (!templateData['formData']) {
+      templateData['formData'] = {};
+    }
+    templateData['formData']['value'] = formData;
+    setShowCreateModal(false);
+  }
+
+  const handleCancel = () => {
+    //history.goBack(); 
+    props.history.push('/company/quality/reports')
+  };
+
+const handleClick = () => {
+  setShowCreateModal(true);
+  const payload = JSON.stringify({
+          coilNo : props.location.state.selectedItemForQr.coilNo,
+          partDetailsId : props.location.state.selectedItemForQr.planId
+      });
+      props.getCoilPlanDetails(props.location.state.selectedItemForQr.coilNo);
+      dispatch(getQualityPacketDetails(payload));
+}
 
   return (
     <div>
@@ -99,7 +175,7 @@ const ProcessingReportTemplate = (props) => {
                 value={templateData[1].value}
               >
                 {PROCESSES.map((stage) => (
-                  <Option value={stage.value}>
+                  <Option key={stage.value} value={stage.value}>
                     {stage.label}
                   </Option>
                 ))}
@@ -108,10 +184,14 @@ const ProcessingReportTemplate = (props) => {
           </Col>
           <Col span={8}>
             <div style={{ display: 'grid', marginTop: 33 }}>
+              {/* {templateData[1].value && <Button
+              onClick={() =>  history.push(`/company/quality/reports/create/process/${templateData[1].value.toLowerCase()}`)}
+              >
+                {`FillXXX ${templateData[1].value.charAt(0).toUpperCase() + templateData[1].value.slice(1).toLowerCase()} Process form first`}
+              </Button>} */}
               {templateData[1].value && <Button
-              onClick={
-              () =>  history.push(`/company/quality/templates/create/process/${templateData[1].value.toLowerCase()}`)
-              }
+               // onClick={() => setShowCreateModal(true)}
+               onClick={handleClick}
               >
                 {`Fill ${templateData[1].value.charAt(0).toUpperCase() + templateData[1].value.slice(1).toLowerCase()} Process form first`}
               </Button>}
@@ -132,7 +212,7 @@ const ProcessingReportTemplate = (props) => {
             </div>
           </Col>
         </Row>
-        <Row>
+        {/* <Row>
           <Col span={8}>
             <div style={{ display: 'grid', marginTop: 45 }}>
               <label>Packing Requirements</label>
@@ -142,7 +222,7 @@ const ProcessingReportTemplate = (props) => {
               </Radio.Group>
             </div>
           </Col>
-        </Row>
+        </Row> */}
 
         <Row>
           <Col span={8}>
@@ -164,6 +244,7 @@ const ProcessingReportTemplate = (props) => {
                 onChange={(e) => onOptionChange(5, e)}
                 required
                 disabled={isDisabled}
+                value={templateData[5].value}
               />
             </div>
           </Col>
@@ -171,14 +252,14 @@ const ProcessingReportTemplate = (props) => {
         <Row>
           <Col span={8}>
             <div style={{ display: 'grid', marginTop: 15 }}>
-              {props.action === 'view' && props.templateDetails.packingIntactPreSingedURL && <img src={props.templateDetails.packingIntactPreSingedURL} style={{ width: 50 }} />}
-              {props.action === 'edit' && <> {props.templateDetails.packingIntactPreSingedURL && <img src={props.templateDetails.packingIntactPreSingedURL} style={{ width: 50 }} />}
+              {props.action === 'view' && props.templateDetails.processingReport1URL && <img src={props.templateDetails.processingReport1URL} alt="ProcessingReport" style={{ width: 50 }} />}
+              {props.action === 'edit' && <> {props.templateDetails.processingReport1URL && <img src={props.templateDetails.processingReport1URL} alt="ProcessingReport" style={{ width: 50 }} />}
                 <Dragger
-                  name='packingIntact'
+                  name='processingReport1'
                   height={50}
                   beforeUpload={() => false}
                   action=''
-                  onChange={(e) => onFilesChange(1, e)}
+                  onChange={(e) => onFilesChange(6, e)}
                 // fileList={templateData[1].fileList}
                 >
                   <p>
@@ -187,11 +268,11 @@ const ProcessingReportTemplate = (props) => {
                   </p>
                 </Dragger> </>}
               {props.action === 'create' && <Dragger
-                name='packingIntact'
+                name='processingReport1'
                 height={50}
                 beforeUpload={() => false}
                 action=''
-                onChange={(e) => onFilesChange(1, e)}
+                onChange={(e) => onFilesChange(6, e)}
               // fileList={templateData[1].fileList}
               >
                 <p>
@@ -202,23 +283,187 @@ const ProcessingReportTemplate = (props) => {
             </div>
           </Col>
         </Row>
-        {props.action !== 'view' && <Row >
+        <Row>
+          <Col span={8}>
+            <div style={{ display: 'grid', marginTop: 15 }}>
+              {props.action === 'view' && props.templateDetails.processingReport2URL && <img src={props.templateDetails.processingReport2URL} alt="ProcessingReport" style={{ width: 50 }} />}
+              {props.action === 'edit' && <> {props.templateDetails.processingReport2URL && <img src={props.templateDetails.processingReport2URL} alt="ProcessingReport" style={{ width: 50 }} />}
+                <Dragger
+                  name='processingReport2'
+                  height={50}
+                  beforeUpload={() => false}
+                  action=''
+                  onChange={(e) => onFilesChange(7, e)}
+                // fileList={templateData[1].fileList}
+                >
+                  <p>
+                    <Icon type="upload" />
+                    &nbsp;Click or drag img
+                  </p>
+                </Dragger> </>}
+              {props.action === 'create' && <Dragger
+                name='processingReport2'
+                height={50}
+                beforeUpload={() => false}
+                action=''
+                onChange={(e) => onFilesChange(7, e)}
+              // fileList={templateData[1].fileList}
+              >
+                <p>
+                  <Icon type="upload" />
+                  &nbsp;Click or drag img
+                </p>
+              </Dragger>}
+            </div>
+          </Col>
+        </Row>
+        <Row>
+          <Col span={8}>
+            <div style={{ display: 'grid', marginTop: 15 }}>
+              {props.action === 'view' && props.templateDetails.processingReport3URL && <img src={props.templateDetails.processingReport3URL} alt="ProcessingReport" style={{ width: 50 }} />}
+              {props.action === 'edit' && <> {props.templateDetails.processingReport3URL && <img src={props.templateDetails.processingReport31URL} alt="ProcessingReport" style={{ width: 50 }} />}
+                <Dragger
+                  name='processingReport3'
+                  height={50}
+                  beforeUpload={() => false}
+                  action=''
+                  onChange={(e) => onFilesChange(3, e)}
+                // fileList={templateData[1].fileList}
+                >
+                  <p>
+                    <Icon type="upload" />
+                    &nbsp;Click or drag img
+                  </p>
+                </Dragger> </>}
+              {props.action === 'create' && <Dragger
+                name='processingReport3'
+                height={50}
+                beforeUpload={() => false}
+                action=''
+                onChange={(e) => onFilesChange(3, e)}
+              // fileList={templateData[1].fileList}
+              >
+                <p>
+                  <Icon type="upload" />
+                  &nbsp;Click or drag img
+                </p>
+              </Dragger>}
+            </div>
+          </Col>
+        </Row>
+        <Row>
+          <Col span={8}>
+            <div style={{ display: 'grid', marginTop: 15 }}>
+              {props.action === 'view' && props.templateDetails.processingReport4URL && <img src={props.templateDetails.processingReport4URL} alt="ProcessingReport" style={{ width: 50 }} />}
+              {props.action === 'edit' && <> {props.templateDetails.processingReport4URL && <img src={props.templateDetails.processingReport4URL} alt="ProcessingReport" style={{ width: 50 }} />}
+                <Dragger
+                  name='processingReport4'
+                  height={50}
+                  beforeUpload={() => false}
+                  action=''
+                  onChange={(e) => onFilesChange(8, e)}
+                // fileList={templateData[1].fileList}
+                >
+                  <p>
+                    <Icon type="upload" />
+                    &nbsp;Click or drag img
+                  </p>
+                </Dragger> </>}
+              {props.action === 'create' && <Dragger
+                name='processingReport4'
+                height={50}
+                beforeUpload={() => false}
+                action=''
+                onChange={(e) => onFilesChange(8, e)}
+              // fileList={templateData[1].fileList}
+              >
+                <p>
+                  <Icon type="upload" />
+                  &nbsp;Click or drag img
+                </p>
+              </Dragger>}
+            </div>
+          </Col>
+        </Row>
+        <Row>
+            <Col span={8}>
+                <div style={{ display: 'grid', marginTop: 50 }}>
+                    <label>Comment:</label>
+                </div>
+              </Col>
+              <Col span={16}>
+                <div style={{ display: 'grid', marginTop: 45 }}>
+                  <Input
+                    id="comments"
+                    onChange={handleCommentChange}
+                    value={comments}
+                    required
+                   disabled={isDisabled}
+                  /> 
+                </div>
+            </Col>
+        </Row>
+        {/* {props.action !== 'view' && <Row >
           <div style={{ marginTop: 45 }}>
-            <Button style={{ marginLeft: 8 }} disabled={isDisabled}>
+            <Button style={{ marginLeft: 8 }} onClick={handleCancel}>
               Cancel
             </Button>
             {props.action === 'create' ? <Button type="primary" htmlType="submit" onClick={createTemplate} disabled={isDisabled}>
-              Create Template
+              Create Report
             </Button> :
               <Button type="primary" htmlType="submit" onClick={createTemplate} disabled={isDisabled}>
-                Update Template
+                Update Report
               </Button>
             }
           </div>
-        </Row>}
+        </Row>} */}
+          <Row>
+          <div style={{ marginTop: 45 }}>
+            {props.action === 'view' ? (
+             <Button type="primary" style={{ marginLeft: 8 }} onClick={handleCancel}>
+                 Back
+            </Button>
+           ) : (
+            <Button style={{ marginLeft: 8 }} onClick={handleCancel}>
+               Cancel
+           </Button>
+           )}
+           {props.action !== 'view' && (
+             <Button type="primary" htmlType="submit" onClick={createTemplate} disabled={isDisabled}>
+          {props.action === 'create' ? 'Create Report' : 'Update Report'}
+           </Button>
+         )}
+    </div>
+  </Row>
       </Col>
+      <Modal
+        title={`${templateData[1].value.charAt(0).toUpperCase() + templateData[1].value.slice(1).toLowerCase()} Process`}
+        style={{top: 20}}
+        width={1180}
+        visible={showCreateModal}
+        okButtonProps={{ hidden: true }}
+        cancelButtonProps={{ hidden: true }}
+        onCancel={() => setShowCreateModal(false)}
+        destroyOnClose={true}
+      >
+         {(templateData[1].value==='SLITTING') ? (<SlittingForm onSave={updateFormData}></SlittingForm>
+        ) : (templateData[1].value==='CUTTING') ? (
+        <CuttingForm onSave={updateFormData}></CuttingForm>
+        ) : (
+          <SlitAndCutForm onSave={updateFormData}></SlitAndCutForm>
+         )}  
+      </Modal>
     </div>
   )
 }
+const mapStateToProps = (state) => ({
+    template: state.quality,
+});
 
-export default ProcessingReportTemplate
+export default connect(mapStateToProps, {
+  fetchQualityReportList,
+  fetchQualityReportStageList,
+  getCoilPlanDetails
+})(withRouter(ProcessingReportTemplate));
+
+//export default ProcessingReportTemplate

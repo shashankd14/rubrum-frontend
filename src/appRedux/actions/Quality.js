@@ -85,7 +85,7 @@ import {
   UPDATE_TEMPLATE_PROCESSING_FORM_DATA,
   UPDATE_QR_PROCESSING_FORM_DATA,
 } from "constants/ActionTypes";
-
+import * as actionTypes from "../../constants/ActionTypes";
 
 export const fetchTemplatesList = () => ({
   type: FETCH_TEMPLATE_LIST,
@@ -231,7 +231,11 @@ export const fetchTemplatesLinkListError = (error) => ({
   type: FETCH_TEMPLATE_LINK_LIST_ERROR,
   error
 });
-
+//it is used to show templateName in QR view
+export const storeLinkListData = (linkListData) => ({
+  type: actionTypes.STORE_LINK_LIST_DATA,
+  payload: linkListData,
+});
 export const saveQualityTemplateLink = payload => {
   return {
     type: SAVE_QUALITY_TEMPLATE_LINK_REQUEST,
@@ -636,3 +640,79 @@ export const updateQRFormData = payload => {
     action: payload.action
   }
 }
+//get List of thickness QM dropdown
+export const getThicknessListQM = () => ({
+  type: actionTypes.GET_THICKNESS_LIST_QM_REQUEST
+});
+
+export const getThicknessListQMSuccess = (thicknessList) => ({
+  type: actionTypes.GET_THICKNESS_LIST_QM_SUCCESS,
+  thicknessList
+});
+
+export const getThicknessListQMError = (error) => ({
+  type: actionTypes.GET_THICKNESS_LIST_QM_ERROR,
+  error
+});
+
+//get List of width QM dropdown
+export const getWidthListQM = () => ({
+  type: actionTypes.GET_WIDTH_LIST_QM_REQUEST
+});
+
+export const getWidthListQMSuccess = (widthList) => ({
+  type: actionTypes.GET_WIDTH_LIST_QM_SUCCESS,
+  widthList
+});
+
+export const getWidthListQMError = (error) => ({
+  type: actionTypes.GET_WIDTH_LIST_QM_ERROR,
+  error
+});
+
+//get List of length QM dropdown
+export const getLengthListQM = () => ({
+  type: actionTypes.GET_LENGTH_LIST_QM_REQUEST
+});
+
+export const getLengthListQMSuccess = (lengthList) => ({
+  type: actionTypes.GET_LENGTH_LIST_QM_SUCCESS,
+  lengthList
+});
+
+export const getLengthListQMError = (error) => ({
+  type: actionTypes.GET_LENGTH_LIST_QM_ERROR,
+  error
+});
+
+//Get packetDetails in quality processStage
+export const getQualityPacketDetails = (payload) => ({
+  type: actionTypes.GET_PACKET_DETAILS_QUALITY_PROCESS_REQUEST,
+  payload
+});
+
+export const getQualityPacketDetailsSuccess = (packetDetails) => ({
+  type: actionTypes.GET_PACKET_DETAILS_QUALITY_PROCESS_SUCCESS,
+  packetDetails
+});
+
+export const getQualityPacketDetailsError = (error) => ({
+  type: actionTypes.GET_PACKET_DETAILS_QUALITY_PROCESS_ERROR,
+  error
+});
+
+//Generate QM Report Inward pdf
+export const pdfGenerateQMreportInward = (payload) => ({
+  type: actionTypes.GENERATE_INWARD_PDF_QUALITY_MODULE_REPORT_REQUEST,
+  payload
+});
+
+export const pdfGenerateQMreportInwardSuccess = (payload) => ({
+  type: actionTypes.GENERATE_INWARD_PDF_QUALITY_MODULE_REPORT_SUCCESS,
+  payload
+});
+
+export const pdfGenerateQMreportInwardError = (error) => ({
+  type: actionTypes.GENERATE_INWARD_PDF_QUALITY_MODULE_REPORT_ERROR,
+  error
+});

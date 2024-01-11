@@ -1,40 +1,58 @@
 import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux';
-import { Button, Card, Col, Form, Input, Row, Select, Tabs, Tag } from 'antd'
+import { Button, Card, Col,  Row, Select,  Tag, Checkbox } from 'antd'
 import {
     fetchPartyList,
     fetchKqpList,
     saveKqpLink,
     getKqpLinkById,
-    fetchEndUserTagsList
+    fetchEndUserTagsList,
+    fetchMaterialList,
+    getThicknessListQM,
+    getWidthListQM,
+    getLengthListQM,
 } from "../../../../../appRedux/actions"
+import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 
 const CreateLinkTemplate = (props) => {
 
     const Option = Select.Option;
-
     const [selectedTemplate, setSelectedTemplate] = useState();
     const [selectedTemplateId, setSelectedTemplateId] = useState();
-    const [templateList, setTemplateList] = useState([]);
+    const [templateList, setTemplateList] = useState([]); 
     const [defaultSelected, setDefaultSelected] = useState([]);
     const [selectedCustomers, setSelectedCustomers] = useState([]);
     const [selectedEndUserTags, setSelectedEndUserTags] = useState([]);
     const [action, setAction] = useState("create");
     const [partyList, setPartyList] = useState([]);
     const [isDisabled, setIsDisabled] = useState(false);
+    const [selectedMatGrade, setSelectedMatGrade] = useState ([]);
+    const [thickness, setThicknessList] = useState([]);
+    const [width, setWidthList] = useState([]);
+    const [length, setLengthList] = useState([]);
+    const [anyThicknessFlag, setAnyThicknessFlag] = useState(props.template?.data?.anyThicknessFlag==='N');
+    const [anyLengthFlag, setAnyLengthFlag] = useState(props.template.data?.anyLengthFlag==='N');
+    const [anyWidthFlag, setAnyWidthFlag] = useState(props.template.data?.anyWidthFlag==='N');
+    const [anyMatGradeFlag, setanyMatGradeFlag] = useState(props.template.data?.anyMatGradeFlag==='N');
+    const [anyEndusertagFlag, setanyEndusertagFlag] = useState(props.template?.data?.anyEndusertagFlag==='N');
+    const [anyPartyFlag, setanyPartyFlag] = useState(props.template?.data?.anyPartyFlag==='N');
 
-    useEffect(() => {
-        if (props.match) {
+    useEffect(() => { 
+         if (props.match) {
             const urlPaths = props.match.url.split('/')
             console.log(urlPaths)
             setSelectedTemplateId(urlPaths[urlPaths.length - 1])
-            if (urlPaths[urlPaths.length - 2] == 'view' || urlPaths[urlPaths.length - 2] == 'edit') {
+            if (urlPaths[urlPaths.length - 2] === 'view' || urlPaths[urlPaths.length - 2] === 'edit') {
                 setAction(urlPaths[urlPaths.length - 2])
                 props.getKqpLinkById(urlPaths[urlPaths.length - 1])
             }
             props.fetchKqpList();
             props.fetchPartyList();
             props.fetchEndUserTagsList();
+            props.fetchMaterialList();
+            props.getThicknessListQM();
+            props.getWidthListQM();
+            props.getLengthListQM();
         }
     }, [])
 
@@ -42,16 +60,73 @@ const CreateLinkTemplate = (props) => {
         if (!props.template.loading && !props.template.error && props.template.operation === 'kqpList') {
             console.log(props.template.data)
             setTemplateList([...props.template.data])
-            setSelectedTemplateDetails(selectedTemplateId)
-            // const filteredTemplate = props.template.data.filter(t => t.templateId == selectedTemplateId)
-            // setSelectedTemplate(filteredTemplate?.length === 1 ? filteredTemplate[0] : undefined)
-            // setDefaultSelected(filteredTemplate?.length === 1 ? [filteredTemplate[0].templateId] : [])
+            setSelectedTemplateDetails(selectedTemplateId) 
         }
     }, [props.template.loading, props.template.error, props.template.operation]);
 
     useEffect(() => {
-        if (!props.party.loading && !props.party.error) {
-            // console.log(props.party)
+        if (!props.template.loading && !props.template.error && props.template.operation === 'kqpLinkById' && props.party.partyList) { 
+            const jsonData =  props.template.data;
+            const groupedData = {};
+            jsonData.forEach((item) => {
+                const { kqpId, kqpName, partyId, partyIdList, anyThicknessFlag, anyLengthFlag, anyWidthFlag, anyPartyFlag, anyEndusertagFlag, anyMatGradeFlag, endUserTagIdList, thicknessList, widthList, lengthList, matGradeIdList } = item;
+              
+                setAnyThicknessFlag(anyThicknessFlag ==='Y');
+                setAnyLengthFlag(anyLengthFlag ==='Y');
+                setAnyWidthFlag(anyWidthFlag ==='Y');
+                setanyPartyFlag(anyPartyFlag ==='Y');
+                setanyEndusertagFlag(anyEndusertagFlag ==='Y');
+                setanyMatGradeFlag(anyMatGradeFlag ==='Y');
+                
+                if (!groupedData[kqpId]) {
+                  groupedData[kqpId] = {
+                    kqpId,
+                    kqpName,
+                    partyIdList: [],
+                    endUserTagIdList:JSON.parse(item.endUserTagIdList),
+                    thicknessList:JSON.parse(item.thicknessList),
+                    widthList:JSON.parse(item.widthList),
+                    lengthList:JSON.parse(item.lengthList),
+                    matGradeIdList:JSON.parse(item.matGradeIdList),
+                    anyThicknessFlag: anyThicknessFlag? 'Y' : 'N',
+                    anyLengthFlag: anyLengthFlag? 'Y' : 'N',
+                    anyWidthFlag: anyWidthFlag? 'Y' : 'N',
+                    anyPartyFlag: anyPartyFlag? 'Y' : 'N',
+                    anyEndusertagFlag: anyEndusertagFlag? 'Y' : 'N',
+                    anyMatGradeFlag: anyMatGradeFlag? 'Y' : 'N',
+                  };
+                }
+              
+                // groupedData[kqpId].partyIdList.push(partyIdList);
+                groupedData[kqpId].partyIdList.push(...JSON.parse(partyIdList)); 
+              });
+              
+              const groupedArray = Object.values(groupedData);  
+
+              // Match nPartyId with partyIdList and display partyName
+              const matchedParties = props.party.partyList?.map((party) => {
+                const matchedParty = groupedArray.find((item) => item.partyIdList.includes(party.nPartyId));
+                if (matchedParty) {
+                  return {
+                    nPartyId: party.nPartyId,
+                    partyName: party.partyName || null,
+                  };
+                }
+                return null;
+              }).filter(Boolean);
+        
+              setSelectedCustomers(matchedParties.map((party) => party.nPartyId).flat());
+             // setSelectedCustomers(groupedArray.map((item) => item.partyIdList).flat());
+              setSelectedEndUserTags(groupedArray.map((item) => item.endUserTagIdList).flat());
+              setSelectedMatGrade(groupedArray.map((item) => item.matGradeIdList).flat());
+              setThicknessList(groupedArray.map((item) => item.thicknessList).flat());
+              setWidthList(groupedArray.map((item) => item.widthList).flat())
+              setLengthList(groupedArray.map((item) => item.lengthList).flat()) 
+        }
+    }, [props.template.loading, props.template.error, props.template.operation, props.party]); 
+    
+    useEffect(() => {
+        if (!props.party.loading && !props.party.error) { 
             setPartyList(props.party.partyList)
         }
     }, [props.party.loading, props.party.error]);
@@ -62,9 +137,7 @@ const CreateLinkTemplate = (props) => {
         setDefaultSelected(filteredTemplate?.length === 1 ? [filteredTemplate[0].kqpId] : [])
     }
 
-    const handeTemplateChange = (e) => {
-        // setTemplateList([...props.template.data])
-        console.log(e)
+    const handeTemplateChange = (e) => {  
         setSelectedTemplateId(e)
         setSelectedTemplateDetails(e);
     }
@@ -75,8 +148,7 @@ const CreateLinkTemplate = (props) => {
             setTemplateList(data.filter(t => (t.kqpId == e || t.kqpName.toLowerCase().includes(e.toLowerCase()))))
         } else {
             setTemplateList(data.filter(t => t.kqpId == e))
-        }
-
+        } 
     }
 
     const onCustomerSelection = (e) => {
@@ -87,12 +159,25 @@ const CreateLinkTemplate = (props) => {
         setSelectedEndUserTags(e)
     }
 
+    const onMatGradeSelection = (e) => {
+        setSelectedMatGrade(e)
+    }
+
+    const onThicknessSelection = (e) => {
+        setThicknessList(e);
+    }
+    const onWidthSelection = (e) => {
+        setWidthList(e);
+    }
+    const onLengthSelection = (e) => {
+        setLengthList(e);
+    }
+
     const onCustomerDeselection = (e) => {
-        console.log(e)
-        console.log('selectedCustomers', selectedCustomers)
-        console.log('filteredCustomers', selectedCustomers.filter(c => c !== e))
-        console.log('partyList', partyList)
-        setSelectedCustomers(selectedCustomers.filter(c => c !== e))
+          setSelectedCustomers(selectedCustomers.filter(c => c !== e))
+    }
+    const onMatGradeDeselection = (e) => {
+            setSelectedMatGrade(selectedMatGrade.filter(c => c !== e))
     }
 
     useEffect(() => {
@@ -102,27 +187,79 @@ const CreateLinkTemplate = (props) => {
     }, [selectedCustomers])
 
     useEffect(() => {
-        if (!props.template.loading && !props.template.error && props.template.operation === 'templateLinkSave') {
-            console.log(props.template)
-            props.history.push('/company/quality/templates?view=links')
+        if (!props.template.loading && !props.template.error && props.template.operation === 'kqpLinkSave') { 
+           props.history.push('/company/quality/kqp')
         }
     }, [props.template.loading, props.template.error]);
+ 
 
     const createTemplateLink = () => {
         const payload = JSON.stringify({
-            templateId: selectedTemplateId,
-            endUserTagId: -1,
-            matGradeId: -1,
+            kqpId: selectedTemplateId,
+            endUserTagIdList: selectedEndUserTags,
+            matGradeIdList: selectedMatGrade,
             userId: localStorage.getItem("userId"),
-            thickness: -1,
+            thicknessList: thickness,
+            widthList: width,
+            lengthList: length,
             partyIdList: selectedCustomers,
-        })
-        props.saveQualityTemplateLink(payload)
+            anyThicknessFlag: anyThicknessFlag? 'Y' : 'N',
+            anyLengthFlag: anyLengthFlag? 'Y' : 'N',
+            anyWidthFlag: anyWidthFlag? 'Y' : 'N',
+            anyPartyFlag: anyPartyFlag? 'Y' : 'N',
+            anyEndusertagFlag: anyEndusertagFlag? 'Y' : 'N',
+            anyMatGradeFlag: anyMatGradeFlag? 'Y' : 'N',
+        }) 
+        if (action === 'create')
+            props.saveKqpLink(payload);
+        else if (action === 'edit') { 
+            props.saveKqpLink(payload);
+        }
     }
 
+    const [materialOptions, setMaterialOptions] = useState([]);
+    useEffect(() => {
+        const options = props.material.materialList.flatMap(item =>
+            item.materialGrade.map(grade => (
+                <Option key={grade.gradeId} value={grade.gradeId}>
+                    {grade.gradeName}
+                </Option>
+            ))
+        );
+        setMaterialOptions(options);
+    }, [props.material.materialList]);
+    
+    const selectAllCustomers = () => {
+        const allOptionValues = partyList.map((party) => party.nPartyId);
+        setSelectedCustomers(allOptionValues);
+      };
+      const selectAllEndUserTags = () => {
+        const allOptionValues = props.packetClassification?.endUserTags.map((tag) => tag.tagId);
+        setSelectedEndUserTags(allOptionValues);
+      };
+      const selectAllMaterialGrades = () => {
+        const allOptionValues = props.material?.materialList.flatMap(item => item.materialGrade.map(grade => grade.gradeId));
+        setSelectedMatGrade(allOptionValues);
+      };
+      const selectAllThickness = () => {
+        const allOptionValues = (props.template?.thicknessList)
+        setThicknessList(allOptionValues);
+      };
+      const selectAllWidth = () => {
+        const allOptionValues = (props.template?.widthList)
+        setWidthList(allOptionValues);
+      };
+      const selectAllLength = () => {
+        const allOptionValues = (props.template?.lengthList)
+        setLengthList(allOptionValues);
+      };
+      const history = useHistory();
+      const handleCancel = () =>{
+        history.goBack();
+      }
     return (
         <div>
-            <Card title="Link Template">
+            <Card title="Link KQP">
                 <Row>
                     <Col span={12}>
                         <label>Qty Template Id/Template Name</label>
@@ -133,7 +270,7 @@ const CreateLinkTemplate = (props) => {
                             onChange={handeTemplateChange}
                             value={defaultSelected}
                             onSearch={searchTemplate}
-                        // onBlur={() => setTemplateList([...props.template.data])}
+                            disabled={(action==="edit")} 
                         >
                             {templateList.map((template) => (
                                 <Option key={`${template.kqpId}${template.kqpName}`} value={template.kqpId}>
@@ -148,6 +285,20 @@ const CreateLinkTemplate = (props) => {
                     <Col span={12}>
                         <div style={{ marginTop: 30, display: "flex" }}>
                             <label>Assign Customer</label>
+                            {/* <button onClick={selectAllCustomers} style={{marginBottom:'5px'}}>Select All</button> */}
+                            &emsp;&emsp;&emsp; <label>Select All</label>&nbsp; 
+                                    <Checkbox
+                                        id="allOptions"
+                                        checked={selectedCustomers.length===partyList.length}
+                                        onChange={selectAllCustomers}
+                                        disabled = {anyPartyFlag}
+                                    />
+                             &emsp;&emsp;&emsp; <label>Any</label>&nbsp; 
+                                    <Checkbox
+                                        id="anyPartyFlag"
+                                        checked={anyPartyFlag}
+                                        onChange={(e) => setanyPartyFlag(e.target.checked)}
+                                    />
                         </div>
                         <div >
                             <Select
@@ -158,8 +309,6 @@ const CreateLinkTemplate = (props) => {
                                 placeholder="Select a customer"
                                 optionFilterProp="children"
                                 onChange={onCustomerSelection}
-                                // onFocus={handleFocus}
-                                // onBlur={handleBlur}
                                 maxTagCount={3}
                                 filterOption={(input, option) =>
                                     option.props.children
@@ -172,7 +321,7 @@ const CreateLinkTemplate = (props) => {
 
                                 {partyList.length > 0 &&
                                     partyList.map((party) => (
-                                        <Select.Option value={party.nPartyId}>{party.partyName}</Select.Option>
+                                        <Select.Option value={party.nPartyId} disabled = {anyPartyFlag}>{party.partyName}</Select.Option>
                                     ))}
                             </Select>
                         </div>
@@ -195,41 +344,72 @@ const CreateLinkTemplate = (props) => {
                 </Row>
                 
                     <>
-                        <Row>
+                    <Row>
                             <Col span={12}>
                                 <div style={{ marginTop: 30, display: "flex" }}>
-                                    <label>End User Tags</label>
-                                </div>
+                                <label>Material Grade</label> 
+                                &emsp;&emsp;&emsp; <label>Select All</label>&nbsp; 
+                                    <Checkbox
+                                        id="allOptions"
+                                        checked={selectAllMaterialGrades.length===props.material.length}
+                                        onChange={selectAllMaterialGrades}
+                                        disabled = {anyMatGradeFlag}
+                                    />
+                             &emsp;&emsp;&emsp; <label>Any</label>&nbsp; 
+                                    <Checkbox
+                                        id="anyMatGradeFlag"
+                                        checked={anyMatGradeFlag}
+                                        onChange={(e) => setanyMatGradeFlag(e.target.checked)}
+                                    />
+                                 </div>
                                 <div>
-                                    {/* <Select
+                                    <Select
                                         id="select"
                                         mode="multiple"
                                         showSearch
                                         style={{ width: '100%' }}
-                                        placeholder="Select End User Tags"
-                                        optionFilterProp="children"
-                                        onChange={onCustomerSelection}
-                                        // onFocus={handleFocus}
-                                        // onBlur={handleBlur}
-                                        maxTagCount={3}
-                                        filterOption={(input, option) =>
-                                            option.props.children
-                                                .toLowerCase()
-                                                .indexOf(input.toLowerCase()) >= 0
-                                        }
-                                        value={selectedCustomers}
-                                        allowClear
-                                    >
-
-                                        {partyList.length > 0 &&
-                                            partyList.map((party) => (
-                                                <Select.Option value={party.nPartyId}>{party.partyName}</Select.Option>
-                                            ))}
-                                    </Select> */}
+                                        placeholder="Select Material Grade"
+                                        optionFilterProp="children" 
+                                        maxTagCount={3} 
+                                    filterOption={(input, option) => {
+                                        return option?.props?.children?.toLowerCase().includes(input.toLowerCase());
+                                    }}
+                                    filterSort={(optionA, optionB) =>
+                                        optionA?.props?.children.toLowerCase().localeCompare(optionB?.props?.children.toLowerCase())
+                                    }
+                                    onChange={onMatGradeSelection}
+                                    value={selectedMatGrade}  disabled = {anyMatGradeFlag}
+                                    allowClear
+                                >  
+                                     {materialOptions}
+                                </Select>
+                                </div>
+                            </Col> 
+                        </Row>
+                        <Row>
+                            <Col span={12}>
+                                <div style={{ marginTop: 30, display: "flex" }}>
+                                <label>End User Tag</label> 
+                                    &emsp;&emsp;&emsp; <label>Select All</label>&nbsp; 
+                                    <Checkbox
+                                        id="allOptions"
+                                        checked={selectedEndUserTags.length===props.packetClassification.length}
+                                        onChange={selectAllEndUserTags}
+                                        disabled = {anyEndusertagFlag}
+                                    />
+                                  &emsp;&emsp;&emsp; <label>Any</label>&nbsp; 
+                                    <Checkbox
+                                        id="anyEndusertagFlag"
+                                        checked={anyEndusertagFlag}
+                                        onChange={(e) => setanyEndusertagFlag(e.target.checked)}
+                                    />
+                                </div>
+                                <div> 
                                     <Select
                                         id="endUsertags"
                                         showSearch
                                         mode="multiple"
+                                        placeholder="Select End User tag"
                                         style={{ width: '100%' }}
                                         maxTagCount={3}
                                         filterOption={(input, option) => {
@@ -240,8 +420,9 @@ const CreateLinkTemplate = (props) => {
                                         }
                                         onChange={onEnduserTagSelection}
                                         value={selectedEndUserTags}
+                                        allowClear
                                     >{props?.packetClassification?.endUserTags?.map(item => {
-                                        return <Option value={item?.tagId}>{item.tagName}</Option>
+                                        return <Option kay={item?.tagId} value={item?.tagId} disabled = {anyEndusertagFlag}>{item.tagName}</Option>
                                     })}</Select>
                                 </div>
                             </Col>
@@ -249,39 +430,22 @@ const CreateLinkTemplate = (props) => {
                         <Row>
                             <Col span={12}>
                                 <div style={{ marginTop: 30, display: "flex" }}>
-                                    <label>Material Grade</label>
+                                <label>Thickness</label> 
+                                    &emsp;&emsp;&emsp; <label>Select All</label>&nbsp; 
+                                    <Checkbox
+                                        id="allOptions"
+                                        checked={thickness.length===props.template.thicknessList.length}
+                                        onChange={selectAllThickness}
+                                        disabled = {anyThicknessFlag}
+                                    />
+                                  &emsp;&emsp;&emsp; <label>Any</label>&nbsp; 
+                                    <Checkbox
+                                        id="anyThicknessFlag"
+                                        checked={anyThicknessFlag}
+                                        onChange={(e) => setAnyThicknessFlag(e.target.checked)}
+                                    />
                                 </div>
-                                <div>
-                                    <Select
-                                        id="select"
-                                        mode="multiple"
-                                        showSearch
-                                        style={{ width: '100%' }}
-                                        placeholder="Select Material Grade"
-                                        optionFilterProp="children"
-                                        onChange={onCustomerSelection}
-                                        // onFocus={handleFocus}
-                                        // onBlur={handleBlur}
-                                        maxTagCount={3}
-                                        filterOption={(input, option) =>
-                                            option.props.children
-                                                .toLowerCase()
-                                                .indexOf(input.toLowerCase()) >= 0
-                                        }
-                                        // value={selectedCustomers}
-                                        allowClear
-                                    >
-
-                                    </Select>
-                                </div>
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col span={12}>
-                                <div style={{ marginTop: 30, display: "flex" }}>
-                                    <label>Thickness</label>
-                                </div>
-                                <div>
+                                  <div>
                                     <Select
                                         id="select"
                                         mode="multiple"
@@ -289,87 +453,119 @@ const CreateLinkTemplate = (props) => {
                                         style={{ width: '100%' }}
                                         placeholder="Select Thickness"
                                         optionFilterProp="children"
-                                        onChange={onCustomerSelection}
-                                        // onFocus={handleFocus}
-                                        // onBlur={handleBlur}
+                                        value={thickness}
+                                        onChange={onThicknessSelection} 
                                         maxTagCount={3}
                                         filterOption={(input, option) =>
                                             option.props.children
                                                 .toLowerCase()
                                                 .indexOf(input.toLowerCase()) >= 0
                                         }
-                                        // value={selectedCustomers}
                                         allowClear
                                     >
-
+                                         {props?.template?.thicknessList?.map(thickness => (
+                                        <Select.Option key={thickness} value={thickness} disabled={anyThicknessFlag}>
+                                            {thickness}
+                                        </Select.Option>
+                                        ))} 
                                     </Select>
-                                </div>
+                                </div>  
                             </Col>
                         </Row>
                         <Row>
                             <Col span={12}>
                                 <div style={{ marginTop: 30, display: "flex" }}>
-                                    <label>Width</label>
+                                    <label>Width</label> 
+                                    &emsp;&emsp;&emsp; <label>Select All</label>&nbsp; 
+                                    <Checkbox
+                                        id="allOptions"
+                                        checked={width.length===props.template.widthList.length}
+                                        onChange={selectAllWidth}
+                                        disabled = {anyWidthFlag}
+                                    />
+                                  &emsp;&emsp;&emsp; <label>Any</label>&nbsp; 
+                                    <Checkbox
+                                        id="anyWidthFlag"
+                                        checked={anyWidthFlag}
+                                        onChange={(e) => setAnyWidthFlag(e.target.checked)}
+                                    />
                                 </div>
                                 <div>
-                                    <Select
+                                <Select
                                         id="select"
                                         mode="multiple"
                                         showSearch
                                         style={{ width: '100%' }}
                                         placeholder="Select Width"
                                         optionFilterProp="children"
-                                        onChange={onCustomerSelection}
-                                        // onFocus={handleFocus}
-                                        // onBlur={handleBlur}
+                                        value={width}
+                                        onChange={onWidthSelection} 
                                         maxTagCount={3}
                                         filterOption={(input, option) =>
                                             option.props.children
                                                 .toLowerCase()
                                                 .indexOf(input.toLowerCase()) >= 0
                                         }
-                                        // value={selectedCustomers}
                                         allowClear
                                     >
-
-                                    </Select>
+                                        {props?.template?.widthList?.map(width => (
+                                        <Select.Option key={width} value={width} disabled={anyWidthFlag}>
+                                            {width}
+                                        </Select.Option>
+                                        ))} 
+                                    </Select> 
                                 </div>
                             </Col>
                         </Row>
                         <Row>
                             <Col span={12}>
                                 <div style={{ marginTop: 30, display: "flex" }}>
-                                    <label>Length</label>
+                                 <label>Length</label> 
+                                    &emsp;&emsp;&emsp; <label>Select All</label>&nbsp; 
+                                    <Checkbox
+                                        id="allOptions"
+                                        checked={length.length===props.template.lengthList.length}
+                                        onChange={selectAllLength}
+                                        disabled = {anyLengthFlag}
+                                    />
+                                  &emsp;&emsp;&emsp; <label>Any</label>&nbsp; 
+                                    <Checkbox
+                                        id="anyLengthFlag"
+                                        checked={anyLengthFlag}
+                                        onChange={(e) => setAnyLengthFlag(e.target.checked)}
+                                    />
                                 </div>
                                 <div>
-                                    <Select
+                                <Select
                                         id="select"
                                         mode="multiple"
                                         showSearch
                                         style={{ width: '100%' }}
                                         placeholder="Select Length"
                                         optionFilterProp="children"
-                                        onChange={onCustomerSelection}
-                                        // onFocus={handleFocus}
-                                        // onBlur={handleBlur}
+                                        value={length}
+                                        onChange={onLengthSelection} 
                                         maxTagCount={3}
                                         filterOption={(input, option) =>
                                             option.props.children
                                                 .toLowerCase()
                                                 .indexOf(input.toLowerCase()) >= 0
-                                        }
-                                        // value={selectedCustomers}
+                                        } 
                                         allowClear
                                     >
-
-                                    </Select>
+                                         {props?.template?.lengthList?.map(length => (
+                                        <Select.Option key={length} value={length} disabled={anyLengthFlag}>
+                                            {length}
+                                        </Select.Option>
+                                        ))} 
+                                    </Select> 
                                 </div>
                             </Col>
                         </Row>
                     </>
                 {action !== 'view' && <Row >
                     <div style={{ marginTop: 45 }}>
-                        <Button style={{ marginLeft: 8 }} disabled={isDisabled}>
+                        <Button style={{ marginLeft: 8 }}  onClick={handleCancel}>
                             Cancel
                         </Button>
                         {action === 'create' ? <Button type="primary" htmlType="submit" onClick={createTemplateLink} disabled={isDisabled}>
@@ -385,11 +581,11 @@ const CreateLinkTemplate = (props) => {
         </div>
     )
 }
-
 const mapStateToProps = state => ({
     template: state.quality,
     party: state.party,
-    packetClassification: state.packetClassification,
+    packetClassification: state.packetClassification, 
+    material: state.material,
 });
 
 export default connect(mapStateToProps, {
@@ -398,4 +594,8 @@ export default connect(mapStateToProps, {
     saveKqpLink,
     getKqpLinkById,
     fetchEndUserTagsList,
+    fetchMaterialList,
+    getThicknessListQM,
+    getWidthListQM,
+    getLengthListQM,
 })(CreateLinkTemplate);

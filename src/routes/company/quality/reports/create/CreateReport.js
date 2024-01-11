@@ -12,7 +12,8 @@ import {
     updateQualityReport,
     deleteQualityReport,
     getCoilPlanDetails,
-    
+    fetchInwardList,
+    fetchTemplatesLinkList
 } from "../../../../../appRedux/actions"
 import TextArea from "antd/lib/input/TextArea";
 import InwardReportTemplate from "./InwardReportTemplate";
@@ -20,7 +21,6 @@ import PreProcessingReportTemplate from "./PreProcessingReportTemplate";
 import ProcessingReportTemplate from "./ProcessingReportTemplate";
 import PreDispatchReportTemplate from "./PreDispatchReportTemplate";
 import PostDispatchReportTemplate from "./PostDispatchReportTemplate";
-
 
 const CreateReport = (props) => {
 
@@ -36,6 +36,8 @@ const CreateReport = (props) => {
     const [templateInfo, setTemplateInfo] = useState("");
     const [isDisabled, setIsDisabled] = useState(false);
     const [materialDetails, setMaterialDetails] = useState();
+    const [inwardInfo, setInwardInfo] = useState();
+    const [filteredInwardList, setFilteredInwardList] = useState([]);
 
     const Option = Select.Option;
 
@@ -54,12 +56,25 @@ const CreateReport = (props) => {
         }
     }, [props.match])
 
+    const [matchedTemplateName, setMatchedTemplateName] = useState('');
+   
     useEffect(() => {
         console.log(props.location.state)
+       // props.fetchInwardList();
+       // if(props.location.state?.selectedItemForQr && props.inward?.inwardList){
         if(props.location.state?.selectedItemForQr)
-            setMaterialDetails([props.location.state.selectedItemForQr])
+       // const filteredData = props.inward.inwardList.filter(item => item.coilNumber === props.location.state.selectedItemForQr.coilNo); 
+        // setFilteredInwardList(filteredData);
+         setMaterialDetails([props.location.state.selectedItemForQr])
         if(props.location.state?.templateDetails){
-            setTemplateName(props.location.state.templateDetails.templateName);
+            const linkListData = props.linkListData;
+            const templateIdToMatch = props.location.state.templateDetails.templateId;
+            const matchedTemplate = linkListData.find(template => template.templateId === templateIdToMatch);
+            if (matchedTemplate) {
+                setMatchedTemplateName(matchedTemplate.templateName);
+                setTemplateName(matchedTemplate.templateName);
+            }
+           // setTemplateName(props.location.state.templateDetails.templateName);
             setStageName(props.location.state.templateDetails.stageName)
             setTemplateInfo(props.location.state.templateDetails)
         }
@@ -67,6 +82,12 @@ const CreateReport = (props) => {
             setAction(props.location.state.action)
             
     }, [props.location.state])
+
+    const [comments, setComment] = useState('');
+
+    const handleCommentChange = (comments) => {
+        setComment(comments);
+    };
 
     useEffect(() => {
         if (!props.inward.loading && props.inward.planSuccess) {
@@ -92,7 +113,18 @@ const CreateReport = (props) => {
         setKqpSummary(e)
     }
 
+    function getProcessId(value) {
+        if (value === 'CUTTING') {
+          return 1;
+        } else if (value === 'SLITTING') {
+          return 2;
+        } else {
+          return 3;
+        }
+      }
+    
     const handleCreate = (data) => {
+        debugger
         // if (!templateName || templateName === "") {
         //     setTemplateNameErr(true);
         //     document.getElementById('templateName').focus();
@@ -100,17 +132,22 @@ const CreateReport = (props) => {
         // }
         let request = new FormData();
         const templateDetails = []
+        const planDetails = []
         Object.keys(data).forEach(key => {
             const dataDetail = data[key];
             if (dataDetail?.fileList?.length > 0 && dataDetail.fileList[0]) {
                 request.append(dataDetail.type, dataDetail.fileList[0].originFileObj);
             }
-            templateDetails.push({
-                "id": key,
-                "type": dataDetail.type,
-                "value": dataDetail.value,
-                "fileName": dataDetail?.fileList?.length > 0 ? dataDetail.fileName : "",
-            })
+            if (key !== 'formData'){
+                templateDetails.push({
+                    "id": key,
+                    "type": dataDetail.type,
+                    "value": dataDetail.value,
+                    "fileName": dataDetail?.fileList?.length > 0 ? dataDetail.fileName : "",
+                })
+            }else{
+                planDetails.push(dataDetail.value);
+            }
         })
         if (templateInfo.templateId) {
             request.append("templateId", templateInfo.templateId);
@@ -121,21 +158,36 @@ const CreateReport = (props) => {
         if (templateName) {
             request.append("templateName", templateName);
         }
-        const coilNumber = stageName == 'INWARD' ? props.location.state.selectedItemForQr.coilNumber : props.location.state.selectedItemForQr.coilNo;
+        if (stageName === 'PROCESSING'){
+            var processId = data[1].processId
+            if(processId === undefined){
+                request.append("processId", getProcessId(data[1].value))
+            } else {
+                request.append("processId", processId)}
+        }
+        //const coilNumber = stageName == 'INWARD' ? props.location.state.selectedItemForQr.coilNumber : props.location.state.selectedItemForQr.coilNo;
         const batchNumber = stageName == 'INWARD' ? props.location.state.selectedItemForQr.batchNumber : props.location.state.selectedItemForQr.customerBatchNo;
         request.append("stageName", stageName);
         request.append("userId", localStorage.getItem("userId").toString());
         request.append("templateDetails", JSON.stringify(templateDetails));
-        request.append("coilNo", coilNumber + '');
+        request.append("planDetails", JSON.stringify(planDetails));
+       // request.append("coilNo", coilNumber + '');
+        request.append("coilNo", props.location.state.selectedItemForQr.coilNo);
         request.append("customerBatchNo", batchNumber);
-        // request.append("planId", props.location.state.selectedItemForQr.planId);
-        // request.append("deliveryChalanNo", props.location.state.selectedItemForQr.coilNumber);
+        request.append("planId", props.location.state.selectedItemForQr.planId);
+        request.append("deliveryChalanNo", props.location.state.selectedItemForQr.deliveryChalanNo);
         request.append("inwardId", props.location.state.selectedItemForQr.inwardEntryId);
-        if (action == 'create')
+        request.append("comments", comments);
+        if (action == 'create'){
             props.saveQualityReport(request);
-        else if (action == 'edit')
-            props.updateQualityReport(request);
-        props.history.push('/company/quality/reports')
+            props.history.push('/company/quality/reports')
+        }
+        else if (action == 'edit'){
+            const qirIdToUpdate = props.templateDetails.data.qirId
+            request.append("qirId", qirIdToUpdate);
+            props.saveQualityReport(request);
+            props.history.push('/company/quality/reports')
+        }   
     }
 
     return (
@@ -147,6 +199,7 @@ const CreateReport = (props) => {
                 className="gx-table-responsive"
                 columns={QUALITY_REPORT_CREATE_COLUMNS}
                 dataSource={materialDetails}
+                //dataSource={filteredInwardList}
                 pagination={false}
             />
             <div style={{marginTop: 10}}>
@@ -157,11 +210,11 @@ const CreateReport = (props) => {
                     disabled
                 />
             </div>
-            {stageName === "INWARD" ? <InwardReportTemplate handleCreate={handleCreate} action={action} templateDetails={templateInfo} from="qr"></InwardReportTemplate>
-                : stageName === "PRE_PROCESSING" ? <PreProcessingReportTemplate handleCreate={handleCreate} action={action} templateDetails={templateInfo} from="qr"></PreProcessingReportTemplate>
-                    : stageName === "PROCESSING" ? <ProcessingReportTemplate handleCreate={handleCreate} action={action} templateDetails={templateInfo} from="qr"></ProcessingReportTemplate>
-                        : stageName === "PRE_DISPATCH" ? <PreDispatchReportTemplate handleCreate={handleCreate} action={action} templateDetails={templateInfo} from="qr"></PreDispatchReportTemplate>
-                            : stageName === "POST_DISPATCH" ? <PostDispatchReportTemplate handleCreate={handleCreate} action={action} templateDetails={templateInfo} from="qr"></PostDispatchReportTemplate>
+            {stageName === "INWARD" ? <InwardReportTemplate handleCreate={handleCreate} action={action} templateDetails={templateInfo} onCommentChange={handleCommentChange} from="qr"></InwardReportTemplate>
+                : stageName === "PRE_PROCESSING" ? <PreProcessingReportTemplate handleCreate={handleCreate} action={action} templateDetails={templateInfo} onCommentChange={handleCommentChange} from="qr"></PreProcessingReportTemplate>
+                    : stageName === "PROCESSING" ? <ProcessingReportTemplate handleCreate={handleCreate} action={action} templateDetails={templateInfo} onCommentChange={handleCommentChange} from="qr"></ProcessingReportTemplate>
+                        : stageName === "PRE_DISPATCH" ? <PreDispatchReportTemplate handleCreate={handleCreate} action={action} templateDetails={templateInfo} onCommentChange={handleCommentChange} from="qr"></PreDispatchReportTemplate>
+                            : stageName === "POST_DISPATCH" ? <PostDispatchReportTemplate handleCreate={handleCreate} action={action} templateDetails={templateInfo} onCommentChange={handleCommentChange} from="qr"></PostDispatchReportTemplate>
                                 : <></>
             }
         </div>
@@ -171,11 +224,14 @@ const CreateReport = (props) => {
 const mapStateToProps = state => ({
     templateDetails: state.quality,
     inward: state.inward,
+    linkListData: state.quality.linkListData
 });
 
 export default connect(mapStateToProps, {
     saveQualityReport,
     getQualityReportById,
     updateQualityReport,
-    deleteQualityReport
+    deleteQualityReport,
+    fetchInwardList,
+    fetchTemplatesLinkList
 })(CreateReport);

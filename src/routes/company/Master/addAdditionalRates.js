@@ -216,6 +216,10 @@ const AdditionalRates = (props) => {
       let payload = {
         partyId: checked ? values?.partyId : [values?.partyId],
         processId: values?.processId,
+        laminationSSlabour:values?.laminationSSlabour,
+        laminationDSlabour:values?.laminationDSlabour,
+        laminationSSmaterial:values?.laminationSSmaterial,
+        laminationDSmaterial:values?.laminationDSmaterial
       };
 
       let payloadArray = [];
@@ -480,6 +484,22 @@ const addAdditionalRatesForm = Form.create({
       processId: Form.createFormField({
         ...props.rates?.rates?.processId,
         value: props.rates?.rates?.processId || undefined,
+      }),
+      laminationSSlabour: Form.createFormField({
+        ...props.rates?.rates?.laminationSSlabour,
+        value: props.rates?.rates?.laminationSSlabour || undefined,
+      }),
+      laminationSSmaterial: Form.createFormField({
+        ...props.rates?.rates?.laminationSSmaterial,
+        value: props.rates?.rates?.laminationSSmaterial || undefined,
+      }),
+      laminationDSlabour: Form.createFormField({
+        ...props.rates?.rates?.laminationDSlabour,
+        value: props.rates?.rates?.laminationDSlabour || undefined,
+      }),
+      laminationDSmaterial: Form.createFormField({
+        ...props.rates?.rates?.laminationDSmaterial,
+        value: props.rates?.rates?.laminationDSmaterial || undefined,
       }),
     };
   },

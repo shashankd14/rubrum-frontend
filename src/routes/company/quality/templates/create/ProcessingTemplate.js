@@ -4,6 +4,8 @@ import { Button, Card, Col, Icon, Input, Modal, Radio, Row, Select } from 'antd'
 import Dragger from 'antd/lib/upload/Dragger'
 import { PROCESSES } from "../../../../../constants/quality/ComponentConstants";
 import SlittingForm from './process/SlittingForm';
+import CuttingForm from './process/CuttingForm';
+import SlitAndCutForm from './process/SlitAndCutForm';
 
 
 const ProcessingTemplate = (props) => {
@@ -73,7 +75,6 @@ const ProcessingTemplate = (props) => {
       setTemplateData(val)
     }
   }, [props.templateDetails]);
-
   const onFilesChange = (type, file) => {
     console.log(type, file)
     templateData[type].fileList = file.fileList.slice(-1)
@@ -96,9 +97,8 @@ const ProcessingTemplate = (props) => {
   const updateFormData = (formData) => {
     console.log(formData)
     templateData['formData']['value'] = formData;
+    setShowCreateModal(false);
   }
-
-  
 
   return (
     <div>
@@ -236,14 +236,20 @@ const ProcessingTemplate = (props) => {
       <Modal
         title={`${templateData[1].value.charAt(0).toUpperCase() + templateData[1].value.slice(1).toLowerCase()} Process`}
         style={{top: 20}}
-        width={1080}
+        //width={1080}
+        width={1180}
         visible={showCreateModal}
         okButtonProps={{ hidden: true }}
         cancelButtonProps={{ hidden: true }}
         onCancel={() => setShowCreateModal(false)}
         destroyOnClose={true}
       >
-        <SlittingForm onSave={updateFormData}></SlittingForm>
+       {(templateData[1].value==='SLITTING') ? (<SlittingForm onSave={updateFormData}></SlittingForm>
+        ) : (templateData[1].value==='CUTTING') ? (
+        <CuttingForm onSave={updateFormData}></CuttingForm>
+        ) : (
+          <SlitAndCutForm onSave={updateFormData}></SlitAndCutForm>
+         )}
       </Modal>
     </div>
   )

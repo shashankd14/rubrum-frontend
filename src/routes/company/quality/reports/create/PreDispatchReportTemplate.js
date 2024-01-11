@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Card, Col, Icon, Input, Radio, Row } from 'antd'
 import Dragger from 'antd/lib/upload/Dragger'
+import { useHistory } from 'react-router';
 
 const PreDispatchReportTemplate = (props) => {
   const [templateData, setTemplateData] = useState({
@@ -86,6 +87,15 @@ const PreDispatchReportTemplate = (props) => {
     setTemplateData({ ...templateData })
   }
 
+  const [comments, setComment] = useState('');
+    const handleCommentChange = (e) => {
+            setComment(e.target.value);
+            props.onCommentChange(e.target.value);
+    };
+    useEffect(() => {
+        setComment(props.templateDetails.comments)
+      }, [props.templateDetails.comments]);
+
   const onOptionChange = (type, value) => {
     console.log(type, value)
     templateData[type].value = value.target.value
@@ -96,6 +106,10 @@ const PreDispatchReportTemplate = (props) => {
   const createTemplate = () => {
     props.handleCreate(templateData)
   }
+  const history = useHistory();
+  const handleCancel = () => {
+    history.goBack(); 
+  };
 
   return (
     <div>
@@ -124,8 +138,8 @@ const PreDispatchReportTemplate = (props) => {
           </Col>
           <Col span={8}>
             <div style={{ display: 'grid', marginTop: 45 }}>
-              {props.action === 'view' && props.templateDetails.strappingPreSingedURL && <img src={props.templateDetails.strappingPreSingedURL} style={{ width: 50 }} />}
-              {props.action === 'edit' && <> {props.templateDetails.strappingPreSingedURL && <img src={props.templateDetails.strappingPreSingedURL} style={{ width: 50 }} />}
+              {props.action === 'view' && props.templateDetails.strappingPreSingedURL && <img src={props.templateDetails.strappingPreSingedURL} alt='strapping' style={{ width: 50 }} />}
+              {props.action === 'edit' && <> {props.templateDetails.strappingPreSingedURL && <img src={props.templateDetails.strappingPreSingedURL} alt='strapping' style={{ width: 50 }} />}
                 <Dragger
                   name='packingIntact'
                   height={50}
@@ -149,7 +163,7 @@ const PreDispatchReportTemplate = (props) => {
               >
                 <p>
                   <Icon type="upload" />
-                  &nbsp;Click or drag packing intact img
+                  &nbsp;Click or drag strapping img
                 </p>
               </Dragger>}
             </div>
@@ -163,8 +177,8 @@ const PreDispatchReportTemplate = (props) => {
           </Col>
           <Col span={8}>
             <div style={{ display: 'grid', marginTop: 45 }}>
-              {props.action === 'view' && props.templateDetails.weighmentSlipPreSingedURL && <img src={props.templateDetails.weighmentSlipPreSingedURL} style={{ width: 50 }} />}
-              {props.action === 'edit' && <> {props.templateDetails.weighmentSlipPreSingedURL && <img src={props.templateDetails.weighmentSlipPreSingedURL} style={{ width: 50 }} />}
+              {props.action === 'view' && props.templateDetails.weighmentSlipPreSingedURL && <img src={props.templateDetails.weighmentSlipPreSingedURL} alt='weighment' style={{ width: 50 }} />}
+              {props.action === 'edit' && <> {props.templateDetails.weighmentSlipPreSingedURL && <img src={props.templateDetails.weighmentSlipPreSingedURL} alt='weighment' style={{ width: 50 }} />}
                 <Dragger
                   name='packingIntact'
                   height={50}
@@ -175,7 +189,7 @@ const PreDispatchReportTemplate = (props) => {
                 >
                   <p>
                     <Icon type="upload" />
-                    &nbsp;Click or drag packing intact img
+                    &nbsp;Click or drag weighment slip img
                   </p>
                 </Dragger> </>}
               {props.action === 'create' && <Dragger
@@ -188,7 +202,7 @@ const PreDispatchReportTemplate = (props) => {
               >
                 <p>
                   <Icon type="upload" />
-                  &nbsp;Click or drag packing intact img
+                  &nbsp;Click or drag weighment slip img
                 </p>
               </Dragger>}
             </div>
@@ -250,16 +264,34 @@ const PreDispatchReportTemplate = (props) => {
             </div>
           </Col>
         </Row>
+        <Row>
+            <Col span={8}>
+                <div style={{ display: 'grid', marginTop: 50 }}>
+                    <label>Comment:</label>
+                </div>
+              </Col>
+              <Col span={16}>
+                <div style={{ display: 'grid', marginTop: 45 }}>
+                  <Input
+                    id="comments"
+                    onChange={handleCommentChange}
+                    value={comments}
+                    required
+                   disabled={isDisabled}
+                  /> 
+                </div>
+            </Col>
+        </Row>
         {props.action !== 'view' && <Row >
           <div style={{ marginTop: 45 }}>
-            <Button style={{ marginLeft: 8 }} disabled={isDisabled}>
+            <Button style={{ marginLeft: 8 }} onClick={handleCancel}>
               Cancel
             </Button>
             {props.action === 'create' ? <Button type="primary" htmlType="submit" onClick={createTemplate} disabled={isDisabled}>
-              Create Template
+              Create Report
             </Button> :
               <Button type="primary" htmlType="submit" onClick={createTemplate} disabled={isDisabled}>
-                Update Template
+                Update Report
               </Button>
             }
           </div>

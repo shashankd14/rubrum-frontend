@@ -247,7 +247,7 @@ const List = (props) => {
             {menuInwardLabelList.length > 0 && menuInwardLabelList.includes(inwardMenuConstants.addInward) && <Button
               type="primary"
               icon={() => <i className="icon icon-add" />}
-              size="medium"
+              size="default"
               onClick={() => {
                 props.resetInwardForm();
                 props.history.push("/company/inward/create");

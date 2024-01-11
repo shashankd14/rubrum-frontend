@@ -1,6 +1,9 @@
+//src-routes-company-quality-templates-create-PostDispatchTemplate.js
+
 import React, { useEffect, useState } from 'react'
 import { Button, Card, Col, Icon, Input, Radio, Row } from 'antd'
 import Dragger from 'antd/lib/upload/Dragger'
+import { useHistory } from 'react-router';
 
 const PostDispatchTemplate = (props) => {
   const [templateData, setTemplateData] = useState({
@@ -68,6 +71,10 @@ const PostDispatchTemplate = (props) => {
   const createTemplate = () => {
     props.handleCreate(templateData)
   }
+  const history = useHistory();
+  const handleCancel = () => {
+    history.goBack(); 
+  };
 
   return (
     <div>
@@ -82,6 +89,38 @@ const PostDispatchTemplate = (props) => {
               </Radio.Group>
             </div>
           </Col>
+          <Col span={8}>
+                        <div style={{ display: 'grid', marginTop: 45 }}>
+                            {props.action === 'view' && props.templateDetails.unloadingImproperPreSingedURL && <img src={props.templateDetails.unloadingImproperPreSingedURL} style={{ width: 50 }} />}
+                            {props.action === 'edit' && <> {props.templateDetails.unloadingImproperPreSingedURL && <img src={props.templateDetails.unloadingImproperPreSingedURL} style={{ width: 50 }} />}
+                                <Dragger
+                                    name='packingIntact'
+                                    height={50}
+                                    beforeUpload={() => false}
+                                    action=''
+                                    onChange={(e) => onFilesChange(1, e)}
+                                // fileList={templateData[1].fileList}
+                                >
+                                    <p>
+                                        <Icon type="upload" />
+                                        &nbsp;Click or drag packing intact img
+                                    </p>
+                                </Dragger> </>}
+                            {props.action === 'create' && <Dragger
+                                name='packingIntact'
+                                height={50}
+                                beforeUpload={() => false}
+                                action=''
+                                onChange={(e) => onFilesChange(1, e)}
+                            // fileList={templateData[1].fileList}
+                            >
+                                <p>
+                                    <Icon type="upload" />
+                                    &nbsp;Click or unloading improper img
+                                </p>
+                            </Dragger>}
+                        </div>
+                    </Col>
         </Row>
 
         <Row>
@@ -96,7 +135,7 @@ const PostDispatchTemplate = (props) => {
           </Col>
           <Col span={8}>
             <div style={{ display: 'grid', marginTop: 45 }}>
-              {props.action === 'view' && props.templateDetails.packingIntactPreSingedURL && <img src={props.templateDetails.packingIntactPreSingedURL} style={{ width: 50 }} />}
+              {props.action === 'view' && props.templateDetails.unloadingImproperPreSingedURL && <img src={props.templateDetails.unloadingImproperPreSingedURL} style={{ width: 50 }} />}
               {props.action === 'edit' && <> {props.templateDetails.packingIntactPreSingedURL && <img src={props.templateDetails.packingIntactPreSingedURL} style={{ width: 50 }} />}
                 <Dragger
                   name='packingIntact'
@@ -121,10 +160,10 @@ const PostDispatchTemplate = (props) => {
               >
                 <p>
                   <Icon type="upload" />
-                  &nbsp;Click or drag packing intact img
+                  &nbsp;Click or drag packing damage in transit img 
                 </p>
               </Dragger>}
-              <Dragger
+              {/* <Dragger
                 name='coilBend'
                 height={50}
                 multiple={false}
@@ -137,7 +176,7 @@ const PostDispatchTemplate = (props) => {
                   <Icon type="upload" />
                   &nbsp;Click or drag coil bend img
                 </p>
-              </Dragger>
+              </Dragger>*/}
             </div>
           </Col>
         </Row>
@@ -146,7 +185,7 @@ const PostDispatchTemplate = (props) => {
             <div style={{ display: 'grid', marginTop: 45 }}>
               <label>Acknowledgement Receipt</label>
             </div>
-          </Col>
+          </Col> 
           <Col span={8}>
             <div style={{ display: 'grid', marginTop: 45 }}>
               {props.action === 'view' && props.templateDetails.ackReceiptPreSingedURL && <img src={props.templateDetails.ackReceiptPreSingedURL} style={{ width: 50 }} />}
@@ -174,7 +213,7 @@ const PostDispatchTemplate = (props) => {
               >
                 <p>
                   <Icon type="upload" />
-                  &nbsp;Click or drag packing intact img
+                  &nbsp;Click or drag acknowledgement receipt img
                 </p>
               </Dragger>}
             </div>
@@ -217,7 +256,7 @@ const PostDispatchTemplate = (props) => {
               >
                 <p>
                   <Icon type="upload" />
-                  &nbsp;Click or drag packing intact img
+                  &nbsp;Click or drag weighment slip img
                 </p>
               </Dragger>}
             </div>
@@ -225,7 +264,7 @@ const PostDispatchTemplate = (props) => {
         </Row>
         {props.action !== 'view' && <Row >
           <div style={{ marginTop: 45 }}>
-            <Button style={{ marginLeft: 8 }} disabled={isDisabled}>
+            <Button style={{ marginLeft: 8 }} onClick={handleCancel}>
               Cancel
             </Button>
             {props.action === 'create' ? <Button type="primary" htmlType="submit" onClick={createTemplate} disabled={isDisabled}>

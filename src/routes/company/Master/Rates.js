@@ -728,7 +728,6 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
   const filteredLaminations = props.laminationCharges.filter(
     (item) => item.partyId === selectedParty
   );
-
   return (
     <div>
       <h1>
@@ -1436,7 +1435,6 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
               const values = props.form.getFieldsValue();
               console.log('Received values of form: ', values);
                if (values.laminationDetailsId !== '' && values.lPartyId !== '' && values.charges !== '') {
-                debugger
                  const laminationId = props?.rates?.laminationCharges?.laminationId;
                  props.updateLminationCharges({...values, laminationId});
                 setEditLaminationCharges(false);
@@ -1445,7 +1443,7 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
             } else {
               const values = props.form.getFieldsValue();
               console.log('Received values of form: ', values);
-              debugger
+
               if (values.laminationDetailsId !== '' && values.lPartyId !== '' && values.charges !== '') {
                 props.addLminationCharges(values);
                 setShowAddLaminationCharges(false);

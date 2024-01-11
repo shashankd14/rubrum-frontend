@@ -1,26 +1,68 @@
 import { Button, Card, Col, DatePicker, Input, Row } from 'antd'
 import TextArea from 'antd/lib/input/TextArea';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import EditableTable from '../../../../../../util/EditableTable';
-
+import { connect } from 'react-redux';
+import {getQualityTemplateById } from '../../../../../../appRedux/actions';
 
 const CuttingForm = (props) => {
 
     const [dataSource, setDataSource] = useState([{
-        slitNo: "",
         thickness: "",
         width: "",
         length: "",
         actualThickness: "",
         actualWidth: "",
         actualLength: "",
-        actualThickness: "",
         burrHeight: "",
         diagonalDifference: "",
         remarks: "",
     }]);
-
+    const [toleranceDataSource, setToleranceDataSource] = useState([{
+        toleranceThicknessFrom: "",
+        toleranceThicknessTo: "",
+        toleranceWidthFrom: "",
+        toleranceWidthTo: "",
+        toleranceLengthFrom: "",
+        toleranceLengthTo: "",
+        toleranceBurrHeightFrom: "",
+        toleranceBurrHeightTo: "",
+        toleranceDiagonalDifferenceFrom: "",
+        toleranceDiagonalDifferenceTo: "",
+    }]);
     const [cutInspectionData, setCutInspectionData] = useState([])
+    const [toleranceInspectionData, setToleranceInspectionData] = useState([])
+
+    //Code for view cut tolerance table
+    const viewCutTolerance = () => {
+        if(props.templateDetails.operation == "templateById"){
+            debugger
+        var templateId = props.templateDetails.data.templateId
+        props.getQualityTemplateById(templateId)
+             const cutDetails = JSON.parse(props.templateDetails.data.templateDetails);
+          const toleranceDataTable = cutDetails[5]?.value.toleranceInspectionData;
+          const toleranceData = toleranceDataTable.map((item, i) => ({
+            toleranceThicknessFrom: item.toleranceThicknessFrom,
+            toleranceThicknessTo: item.toleranceThicknessTo,
+            toleranceWidthFrom: item.toleranceWidthFrom,
+            toleranceWidthTo: item.toleranceWidthTo,
+            toleranceLengthFrom: item.toleranceLengthFrom,
+            toleranceLengthTo: item.toleranceLengthTo,
+            toleranceBurrHeightFrom: item.toleranceBurrHeightFrom,
+            toleranceBurrHeightTo: item.toleranceBurrHeightTo,
+            toleranceDiagonalDifferenceFrom: item.toleranceDiagonalDifferenceFrom,
+            toleranceDiagonalDifferenceTo: item.toleranceDiagonalDifferenceTo,
+        }));
+          setToleranceDataSource(toleranceData);
+          setToleranceInspectionData(toleranceData);
+        }
+      }
+      useEffect(() => {
+        if(props.templateDetails.operation === "templateById"){
+            viewCutTolerance()
+        }
+      }, [props.templateDetails.operation]);
+
     const [cutFormData, setCutFormData] = useState({
         processType: "cutting",
         customerName: "",
@@ -55,11 +97,11 @@ const CuttingForm = (props) => {
     };
 
     const columns = [
-        {
-            title: 'Slit No.',
-            dataIndex: 'slitNo',
-            editable: true,
-        },
+        // {
+        //     title: 'Slit No.',
+        //     dataIndex: 'slitNo',
+        //     editable: true,
+        // },
         {
             title: 'Thickness',
             dataIndex: 'thickness',
@@ -107,15 +149,80 @@ const CuttingForm = (props) => {
         },
     ];
 
+    const toleranceColumns = [
+        {
+            title: 'Thickness From',
+            dataIndex: 'toleranceThicknessFrom',
+            editable: true
+        },
+        {
+            title: 'Thickness To',
+            dataIndex: 'toleranceThicknessTo',
+            editable: true
+        },
+        {
+            title: 'Width From',
+            dataIndex: 'toleranceWidthFrom',
+            editable: true
+        },
+        {
+            title: 'Width To',
+            dataIndex: 'toleranceWidthTo',
+            editable: true
+        },
+        {
+            title: 'Length From',
+            dataIndex: 'toleranceLengthFrom',
+            editable: true
+        },
+        {
+            title: 'Length To',
+            dataIndex: 'toleranceLengthTo',
+            editable: true
+        },
+        {
+            title: 'Burr Height From',
+            dataIndex: 'toleranceBurrHeightFrom',
+            editable: true
+        },
+        {
+            title: 'Burr Height To',
+            dataIndex: 'toleranceBurrHeightTo',
+            editable: true
+        },
+        {
+            title: 'Diagonal Difference From',
+            dataIndex: 'toleranceDiagonalDifferenceFrom',
+            editable: true
+        },
+        {
+            title: 'Diagonal Difference To',
+            dataIndex: 'toleranceDiagonalDifferenceTo',
+            editable: true
+        }
+    ];
+
     const emptyRecord = {
         key: 0,
-        slitNo: "",
         slitSize: "",
         allowableLowerWidth: "",
         allowableHigherWidth: "",
         actualWidth: "",
         burrHeight: "",
         remarks: "",
+    }
+    const toleranceEmptyRecord = {
+        key: 0,
+        toleranceThicknessFrom: "",
+        toleranceThicknessTo: "",
+        toleranceWidthFrom: "",
+        toleranceWidthTo: "",
+        toleranceLengthFrom: "",
+        toleranceLengthTo: "",
+        toleranceBurrHeightFrom: "",
+        toleranceBurrHeightTo: "",
+        toleranceDiagonalDifferenceFrom: "",
+        toleranceDiagonalDifferenceTo: "",
     }
 
     const onOptionChange = (key, changeEvent) => {
@@ -124,16 +231,22 @@ const CuttingForm = (props) => {
 
     const saveForm = () => {
         cutFormData['cutInspectionData'] = cutInspectionData
+        cutFormData['toleranceInspectionData'] = toleranceInspectionData
+        props.onSave(cutFormData);
     }
 
     const handleInspectionTableChange = (tableData) => {
         console.log('handleInspectionTableChange', tableData)
         setCutInspectionData(tableData)
     } 
+    const handleToleranceTableChange = (tableData) => {
+        console.log('handleInspectionTableChange', tableData)
+        setToleranceInspectionData(tableData)
+    } 
 
     return (
         <div id="slittingform">
-            <Card title="Slitting Process Form">
+            <Card title="Cutting Process Form">
                 <Card.Grid style={gridCardStyle}>
                     <Row>
                         <Col span={24}>
@@ -208,6 +321,14 @@ const CuttingForm = (props) => {
 
                 </Card.Grid>
                 <Card.Grid style={gridStyle}>
+                     <Row>
+                        <Col span={24}>
+                            <label style={{fontSize: 20}}>Tolerance</label>
+                        </Col>
+                    </Row>
+                    <EditableTable columns={toleranceColumns} emptyRecord={toleranceEmptyRecord} dataSource={toleranceDataSource} handleChange={handleToleranceTableChange}/>
+                </Card.Grid>
+                <Card.Grid style={gridStyle}>
                     <EditableTable columns={columns} emptyRecord={emptyRecord} dataSource={dataSource} handleChange={handleInspectionTableChange}/>
                 </Card.Grid>
                 <Card.Grid style={gridStyle}>
@@ -240,5 +361,10 @@ const CuttingForm = (props) => {
         </div>
     )
 }
-
-export default CuttingForm
+const mapStateToProps = (state) => ({
+    templateDetails: state.quality,
+  });
+  
+  export default connect(mapStateToProps, {
+    getQualityTemplateById
+  })(CuttingForm);
