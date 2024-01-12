@@ -15,6 +15,7 @@ import Process from './Process';
 import Reports from './Reports';
 import Quality from './Quality';
 import Packing from './Packing';
+import LabelPrint from './LabelPrint';
 
 const createRootReducer = (history) => combineReducers({
   router: connectRouter(history),
@@ -32,7 +33,8 @@ const createRootReducer = (history) => combineReducers({
   process: Process,
   reports: Reports,
   quality: Quality,
-  packing: Packing
+  packing: Packing,
+  labelPrint: LabelPrint
 });
 
 export default createRootReducer

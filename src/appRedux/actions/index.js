@@ -13,3 +13,4 @@ export * from './Process';
 export * from './Reports';
 export * from './Quality';
 export * from './Packing';
+export * from './LabelPrint';
