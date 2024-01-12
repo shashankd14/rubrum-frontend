@@ -7,6 +7,7 @@ export const APPLICATION_DATE_FORMAT = 'DD/MM/YYYY';
 export const sidebarMenuItems = {
     inward: 'Inward',
     partywiseRegister: "Partywise Register",
+    labelPrint: "Label Print",
     deilveredItems: "Delivered Items",
     workInProgress: "Work-In Progress",
     reports: "Reports",
