@@ -1,5 +1,5 @@
 //PreProcessingReport
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { connect } from "react-redux";
 import { Link, useHistory, useLocation, withRouter } from "react-router-dom";
 import { Button, Card, Col, Divider, Icon, Modal, Radio, Row, Select, Table } from 'antd'
@@ -204,7 +204,9 @@ const PreProcessingReport = (props) => {
         props.fetchTemplatesList();
     }, []);
 
+    const isInitialMount = useRef(true);
     useEffect(() => {
+        if (!isInitialMount.current){
         if (!props.template.loading && !props.template.error && props.template.operation == "fetchQualityReport") {
             console.log(props.template)
             setQualityReportList(props.template.data)
@@ -226,6 +228,9 @@ const PreProcessingReport = (props) => {
         } else if (!props.template.loading && !props.template.error && props.template.operation == "qualityReportById") {
             console.log("qualityReportById", props.template)
             props.history.push({ pathname: '/company/quality/reports/create/preprocessing', state: { selectedItemForQr: selectedItemForQr, templateDetails: props.template.data, action: action } })
+        }}
+        else {
+            isInitialMount.current = false;
         }
     }, [props.template.loading, props.template.error, props.template.operation]);
 

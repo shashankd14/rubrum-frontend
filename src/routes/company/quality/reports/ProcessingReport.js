@@ -1,5 +1,5 @@
 //src-routes-company-quality-reports-ProcessingReport.js
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { connect } from "react-redux";
 import { Link, useHistory, useLocation, withRouter } from "react-router-dom";
 import { Button, Card, Col, Divider, Icon, Modal, Radio, Row, Select, Table } from 'antd'
@@ -215,7 +215,9 @@ const ProcessingReport = (props) => {
         setAction('');
     }, []);
 
+    const isInitialMount = useRef(true);
     useEffect(() => {
+        if (!isInitialMount.current){
         if (!props.template.loading && !props.template.error && props.template.operation == "fetchQualityReport") {
             console.log(props.template)
             setQualityReportList(props.template.data)
@@ -236,6 +238,9 @@ const ProcessingReport = (props) => {
         } else if (!props.template.loading && !props.template.error && props.template.operation == "qualityReportById") {
             console.log("qualityReportById", props.template)
             props.history.push({ pathname: '/company/quality/reports/create/processing', state: { selectedItemForQr: selectedItemForQr, templateDetails: props.template.data, action: action } })
+        }}
+        else {
+            isInitialMount.current = false;
         }
     }, [props.template.loading, props.template.error, props.template.operation]);
 
@@ -266,7 +271,6 @@ const ProcessingReport = (props) => {
     const onDelete = (record, key, e) => {
         console.log(record, key);
         props.deleteQualityReport(record.qirId);
-       // props.history.push("/company/quality/reports");
     };
 
     const onEdit = (record, key, e) => {
