@@ -55,13 +55,13 @@ const SlittingForm = (props) => {
     const formDataObjectTolerance = templateDataTolerance.find((item) => item.id === 'formData');
     if (formDataObject) {
       const formData = formDataObjectTolerance.value;
-      const toleranceInspectionData = formData.toleranceInspectionData;
-      toleranceThicknessFrom = toleranceInspectionData[0].toleranceThicknessFrom; 
-      toleranceThicknessTo = toleranceInspectionData[0].toleranceThicknessTo;
-      toleranceSlitSizeFrom = toleranceInspectionData[0].toleranceSlitSizeFrom;
-      toleranceSlitSizeTo = toleranceInspectionData[0].toleranceSlitSizeTo;
-      toleranceBurrHeightFrom = toleranceInspectionData[0].toleranceBurrHeightFrom; 
-      toleranceBurrHeightTo = toleranceInspectionData[0].toleranceBurrHeightTo;
+      const toleranceInspectionDataSlit = formData.toleranceInspectionData;
+      toleranceThicknessFrom = toleranceInspectionDataSlit[0].toleranceThicknessFrom; 
+      toleranceThicknessTo = toleranceInspectionDataSlit[0].toleranceThicknessTo;
+      toleranceSlitSizeFrom = toleranceInspectionDataSlit[0].toleranceSlitSizeFrom;
+      toleranceSlitSizeTo = toleranceInspectionDataSlit[0].toleranceSlitSizeTo;
+      toleranceBurrHeightFrom = toleranceInspectionDataSlit[0].toleranceBurrHeightFrom; 
+      toleranceBurrHeightTo = toleranceInspectionDataSlit[0].toleranceBurrHeightTo;
     } 
 
   const [slitDataSource, setSlitDataSource] = useState([]);
@@ -91,7 +91,7 @@ const SlittingForm = (props) => {
       setFinalDataSource(mappedData);
       setSlitDataSource(mappedData);
       setToleranceDataSource(toleranceData);
-      setToleranceInspectionData(toleranceData);
+      settoleranceInspectionDataSlit(toleranceData);
     }
   }
   useEffect(()=>{
@@ -117,7 +117,7 @@ const SlittingForm = (props) => {
         burrHeight: item.burrHeight,
         remarks: item.burrHeight
       }));
-      const toleranceDataTable = planDetails[1]?.toleranceInspectionData;
+      const toleranceDataTable = planDetails[1]?.toleranceInspectionDataSlit;
           const toleranceData = toleranceDataTable.map((item, i) => ({
         toleranceThicknessFrom: item.toleranceThicknessFrom,
         toleranceThicknessTo: item.toleranceThicknessTo,
@@ -129,7 +129,7 @@ const SlittingForm = (props) => {
       setFinalDataSource(mappedData);
       setSlitDataSource(mappedData);
       setToleranceDataSource(toleranceData);
-      setToleranceInspectionData(toleranceData);
+      settoleranceInspectionDataSlit(toleranceData);
     }}
   }
   useEffect(() => {
@@ -142,7 +142,7 @@ const SlittingForm = (props) => {
 
   const [slitInspectionData, setSlitInspectionData] = useState([]);
   const [finalInspectionData, setFinalInspectionData] = useState([]);
-  const [toleranceInspectionData, setToleranceInspectionData] = useState([])
+  const [toleranceInspectionDataSlit, settoleranceInspectionDataSlit] = useState([])
 
   const instructionDate = props.templateDetails.packetDetails?.map(item=>item.instructionDate)
   useEffect(() => {
@@ -330,7 +330,7 @@ const location = useLocation();
   const saveForm = () => {
     slitFormData['slitInspectionData'] = slitInspectionData;
     slitFormData['finalInspectionData'] = finalInspectionData;
-    slitFormData['toleranceInspectionData'] = toleranceInspectionData
+    slitFormData['toleranceInspectionDataSlit'] = toleranceInspectionDataSlit
     props.onSave(slitFormData);
     props.updateQRFormData({ action: 'slit', formData: slitFormData });
   };
@@ -347,7 +347,7 @@ const location = useLocation();
   };
 
   const handleToleranceTableChangeSlit = (tableData) => {
-    setToleranceInspectionData(tableData)
+    settoleranceInspectionDataSlit(tableData)
 } 
 
   return (
