@@ -257,6 +257,7 @@ const CreateLinkTemplate = (props) => {
       const handleCancel = () =>{
         history.goBack();
       }
+      const allGradeList = props.material?.materialList.flatMap(item => item.materialGrade.map(grade => grade.gradeId));
     return (
         <div>
             <Card title="Link KQP">
@@ -351,7 +352,7 @@ const CreateLinkTemplate = (props) => {
                                 &emsp;&emsp;&emsp; <label>Select All</label>&nbsp; 
                                     <Checkbox
                                         id="allOptions"
-                                        checked={selectAllMaterialGrades.length===props.material.length}
+                                        checked={selectedMatGrade.length===allGradeList.length}
                                         onChange={selectAllMaterialGrades}
                                         disabled = {anyMatGradeFlag}
                                     />
@@ -393,7 +394,7 @@ const CreateLinkTemplate = (props) => {
                                     &emsp;&emsp;&emsp; <label>Select All</label>&nbsp; 
                                     <Checkbox
                                         id="allOptions"
-                                        checked={selectedEndUserTags.length===props.packetClassification.length}
+                                        checked={selectedEndUserTags.length===props.packetClassification.endUserTags.length}
                                         onChange={selectAllEndUserTags}
                                         disabled = {anyEndusertagFlag}
                                     />
