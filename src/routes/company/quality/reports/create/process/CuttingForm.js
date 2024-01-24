@@ -32,17 +32,17 @@ const CuttingForm = (props) => {
     const formDataObject = templateData.find((item) => item.id === 'formData');
     if (formDataObject) {
       const formData = formDataObject.value;
-      const toleranceInspectionData = formData.toleranceInspectionData;
-      toleranceThicknessFrom = toleranceInspectionData[0].toleranceThicknessFrom; 
-      toleranceThicknessTo = toleranceInspectionData[0].toleranceThicknessTo;
-      toleranceWidthFrom = toleranceInspectionData[0].toleranceWidthFrom;
-      toleranceWidthTo = toleranceInspectionData[0].toleranceWidthTo;
-      toleranceBurrHeightFrom = toleranceInspectionData[0].toleranceBurrHeightFrom; 
-      toleranceBurrHeightTo = toleranceInspectionData[0].toleranceBurrHeightTo;
-      toleranceLengthFrom = toleranceInspectionData[0].toleranceLengthFrom;
-      toleranceLengthTo = toleranceInspectionData[0].toleranceLengthTo;
-      toleranceDiagonalDifferenceFrom = toleranceInspectionData[0].toleranceDiagonalDifferenceFrom; 
-      toleranceDiagonalDifferenceTo = toleranceInspectionData[0].toleranceDiagonalDifferenceTo;
+      const toleranceInspectionDataCut = formData.toleranceInspectionData;
+      toleranceThicknessFrom = toleranceInspectionDataCut[0].toleranceThicknessFrom; 
+      toleranceThicknessTo = toleranceInspectionDataCut[0].toleranceThicknessTo;
+      toleranceWidthFrom = toleranceInspectionDataCut[0].toleranceWidthFrom;
+      toleranceWidthTo = toleranceInspectionDataCut[0].toleranceWidthTo;
+      toleranceBurrHeightFrom = toleranceInspectionDataCut[0].toleranceBurrHeightFrom; 
+      toleranceBurrHeightTo = toleranceInspectionDataCut[0].toleranceBurrHeightTo;
+      toleranceLengthFrom = toleranceInspectionDataCut[0].toleranceLengthFrom;
+      toleranceLengthTo = toleranceInspectionDataCut[0].toleranceLengthTo;
+      toleranceDiagonalDifferenceFrom = toleranceInspectionDataCut[0].toleranceDiagonalDifferenceFrom; 
+      toleranceDiagonalDifferenceTo = toleranceInspectionDataCut[0].toleranceDiagonalDifferenceTo;
     } 
     const [dataSource, setDataSource] = useState([]);
     const [toleranceDataSource, setToleranceDataSource] = useState([]);
@@ -75,7 +75,7 @@ const CuttingForm = (props) => {
             }]
             setDataSource(mappedData);
             setToleranceDataSource(toleranceData);
-            setToleranceInspectionData(toleranceData);
+            settoleranceInspectionDataCut(toleranceData);
           }
     }
    
@@ -105,7 +105,7 @@ const CuttingForm = (props) => {
             diagonalDifference: item.diagonalDifference,
             remarks: item.remarks
           }));
-          const toleranceDataTable = planDetails[1]?.toleranceInspectionData;
+          const toleranceDataTable = planDetails[1]?.toleranceInspectionDataCut;
           const toleranceData = toleranceDataTable.map((item, i) => ({
             toleranceThicknessFrom: item.toleranceThicknessFrom,
             toleranceThicknessTo: item.toleranceThicknessTo,
@@ -120,7 +120,7 @@ const CuttingForm = (props) => {
         }));
           setDataSource(mappedData);
           setToleranceDataSource(toleranceData);
-          setToleranceInspectionData(toleranceData);
+          settoleranceInspectionDataCut(toleranceData);
         }}
       }
       useEffect(() => {
@@ -133,7 +133,7 @@ const CuttingForm = (props) => {
 
     const [cutInspectionData, setCutInspectionData] = useState([])
 
-    const [toleranceInspectionData, setToleranceInspectionData] = useState([])
+    const [toleranceInspectionDataCut, settoleranceInspectionDataCut] = useState([])
     const [cutFormData, setCutFormData] = useState({
         processType: "cutting",
         customerName: "",
@@ -317,12 +317,12 @@ const CuttingForm = (props) => {
         setCutFormData((prevFormData) => ({
           ...prevFormData,
           cutInspectionData: cutInspectionData,
-          toleranceInspectionData: toleranceInspectionData,
+          toleranceInspectionDataCut: toleranceInspectionDataCut,
         }));
-      }, [cutInspectionData, toleranceInspectionData]);
+      }, [cutInspectionData, toleranceInspectionDataCut]);
     const saveForm = () => {
         cutFormData['cutInspectionData'] = cutInspectionData
-        cutFormData['toleranceInspectionData'] = toleranceInspectionData
+        cutFormData['toleranceInspectionDataCut'] = toleranceInspectionDataCut
         //cutFormData['toleranceDataSource'] = toleranceDataSource
         props.onSave(cutFormData);
         props.updateQRFormData({ action: 'cut', formData: cutFormData });
@@ -334,7 +334,7 @@ const CuttingForm = (props) => {
     } 
     const handleToleranceTableChange = (tableData) => {
         console.log('handleInspectionTableChange', tableData)
-        setToleranceInspectionData(tableData)
+        settoleranceInspectionDataCut(tableData)
     } 
 
     const location = useLocation();
