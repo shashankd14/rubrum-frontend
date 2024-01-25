@@ -26,6 +26,7 @@ import {
   pdfGenerateInward,
   QrCodeGeneratePlan
 } from "../../../appRedux/actions/Inward";
+import { labelPrintEditFinish } from '../../../appRedux/actions';
 import { APPLICATION_DATE_FORMAT } from "../../../constants";
 
 const Option = Select.Option;
@@ -1230,6 +1231,7 @@ const CreateCuttingDetailsForm = (props) => {
         editFinish: props?.editFinish,
       };
       props.updateInstruction(coil);
+      props.labelPrintEditFinish(coil);
       props.setShowSlittingModal(false);
     } else if (props.wip) {
       const isAllWip = tableData.every(
@@ -1254,6 +1256,7 @@ const CreateCuttingDetailsForm = (props) => {
           instruction: instructionList,
         };
         props.updateInstruction(coil);
+        props.labelPrintEditFinish(coil);
         props.setShowCuttingModal();
       }
     }
@@ -1986,4 +1989,5 @@ export default connect(mapStateToProps, {
   instructionGroupsave,
   pdfGenerateInward,
   QrCodeGeneratePlan,
+  labelPrintEditFinish
 })(CuttingDetailsForm);
