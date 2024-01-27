@@ -29,6 +29,7 @@ import {
   resetIsDeleted,
   QrCodeGeneratePlan,
 } from "../../../appRedux/actions/Inward";
+import { labelPrintEditFinish } from '../../../appRedux/actions/LabelPrint';
 import IntlMessages from "util/IntlMessages";
 import { set } from "nprogress";
 import { values } from "lodash";
@@ -1390,6 +1391,7 @@ const CreateSlittingDetailsForm = (props) => {
         editFinish: props?.editFinish,
       };
       props.updateInstruction(coil);
+       props.labelPrintEditFinish(coil);
       props.setShowSlittingModal(false);
     } else if(props.editFinish){
       const instructionList = tableData.filter(item =>editedRecordState.some(record=> record.instructionId === item.instructionId))
@@ -1427,6 +1429,7 @@ const CreateSlittingDetailsForm = (props) => {
           instruction: instructionList,
         };
         props.updateInstruction(coil);
+        props.labelPrintEditFinish(coil);
         props.setShowSlittingModal(false);
       }
     }
@@ -1941,4 +1944,5 @@ export default connect(mapStateToProps, {
   pdfGenerateInward,
   resetIsDeleted,
   QrCodeGeneratePlan,
+  labelPrintEditFinish
 })(SlittingDetailsForm);

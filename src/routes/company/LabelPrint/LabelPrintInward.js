@@ -30,8 +30,6 @@ const LabelPrintInward = (props) => {
     const [partyList, setPartyList] = useState([]);
     const [templateId, setTemplateId] = useState();
     const { totalItems } = props.inward;
-
-    console.log("table data", filteredInwardList)
    
     const columns = [
         {
@@ -122,19 +120,19 @@ const LabelPrintInward = (props) => {
                         className="gx-link"
                         onClick={() => onPdf(record.inwardEntryId)}
                     >
-                       PDF
+                       Label Print
                     </span>
                 </span>
             ),
         },
-        {
-            title: "Generating Date",
-            dataIndex: "generatingDate",
-            key: "generatingDate",
-            render: (generatingDate, record) => (
-                <span>{generatingDate ? moment(generatingDate).format('DD-MM-YYYY HH:mm:ss') : "not generated"}</span>
-            ),
-        },
+        // {
+        //     title: "Generating Date",
+        //     dataIndex: "generatingDate",
+        //     key: "generatingDate",
+        //     render: (generatingDate, record) => (
+        //         <span>{generatingDate ? moment(generatingDate).format('DD-MM-YYYY HH:mm:ss') : "not generated"}</span>
+        //     ),
+        // },
         // {
         //     title: "Printing Date",
         // },
@@ -202,7 +200,7 @@ const LabelPrintInward = (props) => {
             });
         });
 
-        const payloadpdf = {inwardEntryId:inwardEntryId, process:"inward"}
+        const payloadpdf = {inwardEntryId:inwardEntryId, process:"INWARD"}
          props.labelPrintInward(payloadpdf);
     }
 

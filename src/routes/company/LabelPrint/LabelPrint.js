@@ -44,7 +44,7 @@ const LabelPrint = (props) => {
       </h1>
       <Card>
         <Tabs defaultActiveKey="1" tabPosition={mode} onChange={onTabChange} destroyInactiveTabPane={true} >
-          <TabPane tab="Inward" key="1">
+          <TabPane tab="RM" key="1">
             <LabelPrintInward/>
           </TabPane>
            <TabPane tab="WIP" key="2" className="additionalTab">
