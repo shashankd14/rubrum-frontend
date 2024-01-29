@@ -26,7 +26,7 @@ import {
   pdfGenerateInward,
   QrCodeGeneratePlan
 } from "../../../appRedux/actions/Inward";
-import { labelPrintEditFinish } from '../../../appRedux/actions';
+import { labelPrintEditFinish } from '../../../appRedux/actions/LabelPrint';
 import { APPLICATION_DATE_FORMAT } from "../../../constants";
 
 const Option = Select.Option;
@@ -1231,7 +1231,7 @@ const CreateCuttingDetailsForm = (props) => {
         editFinish: props?.editFinish,
       };
       props.updateInstruction(coil);
-      props.labelPrintEditFinish(coil);
+      props.labelPrintEditFinish(coil)
       props.setShowSlittingModal(false);
     } else if (props.wip) {
       const isAllWip = tableData.every(
@@ -1256,7 +1256,7 @@ const CreateCuttingDetailsForm = (props) => {
           instruction: instructionList,
         };
         props.updateInstruction(coil);
-        props.labelPrintEditFinish(coil);
+        props.labelPrintEditFinish(coil)
         props.setShowCuttingModal();
       }
     }
@@ -1389,6 +1389,7 @@ const CreateCuttingDetailsForm = (props) => {
         instruction: instructionList,
       };
       props.updateInstruction(coil);
+      props.labelPrintEditFinish(coil);
       props.setShowCuttingModal(false);
   };
   const addRow = () => {
@@ -1448,7 +1449,7 @@ const CreateCuttingDetailsForm = (props) => {
       }
       visible={props.showCuttingModal}
       onOk={handleOk}
-      width={1020}
+      width={1300}
       onCancel={handleCancel}
       footer={getFooterButtons()}
     >
