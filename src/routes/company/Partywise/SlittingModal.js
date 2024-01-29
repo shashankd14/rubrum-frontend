@@ -1402,6 +1402,7 @@ const CreateSlittingDetailsForm = (props) => {
         editFinish: props?.editFinish
       };
       props.updateInstruction(coil);
+      props.labelPrintEditFinish(coil);
       props.setShowSlittingModal(false);
     }else if (props.wip) {
       //
@@ -1550,6 +1551,7 @@ const CreateSlittingDetailsForm = (props) => {
         instruction: instructionList,
       };
       props.updateInstruction(coil);
+      props.labelPrintEditFinish(coil);
     }
   };
   const addRow = () => {
