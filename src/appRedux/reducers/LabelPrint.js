@@ -80,7 +80,6 @@ export default (state = INIT_STATE, action) => {
     }
 
     case actionTypes.GENERATE_EDIT_FINISH_LABEL_PRINT_PDF_REQUEST: {
-      debugger
       return {
         ...state,
         labelPrintLoading: true,

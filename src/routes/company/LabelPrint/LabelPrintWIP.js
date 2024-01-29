@@ -125,21 +125,6 @@ const LabelPrintWIP = (props) => {
         </span>
       ),
     },
-    // {
-    //   title: 'Generating Date',
-    //   dataIndex: 'generatingDate',
-    //   key: 'generatingDate',
-    //   render: (generatingDate, record) => (
-    //     <span>
-    //       {generatingDate
-    //         ? moment(generatingDate).format('DD-MM-YYYY HH:mm:ss')
-    //         : 'not generated'}
-    //     </span>
-    //   ),
-    // },
-    // {
-    //     title: "Printing Date",
-    // },
   ];
 
   useEffect(() => {

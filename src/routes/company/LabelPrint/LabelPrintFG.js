@@ -125,21 +125,6 @@ const LabelPrintFG = (props) => {
         </span>
       ),
     },
-    // {
-    //   title: 'Generating Date',
-    //   dataIndex: 'generatingDate',
-    //   key: 'generatingDate',
-    //   render: (generatingDate, record) => (
-    //     <span>
-    //       {generatingDate
-    //         ? moment(generatingDate).format('DD-MM-YYYY HH:mm:ss')
-    //         : 'not generated'}
-    //     </span>
-    //   ),
-    // },
-    // {
-    //     title: "Printing Date",
-    // },
   ];
 
   useEffect(() => {
@@ -221,19 +206,36 @@ const LabelPrintFG = (props) => {
     props.labelPrintFG(payloadpdf);
   };
 
+  const convertTimestampToDateTime = (timestamp) => {
+    const dateObject = new Date(timestamp);
+    return dateObject.toLocaleString('en-GB', {
+      day: 'numeric',
+      month: 'numeric',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      second: 'numeric',
+      hour12: true, // 12-hour clock
+    });
+  };
+
   const getsPlanLabel = () => {
     return (
       <>
         {props.labelPrint?.fgLabelPdf?.fg_labels?.length > 0 && (
           <div>
-            <p>FG Labels &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; Modified Time</p> 
+            <p>
+              FG Labels
+              &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+              Modified Time
+            </p>
             {props.labelPrint?.fgLabelPdf?.fg_labels?.map((item, index) => (
               <>
                 <a href={item?.labelUrl} target='_blank'>
                   {index + 1}. {item.id}
                 </a>{' '}
                 <span>{}</span>
-                <span>{item.modifiedTime}</span>
+                <span>{convertTimestampToDateTime(item.modifiedTime)}</span>
                 <br />
               </>
             ))}

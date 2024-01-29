@@ -20,7 +20,6 @@ const getHeaders = () => ({
 });
 
 function* GenerateInwardLabelPrint(action) {
-  debugger;
   try {
     const pdfGenerate = yield fetch(
       `${baseUrl}api/inwardEntry/getLabels/inward/${action.payloadpdf.inwardEntryId}`,
@@ -49,7 +48,6 @@ function* GenerateInwardLabelPrint(action) {
 }
 
 function* GenerateWIPLabelPrint(action) {
-  debugger;
   console.log('action.inwardEntryId', action.payloadpdf.inwardEntryId);
   try {
     const generateLabelPdf = yield fetch(
@@ -72,7 +70,6 @@ function* GenerateWIPLabelPrint(action) {
 }
 
 function* GenerateFGLabelPrint(action) {
-  debugger;
   console.log('action.inwardEntryId', action.payloadpdf.inwardEntryId);
   try {
     const generateLabelPdf = yield fetch(
@@ -95,7 +92,6 @@ function* GenerateFGLabelPrint(action) {
 }
 
 function* GenerateEditFinishLabelPrint(action) {
-  debugger;
   const { number, instruction, unfinish, editFinish } = action.payloadpdf;
     const ins = instruction.map(item => {
         let insObj = {
