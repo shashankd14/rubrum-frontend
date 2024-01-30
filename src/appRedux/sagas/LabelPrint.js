@@ -91,53 +91,78 @@ function* GenerateFGLabelPrint(action) {
   }
 }
 
+const delay1 = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 function* GenerateEditFinishLabelPrint(action) {
+  yield call(delay1, 500);
   const { number, instruction, unfinish, editFinish } = action.payloadpdf;
-    const ins = instruction.map(item => {
-        let insObj = {
-            instructionId: item.instructionId ? item.instructionId : null,
-            parentInstructionId: item.parentInstructionId ? item.parentInstructionId : null,
-            processId: item?.process?.processId ? item?.process?.processId : 1,
-            instructionDate: item.instructionDate ? moment(item.instructionDate).format('YYYY-MM-DD HH:mm:ss') : null,
-            plannedLength: item.plannedLength ? item.plannedLength : 0,
-            plannedWidth: item.plannedWidth ? item.plannedWidth : 0,
-            plannedWeight: item.plannedWeight ? item.plannedWeight : 0,
-            plannedNoOfPieces: item.plannedNoOfPieces ? item.plannedNoOfPieces : 0,
-            actualWeight: toNumber(item.actualWeight) || 0,
-            actualWidth: toNumber(item.actualWidth) || 0,
-            actualLength: toNumber(item.actualLength) || 0,
-            noOfPieces: item.noOfPieces ? item.noOfPieces : 0,
-            actualNoOfPieces: item.actualNoOfPieces ? item.actualNoOfPieces : 0,
-            wastage: item.wastage ? item.wastage : 0,
-            damage: item.damage ? item.damage : 0,
-            packingWeight: item.packingWeight ? item.packingWeight : 0,
-            createdBy: item.createdBy ? item.createdBy : 1,
-            updatedBy: item.updatedBy ? item.updatedBy : 1,
-            packetClassificationId: item.packetClassification?.classificationId || item.packetClassification?.tagId || '',
-            endUserTagId:item?.endUserTagsentity?.tagId || ""
-        }
-        return insObj;
-    });
-    const filteredData = ins.filter(each => each.packetClassificationId !== 0 && each.packetClassificationId !== "");
-    const req = {
-        taskType: editFinish ?"FGtoFG":unfinish ? "FGtoWIP" :"WIPtoFG",
-        instructionDtos: (unfinish || editFinish) ? ins : filteredData
-    }
+  const ins = instruction.map((item) => {
+    let insObj = {
+      instructionId: item.instructionId ? item.instructionId : null,
+      parentInstructionId: item.parentInstructionId
+        ? item.parentInstructionId
+        : null,
+      processId: item?.process?.processId ? item?.process?.processId : 1,
+      instructionDate: item.instructionDate
+        ? moment(item.instructionDate).format('YYYY-MM-DD HH:mm:ss')
+        : null,
+      plannedLength: item.plannedLength ? item.plannedLength : 0,
+      plannedWidth: item.plannedWidth ? item.plannedWidth : 0,
+      plannedWeight: item.plannedWeight ? item.plannedWeight : 0,
+      plannedNoOfPieces: item.plannedNoOfPieces ? item.plannedNoOfPieces : 0,
+      actualWeight: toNumber(item.actualWeight) || 0,
+      actualWidth: toNumber(item.actualWidth) || 0,
+      actualLength: toNumber(item.actualLength) || 0,
+      noOfPieces: item.noOfPieces ? item.noOfPieces : 0,
+      actualNoOfPieces: item.actualNoOfPieces ? item.actualNoOfPieces : 0,
+      wastage: item.wastage ? item.wastage : 0,
+      damage: item.damage ? item.damage : 0,
+      packingWeight: item.packingWeight ? item.packingWeight : 0,
+      createdBy: item.createdBy ? item.createdBy : 1,
+      updatedBy: item.updatedBy ? item.updatedBy : 1,
+      packetClassificationId:
+        item.packetClassification?.classificationId ||
+        item.packetClassification?.tagId ||
+        '',
+      endUserTagId: item?.endUserTagsentity?.tagId || '',
+    };
+    return insObj;
+  });
+  const filteredData = ins.filter(
+    (each) =>
+      each.packetClassificationId !== 0 && each.packetClassificationId !== ''
+  );
+  var taskType = '';
+  if (editFinish) {
+    taskType = 'FGtoFG';
+  } else if (unfinish) {
+    taskType = 'FGtoWIP';
+  } else {
+    taskType = 'WIPtoFG';
+  }
+  var instructionDtos = '';
+  if (unfinish !== undefined || editFinish !== undefined) {
+    instructionDtos = ins;
+  } else {
+    instructionDtos = filteredData;
+  }
+  const req = {
+    taskType,
+    instructionDtos
+  };
   try {
     const pdfGenerate = yield fetch(`${baseUrl}api/pdf/labelprint/fg`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', ...getHeaders() },
       body: JSON.stringify(req),
     });
-    console.log("action.payloadpdf", req)
-
     if (pdfGenerate.status === 200) {
       const pdfGenerateResponse = yield pdfGenerate.json();
       let pdfWindow = window.open('');
       pdfWindow.document.write(
         "<iframe width='100%' height='600%' src='data:application/pdf;base64, " +
-        encodeURI(pdfGenerateResponse.encodedBase64String) + "'></iframe>"
-   )       
+          encodeURI(pdfGenerateResponse.encodedBase64String) +
+          "'></iframe>"
+      );
       yield put(actions.labelPrintEditFinishSuccess(pdfGenerateResponse));
     } else if (pdfGenerate.status === 401) {
       yield put(userSignOutSuccess());
