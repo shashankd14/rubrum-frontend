@@ -548,11 +548,19 @@ const SlitAndCutForm = (props) => {
         toleranceBurrHeightFrom: "",
         toleranceBurrHeightTo: "",
     }
+    
     const onOptionChange = (key, changeEvent) => {
-        slitCutFormData[key] = changeEvent.target.value;
-    }
+        const target = changeEvent.nativeEvent.target;
+        if (changeEvent.target) {
+          setSlitFormData((prevData) => ({
+            ...prevData,
+            [key]: target.value,
+          }));
+        }
+      };
     const location = useLocation();
-    const saveForm = () => {
+    const saveForm = (event) => {
+        event.preventDefault();
         slitCutFormData['slitInspectionData'] = slitInspectionData
         slitCutFormData['cutInspectionData'] = cutInspectionData
         slitCutFormData['finalInspectionData'] = finalInspectionData
@@ -580,6 +588,21 @@ const SlitAndCutForm = (props) => {
     const handleToleranceTableChangeSlit = (tableData) => {
        setToleranceInspectionDataSlit(tableData);
     }
+
+    //move data from slit table to slit inspection table
+    const handleTransferToFinalTable = () => {
+        const mappedData = slitInspectionData.map((slitItem) => ({
+          instructionId: slitItem.instructionId,
+          plannedWidth: slitItem.plannedWidth,
+          actualWidth: slitItem.actualWidth,
+          actualThickness: slitItem.actualThickness,
+          burrHeight: slitItem.burrHeight,
+          remarks: slitItem.remarks,
+          key: slitItem.key, 
+        }));
+        setFinalDataSource(mappedData);
+        handleFinalInspectionTableChange(mappedData)
+      };
 
     return (
         <div id="slittingform">
@@ -700,7 +723,8 @@ const SlitAndCutForm = (props) => {
                 <Card.Grid style={gridStyle}>
                     <Row>
                         <Col span={24}>
-                            <label style={{fontSize: 20}}>Final Quality Inspection Report</label>
+                            <label style={{fontSize: 20}}>Final Quality Inspection Report &emsp;</label>
+                            <Button type="primary" onClick={handleTransferToFinalTable}>Transfer Data</Button>
                         </Col>
                     </Row>
                     <EditableTable columns={finalColumns} emptyRecord={emptyFinalRecord} dataSource={finalDataSource} handleChange={handleFinalInspectionTableChange}/>
