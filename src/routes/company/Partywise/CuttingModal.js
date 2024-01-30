@@ -1217,6 +1217,7 @@ const CreateCuttingDetailsForm = (props) => {
         editFinish: props?.editFinish,
       };
       props.updateInstruction(coil);
+      props.labelPrintEditFinish(coil)
       props.setShowCuttingModal(false);
     } else if (props?.editFinish) {
       const instructionList = tableData.filter((item) =>
