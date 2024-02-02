@@ -16,10 +16,6 @@ import {
 import { useLocation } from 'react-router-dom/cjs/react-router-dom.min';
 
 const SlittingForm = (props) => {
-  var allowableLowerWidth = 0;
-  var allowableHigherWidth = 0;
-  var allowableLowerburrHeight = 0;
-  var allowableHeigherburrHeight = 0;
   
   const templateData = JSON.parse(
     props?.templateDetails?.data?.templateDetails
@@ -28,19 +24,6 @@ const SlittingForm = (props) => {
   // Access the 'formData' property
   const formDataObject = templateData.find((item) => item.id === 'formData');
 
-  if (formDataObject) {
-    // Access the "value" property which contains the "formData" object
-    const formData = formDataObject.value;
-
-    // Access the "slitInspectionData" array
-    const slitInspectionData = formData.slitInspectionData;
-
-    // Access the "allowableLowerWidth" of the first sub-row (element at index 0)
-    // allowableLowerWidth = slitInspectionData[0].allowableLowerWidth;
-    // allowableHigherWidth = slitInspectionData[0].allowableHigherWidth;
-    // allowableHeigherburrHeight = slitInspectionData[0].allowableHeigherburrHeight;
-    // allowableLowerburrHeight = slitInspectionData[0].allowableLowerburrHeight;
-  } 
   //Slit tolerance
   var toleranceThicknessFrom = 0;
   var toleranceThicknessTo = 0;
@@ -106,7 +89,7 @@ const SlittingForm = (props) => {
       var qirId = props.templateDetails.data.qirId
       props.getQualityReportById(qirId)
       const planDetails = JSON.parse(props.templateDetails.data.planDetails);
-      const slitData = planDetails[1]?.slitInspectionData;
+      const slitData = planDetails[0]?.slitInspectionData;
       if (slitData) {
       const mappedData = slitData.map((item, i) => ({
         key: i,
@@ -117,7 +100,7 @@ const SlittingForm = (props) => {
         burrHeight: item.burrHeight,
         remarks: item.burrHeight
       }));
-      const toleranceDataTable = planDetails[1]?.toleranceInspectionDataSlit;
+      const toleranceDataTable = planDetails[0]?.toleranceInspectionDataSlit;
           const toleranceData = toleranceDataTable.map((item, i) => ({
         toleranceThicknessFrom: item.toleranceThicknessFrom,
         toleranceThicknessTo: item.toleranceThicknessTo,
