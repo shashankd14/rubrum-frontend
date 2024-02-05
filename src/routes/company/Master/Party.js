@@ -603,6 +603,7 @@ const Party = (props) => {
                                             <Checkbox value="INWARDREPORT">INWARDREPORT</Checkbox>
                                             <Checkbox value="STOCKREPORT">STOCKREPORT</Checkbox>
                                             <Checkbox value="OUTWARDREPORT">OUTWARDREPORT</Checkbox>
+                                            <Checkbox value="PROCESSINGREPORT">PROCESSINGREPORT</Checkbox>
                                         </Checkbox.Group>
                                     </Form.Item>
                                 </Form>
