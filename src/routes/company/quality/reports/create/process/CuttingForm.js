@@ -144,10 +144,6 @@ const CuttingForm = (props) => {
         }
       }, [props.templateDetails.operation]);
 
-    const instructionDate = props.templateDetails.packetDetails?.map(item=>item.instructionDate)
-
-    const [cutInspectionData, setCutInspectionData] = useState([])
-
     const [toleranceInspectionDataCut, settoleranceInspectionDataCut] = useState([])
     const [cutFormData, setCutFormData] = useState({
         processType: "cutting",
