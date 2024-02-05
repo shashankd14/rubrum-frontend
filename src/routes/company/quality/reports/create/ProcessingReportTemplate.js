@@ -76,6 +76,13 @@ const ProcessingReportTemplate = (props) => {
       "fileName": "",
       "fileList": []
     },
+    9: {
+      "id": 9,
+      "type": "packingRequirements",
+      "value": "Yes",
+      "fileName": "",
+      "fileList": []
+    },
     formData: {
       "id": "formData",
       "type": "customerApproval",
@@ -184,13 +191,7 @@ const handleClick = () => {
           </Col>
           <Col span={8}>
             <div style={{ display: 'grid', marginTop: 33 }}>
-              {/* {templateData[1].value && <Button
-              onClick={() =>  history.push(`/company/quality/reports/create/process/${templateData[1].value.toLowerCase()}`)}
-              >
-                {`FillXXX ${templateData[1].value.charAt(0).toUpperCase() + templateData[1].value.slice(1).toLowerCase()} Process form first`}
-              </Button>} */}
               {templateData[1].value && <Button
-               // onClick={() => setShowCreateModal(true)}
                onClick={handleClick}
               >
                 {`Fill ${templateData[1].value.charAt(0).toUpperCase() + templateData[1].value.slice(1).toLowerCase()} Process form first`}
@@ -212,17 +213,17 @@ const handleClick = () => {
             </div>
           </Col>
         </Row>
-        {/* <Row>
+         <Row>
           <Col span={8}>
             <div style={{ display: 'grid', marginTop: 45 }}>
-              <label>Packing Requirements</label>
-              <Radio.Group onChange={(e) => onOptionChange(3, e)} value={templateData[3].value} disabled={isDisabled}>
+              <label>Packing Done</label>
+              <Radio.Group onChange={(e) => onOptionChange(9, e)} value={templateData[9].value} disabled={isDisabled}>
                 <Radio value="Yes">Yes</Radio>
                 <Radio value="No">No</Radio>
               </Radio.Group>
             </div>
           </Col>
-        </Row> */}
+        </Row> 
 
         <Row>
           <Col span={8}>
