@@ -46,9 +46,7 @@ const CuttingForm = (props) => {
     } 
     const [dataSource, setDataSource] = useState([]);
     const [toleranceDataSource, setToleranceDataSource] = useState([]);
-    const [cutInspectionData, setCutInspectionData] = useState([])
-    const instructionDate = props.templateDetails.packetDetails?.map(item=>item.instructionDate)
-     //display cut table first three column
+    //display cut table first three column
   useEffect(() => {
     if (props.templateDetails.packetDetails && props.templateDetails.operation !== "qualityReportById") {
         const mappedData = props.templateDetails.packetDetails.map((item, i) => ({
