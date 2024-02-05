@@ -98,7 +98,7 @@ const SlittingForm = (props) => {
         actualThickness: item.actualThickness,
         actualWidth: item.actualWidth,
         burrHeight: item.burrHeight,
-        remarks: item.burrHeight
+        remarks: item.remarks
       }));
       const toleranceDataTable = planDetails[0]?.toleranceInspectionDataSlit;
           const toleranceData = toleranceDataTable.map((item, i) => ({
@@ -115,6 +115,7 @@ const SlittingForm = (props) => {
       settoleranceInspectionDataSlit(toleranceData);
     }}
   }
+  
   useEffect(() => {
     if(props.templateDetails.operation === "qualityReportById"){
         viewSlitData()
@@ -307,10 +308,18 @@ const SlittingForm = (props) => {
 }
 const location = useLocation();
   const onOptionChange = (key, changeEvent) => {
-    slitFormData[key] = changeEvent.target.value;
+    // slitFormData[key] = changeEvent.target.value;
+    const target = changeEvent.nativeEvent.target;
+    if (changeEvent.target) {
+      setSlitFormData((prevData) => ({
+        ...prevData,
+        [key]: target.value,
+      }));
+    }
   };
 
-  const saveForm = () => {
+  const saveForm = (event) => {
+    event.preventDefault();
     slitFormData['slitInspectionData'] = slitInspectionData;
     slitFormData['finalInspectionData'] = finalInspectionData;
     slitFormData['toleranceInspectionDataSlit'] = toleranceInspectionDataSlit
@@ -332,7 +341,20 @@ const location = useLocation();
   const handleToleranceTableChangeSlit = (tableData) => {
     settoleranceInspectionDataSlit(tableData)
 } 
-
+//move data from slit table to slit inspection table
+const handleTransferToFinalTable = () => {
+  const mappedData = slitInspectionData.map((slitItem) => ({
+    instructionId: slitItem.instructionId,
+    plannedWidth: slitItem.plannedWidth,
+    actualWidth: slitItem.actualWidth,
+    actualThickness: slitItem.actualThickness,
+    burrHeight: slitItem.burrHeight,
+    remarks: slitItem.remarks,
+    key: slitItem.key, 
+  }));
+  setFinalDataSource(mappedData);
+  handleFinalInspectionTableChange(mappedData)
+};
   return (
     <div id='slittingform'>
       <Card title='Slitting Process Form'>
@@ -486,8 +508,9 @@ const location = useLocation();
           <Row>
             <Col span={24}>
               <label style={{ fontSize: 20 }}>
-                Final Quality Inspection Report
+                Final Quality Inspection Report &emsp;
               </label>
+              <Button type="primary" onClick={handleTransferToFinalTable}>Transfer Data</Button>
             </Col>
           </Row>
           <EditableTable
