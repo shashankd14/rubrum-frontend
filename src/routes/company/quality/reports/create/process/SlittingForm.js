@@ -101,6 +101,7 @@ const SlittingForm = (props) => {
         remarks: item.remarks
       }));
       const toleranceDataTable = planDetails[0]?.toleranceInspectionDataSlit;
+
           const toleranceData = toleranceDataTable.map((item, i) => ({
         toleranceThicknessFrom: item.toleranceThicknessFrom,
         toleranceThicknessTo: item.toleranceThicknessTo,

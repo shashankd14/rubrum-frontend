@@ -557,7 +557,7 @@ const Party = (props) => {
                                     </Form.Item>
                                     <Form.Item label="Quality Templates">
                                         {getFieldDecorator('qualityTemplates', {
-                                            rules: [{ required: true, message: 'Please enter Quality Templates!' }],
+                                            //rules: [{ required: true, message: 'Please enter Quality Templates!' }],
                                         })(
                                             <Select
                                              id="qualityTemplates"

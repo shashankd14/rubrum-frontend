@@ -120,6 +120,7 @@ const CuttingForm = (props) => {
             remarks: item.remarks
           }));
           const toleranceDataTable = planDetails[0]?.toleranceInspectionDataCut;
+
           const toleranceData = toleranceDataTable.map((item, i) => ({
             toleranceThicknessFrom: item.toleranceThicknessFrom,
             toleranceThicknessTo: item.toleranceThicknessTo,
@@ -142,6 +143,10 @@ const CuttingForm = (props) => {
             viewCutData()
         }
       }, [props.templateDetails.operation]);
+
+    const instructionDate = props.templateDetails.packetDetails?.map(item=>item.instructionDate)
+
+    const [cutInspectionData, setCutInspectionData] = useState([])
 
     const [toleranceInspectionDataCut, settoleranceInspectionDataCut] = useState([])
     const [cutFormData, setCutFormData] = useState({
