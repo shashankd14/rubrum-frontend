@@ -124,7 +124,6 @@ const CreateReport = (props) => {
       }
     
     const handleCreate = (data) => {
-        debugger
         // if (!templateName || templateName === "") {
         //     setTemplateNameErr(true);
         //     document.getElementById('templateName').focus();

@@ -16,10 +16,6 @@ import {
 import { useLocation } from 'react-router-dom/cjs/react-router-dom.min';
 
 const SlittingForm = (props) => {
-  var allowableLowerWidth = 0;
-  var allowableHigherWidth = 0;
-  var allowableLowerburrHeight = 0;
-  var allowableHeigherburrHeight = 0;
   
   const templateData = JSON.parse(
     props?.templateDetails?.data?.templateDetails
@@ -28,19 +24,6 @@ const SlittingForm = (props) => {
   // Access the 'formData' property
   const formDataObject = templateData.find((item) => item.id === 'formData');
 
-  if (formDataObject) {
-    // Access the "value" property which contains the "formData" object
-    const formData = formDataObject.value;
-
-    // Access the "slitInspectionData" array
-    const slitInspectionData = formData.slitInspectionData;
-
-    // Access the "allowableLowerWidth" of the first sub-row (element at index 0)
-    // allowableLowerWidth = slitInspectionData[0].allowableLowerWidth;
-    // allowableHigherWidth = slitInspectionData[0].allowableHigherWidth;
-    // allowableHeigherburrHeight = slitInspectionData[0].allowableHeigherburrHeight;
-    // allowableLowerburrHeight = slitInspectionData[0].allowableLowerburrHeight;
-  } 
   //Slit tolerance
   var toleranceThicknessFrom = 0;
   var toleranceThicknessTo = 0;
@@ -106,7 +89,7 @@ const SlittingForm = (props) => {
       var qirId = props.templateDetails.data.qirId
       props.getQualityReportById(qirId)
       const planDetails = JSON.parse(props.templateDetails.data.planDetails);
-      const slitData = planDetails[1]?.slitInspectionData;
+      const slitData = planDetails[0]?.slitInspectionData;
       if (slitData) {
       const mappedData = slitData.map((item, i) => ({
         key: i,
@@ -115,9 +98,10 @@ const SlittingForm = (props) => {
         actualThickness: item.actualThickness,
         actualWidth: item.actualWidth,
         burrHeight: item.burrHeight,
-        remarks: item.burrHeight
+        remarks: item.remarks
       }));
-      const toleranceDataTable = planDetails[1]?.toleranceInspectionDataSlit;
+      const toleranceDataTable = planDetails[0]?.toleranceInspectionDataSlit;
+
           const toleranceData = toleranceDataTable.map((item, i) => ({
         toleranceThicknessFrom: item.toleranceThicknessFrom,
         toleranceThicknessTo: item.toleranceThicknessTo,
@@ -132,6 +116,7 @@ const SlittingForm = (props) => {
       settoleranceInspectionDataSlit(toleranceData);
     }}
   }
+  
   useEffect(() => {
     if(props.templateDetails.operation === "qualityReportById"){
         viewSlitData()
@@ -324,10 +309,18 @@ const SlittingForm = (props) => {
 }
 const location = useLocation();
   const onOptionChange = (key, changeEvent) => {
-    slitFormData[key] = changeEvent.target.value;
+    // slitFormData[key] = changeEvent.target.value;
+    const target = changeEvent.nativeEvent.target;
+    if (changeEvent.target) {
+      setSlitFormData((prevData) => ({
+        ...prevData,
+        [key]: target.value,
+      }));
+    }
   };
 
-  const saveForm = () => {
+  const saveForm = (event) => {
+    event.preventDefault();
     slitFormData['slitInspectionData'] = slitInspectionData;
     slitFormData['finalInspectionData'] = finalInspectionData;
     slitFormData['toleranceInspectionDataSlit'] = toleranceInspectionDataSlit
@@ -349,7 +342,20 @@ const location = useLocation();
   const handleToleranceTableChangeSlit = (tableData) => {
     settoleranceInspectionDataSlit(tableData)
 } 
-
+//move data from slit table to slit inspection table
+const handleTransferToFinalTable = () => {
+  const mappedData = slitInspectionData.map((slitItem) => ({
+    instructionId: slitItem.instructionId,
+    plannedWidth: slitItem.plannedWidth,
+    actualWidth: slitItem.actualWidth,
+    actualThickness: slitItem.actualThickness,
+    burrHeight: slitItem.burrHeight,
+    remarks: slitItem.remarks,
+    key: slitItem.key, 
+  }));
+  setFinalDataSource(mappedData);
+  handleFinalInspectionTableChange(mappedData)
+};
   return (
     <div id='slittingform'>
       <Card title='Slitting Process Form'>
@@ -503,8 +509,9 @@ const location = useLocation();
           <Row>
             <Col span={24}>
               <label style={{ fontSize: 20 }}>
-                Final Quality Inspection Report
+                Final Quality Inspection Report &emsp;
               </label>
+              <Button type="primary" onClick={handleTransferToFinalTable}>Transfer Data</Button>
             </Col>
           </Row>
           <EditableTable

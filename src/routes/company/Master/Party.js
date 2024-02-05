@@ -37,6 +37,8 @@ const Party = (props) => {
     const [searchValue, setSearchValue] = useState('');
     const [filteredInwardList, setFilteredInwardList] = useState(props.party?.partyList || []);
     const [showAmtDcPdfFlg, setShowAmtDcPdfFlg] = useState(props.party?.showAmtDcPdfFlg==='Y'); // Default value
+    const [dailyReportsList, setDailyReportsList] = useState([]);
+    const [monthlyReportsList, setMonthlyReportsList] = useState([]); 
 
     const {getFieldDecorator, getFieldValue} = props.form;
 
@@ -136,16 +138,15 @@ const Party = (props) => {
 
     const onView = (record, e) => {
         e.preventDefault();
-        setViewPartyData(record);
+         setViewPartyData(record);
+        props.fetchPartyListId(record.nPartyId);
         setViewParty(true);
     }
-
     const onDelete = (record,key, e) => {
         let id = []
         id.push(record.inwardEntryId);
         e.preventDefault();
         props.deleteInwardEntryById(id)
-        console.log(record,key)
       }
 
       const onEdit = (record,e)=>{
@@ -239,6 +240,13 @@ const Party = (props) => {
         console.log(e)
     }
 
+    useEffect(() => {
+        // to show checked in checkbox
+        const {party} = props.party
+        setDailyReportsList(party.dailyReportsList || []);
+        setMonthlyReportsList(party.monthlyReportsList || []);
+      }, [party]);
+
     return (
         <div>
             <h1><IntlMessages id="sidebar.company.partyList"/></h1>
@@ -299,6 +307,8 @@ const Party = (props) => {
                                     {viewPartyDate?.packetClassificationTags && <p><strong>Tags:</strong>{viewPartyDate?.packetClassificationTags?.map(item=> item.tagName)}</p>}
                                     {viewPartyDate?.endUserTags && <p><strong>EndUser Tags:</strong>{viewPartyDate?.endUserTags?.map(item=> item.tagName)}</p>}
                                     {viewPartyDate?.showAmtDcPdfFlg && <p><strong>Include Rates in Delivery Challan :</strong> {viewPartyDate?.showAmtDcPdfFlg||'N'}</p>}
+                                    {props.partyId.dailyReportsList && <p><strong>Daily Reports List :</strong> {props.partyId?.dailyReportsList}</p>}
+                                    {props.partyId?.monthlyReportsList && <p><strong>Monthly Reports List :</strong> {props.partyId?.monthlyReportsList}</p>}
                                 </Card>
                             </Col>
                         </Row>
@@ -309,14 +319,20 @@ const Party = (props) => {
                     visible={showAddParty}
                     onOk={(e) => {
                         if (editParty) {
+                            debugger
+                            const { dailyReportsList: initialDailyReportsList, monthlyReportsList: initialMonthlyReportsList, ...otherProps } = props.party.party;
+                            // Set the initial state with the values from the API
+                            setDailyReportsList(initialDailyReportsList.split(','));
+                            setMonthlyReportsList(initialMonthlyReportsList.split(','));
+                            e.preventDefault();
                             props.form.validateFields((err, values) => {
                                 if (!err) {
-                                  console.log('Received values of form: ', showAmtDcPdfFlg);
-                                  // const data = { values, id: props.party?.party?.nPartyId };
                                  const data = {
                                     values: {
                                       ...values,
                                       showAmtDcPdfFlg: showAmtDcPdfFlg ? 'Y' : 'N',
+                                      dailyReportsList: dailyReportsList.join(','),
+                                      monthlyReportsList: monthlyReportsList.join(','),
                                     },
                                     id: props.party?.party?.nPartyId
                                   }
@@ -334,6 +350,8 @@ const Party = (props) => {
                                  props.addParty({
                                     ...values,
                                     showAmtDcPdfFlg: showAmtDcPdfFlg ? 'Y' : 'N',
+                                    dailyReportsList: dailyReportsList.join(','),
+                                    monthlyReportsList: monthlyReportsList.join(','),
                                   });
                                   props.form.resetFields();
                                   setShowAddParty(false);
@@ -565,6 +583,28 @@ const Party = (props) => {
                                       onChange={(e) => setShowAmtDcPdfFlg(e.target.checked)}
                                     />
                                     </Form.Item>
+                                    <Form.Item label = "Daily Reports">
+                                        <Checkbox.Group
+                                            id="dailyReports"
+                                            value={dailyReportsList}
+                                            onChange={(checkedValues) => {setDailyReportsList(checkedValues)}}
+                                        >
+                                            <Checkbox value="STOCKREPORT">STOCKREPORT</Checkbox>
+                                            <Checkbox value="FGREPORT">FGREPORT</Checkbox>
+                                            <Checkbox value="WIPREPORT">WIPREPORT</Checkbox>
+                                            <Checkbox value="STOCKSUMMARYREPORT">STOCKSUMMARYREPORT</Checkbox>
+                                            <Checkbox value="RMREPORT">RMREPORT</Checkbox>
+                                        </Checkbox.Group>
+                                    </Form.Item>
+                                    <Form.Item label = "Monthly Reports">
+                                        <Checkbox.Group id="monthlyReportsList"
+                                            value={monthlyReportsList}
+                                            onChange={(checkedValues) => {setMonthlyReportsList(checkedValues)}}>
+                                            <Checkbox value="INWARDREPORT">INWARDREPORT</Checkbox>
+                                            <Checkbox value="STOCKREPORT">STOCKREPORT</Checkbox>
+                                            <Checkbox value="OUTWARDREPORT">OUTWARDREPORT</Checkbox>
+                                        </Checkbox.Group>
+                                    </Form.Item>
                                 </Form>
                             </Col>
                         </Row>
@@ -579,6 +619,7 @@ const mapStateToProps = state => ({
     party: state.party,
     packetClassification: state.packetClassification,
     quality: state.quality,
+    partyId: state.party.party
 });
 
 const addPartyForm = Form.create({
@@ -591,6 +632,11 @@ const addPartyForm = Form.create({
         const state = party?.address2?.state ? [party?.address1?.state, party?.address2?.state] : [party?.address1?.state];
         const pincode = party?.address2?.pincode ? [party?.address1?.pincode, party?.address2?.pincode] : [party?.address1?.pincode];
         // const tags = props?.party?.party?.tags.map(item=> item.classificationName)
+       // const checkboxValuesDR = party?.dailyReportsList || [];
+       const checkboxValuesDR = (party?.dailyReportsList || '').split(',').map(value => value.trim());
+        const checkboxValuesMR = party?.monthlyReportsList || [];
+        // console.log('Received dailyReportsList:', party?.dailyReportsList);
+        // console.log('Parsed dailyReportsList:', checkboxValuesDR);
         return {
             partyName:Form.createFormField ({
                 ...props.party?.party?.partyName,
@@ -662,7 +708,16 @@ const addPartyForm = Form.create({
             showAmtDcPdfFlg: Form.createFormField({
                 ...party?.showAmtDcPdfFlg,
                 value: party?.showAmtDcPdfFlg || 'N',
-            })
+            }),
+            dailyReportsList: Form.createFormField({
+                ...party?.dailyReportsList,
+               //value: Array.isArray(checkboxValuesDR) ? checkboxValuesDR : [],
+               value:checkboxValuesDR
+            }),
+            monthlyReportsList: Form.createFormField({
+                ...party?.monthlyReportsList,
+               value: Array.isArray(checkboxValuesMR) ? checkboxValuesMR : [],
+            }),
         };
     }
 })(Party);

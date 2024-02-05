@@ -46,7 +46,21 @@ const CuttingForm = (props) => {
     } 
     const [dataSource, setDataSource] = useState([]);
     const [toleranceDataSource, setToleranceDataSource] = useState([]);
-    
+    const [cutInspectionData, setCutInspectionData] = useState([])
+    const instructionDate = props.templateDetails.packetDetails?.map(item=>item.instructionDate)
+     //display cut table first three column
+  useEffect(() => {
+    if (props.templateDetails.packetDetails && props.templateDetails.operation !== "qualityReportById") {
+        const mappedData = props.templateDetails.packetDetails.map((item, i) => ({
+          key: i,
+          thickness:props.inward?.plan?.fThickness,
+          plannedLength: item.plannedLength,
+          plannedWidth: item.plannedWidth
+        }));
+        
+        setDataSource(mappedData);
+      }
+  }, [props.templateDetails?.packetDetails, props.inward?.plan?.fThickness, props.templateDetails.operation]);
     const saveCutData = () => {
         if (props.templateDetails.packetDetails) {
             const mappedData = props.templateDetails.packetDetails.map((item, i) => ({
@@ -91,7 +105,7 @@ const CuttingForm = (props) => {
         var qirId = props.templateDetails.data.qirId
         props.getQualityReportById(qirId)
              const planDetails = JSON.parse(props.templateDetails.data.planDetails);
-            const cutInspectionData = planDetails[1]?.cutInspectionData;
+            const cutInspectionData = planDetails[0]?.cutInspectionData;
             if (cutInspectionData) {
           const mappedData = cutInspectionData.map((item, i) => ({
             key: i,
@@ -105,7 +119,8 @@ const CuttingForm = (props) => {
             diagonalDifference: item.diagonalDifference,
             remarks: item.remarks
           }));
-          const toleranceDataTable = planDetails[1]?.toleranceInspectionDataCut;
+          const toleranceDataTable = planDetails[0]?.toleranceInspectionDataCut;
+
           const toleranceData = toleranceDataTable.map((item, i) => ({
             toleranceThicknessFrom: item.toleranceThicknessFrom,
             toleranceThicknessTo: item.toleranceThicknessTo,
@@ -182,11 +197,6 @@ const CuttingForm = (props) => {
     };
 
     const columns = [
-        // {
-        //     title: 'Slit No.',
-        //     dataIndex: 'slitNo',
-        //     editable: true,
-        // },
         {
             title: 'Thickness',
             dataIndex: 'thickness',
@@ -310,7 +320,11 @@ const CuttingForm = (props) => {
     }
 
     const onOptionChange = (key, changeEvent) => {
+        debugger
+        console.log("changeEvent", changeEvent)
+        console.log("key", key)
         cutFormData[key] = changeEvent.target.value;
+        console.log("changeEvent.target.value", changeEvent.target.value)
     }
 
     useEffect(() => {

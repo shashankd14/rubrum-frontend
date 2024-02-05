@@ -39,7 +39,129 @@ const SidebarContent = () => {
   const defaultOpenKeys = selectedKeys.split('/')[1];
 
   useEffect(() => {
-    const menus = localStorage.getItem('Menus') ? JSON.parse(localStorage.getItem('Menus')) : [];
+     const menus = localStorage.getItem('Menus') ? JSON.parse(localStorage.getItem('Menus')) : [];
+  //   const menus =  [
+  //     {
+  //         "menuId": 1,
+  //         "menuName": "Inward",
+  //         "parentMenuId": 0,
+  //         "permission": "View,Add Inward,Export,Edit,Delete",
+  //         "displayOrder": 2,
+  //         "menuKey": "Inward"
+  //     },
+  //     {
+  //         "menuId": 3,
+  //         "menuName": "Partywise Register",
+  //         "parentMenuId": 0,
+  //         "permission": "Plan,Retrieve,Cancel Finish,Edit Finish,Add Inward,View,Export,Deliver",
+  //         "displayOrder": 3,
+  //         "menuKey": "Partywise Register"
+  //     },
+  //     {
+  //         "menuId": 4,
+  //         "menuName": "Work-In Progress",
+  //         "parentMenuId": 0,
+  //         "permission": "View,Finish",
+  //         "displayOrder": 5,
+  //         "menuKey": "Work-In Progress"
+  //     },
+  //     {
+  //         "menuId": 5,
+  //         "menuName": "Delivered Items",
+  //         "parentMenuId": 0,
+  //         "permission": "Delete,Add Customer Invoice and Date,View Delivery Info",
+  //         "displayOrder": 4,
+  //         "menuKey": "Delivered Items"
+  //     },
+  //     {
+  //         "menuId": 6,
+  //         "menuName": "Reports",
+  //         "parentMenuId": 0,
+  //         "permission": "Generate Report",
+  //         "displayOrder": 6,
+  //         "menuKey": "Reports"
+  //     },
+  //     {
+  //         "menuId": 7,
+  //         "menuName": "Material",
+  //         "parentMenuId": 2,
+  //         "permission": "Add Material,View,Edit,Delete,Export",
+  //         "displayOrder": 1,
+  //         "menuKey": "Material"
+  //     },
+  //     {
+  //         "menuId": 8,
+  //         "menuName": "Party",
+  //         "parentMenuId": 2,
+  //         "permission": "Add,View,Edit,Delete,Export",
+  //         "displayOrder": 2,
+  //         "menuKey": "Party"
+  //     },
+  //     {
+  //         "menuId": 9,
+  //         "menuName": "Rates",
+  //         "parentMenuId": 2,
+  //         "permission": "Export,Delete,View,Add,Edit",
+  //         "displayOrder": 3,
+  //         "menuKey": "Rates"
+  //     },
+  //     {
+  //         "menuId": 10,
+  //         "menuName": "Tags",
+  //         "parentMenuId": 2,
+  //         "permission": "Process Tags,End User Tags,Add,View,Edit,Delete,Export",
+  //         "displayOrder": 4,
+  //         "menuKey": "Tags"
+  //     },
+  //     {
+  //         "menuId": 11,
+  //         "menuName": "User Access",
+  //         "parentMenuId": 0,
+  //         "permission": "View,Export,Delete,Edit,Add",
+  //         "displayOrder": 5,
+  //         "menuKey": "User Access"
+  //     },
+  //     {
+  //         "menuId": 13,
+  //         "menuName": "Templates",
+  //         "parentMenuId": 12,
+  //         "permission": "Add,View,Edit,Delete",
+  //         "displayOrder": 1,
+  //         "menuKey": "Templates"
+  //     },
+  //     {
+  //         "menuId": 14,
+  //         "menuName": "Reports",
+  //         "parentMenuId": 12,
+  //         "permission": "Add,View,Edit,Delete",
+  //         "displayOrder": 2,
+  //         "menuKey": "Reports"
+  //     },
+  //     {
+  //         "menuId": 15,
+  //         "menuName": "KQP",
+  //         "parentMenuId": 12,
+  //         "permission": "Delete,Edit,View,Add",
+  //         "displayOrder": 3,
+  //         "menuKey": "KQP"
+  //     },
+  //     {
+  //         "menuId": 16,
+  //         "menuName": "Packing",
+  //         "parentMenuId": 2,
+  //         "permission": "Delete,Add,View,Edit,Export",
+  //         "displayOrder": 5,
+  //         "menuKey": "Packing"
+  //     },
+  //     {
+  //         "menuId": 17,
+  //         "menuName": "Label Print",
+  //         "parentMenuId": 0,
+  //         "permission": "Print",
+  //         "displayOrder": 6,
+  //         "menuKey": "Label Print"
+  //     }
+  // ] ;
     if(menus.length > 0) {
       const menuLabels = menus.map(menu => menu.menuKey);
       setMenuLabelList(menuLabels);
@@ -162,6 +284,12 @@ const SidebarContent = () => {
                     <span><IntlMessages id="sidebar.company.partywiseRegister"/></span>
                   </Link>
                 </Menu.Item>}
+                {menuLabelList.includes(sidebarMenuItems.labelPrint) && <Menu.Item key="company/labelPrint">
+                    <Link to="/company/labelPrint">
+                      <i className="icon icon-crypto"/>
+                      <span><IntlMessages id="sidebar.company.labelPrint"/></span>
+                    </Link>
+                  </Menu.Item>} 
                 {menuLabelList.includes(sidebarMenuItems.deilveredItems) && <Menu.Item key="company/deliveredItems">
                   <Link to="/company/deliveredItems">
                     <i className="icon icon-crypto"/>

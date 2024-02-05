@@ -16,10 +16,6 @@ import {
 
 const SlitAndCutForm = (props) => {
      //fetch slit data from QT
-    var allowableLowerWidth = 0;
-    var allowableHigherWidth = 0;
-    var allowableLowerburrHeight = 0;
-    var allowableHeigherburrHeight = 0;
     
     const templateData = JSON.parse(
         props?.templateDetails?.data?.templateDetails
@@ -27,17 +23,17 @@ const SlitAndCutForm = (props) => {
     
     const formDataObject = templateData.find((item) => item.id === 'formData');
 
-    // if (formDataObject) {
-    //     const formData = formDataObject.value;
-    //     const slitInspectionData = formData.slitInspectionData;
-    //     allowableLowerWidth = slitInspectionData[0].allowableLowerWidth;
-    //     allowableHigherWidth = slitInspectionData[0].allowableHigherWidth;
-    //     allowableHeigherburrHeight = slitInspectionData[0].allowableHeigherburrHeight;
-    //     allowableLowerburrHeight = slitInspectionData[0].allowableLowerburrHeight;
-    // } 
     const [slitDataSource, setSlitDataSource] = useState([]);
     const [finalDataSource, setFinalDataSource] = useState([]);
+    //  const [toleranceDataSource, setToleranceDataSource] = useState(formDataObject.value.toleranceInspectionData);
     const [toleranceDataSource, setToleranceDataSource] = useState([]);
+    const [dataSource, setDataSource] = useState([]);
+    const [slitInspectionData, setSlitInspectionData] = useState([])
+    const [cutInspectionData, setCutInspectionData] = useState([])
+    const [finalInspectionData, setFinalInspectionData] = useState([])
+    const [toleranceInspectionData, setToleranceInspectionData] = useState([])
+    const [toleranceDataSourceSlit, setToleranceDataSourceSlit] = useState([]);
+    const [toleranceInspectionDataSlit, setToleranceInspectionDataSlit] = useState([])
 
     //fetch tolerance data from QT-cut
     var toleranceThicknessFromCut = 0;
@@ -55,20 +51,20 @@ const SlitAndCutForm = (props) => {
       props?.templateDetails?.data?.templateDetails
     );
     const formDataObjectCut = templateDataCut.find((item) => item.id === 'formData');
-    if (formDataObject) {
-      const formData = formDataObjectCut.value;
-      const toleranceInspectionData = formData.toleranceInspectionData;
-      toleranceThicknessFromCut = toleranceInspectionData[0].toleranceThicknessFrom; 
-      toleranceThicknessToCut = toleranceInspectionData[0].toleranceThicknessTo;
-      toleranceWidthFromCut = toleranceInspectionData[0].toleranceWidthFrom;
-      toleranceWidthToCut = toleranceInspectionData[0].toleranceWidthTo;
-      toleranceBurrHeightFromCut = toleranceInspectionData[0].toleranceBurrHeightFrom; 
-      toleranceBurrHeightToCut = toleranceInspectionData[0].toleranceBurrHeightTo;
-      toleranceLengthFromCut = toleranceInspectionData[0].toleranceLengthFrom;
-      toleranceLengthToCut = toleranceInspectionData[0].toleranceLengthTo;
-      toleranceDiagonalDifferenceFromCut = toleranceInspectionData[0].toleranceDiagonalDifferenceFrom; 
-      toleranceDiagonalDifferenceToCut = toleranceInspectionData[0].toleranceDiagonalDifferenceTo;
-    } 
+        if (formDataObject){
+            const formData = formDataObjectCut.value;
+            const toleranceInspectionData = formData.toleranceInspectionData;
+            toleranceThicknessFromCut = toleranceInspectionData[0].toleranceThicknessFrom; 
+            toleranceThicknessToCut = toleranceInspectionData[0].toleranceThicknessTo;
+            toleranceWidthFromCut = toleranceInspectionData[0].toleranceWidthFrom;
+            toleranceWidthToCut = toleranceInspectionData[0].toleranceWidthTo;
+            toleranceBurrHeightFromCut = toleranceInspectionData[0].toleranceBurrHeightFrom; 
+            toleranceBurrHeightToCut = toleranceInspectionData[0].toleranceBurrHeightTo;
+            toleranceLengthFromCut = toleranceInspectionData[0].toleranceLengthFrom;
+            toleranceLengthToCut = toleranceInspectionData[0].toleranceLengthTo;
+            toleranceDiagonalDifferenceFromCut = toleranceInspectionData[0].toleranceDiagonalDifferenceFrom; 
+            toleranceDiagonalDifferenceToCut = toleranceInspectionData[0].toleranceDiagonalDifferenceTo;
+        }
   //fetch tolerance data from QT-Slit
   var toleranceThicknessFromSlit = 0;
   var toleranceThicknessToSlit = 0;
@@ -119,6 +115,31 @@ const SlitAndCutForm = (props) => {
       setToleranceInspectionDataSlit(toleranceData);
     }}
   }
+
+  //display cut table first three column
+  useEffect(() => {
+    if(props.templateDetails.operation !== "qualityReportById"){
+    const packetDetails = props.templateDetails?.packetDetails;
+  
+    if (packetDetails) {
+      const slitAndCutProcess = packetDetails.filter(
+        (process) => process.process.processName === 'SLIT AND CUT'
+      );
+  
+      if (slitAndCutProcess.length > 0) {
+        const mappedData = slitAndCutProcess.map((item, i) => ({
+          key: i,
+          plannedLength: item.plannedLength,
+          plannedWidth: item.plannedWidth,
+          thickness: props.inward?.plan?.fThickness,
+        }));
+  
+        setDataSource(mappedData);
+      }
+    }
+}
+  }, [props.templateDetails?.packetDetails, props.inward?.plan?.fThickness, props.templateDetails.operation]);
+
   //save cut table
   const saveCutData = () =>{
     const packetDetails = props.templateDetails?.packetDetails
@@ -167,7 +188,7 @@ const SlitAndCutForm = (props) => {
         var qirId = props.templateDetails.data.qirId
         props.getQualityReportById(qirId)
         const planDetails = JSON.parse(props.templateDetails.data.planDetails);
-        const slitData = planDetails[1]?.slitInspectionData;
+        const slitData = planDetails[0]?.slitInspectionData;
         if (slitData) {
             const mappedData = slitData.map((item, i) => ({
         key: i,
@@ -178,7 +199,7 @@ const SlitAndCutForm = (props) => {
         burrHeight: item.burrHeight,
         remarks: item.remarks
       }));
-      const toleranceDataTable = planDetails[1]?.toleranceInspectionDataSlit;
+      const toleranceDataTable = planDetails[0]?.toleranceInspectionDataSlit;
       const toleranceData = toleranceDataTable.map((item, i) => ({
         toleranceThicknessFrom: item.toleranceThicknessFrom,
         toleranceThicknessTo: item.toleranceThicknessTo,
@@ -199,7 +220,7 @@ const SlitAndCutForm = (props) => {
         var qirId = props.templateDetails.data.qirId
         props.getQualityReportById(qirId)
         const planDetails = JSON.parse(props.templateDetails.data.planDetails);
-        const cutData = planDetails[1]?.cutInspectionData;
+        const cutData = planDetails[0]?.cutInspectionData;
         if (cutData){
             const mappedDataCut = cutData.map((item, i) => ({
             key: i,
@@ -213,7 +234,7 @@ const SlitAndCutForm = (props) => {
           diagonalDifference: item.diagonalDifference,
           remarks: item.remarks
         }));
-        const toleranceDataTable = planDetails[1]?.toleranceInspectionData;
+        const toleranceDataTable = planDetails[0]?.toleranceInspectionData;
         const toleranceData = toleranceDataTable.map((item, i) => ({
             toleranceThicknessFrom: item.toleranceThicknessFrom,
             toleranceThicknessTo: item.toleranceThicknessTo,
@@ -238,13 +259,6 @@ const SlitAndCutForm = (props) => {
     }
   }, [props.templateDetails.operation]);
 
-    const [dataSource, setDataSource] = useState([]);
-    const [slitInspectionData, setSlitInspectionData] = useState([])
-    const [cutInspectionData, setCutInspectionData] = useState([])
-    const [finalInspectionData, setFinalInspectionData] = useState([])
-    const [toleranceInspectionData, setToleranceInspectionData] = useState([])
-    const [toleranceDataSourceSlit, setToleranceDataSourceSlit] = useState([]);
-    const [toleranceInspectionDataSlit, setToleranceInspectionDataSlit] = useState([])
     const [slitCutFormData, setSlitFormData] = useState({
         processType: "SlitCut",
         customerName: "",
@@ -359,11 +373,6 @@ const SlitAndCutForm = (props) => {
     ];
 
     const cutColumns = [
-        // {
-        //     title: 'Slit No.',
-        //     dataIndex: 'slitNo',
-        //     editable: true,
-        // },
         {
             title: 'Thickness',
             dataIndex: 'thickness',
@@ -548,11 +557,19 @@ const SlitAndCutForm = (props) => {
         toleranceBurrHeightFrom: "",
         toleranceBurrHeightTo: "",
     }
+    
     const onOptionChange = (key, changeEvent) => {
-        slitCutFormData[key] = changeEvent.target.value;
-    }
+        const target = changeEvent.nativeEvent.target;
+        if (changeEvent.target) {
+          setSlitFormData((prevData) => ({
+            ...prevData,
+            [key]: target.value,
+          }));
+        }
+      };
     const location = useLocation();
-    const saveForm = () => {
+    const saveForm = (event) => {
+        event.preventDefault();
         slitCutFormData['slitInspectionData'] = slitInspectionData
         slitCutFormData['cutInspectionData'] = cutInspectionData
         slitCutFormData['finalInspectionData'] = finalInspectionData
@@ -580,6 +597,21 @@ const SlitAndCutForm = (props) => {
     const handleToleranceTableChangeSlit = (tableData) => {
        setToleranceInspectionDataSlit(tableData);
     }
+
+    //move data from slit table to slit inspection table
+    const handleTransferToFinalTable = () => {
+        const mappedData = slitInspectionData.map((slitItem) => ({
+          instructionId: slitItem.instructionId,
+          plannedWidth: slitItem.plannedWidth,
+          actualWidth: slitItem.actualWidth,
+          actualThickness: slitItem.actualThickness,
+          burrHeight: slitItem.burrHeight,
+          remarks: slitItem.remarks,
+          key: slitItem.key, 
+        }));
+        setFinalDataSource(mappedData);
+        handleFinalInspectionTableChange(mappedData)
+      };
 
     return (
         <div id="slittingform">
@@ -700,7 +732,8 @@ const SlitAndCutForm = (props) => {
                 <Card.Grid style={gridStyle}>
                     <Row>
                         <Col span={24}>
-                            <label style={{fontSize: 20}}>Final Quality Inspection Report</label>
+                            <label style={{fontSize: 20}}>Final Quality Inspection Report &emsp;</label>
+                            <Button type="primary" onClick={handleTransferToFinalTable}>Transfer Data</Button>
                         </Col>
                     </Row>
                     <EditableTable columns={finalColumns} emptyRecord={emptyFinalRecord} dataSource={finalDataSource} handleChange={handleFinalInspectionTableChange}/>

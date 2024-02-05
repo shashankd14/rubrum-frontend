@@ -803,57 +803,58 @@ function* getReconcileReportSaga(action) {
         yield put(getReconcileReportError(error));
     }
 }
-function* QrGenerateInward(action) {
-    try {
-        const qrGenerateInward = yield fetch(`${baseUrl}api/inwardEntry/qrcode/inward`, {
-            method: 'POST',
-            headers: { "Content-Type": "application/json", ...getHeaders()},
-            body: JSON.stringify(action.payload.payloadObj)
-        });
-        if (qrGenerateInward.status === 200) {
-            const qrGenerateInwardResponse = yield qrGenerateInward.json();
-            let pdfWindow = window.open("")
-               pdfWindow.document.write(
-                  "<iframe width='100%' height='600%' src='data:application/pdf;base64, " +
-                    encodeURI(qrGenerateInwardResponse.encodedBase64String) + "'></iframe>"
-               )                 
-            yield put(QrGenerateInwardSuccess(qrGenerateInwardResponse));
-        } else if (qrGenerateInward.status === 401) {
-            yield put(userSignOutSuccess());
-        } else
-            yield put(actions.QrGenerateInwardError('error'));
-    } catch (error) {
-        yield put(actions.QrGenerateInwardError(error));
-    }
-}
+// function* QrGenerateInward(action) {
+//     try {
+//         const qrGenerateInward = yield fetch(`${baseUrl}api/inwardEntry/qrcode/inward`, {
+//             method: 'POST',
+//             headers: { "Content-Type": "application/json", ...getHeaders()},
+//             body: JSON.stringify(action.payload.payloadObj)
+//         });
+//         if (qrGenerateInward.status === 200) {
+//             const qrGenerateInwardResponse = yield qrGenerateInward.json();
+//             let pdfWindow = window.open("")
+//                pdfWindow.document.write(
+//                   "<iframe width='100%' height='600%' src='data:application/pdf;base64, " +
+//                     encodeURI(qrGenerateInwardResponse.encodedBase64String) + "'></iframe>"
+//                )                 
+//             yield put(QrGenerateInwardSuccess(qrGenerateInwardResponse));
+//         } else if (qrGenerateInward.status === 401) {
+//             yield put(userSignOutSuccess());
+//         } else
+//             yield put(actions.QrGenerateInwardError('error'));
+//     } catch (error) {
+//         yield put(actions.QrGenerateInwardError(error));
+//     }
+// }
 
-function* QrGeneratePlan(action) {
-    try {
-            const response = yield call(fetch, `${baseUrl}api/instruction/qrcode/plan`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                ...getHeaders()
-            },
-            body: JSON.stringify(action.payload)
-        });
-        if (response.status === 200) {
-            const qrGenerateResponse = yield response.json();
-           let qrWindow = window.open('', "_blank")
-            qrWindow.document.write(
-                "<iframe id='qr' width='100%' height='600%' src='data:application/pdf;base64, " +
-                encodeURI(qrGenerateResponse.encodedBase64String) + "'></iframe>"
-            )
-            yield put(actions.QrCodeGeneratePlanSuccess(qrGenerateResponse));
-        } else if (response.status === 401) {
-            yield put(userSignOutSuccess());
-        } else {
-            yield put(actions.QrCodeGeneratePlanError('error'));
-        }
-    } catch (error) {
-        yield put(actions.QrCodeGeneratePlanError(error));
-    }
-}
+// function* QrGeneratePlan(action) {
+//     try {
+//             const response = yield call(fetch, `${baseUrl}api/instruction/qrcode/plan`, {
+//             method: 'POST',
+//             headers: {
+//                 'Content-Type': 'application/json',
+//                 ...getHeaders()
+//             },
+//             body: JSON.stringify(action.payload)
+//         });
+//         if (response.status === 200) {
+//             const qrGenerateResponse = yield response.json();
+//            let qrWindow = window.open('', "_blank")
+//             qrWindow.document.write(
+//                 "<iframe id='qr' width='100%' height='600%' src='data:application/pdf;base64, " +
+//                 encodeURI(qrGenerateResponse.encodedBase64String) + "'></iframe>"
+//             )
+//             yield put(actions.QrCodeGeneratePlanSuccess(qrGenerateResponse));
+//         } else if (response.status === 401) {
+//             yield put(userSignOutSuccess());
+//         } else {
+//             yield put(actions.QrCodeGeneratePlanError('error'));
+//         }
+//     } catch (error) {
+//         yield put(actions.QrCodeGeneratePlanError(error));
+//     }
+// }
+
 function* getPacketwisePriceDCSaga(action) {
 
     console.log('Saga: ', action);
@@ -920,8 +921,8 @@ export function* watchFetchRequests() {
     yield takeLatest(PDF_GENERATE_DELIVERY, generateDCPdf);
     yield takeLatest(PDF_S3_URL, getS3PDFUrl);
     yield takeLatest(GET_RECONCILE_REPORT, getReconcileReportSaga);
-    yield takeLatest(QR_Code_GENERATE_PLAN, QrGeneratePlan);
-    yield takeLatest(QR_GENERATE_INWARD, QrGenerateInward);
+    // yield takeLatest(QR_Code_GENERATE_PLAN, QrGeneratePlan);
+    // yield takeLatest(QR_GENERATE_INWARD, QrGenerateInward);
     yield takeLatest(GET_PACKET_WISE_PRICE_DC_REQUEST, getPacketwisePriceDCSaga);
 }
 
