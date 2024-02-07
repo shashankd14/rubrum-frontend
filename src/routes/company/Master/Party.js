@@ -246,6 +246,7 @@ const Party = (props) => {
         setDailyReportsList(party.dailyReportsList || []);
         setMonthlyReportsList(party.monthlyReportsList || []);
       }, [party]);
+      const { dailyReportsList: initialDailyReportsList, monthlyReportsList: initialMonthlyReportsList, ...otherProps } = props.party.party;
 
     return (
         <div>
@@ -319,11 +320,9 @@ const Party = (props) => {
                     visible={showAddParty}
                     onOk={(e) => {
                         if (editParty) {
-                            debugger
-                            const { dailyReportsList: initialDailyReportsList, monthlyReportsList: initialMonthlyReportsList, ...otherProps } = props.party.party;
                             // Set the initial state with the values from the API
-                            setDailyReportsList(initialDailyReportsList.split(','));
-                            setMonthlyReportsList(initialMonthlyReportsList.split(','));
+                            setDailyReportsList(initialDailyReportsList ? initialDailyReportsList.split(',') : []);
+                            setMonthlyReportsList(initialMonthlyReportsList ? initialMonthlyReportsList.split(',') : []);
                             e.preventDefault();
                             props.form.validateFields((err, values) => {
                                 if (!err) {
@@ -603,6 +602,7 @@ const Party = (props) => {
                                             <Checkbox value="INWARDREPORT">INWARDREPORT</Checkbox>
                                             <Checkbox value="STOCKREPORT">STOCKREPORT</Checkbox>
                                             <Checkbox value="OUTWARDREPORT">OUTWARDREPORT</Checkbox>
+                                            <Checkbox value="PROCESSINGREPORT ">PROCESSINGREPORT </Checkbox>
                                         </Checkbox.Group>
                                     </Form.Item>
                                 </Form>
