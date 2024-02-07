@@ -1,7 +1,7 @@
 import { Button, Card, Col, DatePicker, Input, Row } from 'antd'
 import TextArea from 'antd/lib/input/TextArea';
 import React, { useState, useEffect, useRef } from 'react'
-import EditableTable from '../../../../../../util/EditableTable';
+import EditableTableQR from '../../../../../../util/EditableTableQR';
 import moment from 'moment';
 import { connect } from 'react-redux';
 import { useLocation } from 'react-router-dom/cjs/react-router-dom.min';
@@ -473,16 +473,6 @@ const SlitAndCutForm = (props) => {
     ];
     const toleranceColumnsSlit = [
         {
-            title: 'Thickness From',
-            dataIndex: 'toleranceThicknessFrom',
-            editable: false
-        },
-        {
-            title: 'Thickness To',
-            dataIndex: 'toleranceThicknessTo',
-            editable: false
-        },
-        {
             title: 'Slit Size From',
             dataIndex: 'toleranceSlitSizeFrom',
             editable: false
@@ -490,6 +480,16 @@ const SlitAndCutForm = (props) => {
         {
             title: 'Slit Size To',
             dataIndex: 'toleranceSlitSizeTo',
+            editable: false
+        },
+        {
+            title: 'Thickness From',
+            dataIndex: 'toleranceThicknessFrom',
+            editable: false
+        },
+        {
+            title: 'Thickness To',
+            dataIndex: 'toleranceThicknessTo',
             editable: false
         },
         {
@@ -711,7 +711,7 @@ const SlitAndCutForm = (props) => {
                             <label style={{fontSize: 20}}>Slitting Tolerance Data</label>
                         </Col>
                     </Row>
-                    <EditableTable columns={toleranceColumnsSlit} emptyRecord={toleranceEmptyRecordSlit} dataSource={toleranceDataSourceSlit} handleChange={handleToleranceTableChangeSlit}/>
+                    <EditableTableQR columns={toleranceColumnsSlit} emptyRecord={toleranceEmptyRecordSlit} dataSource={toleranceDataSourceSlit} handleChange={handleToleranceTableChangeSlit}/>
                 </Card.Grid>
                 <Card.Grid style={gridStyle}>
                     <Row>
@@ -719,7 +719,7 @@ const SlitAndCutForm = (props) => {
                             <label style={{fontSize: 20}}>Cutting Tolerance Data</label>
                         </Col>
                     </Row>
-                    <EditableTable columns={toleranceColumns} emptyRecord={toleranceEmptyRecord} dataSource={toleranceDataSource} handleChange={handleToleranceTableChange}/>
+                    <EditableTableQR columns={toleranceColumns} emptyRecord={toleranceEmptyRecord} dataSource={toleranceDataSource} handleChange={handleToleranceTableChange}/>
                 </Card.Grid>
                 <Card.Grid style={gridStyle}>
                     <Row>
@@ -727,7 +727,7 @@ const SlitAndCutForm = (props) => {
                             <label style={{fontSize: 20}}>Slitting</label>
                         </Col>
                     </Row>
-                    <EditableTable columns={slitColumns} emptyRecord={emptySlitRecord} dataSource={slitDataSource} handleChange={handleSlitInspectionTableChange}/>
+                    <EditableTableQR columns={slitColumns} emptyRecord={emptySlitRecord} dataSource={slitDataSource} toleranceData={toleranceDataSourceSlit} handleChange={handleSlitInspectionTableChange}/>
                 </Card.Grid>
                 <Card.Grid style={gridStyle}>
                     <Row>
@@ -736,7 +736,7 @@ const SlitAndCutForm = (props) => {
                             <Button type="primary" onClick={handleTransferToFinalTable}>Transfer Data</Button>
                         </Col>
                     </Row>
-                    <EditableTable columns={finalColumns} emptyRecord={emptyFinalRecord} dataSource={finalDataSource} handleChange={handleFinalInspectionTableChange}/>
+                    <EditableTableQR columns={finalColumns} emptyRecord={emptyFinalRecord} dataSource={finalDataSource} toleranceData={toleranceDataSourceSlit} handleChange={handleFinalInspectionTableChange}/>
                 </Card.Grid>
                 <Card.Grid style={gridStyle}>
                      <Row>
@@ -744,7 +744,7 @@ const SlitAndCutForm = (props) => {
                             <label style={{fontSize: 20}}>Cutting</label>
                         </Col>
                     </Row>
-                    <EditableTable columns={cutColumns} emptyRecord={emptyCutRecord} dataSource={dataSource} handleChange={handleCutInspectionTableChange}/>
+                    <EditableTableQR columns={cutColumns} emptyRecord={emptyCutRecord} dataSource={dataSource} toleranceData={toleranceDataSource} handleChange={handleCutInspectionTableChange}/>
                 </Card.Grid>
                 <Card.Grid style={gridStyle}>
                     <Row>
