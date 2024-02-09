@@ -345,7 +345,7 @@ function* fetchQualityReportStageList(req) {
     console.log(req.payload)
     try {
         const endP = (req.payload.stage.includes('processing') || req.payload.stage.includes('inward') )? 'listpage' : 'dispatchlist'
-        const url = `${baseUrl}api/quality/qir/${req.payload.stage}/${endP}`
+        const url = `${baseUrl}api/quality/qir/${req.payload.stage}/${endP}/${req.payload.page}/${req.payload.pageSize}`
         console.log('url', url)
         const fetchQRList =  yield fetch( url, {
             method: 'GET',

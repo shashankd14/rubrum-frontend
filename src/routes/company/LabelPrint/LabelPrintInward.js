@@ -5,7 +5,6 @@ import { Select, Table } from 'antd'
 import {
     fetchPartyList,
     fetchInwardList,
-    fetchQualityReportList,
     getQualityReportById,
     fetchQualityReportStageList,
     labelPrintInward
@@ -22,14 +21,14 @@ const LabelPrintInward = (props) => {
     });
     const [filteredInfo, setFilteredInfo] = useState(null);
     const [searchValue, setSearchValue] = useState("");
-    const [filteredInwardList, setFilteredInwardList] = useState([]);
+    const [filteredInwardList, setFilteredInwardList] = useState(props.template.data.content);
     const [qualityReportList, setQualityReportList] = useState([]);
 
     const [pageNo, setPageNo] = React.useState(1);
     const [totalPageItems, setTotalItems] = React.useState(0);
     const [partyList, setPartyList] = useState([]);
     const [templateId, setTemplateId] = useState();
-    const { totalItems } = props.inward;
+    const { totalItems } = props.template;
    
     const columns = [
         {
@@ -129,7 +128,6 @@ const LabelPrintInward = (props) => {
 
     useEffect(() => {
         props.fetchQualityReportStageList({ stage: "inward", page: 1, pageSize: 15, partyId: '' });
-        props.fetchQualityReportList();
         props.fetchPartyList();
     }, []);
 
@@ -169,6 +167,17 @@ const LabelPrintInward = (props) => {
         console.log(e)
         setTemplateId(e)
     };
+
+    useEffect(() => {
+        if (totalItems) {
+          setTotalItems(totalItems);
+        }
+      }, [totalItems]);
+
+      const handleChangeTable = (pagination, filters, sorter) => {
+        setSortedInfo(sorter);
+        setFilteredInfo(filters);
+      };
 
     useEffect(() => {
         if (!props.party.loading && !props.party.error) {
@@ -233,20 +242,21 @@ const LabelPrintInward = (props) => {
             </div>
             {/* <div className="gx-flex-row gx-flex-1"> */}
             <div>
-                {(filteredInwardList.length > 0) && <Table
+                <Table
                     className="gx-table-responsive"
                     columns={columns}
-                     dataSource={filteredInwardList}
+                    dataSource={filteredInwardList}
+                    onChange={handleChangeTable}
                     pagination={{
                         pageSize: 15,
-                        onChange: (page) => {
+                        onChange: (page, pageSize) => {
                             setPageNo(page);
-                            props.fetchQualityReportStageList(page, 15, searchValue);
+                            props.fetchQualityReportStageList({stage: "inward", page, pageSize, searchValue});
                         },
                         current: pageNo,
                         total: totalPageItems,
                     }}
-                />}
+                />
             </div>
         </>
     )
@@ -261,7 +271,6 @@ const mapStateToProps = (state) => ({
 export default connect(mapStateToProps, {
     fetchInwardList,
     fetchPartyList,
-    fetchQualityReportList,
     getQualityReportById,
     fetchQualityReportStageList,
     labelPrintInward

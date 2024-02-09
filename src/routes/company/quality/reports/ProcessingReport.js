@@ -5,11 +5,9 @@ import { Link, useHistory, useLocation, withRouter } from "react-router-dom";
 import { Button, Card, Col, Divider, Icon, Modal, Radio, Row, Select, Table } from 'antd'
 import {
     fetchPartyList,
-    fetchInwardList,
     fetchTemplatesList,
     fetchTemplatesLinkList,
     getQualityTemplateById,
-    fetchQualityReportList,
     getQualityReportById,
     updateQualityReport,
     deleteQualityReport,
@@ -34,16 +32,15 @@ const ProcessingReport = (props) => {
     });
     const [filteredInfo, setFilteredInfo] = useState(null);
     const [searchValue, setSearchValue] = useState("");
-    const [filteredProcessingList, setFilteredProcessingList] = useState([]);
+    const [filteredProcessingList, setFilteredProcessingList] = useState(props.template.data.content);
     const [qualityReportList, setQualityReportList] = useState([]);
-
     const [pageNo, setPageNo] = React.useState(1);
     const [totalPageItems, setTotalItems] = React.useState(0);
     const [partyList, setPartyList] = useState([]);
     const [templateList, setTemplateList] = useState([]);
     const [templateLinkList, setTemplateLinkList] = useState([]);
     const [templateId, setTemplateId] = useState();
-    const { totalItems } = props.inward;
+    const { totalItems } = props.template;
     const [selectedItemForQr, setSelectedItemForQr] = useState({})
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showCreateQrScreen, setShowCreateQrScreen] = useState(false);
@@ -156,8 +153,6 @@ const ProcessingReport = (props) => {
             render: (text, record, index) => (
                 <span>
                     <span
-                        // className={`gx-link ${record.qirId && disabledEle }`}
-                        // onClick={(e) => showTemplateList(record, index, e)}
                         className="gx-link"
                         onClick={!record.qirId ? (e) => showTemplateList(record, index, e) : null}
                         style={!record.qirId ? {} : { opacity: 0.5, pointerEvents: 'none' }}
@@ -169,8 +164,6 @@ const ProcessingReport = (props) => {
                         className="gx-link"
                         onClick={record.qirId ? (e) => showReportView(record, index, e) : null}
                         style={record.qirId ? {} : { opacity: 0.5, pointerEvents: 'none' }}
-                        // className={`gx-link ${!record.qirId && disabledEle }`}
-                        // onClick={(e) => showReportView(record, index, e)}
                     >
                         View
                     </span>
@@ -179,8 +172,6 @@ const ProcessingReport = (props) => {
                         className="gx-link"
                         onClick={record.qirId ? (e) => onEdit(record, index, e) : null}
                         style={record.qirId ? {} : { opacity: 0.5, pointerEvents: 'none' }}
-                    // className={`gx-link ${!record.qirId && disabledEle }`}
-                    // onClick={(e) => onEdit(record, index, e)}
                     >
                         Edit
                     </span>
@@ -209,7 +200,6 @@ const ProcessingReport = (props) => {
 
     useEffect(() => {
         props.fetchQualityReportStageList({ stage: "processing", page: 1, pageSize: 15, partyId: '' });
-        props.fetchQualityReportList();
         props.fetchPartyList();
         props.fetchTemplatesList();
         setAction('');
@@ -281,6 +271,17 @@ const ProcessingReport = (props) => {
         setAction('edit');
         props.getQualityReportById(record.qirId);
     };
+
+    useEffect(() => {
+        if (totalItems) {
+          setTotalItems(totalItems);
+        }
+      }, [totalItems]);
+
+      const handleChangeTable = (pagination, filters, sorter) => {
+        setSortedInfo(sorter);
+        setFilteredInfo(filters);
+      };
 
     const handleChange = (e) => {
         console.log(e)
@@ -385,13 +386,13 @@ const ProcessingReport = (props) => {
                     className="gx-table-responsive"
                     columns={columns}
                     dataSource={filteredProcessingList}
+                    onChange={handleChangeTable}
                     //dataSource={filteredDataSource}
                     pagination={{
                         pageSize: 15,
-                        onChange: (page) => {
+                        onChange: (page, pageSize) => {
                             setPageNo(page);
-                           // props.fetchProcessingList(page, 15, searchValue);
-                            props.fetchQualityReportStageList(page, 15, searchValue);
+                            props.fetchQualityReportStageList({ stage: "processing", page, pageSize, searchValue});
                         },
                         current: pageNo,
                         total: totalPageItems,
@@ -482,7 +483,6 @@ export default connect(mapStateToProps, {
     fetchPartyList,
     fetchTemplatesLinkList,
     getQualityTemplateById,
-    fetchQualityReportList,
     getQualityReportById,
     updateQualityReport,
     deleteQualityReport,
