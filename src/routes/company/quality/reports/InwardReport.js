@@ -8,7 +8,6 @@ import {
     fetchTemplatesList,
     fetchTemplatesLinkList,
     getQualityTemplateById,
-    fetchQualityReportList,
     getQualityReportById,
     updateQualityReport,
     deleteQualityReport,
@@ -34,7 +33,7 @@ const InwardReport = (props) => {
     });
     const [filteredInfo, setFilteredInfo] = useState(null);
     const [searchValue, setSearchValue] = useState("");
-    const [filteredInwardList, setFilteredInwardList] = useState([]);
+    const [filteredInwardList, setFilteredInwardList] = useState(props.template.data.content);
     const [qualityReportList, setQualityReportList] = useState([]);
 
     const [pageNo, setPageNo] = React.useState(1);
@@ -43,12 +42,11 @@ const InwardReport = (props) => {
     const [templateList, setTemplateList] = useState([]);
     const [templateLinkList, setTemplateLinkList] = useState([]);
     const [templateId, setTemplateId] = useState();
-    const { totalItems } = props.inward;
+    const { totalItems } = props.template;
     const [selectedItemForQr, setSelectedItemForQr] = useState({})
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showCreateQrScreen, setShowCreateQrScreen] = useState(false);
     const [action, setAction] = useState(undefined);
-
     const disabledEle = 'disabled-ele';
     const renderStatusColumn = (record) => {
         const qirId = record.qirId;
@@ -192,9 +190,14 @@ const InwardReport = (props) => {
     ];
 
     useEffect(() => {
-        props.fetchQualityReportStageList({ stage: "inward", page: 1, pageSize: 15, partyId: '' });
-        // props.fetchInwardList();
-        props.fetchQualityReportList();
+        if (totalItems) {
+          setTotalItems(totalItems);
+        }
+      }, [totalItems]);
+
+    useEffect(() => {
+        debugger
+         props.fetchQualityReportStageList({ stage: "inward", page: 1, pageSize: 15, partyId: '' });
         props.fetchPartyList();
         props.fetchTemplatesList();
     }, []);
@@ -286,7 +289,6 @@ const InwardReport = (props) => {
         console.log(record, key);
         console.log("record.qirId", record.qirId);
         props.deleteQualityReport(record.qirId);
-       // props.deleteQualityReport(record.qirId, record.requestId="deleteInwardQR");
     };
 
     const onEdit = (record, key, e) => {
@@ -301,6 +303,11 @@ const InwardReport = (props) => {
         setTemplateId(e)
     };
 
+    const handleChangeTable = (pagination, filters, sorter) => {
+        setSortedInfo(sorter);
+        setFilteredInfo(filters);
+      };
+    
     useEffect(() => {
         if (!props.party.loading && !props.party.error) {
             console.log(props.party)
@@ -364,22 +371,23 @@ const InwardReport = (props) => {
 
                 </div>
             </div>
-            {/* <div className="gx-flex-row gx-flex-1"> */}
             <div>
-                {(filteredInwardList.length > 0) && <Table
+                <Table
+                    rowSelection={[]}
                     className="gx-table-responsive"
                     columns={columns}
                     dataSource={filteredInwardList}
+                    onChange={handleChangeTable}
                     pagination={{
                         pageSize: 15,
-                        onChange: (page) => {
+                        onChange: (page, pageSize) => {
                             setPageNo(page);
-                            props.fetchQualityReportStageList(page, 15, searchValue);
+                            props.fetchQualityReportStageList({stage: "inward", page, pageSize, searchValue});
                         },
                         current: pageNo,
                         total: totalPageItems,
                     }}
-                />}
+                />
             </div>
 
             <Modal
@@ -466,7 +474,6 @@ export default connect(mapStateToProps, {
     fetchPartyList,
     fetchTemplatesLinkList,
     getQualityTemplateById,
-    fetchQualityReportList,
     getQualityReportById,
     updateQualityReport,
     deleteQualityReport,

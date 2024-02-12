@@ -5,7 +5,6 @@ import { Link, useHistory, useLocation, withRouter } from "react-router-dom";
 import { Button, Card, Col, Divider, Icon, Modal, Radio, Row, Select, Table } from 'antd'
 import {
     fetchPartyList,
-    fetchInwardList,
     fetchTemplatesList,
     fetchTemplatesLinkList,
     getQualityTemplateById,
@@ -34,7 +33,7 @@ const PreProcessingReport = (props) => {
     });
     const [filteredInfo, setFilteredInfo] = useState(null);
     const [searchValue, setSearchValue] = useState("");
-    const [filteredPreProcessingList, setFilteredPreProcessingList] = useState([]);
+    const [filteredPreProcessingList, setFilteredPreProcessingList] = useState(props.template.data.content);
     const [qualityReportList, setQualityReportList] = useState([]);
 
     const [pageNo, setPageNo] = React.useState(1);
@@ -43,7 +42,7 @@ const PreProcessingReport = (props) => {
     const [templateList, setTemplateList] = useState([]);
     const [templateLinkList, setTemplateLinkList] = useState([]);
     const [templateId, setTemplateId] = useState();
-    const { totalItems } = props.inward;
+    const { totalItems } = props.template;
     const [selectedItemForQr, setSelectedItemForQr] = useState({})
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showCreateQrScreen, setShowCreateQrScreen] = useState(false);
@@ -69,14 +68,14 @@ const PreProcessingReport = (props) => {
       };
 
     // Filter out rows with duplicate planIds
-    const uniquePlanIds = new Set();
-        const filteredDataSource = filteredPreProcessingList.filter((item) => {
-        if (!uniquePlanIds.has(item.planId)) {
-            uniquePlanIds.add(item.planId);
-            return true;
-        }
-        return false;
-    });
+    // const uniquePlanIds = new Set();
+    //     const filteredDataSource = filteredPreProcessingList.filter((item) => {
+    //     if (!uniquePlanIds.has(item.planId)) {
+    //         uniquePlanIds.add(item.planId);
+    //         return true;
+    //     }
+    //     return false;
+    // });
 
     const columns = [
         {
@@ -198,6 +197,12 @@ const PreProcessingReport = (props) => {
     ];
 
     useEffect(() => {
+        if (totalItems) {
+          setTotalItems(totalItems);
+        }
+      }, [totalItems]);
+
+    useEffect(() => {
         props.fetchQualityReportStageList({ stage: "preprocessing", page: 1, pageSize: 15, partyId: '' });
         props.fetchQualityReportList();
         props.fetchPartyList();
@@ -271,6 +276,11 @@ const PreProcessingReport = (props) => {
         console.log(e)
         setTemplateId(e)
     };
+
+    const handleChangeTable = (pagination, filters, sorter) => {
+        setSortedInfo(sorter);
+        setFilteredInfo(filters);
+      };
 
     useEffect(() => {
         if (!props.inward.loading && props.inward.success) {
@@ -356,24 +366,23 @@ const PreProcessingReport = (props) => {
 
                 </div>
             </div>
-            {/* <div className="gx-flex-row gx-flex-1"> */}
             <div>
-                {filteredPreProcessingList && filteredPreProcessingList.length > 0 && <Table
+                 <Table
                     className="gx-table-responsive"
                     columns={columns}
-                   // dataSource={filteredPreProcessingList}
-                    dataSource={filteredDataSource}
+                    dataSource={filteredPreProcessingList}
+                    onChange={handleChangeTable}
+                    // dataSource={filteredDataSource}
                     pagination={{
                         pageSize: 15,
-                        onChange: (changePage) => {
+                        onChange: (changePage, pageSize) => {
                             setPageNo(changePage);
-                             props.fetchQualityReportStageList({ stage: "preprocessing", page: changePage, pageSize: 15, partyId: '' });
+                             props.fetchQualityReportStageList({ stage: "preprocessing", page: changePage, pageSize: pageSize, partyId: '' });
                         },
                         current: pageNo,
                         total: totalPageItems,
                     }}
                 />
-                }
             </div>
 
             <Modal

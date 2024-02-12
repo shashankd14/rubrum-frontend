@@ -513,7 +513,7 @@ export const deleteKqpError = error => {
 
 // quality report
 
-export const fetchQualityReportStageList = payload => {
+export const fetchQualityReportStageList = (payload) => {
   return {
     type: FETCH_QUALITY_REPORT_STAGE_REQUEST,
     payload

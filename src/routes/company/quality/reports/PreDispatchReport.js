@@ -4,11 +4,9 @@ import {Link, useHistory, useLocation, withRouter} from "react-router-dom";
 import { Button, Card, Col, Divider, Icon, Modal, Radio, Row, Select, Table } from 'antd'
 import {
     fetchPartyList,
-    fetchInwardList,
     fetchTemplatesList,
     fetchTemplatesLinkList,
     getQualityTemplateById,
-    fetchQualityReportList,
     getQualityReportById,
     updateQualityReport,
     deleteQualityReport,
@@ -33,7 +31,7 @@ const PreDispatchReport = (props) => {
     });
     const [filteredInfo, setFilteredInfo] = useState(null);
     const [searchValue, setSearchValue] = useState("");
-    const [filteredPreDispatchList, setFilteredPreDispatchList] = useState([]);
+    const [filteredPreDispatchList, setFilteredPreDispatchList] = useState(props.template.data.content);
     const [qualityReportList, setQualityReportList] = useState([]);
 
     const [pageNo, setPageNo] = React.useState(1);
@@ -42,7 +40,7 @@ const PreDispatchReport = (props) => {
     const [templateList, setTemplateList] = useState([]);
     const [templateLinkList, setTemplateLinkList] = useState([]);
     const [templateId, setTemplateId] = useState();
-    const { totalItems } = props.inward;
+    const { totalItems } = props.template;
     const [selectedItemForQr, setSelectedItemForQr] = useState({})
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showCreateQrScreen, setShowCreateQrScreen] = useState(false);
@@ -200,7 +198,6 @@ const PreDispatchReport = (props) => {
 
     useEffect(() => {
         props.fetchQualityReportStageList({stage: "predispatch", page: 1, pageSize: 15, partyId: ''});
-        props.fetchQualityReportList();
         props.fetchPartyList();
         props.fetchTemplatesList();
     }, []);
@@ -275,6 +272,18 @@ const PreDispatchReport = (props) => {
         console.log(e)
         setTemplateId(e)
     };
+
+    useEffect(() => {
+        if (totalItems) {
+          setTotalItems(totalItems);
+        }
+      }, [totalItems]);
+
+      const handleChangeTable = (pagination, filters, sorter) => {
+        setSortedInfo(sorter);
+        setFilteredInfo(filters);
+      };
+
 
     useEffect(() => {
         if (!props.inward.loading && props.inward.success) {
@@ -365,12 +374,12 @@ const PreDispatchReport = (props) => {
                         className="gx-table-responsive"
                         columns={columns}
                         dataSource={filteredPreDispatchList}
+                        onChange={handleChangeTable}
                         pagination={{
                             pageSize: 15,
-                            onChange: (page) => {
+                            onChange: (page, pageSize) => {
                                 setPageNo(page);
-                                //props.fetchPreDispatchList(page, 15, searchValue);
-                                props.fetchQualityReportStageList(page, 15, searchValue);
+                                props.fetchQualityReportStageList({stage: "predispatch", page, pageSize, partyId: ''});
                             },
                             current: pageNo,
                             total: totalPageItems,
@@ -471,7 +480,6 @@ export default connect(mapStateToProps, {
     fetchPartyList,
     fetchTemplatesLinkList,
     getQualityTemplateById,
-    fetchQualityReportList,
     getQualityReportById,
     updateQualityReport,
     deleteQualityReport,
