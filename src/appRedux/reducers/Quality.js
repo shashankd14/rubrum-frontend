@@ -106,6 +106,7 @@ const INIT_STATE = {
   },
   loading: false,
   data: [],
+  totalItems: 0,
   linkListData: [],
   error: false,
   pdfLoadingInward: false,
@@ -349,7 +350,8 @@ export default (state = INIT_STATE, action) => {
         ...state,
         error: false,
         loading: false,
-        data: action.templateList,
+        data: action.templateList.content,
+        totalItems: action.templateList.totalItems,
         operation: "fetchQualityReportStage"
       }
     case FETCH_QUALITY_REPORT_STAGE_ERROR:
