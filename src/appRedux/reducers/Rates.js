@@ -414,6 +414,7 @@ export default (state = INIT_STATE, action) => {
                 updateAdditionalFailure:true
             }
         }
+
         //Lamination Charges
         case actionType.RESET_LAMINATION_CHARGES_REQUEST: {
             return {
@@ -519,7 +520,7 @@ export default (state = INIT_STATE, action) => {
                 deleteSuccess: true
             }
         }
-        case DELETE_LAMINATION_CHARGES_ERROR: {
+        case actionType.DELETE_LAMINATION_CHARGES_ERROR: {
             return {
                 ...state,
                 loading: false,
@@ -554,7 +555,6 @@ export default (state = INIT_STATE, action) => {
             }
         }
         case actionType.GET_LAMINATION_CHARGES_DROPDOWN_SUCCESS: {
-            console.log("RRRRRRRR", action.laminationDropDown)
             return {
                 ...state,
                 loading: false,
@@ -572,3 +572,4 @@ export default (state = INIT_STATE, action) => {
             return state;
     }
 }
+

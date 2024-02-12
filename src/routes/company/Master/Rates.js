@@ -728,7 +728,6 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
   const filteredLaminations = props.laminationCharges.filter(
     (item) => item.partyId === selectedParty
   );
-console.log("eeeeeeeeeeeeeeee", props.laminationChargesView)
   return (
     <div>
       <h1>
@@ -809,7 +808,7 @@ console.log("eeeeeeeeeeeeeeee", props.laminationChargesView)
               value={searchThickness}
               onChange={(e) => setSearchThickness(e.target.value)}
             />
-              )}
+            )}
           </div>
         </div>
         <Tabs defaultActiveKey="1" tabPosition={mode} onChange={callback}>
@@ -1444,6 +1443,7 @@ console.log("eeeeeeeeeeeeeeee", props.laminationChargesView)
             } else {
               const values = props.form.getFieldsValue();
               console.log('Received values of form: ', values);
+
               if (values.laminationDetailsId !== '' && values.lPartyId !== '' && values.charges !== '') {
                 props.addLminationCharges(values);
                 setShowAddLaminationCharges(false);
@@ -1646,26 +1646,6 @@ const addRatesForm = Form.create({
         ...props.packingRates?.packingRateDesc,
         value: props.packingRates?.packingRateDesc || "",
       }),
-      // lPartyId: Form.createFormField({
-      //   ...props.laminationCharges?.partyId,
-      //   value: props.laminationCharges?.partyId || "",
-      // }),
-      // laminationDetailsId: Form.createFormField({
-      //   ...props.laminationCharges?.laminationDetailsId,
-      //   value: props.laminationCharges?.laminationDetailsId || "",
-      // }),
-      // charges: Form.createFormField({
-      //   ...props.laminationCharges?.charges,
-      //   value: props.laminationCharges?.charges || "",
-      // }),
-      // laminationId: Form.createFormField({
-      //   ...props.laminationCharges?.laminationId,
-      //   value: props.laminationCharges?.laminationId || "",
-      // }),
-      // laminationDetailsDesc: Form.createFormField({
-      //   ...props.laminationCharges?.laminationDetailsDesc,
-      //   value: props.laminationCharges?.laminationDetailsDesc || "",
-      // }),
       lPartyId: Form.createFormField({
         ...props.laminationChargesView?.partyId,
         value: props.laminationChargesView?.partyId || "",
