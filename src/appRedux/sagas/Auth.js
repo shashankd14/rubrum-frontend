@@ -1,4 +1,4 @@
-import {all, call, fork, put, takeEvery} from "redux-saga/effects";
+import {all, call, delay, fork, put, select, take, takeEvery} from "redux-saga/effects";
 import {
   auth,
   facebookAuthProvider,
@@ -13,7 +13,10 @@ import {
   SIGNIN_TWITTER_USER,
   SIGNIN_USER,
   SIGNOUT_USER,
-  SIGNUP_USER
+  SIGNUP_USER,
+  REFRESH_TOKEN,
+  REFRESH_TOKEN_SUCCESS,
+  REFRESH_TOKEN_FAILURE,
 } from "constants/ActionTypes";
 import {showAuthMessage, userSignInSuccess, userSignOutSuccess, userSignUpSuccess} from "../../appRedux/actions/Auth";
 import {
@@ -22,8 +25,7 @@ import {
   userGoogleSignInSuccess,
   userTwitterSignInSuccess
 } from "../actions/Auth";
-
-const baseUrl = process.env.REACT_APP_BASE_URL;
+const baseUrl = process.env.REACT_APP_BASE_URL; 
 
 const createUserWithEmailPasswordRequest = async (email, password) =>
   await  auth.createUserWithEmailAndPassword(email, password)
@@ -163,14 +165,15 @@ function* signInUserWithEmailPassword({payload}) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(jsonPayload)
   });
-   
     if (signInUser.status ===200) {
       const signeduser = yield signInUser.json()
-      yield put(userSignInSuccess(signeduser.userName));
+      yield put(userSignInSuccess(signeduser.userName, signeduser.expires_in, signeduser.lastLoginTime, signeduser.access_token)); 
       localStorage.setItem("userToken",signeduser.access_token)
       localStorage.setItem("userName",signeduser.userName)
       localStorage.setItem("userId",signeduser.userId)
       localStorage.setItem("Menus",JSON.stringify(signeduser.menusList))
+      localStorage.setItem("refreshToken", signeduser.refresh_token);
+      localStorage.setItem("expiresIn", Date.now() + Number(signeduser.expires_in) * 1000);
     } else {
       yield put(showAuthMessage("Failed to Login"));
     }
@@ -178,6 +181,36 @@ function* signInUserWithEmailPassword({payload}) {
     yield put(showAuthMessage(error));
   }
 }
+
+function* refreshTokenSaga() {
+     try {
+      const data = new URLSearchParams();
+      data.append('grant_type', 'refresh_token');
+      data.append('refresh_token', `${localStorage.getItem('refreshToken')}`);
+
+        const response = yield fetch(`${baseUrl}api/oauth/token`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/x-www-form-urlencoded',
+          Authorization: 'Basic UjJkcHhRM3ZQcnRmZ0Y3MjpmRHc3TXBrazVjekhOdVNSdG1oR21BR0w0MkNheFFCOQ=='
+        },
+        body:data 
+      });
+  
+      if (response.status === 200) {
+        const refreshedTokens = yield response.json();
+        localStorage.setItem('userToken', refreshedTokens.access_token);
+        localStorage.setItem('refreshToken', refreshedTokens.refresh_token);
+        localStorage.setItem("expiresIn", Date.now() + Number(refreshedTokens.expires_in) * 1000);
+        yield put({ type: REFRESH_TOKEN_SUCCESS, payload: refreshedTokens.access_token });
+      } else {
+        yield put({ type: REFRESH_TOKEN_FAILURE });
+      }
+    } catch (error) {
+      console.error('Error during token refresh:', error);
+      yield put({ type: REFRESH_TOKEN_FAILURE });
+    }
+  }
 
 function* signOut() {
   try {
@@ -222,6 +255,10 @@ export function* signInUser() {
 export function* signOutUser() {
   yield takeEvery(SIGNOUT_USER, signOut);
 }
+function* watchRefreshToken() {
+  yield takeEvery(REFRESH_TOKEN, refreshTokenSaga);
+}
+
 
 export default function* rootSaga() {
   yield all([fork(signInUser),
@@ -230,5 +267,6 @@ export default function* rootSaga() {
     fork(signInWithFacebook),
     fork(signInWithTwitter),
     fork(signInWithGithub),
-    fork(signOutUser)]);
+    fork(signOutUser),
+    fork(watchRefreshToken)]);
 }
