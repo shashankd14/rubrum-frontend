@@ -3,6 +3,10 @@ export const getUserToken = () => {
     return `Bearer ${localStorage.getItem('userToken') || ''}`;
 }
 
+export const getRefreshToken = () => {
+    return localStorage.getItem('refreshToken') || '';
+}
+
 export const getUserId = () => {
     return localStorage.getItem('userName') || '';
 }
