@@ -10,8 +10,10 @@ import {
   SIGNIN_TWITTER_USER_SUCCESS,
   SIGNIN_USER_SUCCESS,
   SIGNOUT_USER_SUCCESS,
-  SIGNUP_USER_SUCCESS
-} from "constants/ActionTypes";
+  SIGNUP_USER_SUCCESS,
+  REFRESH_TOKEN_SUCCESS,
+  REFRESH_TOKEN_FAILURE
+} from "constants/ActionTypes"; 
 
 const INIT_STATE = {
   loader: false,
@@ -19,7 +21,10 @@ const INIT_STATE = {
   showMessage: false,
   initURL: '',
   authUser: localStorage.getItem('userName'),
-  signedUp: false
+  signedUp: false,
+  accessToken: null,
+  refreshToken: null,
+  error: null,
 };
 
 
@@ -110,7 +115,18 @@ export default (state = INIT_STATE, action) => {
         ...state,
         loader: false
       }
-    }
+    } 
+    case REFRESH_TOKEN_SUCCESS:
+      return {
+        ...state,
+        accessToken: action.payload.accessToken,
+        error: null,
+      };
+    case REFRESH_TOKEN_FAILURE:
+      return {
+        ...state,
+        error: action.payload.error,
+      };
     default:
       return state;
   }

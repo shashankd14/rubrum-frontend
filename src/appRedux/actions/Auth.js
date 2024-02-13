@@ -17,9 +17,11 @@ import {
   SIGNOUT_USER,
   SIGNOUT_USER_SUCCESS,
   SIGNUP_USER,
-  SIGNUP_USER_SUCCESS
-} from "constants/ActionTypes";
-
+  SIGNUP_USER_SUCCESS,
+  REFRESH_TOKEN,
+  REFRESH_TOKEN_SUCCESS,
+  REFRESH_TOKEN_FAILURE,
+} from "constants/ActionTypes"; 
 export const userSignUp = (user) => {
   return {
     type: SIGNUP_USER,
@@ -27,6 +29,7 @@ export const userSignUp = (user) => {
   };
 };
 export const userSignIn = (user) => {
+  debugger
   return {
     type: SIGNIN_USER,
     payload: user
@@ -44,10 +47,11 @@ export const userSignUpSuccess = (authUser) => {
   };
 };
 
-export const userSignInSuccess = (authUser) => {
+export const userSignInSuccess = (authUser, accessTokenExpiration, lastLoginTime, accessToken) => {
   return {
     type: SIGNIN_USER_SUCCESS,
-    payload: authUser
+    // payload: authUser
+    payload: { authUser, accessTokenExpiration, lastLoginTime, accessToken },
   }
 };
 export const userSignOutSuccess = () => {
@@ -130,3 +134,22 @@ export const hideAuthLoader = () => {
     type: ON_HIDE_LOADER,
   };
 };
+
+export const refreshToken = () => ({
+  type: REFRESH_TOKEN,
+});
+
+export const refreshTokenSuccess = (accessToken) => ({
+  type: REFRESH_TOKEN_SUCCESS,
+  payload: {
+    accessToken,
+  },
+});
+
+export const refreshTokenFailure = () => ({
+  type: REFRESH_TOKEN_FAILURE,
+});
+
+export const signoutUser = () => ({
+  type: SIGNOUT_USER,
+});
