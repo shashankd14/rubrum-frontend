@@ -3,8 +3,6 @@ import TextArea from 'antd/lib/input/TextArea';
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import moment from 'moment';
-import EditableTable from '../../../../../../util/EditableTable';
-import Dragger from 'antd/lib/upload/Dragger'
 import {
   updateQRFormData,
   getQualityPacketDetails,
@@ -14,6 +12,7 @@ import {
   getQualityReportById
 } from '../../../../../../appRedux/actions';
 import { useLocation } from 'react-router-dom/cjs/react-router-dom.min';
+import EditableTableQR from '../../../../../../util/EditableTableQR';
 
 const SlittingForm = (props) => {
   
@@ -244,16 +243,6 @@ const SlittingForm = (props) => {
   ];
   const toleranceColumnsSlit = [
     {
-        title: 'Thickness From',
-        dataIndex: 'toleranceThicknessFrom',
-        editable: false
-    },
-    {
-        title: 'Thickness To',
-        dataIndex: 'toleranceThicknessTo',
-        editable: false
-    },
-    {
         title: 'Slit Size From',
         dataIndex: 'toleranceSlitSizeFrom',
         editable: false
@@ -263,6 +252,16 @@ const SlittingForm = (props) => {
         dataIndex: 'toleranceSlitSizeTo',
         editable: false
     },
+    {
+      title: 'Thickness From',
+      dataIndex: 'toleranceThicknessFrom',
+      editable: false
+  },
+  {
+      title: 'Thickness To',
+      dataIndex: 'toleranceThicknessTo',
+      editable: false
+  },
     {
         title: 'Burr Height From',
         dataIndex: 'toleranceBurrHeightFrom',
@@ -494,13 +493,14 @@ const handleTransferToFinalTable = () => {
                             <label style={{fontSize: 20}}>Tolerance Data</label>
                         </Col>
                     </Row>
-                    <EditableTable columns={toleranceColumnsSlit} emptyRecord={toleranceEmptyRecord} dataSource={toleranceDataSource} handleChange={handleToleranceTableChangeSlit}/>
+                    <EditableTableQR columns={toleranceColumnsSlit} emptyRecord={toleranceEmptyRecord} dataSource={toleranceDataSource} handleChange={handleToleranceTableChangeSlit}/>
                 </Card.Grid>
         <Card.Grid style={gridStyle}>
-          <EditableTable
+          <EditableTableQR
             columns={slitColumns}
             emptyRecord={emptySlitRecord}
             dataSource={slitDataSource}
+            toleranceData={toleranceDataSource}
             handleChange={handleInspectionTableChange}
           />
         </Card.Grid>
@@ -513,7 +513,7 @@ const handleTransferToFinalTable = () => {
               <Button type="primary" onClick={handleTransferToFinalTable}>Transfer Data</Button>
             </Col>
           </Row>
-          <EditableTable
+          <EditableTableQR
             columns={finalColumns}
             emptyRecord={emptyFinalRecord}
             dataSource={finalDataSource}

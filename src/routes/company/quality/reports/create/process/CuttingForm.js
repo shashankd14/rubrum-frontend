@@ -1,7 +1,6 @@
 import { Button, Card, Col, DatePicker, Input, Row } from 'antd'
 import TextArea from 'antd/lib/input/TextArea';
 import React, { useEffect, useState } from 'react'
-import EditableTable from '../../../../../../util/EditableTable';
 import { connect } from 'react-redux';
 import moment from 'moment';
 import { useLocation } from 'react-router-dom/cjs/react-router-dom.min';
@@ -13,6 +12,7 @@ import {
     getCoilPlanDetails,
     getQualityReportById
   } from '../../../../../../appRedux/actions';
+import EditableTableQR from '../../../../../../util/EditableTableQR';
 
 const CuttingForm = (props) => {
     var toleranceThicknessFrom = 0;
@@ -446,10 +446,10 @@ const CuttingForm = (props) => {
                             <label style={{fontSize: 20}}>Cutting Tolerance Data</label>
                         </Col>
                     </Row>
-                    <EditableTable columns={toleranceColumns} emptyRecord={toleranceEmptyRecord} dataSource={toleranceDataSource} handleChange={handleToleranceTableChange}/>
+                    <EditableTableQR columns={toleranceColumns} emptyRecord={toleranceEmptyRecord} dataSource={toleranceDataSource} handleChange={handleToleranceTableChange}/>
                 </Card.Grid>
                 <Card.Grid style={gridStyle}>
-                    <EditableTable columns={columns} emptyRecord={emptyRecord} dataSource={dataSource} handleChange={handleInspectionTableChange}/>
+                    <EditableTableQR columns={columns} emptyRecord={emptyRecord} dataSource={dataSource} toleranceData={toleranceDataSource} handleChange={handleInspectionTableChange}/> 
                 </Card.Grid>
                 <Card.Grid style={gridStyle}>
                     <Row>
