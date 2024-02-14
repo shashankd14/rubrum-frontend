@@ -116,7 +116,6 @@ const INIT_STATE = {
 
 
 export default (state = INIT_STATE, action) => {
-  console.log("reducer", state, action)
   switch (action.type) {
     case TEMPLATE_NAME: {
       return {

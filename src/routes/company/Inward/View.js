@@ -56,11 +56,11 @@ const View = (props) => {
                     <Row>
                         <Col span={12}>
                             <Card title="Invoice Details" style={{ width: 300 }}>
-                                <p>Received Date : {moment(props.inward.inward.receivedDate).format(APPLICATION_DATE_FORMAT)}</p>
+                                <p>Received Date : {moment(props.inward.inward.dReceivedDate).format(APPLICATION_DATE_FORMAT)}</p>
                                 {props.inward.inward.batchNo && <p>Batch No : {props.inward.inward.batchNo}</p>}
                                 {props.inward.inward.vehicleNumber && <p>Vehicle number : {props.inward.inward.vehicleNumber}</p>}
                                 {props.inward.inward.invoiceNumber && <p>Invoice number : {props.inward.inward.invoiceNumber}</p>}
-                                {props.inward.inward.invoiceDate && <p>Invoice date : {moment(props.inward.inward.invoiceDate).format(APPLICATION_DATE_FORMAT)}</p>}
+                                {props.inward.inward.invoiceDate && <p>Invoice date : {moment(props.inward.inward.dInvoiceDate).format(APPLICATION_DATE_FORMAT)}</p>}
                             </Card>
                         </Col>
                         <Col span={12}>

@@ -39,7 +39,7 @@ const InvoiceDetailsForm = (props) => {
         return partyList.partyName
     }
     let dimensionEdit = `${props.inward.fWidth} X ${props.inward.fThickness} X ${props.inward.fLength}`;
-    let dimension = `${props.inward.width} X ${props.inward.thickness} X ${props.inward.length}`
+    let dimension = `${props.inward.width} X ${props.inward.thickness} X ${props.inward.length}`;
     return (
         <>
             <Col span={14}>
@@ -139,8 +139,8 @@ const InvoiceDetails = Form.create({
     mapPropsToFields(props) {
         return {
             receivedDate: Form.createFormField({
-                ...props.inward.receivedDate,
-                value: (props.inward.receivedDate) ? props.inward.receivedDate : moment(new Date(), APPLICATION_DATE_FORMAT),
+                ...props.inward.dReceivedDate,
+                 value: (props.inward.dReceivedDate) ? moment(props.inward.dReceivedDate) : moment(new Date(), APPLICATION_DATE_FORMAT),
             }),
             batchNo: Form.createFormField({
                 ...props.inward.batchNo,
@@ -159,8 +159,8 @@ const InvoiceDetails = Form.create({
                 value: props.inward.valueOfGoods,
             }),
             invoiceDate: Form.createFormField({
-                ...props.inward.invoiceDate,
-                value: (props.inward.invoiceDate) ? props.inward.invoiceDate : moment(new Date(), APPLICATION_DATE_FORMAT),
+                ...props.inward.dInvoiceDate,
+                value: (props.inward.dInvoiceDate) ? moment(props.inward.dInvoiceDate) : moment(new Date(), APPLICATION_DATE_FORMAT),
             }),
         };
     },
