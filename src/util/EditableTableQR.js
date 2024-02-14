@@ -73,7 +73,6 @@ class EditableCell extends React.Component {
       },
       {
         validator: (_, value, callback) => {
-          debugger;
           const toleranceItem = toleranceData.find(
             (item) => item.key === record.key
           );
@@ -296,7 +295,6 @@ class EditableTableQR extends React.Component {
   };
 
   render() {
-    debugger;
     const { dataSource, toleranceData } = this.state;
     const components = {
       body: {

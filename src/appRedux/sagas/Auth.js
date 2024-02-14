@@ -202,13 +202,12 @@ function* refreshTokenSaga() {
         localStorage.setItem('userToken', refreshedTokens.access_token);
         localStorage.setItem('refreshToken', refreshedTokens.refresh_token);
         localStorage.setItem("expiresIn", Date.now() + Number(refreshedTokens.expires_in) * 1000);
-        yield put({ type: REFRESH_TOKEN_SUCCESS, payload: refreshedTokens.access_token });
-      } else {
-        yield put({ type: REFRESH_TOKEN_FAILURE });
-      }
+        // yield put({ type: REFRESH_TOKEN_SUCCESS, payload: refreshedTokens.access_token });
+      } 
     } catch (error) {
       console.error('Error during token refresh:', error);
       yield put({ type: REFRESH_TOKEN_FAILURE });
+      yield put (userSignOutSuccess());
     }
   }
 
@@ -219,6 +218,8 @@ function* signOut() {
       localStorage.removeItem('user_id');
       localStorage.removeItem('userToken');
       localStorage.removeItem('userName');
+      localStorage.removeItem('expiresIn');
+      localStorage.removeItem('refreshToken');
       yield put(userSignOutSuccess(signOutUser));
     } else {
       yield put(showAuthMessage(signOutUser.message));

@@ -29,7 +29,6 @@ export const userSignUp = (user) => {
   };
 };
 export const userSignIn = (user) => {
-  debugger
   return {
     type: SIGNIN_USER,
     payload: user
