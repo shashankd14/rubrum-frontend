@@ -32,6 +32,7 @@ const PostDispatchReport = (props) => {
     });
     const [filteredInfo, setFilteredInfo] = useState(null);
     const [searchValue, setSearchValue] = useState("");
+    const [customerValue, setCustomerValue] = useState("");
     const [filteredPostDispatchList, setFilteredPostDispatchList] = useState(props.template.data.content);
     const [qualityReportList, setQualityReportList] = useState([]);
     const [pageNo, setPageNo] = React.useState(1);
@@ -197,10 +198,22 @@ const PostDispatchReport = (props) => {
     ];
 
     useEffect(() => {
-        props.fetchQualityReportStageList({stage: "postdispatch", page: 1, pageSize: 15, partyId: ''});
+        props.fetchQualityReportStageList({stage: "postdispatch", page: 1, pageSize: 15, searchValue:'', customerValue: ''});
         props.fetchPartyList();
         props.fetchTemplatesList();
     }, []);
+
+    useEffect(() => {
+        if (searchValue) {
+          if (searchValue.length >= 3) {
+            setPageNo(1);
+            props.fetchQualityReportStageList({ stage: "predispatch", page: 1, pageSize: 15, searchValue, customerValue});
+          }
+        } else {
+          setPageNo(1);
+          props.fetchQualityReportStageList({ stage: "predispatch", page: 1, pageSize: 15, searchValue, customerValue});
+        }
+      }, [searchValue]);
 
 
     const showCreateQr = () => {
@@ -307,20 +320,16 @@ const PostDispatchReport = (props) => {
         }
     }, [props.party.loading, props.party.error]);
 
-    useEffect(() => {
-        const { template } = props;
-        if(searchValue) {
-            const filteredData = filteredPostDispatchList.filter(item => 
-                (item.coilNo.toLowerCase().includes(searchValue.toLowerCase())) ||
-                (item.customerBatchNo.toLowerCase().includes(searchValue.toLowerCase())));
-
-            setFilteredPostDispatchList(filteredData);
-            console.log("filteredData", filteredData);
+    const handleCustomerChange = (value) => {
+        if (value) {
+          setCustomerValue(value);
+          setPageNo(1);
+          props.fetchQualityReportStageList(1, 15, searchValue, value);
         } else {
-            setFilteredPostDispatchList(template.data);
+          setCustomerValue("");
+          setFilteredPostDispatchList(props.template.data.content);
         }
-           
-    }, [searchValue]);
+      };
 
     const [payload, setPayload] = useState({});
     const onPdf = (deliveryChalanNo) => {
@@ -351,8 +360,8 @@ const PostDispatchReport = (props) => {
                             style={{ width: 200 }}
                             placeholder="Select a customer"
                             optionFilterProp="children"
-                            onChange={handleChange}
-                            value={templateId}
+                            onChange={handleCustomerChange}
+                            value={customerValue}
                             // onFocus={handleFocus}
                             // onBlur={handleBlur}
                             filterOption={(input, option) =>
@@ -388,7 +397,7 @@ const PostDispatchReport = (props) => {
                             pageSize: 15,
                             onChange: (page, pageSize) => {
                                 setPageNo(page);
-                               props.fetchQualityReportStageList({stage: "postdispatch", page, pageSize, partyId: ''});
+                               props.fetchQualityReportStageList({stage: "postdispatch", page, pageSize, searchValue, customerValue});
                             },
                             current: pageNo,
                             total: totalPageItems,

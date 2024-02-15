@@ -31,6 +31,7 @@ const PreDispatchReport = (props) => {
     });
     const [filteredInfo, setFilteredInfo] = useState(null);
     const [searchValue, setSearchValue] = useState("");
+    const [customerValue, setCustomerValue] = useState("");
     const [filteredPreDispatchList, setFilteredPreDispatchList] = useState(props.template.data.content);
     const [qualityReportList, setQualityReportList] = useState([]);
 
@@ -197,10 +198,22 @@ const PreDispatchReport = (props) => {
     ];
 
     useEffect(() => {
-        props.fetchQualityReportStageList({stage: "predispatch", page: 1, pageSize: 15, partyId: ''});
+        props.fetchQualityReportStageList({stage: "predispatch", page: 1, pageSize: 15, searchValue:'', customerValue: ''});
         props.fetchPartyList();
         props.fetchTemplatesList();
     }, []);
+
+    useEffect(() => {
+        if (searchValue) {
+          if (searchValue.length >= 3) {
+            setPageNo(1);
+            props.fetchQualityReportStageList({ stage: "predispatch", page: 1, pageSize: 15, searchValue, customerValue});
+          }
+        } else {
+          setPageNo(1);
+          props.fetchQualityReportStageList({ stage: "predispatch", page: 1, pageSize: 15, searchValue, customerValue});
+        }
+      }, [searchValue]);
 
     const isInitialMount = useRef(true);
     useEffect(() => {
@@ -284,6 +297,17 @@ const PreDispatchReport = (props) => {
         setFilteredInfo(filters);
       };
 
+      const handleCustomerChange = (value) => {
+        if (value) {
+          setCustomerValue(value);
+          setPageNo(1);
+          props.fetchQualityReportStageList(1, 15, searchValue, value);
+        } else {
+          setCustomerValue("");
+          setFilteredPreDispatchList(props.template.data.content);
+        }
+      };
+
 
     useEffect(() => {
         if (!props.inward.loading && props.inward.success) {
@@ -342,8 +366,8 @@ const PreDispatchReport = (props) => {
                             style={{ width: 200 }}
                             placeholder="Select a customer"
                             optionFilterProp="children"
-                            onChange={handleChange}
-                            value={templateId}
+                            onChange={handleCustomerChange}
+                            value={customerValue}
                             // onFocus={handleFocus}
                             // onBlur={handleBlur}
                             filterOption={(input, option) =>
@@ -379,7 +403,7 @@ const PreDispatchReport = (props) => {
                             pageSize: 15,
                             onChange: (page, pageSize) => {
                                 setPageNo(page);
-                                props.fetchQualityReportStageList({stage: "predispatch", page, pageSize, partyId: ''});
+                                props.fetchQualityReportStageList({stage: "predispatch", page, pageSize, searchValue, customerValue});
                             },
                             current: pageNo,
                             total: totalPageItems,
