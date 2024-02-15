@@ -318,7 +318,6 @@ const CuttingForm = (props) => {
     }
 
     const onOptionChange = (key, changeEvent) => {
-        debugger
         console.log("changeEvent", changeEvent)
         console.log("key", key)
         cutFormData[key] = changeEvent.target.value;

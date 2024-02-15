@@ -196,7 +196,6 @@ const InwardReport = (props) => {
       }, [totalItems]);
 
     useEffect(() => {
-        debugger
          props.fetchQualityReportStageList({ stage: "inward", page: 1, pageSize: 15, partyId: '' });
         props.fetchPartyList();
         props.fetchTemplatesList();
@@ -233,26 +232,26 @@ const InwardReport = (props) => {
     useEffect(() => {
         if (!isInitialMount.current){
         if (!props.template.loading && !props.template.error && props.template.operation == "fetchQualityReport") {
-            console.log(props.template)
-            setQualityReportList(props.template.data)
+            console.log(props.template);
+            setQualityReportList(props.template.data);
         } else if (!props.template.loading && !props.template.error && props.template.operation == "fetchQualityReportStage") {
-            console.log(props.template)
-            setFilteredInwardList(props.template.data)
-            console.log(props.template.data)
+            console.log(props.template);
+            setFilteredInwardList(props.template.data);
+            console.log(props.template.data);
         } else if (!props.template.loading && !props.template.error && props.template.operation === 'templateById') {
-            console.log(props)
-            setShowCreateQrScreen(true)
+            console.log(props);
+            setShowCreateQrScreen(true);
             props.history.push({ pathname: '/company/quality/reports/create/inward', state: { selectedItemForQr: selectedItemForQr, templateDetails: props.template.data, action: 'create' } })
         } else if (!props.template.loading && !props.template.error && props.template.operation == "templateLinkList") {
             var tempData = props.template.data;
-            setTemplateLinkList(tempData.filter(x=> x.stageName==="INWARD"))
-            setShowCreateModal(true)
+            setTemplateLinkList(tempData.filter(x=> x.stageName==="INWARD"));
+            setShowCreateModal(true);
         } else if (!props.template.loading && !props.template.error && props.template.operation === 'templateList') {
-            console.log(props.template)
-            setTemplateList(props.template.data)
+            console.log(props.template);
+            setTemplateList(props.template.data);
         } else if (!props.template.loading && !props.template.error && props.template.operation == "qualityReportById") {
-            console.log("qualityReportById", props.template)
-            props.history.push({ pathname: '/company/quality/reports/create/inward', state: { selectedItemForQr: selectedItemForQr, templateDetails: props.template.data, action: action } })
+            console.log("qualityReportById", props.template);
+            props.history.push({ pathname: '/company/quality/reports/create/inward', state: { selectedItemForQr: selectedItemForQr, templateDetails: props.template.data, action: action } });
         }}
         else {
             // This block will be executed only on the first render

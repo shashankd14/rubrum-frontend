@@ -86,7 +86,6 @@ const SlitAndCutForm = (props) => {
     //Code for view cut tolerance table
     const viewCutTolerance = () => {
         if(props.templateDetails.operation == "templateById"){
-            debugger
         var templateId = props.templateDetails.data.templateId
         props.getQualityTemplateById(templateId)
              const cutDetails = JSON.parse(props.templateDetails.data.templateDetails);
@@ -116,7 +115,6 @@ const SlitAndCutForm = (props) => {
       //Code for view slit tolerance table
     const viewSlitTolerance = () => {
         if(props.templateDetails.operation == "templateById"){
-            debugger
         var templateId = props.templateDetails.data.templateId
         props.getQualityTemplateById(templateId)
              const slitDetails = JSON.parse(props.templateDetails.data.templateDetails);

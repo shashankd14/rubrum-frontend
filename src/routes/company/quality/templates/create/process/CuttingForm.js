@@ -36,7 +36,6 @@ const CuttingForm = (props) => {
     //Code for view cut tolerance table
     const viewCutTolerance = () => {
         if(props.templateDetails.operation == "templateById"){
-            debugger
         var templateId = props.templateDetails.data.templateId
         props.getQualityTemplateById(templateId)
              const cutDetails = JSON.parse(props.templateDetails.data.templateDetails);
