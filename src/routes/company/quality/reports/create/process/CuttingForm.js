@@ -46,9 +46,7 @@ const CuttingForm = (props) => {
     } 
     const [dataSource, setDataSource] = useState([]);
     const [toleranceDataSource, setToleranceDataSource] = useState([]);
-    const [cutInspectionData, setCutInspectionData] = useState([])
-    const instructionDate = props.templateDetails.packetDetails?.map(item=>item.instructionDate)
-     //display cut table first three column
+    //display cut table first three column
   useEffect(() => {
     if (props.templateDetails.packetDetails && props.templateDetails.operation !== "qualityReportById") {
         const mappedData = props.templateDetails.packetDetails.map((item, i) => ({
@@ -120,6 +118,7 @@ const CuttingForm = (props) => {
             remarks: item.remarks
           }));
           const toleranceDataTable = planDetails[0]?.toleranceInspectionDataCut;
+
           const toleranceData = toleranceDataTable.map((item, i) => ({
             toleranceThicknessFrom: item.toleranceThicknessFrom,
             toleranceThicknessTo: item.toleranceThicknessTo,
@@ -142,6 +141,10 @@ const CuttingForm = (props) => {
             viewCutData()
         }
       }, [props.templateDetails.operation]);
+
+    const instructionDate = props.templateDetails.packetDetails?.map(item=>item.instructionDate)
+
+    const [cutInspectionData, setCutInspectionData] = useState([])
 
     const [toleranceInspectionDataCut, settoleranceInspectionDataCut] = useState([])
     const [cutFormData, setCutFormData] = useState({

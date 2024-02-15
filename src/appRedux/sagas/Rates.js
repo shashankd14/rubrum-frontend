@@ -21,7 +21,8 @@ import {FETCH_RATES_LIST_REQUEST,
     UPDATE_LAMINATION_CHARGES_REQUEST,
     DELETE_LAMINATION_CHARGES_REQUEST,
     GET_BY_PARTY_ID_LAMINATION_CHARGES_REQUEST,
-    GET_LAMINATION_CHARGES_DROPDOWN_REQUEST,} from "../../constants/ActionTypes";
+    GET_LAMINATION_CHARGES_DROPDOWN_REQUEST
+} from "../../constants/ActionTypes";
 import {
     fetchRatesListSuccess, 
     fetchRatesListError,
@@ -525,7 +526,6 @@ function* fetchLaminationChargesDropDownList() {
         yield put(getLaminationChargesDropDownError(error));
     }
 }
-
 export function* watchFetchRequests() {
     yield takeLatest(FETCH_RATES_LIST_REQUEST, fetchRatesList);
     yield takeLatest(FETCH_PACKING_RATES_LIST_REQUEST, fetchPackingRatesList);
