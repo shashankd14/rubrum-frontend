@@ -342,14 +342,20 @@ function* updateQualityTemplateLinkById(data) {
 // ======= save quality report ===========
 
 function* fetchQualityReportStageList(req) {
-    console.log(req.payload)
+    const request = {
+        pageNo: req.payload.page,
+        pageSize: req.payload.pageSize,
+        searchText: req.payload.searchValue,
+        partyId: req.payload.customerValue
+    }
     try {
-        const endP = (req.payload.stage.includes('processing') || req.payload.stage.includes('inward') )? 'listpage' : 'dispatchlist'
-        const url = `${baseUrl}api/quality/qir/${req.payload.stage}/${endP}/${req.payload.page}/${req.payload.pageSize}`
+        const endP = (req.payload.stage.includes('processing') || req.payload.stage.includes('inward') )? 'listpage' : 'listpage'
+        const url = `${baseUrl}api/quality/qir/${req.payload.stage}/${endP}`
         console.log('url', url)
         const fetchQRList =  yield fetch( url, {
-            method: 'GET',
-            headers: getHeaders()
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getHeaders() },
+            body: JSON.stringify(request)
         });
         if(fetchQRList.status === 200) {
             const fetchQRListResponse = yield fetchQRList.json();

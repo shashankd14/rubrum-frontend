@@ -80,7 +80,7 @@ const InwardEntrySummary = (props) => {
                     <Row>
                         <Col span={12}>
                             <Card title="Invoice Details" style={{ width: 300 }}>
-                                <p>Received Date : {moment(props.inward.receivedDate).format(APPLICATION_DATE_FORMAT)}</p>
+                                <p>Received Date : {moment(props.inward.dReceivedDate).format(APPLICATION_DATE_FORMAT)}</p>
                                 {props.inward.batchNo && <p>Batch No : {props.inward.batchNo}</p>}
                                 {props.inward.vehicleNumber && <p>Vehicle number : {props.inward.vehicleNumber}</p>}
                                 {props.inward.invoiceNumber && <p>Invoice number : {props.inward.invoiceNumber}</p>}
