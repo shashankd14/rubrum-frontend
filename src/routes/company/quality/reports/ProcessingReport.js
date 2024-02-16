@@ -32,6 +32,7 @@ const ProcessingReport = (props) => {
     });
     const [filteredInfo, setFilteredInfo] = useState(null);
     const [searchValue, setSearchValue] = useState("");
+    const [customerValue, setCustomerValue] = useState("");
     const [filteredProcessingList, setFilteredProcessingList] = useState(props.template.data.content);
     const [qualityReportList, setQualityReportList] = useState([]);
     const [pageNo, setPageNo] = React.useState(1);
@@ -199,11 +200,23 @@ const ProcessingReport = (props) => {
     ];
 
     useEffect(() => {
-        props.fetchQualityReportStageList({ stage: "processing", page: 1, pageSize: 15, partyId: '' });
+        props.fetchQualityReportStageList({ stage: "processing", page: 1, pageSize: 15, searchValue:'', customerValue: '' });
         props.fetchPartyList();
         props.fetchTemplatesList();
         setAction('');
     }, []);
+
+    useEffect(() => {
+        if (searchValue) {
+          if (searchValue.length >= 3) {
+            setPageNo(1);
+            props.fetchQualityReportStageList({ stage: "inward", page: 1, pageSize: 15, searchValue, customerValue});
+          }
+        } else {
+          setPageNo(1);
+          props.fetchQualityReportStageList({ stage: "inward", page: 1, pageSize: 15, searchValue, customerValue});
+        }
+      }, [searchValue]);
 
     const isInitialMount = useRef(true);
     useEffect(() => {
@@ -308,21 +321,16 @@ const ProcessingReport = (props) => {
         }
     }, [props.party.loading, props.party.error]);
 
-    useEffect(() => {
-        const { template } = props;
-        if(searchValue) {
-           const filteredData = filteredProcessingList.filter(item => 
-           //const filteredData = filteredDataSource.filter(item => 
-                (item.coilNo.toLowerCase().includes(searchValue.toLowerCase())) ||
-                (item.customerBatchNo.toLowerCase().includes(searchValue.toLowerCase())));
-
-            setFilteredProcessingList(filteredData);
-            console.log("filteredData", filteredData);
+    const handleCustomerChange = (value) => {
+        if (value) {
+          setCustomerValue(value);
+          setPageNo(1);
+          props.fetchQualityReportStageList(1, 15, searchValue, value);
         } else {
-            setFilteredProcessingList(template.data);
+          setCustomerValue("");
+          setFilteredProcessingList(props.template.data.content);
         }
-           
-    }, [searchValue]);
+      };
 
     const [payload, setPayload] = useState({});
     const onPdf = (planId) => {
@@ -353,8 +361,8 @@ const ProcessingReport = (props) => {
                         style={{ width: 200 }}
                         placeholder="Select a customer"
                         optionFilterProp="children"
-                        onChange={handleChange}
-                        value={templateId}
+                        onChange={handleCustomerChange}
+                        value={customerValue}
                         // onFocus={handleFocus}
                         // onBlur={handleBlur}
                         filterOption={(input, option) =>
@@ -392,7 +400,7 @@ const ProcessingReport = (props) => {
                         pageSize: 15,
                         onChange: (page, pageSize) => {
                             setPageNo(page);
-                            props.fetchQualityReportStageList({ stage: "processing", page, pageSize, searchValue});
+                            props.fetchQualityReportStageList({ stage: "processing", page, pageSize, searchValue, customerValue});
                         },
                         current: pageNo,
                         total: totalPageItems,

@@ -1920,7 +1920,7 @@ const CreateCuttingDetailsForm = (props) => {
             <Modal
               title="Confirmation"
               visible={showDeleteModal}
-              width={400}
+              width={1300}
               onOk={() => {
                 onDelete(deleteRecord);
               }}

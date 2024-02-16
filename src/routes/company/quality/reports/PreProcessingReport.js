@@ -8,7 +8,6 @@ import {
     fetchTemplatesList,
     fetchTemplatesLinkList,
     getQualityTemplateById,
-    fetchQualityReportList,
     getQualityReportById,
     updateQualityReport,
     deleteQualityReport,
@@ -33,6 +32,7 @@ const PreProcessingReport = (props) => {
     });
     const [filteredInfo, setFilteredInfo] = useState(null);
     const [searchValue, setSearchValue] = useState("");
+    const [customerValue, setCustomerValue] = useState("");
     const [filteredPreProcessingList, setFilteredPreProcessingList] = useState(props.template.data.content);
     const [qualityReportList, setQualityReportList] = useState([]);
 
@@ -203,11 +203,22 @@ const PreProcessingReport = (props) => {
       }, [totalItems]);
 
     useEffect(() => {
-        props.fetchQualityReportStageList({ stage: "preprocessing", page: 1, pageSize: 15, partyId: '' });
-        props.fetchQualityReportList();
+        props.fetchQualityReportStageList({ stage: "preprocessing", page: 1, pageSize: 15, searchValue:'', customerValue: '' });
         props.fetchPartyList();
         props.fetchTemplatesList();
     }, []);
+
+    useEffect(() => {
+        if (searchValue) {
+          if (searchValue.length >= 3) {
+            setPageNo(1);
+            props.fetchQualityReportStageList({ stage: "preprocessing", page: 1, pageSize: 15, searchValue, customerValue});
+          }
+        } else {
+          setPageNo(1);
+          props.fetchQualityReportStageList({ stage: "preprocessing", page: 1, pageSize: 15, searchValue, customerValue});
+        }
+      }, [searchValue]);
 
     const isInitialMount = useRef(true);
     useEffect(() => {
@@ -277,6 +288,17 @@ const PreProcessingReport = (props) => {
         setTemplateId(e)
     };
 
+    const handleCustomerChange = (value) => {
+        if (value) {
+          setCustomerValue(value);
+          setPageNo(1);
+          props.fetchQualityReportStageList(1, 15, searchValue, value);
+        } else {
+          setCustomerValue("");
+          setFilteredPreProcessingList(props.template.data.content);
+        }
+      };
+
     const handleChangeTable = (pagination, filters, sorter) => {
         setSortedInfo(sorter);
         setFilteredInfo(filters);
@@ -294,21 +316,6 @@ const PreProcessingReport = (props) => {
             setPartyList(props.party.partyList)
         }
     }, [props.party.loading, props.party.error]);
-
-    useEffect(() => {
-        const { template } = props;
-        if(searchValue) {
-            const filteredData = filteredPreProcessingList.filter(item => 
-                (item.coilNo.toLowerCase().includes(searchValue.toLowerCase())) ||
-                (item.customerBatchNo.toLowerCase().includes(searchValue.toLowerCase())));
-
-            setFilteredPreProcessingList(filteredData);
-            console.log("filteredData", filteredData);
-        } else {
-            setFilteredPreProcessingList(template.data);
-        }
-           
-    }, [searchValue]);
 
     const [payload, setPayload] = useState({});
     const onPdf = (planId) => {
@@ -339,8 +346,8 @@ const PreProcessingReport = (props) => {
                         style={{ width: 200 }}
                         placeholder="Select a customer"
                         optionFilterProp="children"
-                        onChange={handleChange}
-                        value={templateId}
+                        onChange={handleCustomerChange}
+                        value={customerValue}
                         // onFocus={handleFocus}
                         // onBlur={handleBlur}
                         filterOption={(input, option) =>
@@ -377,7 +384,7 @@ const PreProcessingReport = (props) => {
                         pageSize: 15,
                         onChange: (changePage, pageSize) => {
                             setPageNo(changePage);
-                             props.fetchQualityReportStageList({ stage: "preprocessing", page: changePage, pageSize: pageSize, partyId: '' });
+                             props.fetchQualityReportStageList({ stage: "preprocessing", page: changePage, pageSize: pageSize, searchValue, customerValue });
                         },
                         current: pageNo,
                         total: totalPageItems,
@@ -468,7 +475,6 @@ export default connect(mapStateToProps, {
     fetchPartyList,
     fetchTemplatesLinkList,
     getQualityTemplateById,
-    fetchQualityReportList,
     getQualityReportById,
     updateQualityReport,
     deleteQualityReport,

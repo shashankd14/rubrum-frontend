@@ -5,7 +5,6 @@ import { Modal, Select, Table } from 'antd';
 import {
   fetchPartyList,
   fetchInwardList,
-  fetchQualityReportList,
   getQualityReportById,
   fetchQualityReportStageList,
   labelPrintWIP,
@@ -21,6 +20,7 @@ const LabelPrintWIP = (props) => {
   });
   const [filteredInfo, setFilteredInfo] = useState(null);
   const [searchValue, setSearchValue] = useState('');
+  const [customerValue, setCustomerValue] = useState("");
   const [filteredInwardList, setFilteredInwardList] = useState(props.template.data.content);
   const [qualityReportList, setQualityReportList] = useState([]);
   const { totalItems } = props.template;
@@ -128,28 +128,19 @@ const LabelPrintWIP = (props) => {
   ];
 
   useEffect(() => {
-    props.fetchQualityReportStageList({
-      stage: 'inward',
-      page: 1,
-      pageSize: 15,
-      partyId: '',
-    });
-    props.fetchQualityReportList();
+    props.fetchQualityReportStageList({ stage: "inward", page: 1, pageSize: 15, searchValue:'', customerValue: '' });
     props.fetchPartyList();
   }, []);
 
   useEffect(() => {
-    const { template } = props;
     if (searchValue) {
-      const filteredData = filteredInwardList.filter(
-        (item) =>
-          item.coilNo.toLowerCase().includes(searchValue.toLowerCase()) ||
-          item.customerBatchNo.toLowerCase().includes(searchValue.toLowerCase())
-      );
-
-      setFilteredInwardList(filteredData);
+      if (searchValue.length >= 3) {
+        setPageNo(1);
+        props.fetchQualityReportStageList({ stage: "inward", page: 1, pageSize: 15, searchValue, customerValue});
+      }
     } else {
-      setFilteredInwardList(template.data);
+      setPageNo(1);
+      props.fetchQualityReportStageList({ stage: "inward", page: 1, pageSize: 15, searchValue, customerValue});
     }
   }, [searchValue]);
 
@@ -181,6 +172,17 @@ const LabelPrintWIP = (props) => {
   const handleChange = (e) => {
     console.log(e);
     setTemplateId(e);
+  };
+
+  const handleCustomerChange = (value) => {
+    if (value) {
+      setCustomerValue(value);
+      setPageNo(1);
+      props.fetchQualityReportStageList(1, 15, searchValue, value);
+    } else {
+      setCustomerValue("");
+       setFilteredInwardList(props.template.data.content);
+    }
   };
 
   useEffect(() => {
@@ -247,8 +249,8 @@ const LabelPrintWIP = (props) => {
             style={{ width: 200 }}
             placeholder='Select a customer'
             optionFilterProp='children'
-            onChange={handleChange}
-            value={templateId}
+            onChange={handleCustomerChange}
+            value={customerValue}
             // onFocus={handleFocus}
             // onBlur={handleBlur}
             filterOption={(input, option) =>
@@ -284,7 +286,7 @@ const LabelPrintWIP = (props) => {
               pageSize: 15,
               onChange: (page, pageSize) => {
                 setPageNo(page);
-                props.fetchQualityReportStageList({stage: "inward", page, pageSize, searchValue});
+                props.fetchQualityReportStageList({stage: "inward", page, pageSize, searchValue, customerValue});
             },
               current: pageNo,
               total: totalPageItems,
@@ -317,7 +319,6 @@ const mapStateToProps = (state) => ({
 export default connect(mapStateToProps, {
   fetchInwardList,
   fetchPartyList,
-  fetchQualityReportList,
   getQualityReportById,
   fetchQualityReportStageList,
   labelPrintWIP,
