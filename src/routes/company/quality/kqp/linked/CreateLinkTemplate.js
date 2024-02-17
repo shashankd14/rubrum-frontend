@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux';
-import { Button, Card, Col,  Row, Select,  Tag, Checkbox } from 'antd'
+import { Button, Card, Col,  Row, Select,  Tag, Checkbox, Input } from 'antd'
 import {
     fetchPartyList,
     fetchKqpList,
@@ -69,7 +69,7 @@ const CreateLinkTemplate = (props) => {
             const jsonData =  props.template.data;
             const groupedData = {};
             jsonData.forEach((item) => {
-                const { kqpId, kqpName, partyId, partyIdList, anyThicknessFlag, anyLengthFlag, anyWidthFlag, anyPartyFlag, anyEndusertagFlag, anyMatGradeFlag, endUserTagIdList, thicknessList, widthList, lengthList, matGradeIdList } = item;
+                const { kqpId, kqpName, partyId, partyIdList, anyThicknessFlag, anyLengthFlag, anyWidthFlag, anyPartyFlag, anyEndusertagFlag, anyMatGradeFlag } = item;
               
                 setAnyThicknessFlag(anyThicknessFlag ==='Y');
                 setAnyLengthFlag(anyLengthFlag ==='Y');
@@ -116,7 +116,6 @@ const CreateLinkTemplate = (props) => {
               }).filter(Boolean);
         
               setSelectedCustomers(matchedParties.map((party) => party.nPartyId).flat());
-             // setSelectedCustomers(groupedArray.map((item) => item.partyIdList).flat());
               setSelectedEndUserTags(groupedArray.map((item) => item.endUserTagIdList).flat());
               setSelectedMatGrade(groupedArray.map((item) => item.matGradeIdList).flat());
               setThicknessList(groupedArray.map((item) => item.thicknessList).flat());
@@ -166,6 +165,15 @@ const CreateLinkTemplate = (props) => {
     const onThicknessSelection = (e) => {
         setThicknessList(e);
     }
+    const handleThicknessChange = (e) => {
+        setThicknessList(e.target.value);
+    };
+    const handleWidthChange = (e) => {
+        setWidthList(e.target.value)
+    };
+    const handleLengthChange = (e) => {
+        setLengthList(e.target.value)
+    };
     const onWidthSelection = (e) => {
         setWidthList(e);
     }
@@ -194,14 +202,17 @@ const CreateLinkTemplate = (props) => {
  
 
     const createTemplateLink = () => {
+        const thicknessValues = thickness.split(',').map(value => parseFloat(value.trim()));
+        const widthValues = width.split(',').map(value => parseFloat(value.trim()));
+        const lengthValues = length.split(',').map(value => parseFloat(value.trim()));
         const payload = JSON.stringify({
             kqpId: selectedTemplateId,
             endUserTagIdList: selectedEndUserTags,
             matGradeIdList: selectedMatGrade,
             userId: localStorage.getItem("userId"),
-            thicknessList: thickness,
-            widthList: width,
-            lengthList: length,
+            thicknessList: thicknessValues,
+            widthList: widthValues,
+            lengthList: lengthValues,
             partyIdList: selectedCustomers,
             anyThicknessFlag: anyThicknessFlag? 'Y' : 'N',
             anyLengthFlag: anyLengthFlag? 'Y' : 'N',
@@ -432,7 +443,17 @@ const CreateLinkTemplate = (props) => {
                             <Col span={12}>
                                 <div style={{ marginTop: 30, display: "flex" }}>
                                 <label>Thickness</label> 
-                                    &emsp;&emsp;&emsp; <label>Select All</label>&nbsp; 
+                                </div>
+                                <div>
+                                 <Input
+                                    id="thickness"
+                                    placeholder='Enter thickness'
+                                    value={thickness}
+                                    onChange={handleThicknessChange}
+                                /> 
+                                </div>
+                                
+                                    {/* &emsp;&emsp;&emsp; <label>Select All</label>&nbsp; 
                                     <Checkbox
                                         id="allOptions"
                                         checked={thickness.length===props.template.thicknessList.length}
@@ -469,52 +490,22 @@ const CreateLinkTemplate = (props) => {
                                             {thickness}
                                         </Select.Option>
                                         ))} 
-                                    </Select>
-                                </div>  
+                                    </Select>*/}
+                                {/* </div>    */}
                             </Col>
                         </Row>
                         <Row>
                             <Col span={12}>
                                 <div style={{ marginTop: 30, display: "flex" }}>
                                     <label>Width</label> 
-                                    &emsp;&emsp;&emsp; <label>Select All</label>&nbsp; 
-                                    <Checkbox
-                                        id="allOptions"
-                                        checked={width.length===props.template.widthList.length}
-                                        onChange={selectAllWidth}
-                                        disabled = {anyWidthFlag}
-                                    />
-                                  &emsp;&emsp;&emsp; <label>Any</label>&nbsp; 
-                                    <Checkbox
-                                        id="anyWidthFlag"
-                                        checked={anyWidthFlag}
-                                        onChange={(e) => setAnyWidthFlag(e.target.checked)}
-                                    />
                                 </div>
                                 <div>
-                                <Select
-                                        id="select"
-                                        mode="multiple"
-                                        showSearch
-                                        style={{ width: '100%' }}
-                                        placeholder="Select Width"
-                                        optionFilterProp="children"
-                                        value={width}
-                                        onChange={onWidthSelection} 
-                                        maxTagCount={3}
-                                        filterOption={(input, option) =>
-                                            option.props.children
-                                                .toLowerCase()
-                                                .indexOf(input.toLowerCase()) >= 0
-                                        }
-                                        allowClear
-                                    >
-                                        {props?.template?.widthList?.map(width => (
-                                        <Select.Option key={width} value={width} disabled={anyWidthFlag}>
-                                            {width}
-                                        </Select.Option>
-                                        ))} 
-                                    </Select> 
+                                 <Input
+                                    id="width"
+                                    placeholder='Enter Width'
+                                    value={width}
+                                    onChange={handleWidthChange}
+                                /> 
                                 </div>
                             </Col>
                         </Row>
@@ -522,44 +513,14 @@ const CreateLinkTemplate = (props) => {
                             <Col span={12}>
                                 <div style={{ marginTop: 30, display: "flex" }}>
                                  <label>Length</label> 
-                                    &emsp;&emsp;&emsp; <label>Select All</label>&nbsp; 
-                                    <Checkbox
-                                        id="allOptions"
-                                        checked={length.length===props.template.lengthList.length}
-                                        onChange={selectAllLength}
-                                        disabled = {anyLengthFlag}
-                                    />
-                                  &emsp;&emsp;&emsp; <label>Any</label>&nbsp; 
-                                    <Checkbox
-                                        id="anyLengthFlag"
-                                        checked={anyLengthFlag}
-                                        onChange={(e) => setAnyLengthFlag(e.target.checked)}
-                                    />
                                 </div>
                                 <div>
-                                <Select
-                                        id="select"
-                                        mode="multiple"
-                                        showSearch
-                                        style={{ width: '100%' }}
-                                        placeholder="Select Length"
-                                        optionFilterProp="children"
-                                        value={length}
-                                        onChange={onLengthSelection} 
-                                        maxTagCount={3}
-                                        filterOption={(input, option) =>
-                                            option.props.children
-                                                .toLowerCase()
-                                                .indexOf(input.toLowerCase()) >= 0
-                                        } 
-                                        allowClear
-                                    >
-                                         {props?.template?.lengthList?.map(length => (
-                                        <Select.Option key={length} value={length} disabled={anyLengthFlag}>
-                                            {length}
-                                        </Select.Option>
-                                        ))} 
-                                    </Select> 
+                                 <Input
+                                    id="length"
+                                    value={length}
+                                    placeholder='Enter Length'
+                                    onChange={handleLengthChange}
+                                /> 
                                 </div>
                             </Col>
                         </Row>
