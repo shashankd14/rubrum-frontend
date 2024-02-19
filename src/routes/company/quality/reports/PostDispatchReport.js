@@ -198,7 +198,6 @@ const PostDispatchReport = (props) => {
     ];
 
     useEffect(() => {
-        props.fetchQualityReportStageList({stage: "postdispatch", page: 1, pageSize: 15, searchValue:'', customerValue: ''});
         props.fetchPartyList();
         props.fetchTemplatesList();
     }, []);
@@ -207,11 +206,11 @@ const PostDispatchReport = (props) => {
         if (searchValue) {
           if (searchValue.length >= 3) {
             setPageNo(1);
-            props.fetchQualityReportStageList({ stage: "predispatch", page: 1, pageSize: 15, searchValue, customerValue});
+            props.fetchQualityReportStageList({ stage: "postdispatch", page: 1, pageSize: 15, searchValue, customerValue});
           }
         } else {
           setPageNo(1);
-          props.fetchQualityReportStageList({ stage: "predispatch", page: 1, pageSize: 15, searchValue, customerValue});
+          props.fetchQualityReportStageList({ stage: "postdispatch", page: 1, pageSize: 15, searchValue, customerValue});
         }
       }, [searchValue]);
 

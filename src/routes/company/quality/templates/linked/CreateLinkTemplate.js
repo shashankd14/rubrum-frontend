@@ -423,9 +423,7 @@ const CreateLinkTemplate = (props) => {
                                         // onBlur={handleBlur}
                                         maxTagCount={3}
                                         filterOption={(input, option) =>
-                                            option.props.children
-                                                .toLowerCase()
-                                                .indexOf(input.toLowerCase()) >= 0
+                                            option.props.value.toString().toLowerCase().indexOf(input.toLowerCase()) >= 0 // Use option's value for filtering
                                         }
                                         allowClear
                                     >

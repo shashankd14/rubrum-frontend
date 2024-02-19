@@ -198,7 +198,6 @@ const PreDispatchReport = (props) => {
     ];
 
     useEffect(() => {
-        props.fetchQualityReportStageList({stage: "predispatch", page: 1, pageSize: 15, searchValue:'', customerValue: ''});
         props.fetchPartyList();
         props.fetchTemplatesList();
     }, []);
