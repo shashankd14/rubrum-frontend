@@ -203,7 +203,6 @@ const PreProcessingReport = (props) => {
       }, [totalItems]);
 
     useEffect(() => {
-        props.fetchQualityReportStageList({ stage: "preprocessing", page: 1, pageSize: 15, searchValue:'', customerValue: '' });
         props.fetchPartyList();
         props.fetchTemplatesList();
     }, []);

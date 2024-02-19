@@ -200,7 +200,6 @@ const ProcessingReport = (props) => {
     ];
 
     useEffect(() => {
-        props.fetchQualityReportStageList({ stage: "processing", page: 1, pageSize: 15, searchValue:'', customerValue: '' });
         props.fetchPartyList();
         props.fetchTemplatesList();
         setAction('');
@@ -210,11 +209,11 @@ const ProcessingReport = (props) => {
         if (searchValue) {
           if (searchValue.length >= 3) {
             setPageNo(1);
-            props.fetchQualityReportStageList({ stage: "inward", page: 1, pageSize: 15, searchValue, customerValue});
+            props.fetchQualityReportStageList({ stage: "processing", page: 1, pageSize: 15, searchValue, customerValue});
           }
         } else {
           setPageNo(1);
-          props.fetchQualityReportStageList({ stage: "inward", page: 1, pageSize: 15, searchValue, customerValue});
+          props.fetchQualityReportStageList({ stage: "processing", page: 1, pageSize: 15, searchValue, customerValue});
         }
       }, [searchValue]);
 
