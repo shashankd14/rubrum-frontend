@@ -41,115 +41,81 @@ class EditableCell extends React.Component {
 
   renderCell = (form) => {
     this.form = form;
-    const { children, dataIndex, record, title, toleranceData } = this.props;
+    const { children, dataIndex, record, title, toleranceData, thicknessSlit } = this.props;
     const { editing } = this.state;
-    //previous code before validation
-    //   return editing ? (
-    //     <Form.Item style={{ margin: 0 }}>
-    //       {form.getFieldDecorator(dataIndex, {
-    //         rules: [
-    //           {
-    //             required: true,
-    //             message: `${title} is required.`,
-    //           },
-    //         ],
-    //         initialValue: record[dataIndex],
-    //       })(<Input ref={node => (this.input = node)} onPressEnter={this.save} onBlur={this.save} />)}
-    //     </Form.Item>
-    //   ) : (
-    //     <div
-    //       className="editable-cell-value-wrap"
-    //       style={{ paddingRight: 24 }}
-    //       onClick={this.toggleEdit}
-    //     >
-    //       {children}
-    //     </div>
-    //   );
-    // };
     const rules = [
-      {
-        required: true,
-        message: `${title} is required.`,
-      },
+      // {
+      //   required: true,
+      //   message: `${title} is required.`,
+      // },
       {
         validator: (_, value, callback) => {
           const toleranceItem = toleranceData.find(
             (item) => item.key === record.key
           );
+          const widthCol = parseFloat(record.plannedWidth);
+          const thicknessCol = parseFloat(record.thickness);
+          const lengthCol = parseFloat(record.plannedLength);
 
-          console.log('toleranceData : ', toleranceData);
-          const actualWidth = parseFloat(value) || 0;
-          // const lowerBound = parseFloat(record.plannedWidth) - 0.5;
-          // const upperBound = parseFloat(record.plannedWidth) + 0.5;
-          const lowerBound =
-            toleranceData?.[0]?.toleranceWidthFrom 
-          const upperBound =
-            toleranceData?.[0]?.toleranceWidthTo 
-
-          const actualThickness = parseFloat(value) || 0;
-          // const lowerBoundThickness = parseFloat(record.thickness) - 0.5;
-          // const upperBoundThickness = parseFloat(record.thickness) + 0.5;
-          const lowerBoundThickness =
-            toleranceData?.[0]?.toleranceThicknessFrom ??
-            parseFloat(record.thickness) - 0.5;
-          const upperBoundThickness =
-            toleranceData?.[0]?.toleranceThicknessTo ??
-            parseFloat(record.thickness) + 0.5;
-
-          const actualLength = parseFloat(value) || 0;
-          // const lowerBoundLength = parseFloat(record.plannedLength) - 0.5;
-          // const upperBoundLength = parseFloat(record.plannedLength) + 0.5;
-          const lowerBoundLength =
-            toleranceData?.[0]?.toleranceLengthFrom 
-          const upperBoundLength =
-            toleranceData?.[0]?.toleranceLengthTo 
+          const lowerBound = ( widthCol - Math.abs(parseFloat(toleranceData?.[0]?.toleranceWidthFrom))); 
+          const upperBound = ( widthCol + (parseFloat(toleranceData?.[0]?.toleranceWidthTo))); 
+          //cut thickness validation
+          const lowerBoundThickness = ( thicknessCol - Math.abs(parseFloat(toleranceData?.[0]?.toleranceThicknessFrom)));
+          const upperBoundThickness = ( (thicknessCol) + (parseFloat(toleranceData?.[0]?.toleranceThicknessTo))); 
+           //slit thickness validation
+          
+          const lowerBoundThicknessSlit = ( thicknessSlit - Math.abs(parseFloat(toleranceData?.[0]?.toleranceThicknessFrom)));
+          const upperBoundThicknessSlit = ( (thicknessSlit) + (parseFloat(toleranceData?.[0]?.toleranceThicknessTo))); 
+          const lowerBoundLength = ( lengthCol - Math.abs(parseFloat(toleranceData?.[0]?.toleranceLengthFrom))); 
+          const upperBoundLength = ( lengthCol + (parseFloat(toleranceData?.[0]?.toleranceLengthTo))); 
 
           const actualburrHeight = parseFloat(value) || 0;
-          const lowerBoundburrHeight =
-            toleranceData?.[0]?.toleranceBurrHeightFrom ?? 0;
-          const upperBoundburrHeight =
-            toleranceData?.[0]?.toleranceBurrHeightTo ?? 0;
+  
+          const lowerBoundburrHeight = parseFloat(toleranceData?.[0]?.toleranceBurrHeightFrom) ?? 1;
+          const upperBoundburrHeight = parseFloat(toleranceData?.[0]?.toleranceBurrHeightTo) ?? 1;
+          //cut burrheight
+          const lowerBurrHeightPercent = (thicknessCol * lowerBoundburrHeight) / 100;
+          const upperBurrHeightPercent = (thicknessCol * upperBoundburrHeight) / 100;
+          //slit burrheight
+          const lowerBurrHeightPercentSlit = (thicknessSlit * lowerBoundburrHeight) / 100;
+          const upperBurrHeightPercentSlit = (thicknessSlit * upperBoundburrHeight) / 100;
 
           const actualdiagonalDifference = parseFloat(value) || 0;
           const lowerBoundtoleranceDiagonalDifferenceFrom =
             toleranceData?.[0]?.toleranceDiagonalDifferenceFrom ?? 0;
           const uppertoleranceDiagonalDifferenceTo =
             toleranceData?.[0]?.toleranceDiagonalDifferenceTo ?? 0;
+
+            //slit slitsize validation
             const slitSize = parseFloat(value) || 0;
-            const lowerBoundtoleranceSlitSizeFrom =
-              toleranceData?.[0]?.toleranceSlitSizeFrom ?? 0;
-            const upperBoundtoleranceSlitSizeTo =
-              toleranceData?.[0]?.toleranceSlitSizeTo ?? 0;
+            const lowerBoundtoleranceSlitSizeFrom =  (widthCol - Math.abs(parseFloat(toleranceData?.[0]?.toleranceSlitSizeFrom))) ?? 0;
+            const upperBoundtoleranceSlitSizeTo =  (widthCol + Math.abs(parseFloat(toleranceData?.[0]?.toleranceSlitSizeTo))) ?? 0;
 
           if (
-            dataIndex === 'actualWidth' &&
-            (actualWidth < lowerBound || actualWidth > upperBound)
+            dataIndex === 'actualWidth' && (value < lowerBound || value > upperBound)
           ) {
             callback(
-              `Don't enter more than ${upperBound} & less than ${lowerBound}`
+              `You are out of range, range is (${upperBound} to ${lowerBound})`
             );
           } else if (
-            dataIndex === 'actualThickness' &&
-            (actualThickness < lowerBoundThickness ||
-              actualThickness > upperBoundThickness)
+            dataIndex === 'actualThickness' && (value < lowerBoundThickness || value > upperBoundThickness)
           ) {
             callback(
-              `Don't enter less than ${lowerBoundThickness} & more than ${upperBoundThickness}`
+              `You are out of range, range is (${lowerBoundThickness} to ${upperBoundThickness})`
             );
           } else if (
-            dataIndex === 'actualLength' &&
-            (actualLength < lowerBoundLength || actualLength > upperBoundLength)
+            dataIndex === 'actualLength' && (value < lowerBoundLength || value > upperBoundLength)
           ) {
             callback(
-              `Don't enter less than ${lowerBoundLength} & more than ${upperBoundLength}`
+              `You are out of range, range is (${lowerBoundLength} to ${upperBoundLength})`
             );
           } else if (
             dataIndex === 'burrHeight' &&
-            (actualburrHeight < lowerBoundburrHeight ||
-              actualburrHeight > upperBoundburrHeight)
+            (value < lowerBurrHeightPercent ||
+              value > upperBurrHeightPercent)
           ) {
             callback(
-              `Don't enter less than ${lowerBoundburrHeight} & more than ${upperBoundburrHeight}`
+              `You are out of range, range is (${lowerBurrHeightPercent} to ${upperBurrHeightPercent})`
             );
           } else if (
             dataIndex === 'diagonalDifference' &&
@@ -158,17 +124,27 @@ class EditableCell extends React.Component {
               actualdiagonalDifference > uppertoleranceDiagonalDifferenceTo)
           ) {
             callback(
-              `Don't enter less than ${lowerBoundtoleranceDiagonalDifferenceFrom} & more than ${uppertoleranceDiagonalDifferenceTo}`
+              `You are out of range, range is (${lowerBoundtoleranceDiagonalDifferenceFrom} to ${uppertoleranceDiagonalDifferenceTo})`
             ) 
          } else if (
-            dataIndex === 'actualWidth' &&
-            (slitSize <
-                lowerBoundtoleranceSlitSizeFrom ||
-              slitSize > upperBoundtoleranceSlitSizeTo)
+            dataIndex === 'actualWidth' && (value < lowerBoundtoleranceSlitSizeFrom || value > upperBoundtoleranceSlitSizeTo)
           ) {
             callback(
-              `Don't enter less than ${lowerBoundtoleranceSlitSizeFrom} & more than ${upperBoundtoleranceSlitSizeTo}`
+              `You are out of range, range is ${lowerBoundtoleranceSlitSizeFrom} to ${upperBoundtoleranceSlitSizeTo}`
             ) 
+          } else if ( dataIndex === 'burrHeight' &&
+          (value < lowerBurrHeightPercentSlit ||
+            value > upperBurrHeightPercentSlit)
+        ) {
+          callback(
+            `You are out of range, range is (${lowerBurrHeightPercentSlit} to ${upperBurrHeightPercentSlit})`
+          );
+        } else if (
+          dataIndex === 'actualThickness' && (value < lowerBoundThicknessSlit || value > upperBoundThicknessSlit)
+        ) {
+          callback(
+            `You are out of range, range is (${lowerBoundThicknessSlit} to ${upperBoundThicknessSlit})`
+          );
           } else {
             callback();
           }
@@ -210,6 +186,7 @@ class EditableCell extends React.Component {
       handleSave,
       children,
       toleranceData,
+      thicknessSlit,
       ...restProps
     } = this.props;
     return (
@@ -223,8 +200,6 @@ class EditableCell extends React.Component {
     );
   }
 }
-//const location = useLocation();
-//console.log("properties :", this.props);
 class EditableTableQR extends React.Component {
   constructor(props) {
     super(props);
@@ -233,9 +208,9 @@ class EditableTableQR extends React.Component {
       dataSource: this.props.dataSource,
       count: this.props.dataSource.length,
       toleranceData: this.props.toleranceData,
+      thicknessSlit: this.props.thicknessSlit
     };
     console.log('properties :', this.props);
-    // console.log("location.state :", location.state);
     this.columns.push({
       title: 'operation',
       dataIndex: 'operation',
@@ -243,10 +218,6 @@ class EditableTableQR extends React.Component {
         this.state.dataSource.length >= 1 ? (
           <div>
             <a onClick={() => this.handleEdit(record.key)}>Edit</a>
-            {/* <Divider type="vertical" />
-                 <Popconfirm title="Sure to delete?" onConfirm={() => this.handleDelete(record.key)}>
-                    <a>Delete</a>
-                </Popconfirm> */}
           </div>
         ) : null,
     });
@@ -267,8 +238,6 @@ class EditableTableQR extends React.Component {
 
   handleEdit = (key) => {
     const { history } = this.props;
-
-    //history.push(`/company/quality/templates/edit/${key}`);
     history.push('/company/quality/templates');
     console.log(`Editing record with key: ${key}`);
   };
@@ -295,7 +264,7 @@ class EditableTableQR extends React.Component {
   };
 
   render() {
-    const { dataSource, toleranceData } = this.state;
+    const { dataSource, toleranceData, thicknessSlit } = this.state;
     const components = {
       body: {
         row: EditableFormRow,
@@ -314,21 +283,20 @@ class EditableTableQR extends React.Component {
           dataIndex: col.dataIndex,
           title: col.title,
           toleranceData: this.props.toleranceData,
+          thicknessSlit: this.props.thicknessSlit,
           handleSave: this.handleSave,
         }),
       };
     });
     return (
       <div className='table-container'>
-        {/* <Button onClick={this.handleAdd} type="primary" style={{ marginBottom: 16 }}>
-          Add a row
-        </Button> */}
         <Table
           components={components}
           rowClassName={() => 'editable-row'}
           bordered
           dataSource={dataSource}
           toleranceData={toleranceData}
+          thicknessSlit={thicknessSlit}
           columns={columns}
           pagination={false}
         />
