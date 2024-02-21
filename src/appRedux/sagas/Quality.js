@@ -1,6 +1,6 @@
 //src-appredux-saga-quality.js
 
-import { all, put, fork, takeLatest } from "redux-saga/effects";
+import { all, put, fork, takeLatest, call } from "redux-saga/effects";
 import { getUserToken } from './common';
 import {
     SAVE_TEMPLATE_REQUEST,
@@ -418,18 +418,18 @@ function* fetchQualityReportStageList1(req) {
 //         yield put(fetchQualityReportListError(error));
 //     }
 // }
-
+const delay1 = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 function* saveQualityReport(data) {
+     yield call(delay1, 500);
     try {
-        // let data = new FormData();
         console.log(data.payload)
-        // /api/quality/qir/save
         const qualityTemplate = yield fetch(`${baseUrl}api/quality/qir/save`, {
             method: 'POST',
             body: data.payload,
             // headers: {'Content-Type': 'multipart/form-data', ...getHeaders()}
             headers: getHeaders()
         });
+        window.location.reload(true);
         if (qualityTemplate.status == 200) {
             let qualityTemplateResponse = yield qualityTemplate.json()
             yield put(saveQualityReportSuccess(qualityTemplateResponse.inwardEntryId));

@@ -126,7 +126,12 @@ const SlittingForm = (props) => {
   const [slitInspectionData, setSlitInspectionData] = useState([]);
   const [finalInspectionData, setFinalInspectionData] = useState([]);
   const [toleranceInspectionDataSlit, settoleranceInspectionDataSlit] = useState([])
-
+  const [thicknessSlit, setThicknessSlit] = useState();
+   //send thickness to EditableTableQR
+  useEffect(() => {
+    const thicknessSlitE = props.inward?.plan?.fThickness
+    setThicknessSlit(thicknessSlitE);
+  },[props.inward])
   const instructionDate = props.templateDetails.packetDetails?.map(item=>item.instructionDate)
   useEffect(() => {
     // Update customerName in slitFormData when props change
@@ -502,6 +507,7 @@ const handleTransferToFinalTable = () => {
             dataSource={slitDataSource}
             toleranceData={toleranceDataSource}
             handleChange={handleInspectionTableChange}
+            thicknessSlit={thicknessSlit}
           />
         </Card.Grid>
         <Card.Grid style={gridStyle}>
