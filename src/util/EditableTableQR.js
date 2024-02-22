@@ -57,15 +57,14 @@ class EditableCell extends React.Component {
           const thicknessCol = parseFloat(record.thickness);
           const lengthCol = parseFloat(record.plannedLength);
 
-          const lowerBound = ( widthCol - Math.abs(parseFloat(toleranceData?.[0]?.toleranceWidthFrom))); 
-          const upperBound = ( widthCol + (parseFloat(toleranceData?.[0]?.toleranceWidthTo))); 
+          const lowerBound = parseFloat(( widthCol - Math.abs(parseFloat(toleranceData?.[0]?.toleranceWidthFrom))).toFixed(2)); 
+          const upperBound = parseFloat(( widthCol + (parseFloat(toleranceData?.[0]?.toleranceWidthTo))).toFixed(2)); 
           //cut thickness validation
-          const lowerBoundThickness = ( thicknessCol - Math.abs(parseFloat(toleranceData?.[0]?.toleranceThicknessFrom)));
-          const upperBoundThickness = ( (thicknessCol) + (parseFloat(toleranceData?.[0]?.toleranceThicknessTo))); 
+          const lowerBoundThickness = parseFloat(( thicknessCol - Math.abs(parseFloat(toleranceData?.[0]?.toleranceThicknessFrom))).toFixed(2));
+          const upperBoundThickness = parseFloat(( (thicknessCol) + (parseFloat(toleranceData?.[0]?.toleranceThicknessTo))).toFixed(2)); 
            //slit thickness validation
-          
-          const lowerBoundThicknessSlit = ( thicknessSlit - Math.abs(parseFloat(toleranceData?.[0]?.toleranceThicknessFrom)));
-          const upperBoundThicknessSlit = ( (thicknessSlit) + (parseFloat(toleranceData?.[0]?.toleranceThicknessTo))); 
+          const lowerBoundThicknessSlit = parseFloat(( thicknessSlit - Math.abs(parseFloat(toleranceData?.[0]?.toleranceThicknessFrom))).toFixed(2));
+          const upperBoundThicknessSlit = parseFloat(( (thicknessSlit) + (parseFloat(toleranceData?.[0]?.toleranceThicknessTo))).toFixed(2)); 
           const lowerBoundLength = ( lengthCol - Math.abs(parseFloat(toleranceData?.[0]?.toleranceLengthFrom))); 
           const upperBoundLength = ( lengthCol + (parseFloat(toleranceData?.[0]?.toleranceLengthTo))); 
 
@@ -74,11 +73,11 @@ class EditableCell extends React.Component {
           const lowerBoundburrHeight = parseFloat(toleranceData?.[0]?.toleranceBurrHeightFrom) ?? 1;
           const upperBoundburrHeight = parseFloat(toleranceData?.[0]?.toleranceBurrHeightTo) ?? 1;
           //cut burrheight
-          const lowerBurrHeightPercent = (thicknessCol * lowerBoundburrHeight) / 100;
-          const upperBurrHeightPercent = (thicknessCol * upperBoundburrHeight) / 100;
+          const lowerBurrHeightPercent = parseFloat(((thicknessCol * lowerBoundburrHeight) / 100).toFixed(2));
+          const upperBurrHeightPercent = parseFloat(((thicknessCol * upperBoundburrHeight) / 100).toFixed(2));
           //slit burrheight
-          const lowerBurrHeightPercentSlit = (thicknessSlit * lowerBoundburrHeight) / 100;
-          const upperBurrHeightPercentSlit = (thicknessSlit * upperBoundburrHeight) / 100;
+          const lowerBurrHeightPercentSlit = parseFloat(((thicknessSlit * lowerBoundburrHeight) / 100).toFixed(2));
+          const upperBurrHeightPercentSlit = parseFloat(((thicknessSlit * upperBoundburrHeight) / 100).toFixed(2));
 
           const actualdiagonalDifference = parseFloat(value) || 0;
           const lowerBoundtoleranceDiagonalDifferenceFrom =
@@ -95,19 +94,19 @@ class EditableCell extends React.Component {
             dataIndex === 'actualWidth' && (value < lowerBound || value > upperBound)
           ) {
             callback(
-              `You are out of range, range is (${upperBound} to ${lowerBound})`
+              `out of range, range is (${lowerBound} to ${upperBound})`
             );
           } else if (
             dataIndex === 'actualThickness' && (value < lowerBoundThickness || value > upperBoundThickness)
           ) {
             callback(
-              `You are out of range, range is (${lowerBoundThickness} to ${upperBoundThickness})`
+              `out of range, range is (${lowerBoundThickness} to ${upperBoundThickness})`
             );
           } else if (
             dataIndex === 'actualLength' && (value < lowerBoundLength || value > upperBoundLength)
           ) {
             callback(
-              `You are out of range, range is (${lowerBoundLength} to ${upperBoundLength})`
+              `out of range, range is (${lowerBoundLength} to ${upperBoundLength})`
             );
           } else if (
             dataIndex === 'burrHeight' &&
@@ -115,7 +114,7 @@ class EditableCell extends React.Component {
               value > upperBurrHeightPercent)
           ) {
             callback(
-              `You are out of range, range is (${lowerBurrHeightPercent} to ${upperBurrHeightPercent})`
+              `out of range, range is (${lowerBurrHeightPercent} to ${upperBurrHeightPercent})`
             );
           } else if (
             dataIndex === 'diagonalDifference' &&
@@ -124,26 +123,26 @@ class EditableCell extends React.Component {
               actualdiagonalDifference > uppertoleranceDiagonalDifferenceTo)
           ) {
             callback(
-              `You are out of range, range is (${lowerBoundtoleranceDiagonalDifferenceFrom} to ${uppertoleranceDiagonalDifferenceTo})`
+              `out of range, range is (${lowerBoundtoleranceDiagonalDifferenceFrom} to ${uppertoleranceDiagonalDifferenceTo})`
             ) 
          } else if (
             dataIndex === 'actualWidth' && (value < lowerBoundtoleranceSlitSizeFrom || value > upperBoundtoleranceSlitSizeTo)
           ) {
             callback(
-              `You are out of range, range is ${lowerBoundtoleranceSlitSizeFrom} to ${upperBoundtoleranceSlitSizeTo}`
+              `out of range, range is ${lowerBoundtoleranceSlitSizeFrom} to ${upperBoundtoleranceSlitSizeTo}`
             ) 
           } else if ( dataIndex === 'burrHeight' &&
           (value < lowerBurrHeightPercentSlit ||
             value > upperBurrHeightPercentSlit)
         ) {
           callback(
-            `You are out of range, range is (${lowerBurrHeightPercentSlit} to ${upperBurrHeightPercentSlit})`
+            `out of range, range is (${lowerBurrHeightPercentSlit} to ${upperBurrHeightPercentSlit})`
           );
         } else if (
           dataIndex === 'actualThickness' && (value < lowerBoundThicknessSlit || value > upperBoundThicknessSlit)
         ) {
           callback(
-            `You are out of range, range is (${lowerBoundThicknessSlit} to ${upperBoundThicknessSlit})`
+            `out of range, range is (${lowerBoundThicknessSlit} to ${upperBoundThicknessSlit})`
           );
           } else {
             callback();
