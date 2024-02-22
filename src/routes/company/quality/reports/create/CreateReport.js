@@ -180,14 +180,12 @@ const CreateReport = (props) => {
         if (action == 'create'){
             props.saveQualityReport(request);
             props.history.push('/company/quality/reports');
-            window.location.reload(true);
         }
         else if (action == 'edit'){
             const qirIdToUpdate = props.templateDetails.data.qirId
             request.append("qirId", qirIdToUpdate);
             props.saveQualityReport(request);
             props.history.push('/company/quality/reports');
-            window.location.reload(true);
         }   
     }
 

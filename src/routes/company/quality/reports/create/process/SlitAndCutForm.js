@@ -34,7 +34,12 @@ const SlitAndCutForm = (props) => {
     const [toleranceInspectionData, setToleranceInspectionData] = useState([])
     const [toleranceDataSourceSlit, setToleranceDataSourceSlit] = useState([]);
     const [toleranceInspectionDataSlit, setToleranceInspectionDataSlit] = useState([])
-
+    const [thicknessSlit, setThicknessSlit] = useState();
+    //send thickness to EditableTableQR
+    useEffect(() => {
+      const thicknessSlitE = props.inward?.plan?.fThickness
+      setThicknessSlit(thicknessSlitE);
+    },[props.inward])
     //fetch tolerance data from QT-cut
     var toleranceThicknessFromCut = 0;
     var toleranceThicknessToCut = 0;
@@ -727,7 +732,7 @@ const SlitAndCutForm = (props) => {
                             <label style={{fontSize: 20}}>Slitting</label>
                         </Col>
                     </Row>
-                    <EditableTableQR columns={slitColumns} emptyRecord={emptySlitRecord} dataSource={slitDataSource} toleranceData={toleranceDataSourceSlit} handleChange={handleSlitInspectionTableChange}/>
+                    <EditableTableQR columns={slitColumns} emptyRecord={emptySlitRecord} dataSource={slitDataSource} toleranceData={toleranceDataSourceSlit} handleChange={handleSlitInspectionTableChange} thicknessSlit={thicknessSlit}/>
                 </Card.Grid>
                 <Card.Grid style={gridStyle}>
                     <Row>
@@ -736,7 +741,7 @@ const SlitAndCutForm = (props) => {
                             <Button type="primary" onClick={handleTransferToFinalTable}>Transfer Data</Button>
                         </Col>
                     </Row>
-                    <EditableTableQR columns={finalColumns} emptyRecord={emptyFinalRecord} dataSource={finalDataSource} toleranceData={toleranceDataSourceSlit} handleChange={handleFinalInspectionTableChange}/>
+                    <EditableTableQR columns={finalColumns} emptyRecord={emptyFinalRecord} dataSource={finalDataSource} toleranceData={toleranceDataSourceSlit} handleChange={handleFinalInspectionTableChange} thicknessSlit={thicknessSlit}/>
                 </Card.Grid>
                 <Card.Grid style={gridStyle}>
                      <Row>
