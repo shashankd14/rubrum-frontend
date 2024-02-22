@@ -57,14 +57,14 @@ class EditableCell extends React.Component {
           const thicknessCol = parseFloat(record.thickness);
           const lengthCol = parseFloat(record.plannedLength);
 
-          const lowerBound = parseFloat(( widthCol - Math.abs(parseFloat(toleranceData?.[0]?.toleranceWidthFrom))).toFixed(2)); 
-          const upperBound = parseFloat(( widthCol + (parseFloat(toleranceData?.[0]?.toleranceWidthTo))).toFixed(2)); 
+          const lowerBound = parseFloat(( widthCol - Math.abs(parseFloat(toleranceData?.[0]?.toleranceWidthFrom))).toFixed(3)); 
+          const upperBound = parseFloat(( widthCol + (parseFloat(toleranceData?.[0]?.toleranceWidthTo))).toFixed(3)); 
           //cut thickness validation
-          const lowerBoundThickness = parseFloat(( thicknessCol - Math.abs(parseFloat(toleranceData?.[0]?.toleranceThicknessFrom))).toFixed(2));
-          const upperBoundThickness = parseFloat(( (thicknessCol) + (parseFloat(toleranceData?.[0]?.toleranceThicknessTo))).toFixed(2)); 
+          const lowerBoundThickness = parseFloat(( thicknessCol - Math.abs(parseFloat(toleranceData?.[0]?.toleranceThicknessFrom))).toFixed(3));
+          const upperBoundThickness = parseFloat(( (thicknessCol) + (parseFloat(toleranceData?.[0]?.toleranceThicknessTo))).toFixed(3)); 
            //slit thickness validation
-          const lowerBoundThicknessSlit = parseFloat(( thicknessSlit - Math.abs(parseFloat(toleranceData?.[0]?.toleranceThicknessFrom))).toFixed(2));
-          const upperBoundThicknessSlit = parseFloat(( (thicknessSlit) + (parseFloat(toleranceData?.[0]?.toleranceThicknessTo))).toFixed(2)); 
+          const lowerBoundThicknessSlit = parseFloat(( thicknessSlit - Math.abs(parseFloat(toleranceData?.[0]?.toleranceThicknessFrom))).toFixed(3));
+          const upperBoundThicknessSlit = parseFloat(( (thicknessSlit) + (parseFloat(toleranceData?.[0]?.toleranceThicknessTo))).toFixed(3)); 
           const lowerBoundLength = ( lengthCol - Math.abs(parseFloat(toleranceData?.[0]?.toleranceLengthFrom))); 
           const upperBoundLength = ( lengthCol + (parseFloat(toleranceData?.[0]?.toleranceLengthTo))); 
 
@@ -73,11 +73,11 @@ class EditableCell extends React.Component {
           const lowerBoundburrHeight = parseFloat(toleranceData?.[0]?.toleranceBurrHeightFrom) ?? 1;
           const upperBoundburrHeight = parseFloat(toleranceData?.[0]?.toleranceBurrHeightTo) ?? 1;
           //cut burrheight
-          const lowerBurrHeightPercent = parseFloat(((thicknessCol * lowerBoundburrHeight) / 100).toFixed(2));
-          const upperBurrHeightPercent = parseFloat(((thicknessCol * upperBoundburrHeight) / 100).toFixed(2));
+          const lowerBurrHeightPercent = parseFloat(((thicknessCol * lowerBoundburrHeight) / 100).toFixed(3));
+          const upperBurrHeightPercent = parseFloat(((thicknessCol * upperBoundburrHeight) / 100).toFixed(3));
           //slit burrheight
-          const lowerBurrHeightPercentSlit = parseFloat(((thicknessSlit * lowerBoundburrHeight) / 100).toFixed(2));
-          const upperBurrHeightPercentSlit = parseFloat(((thicknessSlit * upperBoundburrHeight) / 100).toFixed(2));
+          const lowerBurrHeightPercentSlit = parseFloat(((thicknessSlit * lowerBoundburrHeight) / 100).toFixed(3));
+          const upperBurrHeightPercentSlit = parseFloat(((thicknessSlit * upperBoundburrHeight) / 100).toFixed(3));
 
           const actualdiagonalDifference = parseFloat(value) || 0;
           const lowerBoundtoleranceDiagonalDifferenceFrom =
