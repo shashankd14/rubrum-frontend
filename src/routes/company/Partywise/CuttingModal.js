@@ -1097,6 +1097,7 @@ const CreateCuttingDetailsForm = (props) => {
       updatedBy: "1",
     };
     for (let i = 0; i < packetNo; i++) {
+      setEndUserTagList(selectedRowKeys?.map((item) => item?.endUserTagsentity));
       let cutObj = {
         processId: 3,
         instructionDate: moment().format("YYYY-MM-DD HH:mm:ss"),
@@ -1116,6 +1117,7 @@ const CreateCuttingDetailsForm = (props) => {
         deleteUniqId: unsavedDeleteId,
         index: idx,
         isScrapWeightUsed: false,
+        endUserTagId: endUserTagList
       };
       cutsValue.push(cutObj);
     }
