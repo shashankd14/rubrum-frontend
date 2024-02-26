@@ -127,7 +127,6 @@ const SlittingForm = (props) => {
   const [finalInspectionData, setFinalInspectionData] = useState([]);
   const [toleranceInspectionDataSlit, settoleranceInspectionDataSlit] = useState([])
   const [thicknessSlit, setThicknessSlit] = useState();
-   //send thickness to EditableTableQR
   useEffect(() => {
     const thicknessSlitE = props.inward?.plan?.fThickness
     setThicknessSlit(thicknessSlitE);
@@ -526,7 +525,7 @@ const handleTransferToFinalTable = () => {
             handleChange={handleFinalInspectionTableChange}
           />
         </Card.Grid>
-        <Card.Grid style={gridStyle}>
+        {/* <Card.Grid style={gridStyle}>
           <Row>
             <Col span={24}>
               <label>Final Judgement</label>
@@ -552,13 +551,15 @@ const handleTransferToFinalTable = () => {
               ></Input>
             </Col>
           </Row>
-        </Card.Grid>
-        <div style={{ marginTop: 45 }}>
+        </Card.Grid> */}
+        <Row style={{marginLeft: 8}}>
+        <div style={{ marginTop: 50 }}>
           <Button style={{ marginLeft: 8 }} onClick={onCancel}>Cancel</Button>
           <Button type='primary' htmlType='submit' onClick={saveForm}>
             Save
           </Button>
         </div>
+        </Row>
       </Card>
     </div>
   );

@@ -450,25 +450,7 @@ const CuttingForm = (props) => {
                 <Card.Grid style={gridStyle}>
                     <EditableTableQR columns={columns} emptyRecord={emptyRecord} dataSource={dataSource} toleranceData={toleranceDataSource} handleChange={handleInspectionTableChange}/> 
                 </Card.Grid>
-                <Card.Grid style={gridStyle}>
-                    <Row>
-                        <Col span={24}>
-                            <label>Final Judgement</label>
-                            <TextArea onChange={(e) => onOptionChange('finalJudgement', e)}></TextArea>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col span={12}>
-                            <label>Quality Engineer</label>
-                            <Input onChange={(e) => onOptionChange('qualityEngineer', e)}></Input>
-                        </Col>
-                        <Col span={12}>
-                            <label>Quality Head</label>
-                            <Input onChange={(e) => onOptionChange('qualityHead', e)}></Input>
-                        </Col>
-                    </Row>
-                </Card.Grid>
-                <div style={{ marginTop: 45 }}>
+                <div style={{ marginTop: 50 }}>
                     <Button style={{ marginLeft: 8 }}>
                         Cancel
                     </Button>

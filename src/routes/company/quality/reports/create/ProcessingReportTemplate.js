@@ -90,6 +90,27 @@ const ProcessingReportTemplate = (props) => {
       "fileName": "",
       "fileList": []
     },
+    10: {
+      "id": 10,
+      "type": "qualityEngineer",
+      "value": "",
+      "fileName": "",
+      "fileList": []
+    },
+    11: {
+      "id": 11,
+      "type": "qualityHead",
+      "value": "",
+      "fileName": "",
+      "fileList": []
+    },
+    12: {
+      "id": 12,
+      "type": "finalJudgement",
+      "value": "",
+      "fileName": "",
+      "fileList": []
+    }
   });
 
   const [isDisabled, setIsDisabled] = useState(false);
@@ -398,6 +419,50 @@ const handleClick = () => {
                     id="comments"
                     onChange={handleCommentChange}
                     value={comments}
+                    required
+                   disabled={isDisabled}
+                  /> 
+                </div>
+            </Col>
+        </Row>
+        <Row>
+            <Col span={8}>
+                <div style={{ display: 'grid', marginTop: 50 }}>
+                    <label>Final Judgement:</label>
+                </div>
+              </Col>
+              <Col span={16}>
+                <div style={{ display: 'grid', marginTop: 45 }}>
+                  <Input
+                    id="finalJudgement"
+                    onChange={(e) => onOptionChange(12, e)}
+                    value={templateData[12].value}
+                    required
+                   disabled={isDisabled}
+                  /> 
+                </div>
+            </Col>
+        </Row>
+        <Row>
+          <Col span={8}>
+            <div style={{ display: 'grid', marginTop: 45 }}>
+              <label>Quality Engineer</label>
+              <Input
+                    id="qualityEngineer"
+                    onChange={(e) => onOptionChange(10, e)}
+                    value={templateData[10].value}
+                    required
+                   disabled={isDisabled}
+                  /> 
+            </div>
+          </Col>
+          <Col span={8}>
+                <div style={{ display: 'grid', marginTop: 45 }}>
+                <label>Quality Head</label>
+                  <Input
+                    id="qualityHead"
+                    onChange={(e) => onOptionChange(11, e)}
+                    value={templateData[11].value}
                     required
                    disabled={isDisabled}
                   /> 

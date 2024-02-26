@@ -40,6 +40,7 @@ const SlitAndCutForm = (props) => {
       const thicknessSlitE = props.inward?.plan?.fThickness
       setThicknessSlit(thicknessSlitE);
     },[props.inward])
+    console.log("1111111111", thicknessSlit)
     //fetch tolerance data from QT-cut
     var toleranceThicknessFromCut = 0;
     var toleranceThicknessToCut = 0;
@@ -750,24 +751,6 @@ const SlitAndCutForm = (props) => {
                         </Col>
                     </Row>
                     <EditableTableQR columns={cutColumns} emptyRecord={emptyCutRecord} dataSource={dataSource} toleranceData={toleranceDataSource} handleChange={handleCutInspectionTableChange}/>
-                </Card.Grid>
-                <Card.Grid style={gridStyle}>
-                    <Row>
-                        <Col span={24}>
-                            <label>Final Judgement</label>
-                            <TextArea  onChange={(e) => onOptionChange('finalJudgement', e)}></TextArea>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col span={12}>
-                            <label>Quality Engineer</label>
-                            <Input onChange={(e) => onOptionChange('qualityEngineer', e)}></Input>
-                        </Col>
-                        <Col span={12}>
-                            <label>Quality Head</label>
-                            <Input onChange={(e) => onOptionChange('qualityHead', e)}></Input>
-                        </Col>
-                    </Row>
                 </Card.Grid>
                 <div style={{ marginTop: 45 }}>
                     <Button style={{ marginLeft: 8 }}>
