@@ -454,12 +454,12 @@ const CreateCuttingDetailsForm = (props) => {
                 .toLowerCase()
                 .localeCompare(optionB?.props?.children.toLowerCase())
             }
-            value={
-              record?.endUserTagsentity
-                ? record?.endUserTagsentity?.tagName ||
-                  endUserTagList[0]?.tagName
-                : record?.endUserTagId || endUserTagList[0]?.tagName
-            }
+            // value={
+            //   record?.endUserTagsentity
+            //     ? record?.endUserTagsentity?.tagName ||
+            //       endUserTagList[0]?.tagName
+            //     : record?.endUserTagId || endUserTagList[0]?.tagName
+            // }
             onChange={(e) => handleTagsChange(record, e, "endUser")}
           >
             {endUserTagList?.map((item) => {
@@ -1117,7 +1117,7 @@ const CreateCuttingDetailsForm = (props) => {
         deleteUniqId: unsavedDeleteId,
         index: idx,
         isScrapWeightUsed: false,
-        endUserTagId: endUserTagList
+         endUserTagId: ''
       };
       cutsValue.push(cutObj);
     }
