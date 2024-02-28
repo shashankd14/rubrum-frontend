@@ -454,12 +454,12 @@ const CreateCuttingDetailsForm = (props) => {
                 .toLowerCase()
                 .localeCompare(optionB?.props?.children.toLowerCase())
             }
-            value={
-              record?.endUserTagsentity
-                ? record?.endUserTagsentity?.tagName ||
-                  endUserTagList[0]?.tagName
-                : record?.endUserTagId || endUserTagList[0]?.tagName
-            }
+            // value={
+            //   record?.endUserTagsentity
+            //     ? record?.endUserTagsentity?.tagName ||
+            //       endUserTagList[0]?.tagName
+            //     : record?.endUserTagId || endUserTagList[0]?.tagName
+            // }
             onChange={(e) => handleTagsChange(record, e, "endUser")}
           >
             {endUserTagList?.map((item) => {
@@ -1097,6 +1097,7 @@ const CreateCuttingDetailsForm = (props) => {
       updatedBy: "1",
     };
     for (let i = 0; i < packetNo; i++) {
+      setEndUserTagList(selectedRowKeys?.map((item) => item?.endUserTagsentity));
       let cutObj = {
         processId: 3,
         instructionDate: moment().format("YYYY-MM-DD HH:mm:ss"),
@@ -1116,6 +1117,7 @@ const CreateCuttingDetailsForm = (props) => {
         deleteUniqId: unsavedDeleteId,
         index: idx,
         isScrapWeightUsed: false,
+         endUserTagId: ''
       };
       cutsValue.push(cutObj);
     }

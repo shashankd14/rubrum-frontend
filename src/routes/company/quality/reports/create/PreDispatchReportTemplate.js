@@ -60,6 +60,20 @@ const PreDispatchReportTemplate = (props) => {
       "value": "",
       "fileName": "",
       "fileList": []
+    },
+    9: {
+      "id": 9,
+      "type": "qualityEngineer",
+      "value": "",
+      "fileName": "",
+      "fileList": []
+    },
+    10: {
+      "id": 10,
+      "type": "qualityHead",
+      "value": "",
+      "fileName": "",
+      "fileList": []
     }
   });
 
@@ -276,6 +290,32 @@ const PreDispatchReportTemplate = (props) => {
                     id="comments"
                     onChange={handleCommentChange}
                     value={comments}
+                    required
+                   disabled={isDisabled}
+                  /> 
+                </div>
+            </Col>
+        </Row>
+        <Row>
+          <Col span={8}>
+            <div style={{ display: 'grid', marginTop: 45 }}>
+              <label>Quality Engineer</label>
+              <Input
+                    id="qualityEngineer"
+                    onChange={(e) => onOptionChange(9, e)}
+                    value={templateData[9].value}
+                    required
+                   disabled={isDisabled}
+                  /> 
+            </div>
+          </Col>
+          <Col span={8}>
+                <div style={{ display: 'grid', marginTop: 45 }}>
+                <label>Quality Head</label>
+                  <Input
+                    id="qualityHead"
+                    onChange={(e) => onOptionChange(10, e)}
+                    value={templateData[10].value}
                     required
                    disabled={isDisabled}
                   /> 
