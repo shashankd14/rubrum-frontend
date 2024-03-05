@@ -55,6 +55,7 @@ const List = (props) => {
   const [showRetrieve, setShowRetrieve] = React.useState(false);
   const [selectedCoil, setSelectedCoil] = React.useState([]);
   const [pageSize, setPageSize] = useState(15);
+  
   const columns = [
     {
       title: "Coil Number",
@@ -241,6 +242,8 @@ const List = (props) => {
       ),
     },
   ];
+  //filter data which is dispatched
+  const filteredInwardListWithoutDispatched = filteredInwardList.filter(item => !(item.status && item.status.statusId === 4 && item.status.statusName === "DISPATCHED"));
 
   useEffect(() => {
     props.fetchPartyList();
@@ -534,7 +537,8 @@ const List = (props) => {
         <Table
           className="gx-table-responsive"
           columns={columns}
-          dataSource={filteredInwardList}
+          // dataSource={filteredInwardList}
+          dataSource={filteredInwardListWithoutDispatched}
           onChange={handleChange}
           rowSelection={rowSelection}
           // onExpand={(expanded, record, data) => {
