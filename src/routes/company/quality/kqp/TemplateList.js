@@ -32,7 +32,6 @@ const TemplateList = (props) => {
     }, []);
 
     useEffect(() => {
-        console.log("init")
         setTemplateList([]);
         //setSearchValue([]);
         //setPageNo([]);
@@ -40,14 +39,12 @@ const TemplateList = (props) => {
 
     useEffect(() => {
         if (!props.template.loading && !props.template.error && props.template.operation === 'kqpList') {
-            console.log(props.template)
             setTemplateList(props.template.data)
         }
     }, [props.template.loading, props.template.error]);
 
     useEffect(() => {
         if (!props.party.loading && !props.party.error) {
-            console.log(props.party)
             setPartyList(props.party.partyList)
         }
     }, [props.party.loading, props.party.error]);
@@ -74,7 +71,6 @@ const TemplateList = (props) => {
                 }
             });
             setTemplateList(filteredData);
-            console.log("filteredData", filteredData);
         } else {
             setTemplateList(template.data);
         }
