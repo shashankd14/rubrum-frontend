@@ -816,6 +816,27 @@ export default (state = INIT_STATE, action) => {
                 error: true
             }
         }
+        case actionTypes.GET_PACKET_WISE_PRICE_DC_FULL_HANDLING_REQUEST: {
+            return {
+                ...state,
+            }
+        }
+        case actionTypes.GET_PACKET_WISE_PRICE_DC_FULL_HANDLING_SUCCESS: {
+            return {
+                ...state,
+                loading:false,
+                success:true,
+                packetwisePriceDC: action.payload,
+            }
+        }
+        case actionTypes.GET_PACKET_WISE_PRICE_DC_FULL_HANDLING_ERROR: {
+            return {
+                ...state,
+                loading:false,
+                success:false,
+                error: true
+            }
+        }
         
         default:
             return state;
