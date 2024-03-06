@@ -320,7 +320,6 @@ const Party = (props) => {
                     visible={showAddParty}
                     onOk={(e) => {
                         if (editParty) {
-        
                             // Set the initial state with the values from the API
                             setDailyReportsList(initialDailyReportsList ? initialDailyReportsList.split(',') : []);
                             setMonthlyReportsList(initialMonthlyReportsList ? initialMonthlyReportsList.split(',') : []);

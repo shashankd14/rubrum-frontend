@@ -268,7 +268,6 @@ export const updateAdditionalRatesError = (error) => ({
     type: UPDATE_ADDITIONAL_RATES_ERROR,
     error
 });
-
 //Lamination Charges
 export const getLaminationChargesList = () => ({
     type: actionTypes.GET_LAMINATION_CHARGES_LIST_REQUEST,
@@ -340,7 +339,7 @@ export const deleteLminationChargesSuccess = (rates) => ({
 });
 
 export const deleteLminationChargesError = (error) => ({
-    type: DELETE_LAMINATION_CHARGES_ERROR,
+    type: actionTypes.DELETE_LAMINATION_CHARGES_ERROR,
     error
 });
 
@@ -368,3 +367,4 @@ export const getLaminationChargesDropDownError = (error) => ({
     type: actionTypes.GET_LAMINATION_CHARGES_DROPDOWN_ERROR,
     error
 });
+
