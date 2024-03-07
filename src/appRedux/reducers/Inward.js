@@ -838,6 +838,7 @@ export default (state = INIT_STATE, action) => {
                 error: true
             }
         }
+
         default:
             return state;
     }

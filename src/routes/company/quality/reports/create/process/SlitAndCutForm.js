@@ -579,7 +579,7 @@ const SlitAndCutForm = (props) => {
         slitCutFormData['slitInspectionData'] = slitInspectionData
         slitCutFormData['cutInspectionData'] = cutInspectionData
         slitCutFormData['finalInspectionData'] = finalInspectionData
-        slitCutFormData['toleranceInspectionData'] = toleranceInspectionData 
+        slitCutFormData['toleranceInspectionDataCut'] = toleranceInspectionData 
         slitCutFormData['toleranceInspectionDataSlit'] = toleranceInspectionDataSlit
         props.onSave(slitCutFormData);
         props.updateQRFormData({ action: 'slit_cut', formData: slitCutFormData });
