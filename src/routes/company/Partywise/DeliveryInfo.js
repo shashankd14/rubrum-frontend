@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { Popover,Input, Card, message, Select, Row, Col } from "antd";
 import { InfoCircleOutlined, CloseSquareTwoTone } from "@ant-design/icons";
-import { fetchPackingListByParty, fetchPackingBucketList, getLaminationChargesByPartyId, getPacketwisePriceDC, postDeliveryConfirm, generateDCPdf,resetInstruction,saveUnprocessedDelivery } from "../../../appRedux/actions";
+import { fetchPackingListByParty, getPacketwisePriceDCFullHandling, fetchPackingBucketList, getLaminationChargesByPartyId, getPacketwisePriceDC, postDeliveryConfirm, generateDCPdf,resetInstruction,saveUnprocessedDelivery } from "../../../appRedux/actions";
 import moment from "moment";
 import { Button, Table, Modal } from "antd";
 
@@ -31,16 +31,19 @@ const DeliveryInfo = (props) => {
   
   const handlePacketPrice = (e) =>{
     setPriceModal(true);
-
     const iList= props?.inward.inwardListForDelivery.filter(item =>  (item?.inwardEntryId && item?.status?.statusName ==="RECEIVED") || (item?.instruction?.length && !item.childInstructions && !item.instructionId && item?.status?.statusName ==="READY TO DELIVER"))
 
     if(iList?.length){
       const payload={
         inwardEntryId: iList.map(item => item.inwardEntryId),
-        motherCoilDispatch: true
+        laminationId,
+        vehicleNo,
+        packingRateId,
+        // motherCoilDispatch: true
       }
       setFullHandling(true)
-      props.saveUnprocessedDelivery(payload)
+      props.getPacketwisePriceDCFullHandling(payload)
+      // props.saveUnprocessedDelivery(payload)
       const reqObj = {
         packingRateId,
         laminationId,
@@ -184,8 +187,9 @@ useEffect(()=>{
       laminationId,
       inwardListForDelivery: fullHandlingList
     }
-   // props.postDeliveryConfirm(reqObj);
-    props.getPacketwisePriceDC(reqObj);
+     props.postDeliveryConfirm(reqObj);
+     props.saveUnprocessedDelivery(reqObj);
+    //  props.getPacketwisePriceDC(reqObj);
   }
 },[props.inward.unprocessedSuccess])
 
@@ -198,6 +202,22 @@ useEffect(()=>{
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    const iList= props?.inward.inwardListForDelivery.filter(item =>  (item?.inwardEntryId && item?.status?.statusName ==="RECEIVED") || (item?.instruction?.length && !item.childInstructions && !item.instructionId && item?.status?.statusName ==="READY TO DELIVER"))
+
+    if(iList?.length){
+      const payload={
+        inwardEntryId: iList.map(item => item.inwardEntryId),
+        laminationId,
+        vehicleNo,
+        packingRateId,
+        motherCoilDispatch: true
+      }
+      setFullHandling(true)
+      props.saveUnprocessedDelivery(payload)
+    }
+    else{
+
         const reqObj = {
           packingRateId,
           vehicleNo,
@@ -219,7 +239,9 @@ useEffect(()=>{
           inwardListForDelivery: fullHandlingList
         }
         props.postDeliveryConfirm(reqObj);
+        props.saveUnprocessedDelivery(reqObj);
       }
+    }
   };
   return (
     <div>
@@ -484,4 +506,4 @@ const mapStateToProps = (state) => {
   return mappedProps;
 };
 
-export default connect(mapStateToProps, { fetchPackingListByParty, getLaminationChargesByPartyId, saveUnprocessedDelivery,getPacketwisePriceDC, postDeliveryConfirm, generateDCPdf,resetInstruction})(DeliveryInfo);
+export default connect(mapStateToProps, { fetchPackingListByParty, getPacketwisePriceDCFullHandling, getLaminationChargesByPartyId, saveUnprocessedDelivery,getPacketwisePriceDC, postDeliveryConfirm, generateDCPdf,resetInstruction})(DeliveryInfo);

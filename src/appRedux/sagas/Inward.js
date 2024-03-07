@@ -32,7 +32,8 @@ import {
     GET_RECONCILE_REPORT_ERROR,
     QR_Code_GENERATE_PLAN,
     QR_GENERATE_INWARD,
-    GET_PACKET_WISE_PRICE_DC_REQUEST
+    GET_PACKET_WISE_PRICE_DC_REQUEST,
+    GET_PACKET_WISE_PRICE_DC_FULL_HANDLING_REQUEST
 } from "../../constants/ActionTypes";
 
 import {
@@ -87,7 +88,9 @@ import {
     getReconcileReportSuccess,
     getPacketwisePriceDCSuccess,
     getPacketwisePriceDCError,
-    QrGenerateInwardSuccess
+    QrGenerateInwardSuccess,
+    getPacketwisePriceDCFullHandlingSuccess,
+    getPacketwisePriceDCFullHandlingError
 } from "../actions";
 import { CUTTING_INSTRUCTION_PROCESS_ID, SLITTING_INSTRUCTION_PROCESS_ID, SLIT_CUT_INSTRUCTION_PROCESS_ID } from "../../constants";
 import { formItemLayout } from "../../routes/company/Partywise/CuttingModal";
@@ -892,7 +895,33 @@ function* getPacketwisePriceDCSaga(action) {
         } else
             yield put(getPacketwisePriceDCError('error'));
     } catch (error) {
-        yield put(postDeliveryConfirmError(error));
+        yield put(getPacketwisePriceDCError(error));
+    }
+}
+
+function* getPacketwisePriceDCFullHandlingSaga(action) {
+    let req_obj ={};
+    if(action.payload){
+        req_obj = {
+            vehicleNo: action.payload?.vehicleNo,
+            packingRateId: action.payload?.packingRateId,
+            laminationId: action.payload?.laminationId,
+            inwardList: action.payload?.inwardEntryId
+        }
+    }
+    try {
+        const response = yield call(fetch, `${baseUrl}api/delivery/validatePriceMappingFullHandling`, {
+            method: 'POST', headers: { "Content-Type": "application/json", ...getHeaders()}, body: JSON.stringify(req_obj)
+        });
+        const respData=yield response.json();
+        if (response.status === 200 ) {
+            yield put(getPacketwisePriceDCFullHandlingSuccess(respData));
+        } else if (response.status === 401) {
+            yield put(userSignOutSuccess());
+        } else
+            yield put(getPacketwisePriceDCFullHandlingError('error'));
+    } catch (error) {
+        yield put(getPacketwisePriceDCFullHandlingError(error));
     }
 }
 
@@ -924,6 +953,7 @@ export function* watchFetchRequests() {
     // yield takeLatest(QR_Code_GENERATE_PLAN, QrGeneratePlan);
     // yield takeLatest(QR_GENERATE_INWARD, QrGenerateInward);
     yield takeLatest(GET_PACKET_WISE_PRICE_DC_REQUEST, getPacketwisePriceDCSaga);
+    yield takeLatest(GET_PACKET_WISE_PRICE_DC_FULL_HANDLING_REQUEST, getPacketwisePriceDCFullHandlingSaga);
 }
 
 export default function* inwardSagas() {

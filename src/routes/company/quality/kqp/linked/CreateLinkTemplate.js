@@ -8,9 +8,9 @@ import {
     getKqpLinkById,
     fetchEndUserTagsList,
     fetchMaterialList,
-    getThicknessListQM,
-    getWidthListQM,
-    getLengthListQM,
+    // getThicknessListQM,
+    // getWidthListQM,
+    // getLengthListQM,
 } from "../../../../../appRedux/actions"
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 
@@ -40,7 +40,6 @@ const CreateLinkTemplate = (props) => {
     useEffect(() => { 
          if (props.match) {
             const urlPaths = props.match.url.split('/')
-            console.log(urlPaths)
             setSelectedTemplateId(urlPaths[urlPaths.length - 1])
             if (urlPaths[urlPaths.length - 2] === 'view' || urlPaths[urlPaths.length - 2] === 'edit') {
                 setAction(urlPaths[urlPaths.length - 2])
@@ -50,15 +49,14 @@ const CreateLinkTemplate = (props) => {
             props.fetchPartyList();
             props.fetchEndUserTagsList();
             props.fetchMaterialList();
-            props.getThicknessListQM();
-            props.getWidthListQM();
-            props.getLengthListQM();
+            // props.getThicknessListQM();
+            // props.getWidthListQM();
+            // props.getLengthListQM();
         }
     }, [])
 
     useEffect(() => {
         if (!props.template.loading && !props.template.error && props.template.operation === 'kqpList') {
-            console.log(props.template.data)
             setTemplateList([...props.template.data])
             setSelectedTemplateDetails(selectedTemplateId) 
         }
@@ -114,7 +112,6 @@ const CreateLinkTemplate = (props) => {
                 }
                 return null;
               }).filter(Boolean);
-        
               setSelectedCustomers(matchedParties.map((party) => party.nPartyId).flat());
               setSelectedEndUserTags(groupedArray.map((item) => item.endUserTagIdList).flat());
               setSelectedMatGrade(groupedArray.map((item) => item.matGradeIdList).flat());
@@ -202,10 +199,20 @@ const CreateLinkTemplate = (props) => {
  
 
     const createTemplateLink = () => {
-        const thicknessValues = thickness.split(',').map(value => parseFloat(value.trim()));
-        const widthValues = width.split(',').map(value => parseFloat(value.trim()));
-        const lengthValues = length.split(',').map(value => parseFloat(value.trim()));
-        const payload = JSON.stringify({
+        let thicknessValues = [];
+        let widthValues = [];
+        let lengthValues = [];
+        if (typeof thickness === 'string') {
+            thicknessValues = thickness.split(',').map(value => parseFloat(value.trim()));
+        } else {thicknessValues = [...thickness]}
+        if (typeof width === 'string') {
+            widthValues = width.split(',').map(value => parseFloat(value.trim()));
+        } else {widthValues = [...width]}
+        if (typeof length === 'string') {
+            lengthValues = length.split(',').map(value => parseFloat(value.trim()));
+        } else {lengthValues = [...length]}
+        console.log("thickness before create", thicknessValues)
+        let payload = JSON.stringify({
             kqpId: selectedTemplateId,
             endUserTagIdList: selectedEndUserTags,
             matGradeIdList: selectedMatGrade,
@@ -443,6 +450,12 @@ const CreateLinkTemplate = (props) => {
                             <Col span={12}>
                                 <div style={{ marginTop: 30, display: "flex" }}>
                                 <label>Thickness</label> 
+                                &emsp;&emsp;&emsp; <label>Any</label>&nbsp; 
+                                    <Checkbox
+                                        id="anyThicknessFlag"
+                                        checked={anyThicknessFlag}
+                                        onChange={(e) => setAnyThicknessFlag(e.target.checked)}
+                                    />
                                 </div>
                                 <div>
                                  <Input
@@ -450,6 +463,7 @@ const CreateLinkTemplate = (props) => {
                                     placeholder='Enter thickness'
                                     value={thickness}
                                     onChange={handleThicknessChange}
+                                    disabled = {anyThicknessFlag}
                                 /> 
                                 </div>
                                 
@@ -498,6 +512,12 @@ const CreateLinkTemplate = (props) => {
                             <Col span={12}>
                                 <div style={{ marginTop: 30, display: "flex" }}>
                                     <label>Width</label> 
+                                    &emsp;&emsp;&emsp; <label>Any</label>&nbsp; 
+                                    <Checkbox
+                                        id="anyWidthFlag"
+                                        checked={anyWidthFlag}
+                                        onChange={(e) => setAnyWidthFlag(e.target.checked)}
+                                    />
                                 </div>
                                 <div>
                                  <Input
@@ -505,6 +525,7 @@ const CreateLinkTemplate = (props) => {
                                     placeholder='Enter Width'
                                     value={width}
                                     onChange={handleWidthChange}
+                                    disabled = {anyWidthFlag}
                                 /> 
                                 </div>
                             </Col>
@@ -513,6 +534,12 @@ const CreateLinkTemplate = (props) => {
                             <Col span={12}>
                                 <div style={{ marginTop: 30, display: "flex" }}>
                                  <label>Length</label> 
+                                 &emsp;&emsp;&emsp; <label>Any</label>&nbsp; 
+                                    <Checkbox
+                                        id="anyLengthFlag"
+                                        checked={anyLengthFlag}
+                                        onChange={(e) => setAnyLengthFlag(e.target.checked)}
+                                    />
                                 </div>
                                 <div>
                                  <Input
@@ -520,6 +547,7 @@ const CreateLinkTemplate = (props) => {
                                     value={length}
                                     placeholder='Enter Length'
                                     onChange={handleLengthChange}
+                                    disabled={anyLengthFlag}
                                 /> 
                                 </div>
                             </Col>
@@ -557,7 +585,7 @@ export default connect(mapStateToProps, {
     getKqpLinkById,
     fetchEndUserTagsList,
     fetchMaterialList,
-    getThicknessListQM,
-    getWidthListQM,
-    getLengthListQM,
+    // getThicknessListQM,
+    // getWidthListQM,
+    // getLengthListQM,
 })(CreateLinkTemplate);

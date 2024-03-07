@@ -523,3 +523,17 @@ export const getPacketwisePriceDCError = (error) => ({
     type: GET_PACKET_WISE_PRICE_DC_ERROR,
     error
 });
+
+export const getPacketwisePriceDCFullHandling = (payload) => ({
+    type: actionTypes.GET_PACKET_WISE_PRICE_DC_FULL_HANDLING_REQUEST,
+    payload
+});
+export const getPacketwisePriceDCFullHandlingSuccess = (payload) => ({
+    type: actionTypes.GET_PACKET_WISE_PRICE_DC_FULL_HANDLING_SUCCESS,
+    payload
+});
+export const getPacketwisePriceDCFullHandlingError = (error) => ({
+    type: actionTypes.GET_PACKET_WISE_PRICE_DC_FULL_HANDLING_ERROR,
+    error
+});
+
