@@ -7,8 +7,8 @@ import {formItemLayout} from "../Create";
 
 import {APPLICATION_DATE_FORMAT} from '../../../../constants/index';
 
-const InvoiceDetailsForm = (props) => {
-    const {getFieldDecorator} = props.form;
+const InvoiceDetailsForm = props => {
+    const {getFieldDecorator } = props.form;
 
     const handleSubmit = e => {
         e.preventDefault();
@@ -24,6 +24,18 @@ const InvoiceDetailsForm = (props) => {
         const { value } = e.target;
         props.inward[path] = value || '';
     }
+
+    const handleChangeDate = (date, dateString) => {
+        props.form.setFieldsValue({
+            receivedDate: moment(dateString, APPLICATION_DATE_FORMAT),
+        });
+      };
+
+      const handleChangeDateInvoice = (date) => {
+        props.form.setFieldsValue({
+            invoiceDate: moment(date, APPLICATION_DATE_FORMAT),
+        });
+      };
 
     React.useEffect(() => {
         if (props.params !== '') {
@@ -46,14 +58,14 @@ const InvoiceDetailsForm = (props) => {
                 <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4">
                     <Form.Item label="Received Date">
                         {getFieldDecorator('receivedDate', {
-                            initialValue: moment(new Date(), APPLICATION_DATE_FORMAT),
+                            initialValue: moment(props.inward.receivedDate || new Date(), APPLICATION_DATE_FORMAT),
                             rules: [{ required: true, message: 'Please select a received date' }],
                         })(
                             <DatePicker
                                 style={{width: 200}}
                                 className="gx-mb-3 gx-w-100"
-                                defaultValue={moment(new Date(), APPLICATION_DATE_FORMAT)}
                                 format={APPLICATION_DATE_FORMAT}
+                                onChange={handleChangeDate}
                             />
                         )}
                     </Form.Item>
@@ -85,14 +97,14 @@ const InvoiceDetailsForm = (props) => {
                     </Form.Item>
                     <Form.Item label="Invoice date">
                         {getFieldDecorator('invoiceDate', {
-                            initialValue: moment(new Date(), APPLICATION_DATE_FORMAT),
+                            initialValue:  moment(props.inward.invoiceDate || new Date(), APPLICATION_DATE_FORMAT),
                             rules: [{ required: false, message: 'Please select a received date' }],
                         })(
                             <DatePicker
                                 style={{width: 200}}
                                 className="gx-mb-3 gx-w-100"
-                                defaultValue={moment(new Date(), APPLICATION_DATE_FORMAT)}
                                 format={APPLICATION_DATE_FORMAT}
+                                onChange={handleChangeDateInvoice}
                             />
                         )}
                     </Form.Item>
@@ -140,7 +152,7 @@ const InvoiceDetails = Form.create({
         return {
             receivedDate: Form.createFormField({
                 ...props.inward.dReceivedDate,
-                 value: (props.inward.dReceivedDate) ? moment(props.inward.dReceivedDate) : moment(new Date(), APPLICATION_DATE_FORMAT),
+                 value: moment(props.inward.receivedDate || moment(props.inward.dReceivedDate) || new Date(), APPLICATION_DATE_FORMAT),
             }),
             batchNo: Form.createFormField({
                 ...props.inward.batchNo,
@@ -160,7 +172,7 @@ const InvoiceDetails = Form.create({
             }),
             invoiceDate: Form.createFormField({
                 ...props.inward.dInvoiceDate,
-                value: (props.inward.dInvoiceDate) ? moment(props.inward.dInvoiceDate) : moment(new Date(), APPLICATION_DATE_FORMAT),
+                value: moment(props.inward.invoiceDate || moment(props.inward.dInvoiceDate) || new Date(), APPLICATION_DATE_FORMAT),
             }),
         };
     },
