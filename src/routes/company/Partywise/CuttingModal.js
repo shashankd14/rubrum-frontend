@@ -871,6 +871,13 @@ const CreateCuttingDetailsForm = (props) => {
   }, [props.inward.loading]);
   
   useEffect(() => {
+    if (length > 0 && currentWeight === 0){
+      Modal.info({
+        title: 'Warning Message',
+        content: `Available length is ${length} and weight is ${currentWeight}`,
+        onOk() {},
+    });
+    }
     setCutPayload(cuts);
     let cutsArray = cuts.map((i) => i.plannedWeight);
     cutsArray = cutsArray.filter((i) => i !== undefined);
@@ -1031,7 +1038,7 @@ const CreateCuttingDetailsForm = (props) => {
       numerator = numerator - Number(weight);
     }
     setNo(
-      (
+      Math.floor(
         numerator /
         (0.00000785 * width * props.coil.fThickness * Number(length))
       ).toFixed(0)
