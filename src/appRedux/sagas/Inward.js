@@ -106,7 +106,7 @@ const getHeaders = () => ({
 
 function* fetchInwardList({ page = 1, pageSize = 15, searchValue = '', partyId = '' }) {
     try {
-        const fetchInwardList = yield fetch(`${baseUrl}api/inwardEntry/list/${page}/${pageSize}?searchText=${searchValue}&partyId=${partyId}`, {
+        const fetchInwardList = yield fetch(`${baseUrl}api/inwardEntry/partywise/${page}/${pageSize}?searchText=${searchValue}&partyId=${partyId}`, {
             method: 'GET',
             headers: getHeaders()
         });
