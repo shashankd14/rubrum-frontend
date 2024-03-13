@@ -646,6 +646,7 @@ const CreateCuttingDetailsForm = (props) => {
       no: no,
     });
   };
+  //Add Size >
   const handleSubmit = (e) => {
     e.preventDefault();
     let instructionRequestDTOs = [];
@@ -708,7 +709,7 @@ const CreateCuttingDetailsForm = (props) => {
           );
           setSaveCutting(
             saveCutting.length > 0
-              ? [...slitcuts, ...saveCutting]
+              ? [...saveCutting, ...slitcuts]
               : [...slitcuts]
           );
           //  instructionRequestDTOs.push(saveCutting.length >0 ? [...slitcuts,...saveCutting]: [...slitcuts]);
@@ -716,7 +717,7 @@ const CreateCuttingDetailsForm = (props) => {
             partDetailsRequest: instructionPlanDto,
             instructionRequestDTOs:
               saveCutting.length > 0
-                ? [...slitcuts, ...saveCutting]
+                ? [...saveCutting, ...slitcuts]
                 : [...slitcuts],
             deleteUniqId: unsavedDeleteId,
           };
