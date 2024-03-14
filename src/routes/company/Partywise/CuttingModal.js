@@ -646,6 +646,7 @@ const CreateCuttingDetailsForm = (props) => {
       no: no,
     });
   };
+  //Add Size >
   const handleSubmit = (e) => {
     e.preventDefault();
     let instructionRequestDTOs = [];
@@ -708,7 +709,7 @@ const CreateCuttingDetailsForm = (props) => {
           );
           setSaveCutting(
             saveCutting.length > 0
-              ? [...slitcuts, ...saveCutting]
+              ? [...saveCutting, ...slitcuts]
               : [...slitcuts]
           );
           //  instructionRequestDTOs.push(saveCutting.length >0 ? [...slitcuts,...saveCutting]: [...slitcuts]);
@@ -716,7 +717,7 @@ const CreateCuttingDetailsForm = (props) => {
             partDetailsRequest: instructionPlanDto,
             instructionRequestDTOs:
               saveCutting.length > 0
-                ? [...slitcuts, ...saveCutting]
+                ? [...saveCutting, ...slitcuts]
                 : [...slitcuts],
             deleteUniqId: unsavedDeleteId,
           };
@@ -871,6 +872,13 @@ const CreateCuttingDetailsForm = (props) => {
   }, [props.inward.loading]);
   
   useEffect(() => {
+    if (length > 0 && currentWeight === 0){
+      Modal.info({
+        title: 'Warning Message',
+        content: `Available length is ${length} and weight is ${currentWeight}`,
+        onOk() {},
+    });
+    }
     setCutPayload(cuts);
     let cutsArray = cuts.map((i) => i.plannedWeight);
     cutsArray = cutsArray.filter((i) => i !== undefined);
@@ -1031,7 +1039,7 @@ const CreateCuttingDetailsForm = (props) => {
       numerator = numerator - Number(weight);
     }
     setNo(
-      (
+      Math.floor(
         numerator /
         (0.00000785 * width * props.coil.fThickness * Number(length))
       ).toFixed(0)

@@ -240,7 +240,7 @@ const SlitAndCutForm = (props) => {
           diagonalDifference: item.diagonalDifference,
           remarks: item.remarks
         }));
-        const toleranceDataTable = planDetails[0]?.toleranceInspectionData;
+        const toleranceDataTable = planDetails[0]?.toleranceInspectionDataCut;
         const toleranceData = toleranceDataTable.map((item, i) => ({
             toleranceThicknessFrom: item.toleranceThicknessFrom,
             toleranceThicknessTo: item.toleranceThicknessTo,
