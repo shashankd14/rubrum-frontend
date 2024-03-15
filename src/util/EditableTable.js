@@ -28,6 +28,12 @@ class EditableCell extends React.Component {
     });
   };
 
+  handleFocus = () => {
+    if (!this.state.editing) {
+      this.toggleEdit();
+    }
+  };
+
   save = e => {
     const { record, handleSave } = this.props;
     this.form.validateFields((error, values) => {
@@ -115,6 +121,8 @@ class EditableCell extends React.Component {
       className="editable-cell-value-wrap"
       style={{ paddingRight: 24 }}
       onClick={this.toggleEdit}
+      onFocus={this.handleFocus}
+      tabIndex={0}
     >
       {children}
     </div>
