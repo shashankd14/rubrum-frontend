@@ -116,6 +116,30 @@ export const fetchInwardListError = (error) => ({
     type: FETCH_INWARD_LIST_ERROR,
     error
 });
+//inward search if data is not found
+export const coilNotFound = (totalItems) => ({
+    type: actionTypes.COIL_NOT_FOUND,
+    totalItems: 'Coil not found.'
+});
+//inward with old api
+export const fetchInwardListOldAPI = (page, pageSize, searchValue, partyId) => ({
+    type: actionTypes.FETCH_INWARD_LIST_WITH_OLD_API_REQUEST,
+    page,
+    pageSize,
+    searchValue,
+    partyId
+});
+
+export const fetchInwardListOldAPISuccess = (inwardList, totalItems) => ({
+    type: actionTypes.FETCH_INWARD_LIST_WITH_OLD_API_SUCCESS,
+    inwardList,
+    totalItems
+});
+
+export const fetchInwardListOldAPIError = (error) => ({
+    type: actionTypes.FETCH_INWARD_LIST_WITH_OLD_API_ERROR,
+    error
+});
 
 export const fetchWIPInwardList = (page, pageSize, searchValue, partyId) => ({
     type: FETCH_WIP_INWARD_LIST_REQUEST,
