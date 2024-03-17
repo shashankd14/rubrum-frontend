@@ -33,7 +33,9 @@ import {
     QR_Code_GENERATE_PLAN,
     QR_GENERATE_INWARD,
     GET_PACKET_WISE_PRICE_DC_REQUEST,
-    GET_PACKET_WISE_PRICE_DC_FULL_HANDLING_REQUEST
+    GET_PACKET_WISE_PRICE_DC_FULL_HANDLING_REQUEST,
+    COIL_NOT_FOUND,
+    FETCH_INWARD_LIST_WITH_OLD_API_REQUEST
 } from "../../constants/ActionTypes";
 
 import {
@@ -91,7 +93,8 @@ import {
     getPacketwisePriceDCError,
     QrGenerateInwardSuccess,
     getPacketwisePriceDCFullHandlingSuccess,
-    getPacketwisePriceDCFullHandlingError
+    getPacketwisePriceDCFullHandlingError,
+    coilNotFound
 } from "../actions";
 import { CUTTING_INSTRUCTION_PROCESS_ID, SLITTING_INSTRUCTION_PROCESS_ID, SLIT_CUT_INSTRUCTION_PROCESS_ID } from "../../constants";
 import { formItemLayout } from "../../routes/company/Partywise/CuttingModal";
@@ -140,8 +143,61 @@ function* fetchInwardList({ page = 1, pageSize = 15, searchValue = '', partyId =
                     }
                     inwardResponse.push(eachInward);
                 });
+                yield put(fetchInwardListSuccess(inwardResponse, totalItems));
+            } 
+            else if (content.length === 0) {
+                 yield put(coilNotFound(totalItems));
             }
-            yield put(fetchInwardListSuccess(inwardResponse, totalItems));
+        } else if (fetchInwardList.status === 401) {
+            yield put(userSignOutSuccess());
+        } else
+            yield put(fetchInwardListError('error'));
+    } catch (error) {
+        yield put(fetchInwardListError(error));
+    }
+}
+//fetch inwardList with old api
+function* fetchInwardListWithOldAPI({ page = 1, pageSize = 15, searchValue = '', partyId = '' }) {
+    try {
+        const fetchInwardList = yield fetch(`${baseUrl}api/inwardEntry/list/${page}/${pageSize}?searchText=${searchValue}&partyId=${partyId}`, {
+            method: 'GET',
+            headers: getHeaders()
+        });
+        if (fetchInwardList.status === 200) {
+            const fetchInwardListResponse = yield fetchInwardList.json();
+            const inwardResponse = [];
+            const { content, totalItems } = fetchInwardListResponse;
+            if (content.length > 0) {
+                content.map((inward) => {
+                    let eachInward = { ...inward };
+                    eachInward.key = inward.coilNumber;
+                    if (inward.instruction.length > 0) {
+                        eachInward.children = inward.instruction;
+                        inward.instruction.map((instruction, index) => {
+                            eachInward.children[index].key = `${inward.coilNumber}-${instruction.instructionId}`;
+                            eachInward.children[index].coilNumber = instruction.instructionId;
+                            eachInward.children[index].party = inward.party;
+                            eachInward.children[index].material = inward.material;
+                            if (instruction.childInstructions && instruction.childInstructions.length > 0) {
+                                eachInward.children[index].children = instruction.childInstructions;
+                                eachInward.children[index].children.map((childInstruction, childIndex) => {
+                                    eachInward.children[index].children[childIndex].key = `${inward.coilNumber}-${instruction.instructionId}-${childInstruction.instructionId}`;
+                                    eachInward.children[index].children[childIndex].coilNumber = childInstruction.instructionId;
+                                    eachInward.children[index].children[childIndex].party = inward.party;
+                                    eachInward.children[index].children[childIndex].material = inward.material;
+                                    eachInward.children[index].children[childIndex].customerBatchId = inward.customerBatchId;
+                                    eachInward.children[index].children[childIndex].fThickness = inward.fThickness;
+                                })
+                            }
+                        })
+                    }
+                    inwardResponse.push(eachInward);
+                });
+                yield put(fetchInwardListSuccess(inwardResponse, totalItems));
+            } 
+            else if (content.length === 0) {
+                 yield put(coilNotFound(totalItems));
+            }
         } else if (fetchInwardList.status === 401) {
             yield put(userSignOutSuccess());
         } else
@@ -928,6 +984,7 @@ function* getPacketwisePriceDCFullHandlingSaga(action) {
 
 export function* watchFetchRequests() {
     yield takeLatest(FETCH_INWARD_LIST_REQUEST, fetchInwardList);
+    yield takeLatest(FETCH_INWARD_LIST_WITH_OLD_API_REQUEST, fetchInwardListWithOldAPI);
     yield takeLatest(FETCH_WIP_INWARD_LIST_REQUEST, fetchWIPInwardList);
     yield takeLatest(SUBMIT_INWARD_ENTRY, submitInward);
     yield takeLatest(CHECK_COIL_EXISTS, checkCoilDuplicate);

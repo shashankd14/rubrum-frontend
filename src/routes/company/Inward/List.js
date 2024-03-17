@@ -6,7 +6,7 @@ import SearchBox from "../../../components/SearchBox";
 
 import IntlMessages from "../../../util/IntlMessages";
 import {
-  fetchInwardList,
+  fetchInwardListOldAPI,
   resetInwardForm,
   deleteInwardEntryById,
   resetDeleteInward,
@@ -184,11 +184,11 @@ const List = (props) => {
     if (searchValue) {
       if (searchValue.length >= 3) {
         setPageNo(1);
-        props.fetchInwardList(1, 15, searchValue);
+        props.fetchInwardListOldAPI(1, 15, searchValue);
       }
     } else {
       setPageNo(1);
-      props.fetchInwardList(1, 15, searchValue);
+      props.fetchInwardListOldAPI(1, 15, searchValue);
     }
   }, [searchValue]);
 
@@ -273,7 +273,7 @@ const List = (props) => {
             pageSize: 15,
             onChange: (page) => {
               setPageNo(page);
-              props.fetchInwardList(page, 15, searchValue);
+              props.fetchInwardListOldAPI(page, 15, searchValue);
             },
             current: pageNo,
             total: totalPageItems,
@@ -289,7 +289,7 @@ const mapStateToProps = (state) => ({
 });
 
 export default connect(mapStateToProps, {
-  fetchInwardList,
+  fetchInwardListOldAPI,
   resetInwardForm,
   deleteInwardEntryById,
   fetchPartyListById,
