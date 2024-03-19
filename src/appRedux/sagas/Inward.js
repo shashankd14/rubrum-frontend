@@ -107,11 +107,21 @@ const getHeaders = () => ({
     Authorization: getUserToken()
 });
 
-function* fetchInwardList({ page = 1, pageSize = 15, searchValue = '', partyId = '' }) {
+ function* fetchInwardList({ page = '', pageSize = 15, searchValue = '', partyId = '', sortColumn='', sortOrder='' }) {
+    const body = {
+        pageNo: page,
+        pageSize: pageSize,
+        searchText: searchValue,
+        partyId: partyId,
+        sortColumn: sortColumn,
+        sortOrder: sortOrder
+    }
     try {
-        const fetchInwardList = yield fetch(`${baseUrl}api/inwardEntry/partywise/${page}/${pageSize}?searchText=${searchValue}&partyId=${partyId}`, {
-            method: 'GET',
-            headers: getHeaders()
+        // const fetchInwardList = yield fetch(`${baseUrl}api/inwardEntry/partywise/${page}/${pageSize}?searchText=${searchValue}&partyId=${partyId}`, {
+            const fetchInwardList = yield fetch(`${baseUrl}api/inwardEntry/partywiselist`, {
+            method: 'POST',
+            headers: { "Content-Type": "application/json", ...getHeaders()},
+            body: JSON.stringify(body)
         });
         if (fetchInwardList.status === 200) {
             const fetchInwardListResponse = yield fetchInwardList.json();
