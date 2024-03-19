@@ -145,7 +145,9 @@ const INIT_STATE = {
     QrSuccess:false,
     QrLoading: false,
     QrError: false,
-    packetwisePriceDC:{}
+    packetwisePriceDC:{},
+    errorMessage: '',
+    operation: ''
 };
 
 export default (state = INIT_STATE, action) => {
@@ -163,6 +165,39 @@ export default (state = INIT_STATE, action) => {
                 inwardList: action.inwardList,
                 totalItems: action.totalItems,
                 success: true
+            }
+        }
+
+        case actionTypes.COIL_NOT_FOUND: {
+            debugger
+            console.log("staterrrrrrrrr", state);
+            return {
+                ...state,
+                loading: true,
+                errorMessage: 'entered coil not exist.',
+                operation: 'coilNotFound',
+            }
+        }
+        //inwardList with old api
+        case actionTypes.FETCH_INWARD_LIST_WITH_OLD_API_REQUEST: {
+            return {
+                ...state,
+                loading: true
+            }
+        }
+        case actionTypes.FETCH_INWARD_LIST_WITH_OLD_API_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                inwardList: action.inwardList,
+                totalItems: action.totalItems,
+                success: true
+            }
+        }
+        case actionTypes.FETCH_INWARD_LIST_WITH_OLD_API_ERROR: {
+            return {
+                ...state,
+                loading: false,
             }
         }
 
