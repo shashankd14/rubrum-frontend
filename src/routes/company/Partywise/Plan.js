@@ -124,7 +124,7 @@ const Plan = (props) => {
 
     useEffect(() => {
         getCoilData();
-        if (props.wip) {
+        if (props.wip || !props.wip) {
             props.fetchClassificationList();
         }
         

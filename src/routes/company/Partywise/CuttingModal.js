@@ -314,9 +314,12 @@ const CreateCuttingDetailsForm = (props) => {
   //   };
   //   columns.splice(4, 0, widthObj);
   // }
+
+  //only cutting table column
+  const desiredTags = ['WIP(CUT ENDS)', 'WIP(EDGE TRIM)', 'WIP(FG)'];
   const columnsPlan = [
     {
-      title: "Serial No",
+      title: "Sr.No",
       dataIndex: "instructionId",
       key: "instructionId",
       render: (text, record, index) => {
@@ -339,7 +342,37 @@ const CreateCuttingDetailsForm = (props) => {
       dataIndex: "plannedWeight",
       key: "plannedWeight",
     },
+    {
+      title: 'Classification',
+      dataIndex: 'packetClassification',
+      render: (text, record, index) => {
+        const filteredTags = packetClassification.filter((item) =>
+          desiredTags.includes(item.tagName)
+        );
 
+        return (
+          <Select
+            disabled={props.unfinish}
+            dropdownMatchSelectWidth={false}
+            style={{ width: '100%' }}
+            value={
+              record?.packetClassification?.packetClassificationId ||
+              record?.packetClassification?.classificationId ||
+              record?.packetClassificationId
+            }
+            onChange={(value) =>
+              handleClassificationChange(value, index, record)
+            }
+          >
+            {filteredTags.map((item) => (
+              <Option key={item.tagId} value={item.tagId}>
+                {item.tagName}
+              </Option>
+            ))}
+          </Select>
+        );
+      },
+    },
     {
       title: "End User Tags",
       dataIndex: "endUserTags.tagName",
@@ -397,11 +430,23 @@ const CreateCuttingDetailsForm = (props) => {
       ),
       key: "action",
     },
+    // {
+    //   title: "Process Date",
+    //   dataIndex: "processDate",
+    //   render(value) {
+    //     return moment(value).format("DD/MM/YYYY");
+    //   },
+    //   key: "processDate",
+    // },
     {
       title: "Process Date",
       dataIndex: "processDate",
-      render(value) {
-        return moment(value).format("DD/MM/YYYY");
+      render: (value, record) => {
+        if (record.process && record.process.processName === 'CUTTING') {
+          return moment(record.instructionDate).format("DD/MM/YYYY");
+        } else {
+          return moment(value).format("DD/MM/YYYY");
+        }
       },
       key: "processDate",
     },
@@ -536,6 +581,36 @@ const CreateCuttingDetailsForm = (props) => {
     });
     setTagsName(record?.packetClassification?.tagId);
   };
+
+  const [weightAdditions, setWeightAdditions] = useState([]);
+  const [totalWeightAddition, setTotalWeightAddition] = useState(0);
+  const  getPackatClassificationName = (value) =>{ 
+    return packetClassification.filter((item)=>item.tagId==value)?.[0].tagName;
+  }
+  const handleClassificationChange = (value, index, record) => {
+    record.packetClassificationId = value;
+   record.packetClassificationName = getPackatClassificationName(value);
+    // if (record.packetClassification === 27 || record.packetClassification === 26) {
+      if (record.packetClassificationName === 'WIP(EDGE TRIM)' || record.packetClassificationName === 'WIP(CUT ENDS)') {
+      // Calculate new plannedWeight by adding a certain amount in array
+      const plannedWeight = parseFloat(record.plannedWeight);
+      const newWeightAddition = plannedWeight; 
+      setWeightAdditions([...weightAdditions, newWeightAddition]);
+    } else {
+      // Remove weight addition if packet classification is not 27 or 26
+      const plannedWeight = parseFloat(record.plannedWeight);
+      const removedWeightAddition = plannedWeight;
+      setWeightAdditions(weightAdditions.filter(addition => addition !== removedWeightAddition));
+    }
+  };
+
+   const ratio = ((totalWeightAddition / tweight) * 100).toFixed(2);
+
+  React.useEffect(() => {
+    const newTotalWeightAddition = weightAdditions.reduce((total, addition) => total + addition, 0);
+    setTotalWeightAddition(newTotalWeightAddition);
+  }, [weightAdditions]);
+  
   const handleTagsChange = (record, e, type = "") => {
     setTagsName(e);
     if (type === "endUser") {
@@ -646,7 +721,7 @@ const CreateCuttingDetailsForm = (props) => {
       no: no,
     });
   };
-  //Add Size >
+  //Add Size > 
   const handleSubmit = (e) => {
     e.preventDefault();
     let instructionRequestDTOs = [];
@@ -735,7 +810,6 @@ const CreateCuttingDetailsForm = (props) => {
       }
     });
   };
-
   useEffect(() => {
     if (props.inward.process.length && props.inward.process.no) {
       let weight = cuts.map((i) =>
@@ -775,7 +849,7 @@ const CreateCuttingDetailsForm = (props) => {
         });
     }
   }, [props.inward.process.length, props.inward.process.no]);
- // console.log("prps.inward", props.inward);
+
   useEffect(() => {
     setcurrentWeight(props.coilDetails.fpresent);
   }, [props.coilDetails.fpresent]);
@@ -1300,17 +1374,20 @@ const CreateCuttingDetailsForm = (props) => {
       }
     } else if (validate === false) {
       if (cutPayload.length > 0) {
-        // saveInstruction.map((ins) => {
-        //   return ins.instructionRequestDTOs?.map((item) => {
-        //     if (item?.endUserTagId !== null) {
-              props.saveCuttingInstruction(saveInstruction);
+            const modifiedSlitInstruction = saveInstruction.map((instruction) => {
+              // Add totalYield to partDetailsRequest
+              return {
+                ...instruction,
+                partDetailsRequest: {
+                  ...instruction.partDetailsRequest,
+                  totalYieldLoss: ratio,
+                }
+              };
+            });
+              // props.saveCuttingInstruction(saveInstruction);
+              props.saveCuttingInstruction(modifiedSlitInstruction);
               setSaveInstruction([]);
               setSaveCutting([]);
-        //     } else {
-        //       message.error("Please select End User Tags");
-        //     }
-        //   });
-        // });
       } else {
         props.setShowCuttingModal(false);
       }
@@ -1706,7 +1783,11 @@ const CreateCuttingDetailsForm = (props) => {
                 <Row>
                   {!props.wip && (
                     <Col
-                      lg={10}
+                      // lg={10}
+                      // md={12}
+                      // sm={24}
+                      // xs={24}
+                      lg={8}
                       md={12}
                       sm={24}
                       xs={24}
@@ -1853,7 +1934,7 @@ const CreateCuttingDetailsForm = (props) => {
                   )}
 
                   <Col
-                    lg={props.wip ? 24 : 14}
+                    lg={props.wip ? 24 : 16}
                     md={props.wip ? 24 : 12}
                     sm={24}
                     xs={24}
@@ -1900,6 +1981,8 @@ const CreateCuttingDetailsForm = (props) => {
                         </Form.Item>
                       </div>
                     ) : (
+                      <Row gutter={16}>
+                      <Col span={12}> 
                       <Form.Item label="Total weight(kg)">
                         {getFieldDecorator("tweight", {
                           rules: [{ required: false }],
@@ -1914,6 +1997,24 @@ const CreateCuttingDetailsForm = (props) => {
                           </>
                         )}
                       </Form.Item>
+                      </Col>
+                      <Col span={12}>
+                      <Form.Item label="Total yield loss ratio">
+                        {getFieldDecorator("ratio", {
+                          rules: [{ required: false }],
+                        })(
+                          <>
+                            <Input
+                              id="ratio"
+                              disabled={true}
+                              value={ratio}
+                              name="ratio"
+                            />
+                          </>
+                        )}
+                       </Form.Item>
+                      </Col>
+                      </Row>
                     )}
                   </Col>
                 </Row>
