@@ -281,7 +281,6 @@ const SlittingWidths = (props) => {
   };
   // - function to add the instruction
   const addNewSize = (e) => {
-    debugger;
     let wValue;
     let slitInstructionPayload =
       props.slitInstructionList.length > 0
@@ -347,7 +346,6 @@ const SlittingWidths = (props) => {
               packetClassificationId: null,
               endUserTagId: null,
             };
-            console.log("packetClassificationId addNewSize", slitValue);
             slits.push(slitValue);
           }
 
@@ -1023,7 +1021,6 @@ const CreateSlittingDetailsForm = (props) => {
       title: 'Classification',
       dataIndex: 'packetClassification',
       render: (text, record, index) => {
-        debugger
         const filteredTags = packetClassification.filter((item) =>
           desiredTags.includes(item.tagName)
         );
@@ -1302,8 +1299,6 @@ const CreateSlittingDetailsForm = (props) => {
   //   }
   // }, []);
 
-  console.log("SlitInstruction", slitInstruction);
-  console.log("SlitInstructionList", slitInstructionList);
   const onInputChange =
     (key, index, record, type) => (e: React.ChangeEvent<HTMLInputElement>) => {
       let editedRecord = [];
@@ -1348,7 +1343,7 @@ const CreateSlittingDetailsForm = (props) => {
   const [storedTableDatapacketWeights, setStoredTableDatapacketWeights] = useState(new Array(panelList.length).fill(0));
   //addition of total loss weight for each table
   const [totaltableDatapacketWeight, setTotaltableDatapacketWeight] = useState(new Array(panelList.length).fill(0));
-  console.log("storedTableDatapacketWeights ", storedTableDatapacketWeights);
+ 
   const  getPackatClassificationName = (value) =>{ 
     return packetClassification.filter((item)=>item.tagId==value)?.[0].tagName;
   }
@@ -1371,8 +1366,6 @@ const CreateSlittingDetailsForm = (props) => {
 
     panelList[tableIndex].map((tableRecord) => {
       // Update the relevant data in tableData
-      // const desiredTags = ['WIP(CUT ENDS)', 'WIP(EDGE TRIM)', 'WIP(FG)'];
-  
       // if ( tableRecord.packetClassificationId === 26 || tableRecord.packetClassificationId === 27
       if ( tableRecord.packetClassificationName === 'WIP(EDGE TRIM)' || tableRecord.packetClassificationName === 'WIP(CUT ENDS)'
       ) 
@@ -1402,15 +1395,9 @@ const CreateSlittingDetailsForm = (props) => {
     const newArray = [...yieldLossRatio];
     newArray[tableIndex] = TDlossRatio;
     setYieldLossRatio(newArray);
-    console.log("tableDatapacketWeight", tableDatapacketWeight)
   };
- 
-  // useEffect(() => {
-  //    props.fetchClassificationList();
-  // }, []);
 
   useEffect(() => {
-    debugger
     let processTags = [{ tagId: 0, tagName: 'Select' }];
     processTags = [...processTags, ...props?.processTags];
     setPacketClassification(processTags);
@@ -1508,20 +1495,8 @@ const CreateSlittingDetailsForm = (props) => {
   };
 
   const sum = (totaltableDatapacketWeight / tweight) * 100;
-  // const roundedSum = yieldLossRatio.reduce(
-  //   (accumulator, currentValue) => accumulator + currentValue,
-  //   0
-  // );
-  // console.log("yieldLossRatioo11111", yieldLossRatio);
-  // console.log("tweight2222", tweight);
-  // const roundedSum = (yieldLossRatio / tweight) * 100
-  //  console.log("roundedSum33333", roundedSum);
-  // const sum = roundedSum.toFixed(2);
-  //  console.log('sum', sum);
-  // Assuming panelList is a prop or a state variable that might change
 
   useEffect(() => {
-  debugger;
     const updatedTmpGroupedInstructions = new Map();
 
     const tmpLossRatio = Array(panelList.length).fill(0);
@@ -1545,19 +1520,16 @@ const CreateSlittingDetailsForm = (props) => {
         };
 
         updatedTmpGroupedInstructions.get(instructionDate).push(updatedItem);
-        console.log("updatedTmpGroupedInstructions,", updatedTmpGroupedInstructions)
       });
     });
 
     setYieldLossRatio(tmpLossRatio);
-    console.log('tmpLossRatio', tmpLossRatio);
     // Update the state with the new tmpGroupedInstructions
     setGroupedInstructions(updatedTmpGroupedInstructions);
   }, [panelList]); // Add any dependencies that should trigger this effect when changed
 
 
   const handleOk = (e, name, record) => {
-    debugger
     e.preventDefault();
     if (props?.unfinish) {
       const coil = {
@@ -1634,8 +1606,27 @@ const CreateSlittingDetailsForm = (props) => {
         setDeletedSelected(false);
         if (name === "Slitting") {
           if (slitPayload.length > 0) {
-            props.saveSlittingInstruction(slitInstruction);
-           
+            const modifiedSlitInstruction = slitInstruction.map((instruction) => {
+              // Map over each instruction in instructionRequestDTOs and add instructionwiseLoss
+              const updatedInstructions = instruction.instructionRequestDTOs.map((instructionDTO, index) => {
+                return {
+                  ...instructionDTO,
+                  instructionwiseLoss: yieldLossRatio[index] // Assuming yieldLoss array is synchronized with instructionRequestDTOs
+                };
+              });
+    
+              // Add totalYield to partDetailsRequest1
+              return {
+                ...instruction,
+                partDetailsRequest: {
+                  ...instruction.partDetailsRequest,
+                  totalYieldLoss: sum,
+                },
+                instructionRequestDTOs: updatedInstructions // Replace instructionRequestDTOs with updated array
+              };
+            });
+            // props.saveSlittingInstruction(slitInstruction);
+            props.saveSlittingInstruction(modifiedSlitInstruction);
           } else {
             props.resetIsDeleted(false);
             props.setShowSlittingModal(false);

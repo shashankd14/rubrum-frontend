@@ -346,7 +346,6 @@ const CreateCuttingDetailsForm = (props) => {
       title: 'Classification',
       dataIndex: 'packetClassification',
       render: (text, record, index) => {
-        // debugger
         const filteredTags = packetClassification.filter((item) =>
           desiredTags.includes(item.tagName)
         );
@@ -359,7 +358,7 @@ const CreateCuttingDetailsForm = (props) => {
             value={
               record?.packetClassification?.packetClassificationId ||
               record?.packetClassification?.classificationId ||
-              record?.packetClassificationId || record?.packetClassification
+              record?.packetClassificationId
             }
             onChange={(value) =>
               handleClassificationChange(value, index, record)
@@ -589,8 +588,7 @@ const CreateCuttingDetailsForm = (props) => {
     return packetClassification.filter((item)=>item.tagId==value)?.[0].tagName;
   }
   const handleClassificationChange = (value, index, record) => {
-    // debugger;
-    record.packetClassification = value;
+    record.packetClassificationId = value;
    record.packetClassificationName = getPackatClassificationName(value);
     // if (record.packetClassification === 27 || record.packetClassification === 26) {
       if (record.packetClassificationName === 'WIP(EDGE TRIM)' || record.packetClassificationName === 'WIP(CUT ENDS)') {
@@ -723,9 +721,8 @@ const CreateCuttingDetailsForm = (props) => {
       no: no,
     });
   };
-  //Add Size > and save and generate payload
+  //Add Size > 
   const handleSubmit = (e) => {
-    // debugger
     e.preventDefault();
     let instructionRequestDTOs = [];
     let remainWeight;
@@ -1377,17 +1374,20 @@ const CreateCuttingDetailsForm = (props) => {
       }
     } else if (validate === false) {
       if (cutPayload.length > 0) {
-        // saveInstruction.map((ins) => {
-        //   return ins.instructionRequestDTOs?.map((item) => {
-        //     if (item?.endUserTagId !== null) {
-              props.saveCuttingInstruction(saveInstruction);
+            const modifiedSlitInstruction = saveInstruction.map((instruction) => {
+              // Add totalYield to partDetailsRequest
+              return {
+                ...instruction,
+                partDetailsRequest: {
+                  ...instruction.partDetailsRequest,
+                  totalYieldLoss: ratio,
+                }
+              };
+            });
+              // props.saveCuttingInstruction(saveInstruction);
+              props.saveCuttingInstruction(modifiedSlitInstruction);
               setSaveInstruction([]);
               setSaveCutting([]);
-        //     } else {
-        //       message.error("Please select End User Tags");
-        //     }
-        //   });
-        // });
       } else {
         props.setShowCuttingModal(false);
       }
