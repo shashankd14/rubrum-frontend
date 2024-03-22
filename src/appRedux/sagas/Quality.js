@@ -817,13 +817,9 @@ function* generateQMreportInwardPdf(action) {
         let pdfGenerate
     try {
         if(action.payload.type === 'inward'){
-            pdfGenerate = yield fetch(`${baseUrl}api/pdf/inward`, {
-                method: 'POST',
-                headers: {
-                    "Content-Type": "application/json",
-                    ...getHeaders()
-                  },
-                body: JSON.stringify(action.payload.inwardId)
+            pdfGenerate = yield fetch(`${baseUrl}api/inwardEntry/getPlanPDFs/${action.payload.inwardId.inwardId}`, {
+                method: 'GET',
+                headers: getHeaders(),
             });
         }else if(action.payload.type === 'preProcessing'){
             pdfGenerate = yield fetch(`${baseUrl}api/pdf`, {
@@ -854,11 +850,28 @@ function* generateQMreportInwardPdf(action) {
         }
         if(pdfGenerate.status === 200) {
             const pdfGenerateResponse = yield pdfGenerate.json();
-            let pdfWindow = window.open("")
-               pdfWindow.document.write(
-                  "<iframe width='100%' height='600%' src='data:application/pdf;base64, " +
+            let pdfWindow = window.open('');
+            if (pdfGenerateResponse.encodedBase64String!==undefined){
+                pdfWindow.document.write(
+                    "<iframe width='100%' height='600%' src='data:application/pdf;base64, " +
                     encodeURI(pdfGenerateResponse.encodedBase64String) + "'></iframe>"
-               )                 
+                  ); 
+            } 
+            else if (pdfGenerateResponse.dc_pdfs.length !==0){
+                pdfWindow.document.write(
+                    "<iframe width='100%' height='600%' src='" +
+                      pdfGenerateResponse.dc_pdfs[0].pdfS3Url +
+                      "'></iframe>"
+                  ); 
+            } 
+            else {
+                pdfWindow.document.write(
+                    "<iframe width='100%' height='600%' src='" +
+                      pdfGenerateResponse.inward_pdf +
+                      "'></iframe>"
+                  );  
+            }
+                        
             yield put(pdfGenerateQMreportInwardSuccess(pdfGenerateResponse));
         } else if (pdfGenerate.status === 401) {
             yield put(userSignOutSuccess());
