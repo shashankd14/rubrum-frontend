@@ -30,10 +30,8 @@ const partyWiseMenuConstants = {
 }
 const List = (props) => {
   const [sortedInfo, setSortedInfo] = useState({
-    // order: "descend",
-    // columnKey: "age",
-    order: "ASC",
-    columnKey: "fThickness",
+    order: "descend",
+    columnKey: "age",
   });
   const [filteredInfo, setFilteredInfo] = useState(null);
   const [searchValue, setSearchValue] = useState("");
@@ -57,8 +55,6 @@ const List = (props) => {
   const [showRetrieve, setShowRetrieve] = React.useState(false);
   const [selectedCoil, setSelectedCoil] = React.useState([]);
   const [pageSize, setPageSize] = useState(15);
-  const [sortColumn, setSortColumn] = useState(null);
-  const [sortOrder, setSortOrder] = useState(null);
   
   const columns = [
     {
@@ -302,19 +298,10 @@ const List = (props) => {
     }
   }, [searchValue]);
 
-  const handleChange = (pagination, filters, sorter, partyId) => {
+  const handleChange = (pagination, filters, sorter) => {
     setSortedInfo(sorter);
     setFilteredInfo(filters);
-    setSortColumn(sorter.columnKey);
-    setSortOrder(sorter.order==='descend'?'DESC':'ASC');
   };
-  useEffect(() => {
-    if (sortColumn && sortOrder) {
-        setPageNo(1);
-        props.fetchInwardList(1, 20, searchValue, customerValue,  sortOrder, sortColumn);
-    }
-  }, [sortColumn, sortOrder]);
-
 
   const clearFilters = (value) => {
     setCustomerValue("");
@@ -573,7 +560,7 @@ const List = (props) => {
             pageSize: 15,
             onChange: (page) => {
               setPageNo(page);
-              props.fetchInwardList(page, pageSize, searchValue, customerValue, sortOrder, sortColumn);
+              props.fetchInwardList(page, pageSize, searchValue, customerValue);
             },
             current: pageNo,
             total: totalPageItems,

@@ -357,5 +357,11 @@
   "quality.kqp.button.action.create.label": "Create KQP",
   "quality.templates.create.new": "Create New Template",
   "quality.kqp.create.new": "Create New KQP",
-  "quality.reports.create.new": "Create Quality Report"
+  "quality.reports.create.new": "Create Quality Report",
+  "sidebar.master.vendor": "Vendor",
+  "sidebar.master.location": "Location",
+  "sidebar.company.vendorList": "Vendor List",
+  "sidebar.company.customerList": "Customer List",
+  "sidebar.company.locationList": "Location List",
+  "sidebar.master.customer": "Customer"
 }

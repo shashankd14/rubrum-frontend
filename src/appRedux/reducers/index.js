@@ -16,6 +16,10 @@ import Reports from './Reports';
 import Quality from './Quality';
 import Packing from './Packing';
 import LabelPrint from './LabelPrint';
+import Location from './Location';
+import Customer from './Customer';
+import Vendor from './Vendor';
+import MaterialDV from './MaterialDV';
 
 const createRootReducer = (history) => combineReducers({
   router: connectRouter(history),
@@ -34,7 +38,11 @@ const createRootReducer = (history) => combineReducers({
   reports: Reports,
   quality: Quality,
   packing: Packing,
-  labelPrint: LabelPrint
+  labelPrint: LabelPrint,
+  location: Location,
+  customer: Customer,
+  vendor: Vendor,
+  materialDV: MaterialDV
 });
 
 export default createRootReducer

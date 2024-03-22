@@ -12,6 +12,10 @@ const Delivery = ({ match }) => (
         <Route exact path={`${match.url}/quality/createTemplate`} component={asyncComponent(() => import('./CreateTemplate'))} />
         <Route path={`${match.url}/tags`} component={asyncComponent(() => import('./Tags'))} />
         <Route path={`${match.url}/packing`} component={asyncComponent(() => import('./Packing'))} />
+        <Route path={`${match.url}/materialDV`} component={asyncComponent(() => import('./MaterialDV'))} />
+        <Route path={`${match.url}/vendor`} component={asyncComponent(() => import('./Vendor'))} />
+        <Route path={`${match.url}/customer`} component={asyncComponent(() => import('./Customer'))} />
+        <Route path={`${match.url}/location`} component={asyncComponent(() => import('./Location'))} />
     </Switch>
 );
 

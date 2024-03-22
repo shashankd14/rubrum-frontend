@@ -1,0 +1,10 @@
+.flex-row {
+    display: flex;
+    flex-direction: row;
+    margin-top: 15px;
+  }
+
+  .left-side-label {
+    align-self: center;
+    margin-left: 8px;
+  }
