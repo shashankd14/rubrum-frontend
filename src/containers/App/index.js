@@ -49,25 +49,25 @@ const App = (props) => {
   const history = useHistory();
   const match = useRouteMatch();
 
-  // useEffect(() => {
-  //   // Check if access token is expired and refresh if necessary
-  //   const checkAccessTokenExpiration = setInterval(() => {
-  //     const accessToken = localStorage.getItem('userToken');
-  //     const expiresIn = localStorage.getItem('expiresIn');
+  useEffect(() => {
+    // Check if access token is expired and refresh if necessary
+    const checkAccessTokenExpiration = setInterval(() => {
+      const accessToken = localStorage.getItem('userToken');
+      const expiresIn = localStorage.getItem('expiresIn');
       
-  //     if (accessToken && expiresIn) {
-  //       const currentTime = Date.now();
-  //       if (currentTime > expiresIn) {
-  //         console.log("token is expired")
-  //        dispatch(refreshToken());
-  //       } else {
-  //         console.log("token is not expired")
-  //       }
-  //     }
-  //   }, 10000); // Check token is expired every 10 sec
+      if (accessToken && expiresIn) {
+        const currentTime = Date.now();
+        if (currentTime > expiresIn) {
+          console.log("token is expired")
+         dispatch(refreshToken());
+        } else {
+          console.log("token is not expired")
+        }
+      }
+    }, 10000); // Check token is expired every 10 sec
 
-  //   return () => clearInterval(checkAccessTokenExpiration);
-  // });
+    return () => clearInterval(checkAccessTokenExpiration);
+  });
 
   useEffect(() => {
     let link = document.createElement('link');
