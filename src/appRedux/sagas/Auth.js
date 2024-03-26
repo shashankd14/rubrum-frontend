@@ -184,7 +184,7 @@ function* signInUserWithEmailPassword({payload}) {
 
 const delay1 = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 function* refreshTokenSaga() {
-  yield call(delay1, 500);
+  yield call(delay1, 1000);
      try {
       const data = new URLSearchParams();
       data.append('grant_type', 'refresh_token');
