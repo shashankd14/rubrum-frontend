@@ -237,6 +237,34 @@ const SidebarContent = () => {
                       <span><IntlMessages id="sidebar.master.packing"/></span>
                     </Link>
                   </Menu.Item>}
+                  
+                  {/* DV steel menu */}
+                  {menuLabelList.includes(sidebarMenuItems.materialDV) && <Menu.Item key="company/master/material">
+                    <Link to="/company/master/materialDV">
+                      <i className="icon icon-crypto"/>
+                      <span><IntlMessages id="sidebar.master.material"/></span>
+                    </Link>
+                  </Menu.Item>}
+                  {menuLabelList.includes(sidebarMenuItems.vendor) && <Menu.Item key="company/master/vendor">
+                    <Link to="/company/master/vendor">
+                      <i className="icon icon-crypto"/>
+                      <span><IntlMessages id="sidebar.master.vendor"/></span>
+                    </Link>
+                  </Menu.Item>}
+
+                  {menuLabelList.includes(sidebarMenuItems.location) && <Menu.Item key="company/master/location">
+                    <Link to="/company/master/location">
+                      <i className="icon icon-crypto"/>
+                      <span><IntlMessages id="sidebar.master.location"/></span>
+                    </Link>
+                  </Menu.Item>}
+
+                  {menuLabelList.includes(sidebarMenuItems.customer) && <Menu.Item key="company/master/customer">
+                    <Link to="/company/master/customer">
+                      <i className="icon icon-crypto"/>
+                      <span><IntlMessages id="sidebar.master.customer"/></span>
+                    </Link>
+                  </Menu.Item>}
 
                   {/* <Menu.Item key="company/master/quality">
                     <Link to="/company/master/quality">

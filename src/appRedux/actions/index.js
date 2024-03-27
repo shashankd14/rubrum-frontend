@@ -14,3 +14,7 @@ export * from './Reports';
 export * from './Quality';
 export * from './Packing';
 export * from './LabelPrint';
+export * from './Vendor';
+export * from './Customer';
+export * from './Location';
+export * from './MaterialDV';

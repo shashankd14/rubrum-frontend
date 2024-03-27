@@ -166,6 +166,7 @@ function* signInUserWithEmailPassword({payload}) {
       body: JSON.stringify(jsonPayload)
   });
     if (signInUser.status ===200) {
+      debugger
       const signeduser = yield signInUser.json()
       yield put(userSignInSuccess(signeduser.userName, signeduser.expires_in, signeduser.lastLoginTime, signeduser.access_token)); 
       localStorage.setItem("userToken",signeduser.access_token)
@@ -184,7 +185,7 @@ function* signInUserWithEmailPassword({payload}) {
 
 const delay1 = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 function* refreshTokenSaga() {
-  yield call(delay1, 500);
+  yield call(delay1, 1000);
      try {
       const data = new URLSearchParams();
       data.append('grant_type', 'refresh_token');

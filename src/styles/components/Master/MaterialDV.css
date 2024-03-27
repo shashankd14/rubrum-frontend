@@ -1,0 +1,36 @@
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  margin-top: 13px;
+}
+
+.left-side-label {
+  align-self: center;
+  margin-left: 8px;
+  margin-top: -2px;
+}
+
+.add-category-button {
+  display: flex;
+  flex-direction: row;
+  margin-top: 6px;
+}
+
+.flex-row-mm {
+  display: flex;
+  flex-direction: row;
+  margin-top: 13px;
+  margin-left: 20px;
+}
+
+.left-side-label-mm {
+  align-self: center;
+  margin-left: 8px;
+  margin-top: -2px;
+  margin-right: -25px;
+}
+
+.input-parameter-input-text {
+  margin-left: 8px;
+  margin-right: -100px;
+}

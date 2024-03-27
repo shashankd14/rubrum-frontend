@@ -12,6 +12,10 @@ import reportSagas from './Reports';
 import packingSagas from "./Packing";
 import qualitySagas from "./Quality";
 import labelPrintSaga from './LabelPrint';
+import customerSagas from './Customer';
+import vendorSagas from './Vendor';
+import locationSagas from './Location';
+import DVmaterialSagas from './MaterialDV';
 
 export default function* rootSaga() {
   yield all([fork(authSagas)]);
@@ -27,4 +31,8 @@ export default function* rootSaga() {
   yield all([fork(packingSagas)]);
   yield all([fork(qualitySagas)]);
   yield all([fork(labelPrintSaga)]);
+  yield all([fork(customerSagas)]);
+  yield all([fork(vendorSagas)]);
+  yield all([fork(locationSagas)]);
+  yield all([fork(DVmaterialSagas)]);
 }
