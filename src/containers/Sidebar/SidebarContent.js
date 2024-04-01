@@ -223,6 +223,13 @@ const SidebarContent = () => {
                     </Link>
                   </Menu.Item>}
 
+                  {menuLabelList.includes(sidebarMenuItems.party) && <Menu.Item key="company/master/yieldLoss">
+                    <Link to="/company/master/yieldLoss">
+                      <i className="icon icon-crypto"/>
+                      <span><IntlMessages id="sidebar.master.yieldLoss"/></span>
+                    </Link>
+                  </Menu.Item>}
+
                   {menuLabelList.includes(sidebarMenuItems.rates) && <Menu.Item key="company/master/rates">
                     <Link to="/company/master/rates">
                       <i className="icon icon-crypto"/>

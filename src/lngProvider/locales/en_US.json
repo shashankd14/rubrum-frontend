@@ -10,6 +10,8 @@
   "sidebar.company.ratesList": "Rates List",
   "sidebar.company.tagsList": "Tags List",
   "sidebar.master.party": "Party",
+  "sidebar.master.yieldLoss": "Yield Loss Ratio",
+  "sidebar.company.yieldLossList": "Yield Loss Ratio List",
   "sidebar.master.rates": "Rates",
   "sidebar.master.tags":"Tags",
   "sidebar.master.quality": "Quality",
