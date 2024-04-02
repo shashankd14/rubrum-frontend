@@ -17,13 +17,13 @@ const getHeaders = () => ({
     Authorization: getUserToken()
 });
 
-function* fetchCustomerList({id}) {
+function* fetchCustomerList({action}) {
     debugger
     const reqBody = {
-        pageNo: id.pageNo,
-        pageSize: id.pageSize,
-        ipAddress: id.ipAddress,
-        requestId: id.requestId,
+        pageNo: action.pageNo,
+        pageSize: action.pageSize,
+        ipAddress: action.ipAddress,
+        requestId: action.requestId,
         userId: localStorage.getItem('userId')
     }
     try {

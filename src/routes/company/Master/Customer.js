@@ -5,9 +5,8 @@ import moment from 'moment';
 import SearchBox from "../../../components/SearchBox";
 
 import IntlMessages from "../../../util/IntlMessages";
-import { fetchCustomerList, fetchPartyList, addParty, fetchPartyListId, updateParty, resetParty, fetchClassificationList,fetchEndUserTagsList, fetchTemplatesList } from "../../../appRedux/actions";
+import { fetchCustomerList, fetchPartyList, addCustomer, fetchCustomerListId, updateParty, resetParty, fetchClassificationList,fetchEndUserTagsList, fetchTemplatesList } from "../../../appRedux/actions";
 import { onDeleteContact } from "../../../appRedux/actions";
-import { express } from 'express';
 
 const FormItem = Form.Item;
 export const formItemLayout = {
@@ -23,7 +22,7 @@ export const formItemLayout = {
     },
 };
 
-const Party = (props) => {
+const Customer = (props) => {
 
     const Option = Select.Option;
     const [sortedInfo, setSortedInfo] = useState({
@@ -31,20 +30,20 @@ const Party = (props) => {
         columnKey: 'age',
     });
     const [filteredInfo, setFilteredInfo] = useState(null);
-    const [showAddParty, setShowAddParty] = useState(false);
-    const [viewParty, setViewParty] = useState(false);
-    const [viewPartyDate, setViewPartyData] = useState({});
-    const [editParty, setEditParty] = useState(false);
+    const [showAddCustomer, setShowAddCustomer] = useState(false);
+    const [viewCustomer, setViewCustomer] = useState(false);
+    const [viewCustomerData, setViewCustomerData] = useState({});
+    const [editCustomer, setEditCustomer] = useState(false);
     const [searchValue, setSearchValue] = useState('');
     const [filteredInwardList, setFilteredInwardList] = useState(props.party?.partyList || []);
-    // const [filteredCustomerList, setFilteredCustomerList] = useState(props.customer?.customerList || []);
+    const [filteredCustomerList, setFilteredCustomerList] = useState(props.customer?.customerList || []);
     const [showAmtDcPdfFlg, setShowAmtDcPdfFlg] = useState(props.party?.showAmtDcPdfFlg==='Y'); // Default value
     const [dailyReportsList, setDailyReportsList] = useState([]);
     const [monthlyReportsList, setMonthlyReportsList] = useState([]); 
-
+console.log("viewCustomerData", viewCustomerData)
     const {getFieldDecorator, getFieldValue} = props.form;
 
-    const { party } = props.party;
+    const { customer } = props.customer;
     const [tagsList, setTagsList] =useState([{tagId: 1}]);
 
     getFieldDecorator('phoneKeys', {initialValue: [0]});
@@ -55,24 +54,23 @@ const Party = (props) => {
     const addressKeys = getFieldValue('addressKeys');
     const emailKeys = getFieldValue('emailKeys');
 
-
     const columns = [{
         title: 'Customer Id',
-        dataIndex: 'nPartyId',
-        key: 'nPartyId',
+        dataIndex: 'customerId',
+        key: 'customerId',
         filters: [],
         sorter: (a, b) => {
-            return a.nPartyId - b.nPartyId
+            return a.customerId - b.customerId
         },
-        sortOrder: sortedInfo.columnKey === 'nPartyId' && sortedInfo.order,
+        sortOrder: sortedInfo.columnKey === 'customerId' && sortedInfo.order,
     },
     {
         title: 'Customer Name',
-        dataIndex: 'partyName',
-        key: 'partyName',
+        dataIndex: 'customerName',
+        key: 'customerName',
         filters: [],
-        sorter: (a, b) => a.partyName.length - b.partyName.length,
-        sortOrder: sortedInfo.columnKey === 'partyName' && sortedInfo.order,
+        sorter: (a, b) => a.customerName.length - b.customerName.length,
+        sortOrder: sortedInfo.columnKey === 'customerName' && sortedInfo.order,
     },
     {
         title: 'GST Number',
@@ -84,17 +82,17 @@ const Party = (props) => {
     },
     {
         title: 'City',
-        dataIndex: 'address1.city',
-        key: 'address1.city',
-        sorter: (a, b) => a.address1?.city?.length - b.address1?.city?.length,
-        sortOrder: sortedInfo.columnKey === 'address1.city' && sortedInfo.order,
+        dataIndex: 'city',
+        key: 'city',
+        sorter: (a, b) => a.city?.length - b.city?.length,
+        sortOrder: sortedInfo.columnKey === 'city' && sortedInfo.order,
     },
     {
         title: 'State',
-        dataIndex: 'address1.state',
-        key: 'address1.state',
+        dataIndex: 'state',
+        key: 'state',
         sorter: (a, b) => a.address1?.state?.length - b.address1?.state?.length,
-        sortOrder: sortedInfo.columnKey === 'address1.state' && sortedInfo.order,
+        sortOrder: sortedInfo.columnKey === 'state' && sortedInfo.order,
     },
     // {
     //     title: 'Process Tags',
@@ -104,14 +102,6 @@ const Party = (props) => {
     //     },
     //     key: 'tags',
     //     filters: []
-    // },
-    // {
-    //     title: 'Include Rates in DC',
-    //     dataIndex: 'showAmtDcPdfFlg',
-    //     key: 'showAmtDcPdfFlg' ,
-    //     filters: [],
-    //     sorter: (a, b) => a.showAmtDcPdfFlg.length - b.showAmtDcPdfFlg.length,
-    //     sortOrder: sortedInfo.columnKey === 'showAmtDcPdfFlg' && sortedInfo.order,
     // },
     {
         title: 'Action',
@@ -131,25 +121,34 @@ const Party = (props) => {
 
     const onView = (record, e) => {
         e.preventDefault();
-         setViewPartyData(record);
-        props.fetchPartyListId(record.nPartyId);
-        setViewParty(true);
+         setViewCustomerData(record);
+        props.fetchCustomerListId({
+            id: record.customerId,
+            searchText: '',
+            pageNo: 1,
+            pageSize: 15,
+            ipAddress: "1.1.1.1",
+            requestId: "CUSTOMER_GET",
+            userId: ''
+        });
+        setViewCustomer(true);
     }
     const onDelete = (record,key, e) => {
         let id = []
         id.push(record.inwardEntryId);
         e.preventDefault();
         props.deleteInwardEntryById(id)
+
       }
 
       const onEdit = (record,e)=>{
         e.preventDefault();
         let classificationObj = record.packetClassificationTags.length===0? [{tagId:1}]: record.packetClassificationTags;
         setTagsList(classificationObj?.map(item =>item.tagId) || null)
-        props.fetchPartyListId(record.nPartyId);
-        setEditParty(true);
+        props.fetchCustomerListId(record.nPartyId);
+        setEditCustomer(true);
         setTimeout(() => {
-            setShowAddParty(true);
+            setShowAddCustomer(true);
         }, 1000);
 
     }
@@ -169,15 +168,15 @@ const Party = (props) => {
             props.fetchEndUserTagsList();
             props.fetchTemplatesList()
         }, 1000);
-    }, [showAddParty]);
+    }, []);
 
     useEffect(() => {
-        const { loading, error, partyList } = props.party;
+        const { loading, error, customerList } = props.customer;
         if (!loading && !error) {
-            setFilteredInwardList(partyList)
+            setFilteredCustomerList(customerList.content);
 
         }
-    }, [props.party]);
+    }, [props.customer]);
 
     useEffect(() => {
 
@@ -209,35 +208,14 @@ const Party = (props) => {
 
     }
 
-    // const express = require('express');
-    // const app = express();
-    
-    // app.get('/', (req, res) => {
-    //   const clientIP = req.ip;
-    //   res.send(`Client IP Address: ${clientIP}`);
-    // });
-    
-    // app.listen(3000, () => {
-    //   console.log('Server is running on port 3000');
-    // });
-    // useEffect(() => {
-    //     fetch('/api/getIPAddress')
-    //       .then(response => response.json())
-    //       .then(data => {
-    //         console.log('Client IP Address:', data.ip);
-    //       })
-    //       .catch(error => {
-    //         console.error('Error fetching IP address:', error);
-    //       });
-    //   }, []);
-
     const deleteSelectedCoils = () => {
         console.log('dfd');
     };
 
     const addNewKey = (idx, key) => {
         const {form} = props;
-        const value = form.getFieldValue(key);
+        const value = form.getFieldValue(key)
+;
         const nextValue = value.concat(idx+1);
         form.setFieldsValue({
             [key]: nextValue
@@ -263,15 +241,15 @@ const Party = (props) => {
         console.log(e)
     }
 
-    useEffect(() => {
-        // to show checked in checkbox
-        const {party} = props.party
-        setDailyReportsList(party.dailyReportsList || []);
-        setMonthlyReportsList(party.monthlyReportsList || []);
-      }, [party]);
-      const { dailyReportsList: initialDailyReportsList, monthlyReportsList: initialMonthlyReportsList, ...otherProps } = props.party.party;
-console.log("Customer list", props.customer);
-    return (
+    // useEffect(() => {
+    //     // to show checked in checkbox
+    //     const {customer} = props.customer
+    //     setDailyReportsList(customer.dailyReportsList || []);
+    //     setMonthlyReportsList(customer.monthlyReportsList || []);
+    //   }, [customer]);
+    //   const { dailyReportsList: initialDailyReportsList, monthlyReportsList: initialMonthlyReportsList, ...otherProps } = props.customer.customer;
+
+   return (
         <div>
             <h1><IntlMessages id="sidebar.company.customerList"/></h1>
             <Card>
@@ -285,7 +263,7 @@ console.log("Customer list", props.customer);
                                 onClick={() => {
                                     props.resetParty();
                                     props.form.resetFields()
-                                    setShowAddParty(true)
+                                    setShowAddCustomer(true)
                                 }}
                         >Add Customer</Button>
                         <SearchBox styleName="gx-flex-1" placeholder="Search for party id or party name..." value={searchValue} onChange={(e) => setSearchValue(e.target.value)}/>
@@ -294,90 +272,87 @@ console.log("Customer list", props.customer);
                 <Table rowSelection={[]}
                     className="gx-table-responsive"
                     columns={columns}
-                    dataSource={filteredInwardList}
+                    dataSource={filteredCustomerList}
                     onChange={handleChange}
                 />
                 <Modal
-                    title='Party Details'
-                    visible={viewParty}
+                    title='Customer Details'
+                    visible={viewCustomer}
                     width={600}
-                    onOk={() => setViewParty(false)}
-                    onCancel={() => setViewParty(false)}
+                    onOk={() => setViewCustomer(false)}
+                    onCancel={() => setViewCustomer(false)}
 
                 >
                     <Card className="gx-card">
                         <Row>
                             <Col span={24}>
                                 <Card>
-                                    <p><strong>Party Name :</strong> {viewPartyDate?.partyName}</p>
-                                    {viewPartyDate?.partyNickname && <p><strong>Party Nickname :</strong> {viewPartyDate?.partyNickname}</p>}
-                                    <p><strong>Phone Number :</strong> {viewPartyDate?.phone1}</p>
-                                    {viewPartyDate?.phone2 && <p><strong>Alternate phone number 1 :</strong> {viewPartyDate?.phone2}</p>}
-                                    {viewPartyDate?.phone3 && <p><strong>Alternate phone number 2:</strong> {viewPartyDate?.phone3}</p>}
-                                    <p><strong>E-mail :</strong> {viewPartyDate?.email1}</p>
-                                    {viewPartyDate?.email2 && <p><strong>Alternate E-mail 1:</strong> {viewPartyDate?.email2}</p>}
-                                    {viewPartyDate?.email3 && <p><strong>Alternate E-mail 2:</strong> {viewPartyDate?.email3}</p>}
-                                    {viewPartyDate?.contactName && <p><strong>Contact Name :</strong> {viewPartyDate?.contactName}</p>}
-                                    {viewPartyDate?.contactNumber && <p><strong>Contact Number :</strong> {viewPartyDate?.contactNumber}</p>}
-                                    {viewPartyDate?.tanNumber && <p><strong>TAN Number :</strong> {viewPartyDate?.tanNumber}</p>}
-                                    {viewPartyDate?.panNumber && <p><strong>PAN Number :</strong> {viewPartyDate?.panNumber}</p>}
-                                    {viewPartyDate?.gstNumber && <p><strong>GST Number :</strong> {viewPartyDate?.gstNumber}</p>}
-                                    {viewPartyDate?.address1 && <>
-                                        <p><strong>Address :</strong> {viewPartyDate?.address1?.details}</p>
-                                        <p><strong>City :</strong> {viewPartyDate?.address1?.city}</p>
-                                        <p><strong>State :</strong> {viewPartyDate?.address1?.state}</p>
-                                        <p><strong>Pincode :</strong> {viewPartyDate?.address1?.pincode}</p>
+                                    <p><strong>Party Name :</strong> {viewCustomerData?.customerName}</p>
+                                    {viewCustomerData?.customerNickName && <p><strong>Party Nickname :</strong> {viewCustomerData?.customerNickName}</p>}
+                                    <p><strong>Phone Number :</strong> {viewCustomerData?.phoneNo}</p>
+                                    <p><strong>E-mail :</strong> {viewCustomerData?.emailId}</p>
+                                    {viewCustomerData?.contactName && <p><strong>Contact Name :</strong> {viewCustomerData?.contactName}</p>}
+                                    {viewCustomerData?.contactNo && <p><strong>Contact Number :</strong> {viewCustomerData?.contactNo}</p>}
+                                    {viewCustomerData?.tanNumber && <p><strong>TAN Number :</strong> {viewCustomerData?.tanNumber}</p>}
+                                    {viewCustomerData?.panNumber && <p><strong>PAN Number :</strong> {viewCustomerData?.panNumber}</p>}
+                                    {viewCustomerData?.gstNumber && <p><strong>GST Number :</strong> {viewCustomerData?.gstNumber}</p>}
+                                    {viewCustomerData?.address1 && <>
+                                        <p><strong>Address :</strong> {viewCustomerData?.alternateAddress1}</p>
+                                        <p><strong>City :</strong> {viewCustomerData?.city}</p>
+                                        <p><strong>State :</strong> {viewCustomerData?.state}</p>
+                                        <p><strong>Pincode :</strong> {viewCustomerData?.pincode}</p>
                                     </>}
-                                    {viewPartyDate?.packetClassificationTags && <p><strong>Tags:</strong>{viewPartyDate?.packetClassificationTags?.map(item=> item.tagName)}</p>}
-                                    {viewPartyDate?.endUserTags && <p><strong>EndUser Tags:</strong>{viewPartyDate?.endUserTags?.map(item=> item.tagName)}</p>}
-                                    {viewPartyDate?.showAmtDcPdfFlg && <p><strong>Include Rates in Delivery Challan :</strong> {viewPartyDate?.showAmtDcPdfFlg||'N'}</p>}
-                                    {props.partyId.dailyReportsList && <p><strong>Daily Reports List :</strong> {props.partyId?.dailyReportsList}</p>}
-                                    {props.partyId?.monthlyReportsList && <p><strong>Monthly Reports List :</strong> {props.partyId?.monthlyReportsList}</p>}
+                                    {/* {viewCustomerData?.processTags && <p><strong>Tags:</strong>{viewCustomerData?.processTags?.map(item=> item.tagName)}</p>} */}
+                                    {viewCustomerData?.processTags && <p><strong>Tags:</strong>{viewCustomerData?.processTags}</p>}
+                                    {/* {props.customerId.dailyReportsList && <p><strong>Daily Reports List :</strong> {props.customerId?.dailyReportsList}</p>}
+                                    {props.customerId?.monthlyReportsList && <p><strong>Monthly Reports List :</strong> {props.customerId?.monthlyReportsList}</p>} */}
                                 </Card>
                             </Col>
                         </Row>
                     </Card>
                 </Modal>
                 <Modal
-                    title={editParty?'Edit Customer':'Add Customer'}
-                    visible={showAddParty}
+                    title={editCustomer?'Edit Customer':'Add Customer'}
+                    visible={showAddCustomer}
                     onOk={(e) => {
-                        if (editParty) {
+                        if (editCustomer) {
         
                             // Set the initial state with the values from the API
-                            setDailyReportsList(initialDailyReportsList ? initialDailyReportsList.split(',') : []);
-                            setMonthlyReportsList(initialMonthlyReportsList ? initialMonthlyReportsList.split(',') : []);
+                            // setDailyReportsList(initialDailyReportsList ? initialDailyReportsList.split(',') : []);
+                            // setMonthlyReportsList(initialMonthlyReportsList ? initialMonthlyReportsList.split(',') : []);
                             e.preventDefault();
                             props.form.validateFields((err, values) => {
                                 if (!err) {
                                  const data = {
                                     values: {
                                       ...values,
-                                      showAmtDcPdfFlg: showAmtDcPdfFlg ? 'Y' : 'N',
-                                      dailyReportsList: dailyReportsList.join(','),
-                                      monthlyReportsList: monthlyReportsList.join(','),
+                                    //   dailyReportsList: dailyReportsList.join(','),
+                                    //   monthlyReportsList: monthlyReportsList.join(','),
                                     },
-                                    id: props.party?.party?.nPartyId
+                                    id: props.customer?.party?.nPartyId
                                   }
                                   props.updateParty(data);
                                   props.form.resetFields();
-                                  setShowAddParty(false);
-                                  setEditParty(false);
+                                  setShowAddCustomer(false);
+                                  setEditCustomer(false);
                                 }
                             });
                         } else {
                             props.form.validateFields((err, values) => {
+                                debugger
                                 if (!err) {
                                  e.preventDefault();
-                                  // props.addParty(values);
-                                 props.addParty({
+                                  // props.addCustomer(values);
+                                 props.addCustomer({
                                     ...values,
-                                    showAmtDcPdfFlg: showAmtDcPdfFlg ? 'Y' : 'N',
-                                    dailyReportsList: dailyReportsList.join(','),
-                                    monthlyReportsList: monthlyReportsList.join(','),
+                                    ipAddress: "1.1.1.1",
+                                    requestId:"CUSTOMER_INSERT",
+                                    userId: 1
+                                    // dailyReportsList: dailyReportsList.join(','),
+                                    // monthlyReportsList: monthlyReportsList.join(','),
                                   });
                                   props.form.resetFields();
-                                  setShowAddParty(false);
+                                  setShowAddCustomer(false);
                                 }
                             });
                         }
@@ -385,8 +360,8 @@ console.log("Customer list", props.customer);
                     width={800}
                     onCancel={() => {
                         props.form.resetFields();
-                        setShowAddParty(false);
-                        setEditParty(false)
+                        setShowAddCustomer(false);
+                        setEditCustomer(false)
                     }}
                 >
                     <Card className="gx-card">
@@ -409,7 +384,7 @@ console.log("Customer list", props.customer);
                                     </Form.Item>
                                     {phoneKeys.map((k, index) => {
                                     const req = index ? false : true;
-                                    const phone = party?.phone3 ? [party?.phone1,party?.phone2,party?.phone3] : (party?.phone2 ? [party?.phone1,party?.phone2] : [party?.phone1]);
+                                    const phone = customer?.phone3 ? [customer?.phone1,customer?.phone2,customer?.phone3] : (customer?.phone2 ? [customer?.phone1,customer?.phone2] : [customer?.phone1]);
                                     return (
                                         <Form.Item  {...formItemLayout} className='phone'
                                             label={index ? `Alternate Phone Number ${index}` : 'Phone Number'}
@@ -442,10 +417,10 @@ console.log("Customer list", props.customer);
 
                                     {addressKeys.map((k, index) => {
                                     const req = index ? false : true;
-                                    const address = party?.address2?.details ? [party?.address1?.details, party?.address2?.details] : [party?.address1?.details];
-                                    const city = party?.address2?.city ? [party?.address1?.city, party?.address2?.city] : [party?.address1?.city];
-                                    const state = party?.address2?.state ? [party?.address1?.state, party?.address2?.state] : [party?.address1?.state];
-                                    const pincode = party?.address2?.pincode ? [party?.address1?.pincode, party?.address2?.pincode] : [party?.address1?.pincode];
+                                    const address = customer?.address2?.details ? [customer?.address1?.details, customer?.address2?.details] : [customer?.address1?.details];
+                                    const city = customer?.address2?.city ? [customer?.address1?.city, customer?.address2?.city] : [customer?.address1?.city];
+                                    const state = customer?.address2?.state ? [customer?.address1?.state, customer?.address2?.state] : [customer?.address1?.state];
+                                    const pincode = customer?.address2?.pincode ? [customer?.address1?.pincode, customer?.address2?.pincode] : [customer?.address1?.pincode];
                                     return (
                                         <div>
                                         <Form.Item  {...formItemLayout} className='address'
@@ -499,7 +474,7 @@ console.log("Customer list", props.customer);
 
                                     {emailKeys.map((k, index) => {
                                     const req = index ? false : true;
-                                    const email = party?.email3 ? [party?.email1,party?.email2,party?.email3] : (party?.email2 ? [party?.email1,party?.email2] : [party?.email1]);
+                                    const email = customer?.email3 ? [customer?.email1,customer?.email2,customer?.email3] : (customer?.email2 ? [customer?.email1,customer?.email2] : [customer?.email1]);
                                     return (
                                         <Form.Item  {...formItemLayout} className='email'
                                             label={index ? `Alternate E-mail ${index}` : 'E-mail'}
@@ -556,16 +531,8 @@ console.log("Customer list", props.customer);
                                                 return <Option value={item?.tagId}>{item?.tagName}</Option>
                                             })}</Select>
                                         )}
-                                    </Form.Item>
-                                    
-                                     <Form.Item label = "Include Rates in Delivery Challan">
-                                    <Checkbox
-                                        id="showAmtDcPdfFlg"
-                                        checked={showAmtDcPdfFlg}
-                                      onChange={(e) => setShowAmtDcPdfFlg(e.target.checked)}
-                                    />
                                     </Form.Item> */}
-                                    <Form.Item label = "Purchase Reports">
+                                    {/* <Form.Item label = "Purchase Reports">
                                         <Checkbox.Group
                                             id="purchaseReports"
                                             value={dailyReportsList}
@@ -574,7 +541,7 @@ console.log("Customer list", props.customer);
                                             <Checkbox value="Daily">Daily</Checkbox>
                                             <Checkbox value="Monthly">Monthly</Checkbox>
                                         </Checkbox.Group>
-                                    </Form.Item>
+                                    </Form.Item> */}
                                 </Form>
                             </Col>
                         </Row>
@@ -586,36 +553,36 @@ console.log("Customer list", props.customer);
 }
 
 const mapStateToProps = state => ({
+    customer: state.customer,
     party: state.party,
     packetClassification: state.packetClassification,
     quality: state.quality,
-    partyId: state.party.party,
-    customer: state.customer
+    partyId: state.party.party
 });
 
-const addPartyForm = Form.create({
+const addCustomerForm = Form.create({
     mapPropsToFields(props) {
-        const { party } = props.party;
-        const phone = party?.phone3 ? [party?.phone1,party?.phone2,party?.phone3] : (party?.phone2 ? [party?.phone1,party?.phone2] : [party?.phone1]);
-        const email = party?.email3 ? [party?.email1,party?.email2,party?.email3] : (party?.email2 ? [party?.email1,party?.email2] : [party?.email1]);
-        const address = party?.address2?.details ? [party?.address1?.details, party?.address2?.details] : [party?.address1?.details];
-        const city = party?.address2?.city ? [party?.address1?.city, party?.address2?.city] : [party?.address1?.city];
-        const state = party?.address2?.state ? [party?.address1?.state, party?.address2?.state] : [party?.address1?.state];
-        const pincode = party?.address2?.pincode ? [party?.address1?.pincode, party?.address2?.pincode] : [party?.address1?.pincode];
-        // const tags = props?.party?.party?.tags.map(item=> item.classificationName)
-       // const checkboxValuesDR = party?.dailyReportsList || [];
-       const checkboxValuesDR = (party?.dailyReportsList || '').split(',').map(value => value.trim());
-        const checkboxValuesMR = party?.monthlyReportsList || [];
+        const { customer } = props.customer;
+        const phone = customer?.phone3 ? [customer?.phone1,customer?.phone2,customer?.phone3] : (customer?.phone2 ? [customer?.phone1,customer?.phone2] : [customer?.phone1]);
+        const email = customer?.email3 ? [customer?.email1,customer?.email2,customer?.email3] : (customer?.email2 ? [customer?.email1,customer?.email2] : [customer?.email1]);
+        const address = customer?.address2?.details ? [customer?.address1?.details, customer?.address2?.details] : [customer?.address1?.details];
+        const city = customer?.address2?.city ? [customer?.address1?.city, customer?.address2?.city] : [customer?.address1?.city];
+        const state = customer?.address2?.state ? [customer?.address1?.state, customer?.address2?.state] : [customer?.address1?.state];
+        const pincode = customer?.address2?.pincode ? [customer?.address1?.pincode, customer?.address2?.pincode] : [customer?.address1?.pincode];
+        // const tags = props?.customer?.customer?.tags.map(item=> item.classificationName)
+       // const checkboxValuesDR = customer?.dailyReportsList || [];
+    //    const checkboxValuesDR = (customer?.dailyReportsList || '').split(',').map(value => value.trim());
+    //     const checkboxValuesMR = customer?.monthlyReportsList || [];
         // console.log('Received dailyReportsList:', party?.dailyReportsList);
         // console.log('Parsed dailyReportsList:', checkboxValuesDR);
         return {
-            partyName:Form.createFormField ({
-                ...props.party?.party?.partyName,
-                value: props.party?.party?.partyName|| '',
+            customerName:Form.createFormField ({
+                ...props.customer?.customer?.customerName,
+                value: props.customer?.customer?.customerName|| '',
             }),
-            partyNickname: Form.createFormField({
-                ...props.party?.party?.partyNickname,
-                value: props.party?.party?.partyNickname || '',
+            customerNickname: Form.createFormField({
+                ...props.customer?.customer?.customerNickname,
+                value: props.customer?.customer?.customerNickname || '',
             }),
             phone: Form.createFormField({
                 value: phone
@@ -624,12 +591,12 @@ const addPartyForm = Form.create({
                 value: phone,
             }),
             contactName: Form.createFormField({
-                ...props.party?.party?.contactName,
-                value: props.party?.party?.contactName || '',
+                ...props.customer?.customer?.contactName,
+                value: props.customer?.customer?.contactName || '',
             }),
             contactNumber: Form.createFormField({
-                ...props.party?.party?.contactNumber,
-                value: props.party?.party?.contactNumber || '',
+                ...props.party?.customer?.contactNumber,
+                value: props.party?.customer?.contactNumber || '',
             }),
             address: Form.createFormField({
                 value: address
@@ -653,54 +620,42 @@ const addPartyForm = Form.create({
                 value: email
             }),
             panNumber: Form.createFormField({
-                ...party?.panNumber,
-                value: party?.panNumber || '',
+                ...customer?.panNumber,
+                value: customer?.panNumber || '',
             }),
             tanNumber: Form.createFormField({
-                ...party?.tanNumber,
-                value: party?.tanNumber || '',
+                ...customer?.tanNumber,
+                value: customer?.tanNumber || '',
             }),
             gstNumber: Form.createFormField({
-                ...party?.gstNumber,
-                value: party?.gstNumber || '',
+                ...customer?.gstNumber,
+                value: customer?.gstNumber || '',
             }),
             tags: Form.createFormField({
-                ...props.party?.party?.tags,
-                value: party?.tags?.map(item=> item.tagId) || [],
+                ...props.customer?.customer?.tags,
+                value: customer?.tags?.map(item=> item.tagId) || [],
             }),
-            endUsertags: Form.createFormField({
-                ...props.party?.party?.endUserTags,
-                value: party?.endUserTags?.map(item=> item.tagId) || [],
-            }),
-            qualityTemplates: Form.createFormField({
-                ...props.party?.party?.templateIdList,
-                value: party?.templateIdList?.map(item=> item.templateId) || [],
-            }),
-            showAmtDcPdfFlg: Form.createFormField({
-                ...party?.showAmtDcPdfFlg,
-                value: party?.showAmtDcPdfFlg || 'N',
-            }),
-            dailyReportsList: Form.createFormField({
-                ...party?.dailyReportsList,
-               //value: Array.isArray(checkboxValuesDR) ? checkboxValuesDR : [],
-               value:checkboxValuesDR
-            }),
-            monthlyReportsList: Form.createFormField({
-                ...party?.monthlyReportsList,
-               value: Array.isArray(checkboxValuesMR) ? checkboxValuesMR : [],
-            }),
+            // dailyReportsList: Form.createFormField({
+            //     ...customer?.dailyReportsList,
+            //    //value: Array.isArray(checkboxValuesDR) ? checkboxValuesDR : [],
+            //    value:checkboxValuesDR
+            // }),
+            // monthlyReportsList: Form.createFormField({
+            //     ...customer?.monthlyReportsList,
+            //    value: Array.isArray(checkboxValuesMR) ? checkboxValuesMR : [],
+            // }),
         };
     }
-})(Party);
+})(Customer);
 
 export default connect(mapStateToProps, {
     fetchPartyList,
-    addParty,
-    fetchPartyListId,
+    addCustomer,
+    fetchCustomerListId,
     updateParty,
     resetParty,
     fetchClassificationList,
     fetchEndUserTagsList,
     fetchTemplatesList,
     fetchCustomerList
-})(addPartyForm);
+})(addCustomerForm);
