@@ -30,6 +30,7 @@ export default (state = INIT_STATE, action) => {
             }
         }
         case FETCH_CUSTOMER_LIST_SUCCESS: {
+            debugger
             return {
                 ...state,
                 loading: false,

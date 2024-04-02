@@ -10,13 +10,18 @@ import {FETCH_CUSTOMER_LIST_ERROR, FETCH_CUSTOMER_LIST_REQUEST, FETCH_CUSTOMER_L
 } from "../../constants/ActionTypes";
 import * as actionTypes from "../../constants/ActionTypes";
 
-export const fetchCustomerList = () => ({
+export const fetchCustomerList = (pageNo, pageSize, ipAddress, requestId, userId) => ({
     type: actionTypes.FETCH_CUSTOMER_LIST_REQUEST,
+    pageNo,
+    pageSize,
+    ipAddress,
+    requestId,
+    userId
 });
 
-export const fetchCustomerListSuccess = (CustomerList) => ({
+export const fetchCustomerListSuccess = (customerList) => ({
     type: actionTypes.FETCH_CUSTOMER_LIST_SUCCESS,
-    CustomerList
+    customerList
 });
 
 export const fetchCustomerListError = (error) => ({

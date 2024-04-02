@@ -17,16 +17,25 @@ const getHeaders = () => ({
     Authorization: getUserToken()
 });
 
-function* fetchCustomerList() {
+function* fetchCustomerList({id}) {
+    debugger
+    const reqBody = {
+        pageNo: id.pageNo,
+        pageSize: id.pageSize,
+        ipAddress: id.ipAddress,
+        requestId: id.requestId,
+        userId: localStorage.getItem('userId')
+    }
     try {
-        const fetchPartyList =  yield fetch(`${baseUrl}api/party/list`, {
-            method: 'GET',
-            headers: getHeaders()
+        const fetchCustomerList =  yield fetch(`${baseUrl}api/trading/customer/list`, {
+            method: 'POST',
+            headers: { "Content-Type": "application/json", ...getHeaders() },
+            body: JSON.stringify(reqBody)
         });
-        if(fetchPartyList.status === 200) {
-            const fetchPartyListResponse = yield fetchPartyList.json();
-            yield put(fetchCustomerListSuccess(fetchPartyListResponse));
-        } else if (fetchPartyList.status === 401) {
+        if(fetchCustomerList.status === 200) {
+            const fetchCustomerListResponse = yield fetchCustomerList.json();
+            yield put(fetchCustomerListSuccess(fetchCustomerListResponse));
+        } else if (fetchCustomerList.status === 401) {
             yield put(userSignOutSuccess());
         } else
             yield put(fetchCustomerListError('error'));

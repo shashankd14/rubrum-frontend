@@ -5,8 +5,9 @@ import moment from 'moment';
 import SearchBox from "../../../components/SearchBox";
 
 import IntlMessages from "../../../util/IntlMessages";
-import { fetchPartyList, addParty, fetchPartyListId, updateParty, resetParty, fetchClassificationList,fetchEndUserTagsList, fetchTemplatesList } from "../../../appRedux/actions";
+import { fetchCustomerList, fetchPartyList, addParty, fetchPartyListId, updateParty, resetParty, fetchClassificationList,fetchEndUserTagsList, fetchTemplatesList } from "../../../appRedux/actions";
 import { onDeleteContact } from "../../../appRedux/actions";
+import { express } from 'express';
 
 const FormItem = Form.Item;
 export const formItemLayout = {
@@ -36,6 +37,7 @@ const Party = (props) => {
     const [editParty, setEditParty] = useState(false);
     const [searchValue, setSearchValue] = useState('');
     const [filteredInwardList, setFilteredInwardList] = useState(props.party?.partyList || []);
+    // const [filteredCustomerList, setFilteredCustomerList] = useState(props.customer?.customerList || []);
     const [showAmtDcPdfFlg, setShowAmtDcPdfFlg] = useState(props.party?.showAmtDcPdfFlg==='Y'); // Default value
     const [dailyReportsList, setDailyReportsList] = useState([]);
     const [monthlyReportsList, setMonthlyReportsList] = useState([]); 
@@ -153,7 +155,15 @@ const Party = (props) => {
     }
 
     useEffect(() => {
+        debugger
         setTimeout(() => {
+            props.fetchCustomerList({
+                pageNo: 1,
+                pageSize: 11,
+                ipAddress: "1.1.1.1",
+                requestId: "CUSTOMER_GET",
+                userId: ''
+            });
             props.fetchPartyList();
             props.fetchClassificationList();
             props.fetchEndUserTagsList();
@@ -199,6 +209,28 @@ const Party = (props) => {
 
     }
 
+    // const express = require('express');
+    // const app = express();
+    
+    // app.get('/', (req, res) => {
+    //   const clientIP = req.ip;
+    //   res.send(`Client IP Address: ${clientIP}`);
+    // });
+    
+    // app.listen(3000, () => {
+    //   console.log('Server is running on port 3000');
+    // });
+    // useEffect(() => {
+    //     fetch('/api/getIPAddress')
+    //       .then(response => response.json())
+    //       .then(data => {
+    //         console.log('Client IP Address:', data.ip);
+    //       })
+    //       .catch(error => {
+    //         console.error('Error fetching IP address:', error);
+    //       });
+    //   }, []);
+
     const deleteSelectedCoils = () => {
         console.log('dfd');
     };
@@ -238,7 +270,7 @@ const Party = (props) => {
         setMonthlyReportsList(party.monthlyReportsList || []);
       }, [party]);
       const { dailyReportsList: initialDailyReportsList, monthlyReportsList: initialMonthlyReportsList, ...otherProps } = props.party.party;
-
+console.log("Customer list", props.customer);
     return (
         <div>
             <h1><IntlMessages id="sidebar.company.customerList"/></h1>
@@ -557,7 +589,8 @@ const mapStateToProps = state => ({
     party: state.party,
     packetClassification: state.packetClassification,
     quality: state.quality,
-    partyId: state.party.party
+    partyId: state.party.party,
+    customer: state.customer
 });
 
 const addPartyForm = Form.create({
@@ -668,5 +701,6 @@ export default connect(mapStateToProps, {
     resetParty,
     fetchClassificationList,
     fetchEndUserTagsList,
-    fetchTemplatesList
+    fetchTemplatesList,
+    fetchCustomerList
 })(addPartyForm);

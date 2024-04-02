@@ -1035,8 +1035,44 @@ const MaterialDV = (props) => {
                   </Col>
                 </Col>
               </Form.Item>
+              <Form.Item>
+                <Col
+                  style={{ display: 'flex' }}
+                  lg={24}
+                  md={24}
+                  sm={24}
+                  xs={24}
+                >
+                  <Col lg={12} md={12} sm={24} xs={24}>
+                    {getFieldDecorator('sectionWeightKg', {
+                      // rules: [{ required: false, message: 'Please enter manufacturers name' }],
+                    })(<Input id='sectionWeightKg' {...getFieldProps} />)}
+                  </Col>
+                  <Col lg={12} md={12} sm={24} xs={24}>
+                    <label>Kg per feet</label>
+                  </Col>
+                </Col>
+              </Form.Item>
+              <Form.Item>
+                <Col
+                  style={{ display: 'flex' }}
+                  lg={24}
+                  md={24}
+                  sm={24}
+                  xs={24}
+                >
+                  <Col lg={12} md={12} sm={24} xs={24}>
+                    {getFieldDecorator('sectionWeightKg', {
+                      // rules: [{ required: false, message: 'Please enter manufacturers name' }],
+                    })(<Input id='sectionWeightKg' {...getFieldProps} />)}
+                  </Col>
+                  <Col lg={12} md={12} sm={24} xs={24}>
+                    <label>Kg per pc</label>
+                  </Col>
+                </Col>
+              </Form.Item>
 
-              <Row>
+              {/* <Row>
                 <Col
                   lg={24}
                   md={24}
@@ -1046,7 +1082,7 @@ const MaterialDV = (props) => {
                 >
                   <Form.Item>
                     {/* <Col className='flex-row'> */}
-                    <Col style={{ display: 'flex', flexDirection: 'row' }}>
+                   {/*  <Col style={{ display: 'flex', flexDirection: 'row' }}>
                       {getFieldDecorator('sectionWeightKg', {
                         // rules: [{ required: false, message: 'Please enter manufacturers name' }],
                       })(<Input id='sectionWeightKg' {...getFieldProps} />)}
@@ -1059,7 +1095,7 @@ const MaterialDV = (props) => {
                     </Col>
                   </Form.Item>
                 </Col>
-              </Row>
+              </Row> */}
             </Form>
           </Card>
         </Modal>
