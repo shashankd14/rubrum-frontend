@@ -13,9 +13,12 @@ export const getUserId = () => {
 export const getUserName = () => {
     return localStorage.getItem('userName') || '';
 }
-
+export const getIPAddress = () => {
+    return localStorage.getItem('ipAddress') || '';
+}
 export default {
     getUserToken,
     getUserId,
-    getUserName
+    getUserName,
+    getIPAddress
 }

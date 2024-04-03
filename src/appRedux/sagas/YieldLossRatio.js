@@ -1,16 +1,15 @@
 import {all, put, fork, takeLatest} from "redux-saga/effects";
-import { getUserToken } from './common';
-import { FETCH_PARTY_LIST_REQUEST, ADD_PARTY_REQUEST, FETCH_PARTY_LIST_ID_REQUEST, UPDATE_PARTY_REQUEST, FETCH_YLR_LIST_REQUEST } from "../../constants/ActionTypes";
-import {fetchPartyListSuccess,
-    fetchPartyListError,
-    addPartySuccess,
-    addPartyError,
-    fetchPartyListIdSuccess,
-    fetchPartyListIdError,
-    updatePartySuccess,
-    updatePartyError,
+import {  getIPAddress, getUserId, getUserToken } from './common';
+import {FETCH_YLR_LIST_REQUEST, ADD_YLR_REQUEST, FETCH_YLR_BY_ID_REQUEST, UPDATE_YLR_REQUEST } from "../../constants/ActionTypes";
+import {
+    fetchYLRbyIdSuccess,
+    fetchYLRbyIdError,
     fetchYLRListSuccess,
-    fetchYLRListError
+    fetchYLRListError,
+    updateYLRSuccess,
+    updateYLRError,
+    addYLRSuccess,
+    addYLRError
 } from "../actions";
 import { userSignOutSuccess } from "../../appRedux/actions/Auth";
 
@@ -19,17 +18,15 @@ const getHeaders = () => ({
     Authorization: getUserToken()
 });
 
-function* fetchYLRList(request) {
-    debugger
-    console.log("saga", request);
-    console.log("saga.pageno", request.pageNo);
+function* fetchYLRList(action) {
+    const request = action.payload;
     const reqBody = {
-        ipAddress: request.ipAddress,
+        ipAddress: "1.1.1.1",
         pageNo: request.pageNo,
         pageSize: request.pageSize,
         partyId: request.partyId,
-        requestId: request.requestId,
-        userId: localStorage.getItem('userId')
+        requestId: "YLR_MASTER_GET",
+        userId: getUserId()
     }
     try {
         const fetchYLRList =  yield fetch(`${baseUrl}api/yieldlossratio/list`, {
@@ -49,146 +46,45 @@ function* fetchYLRList(request) {
     }
 }
 
-function* fetchPartyListById(action) {
-    try {
-        const fetchPartyListId =  yield fetch(`${baseUrl}api/party/getById/${action.partyId}`, {
-            method: 'GET',
-            headers: getHeaders()
-        });
-        if(fetchPartyListId.status === 200) {
-            const fetchPartyListResponse = yield fetchPartyListId.json();
-            yield put(fetchPartyListIdSuccess(fetchPartyListResponse));
-        } else if (fetchPartyListId.status === 401) {
-            yield put(userSignOutSuccess());
-        } else
-            yield put(fetchPartyListIdError('error'));
-    } catch (error) {
-        yield put(fetchPartyListIdError(error));
+function* fetchYLRById(action) {
+    debugger
+    const request = action.payload;
+    const reqBody = {
+        ipAddress: '1.1.1.1',
+        pageNo: request.pageNo,
+        pageSize: request.pageSize,
+        ylrId: request.ylrId,
+        requestId: "YLR_MASTER_GET",
+        userId: getUserId()
     }
-}
-
-function* addParty(action) {
     try {
-        const { partyName,
-            partyNickname,
-            contactName,
-            contactNumber,
-            gstNumber,
-            panNumber,
-            tanNumber,
-            email,
-            addressKeys,
-            address,
-            city,
-            state,
-            pincode,
-            phone,tags,endUsertags,
-            qualityTemplates,
-            showAmtDcPdfFlg,
-            dailyReportsList,
-            monthlyReportsList
-        } = action.party;
-
-        const getEmail = (mail) => {
-            const mailObj = {};
-            mail.forEach((key, idx) => {
-                mailObj[`email${idx+1}`] = key
-            });
-            return mailObj;
-        }
-
-        const getPhone = (phone) => {
-            const phoneObj = {};
-            phone.forEach((key, idx) => {
-                phoneObj[`phone${idx+1}`] = key
-            });
-            return phoneObj;
-        }
-
-        const getAddress = (addressKeys) => {
-            const addressObj = {};
-            addressKeys.forEach((key, idx) => {
-                addressObj[`address${idx+1}`] = {
-                    details: address[idx],
-                    city: city[idx],
-                    state: state[idx],
-                    pincode: pincode[idx]
-                }
-            });
-            return addressObj;
-        }
-        const getTags=()=>{
-            return tags.map(tagId => ({tagId}))
-        }
-        const getEndUserTags=()=>{
-            return endUsertags.map(tagId => ({tagId}))
-        }
-        const qualityTemplateIds =()=>{
-            return qualityTemplates.map(templateId => ({templateId
-            }))
-        }
-        const reqBody = {
-            partyName,
-            partyNickname,
-            contactName,
-            contactNumber,
-            gstNumber,
-            panNumber,
-            tanNumber,
-            tags:getTags(),
-            ...getEmail(email),
-            ...getAddress(addressKeys),
-            ...getPhone(phone),
-            endUserTags: getEndUserTags(),
-            templateIdList: qualityTemplateIds(),
-            showAmtDcPdfFlg,
-            dailyReportsList,
-            monthlyReportsList
-        }
-        const addParty = yield fetch(`${baseUrl}api/party/save`, {
+        const fetchYlrId =  yield fetch(`${baseUrl}api/yieldlossratio/list`, {
             method: 'POST',
             headers: { "Content-Type": "application/json", ...getHeaders() },
             body:JSON.stringify(reqBody)
-
         });
-        if (addParty.status == 200) {
-            yield put(addPartySuccess());
-        } else if (addParty.status === 401) {
+        if(fetchYlrId.status === 200) {
+            const fetchYLRidResponse = yield fetchYlrId.json();
+            yield put(fetchYLRbyIdSuccess(fetchYLRidResponse));
+        } else if (fetchYlrId.status === 401) {
             yield put(userSignOutSuccess());
         } else
-            yield put(addPartyError('error'));
+            yield put(fetchYLRbyIdError('error'));
     } catch (error) {
-        yield put(addPartyError(error));
+        yield put(fetchYLRbyIdError(error));
     }
 }
 
-function* updateParty(action) {
+function* addYLRsaga(action) {
+    debugger
     try {
-        const {
-            values: {
-                partyName,
-                partyNickname,
-                contactName,
-                contactNumber,
-                gstNumber,
-                panNumber,
-                tanNumber,
-                email,
-                addressKeys,
-                address,
-                city,
-                state,
-                pincode,
-                phone,
-                tags,
-                endUsertags,
-                qualityTemplates,
-                showAmtDcPdfFlg,
-                dailyReportsList,
-                monthlyReportsList
-            },
-            id
-        } = action.party;
+        const { comment,
+            keys,
+            partyId,
+            rangeFrom,
+            rangeTo,
+            tags
+        } = action.YLR;
 
         const getEmail = (mail) => {
             const mailObj = {};
@@ -206,72 +102,138 @@ function* updateParty(action) {
             return phoneObj;
         }
 
-        const getAddress = (addressKeys) => {
-            const addressObj = {};
-            addressKeys.forEach((key, idx) => {
-                addressObj[`address${idx+1}`] = {
-                    details: address[idx],
-                    city: city[idx],
-                    state: state[idx],
-                    pincode: pincode[idx]
-                }
-            });
-            return addressObj;
-        }
+        // const getAddress = (addressKeys) => {
+        //     const addressObj = {};
+        //     addressKeys.forEach((key, idx) => {
+        //         addressObj[`address${idx+1}`] = {
+        //             details: address[idx],
+        //             city: city[idx],
+        //             state: state[idx],
+        //             pincode: pincode[idx]
+        //         }
+        //     });
+        //     return addressObj;
+        // }
         const getTags=()=>{
             return tags.map(tagId => ({tagId}))
         }
-        const getEndUserTags=()=>{
-            return endUsertags.map(tagId => ({tagId}))
+        
+        const reqBody = {
+            comment,
+            partyId,
+            rangeFrom,
+            rangeTo,
+            // processIdList:getTags(),
+            processIdList:tags,
+            // ...getEmail(email),
+            // ...getAddress(addressKeys),
+            // ...getPhone(phone),
+            // endUserTags: getEndUserTags(),
+            ipAddress: '1.1.1.1',
+            requestId: "YLR_MASTER_ADD",
+            userId: getUserId()
         }
-        const qualityTemplateIds =()=>{
-            return qualityTemplates.map(templateId => ({templateId
-            }))
+        const addParty = yield fetch(`${baseUrl}api/yieldlossratio/save`, {
+            method: 'POST',
+            headers: { "Content-Type": "application/json", ...getHeaders() },
+            body:JSON.stringify([reqBody])
+
+        });
+        if (addParty.status == 200) {
+            yield put(addYLRSuccess());
+        } else if (addParty.status === 401) {
+            yield put(userSignOutSuccess());
+        } else
+            yield put(addYLRError('error'));
+    } catch (error) {
+        yield put(addYLRError(error));
+    }
+}
+
+function* updateYLRsaga(action) {
+    debugger
+    try {
+        const {
+            values: {
+                comment,
+                keys,
+                partyId,
+                rangeFrom,
+                rangeTo,
+                tags
+            },
+            ylrId
+        } = action.payload;
+
+        const getEmail = (mail) => {
+            const mailObj = {};
+            mail.forEach((key, idx) => {
+                mailObj[`email${idx+1}`] = key
+            });
+            return mailObj;
         }
 
-        const reqBody = {
-            nPartyId: id,
-            partyName,
-            partyNickname,
-            contactName,
-            contactNumber,
-            gstNumber,
-            panNumber,
-            tanNumber,
-            tags:getTags(),
-            endUserTags:getEndUserTags(),
-            ...getEmail(email),
-            ...getAddress(addressKeys),
-            ...getPhone(phone),
-            templateIdList: qualityTemplateIds(),
-            showAmtDcPdfFlg,
-            dailyReportsList,
-            monthlyReportsList
+        const getPhone = (phone) => {
+            const phoneObj = {};
+            phone.forEach((key, idx) => {
+                phoneObj[`phone${idx+1}`] = key
+            });
+            return phoneObj;
         }
-        const updateParty = yield fetch(`${baseUrl}api/party/update`, {
+
+        // const getAddress = (addressKeys) => {
+        //     const addressObj = {};
+        //     addressKeys.forEach((key, idx) => {
+        //         addressObj[`address${idx+1}`] = {
+        //             details: address[idx],
+        //             city: city[idx],
+        //             state: state[idx],
+        //             pincode: pincode[idx]
+        //         }
+        //     });
+        //     return addressObj;
+        // }
+        const getTags=()=>{
+            return tags.map(tagId => ({tagId}))
+        }
+        
+        
+
+        const reqBody = {
+            ylrId: ylrId,
+            comment,
+            partyId,
+            rangeFrom,
+            rangeTo,
+            tags
+            // ...getEmail(email),
+            // ...getAddress(addressKeys),
+            // ...getPhone(phone),
+        }
+        const updateYLR = yield fetch(`${baseUrl}api/yieldlossratio/update`, {
             method: 'PUT',
             headers: { "Content-Type": "application/json", ...getHeaders() },
             body:JSON.stringify(reqBody)
 
         });
-        if (updateParty.status == 200) {
-            yield put(updatePartySuccess());
-        } else if (updateParty.status === 401) {
+        if (updateYLR.status == 200) {
+            yield put(updateYLRSuccess());
+        } else if (updateYLR.status === 401) {
             yield put(userSignOutSuccess());
         } else
-            yield put(updatePartyError('error'));
+            yield put(updateYLRError('error'));
     } catch (error) {
         console.log(error);
-        yield put(updatePartyError(error));
+        yield put(updateYLRError(error));
     }
 }
 
 
 export function* watchFetchRequests() {
     yield takeLatest(FETCH_YLR_LIST_REQUEST, fetchYLRList);
-    yield takeLatest(ADD_PARTY_REQUEST, addParty);
-    yield takeLatest(UPDATE_PARTY_REQUEST, updateParty);
-    yield takeLatest(FETCH_PARTY_LIST_ID_REQUEST, fetchPartyListById);
+    yield takeLatest(ADD_YLR_REQUEST, addYLRsaga);
+    yield takeLatest(UPDATE_YLR_REQUEST, updateYLRsaga);
+    yield takeLatest(FETCH_YLR_BY_ID_REQUEST, fetchYLRById);
 }
 
 export default function* YLRSagas() {

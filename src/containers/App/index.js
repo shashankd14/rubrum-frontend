@@ -22,7 +22,7 @@ import {
   NAV_STYLE_DEFAULT_HORIZONTAL,
   NAV_STYLE_INSIDE_HEADER_HORIZONTAL
 } from "../../constants/ThemeSetting";
-import { refreshToken } from '../../appRedux/actions';
+import { getIPAddress, refreshToken } from '../../appRedux/actions';
 
 const RestrictedRoute = ({component: Component, location, authUser, ...rest}) =>
   <Route
@@ -72,6 +72,11 @@ const App = (props) => {
   
     return () => clearInterval(tokenCheckInterval);
   }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(getIPAddress());
+  },[]);
+
 
   useEffect(() => {
     let link = document.createElement('link');

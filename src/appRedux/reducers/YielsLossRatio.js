@@ -27,17 +27,12 @@ const INIT_STATE = {
 export default (state = INIT_STATE, action) => {
     switch (action.type) {
         case FETCH_YLR_LIST_REQUEST: {
-            debugger
-    console.log("reducerrrrrrr", action);
             return {
                 ...state,
                 loading: true
             }
         }
         case FETCH_YLR_LIST_SUCCESS: {
-            debugger
-            
-    console.log("reducer Successsssssssssssss", action.YLRList);
             return {
                 ...state,
                 loading: false,
@@ -80,10 +75,11 @@ export default (state = INIT_STATE, action) => {
             }
         }
         case FETCH_YLR_BY_ID_SUCCESS: {
+            debugger
             return {
                 ...state,
                 loading: false,
-                YLR: action.YLR
+                YLR: action.YLR.content[0]
             }
         }
         case FETCH_YLR_BY_ID_ERROR: {

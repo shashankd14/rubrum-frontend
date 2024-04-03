@@ -19,10 +19,10 @@ import IntlMessages from '../../../util/IntlMessages';
 import {
   fetchYLRList,
   fetchMaterialList,
-  addMaterial,
-  fetchMaterialListById,
-  updateMaterial,
-  resetMaterial,
+  addYLR,
+  fetchYLRbyId,
+  updateYLR,
+  resetYLR,
   fetchClassificationList,
   fetchPartyList,
 } from '../../../appRedux/actions';
@@ -49,16 +49,19 @@ const YieldLoss = (props) => {
   const { getFieldDecorator, getFieldValue, getFieldProps } = props.form;
   getFieldDecorator('keys', { initialValue: [0] });
   const [showAddYLR, setShowAddYLR] = useState(false);
-  const [viewMaterial, setViewMaterial] = useState(false);
-  const [editMaterial, setEditMaterial] = useState(false);
-  const [viewMaterialData, setViewMaterialData] = useState({});
+  const [viewYLR, setViewYLR] = useState(false);
+  const [editYLR, setEditYLR] = useState(false);
+  const [viewYLRData, setViewYLRData] = useState({});
   const [filteredInfo, setFilteredInfo] = useState(null);
   const [searchValue, setSearchValue] = useState('');
   const [filteredYLRList, setFilteredYLRList] = useState(
-    props.yieldLossRatio?.YLRList || []
+    props.yieldLossRatio?.YLRList?.content || []
   );
-console.log("1111111111", props)
-console.log("22222", props.yieldLossRatio)
+  const [pageNo, setPageNo] = React.useState(1);
+  const [totalPageItems, setTotalItems] = React.useState(0);
+  const [customerValue, setCustomerValue] = useState("");
+  const [pageSize, setPageSize] = useState(15);
+
   const keys = getFieldValue('keys');
   const Option = Select.Option;
 
@@ -144,8 +147,8 @@ console.log("22222", props.yieldLossRatio)
 
   const onView = (record, e) => {
     e.preventDefault();
-    setViewMaterialData(record);
-    setViewMaterial(true);
+    setViewYLRData(record);
+    setViewYLR(true);
   };
 
   const onDelete = (record, key, e) => {
@@ -156,65 +159,54 @@ console.log("22222", props.yieldLossRatio)
     console.log(record, key);
   };
   const onEdit = (record, e) => {
+    debugger
     e.preventDefault();
-    props.fetchMaterialListById(record.matId);
-    setEditMaterial(true);
+    props.fetchYLRbyId({
+      ylrId: record.ylrId,
+      pageNo: 1,
+      pageSize: 15,
+      ipAddress: '',
+      requestId: "YLR_MASTER_GET_BY_ID",
+      userId: ''
+    });
+    setEditYLR(true);
     setTimeout(() => {
       setShowAddYLR(true);
     }, 1000);
   };
 
   useEffect(() => {
-    debugger
     console.log('showAddYLR:', showAddYLR);
     setTimeout(() => {
       props.fetchYLRList({
         pageNo: "1",
-        pageSize: "15",
+        pageSize: "25",
         partyId: "",
-        ipAddress: "1.1.1.1",
+        ipAddress: "",
         requestId: "YLR_MASTER_GET",
         userId: ""
     });
-      // props.fetchMaterialList();
-      // props.fetchPartyList();
-      // props.fetchClassificationList();
+      props.fetchMaterialList();
+      props.fetchPartyList();
+      props.fetchClassificationList();
     }, 1000);
   }, [showAddYLR]);
-
-  // const dispatch = useDispatch();
-  // useEffect(() => {
-  //   debugger
-  //   console.log('showAddYLR:', showAddYLR);
-  //   props.fetchYLRList();
-  //   setTimeout(() => {
-  //     console.log('Calling fetchYLRList...');
-  //     dispatch(fetchYLRList({
-  //       pageNo: 1,
-  //       pageSize: 15,
-  //       partyId: '',
-  //       ipAddress: "1.1.1.1",
-  //       requestId: "YLR_MASTER_GET",
-  //       userId: ""
-  //     }));
-  //   }, 1000);
-  // }, []); 
 
   useEffect(() => {
     const { loading, error, YLRList } = props.yieldLossRatio;
     if (!loading && !error) {
-      setFilteredYLRList(YLRList);
+      setFilteredYLRList(YLRList.content);
     }
   }, [props.yieldLossRatio]);
   console.log("filteredYLR", filteredYLRList);
 
   // useEffect(() => {
-  //   const { material } = props;
+  //   const { ylr } = props;
   //   if (searchValue) {
-  //     const filteredData = material?.materialList?.filter((material) => {
+  //     const filteredData = ylr?.YLRList?.filter((material) => {
   //       if (
-  //         material.matId.toString() === searchValue ||
-  //         material.description
+  //         material.processName.toString() === searchValue ||
+  //         material.processName
   //           ?.toLowerCase()
   //           .includes(searchValue.toLowerCase()) ||
   //         material.materialGrade?.includes(searchValue)
@@ -224,7 +216,7 @@ console.log("22222", props.yieldLossRatio)
   //     });
   //     setFilteredYLRList(filteredData);
   //   } else {
-  //     setFilteredYLRList(material.materialList);
+  //     setFilteredYLRList(ylr?.YLRList?.content);
   //   }
   // }, [searchValue]);
 
@@ -290,6 +282,18 @@ console.log("22222", props.yieldLossRatio)
   const handlePartyChange = (e) => {
     setSelectedParty(e);
   };
+console.log("props.yieldLossRatio.YLR,", props.yieldLossRatio.YLR.partyName)
+  const handleCustomerChange = (partyId) => {
+    //debugger
+    if (partyId) {
+      setCustomerValue(partyId);
+      setPageNo(1);
+      props.fetchYLRList(1, pageSize, searchValue, partyId);
+    } else {
+      setCustomerValue("");
+      setFilteredYLRList(filteredYLRList);
+    }
+  };
 
   return (
     <div>
@@ -299,7 +303,26 @@ console.log("22222", props.yieldLossRatio)
       <Card>
         <div className='gx-flex-row gx-flex-1'>
           <div className='table-operations gx-col'>
-            <Button onClick={deleteSelectedCoils}>Delete</Button>
+          <Select
+              id="select"
+              showSearch
+              style={{ width: 250, paddingTop: '-50px' }}
+              placeholder="Select a customer"
+              optionFilterProp="children"
+              onChange={handleCustomerChange}
+              value={customerValue}
+              filterOption={(input, option) =>
+                option.props.children
+                  .toLowerCase()
+                  .indexOf(input.toLowerCase()) >= 0
+              }
+              >
+              {props.party?.partyList?.map((party) => (
+                <Option key={party.nPartyId} value={party.nPartyId}>
+                  {party.partyName}
+                </Option>
+              ))}
+            </Select>&emsp;
             <Button onClick={exportSelectedData}>Export</Button>
             <Button onClick={clearFilters}>Clear All filters</Button>
           </div>
@@ -310,105 +333,54 @@ console.log("22222", props.yieldLossRatio)
               size='default'
               onClick={() => {
                 props.form.resetFields();
-                props.resetMaterial();
+                props.resetYLR();
                 setShowAddYLR(true);
               }}
             >
               Add Yield Loss
             </Button>
-            <SearchBox
+            {/* <SearchBox
               styleName='gx-flex-1'
               placeholder='Search for yield loss...'
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
-            />
+            /> */}
           </div>
         </div>
-        <hr />
-        <Select
-          id='partyId'
-          showSearch
-          placeholder='Select customer'
-          style={{ width: 300 }}
-          className="additional_price_select"
-          filterOption={(input, option) => {
-            return option?.props?.children
-              ?.toLowerCase()
-              .includes(input.toLowerCase());
-          }}
-          filterSort={(optionA, optionB) =>
-            optionA?.props?.children
-              .toLowerCase()
-              .localeCompare(optionB?.props?.children.toLowerCase())
-          }
-        >
-          {props.party?.partyList?.map((party) => (
-            <Option key={party.nPartyId} value={party.nPartyId}>
-              {party.partyName}
-            </Option>
-          ))}
-        </Select>
-        <Select
-          id='tags'
-          placeholder='Select process tag'
-          showSearch
-          style={{ width: 300 }}
-          className="additional_price_select"
-          onChange={handleSelectChange}
-          filterOption={(input, option) => {
-            return option?.props?.children
-              ?.toLowerCase()
-              .includes(input.toLowerCase());
-          }}
-          filterSort={(optionA, optionB) =>
-            optionA?.props?.children
-              .toLowerCase()
-              .localeCompare(optionB?.props?.children.toLowerCase())
-          }
-        >
-          {props?.packetClassification?.processTags?.map((item) => {
-            return <Option value={item?.tagId}>{item?.tagName}</Option>;
-          })}
-        </Select>
+        
         <Table
           rowSelection={[]}
           className='gx-table-responsive'
           columns={columns}
           dataSource={filteredYLRList}
           onChange={handleChange}
+          // pagination={{
+          //   pageSize: 15,
+          //   onChange: (page) => {
+          //     setPageNo(page);
+          //     props.fetchInwardList(page, pageSize, searchValue, customerValue);
+          //   },
+          //   current: pageNo,
+          //   total: totalPageItems,
+          // }}
         />
 
         <Modal
           title='Yield Loss Ratio Details'
-          visible={viewMaterial}
-          onCancel={() => setViewMaterial(false)}
-          onOk={() => setViewMaterial(false)}
+          visible={viewYLR}
+          onCancel={() => setViewYLR(false)}
+          onOk={() => setViewYLR(false)}
           width={600}
         >
           <Card>
             <Row>
               <Col span={24}>
                 <Card>
-                  {viewMaterialData?.description && (
-                    <p>
-                      <strong>Material Type :</strong>{' '}
-                      {viewMaterialData.description}
-                    </p>
-                  )}
-                  {viewMaterialData?.materialGrade && (
-                    <p>
-                      <strong>Material Grade :</strong>{' '}
-                      {viewMaterialData?.materialGrade?.reduce(
-                        (acc, grade, index, arr) =>
-                          acc.concat(
-                            `${grade.gradeName}${
-                              index === arr.length - 1 ? '' : ','
-                            } `
-                          ),
-                        ''
-                      )}
-                    </p>
-                  )}
+                <p><strong>Party Name :</strong> {viewYLRData?.partyName}</p>
+                <p><strong>Process Name :</strong> {viewYLRData?.processName}</p>
+                <p><strong>Loss Ratio from :</strong> {viewYLRData?.lossRatioPercentageFrom}</p>
+                <p><strong>Loss Ratio to :</strong> {viewYLRData?.lossRatioPercentageTo}</p>
+                <p><strong>Comment :</strong> {viewYLRData?.comments}</p>
                 </Card>
               </Col>
             </Row>
@@ -416,17 +388,19 @@ console.log("22222", props.yieldLossRatio)
         </Modal>
 
         <Modal
-          title='Add yield loss ratio'
+          title={editYLR ? 'Edit yield loss ratio' : 'Add yield loss ratio'}
           visible={showAddYLR}
           onOk={(e) => {
             e.preventDefault();
-            if (editMaterial) {
+            if (editYLR) {
               props.form.validateFields((err, values) => {
+                debugger
                 if (!err) {
                   console.log('Received values of form: ', values);
-                  const data = { values, id: props.material?.material?.matId };
-                  props.updateMaterial(data);
-                  setEditMaterial(false);
+                  const data = { values, ylrId: props.yieldLossRatio?.YLR?.ylrId };
+                  props.updateYLR(data);
+                  props.form.resetFields();
+                  setEditYLR(false);
                   setShowAddYLR(false);
                 }
               });
@@ -435,7 +409,7 @@ console.log("22222", props.yieldLossRatio)
               props.form.validateFields((err, values) => {
                 if (!err) {
                   console.log('Received values of form: ', values);
-                  props.addMaterial(values);
+                  props.addYLR(values);
                   setShowAddYLR(false);
                 }
               });
@@ -444,10 +418,10 @@ console.log("22222", props.yieldLossRatio)
           }}
           width={700}
           onCancel={() => {
-            props.resetMaterial();
+            props.resetYLR();
             props.form.resetFields();
             setShowAddYLR(false);
-            setEditMaterial(false);
+            setEditYLR(false);
           }}
         >
           <Card className='gx-card'>
@@ -551,12 +525,12 @@ console.log("22222", props.yieldLossRatio)
                                 message: 'Please enter range!',
                               },
                             ],
-                          })(<Input id={`grade${index}`} {...getFieldProps} />)}
+                          })(<Input id={`rangeFrom${index}`} {...getFieldProps} />)}
                         </Form.Item>
                         <Form.Item label='Range to'>
                           {getFieldDecorator(`rangeTo[${index}]`, {
                             initialValue:
-                              props.material?.material?.materialGrade?.map(
+                              props.yieldLossRatio?.yieldLossRatioList?.ratioList?.map(
                                 (material) => material.rangeTo
                               )[index] || '',
                             rules: [
@@ -645,7 +619,7 @@ console.log("22222", props.yieldLossRatio)
                     );
                 })} */}
 
-                  {/* {keys.map((k, index) => {
+                 {/*  {keys.map((k, index) => {
                     return (
                         <div key={k}>
                             <Row gutter={16}>
@@ -707,24 +681,34 @@ const mapStateToProps = (state) => ({
 
 const addYieldLossForm = Form.create({
   mapPropsToFields(props) {
-    const grade = props.material?.material?.materialGrade?.map(
-      (material) => material.gradeName
-    );
     return {
-      description: Form.createFormField({
-        value: props.material?.material?.description || '',
+      partyId:Form.createFormField ({
+        ...props.yieldLossRatio?.YLR?.partyId,
+        value: props.yieldLossRatio.YLR.partyId || [],
+       }),
+       tags: Form.createFormField({
+        ...props.yieldLossRatio?.YLR?.processId,
+        value: props.yieldLossRatio?.YLR?.processId || [],
       }),
-      grade: Form.createFormField({
-        value: grade || [],
+      rangeFrom: Form.createFormField({
+        ...props.yieldLossRatio?.YLR?.lossRatioPercentageFrom,
+        value: props.yieldLossRatio?.YLR?.lossRatioPercentageFrom || '',
       }),
-      keys: Form.createFormField({
-        value: grade || [0],
+      rangeTo: Form.createFormField({
+        ...props.yieldLossRatio?.YLR?.lossRatioPercentageTo,
+        value: props.yieldLossRatio?.YLR?.lossRatioPercentageTo || '',
       }),
-      materialCode: Form.createFormField({
-        value: props.material?.material?.materialCode || '',
+      comment: Form.createFormField({
+        ...props.yieldLossRatio?.YLR?.comments,
+        value: props.yieldLossRatio?.YLR?.comments || '',
       }),
-      hsnCode: Form.createFormField({
-        value: props.material?.material?.hsnCode || '',
+      
+      ratioList: Form.createFormField({
+        value: props.yieldLossRatio?.yieldLossRatioList?.map((item) => ({
+          lossRatioPercentageFrom: item.rangeFrom,
+          lossRatioPercentageTo: item.rangeTo,
+          comments: item.comment,
+        })) || [],
       }),
     };
   },
@@ -733,10 +717,10 @@ const addYieldLossForm = Form.create({
 export default connect(mapStateToProps, {
   fetchYLRList,
   fetchMaterialList,
-  addMaterial,
-  fetchMaterialListById,
-  updateMaterial,
-  resetMaterial,
+  addYLR,
+  fetchYLRbyId,
+  updateYLR,
+  resetYLR,
   fetchClassificationList,
   fetchPartyList,
 })(addYieldLossForm);
