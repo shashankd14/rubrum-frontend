@@ -495,7 +495,7 @@ const SlitAndCutForm = (props) => {
                             <Input disabled value={slitCutFormData.motherCoilNumber} onChange={(e) => onOptionChange('motherCoilNumber', e)}></Input>
                         </Col>
                         <Col span={12}>
-                            <label>AspenCoil No.</label>
+                            <label>Internal Coil No</label>
                             <Input disabled value={slitCutFormData.aspenCoilNumber} onChange={(e) => onOptionChange('aspenCoilNumber', e)}></Input>
                         </Col>
 
