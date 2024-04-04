@@ -25,6 +25,7 @@ import {
   resetYLR,
   fetchClassificationList,
   fetchPartyList,
+  deleteYLR
 } from '../../../appRedux/actions';
 import { onDeleteContact } from '../../../appRedux/actions';
 
@@ -137,7 +138,7 @@ const YieldLoss = (props) => {
             Edit
           </span>
           <Divider type='vertical' />
-          <span className='gx-link' onClick={() => {}}>
+          <span className='gx-link' onClick={(e) => onDelete(record, e)}>
             Delete
           </span>
         </span>
@@ -152,14 +153,14 @@ const YieldLoss = (props) => {
   };
 
   const onDelete = (record, key, e) => {
-    let id = [];
-    id.push(record.inwardEntryId);
-    e.preventDefault();
-    props.deleteInwardEntryById(id);
-    console.log(record, key);
+    props.deleteYLR({
+      ids: record.ylrId,
+        ipAddress: '1.1.1.1',
+        requestId: "YLR_MASTER_DELETE",
+        userId: ''
+    });
   };
   const onEdit = (record, e) => {
-    debugger
     e.preventDefault();
     props.fetchYLRbyId({
       ylrId: record.ylrId,
@@ -176,7 +177,6 @@ const YieldLoss = (props) => {
   };
 
   useEffect(() => {
-    console.log('showAddYLR:', showAddYLR);
     setTimeout(() => {
       props.fetchYLRList({
         pageNo: "1",
@@ -198,7 +198,6 @@ const YieldLoss = (props) => {
       setFilteredYLRList(YLRList.content);
     }
   }, [props.yieldLossRatio]);
-  console.log("filteredYLR", filteredYLRList);
 
   // useEffect(() => {
   //   const { ylr } = props;
@@ -282,13 +281,19 @@ const YieldLoss = (props) => {
   const handlePartyChange = (e) => {
     setSelectedParty(e);
   };
-console.log("props.yieldLossRatio.YLR,", props.yieldLossRatio.YLR.partyName)
+
   const handleCustomerChange = (partyId) => {
-    //debugger
     if (partyId) {
-      setCustomerValue(partyId);
+      // setCustomerValue(partyId);
       setPageNo(1);
-      props.fetchYLRList(1, pageSize, searchValue, partyId);
+      props.fetchYLRList({
+        pageNo: "1",
+        pageSize: "25",
+        partyId: partyId,
+        ipAddress: "",
+        requestId: "YLR_MASTER_GET",
+        userId: ""
+    });
     } else {
       setCustomerValue("");
       setFilteredYLRList(filteredYLRList);
@@ -310,7 +315,7 @@ console.log("props.yieldLossRatio.YLR,", props.yieldLossRatio.YLR.partyName)
               placeholder="Select a customer"
               optionFilterProp="children"
               onChange={handleCustomerChange}
-              value={customerValue}
+              // value={customerValue}
               filterOption={(input, option) =>
                 option.props.children
                   .toLowerCase()
@@ -394,7 +399,6 @@ console.log("props.yieldLossRatio.YLR,", props.yieldLossRatio.YLR.partyName)
             e.preventDefault();
             if (editYLR) {
               props.form.validateFields((err, values) => {
-                debugger
                 if (!err) {
                   console.log('Received values of form: ', values);
                   const data = { values, ylrId: props.yieldLossRatio?.YLR?.ylrId };
@@ -435,7 +439,7 @@ console.log("props.yieldLossRatio.YLR,", props.yieldLossRatio.YLR.partyName)
               >
                 <Form {...formItemLayout} className='gx-pt-4'>
                   <Form.Item label='Party Name'>
-                    {getFieldDecorator('partyId', {
+                    {getFieldDecorator('partyIdList', {
                       rules: [
                         {
                           required: true,
@@ -514,25 +518,19 @@ console.log("props.yieldLossRatio.YLR,", props.yieldLossRatio.YLR.partyName)
                     return (
                       <div key={k}>
                         <Form.Item label='Range from'>
-                          {getFieldDecorator(`rangeFrom[${index}]`, {
-                            initialValue:
-                              props.material?.material?.materialGrade?.map(
-                                (material) => material.gradeName
-                              )[index] || '',
+                          {getFieldDecorator(`lossRatioPercentageFrom[${index}]`, {
+                            initialValue: props.yieldLossRatio.YLR?.lossRatioPercentageFrom,
                             rules: [
                               {
                                 required: true,
                                 message: 'Please enter range!',
                               },
                             ],
-                          })(<Input id={`rangeFrom${index}`} {...getFieldProps} />)}
+                          })(<Input id={`lossRatioPercentageFrom${index}`} {...getFieldProps} />)}
                         </Form.Item>
                         <Form.Item label='Range to'>
-                          {getFieldDecorator(`rangeTo[${index}]`, {
-                            initialValue:
-                              props.yieldLossRatio?.yieldLossRatioList?.ratioList?.map(
-                                (material) => material.rangeTo
-                              )[index] || '',
+                          {getFieldDecorator(`lossRatioPercentageTo[${index}]`, {
+                            initialValue:props.yieldLossRatio.YLR?.lossRatioPercentageTo || '',
                             rules: [
                               {
                                 required: true,
@@ -540,15 +538,12 @@ console.log("props.yieldLossRatio.YLR,", props.yieldLossRatio.YLR.partyName)
                               },
                             ],
                           })(
-                            <Input id={`rangeTo${index}`} {...getFieldProps} />
+                            <Input id={`lossRatioPercentageTo${index}`} {...getFieldProps} />
                           )}
                         </Form.Item>
                         <Form.Item label='Comment'>
-                          {getFieldDecorator(`comment[${index}]`, {
-                            initialValue:
-                              props.material?.material?.materialGrade?.map(
-                                (material) => material.comment
-                              )[index] || '',
+                          {getFieldDecorator(`comments[${index}]`, {
+                            initialValue: props.yieldLossRatio.YLR?.comments || '',
                             rules: [
                               {
                                 required: true,
@@ -556,7 +551,7 @@ console.log("props.yieldLossRatio.YLR,", props.yieldLossRatio.YLR.partyName)
                               },
                             ],
                           })(
-                            <Input id={`comment${index}`} {...getFieldProps} />
+                            <Input id={`comments${index}`} {...getFieldProps} />
                           )}
                         </Form.Item>
                         <div style={{ marginLeft: '200px' }}>
@@ -682,7 +677,7 @@ const mapStateToProps = (state) => ({
 const addYieldLossForm = Form.create({
   mapPropsToFields(props) {
     return {
-      partyId:Form.createFormField ({
+      partyIdList:Form.createFormField ({
         ...props.yieldLossRatio?.YLR?.partyId,
         value: props.yieldLossRatio.YLR.partyId || [],
        }),
@@ -690,25 +685,17 @@ const addYieldLossForm = Form.create({
         ...props.yieldLossRatio?.YLR?.processId,
         value: props.yieldLossRatio?.YLR?.processId || [],
       }),
-      rangeFrom: Form.createFormField({
+      lossRatioPercentageFrom: Form.createFormField({
         ...props.yieldLossRatio?.YLR?.lossRatioPercentageFrom,
         value: props.yieldLossRatio?.YLR?.lossRatioPercentageFrom || '',
       }),
-      rangeTo: Form.createFormField({
+      lossRatioPercentageTo: Form.createFormField({
         ...props.yieldLossRatio?.YLR?.lossRatioPercentageTo,
         value: props.yieldLossRatio?.YLR?.lossRatioPercentageTo || '',
       }),
-      comment: Form.createFormField({
+      comments: Form.createFormField({
         ...props.yieldLossRatio?.YLR?.comments,
         value: props.yieldLossRatio?.YLR?.comments || '',
-      }),
-      
-      ratioList: Form.createFormField({
-        value: props.yieldLossRatio?.yieldLossRatioList?.map((item) => ({
-          lossRatioPercentageFrom: item.rangeFrom,
-          lossRatioPercentageTo: item.rangeTo,
-          comments: item.comment,
-        })) || [],
       }),
     };
   },
@@ -723,4 +710,5 @@ export default connect(mapStateToProps, {
   resetYLR,
   fetchClassificationList,
   fetchPartyList,
+  deleteYLR
 })(addYieldLossForm);

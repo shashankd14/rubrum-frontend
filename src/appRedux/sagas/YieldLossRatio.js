@@ -1,6 +1,6 @@
 import {all, put, fork, takeLatest} from "redux-saga/effects";
 import {  getIPAddress, getUserId, getUserToken } from './common';
-import {FETCH_YLR_LIST_REQUEST, ADD_YLR_REQUEST, FETCH_YLR_BY_ID_REQUEST, UPDATE_YLR_REQUEST } from "../../constants/ActionTypes";
+import {FETCH_YLR_LIST_REQUEST, ADD_YLR_REQUEST, FETCH_YLR_BY_ID_REQUEST, UPDATE_YLR_REQUEST, DELETE_YLR_REQUEST } from "../../constants/ActionTypes";
 import {
     fetchYLRbyIdSuccess,
     fetchYLRbyIdError,
@@ -9,7 +9,9 @@ import {
     updateYLRSuccess,
     updateYLRError,
     addYLRSuccess,
-    addYLRError
+    addYLRError,
+    deleteYLRSuccess,
+    deleteYLRError
 } from "../actions";
 import { userSignOutSuccess } from "../../appRedux/actions/Auth";
 
@@ -47,7 +49,6 @@ function* fetchYLRList(action) {
 }
 
 function* fetchYLRById(action) {
-    debugger
     const request = action.payload;
     const reqBody = {
         ipAddress: '1.1.1.1',
@@ -76,59 +77,42 @@ function* fetchYLRById(action) {
 }
 
 function* addYLRsaga(action) {
-    debugger
     try {
-        const { comment,
+        const { comments,
             keys,
-            partyId,
-            rangeFrom,
-            rangeTo,
+            partyIdList,
+            lossRatioPercentageFrom,
+            lossRatioPercentageTo,
             tags
         } = action.YLR;
 
-        const getEmail = (mail) => {
-            const mailObj = {};
-            mail.forEach((key, idx) => {
-                mailObj[`email${idx+1}`] = key
-            });
-            return mailObj;
-        }
+        const getratioList = (
+          comments,
+          lossRatioPercentageFrom,
+          lossRatioPercentageTo
+        ) => {
+          const ratioList = [];
 
-        const getPhone = (phone) => {
-            const phoneObj = {};
-            phone.forEach((key, idx) => {
-                phoneObj[`phone${idx+1}`] = key
-            });
-            return phoneObj;
-        }
+          // Loop through the comments array (assuming all arrays are of the same length)
+          for (let i = 0; i < comments.length; i++) {
+            // Create a ratioList object with corresponding values from each array
+            const ratioItem = {
+              lossRatioPercentageFrom: lossRatioPercentageFrom[i],
+              lossRatioPercentageTo: lossRatioPercentageTo[i],
+              comments: comments[i],
+            };
 
-        // const getAddress = (addressKeys) => {
-        //     const addressObj = {};
-        //     addressKeys.forEach((key, idx) => {
-        //         addressObj[`address${idx+1}`] = {
-        //             details: address[idx],
-        //             city: city[idx],
-        //             state: state[idx],
-        //             pincode: pincode[idx]
-        //         }
-        //     });
-        //     return addressObj;
-        // }
-        const getTags=()=>{
-            return tags.map(tagId => ({tagId}))
-        }
-        
+            // Push the ratioList object to the ratioList array
+            ratioList.push(ratioItem);
+          }
+
+          // Convert the ratioList array to JSON string and return
+          return  ratioList ;
+        };
         const reqBody = {
-            comment,
-            partyId,
-            rangeFrom,
-            rangeTo,
-            // processIdList:getTags(),
+            partyIdList,
+            ratioList:getratioList(comments,lossRatioPercentageFrom,lossRatioPercentageTo),
             processIdList:tags,
-            // ...getEmail(email),
-            // ...getAddress(addressKeys),
-            // ...getPhone(phone),
-            // endUserTags: getEndUserTags(),
             ipAddress: '1.1.1.1',
             requestId: "YLR_MASTER_ADD",
             userId: getUserId()
@@ -151,69 +135,55 @@ function* addYLRsaga(action) {
 }
 
 function* updateYLRsaga(action) {
-    debugger
     try {
         const {
             values: {
-                comment,
-                keys,
-                partyId,
-                rangeFrom,
-                rangeTo,
+                partyIdList,
+                lossRatioPercentageFrom,
+                lossRatioPercentageTo,
+                comments,
                 tags
-            },
-            ylrId
-        } = action.payload;
+                },
+                ylrId
+            } = action.payload;
 
-        const getEmail = (mail) => {
-            const mailObj = {};
-            mail.forEach((key, idx) => {
-                mailObj[`email${idx+1}`] = key
-            });
-            return mailObj;
-        }
-
-        const getPhone = (phone) => {
-            const phoneObj = {};
-            phone.forEach((key, idx) => {
-                phoneObj[`phone${idx+1}`] = key
-            });
-            return phoneObj;
-        }
-
-        // const getAddress = (addressKeys) => {
-        //     const addressObj = {};
-        //     addressKeys.forEach((key, idx) => {
-        //         addressObj[`address${idx+1}`] = {
-        //             details: address[idx],
-        //             city: city[idx],
-        //             state: state[idx],
-        //             pincode: pincode[idx]
-        //         }
-        //     });
-        //     return addressObj;
-        // }
-        const getTags=()=>{
-            return tags.map(tagId => ({tagId}))
-        }
-        
-        
-
+            const getratioList = (
+                comments,
+                lossRatioPercentageFrom,
+                lossRatioPercentageTo
+              ) => {
+                const ratioList = [];
+      
+                // Loop through the comments array (assuming all arrays are of the same length)
+                for (let i = 0; i < comments.length; i++) {
+                  // Create a ratioList object with corresponding values from each array
+                  const ratioItem = {
+                    lossRatioPercentageFrom: lossRatioPercentageFrom[i],
+                    lossRatioPercentageTo: lossRatioPercentageTo[i],
+                    comments: comments[i],
+                  };
+      
+                  // Push the ratioList object to the ratioList array
+                  ratioList.push(ratioItem);
+                }
+      
+                // Convert the ratioList array to JSON string and return
+                return  ratioList ;
+              };
+              
         const reqBody = {
             ylrId: ylrId,
-            comment,
-            partyId,
-            rangeFrom,
-            rangeTo,
-            tags
-            // ...getEmail(email),
-            // ...getAddress(addressKeys),
-            // ...getPhone(phone),
+            partyIdList: [partyIdList],
+            ratioList:getratioList(comments,lossRatioPercentageFrom,lossRatioPercentageTo),
+            processIdList:[tags],
+            ipAddress: '1.1.1.1',
+            requestId: "YLR_MASTER_UPDATE",
+            userId: getUserId()
         }
         const updateYLR = yield fetch(`${baseUrl}api/yieldlossratio/update`, {
             method: 'PUT',
             headers: { "Content-Type": "application/json", ...getHeaders() },
-            body:JSON.stringify(reqBody)
+            body:JSON.stringify([reqBody])
 
         });
         if (updateYLR.status == 200) {
@@ -228,12 +198,38 @@ function* updateYLRsaga(action) {
     }
 }
 
+function* deleteYLRById(action) {
+    const request = action.payload;
+    const reqBody ={
+        ids: [request.ids],
+        ipAddress: '1.1.1.1',
+        requestId: "YLR_MASTER_DELETE",
+        userId: getUserId()
+    }
+    try {
+        const deletedYLR =  yield fetch(`${baseUrl}api/yieldlossratio/delete`, {
+            method: 'POST',
+            headers: { "Content-Type": "application/json", ...getHeaders() },
+            body:JSON.stringify(reqBody)
+        });
+        if(deletedYLR.status === 200) {
+            yield put(deleteYLRSuccess(deletedYLR));
+        } else if (deletedYLR.status === 401) {
+            yield put(userSignOutSuccess());
+        } else
+            yield put(deleteYLRError('error'));
+    } catch (error) {
+        yield put(deleteYLRError(error));
+    }
+}
+
 
 export function* watchFetchRequests() {
     yield takeLatest(FETCH_YLR_LIST_REQUEST, fetchYLRList);
     yield takeLatest(ADD_YLR_REQUEST, addYLRsaga);
     yield takeLatest(UPDATE_YLR_REQUEST, updateYLRsaga);
     yield takeLatest(FETCH_YLR_BY_ID_REQUEST, fetchYLRById);
+    yield takeLatest(DELETE_YLR_REQUEST, deleteYLRById);
 }
 
 export default function* YLRSagas() {

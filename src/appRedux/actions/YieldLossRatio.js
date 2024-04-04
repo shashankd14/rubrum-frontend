@@ -11,7 +11,10 @@ import {
     RESET_YLR_REQUEST,
     UPDATE_YLR_REQUEST,
     UPDATE_YLR_SUCCESS,
-    UPDATE_YLR_ERROR
+    UPDATE_YLR_ERROR,
+    DELETE_YLR_REQUEST,
+    DELETE_YLR_SUCCESS,
+    DELETE_YLR_ERROR
 } from "../../constants/ActionTypes";
 
 export const fetchYLRList = (payload) => ({
@@ -73,5 +76,20 @@ export const updateYLRSuccess = () => ({
 
 export const updateYLRError = (error) => ({
     type: UPDATE_YLR_ERROR,
+    error
+});
+
+export const deleteYLR = (payload) => ({
+    type: DELETE_YLR_REQUEST,
+    payload
+});
+
+export const deleteYLRSuccess = (YLR) => ({
+    type: DELETE_YLR_SUCCESS,
+    YLR
+});
+
+export const deleteYLRError = (error) => ({
+    type: DELETE_YLR_ERROR,
     error
 });

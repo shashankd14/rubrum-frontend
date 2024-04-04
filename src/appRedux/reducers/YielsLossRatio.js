@@ -75,7 +75,6 @@ export default (state = INIT_STATE, action) => {
             }
         }
         case FETCH_YLR_BY_ID_SUCCESS: {
-            debugger
             return {
                 ...state,
                 loading: false,
