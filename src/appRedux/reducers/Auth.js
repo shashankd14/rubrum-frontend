@@ -14,6 +14,7 @@ import {
   REFRESH_TOKEN_SUCCESS,
   REFRESH_TOKEN_FAILURE
 } from "constants/ActionTypes"; 
+import { GET_IP_ADDRESS_SUCCESS } from "../../constants/ActionTypes";
 
 const INIT_STATE = {
   loader: false,
@@ -25,6 +26,7 @@ const INIT_STATE = {
   accessToken: null,
   refreshToken: null,
   error: null,
+  ipAddress:'',
 };
 
 
@@ -127,6 +129,12 @@ export default (state = INIT_STATE, action) => {
         ...state,
         error: action.payload.error,
       };
+    case GET_IP_ADDRESS_SUCCESS:
+        return {
+          ...state,
+          ipAddress: action.ipAddress,
+          error: null,
+        };
     default:
       return state;
   }

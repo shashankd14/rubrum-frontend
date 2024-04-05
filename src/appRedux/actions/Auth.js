@@ -22,6 +22,7 @@ import {
   REFRESH_TOKEN_SUCCESS,
   REFRESH_TOKEN_FAILURE,
 } from "constants/ActionTypes"; 
+import { GET_IP_ADDRESS_REQUEST, GET_IP_ADDRESS_SUCCESS } from "../../constants/ActionTypes";
 export const userSignUp = (user) => {
   return {
     type: SIGNUP_USER,
@@ -151,4 +152,12 @@ export const refreshTokenFailure = () => ({
 
 export const signoutUser = () => ({
   type: SIGNOUT_USER,
+});
+
+export const getIPAddress = () => ({
+  type: GET_IP_ADDRESS_REQUEST,
+});
+export const getIPAddressSuccess = (ipAddress) => ({
+  type: GET_IP_ADDRESS_SUCCESS,
+  ipAddress
 });

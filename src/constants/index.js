@@ -15,6 +15,7 @@ export const sidebarMenuItems = {
     userAccess: "User Access",
     material: "Material",
     party: "Party",
+    yieldLoss: "Yield Loss Ratio",
     rates: "Rates",
     tags: "Tags",
     quality: "Quality",

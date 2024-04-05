@@ -8,14 +8,17 @@ export const getRefreshToken = () => {
 }
 
 export const getUserId = () => {
-    return localStorage.getItem('userName') || '';
+    return localStorage.getItem('userId') || '';
 }
 export const getUserName = () => {
     return localStorage.getItem('userName') || '';
 }
-
+export const getIPAddress = () => {
+    return localStorage.getItem('ipAddress') || '';
+}
 export default {
     getUserToken,
     getUserId,
-    getUserName
+    getUserName,
+    getIPAddress
 }

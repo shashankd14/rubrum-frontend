@@ -18,13 +18,14 @@ import {
   REFRESH_TOKEN_SUCCESS,
   REFRESH_TOKEN_FAILURE,
 } from "constants/ActionTypes";
-import {showAuthMessage, userSignInSuccess, userSignOutSuccess, userSignUpSuccess} from "../../appRedux/actions/Auth";
+import {getIPAddressSuccess, showAuthMessage, userSignInSuccess, userSignOutSuccess, userSignUpSuccess} from "../../appRedux/actions/Auth";
 import {
   userFacebookSignInSuccess,
   userGithubSignInSuccess,
   userGoogleSignInSuccess,
   userTwitterSignInSuccess
 } from "../actions/Auth";
+import { GET_IP_ADDRESS_REQUEST } from "../../constants/ActionTypes";
 const baseUrl = process.env.REACT_APP_BASE_URL; 
 
 const createUserWithEmailPasswordRequest = async (email, password) =>
@@ -213,6 +214,23 @@ function* refreshTokenSaga() {
     }
   }
 
+function* getIPAddress1() {
+      try {
+
+          const response = yield fetch(`https://api.ipify.org/?format=json`, {
+          method: 'GET'
+        });
+    
+        if (response.status === 200) {
+          const ipAddress = yield response.json();
+          localStorage.setItem('ipAddress', ipAddress.ip);
+        
+        } 
+      } catch (error) {
+        console.error('Error during fetching IP Address:', error);
+      }
+    }
+  
 function* signOut() {
   try {
     const signOutUser = yield call(signOutRequest);
@@ -222,6 +240,7 @@ function* signOut() {
       localStorage.removeItem('userName');
       localStorage.removeItem('expiresIn');
       localStorage.removeItem('refreshToken');
+      localStorage.removeItem('ipAddress');
       yield put(userSignOutSuccess(signOutUser));
     } else {
       yield put(showAuthMessage(signOutUser.message));
@@ -258,6 +277,9 @@ export function* signInUser() {
 export function* signOutUser() {
   yield takeEvery(SIGNOUT_USER, signOut);
 }
+export function* getIPAddress() {
+  yield takeEvery(GET_IP_ADDRESS_REQUEST, getIPAddress1);
+}
 function* watchRefreshToken() {
   yield takeEvery(REFRESH_TOKEN, refreshTokenSaga);
 }
@@ -271,5 +293,6 @@ export default function* rootSaga() {
     fork(signInWithTwitter),
     fork(signInWithGithub),
     fork(signOutUser),
-    fork(watchRefreshToken)]);
+    fork(watchRefreshToken),
+    fork(getIPAddress)]);
 }
