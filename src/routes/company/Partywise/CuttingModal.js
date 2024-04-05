@@ -28,6 +28,7 @@ import {
 } from "../../../appRedux/actions/Inward";
 import { labelPrintEditFinish } from '../../../appRedux/actions/LabelPrint';
 import { APPLICATION_DATE_FORMAT } from "../../../constants";
+import { fetchYLRList } from '../../../appRedux/actions';
 
 const Option = Select.Option;
 
@@ -1072,6 +1073,7 @@ const CreateCuttingDetailsForm = (props) => {
     processTags = [...processTags, ...props?.processTags];
     setPacketClassification(processTags);
   }, [props.processTags]);
+
   const onInputChange =
     (key, index, record, type) => (e: React.ChangeEvent<HTMLInputElement>) => {
       let editedRecord = [];
@@ -1088,6 +1090,8 @@ const CreateCuttingDetailsForm = (props) => {
           : Number(e.target.value);
       setTableData(newData);
     };
+
+
   const handleChange = (e) => {
     if (e.target.value !== "") {
       setBalanced(false);
@@ -1284,6 +1288,64 @@ const CreateCuttingDetailsForm = (props) => {
       });
     }
   };
+
+  
+//Yield loss ratio
+const columnYieldLoss = [
+  {
+    title: 'Sr. No',
+    key: 'index',
+    render: (text, record, index) => (page - 1) * 10 + index + 1,
+  },
+  {
+    title: 'Customer Name',
+    dataIndex: 'partyName',
+    key: 'partyName',
+  },
+  {
+    title: 'Loss Ratio from',
+    dataIndex: 'lossRatioPercentageFrom',
+    key: 'lossRatioPercentageFrom',
+  },
+  {
+    title: 'Loss Ratio to',
+    dataIndex: 'lossRatioPercentageTo',
+    key: 'lossRatioPercentageTo',
+  },
+  {
+    title: 'Comments',
+    dataIndex: 'comments',
+    key: 'comments',
+  },
+]
+
+useEffect(() => {
+  debugger
+  if (props.yieldLossRatioParty === undefined) {
+    props.fetchYLRList({
+      pageNo: "1",
+      pageSize: "500",
+      partyId: props.coil.party.nPartyId,
+      ipAddress: "",
+      requestId: "YLR_PLAN_GET",
+      userId: ""
+    });
+  }
+}, []); 
+
+const [cuttingfilteredData, setCuttingFilteredData] = useState();
+useEffect(() => {
+  if (props.yieldLossRatioParty !== undefined) {
+    const filterContentByProcessName = (processName, content) => {
+      debugger;
+      return content.filter(item => item.processName === processName);
+    }
+
+    const filteredDataSlitting = filterContentByProcessName("CUTTING", props.yieldLossRatioParty);
+    setCuttingFilteredData(filteredDataSlitting);
+  }
+}, [props.yieldLossRatioParty]);
+
   const handleOk = (e) => {
     e.preventDefault();
     if (props?.unfinish) {
@@ -1979,6 +2041,20 @@ const CreateCuttingDetailsForm = (props) => {
                             </>
                           )}
                         </Form.Item>
+                      <Form.Item label="Actual yield loss ratio">
+                        {getFieldDecorator("ratio", {
+                          rules: [{ required: false }],
+                        })(
+                          <>
+                            <Input
+                              id="ratio"
+                              disabled={true}
+                              value={ratio}
+                              name="ratio"
+                            />
+                          </>
+                        )}
+                       </Form.Item>
                       </div>
                     ) : (
                       <Row gutter={16}>
@@ -1998,7 +2074,7 @@ const CreateCuttingDetailsForm = (props) => {
                         )}
                       </Form.Item>
                       </Col>
-                      <Col span={12}>
+                       {/* <Col span={12}>
                       <Form.Item label="Total yield loss ratio">
                         {getFieldDecorator("ratio", {
                           rules: [{ required: false }],
@@ -2013,7 +2089,7 @@ const CreateCuttingDetailsForm = (props) => {
                           </>
                         )}
                        </Form.Item>
-                      </Col>
+                      </Col>  */}
                       </Row>
                     )}
                   </Col>
@@ -2034,6 +2110,17 @@ const CreateCuttingDetailsForm = (props) => {
               <p>Please click OK to confirm</p>
             </Modal>
           </TabPane>
+          <TabPane tab='Customer Yield Loss Reference' key='3'>
+                <Row>
+                  <Col lg={20} md={20} sm={24} xs={24}>
+                    <Table
+                      className='gx-table-responsive'
+                       columns={columnYieldLoss}
+                       dataSource={cuttingfilteredData}
+                    />
+                  </Col>
+                </Row>
+              </TabPane>
         </Tabs>
       </Card>
     </Modal>
@@ -2047,6 +2134,7 @@ const mapStateToProps = (state) => ({
   processTags: state.packetClassification?.processTags,
   saveCut: state.saveCut,
   groupId: state.groupId,
+  yieldLossRatioParty: state.yieldLossRatio.YLRList.content
 });
 
 const CuttingDetailsForm = Form.create({
@@ -2095,5 +2183,6 @@ export default connect(mapStateToProps, {
   instructionGroupsave,
   pdfGenerateInward,
   QrCodeGeneratePlan,
-  labelPrintEditFinish
+  labelPrintEditFinish,
+  fetchYLRList
 })(CuttingDetailsForm);

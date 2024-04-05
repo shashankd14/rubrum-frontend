@@ -215,7 +215,6 @@ function* refreshTokenSaga() {
   }
 
 function* getIPAddress1() {
-  debugger
       try {
 
           const response = yield fetch(`https://api.ipify.org/?format=json`, {

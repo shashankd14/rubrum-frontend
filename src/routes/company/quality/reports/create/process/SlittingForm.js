@@ -471,9 +471,13 @@ const handleTransferToFinalTable = () => {
             </Col>
           </Row>
           <Row>
-                <Col span={24}>
+                <Col span={12}>
                   <label>Target Weight</label>
                   <Input disabled value={location.state.selectedItemForQr.targetWeight} onChange={(e) => onOptionChange('plannedWeight', e)}></Input>
+                </Col>
+                <Col span={12}>
+                  <label>Total Yield Loss (%)</label>
+                  <Input disabled value={location.state.selectedItemForQr.targetWeight} onChange={(e) => onOptionChange('totalYieldLoss', e)}></Input>
                 </Col>
          </Row>
           <Row>

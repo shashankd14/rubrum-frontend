@@ -252,7 +252,6 @@ const YieldLoss = (props) => {
     const { form } = props;
     // can use data-binding to get
     const keys = form.getFieldValue('keys');
-    const grade = form.getFieldValue('grade');
     // We need at least one passenger
     if (keys.length === 1) {
       return;
@@ -260,7 +259,6 @@ const YieldLoss = (props) => {
     // can use data-binding to set
     form.setFieldsValue({
       keys: keys.filter((key, idx) => idx !== k),
-      grade: grade.filter((key, idx) => idx !== k),
     });
   };
 

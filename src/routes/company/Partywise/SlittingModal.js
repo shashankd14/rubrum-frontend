@@ -30,7 +30,7 @@ import {
   resetIsDeleted,
   QrCodeGeneratePlan,
 } from '../../../appRedux/actions/Inward';
-import { fetchClassificationList } from '../../../appRedux/actions';
+import { fetchClassificationList, fetchYLRList } from '../../../appRedux/actions';
 import { labelPrintEditFinish } from '../../../appRedux/actions/LabelPrint';
 import IntlMessages from 'util/IntlMessages';
 import { set } from 'nprogress';
@@ -1032,7 +1032,7 @@ const CreateSlittingDetailsForm = (props) => {
             style={{ width: '100%' }}
             value={
               record?.packetClassification?.packetClassificationId ||
-              record?.packetClassification?.classificationId ||
+              record?.packetClassification?.classificationName ||
               record?.packetClassificationId
             }
             onChange={(value) =>
@@ -1126,6 +1126,7 @@ const CreateSlittingDetailsForm = (props) => {
   const [insData, setInstruction] = useState({});
   const [tweight, settweight] = useState(0);
   const [totalActualweight, setTotalActualWeight] = useState(0);
+  const [actualYLR, setactualYLR] = useState(0);
   const [page, setPage] = useState(1);
   const [edit, setEdit] = useState([]);
   const [validate, setValidate] = useState(true);
@@ -1324,6 +1325,22 @@ const CreateSlittingDetailsForm = (props) => {
           ? data
           : data.toFixed(1);
       }
+      // Yield loss Ratio
+      if ((key === "packetClassification" && type === "select") || key === "actualWeight"){
+
+        const edgeTrimWeights = newData.filter((record) => {
+          const classificationName = getPackatClassificationName(record.packetClassification?.classificationId || record.packetClassification?.tagId);
+          return classificationName === "EDGE TRIM" || classificationName === "CUT ENDS";
+        }).map((record) => record.actualWeight);
+      
+        const totalActualWeight = newData.reduce((total, record) => total + record.actualWeight, 0);
+      
+        const sumEdgeTrimWeight = edgeTrimWeights.reduce((total, weight) => total + weight, 0);
+      
+        const yieldLossRatio = (sumEdgeTrimWeight / totalActualWeight) * 100; 
+        setactualYLR(yieldLossRatio);
+       }
+
       setTableData(newData);
     };
 
@@ -1430,6 +1447,62 @@ const CreateSlittingDetailsForm = (props) => {
         });
     }
   }, [props.inward.pdfSuccess]);
+//Yield loss ratio
+const columnYieldLoss = [
+  {
+    title: 'Sr. No',
+    key: 'index',
+    render: (text, record, index) => (page - 1) * 10 + index + 1,
+  },
+  {
+    title: 'Customer Name',
+    dataIndex: 'partyName',
+    key: 'partyName',
+  },
+  {
+    title: 'Loss Ratio from',
+    dataIndex: 'lossRatioPercentageFrom',
+    key: 'lossRatioPercentageFrom',
+  },
+  {
+    title: 'Loss Ratio to',
+    dataIndex: 'lossRatioPercentageTo',
+    key: 'lossRatioPercentageTo',
+  },
+  {
+    title: 'Comments',
+    dataIndex: 'comments',
+    key: 'comments',
+  },
+]
+  useEffect(() => {
+    if (props.yieldLossRatioParty === undefined) {
+      props.fetchYLRList({
+        pageNo: "1",
+        pageSize: "500",
+        partyId: props.coil.party.nPartyId,
+        ipAddress: "",
+        requestId: "YLR_PLAN_GET",
+        userId: ""
+      });
+    }
+  }, []); 
+  
+  const [slittingfilteredData, setSlittingFilteredData] = useState();
+  const [slitCutfilteredData, setSlitCutFilteredData] = useState();
+  useEffect(() => {
+    if (props.yieldLossRatioParty !== undefined) {
+      const filterContentByProcessName = (processName, content) => {
+        debugger;
+        return content.filter(item => item.processName === processName);
+      }
+  
+      const filteredDataSlitting = filterContentByProcessName("SLITTING", props.yieldLossRatioParty);
+      const filteredDataSlitCut = filterContentByProcessName("SLIT AND CUT", props.yieldLossRatioParty);
+      setSlittingFilteredData(filteredDataSlitting);
+      setSlitCutFilteredData(filteredDataSlitCut);
+    }
+  }, [props.yieldLossRatioParty]);
 
   useEffect(() => {
     if (
@@ -1495,7 +1568,6 @@ const CreateSlittingDetailsForm = (props) => {
   };
 
   const sum = (totaltableDatapacketWeight / tweight) * 100;
-
   useEffect(() => {
     const updatedTmpGroupedInstructions = new Map();
 
@@ -1528,9 +1600,7 @@ const CreateSlittingDetailsForm = (props) => {
     setGroupedInstructions(updatedTmpGroupedInstructions);
   }, [panelList]); // Add any dependencies that should trigger this effect when changed
 
-
-  const handleOk = (e, name, record) => {
-    e.preventDefault();
+  const savePlan = (e, name, record) => {
     if (props?.unfinish) {
       const coil = {
         number: props.coil.coilNumber,
@@ -1620,7 +1690,7 @@ const CreateSlittingDetailsForm = (props) => {
                 ...instruction,
                 partDetailsRequest: {
                   ...instruction.partDetailsRequest,
-                  totalYieldLoss: sum,
+                  plannedYieldLossRatio: sum,
                 },
                 instructionRequestDTOs: updatedInstructions // Replace instructionRequestDTOs with updated array
               };
@@ -1665,6 +1735,33 @@ const CreateSlittingDetailsForm = (props) => {
         setDeletedSelected(false);
       }
     }
+  }
+
+  const { confirm } = Modal;
+  const handleOk = (e, name, record) => {
+    if(slittingfilteredData !== undefined){
+     
+        const lossRatioPercentageToValues = slittingfilteredData.map(item => item.lossRatioPercentageTo);
+
+        const compareYieldLoss = lossRatioPercentageToValues.filter(value => sum > value);
+
+        console.log("compareYieldLoss:", compareYieldLoss);
+
+        if (compareYieldLoss.length > 0) {
+            // message.warning('take approval from customer or change the plan');
+            confirm({
+              title: 'take approval from customer or change the plan.',
+              okText: 'OK',
+              onOk() {
+                  savePlan(e, name, record);
+              },
+          });
+            return;
+        }
+    }
+
+    // e.preventDefault();
+    savePlan(e, name, record);
   };
 
   const handleWeight = (e, record) => {
@@ -1928,6 +2025,38 @@ const CreateSlittingDetailsForm = (props) => {
                           </>
                         )}
                       </Form.Item>
+
+                      <Form.Item label='Planned yield loss ratio (%)'>
+                        {getFieldDecorator('plannedYieldLossRatio', {
+                          initialValue: props.coil.party.plannedYieldLossRatio || '',
+                          rules: [{ required: false }],
+                        })(
+                          <>
+                            <Input
+                              id='plannedYieldLossRatio'
+                              disabled={true}
+                              value={sum}
+                              name='plannedYieldLossRatio'
+                            />
+                          </>
+                        )}
+                      </Form.Item>
+
+                      <Form.Item label='Actual yield loss ratio (%)'>
+                        {getFieldDecorator('plannedYieldLossRatio', {
+                          initialValue: props.coil.party.plannedYieldLossRatio || '',
+                          rules: [{ required: false }],
+                        })(
+                          <>
+                            <Input
+                              id='plannedYieldLossRatio'
+                              disabled={true}
+                              value={actualYLR.toFixed(2)}
+                              name='plannedYieldLossRatio'
+                            />
+                          </>
+                        )}
+                      </Form.Item>
                     </div>
                   </Col>
                 </Row>
@@ -2039,15 +2168,15 @@ const CreateSlittingDetailsForm = (props) => {
                       </Col>
                       <Col lg={12} md={12} sm={24} xs={24}>
                         <Form.Item label='Total yield loss (%)'>
-                          {getFieldDecorator('totalYieldLoss', {
+                          {getFieldDecorator('plannedYieldLossRatio', {
                             rules: [{ required: false }],
                           })(
                             <>
                               <Input
-                                id='totalYieldLoss'
+                                id='plannedYieldLossRatio'
                                 disabled={true}
                                 value={(sum).toFixed(2)}
-                                name='totalYieldLoss'
+                                name='plannedYieldLossRatio'
                               />
                             </>
                           )}
@@ -2105,29 +2234,12 @@ const CreateSlittingDetailsForm = (props) => {
             {!props.wip && (
               <TabPane tab='Customer Yield Loss Reference' key='3'>
                 <Row>
-                  <Col lg={12} md={12} sm={24} xs={24}>
-                    <p>Coil number : {props.coil.coilNumber}</p>
-                    <p>Customer Name : {props.coil.party.partyName}</p>
-                    {props.coil.customerBatchId && (
-                      <p>Customer Batch No:{props.coil.customerBatchId}</p>
-                    )}
-                    <p>Material Desc: {props.coil.material.description}</p>
-                    <p>Grade: {props.coil.materialGrade.gradeName}</p>
-                  </Col>
-                  <Col lg={12} md={12} sm={24} xs={24}>
-                    <p>
-                      Inward specs: {props.coil.fThickness}X{props.coil.fWidth}X
-                      {props.coil.fLength}/{props.coil.fQuantity}
-                    </p>
-                    <p>Available Length(mm): {props.coil.availableLength}</p>
-                    <p>Available Weight(kg) : {props.coil.fpresent}</p>
-                    <p>
-                      Available Width (mm) :{' '}
-                      {props.coil.fpresent > 0
-                        ? props.coilDetails.fWidth ||
-                          props.coilDetails.plannedWidth
-                        : 0}
-                    </p>
+                  <Col lg={20} md={20} sm={24} xs={24}>
+                    <Table
+                      className='gx-table-responsive'
+                      columns={columnYieldLoss}
+                      dataSource={props.slitCut ? slitCutfilteredData  : slittingfilteredData }
+                    />
                   </Col>
                 </Row>
               </TabPane>
@@ -2143,6 +2255,7 @@ const mapStateToProps = (state) => ({
   party: state.party,
   inward: state.inward,
   processTags: state.packetClassification?.processTags,
+  yieldLossRatioParty: state.yieldLossRatio.YLRList.content
 });
 
 const SlittingDetailsForm = Form.create({
@@ -2189,6 +2302,10 @@ const SlittingDetailsForm = Form.create({
         ...props.inward.process.noParts,
         value: props.inward.process.noParts ? props.inward.process.noParts : '',
       }),
+      plannedYieldLossRatio: Form.createFormField({
+        ...props.inward.process.plannedYieldLossRatio,
+        value: props.inward.process.plannedYieldLossRatio || '',
+      }),
     };
   },
   onValuesChange(props, values) {
@@ -2209,4 +2326,5 @@ export default connect(mapStateToProps, {
   QrCodeGeneratePlan,
   labelPrintEditFinish,
   fetchClassificationList,
+  fetchYLRList
 })(SlittingDetailsForm);
