@@ -585,12 +585,13 @@ const CreateCuttingDetailsForm = (props) => {
 
   const [weightAdditions, setWeightAdditions] = useState([]);
   const [totalWeightAddition, setTotalWeightAddition] = useState(0);
-  const  getPackatClassificationName = (value) =>{ 
-    return packetClassification.filter((item)=>item.tagId==value)?.[0].tagName;
+  const  getPackatClassificationName1 = (value) =>{ 
+    // return packetClassification.filter((item)=>item.tagId==value)?.[0].tagName;
+    // return packetClassification.filter((item)=>item.tagId==value)?.[0].tagId;
   }
   const handleClassificationChange = (value, index, record) => {
     record.packetClassificationId = value;
-   record.packetClassificationName = getPackatClassificationName(value);
+   record.packetClassificationName = getPackatClassificationName1(value);
     // if (record.packetClassification === 27 || record.packetClassification === 26) {
       if (record.packetClassificationName === 'WIP(EDGE TRIM)' || record.packetClassificationName === 'WIP(CUT ENDS)') {
       // Calculate new plannedWeight by adding a certain amount in array
@@ -1074,6 +1075,13 @@ const CreateCuttingDetailsForm = (props) => {
     setPacketClassification(processTags);
   }, [props.processTags]);
 
+  const [actualYLR, setactualYLR] = useState(0);
+  const  getPackatClassificationName = (value) =>{
+    if (value === undefined){
+      value = 0;
+    }
+    return packetClassification.filter((item)=>item.tagId==value)?.[0].tagName;
+  }
   const onInputChange =
     (key, index, record, type) => (e: React.ChangeEvent<HTMLInputElement>) => {
       let editedRecord = [];
@@ -1088,9 +1096,23 @@ const CreateCuttingDetailsForm = (props) => {
             ? { tagId: Number(e) }
             : { classificationId: Number(e) }
           : Number(e.target.value);
+            // Yield loss Ratio
+      if ((key === "packetClassification" && type === "select") || key === "actualWeight"){
+
+        const edgeTrimWeights = newData.filter((record) => {
+          const classificationName = getPackatClassificationName(record.packetClassification?.classificationId || record.packetClassification?.tagId);
+          return classificationName === "EDGE TRIM" || classificationName === "CUT ENDS";
+        }).map((record) => record.actualWeight);
+      
+        const totalActualWeight = newData.reduce((total, record) => total + record.actualWeight, 0);
+      
+        const sumEdgeTrimWeight = edgeTrimWeights.reduce((total, weight) => total + weight, 0);
+      
+        const yieldLossRatio = (sumEdgeTrimWeight / totalActualWeight) * 100; 
+        setactualYLR(yieldLossRatio);
+       }
       setTableData(newData);
     };
-
 
   const handleChange = (e) => {
     if (e.target.value !== "") {
@@ -2049,7 +2071,7 @@ useEffect(() => {
                             <Input
                               id="ratio"
                               disabled={true}
-                              value={ratio}
+                              value={actualYLR.toFixed(2)}
                               name="ratio"
                             />
                           </>
