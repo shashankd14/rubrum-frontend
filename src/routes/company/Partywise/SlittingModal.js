@@ -1287,6 +1287,16 @@ const CreateSlittingDetailsForm = (props) => {
       setTableData(newData);
     }
     props.resetIsDeleted(false);
+
+
+
+
+
+
+
+
+
+    
   }, [props.coilDetails]);
 
   
@@ -1360,12 +1370,15 @@ const CreateSlittingDetailsForm = (props) => {
   const [storedTableDatapacketWeights, setStoredTableDatapacketWeights] = useState(new Array(panelList.length).fill(0));
   //addition of total loss weight for each table
   const [totaltableDatapacketWeight, setTotaltableDatapacketWeight] = useState(new Array(panelList.length).fill(0));
+  const [totalYLR, setTotalYLR] = useState(0);
  
   const  getPackatClassificationName = (value) =>{ 
+    if(value===undefined)
+    {value=0;}
     return packetClassification.filter((item)=>item.tagId==value)?.[0].tagName;
   }
   const handleClassificationChange = (value, index, record) => {
-    
+    debugger
     const tableIndex = record.tableIndex;
     panelList[tableIndex][index].packetClassificationId = value;
     panelList[tableIndex][index].packetClassificationName = getPackatClassificationName(value);
@@ -1387,9 +1400,9 @@ const CreateSlittingDetailsForm = (props) => {
       if ( tableRecord.packetClassificationName === 'WIP(EDGE TRIM)' || tableRecord.packetClassificationName === 'WIP(CUT ENDS)'
       ) 
       {
-        tableDatapacketWeight += parseFloat(tableRecord.plannedWeight);
+        tableDatapacketWeight += tableRecord.plannedWeight!== undefined? parseFloat(tableRecord.plannedWeight): 0;
       }
-      tdTotalPlannedWeight += parseFloat(tableRecord.plannedWeight);
+      tdTotalPlannedWeight += tableRecord.plannedWeight!== undefined? parseFloat(tableRecord.plannedWeight): 0;
       // Return the original tableRecord for other indices
       return tableRecord;
     });
@@ -1410,7 +1423,30 @@ const CreateSlittingDetailsForm = (props) => {
     setTotaltableDatapacketWeight(updatedTotaltableDatapacketWeight);
 
     const newArray = [...yieldLossRatio];
-    newArray[tableIndex] = TDlossRatio;
+    newArray[tableIndex] = TDlossRatio !== undefined? TDlossRatio: 0;
+  //   let totalsum =0;
+  //   for (let i = 0; i < panelList.length; i++) {
+      
+  //     const panel = panelList[i];
+  //     let sumPlannedWeightEdgeTrim = 0;
+  //     let sumPlannedWeightTotal = 0;
+  
+  //     for (const instruction of panel) {
+  //         const classificationName = getPackatClassificationName(instruction.packetClassification?.classificationId);
+  
+  //         if (classificationName === 'WIP(EDGE TRIM)' || classificationName === 'WIP(CUT ENDS)') {
+  //             sumPlannedWeightEdgeTrim += parseFloat(instruction.plannedWeight);
+  //         }
+  
+  //         sumPlannedWeightTotal += parseFloat(instruction.plannedWeight);
+  //     }
+  
+  //     if (sumPlannedWeightTotal !== 0) {
+  //         const yieldLossRatio = (sumPlannedWeightEdgeTrim / sumPlannedWeightTotal) * 100;
+  //         totalsum = totalsum + yieldLossRatio;
+  //     }
+  // }
+    // setTotalYLR(totalsum);
     setYieldLossRatio(newArray);
   };
 
@@ -1569,10 +1605,12 @@ const columnYieldLoss = [
 
   const sum = (totaltableDatapacketWeight / tweight) * 100;
   useEffect(() => {
+    debugger;
     const updatedTmpGroupedInstructions = new Map();
 
     const tmpLossRatio = Array(panelList.length).fill(0);
     // Group instructions by date
+    debugger;
     panelList.forEach((innerArray, panelIndex) => {
       innerArray.forEach((item, rowIndex) => {
         // const instructionDate = item.instructionDate.split(' ')[0];
@@ -1594,11 +1632,64 @@ const columnYieldLoss = [
         updatedTmpGroupedInstructions.get(instructionDate).push(updatedItem);
       });
     });
+    
+  //   let totalsum=0;
+    
 
-    setYieldLossRatio(tmpLossRatio);
+
     // Update the state with the new tmpGroupedInstructions
     setGroupedInstructions(updatedTmpGroupedInstructions);
+
+
+    console.log('inside calc....');
+    debugger;
+    const newArray = [...yieldLossRatio];
+    const updatedStoredTableDatapacketWeights = [...storedTableDatapacketWeights];
+        
+    for (let i = 0; i < panelList.length; i++) {
+      var tableDatapacketWeight = 0;
+      var tdTotalPlannedWeight = 0;
+
+      panelList[i].map((tableRecord) => {
+        // Update the relevant data in tableData
+        // if ( tableRecord.packetClassificationId === 26 || tableRecord.packetClassificationId === 27
+        if ( tableRecord?.packetClassification?.classificationName === 'WIP(EDGE TRIM)' || tableRecord?.packetClassification?.classificationName === 'WIP(CUT ENDS)'
+        ) 
+        {
+          tableDatapacketWeight += tableRecord?.plannedWeight !== undefined? parseFloat(tableRecord?.plannedWeight): 0;
+        }
+        tdTotalPlannedWeight += tableRecord?.plannedWeight !== undefined? parseFloat(tableRecord?.plannedWeight): 0;
+        // Return the original tableRecord for other indices
+        return tableRecord;
+      });
+
+      var TDlossRatio = tdTotalPlannedWeight!== 0 ? (tableDatapacketWeight / tdTotalPlannedWeight) * 100: 0;
+
+      //addition of tableDatapacketWeight for total yield loss ratio
+      var totaltableDatapacketWeight =0;
+      totaltableDatapacketWeight += tableDatapacketWeight;
+      console.log("totaltableDatapacketWeight", totaltableDatapacketWeight); 
+      // Update storedTableDatapacketWeights with the cumulative tableDatapacketWeight for the specific table index
+      updatedStoredTableDatapacketWeights[i] = tableDatapacketWeight;
+      
+
+      newArray[i] = TDlossRatio !== undefined? TDlossRatio: 0;
+
+      console.log('inside calc....2', newArray);
+      // setTotalYLR(totalsum);
+    }
+    setStoredTableDatapacketWeights(updatedStoredTableDatapacketWeights);
+
+      // Update totaltableDatapacketWeight with the cumulative tableDatapacketWeight for all table indices
+      const updatedTotaltableDatapacketWeight = updatedStoredTableDatapacketWeights.reduce((acc, curr) => acc + curr, 0);
+      setTotaltableDatapacketWeight(updatedTotaltableDatapacketWeight);
+    setYieldLossRatio(newArray);
+
   }, [panelList]); // Add any dependencies that should trigger this effect when changed
+
+  useEffect(() => {
+    
+  }, [panelList]);
 
   const savePlan = (e, name, record) => {
     if (props?.unfinish) {
@@ -2167,7 +2258,7 @@ const columnYieldLoss = [
                         </Form.Item>
                       </Col>
                       <Col lg={12} md={12} sm={24} xs={24}>
-                        <Form.Item label='Total yield loss (%)'>
+                        <Form.Item label='Planned yield loss (%)'>
                           {getFieldDecorator('plannedYieldLossRatio', {
                             rules: [{ required: false }],
                           })(
@@ -2177,6 +2268,22 @@ const columnYieldLoss = [
                                 disabled={true}
                                 value={(sum).toFixed(2)}
                                 name='plannedYieldLossRatio'
+                              />
+                            </>
+                          )}
+                        </Form.Item>
+                      </Col>
+                      <Col lg={12} md={12} sm={24} xs={24}>
+                        <Form.Item label='Total yield loss (%)'>
+                          {getFieldDecorator('totalYieldLossRatio', {
+                            rules: [{ required: false }],
+                          })(
+                            <>
+                              <Input
+                                id='totalYieldLossRatio'
+                                disabled={true}
+                                value={(sum).toFixed(2)}
+                                name='totalYieldLossRatio'
                               />
                             </>
                           )}

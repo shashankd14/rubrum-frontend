@@ -285,8 +285,10 @@ const List = (props) => {
     if (!props.inward.loading && props.inward.success) {
       // setFilteredInwardList(getFilterData(inwardList));
       // console.log(inwardList)
-      inwardList[0].children = inwardList[0].instruction
-      setFilteredInwardList(inwardList);
+      if(inwardList.length !==0){
+        inwardList[0].children = inwardList[0].instruction
+      }
+        setFilteredInwardList(inwardList);
     }
   }, [props.inward.loading, props.inward.success]);
 
