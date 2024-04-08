@@ -431,7 +431,9 @@ const SlittingWidths = (props) => {
       keys: keys.filter((key) => key !== k),
     });
   };
+console.log("props.coilDetails", props.coilDetails);
 
+console.log("props.coil", props.coil);
   const handleBlur = (e, i) => {
     props.form.validateFields((err, values) => {
       let widthEntry = 0;
@@ -1287,6 +1289,7 @@ const CreateSlittingDetailsForm = (props) => {
       setTableData(newData);
     }
     props.resetIsDeleted(false);
+    
   }, [props.coilDetails]);
 
   
@@ -1340,8 +1343,9 @@ const CreateSlittingDetailsForm = (props) => {
         const yieldLossRatio = (sumEdgeTrimWeight / totalActualWeight) * 100; 
         setactualYLR(yieldLossRatio);
        }
-
       setTableData(newData);
+
+      
     };
 
     const handleTagsChange = (value, index, record) => {
@@ -1360,12 +1364,15 @@ const CreateSlittingDetailsForm = (props) => {
   const [storedTableDatapacketWeights, setStoredTableDatapacketWeights] = useState(new Array(panelList.length).fill(0));
   //addition of total loss weight for each table
   const [totaltableDatapacketWeight, setTotaltableDatapacketWeight] = useState(new Array(panelList.length).fill(0));
+  const [TDlossRatio, setTDlossRatio] = useState(0);
  
   const  getPackatClassificationName = (value) =>{ 
+    if(value===undefined)
+    {value=0;}
     return packetClassification.filter((item)=>item.tagId==value)?.[0].tagName;
   }
   const handleClassificationChange = (value, index, record) => {
-    
+    // debugger
     const tableIndex = record.tableIndex;
     panelList[tableIndex][index].packetClassificationId = value;
     panelList[tableIndex][index].packetClassificationName = getPackatClassificationName(value);
@@ -1387,15 +1394,16 @@ const CreateSlittingDetailsForm = (props) => {
       if ( tableRecord.packetClassificationName === 'WIP(EDGE TRIM)' || tableRecord.packetClassificationName === 'WIP(CUT ENDS)'
       ) 
       {
-        tableDatapacketWeight += parseFloat(tableRecord.plannedWeight);
+        tableDatapacketWeight += tableRecord.plannedWeight!== undefined? parseFloat(tableRecord.plannedWeight): 0;
       }
-      tdTotalPlannedWeight += parseFloat(tableRecord.plannedWeight);
+      tdTotalPlannedWeight += tableRecord.plannedWeight!== undefined? parseFloat(tableRecord.plannedWeight): 0;
       // Return the original tableRecord for other indices
       return tableRecord;
     });
 
     var TDlossRatio = (tableDatapacketWeight / tdTotalPlannedWeight) * 100;
-
+    console.log("TDlossRatio11111111", TDlossRatio);
+    setTDlossRatio(TDlossRatio);
     //addition of tableDatapacketWeight for total yield loss ratio
     var totaltableDatapacketWeight =0;
     totaltableDatapacketWeight += tableDatapacketWeight;
@@ -1410,8 +1418,9 @@ const CreateSlittingDetailsForm = (props) => {
     setTotaltableDatapacketWeight(updatedTotaltableDatapacketWeight);
 
     const newArray = [...yieldLossRatio];
-    newArray[tableIndex] = TDlossRatio;
+    newArray[tableIndex] = TDlossRatio !== undefined? TDlossRatio: 0;
     setYieldLossRatio(newArray);
+
   };
 
   useEffect(() => {
@@ -1493,7 +1502,6 @@ const columnYieldLoss = [
   useEffect(() => {
     if (props.yieldLossRatioParty !== undefined) {
       const filterContentByProcessName = (processName, content) => {
-        debugger;
         return content.filter(item => item.processName === processName);
       }
   
@@ -1569,6 +1577,7 @@ const columnYieldLoss = [
 
   const sum = (totaltableDatapacketWeight / tweight) * 100;
   useEffect(() => {
+    // debugger;
     const updatedTmpGroupedInstructions = new Map();
 
     const tmpLossRatio = Array(panelList.length).fill(0);
@@ -1594,11 +1603,59 @@ const columnYieldLoss = [
         updatedTmpGroupedInstructions.get(instructionDate).push(updatedItem);
       });
     });
-
-    setYieldLossRatio(tmpLossRatio);
+  
     // Update the state with the new tmpGroupedInstructions
     setGroupedInstructions(updatedTmpGroupedInstructions);
+
+
+    console.log('inside calc....');
+    const newArray = [...yieldLossRatio];
+    const updatedStoredTableDatapacketWeights = [...storedTableDatapacketWeights];
+        
+    for (let i = 0; i < panelList.length; i++) {
+      var tableDatapacketWeight = 0;
+      var tdTotalPlannedWeight = 0;
+
+      panelList[i].map((tableRecord) => {
+        // Update the relevant data in tableData
+        // if ( tableRecord.packetClassificationId === 26 || tableRecord.packetClassificationId === 27
+        if ( tableRecord?.packetClassification?.classificationName === 'WIP(EDGE TRIM)' || tableRecord?.packetClassification?.classificationName === 'WIP(CUT ENDS)'
+        ) 
+        {
+          tableDatapacketWeight += tableRecord?.plannedWeight !== undefined? parseFloat(tableRecord?.plannedWeight): 0;
+        }
+        tdTotalPlannedWeight += tableRecord?.plannedWeight !== undefined? parseFloat(tableRecord?.plannedWeight): 0;
+        // Return the original tableRecord for other indices
+        return tableRecord;
+      });
+
+      var TDlossRatio = tdTotalPlannedWeight!== 0 ? (tableDatapacketWeight / tdTotalPlannedWeight) * 100: 0;
+
+      //addition of tableDatapacketWeight for total yield loss ratio
+      var totaltableDatapacketWeight =0;
+      totaltableDatapacketWeight += tableDatapacketWeight;
+      console.log("totaltableDatapacketWeight", totaltableDatapacketWeight); 
+      // Update storedTableDatapacketWeights with the cumulative tableDatapacketWeight for the specific table index
+      updatedStoredTableDatapacketWeights[i] = tableDatapacketWeight;
+      
+
+      newArray[i] = TDlossRatio !== undefined? TDlossRatio: 0;
+
+      console.log('inside calc....2', newArray);
+      // setTotalYLR(totalsum);
+    }
+    setStoredTableDatapacketWeights(updatedStoredTableDatapacketWeights);
+
+      // Update totaltableDatapacketWeight with the cumulative tableDatapacketWeight for all table indices
+      const updatedTotaltableDatapacketWeight = updatedStoredTableDatapacketWeights.reduce((acc, curr) => acc + curr, 0);
+      setTotaltableDatapacketWeight(updatedTotaltableDatapacketWeight);
+    setYieldLossRatio(newArray);
+
   }, [panelList]); // Add any dependencies that should trigger this effect when changed
+
+  useEffect(() => {
+    
+  }, [panelList]);
 
   const savePlan = (e, name, record) => {
     if (props?.unfinish) {
@@ -1681,7 +1738,7 @@ const columnYieldLoss = [
               const updatedInstructions = instruction.instructionRequestDTOs.map((instructionDTO, index) => {
                 return {
                   ...instructionDTO,
-                  instructionwiseLoss: yieldLossRatio[index] // Assuming yieldLoss array is synchronized with instructionRequestDTOs
+                  // instructionwiseLoss: yieldLossRatio[index] // Assuming yieldLoss array is synchronized with instructionRequestDTOs
                 };
               });
     
@@ -1839,6 +1896,7 @@ const columnYieldLoss = [
     }
   };
   const addRow = () => {
+    debugger
     setRowData(true);
     const newData = {
       processDate: new Date(),
@@ -1858,6 +1916,7 @@ const columnYieldLoss = [
     };
     setTableData([...tableData, newData]);
   };
+  console.log("tableData Add row", tableData);
   const getFooterButtons = (type) => {
     return [
       <Button key='back' onClick={handleCancel}>
@@ -2026,7 +2085,7 @@ const columnYieldLoss = [
                         )}
                       </Form.Item>
 
-                      <Form.Item label='Planned yield loss ratio (%)'>
+                     {/* <Form.Item label='Planned yield loss ratio (%)'>
                         {getFieldDecorator('plannedYieldLossRatio', {
                           initialValue: props.coil.party.plannedYieldLossRatio || '',
                           rules: [{ required: false }],
@@ -2040,7 +2099,7 @@ const columnYieldLoss = [
                             />
                           </>
                         )}
-                      </Form.Item>
+                        </Form.Item>*/}
 
                       <Form.Item label='Actual yield loss ratio (%)'>
                         {getFieldDecorator('plannedYieldLossRatio', {
@@ -2167,7 +2226,7 @@ const columnYieldLoss = [
                         </Form.Item>
                       </Col>
                       <Col lg={12} md={12} sm={24} xs={24}>
-                        <Form.Item label='Total yield loss (%)'>
+                        <Form.Item label='Planned yield loss (%)'>
                           {getFieldDecorator('plannedYieldLossRatio', {
                             rules: [{ required: false }],
                           })(
@@ -2175,8 +2234,24 @@ const columnYieldLoss = [
                               <Input
                                 id='plannedYieldLossRatio'
                                 disabled={true}
-                                value={(sum).toFixed(2)}
+                                value={TDlossRatio.toFixed(2)}
                                 name='plannedYieldLossRatio'
+                              />
+                            </>
+                          )}
+                        </Form.Item>
+                      </Col>
+                      <Col lg={12} md={12} sm={24} xs={24}>
+                        <Form.Item label='Total yield loss (%)'>
+                          {getFieldDecorator('totalYieldLossRatio', {
+                            rules: [{ required: false }],
+                          })(
+                            <>
+                              <Input
+                                id='totalYieldLossRatio'
+                                disabled={true}
+                                value={(sum).toFixed(2)}
+                                name='totalYieldLossRatio'
                               />
                             </>
                           )}
