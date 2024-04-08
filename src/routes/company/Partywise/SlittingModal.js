@@ -431,9 +431,7 @@ const SlittingWidths = (props) => {
       keys: keys.filter((key) => key !== k),
     });
   };
-console.log("props.coilDetails", props.coilDetails);
 
-console.log("props.coil", props.coil);
   const handleBlur = (e, i) => {
     props.form.validateFields((err, values) => {
       let widthEntry = 0;
@@ -1129,6 +1127,8 @@ const CreateSlittingDetailsForm = (props) => {
   const [tweight, settweight] = useState(0);
   const [totalActualweight, setTotalActualWeight] = useState(0);
   const [actualYLR, setactualYLR] = useState(0);
+  const [actualSlitCutYLR, setactualSlitCutYLR] = useState(0);
+  const [actualSlittingYLR, setactualSlittingYLR] = useState(0);
   const [page, setPage] = useState(1);
   const [edit, setEdit] = useState([]);
   const [validate, setValidate] = useState(true);
@@ -1344,9 +1344,37 @@ const CreateSlittingDetailsForm = (props) => {
         setactualYLR(yieldLossRatio);
        }
       setTableData(newData);
+        // Calculate total planned weight for SlitCut
+        const slitAndCutItems = newData.filter(item => item.isSlitAndCut);
 
-      
-    };
+        const edgeTrimWeightsSlitCut = slitAndCutItems.filter((record) => {
+          const classificationName = getPackatClassificationName(record.packetClassification?.classificationId || record.packetClassification?.tagId);
+          return classificationName === "EDGE TRIM" || classificationName === "CUT ENDS";
+        }).map((record) => record.plannedWeight);
+
+        const totalPlannedWeight1 = slitAndCutItems.reduce((total, record) => total + record.plannedWeight, 0);
+
+        const slitCutsumEdgeTrimWeight = edgeTrimWeightsSlitCut.reduce((total, weight) => total + weight, 0);
+
+        const yieldLossRatioSlitCut = (slitCutsumEdgeTrimWeight / totalPlannedWeight1) * 100; 
+        setactualSlitCutYLR(yieldLossRatioSlitCut);
+
+        // Calculate total planned weight for Slitting
+        const slittingItems = newData.filter(item => item.isSlitAndCut === false);
+
+        const edgeTrimWeightsSlitting = slittingItems.filter((record) => {
+          const classificationName = getPackatClassificationName(record.packetClassification?.classificationId || record.packetClassification?.tagId);
+          return classificationName === "EDGE TRIM" || classificationName === "CUT ENDS";
+        }).map((record) => record.plannedWeight);
+
+        const totalPlannedWeight2 = slittingItems.reduce((total, record) => total + record.plannedWeight, 0);
+
+        const slittingsumEdgeTrimWeight = edgeTrimWeightsSlitting.reduce((total, weight) => total + weight, 0);
+
+        const yieldLossRatioSlitting = (slittingsumEdgeTrimWeight / totalPlannedWeight2) * 100; 
+        setactualSlittingYLR(yieldLossRatioSlitting);
+
+ };
 
     const handleTagsChange = (value, index, record) => {
 
@@ -2101,17 +2129,47 @@ const columnYieldLoss = [
                         )}
                         </Form.Item>*/}
 
-                      <Form.Item label='Actual yield loss ratio (%)'>
-                        {getFieldDecorator('plannedYieldLossRatio', {
+                      <Form.Item label='SlitCut actual yield loss ratio  (%)'>
+                        {getFieldDecorator('actualYieldLossRatioSlitCut', {
                           initialValue: props.coil.party.plannedYieldLossRatio || '',
                           rules: [{ required: false }],
                         })(
                           <>
                             <Input
-                              id='plannedYieldLossRatio'
+                              id='actualYieldLossRatioSlitCut'
+                              disabled={true}
+                              value={actualSlitCutYLR.toFixed(2)}
+                              name='actualYieldLossRatioSlitCut'
+                            />
+                          </>
+                        )}
+                      </Form.Item>
+                      <Form.Item label='Slitting actual yield loss ratio(%)'>
+                        {getFieldDecorator('actualYieldLossRatioSlit', {
+                          initialValue: props.coil.party.plannedYieldLossRatio || '',
+                          rules: [{ required: false }],
+                        })(
+                          <>
+                            <Input
+                              id='actualYieldLossRatioSlit'
+                              disabled={true}
+                              value={actualSlittingYLR.toFixed(2)}
+                              name='actualYieldLossRatioSlit'
+                            />
+                          </>
+                        )}
+                      </Form.Item>
+                      <Form.Item label='Total yield loss ratio (%)'>
+                        {getFieldDecorator('actualYieldLossRatio', {
+                          initialValue: props.coil.party.actualYieldLossRatio || '',
+                          rules: [{ required: false }],
+                        })(
+                          <>
+                            <Input
+                              id='actualYieldLossRatio'
                               disabled={true}
                               value={actualYLR.toFixed(2)}
-                              name='plannedYieldLossRatio'
+                              name='actualYieldLossRatio'
                             />
                           </>
                         )}
