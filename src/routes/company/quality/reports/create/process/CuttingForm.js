@@ -428,6 +428,10 @@ const CuttingForm = (props) => {
                             <label>Target Weight</label>
                             <Input disabled value={location.state.selectedItemForQr.targetWeight} onChange={(e) => onOptionChange('plannedWeight', e)}></Input>
                         </Col>
+                        <Col span={12}>
+                            <label>Total Yield Loss (%)</label>
+                            <Input disabled value={location.state.selectedItemForQr.plannedYieldLossRatio} onChange={(e) => onOptionChange('plannedYieldLossRatio', e)}></Input>
+                         </Col>
                     </Row>
                     <Row>
                         <Col span={24}>
