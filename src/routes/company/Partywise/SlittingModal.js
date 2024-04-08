@@ -431,7 +431,9 @@ const SlittingWidths = (props) => {
       keys: keys.filter((key) => key !== k),
     });
   };
+console.log("props.coilDetails", props.coilDetails);
 
+console.log("props.coil", props.coil);
   const handleBlur = (e, i) => {
     props.form.validateFields((err, values) => {
       let widthEntry = 0;
@@ -1287,15 +1289,6 @@ const CreateSlittingDetailsForm = (props) => {
       setTableData(newData);
     }
     props.resetIsDeleted(false);
-
-
-
-
-
-
-
-
-
     
   }, [props.coilDetails]);
 
@@ -1350,8 +1343,9 @@ const CreateSlittingDetailsForm = (props) => {
         const yieldLossRatio = (sumEdgeTrimWeight / totalActualWeight) * 100; 
         setactualYLR(yieldLossRatio);
        }
-
       setTableData(newData);
+
+      
     };
 
     const handleTagsChange = (value, index, record) => {
@@ -1370,7 +1364,7 @@ const CreateSlittingDetailsForm = (props) => {
   const [storedTableDatapacketWeights, setStoredTableDatapacketWeights] = useState(new Array(panelList.length).fill(0));
   //addition of total loss weight for each table
   const [totaltableDatapacketWeight, setTotaltableDatapacketWeight] = useState(new Array(panelList.length).fill(0));
-  const [totalYLR, setTotalYLR] = useState(0);
+  const [TDlossRatio, setTDlossRatio] = useState(0);
  
   const  getPackatClassificationName = (value) =>{ 
     if(value===undefined)
@@ -1378,7 +1372,7 @@ const CreateSlittingDetailsForm = (props) => {
     return packetClassification.filter((item)=>item.tagId==value)?.[0].tagName;
   }
   const handleClassificationChange = (value, index, record) => {
-    debugger
+    // debugger
     const tableIndex = record.tableIndex;
     panelList[tableIndex][index].packetClassificationId = value;
     panelList[tableIndex][index].packetClassificationName = getPackatClassificationName(value);
@@ -1408,7 +1402,8 @@ const CreateSlittingDetailsForm = (props) => {
     });
 
     var TDlossRatio = (tableDatapacketWeight / tdTotalPlannedWeight) * 100;
-
+    console.log("TDlossRatio11111111", TDlossRatio);
+    setTDlossRatio(TDlossRatio);
     //addition of tableDatapacketWeight for total yield loss ratio
     var totaltableDatapacketWeight =0;
     totaltableDatapacketWeight += tableDatapacketWeight;
@@ -1424,30 +1419,8 @@ const CreateSlittingDetailsForm = (props) => {
 
     const newArray = [...yieldLossRatio];
     newArray[tableIndex] = TDlossRatio !== undefined? TDlossRatio: 0;
-  //   let totalsum =0;
-  //   for (let i = 0; i < panelList.length; i++) {
-      
-  //     const panel = panelList[i];
-  //     let sumPlannedWeightEdgeTrim = 0;
-  //     let sumPlannedWeightTotal = 0;
-  
-  //     for (const instruction of panel) {
-  //         const classificationName = getPackatClassificationName(instruction.packetClassification?.classificationId);
-  
-  //         if (classificationName === 'WIP(EDGE TRIM)' || classificationName === 'WIP(CUT ENDS)') {
-  //             sumPlannedWeightEdgeTrim += parseFloat(instruction.plannedWeight);
-  //         }
-  
-  //         sumPlannedWeightTotal += parseFloat(instruction.plannedWeight);
-  //     }
-  
-  //     if (sumPlannedWeightTotal !== 0) {
-  //         const yieldLossRatio = (sumPlannedWeightEdgeTrim / sumPlannedWeightTotal) * 100;
-  //         totalsum = totalsum + yieldLossRatio;
-  //     }
-  // }
-    // setTotalYLR(totalsum);
     setYieldLossRatio(newArray);
+
   };
 
   useEffect(() => {
@@ -1529,7 +1502,6 @@ const columnYieldLoss = [
   useEffect(() => {
     if (props.yieldLossRatioParty !== undefined) {
       const filterContentByProcessName = (processName, content) => {
-        debugger;
         return content.filter(item => item.processName === processName);
       }
   
@@ -1605,12 +1577,11 @@ const columnYieldLoss = [
 
   const sum = (totaltableDatapacketWeight / tweight) * 100;
   useEffect(() => {
-    debugger;
+    // debugger;
     const updatedTmpGroupedInstructions = new Map();
 
     const tmpLossRatio = Array(panelList.length).fill(0);
     // Group instructions by date
-    debugger;
     panelList.forEach((innerArray, panelIndex) => {
       innerArray.forEach((item, rowIndex) => {
         // const instructionDate = item.instructionDate.split(' ')[0];
@@ -1632,17 +1603,12 @@ const columnYieldLoss = [
         updatedTmpGroupedInstructions.get(instructionDate).push(updatedItem);
       });
     });
-    
-  //   let totalsum=0;
-    
-
-
+  
     // Update the state with the new tmpGroupedInstructions
     setGroupedInstructions(updatedTmpGroupedInstructions);
 
 
     console.log('inside calc....');
-    debugger;
     const newArray = [...yieldLossRatio];
     const updatedStoredTableDatapacketWeights = [...storedTableDatapacketWeights];
         
@@ -1772,7 +1738,7 @@ const columnYieldLoss = [
               const updatedInstructions = instruction.instructionRequestDTOs.map((instructionDTO, index) => {
                 return {
                   ...instructionDTO,
-                  instructionwiseLoss: yieldLossRatio[index] // Assuming yieldLoss array is synchronized with instructionRequestDTOs
+                  // instructionwiseLoss: yieldLossRatio[index] // Assuming yieldLoss array is synchronized with instructionRequestDTOs
                 };
               });
     
@@ -1930,6 +1896,7 @@ const columnYieldLoss = [
     }
   };
   const addRow = () => {
+    debugger
     setRowData(true);
     const newData = {
       processDate: new Date(),
@@ -1949,6 +1916,7 @@ const columnYieldLoss = [
     };
     setTableData([...tableData, newData]);
   };
+  console.log("tableData Add row", tableData);
   const getFooterButtons = (type) => {
     return [
       <Button key='back' onClick={handleCancel}>
@@ -2117,7 +2085,7 @@ const columnYieldLoss = [
                         )}
                       </Form.Item>
 
-                      <Form.Item label='Planned yield loss ratio (%)'>
+                     {/* <Form.Item label='Planned yield loss ratio (%)'>
                         {getFieldDecorator('plannedYieldLossRatio', {
                           initialValue: props.coil.party.plannedYieldLossRatio || '',
                           rules: [{ required: false }],
@@ -2131,7 +2099,7 @@ const columnYieldLoss = [
                             />
                           </>
                         )}
-                      </Form.Item>
+                        </Form.Item>*/}
 
                       <Form.Item label='Actual yield loss ratio (%)'>
                         {getFieldDecorator('plannedYieldLossRatio', {
@@ -2266,7 +2234,7 @@ const columnYieldLoss = [
                               <Input
                                 id='plannedYieldLossRatio'
                                 disabled={true}
-                                value={(sum).toFixed(2)}
+                                value={TDlossRatio.toFixed(2)}
                                 name='plannedYieldLossRatio'
                               />
                             </>
