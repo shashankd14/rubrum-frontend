@@ -26,4 +26,6 @@ export const sidebarMenuItems = {
     vendor: "Vendor",
     location: "Location",
     customer: "Customer",
+    category: "Vendor",
+    weighbridge: "Vendor"
 }

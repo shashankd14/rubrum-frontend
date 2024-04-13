@@ -5,7 +5,7 @@ import moment from 'moment';
 import SearchBox from "../../../components/SearchBox";
 
 import IntlMessages from "../../../util/IntlMessages";
-import { fetchCustomerList, fetchPartyList, addCustomer, fetchCustomerListId, updateParty, resetParty, fetchClassificationList,fetchEndUserTagsList, fetchTemplatesList } from "../../../appRedux/actions";
+import { fetchCustomerList, deleteCustomer, fetchPartyList, addCustomer, fetchCustomerListId, updateParty, resetParty, fetchClassificationList,fetchEndUserTagsList, fetchTemplatesList } from "../../../appRedux/actions";
 import { onDeleteContact } from "../../../appRedux/actions";
 
 const FormItem = Form.Item;
@@ -38,7 +38,7 @@ const Customer = (props) => {
     const [filteredInwardList, setFilteredInwardList] = useState(props.party?.partyList || []);
     const [filteredCustomerList, setFilteredCustomerList] = useState(props.customer?.customerList || []);
     const [showAmtDcPdfFlg, setShowAmtDcPdfFlg] = useState(props.party?.showAmtDcPdfFlg==='Y'); // Default value
-    const [dailyReportsList, setDailyReportsList] = useState([]);
+    const [purchaseReportsList, setPurchaseReportsList] = useState([]);
     const [monthlyReportsList, setMonthlyReportsList] = useState([]); 
 console.log("viewCustomerData", viewCustomerData)
     const {getFieldDecorator, getFieldValue} = props.form;
@@ -113,7 +113,7 @@ console.log("viewCustomerData", viewCustomerData)
                 <Divider type="vertical"/>
                 <span className="gx-link" onClick={(e) => onEdit(record, e)}>Edit</span>
                 <Divider type="vertical"/>
-                <span className="gx-link"onClick={() => {}}>Delete</span>
+                <span className="gx-link" onClick={(e) => onDelete(record, e)}>Delete</span>
             </span>
         ),
     },
@@ -134,10 +134,12 @@ console.log("viewCustomerData", viewCustomerData)
         setViewCustomer(true);
     }
     const onDelete = (record,key, e) => {
-        let id = []
-        id.push(record.inwardEntryId);
-        e.preventDefault();
-        props.deleteInwardEntryById(id)
+        props.deleteCustomer({
+            id: record.customerId,
+            ipAddress: "1.1.1.1",
+            requestId: "CUSTOMER_GET",
+            userId: ''
+        })
 
       }
 
@@ -347,9 +349,8 @@ console.log("viewCustomerData", viewCustomerData)
                                     ...values,
                                     ipAddress: "1.1.1.1",
                                     requestId:"CUSTOMER_INSERT",
-                                    userId: 1
-                                    // dailyReportsList: dailyReportsList.join(','),
-                                    // monthlyReportsList: monthlyReportsList.join(','),
+                                    userId: "",
+                                    purchaseReportsList: purchaseReportsList.join(','),
                                   });
                                   props.form.resetFields();
                                   setShowAddCustomer(false);
@@ -532,16 +533,16 @@ console.log("viewCustomerData", viewCustomerData)
                                             })}</Select>
                                         )}
                                     </Form.Item> */}
-                                    {/* <Form.Item label = "Purchase Reports">
+                                     <Form.Item label = "Purchase Reports">
                                         <Checkbox.Group
                                             id="purchaseReports"
-                                            value={dailyReportsList}
-                                            onChange={(checkedValues) => {setDailyReportsList(checkedValues)}}
+                                            value={purchaseReportsList}
+                                            onChange={(checkedValues) => {setPurchaseReportsList(checkedValues)}}
                                         >
                                             <Checkbox value="Daily">Daily</Checkbox>
                                             <Checkbox value="Monthly">Monthly</Checkbox>
                                         </Checkbox.Group>
-                                    </Form.Item> */}
+                                    </Form.Item> 
                                 </Form>
                             </Col>
                         </Row>
@@ -569,12 +570,7 @@ const addCustomerForm = Form.create({
         const city = customer?.address2?.city ? [customer?.address1?.city, customer?.address2?.city] : [customer?.address1?.city];
         const state = customer?.address2?.state ? [customer?.address1?.state, customer?.address2?.state] : [customer?.address1?.state];
         const pincode = customer?.address2?.pincode ? [customer?.address1?.pincode, customer?.address2?.pincode] : [customer?.address1?.pincode];
-        // const tags = props?.customer?.customer?.tags.map(item=> item.classificationName)
-       // const checkboxValuesDR = customer?.dailyReportsList || [];
-    //    const checkboxValuesDR = (customer?.dailyReportsList || '').split(',').map(value => value.trim());
-    //     const checkboxValuesMR = customer?.monthlyReportsList || [];
-        // console.log('Received dailyReportsList:', party?.dailyReportsList);
-        // console.log('Parsed dailyReportsList:', checkboxValuesDR);
+        const checkboxValues = (customer?.dailyReportsList || '').split(',').map(value => value.trim());
         return {
             customerName:Form.createFormField ({
                 ...props.customer?.customer?.customerName,
@@ -635,11 +631,11 @@ const addCustomerForm = Form.create({
                 ...props.customer?.customer?.tags,
                 value: customer?.tags?.map(item=> item.tagId) || [],
             }),
-            // dailyReportsList: Form.createFormField({
-            //     ...customer?.dailyReportsList,
-            //    //value: Array.isArray(checkboxValuesDR) ? checkboxValuesDR : [],
-            //    value:checkboxValuesDR
-            // }),
+            purchaseReportsList: Form.createFormField({
+                ...customer?.purchaseReportsList,
+               //value: Array.isArray(checkboxValuesDR) ? checkboxValuesDR : [],
+               value:checkboxValues
+            }),
             // monthlyReportsList: Form.createFormField({
             //     ...customer?.monthlyReportsList,
             //    value: Array.isArray(checkboxValuesMR) ? checkboxValuesMR : [],
@@ -651,6 +647,7 @@ const addCustomerForm = Form.create({
 export default connect(mapStateToProps, {
     fetchPartyList,
     addCustomer,
+    deleteCustomer,
     fetchCustomerListId,
     updateParty,
     resetParty,

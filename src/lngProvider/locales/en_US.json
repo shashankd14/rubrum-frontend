@@ -363,5 +363,11 @@
   "sidebar.company.vendorList": "Vendor List",
   "sidebar.company.customerList": "Customer List",
   "sidebar.company.locationList": "Location List",
-  "sidebar.master.customer": "Customer"
+  "sidebar.master.customer": "Customer",
+  "sidebar.master.category": "Category",
+  "master.company.mainCategory": "Main Category",
+  "sidebar.master.subCategory": "Sub Category",
+  "master.company.subCategoryList": "Sub Category List",
+  "sidebar.master.weighbridge": "Weighbridge",
+  "master.company.weighbridgeList": "Weighbridge List"
 }

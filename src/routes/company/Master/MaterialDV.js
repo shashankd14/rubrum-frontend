@@ -439,7 +439,7 @@ const MaterialDV = (props) => {
                           style={{ marginRight: '8px' }}
                         />
                       )}
-                      <Button
+                      {/* <Button
                         type='primary'
                         htmlType='submit'
                         onClick={() => setAddMainCategory(true)}
@@ -489,8 +489,8 @@ const MaterialDV = (props) => {
                             </Row>
                           </Form>
                         </Card>
-                      </Modal>
-                    </Col>
+                      </Modal>*/}
+                    </Col> 
                   </Form.Item>
 
                   <Form.Item label='Item sub category'>
@@ -509,7 +509,7 @@ const MaterialDV = (props) => {
                           style={{ marginRight: '8px' }}
                         />
                       )}
-                      <Button
+                      {/* <Button
                         type='primary'
                         onClick={() => {
                           props.form.resetFields();
@@ -603,7 +603,7 @@ const MaterialDV = (props) => {
                             </Row>
                           </Form>
                         </Card>
-                      </Modal>
+                      </Modal> */}
                     </Col>
                   </Form.Item>
 

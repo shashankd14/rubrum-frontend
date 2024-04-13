@@ -1,6 +1,6 @@
 import {all, put, fork, takeLatest} from "redux-saga/effects";
-import { getUserToken } from './common';
-import { FETCH_CUSTOMER_LIST_REQUEST, ADD_CUSTOMER_REQUEST, UPDATE_CUSTOMER_REQUEST, FETCH_CUSTOMER_LIST_ID_REQUEST } from "../../constants/ActionTypes";
+import { getUserToken, getUserId } from './common';
+import { FETCH_CUSTOMER_LIST_REQUEST, ADD_CUSTOMER_REQUEST, UPDATE_CUSTOMER_REQUEST, FETCH_CUSTOMER_LIST_ID_REQUEST, DELETE_CUSTOMER_REQUEST } from "../../constants/ActionTypes";
 import {fetchCustomerListSuccess,
     fetchCustomerListError,
     addCustomerSuccess,
@@ -8,7 +8,9 @@ import {fetchCustomerListSuccess,
     fetchCustomerListIdSuccess,
     fetchCustomerListIdError,
     updateCustomerSuccess,
-    updateCustomerError
+    updateCustomerError,
+    deleteCustomerSuccess,
+    deleteCustomerError
 } from "../actions";
 import { userSignOutSuccess } from "../../appRedux/actions/Auth";
 
@@ -63,11 +65,12 @@ function* fetchCustomerListById(action) {
 }
 
 function* addCustomer(action) {
+    debugger
     try {
-        const { partyName,
-            partyNickname,
+        const { customerName,
+            customerNickname,
             contactName,
-            contactNumber,
+            contactNo,
             gstNumber,
             panNumber,
             tanNumber,
@@ -77,11 +80,9 @@ function* addCustomer(action) {
             city,
             state,
             pincode,
-            phone,tags,endUsertags,
-            qualityTemplates,
+            phoneNo,
             showAmtDcPdfFlg,
-            dailyReportsList,
-            monthlyReportsList
+            purchaseReportsList
         } = action.party;
 
         const getEmail = (mail) => {
@@ -112,35 +113,34 @@ function* addCustomer(action) {
             });
             return addressObj;
         }
-        const getTags=()=>{
-            return tags.map(tagId => ({tagId}))
-        }
-        const getEndUserTags=()=>{
-            return endUsertags.map(tagId => ({tagId}))
-        }
-        const qualityTemplateIds =()=>{
-            return qualityTemplates.map(templateId => ({templateId
-            }))
-        }
+        // const getTags=()=>{
+        //     return tags.map(tagId => ({tagId}))
+        // }
+        // const getEndUserTags=()=>{
+        //     return endUsertags.map(tagId => ({tagId}))
+        // }
+        // const qualityTemplateIds =()=>{
+        //     return qualityTemplates.map(templateId => ({templateId
+        //     }))
+        // }
         const reqBody = {
-            partyName,
-            partyNickname,
+            customerName,
+            customerNickname,
             contactName,
-            contactNumber,
+            contactNo,
             gstNumber,
             panNumber,
             tanNumber,
-            tags:getTags(),
             ...getEmail(email),
             ...getAddress(addressKeys),
-            ...getPhone(phone),
-            endUserTags: getEndUserTags(),
-            templateIdList: qualityTemplateIds(),
+            ...getPhone(phoneNo),
             showAmtDcPdfFlg,
-            dailyReportsList,
-            monthlyReportsList
+            purchaseReportsList,
+            ipAddress: "1.1.1.1",
+            requestId: "CUSTOMER_INSERT",
+            userId: getUserId()
         }
-        const addParty = yield fetch(`${baseUrl}api/party/save`, {
+        const addParty = yield fetch(`${baseUrl}api/trading/customer/save`, {
             method: 'POST',
             headers: { "Content-Type": "application/json", ...getHeaders() },
             body:JSON.stringify(reqBody)
@@ -243,7 +243,7 @@ function* updateCustomer(action) {
             dailyReportsList,
             monthlyReportsList
         }
-        const updateParty = yield fetch(`${baseUrl}api/party/update`, {
+        const updateParty = yield fetch(`${baseUrl}api/trading/customer/update`, {
             method: 'PUT',
             headers: { "Content-Type": "application/json", ...getHeaders() },
             body:JSON.stringify(reqBody)
@@ -261,12 +261,39 @@ function* updateCustomer(action) {
     }
 }
 
+function* deleteCustomerSaga(action) {
+    let body = action.payload;
+    const reqBody = {
+        ids: [body.id],
+        requestId: "CUSTOMER_DELETE",
+        ipAddress: "1.1.1.1",
+        userId: getUserId()
+    }
+    try {
+        const deleteCustomer = yield fetch(`${baseUrl}api/trading/customer/delete`, {
+            method: 'POST',
+            headers: { "Content-Type": "application/json", ...getHeaders() },
+            body:JSON.stringify(reqBody)
+
+        });
+        if (deleteCustomer.status == 200) {
+            yield put(deleteCustomerSuccess());
+        } else if (deleteCustomer.status === 401) {
+            yield put(userSignOutSuccess());
+        } else
+            yield put(deleteCustomerError('error'));
+    } catch (error) {
+        console.log(error);
+        yield put(deleteCustomerError(error));
+    }
+}
 
 export function* watchFetchRequests() {
     yield takeLatest(FETCH_CUSTOMER_LIST_REQUEST, fetchCustomerList);
     yield takeLatest(ADD_CUSTOMER_REQUEST, addCustomer);
     yield takeLatest(UPDATE_CUSTOMER_REQUEST, updateCustomer);
     yield takeLatest(FETCH_CUSTOMER_LIST_ID_REQUEST, fetchCustomerListById);
+    yield takeLatest(DELETE_CUSTOMER_REQUEST, deleteCustomerSaga);
 }
 
 export default function* customerSagas() {

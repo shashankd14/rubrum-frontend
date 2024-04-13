@@ -71,3 +71,17 @@ export const updateCustomerError = (error) => ({
     type: UPDATE_CUSTOMER_ERROR,
     error
 });
+
+export const deleteCustomer = (payload) => ({
+    type: actionTypes.DELETE_CUSTOMER_REQUEST,
+    payload
+});
+
+export const deleteCustomerSuccess = () => ({
+    type: actionTypes.DELETE_CUSTOMER_SUCCESS
+});
+
+export const deleteCustomerError = (error) => ({
+    type: actionTypes.DELETE_CUSTOMER_ERROR,
+    error
+});

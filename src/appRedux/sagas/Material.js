@@ -18,7 +18,7 @@ import {fetchMaterialListError,
     updateMaterialSuccess,
     updateMaterialError
 } from "../actions";
-import { userSignOutSuccess } from "../../appRedux/actions/Auth";
+import { refreshToken, userSignOutSuccess } from "../../appRedux/actions/Auth";
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
 const getHeaders = () => ({
@@ -35,7 +35,8 @@ function* fetchMaterialList() {
             const fetchMaterialListResponse = yield fetchMaterialList.json();
             yield put(fetchMaterialListSuccess(fetchMaterialListResponse));
         } else if (fetchMaterialList.status === 401) {
-            yield put(userSignOutSuccess());
+            yield put(refreshToken());
+            // yield put(userSignOutSuccess());
         } else
             yield put(fetchMaterialListError('error'));
     } catch (error) {

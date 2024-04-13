@@ -10,8 +10,9 @@ import {FETCH_LOCATION_LIST_ERROR, FETCH_LOCATION_LIST_REQUEST, FETCH_LOCATION_L
 } from "../../constants/ActionTypes";
 import * as actionTypes from "../../constants/ActionTypes";
 
-export const fetchLocationList = () => ({
+export const fetchLocationList = (payload) => ({
     type: actionTypes.FETCH_LOCATION_LIST_REQUEST,
+    payload
 });
 
 export const fetchLocationListSuccess = (LocationList) => ({
@@ -24,9 +25,9 @@ export const fetchLocationListError = (error) => ({
     error
 });
 
-export const addLocation = (Location) => ({
+export const addLocation = (payload) => ({
     type: ADD_LOCATION_REQUEST,
-    Location
+    payload
 });
 
 export const addLocationSuccess = () => ({
@@ -38,9 +39,9 @@ export const addLocationError = (error) => ({
     error
 });
 
-export const fetchLocationListId = (LocationId) => ({
+export const fetchLocationListId = (payload) => ({
     type: FETCH_LOCATION_LIST_ID_REQUEST,
-    LocationId
+    payload
 });
 
 export const fetchLocationListIdSuccess = (Location) => ({
@@ -57,9 +58,9 @@ export const resetLocation = () => ({
     type: RESET_LOCATION_REQUEST
 });
 
-export const updateLocation = (Location) => ({
+export const updateLocation = (payload) => ({
     type: UPDATE_LOCATION_REQUEST,
-    Location
+    payload
 });
 
 export const updateLocationSuccess = () => ({
@@ -68,5 +69,34 @@ export const updateLocationSuccess = () => ({
 
 export const updateLocationError = (error) => ({
     type: UPDATE_LOCATION_ERROR,
+    error
+});
+
+export const deleteLocation = (payload) => ({
+    type: actionTypes.DELETE_LOCATION_REQUEST,
+    payload
+});
+
+export const deleteLocationSuccess = () => ({
+    type: actionTypes.DELETE_LOCATION_SUCCESS
+});
+
+export const deleteLocationError = (error) => ({
+    type: actionTypes.DELETE_LOCATION_ERROR,
+    error
+});
+
+export const fetchStateList = (payload) => ({
+    type: actionTypes.FETCH_STATE_LIST_REQUEST,
+    payload
+});
+
+export const fetchStateListSuccess = (StateList) => ({
+    type: actionTypes.FETCH_STATE_LIST_SUCCESS,
+    StateList
+});
+
+export const fetchStateListError = (error) => ({
+    type: actionTypes.FETCH_STATE_LIST_ERROR,
     error
 });

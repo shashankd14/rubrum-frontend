@@ -1,6 +1,6 @@
 import {all, put, fork, takeLatest} from "redux-saga/effects";
-import { getUserToken } from './common';
-import { FETCH_LOCATION_LIST_REQUEST, ADD_LOCATION_REQUEST, UPDATE_LOCATION_REQUEST, FETCH_LOCATION_LIST_ID_REQUEST } from "../../constants/ActionTypes";
+import { getUserToken, getUserId } from './common';
+import { FETCH_LOCATION_LIST_REQUEST, ADD_LOCATION_REQUEST, UPDATE_LOCATION_REQUEST, FETCH_LOCATION_LIST_ID_REQUEST, DELETE_LOCATION_REQUEST, FETCH_STATE_LIST_REQUEST } from "../../constants/ActionTypes";
 import {fetchLocationListSuccess,
     fetchLocationListError,
     addLocationSuccess,
@@ -8,7 +8,11 @@ import {fetchLocationListSuccess,
     fetchLocationListIdSuccess,
     fetchLocationListIdError,
     updateLocationSuccess,
-    updateLocationError
+    updateLocationError,
+    deleteLocationSuccess,
+    deleteLocationError,
+    fetchStateListSuccess,
+    fetchStateListError
 } from "../actions";
 import { userSignOutSuccess } from "../../appRedux/actions/Auth";
 
@@ -17,16 +21,26 @@ const getHeaders = () => ({
     Authorization: getUserToken()
 });
 
-function* fetchLocationList() {
+function* fetchLocationList(action) {
+    let body = action.payload;
+    const reqBody = {
+        searchText: body.searchText,
+        pageNo: body.pageNo,
+        pageSize: body.pageSize,
+        ipAddress: "1.1.1.1",
+        requestId: "GET_LOCATION_LIST",
+        userId: getUserId()
+    }
     try {
-        const fetchPartyList =  yield fetch(`${baseUrl}api/party/list`, {
-            method: 'GET',
-            headers: getHeaders()
+        const fetchLocationList =  yield fetch(`${baseUrl}api/trading/location/list`, {
+            method: 'POST',
+            headers: { "Content-Type": "application/json", ...getHeaders() },
+            body:JSON.stringify(reqBody)
         });
-        if(fetchPartyList.status === 200) {
-            const fetchPartyListResponse = yield fetchPartyList.json();
-            yield put(fetchLocationListSuccess(fetchPartyListResponse));
-        } else if (fetchPartyList.status === 401) {
+        if(fetchLocationList.status === 200) {
+            const fetchLocationListResponse = yield fetchLocationList.json();
+            yield put(fetchLocationListSuccess(fetchLocationListResponse));
+        } else if (fetchLocationList.status === 401) {
             yield put(userSignOutSuccess());
         } else
             yield put(fetchLocationListError('error'));
@@ -36,15 +50,25 @@ function* fetchLocationList() {
 }
 
 function* fetchLocationListById(action) {
+    let body = action.payload;
+    const reqBody = {
+        id: body.id,
+        searchText: body.searchText,
+        pageNo: body.pageNo,
+        pageSize: body.pageSize,
+        ipAddress: "1.1.1.1",
+        userId: getUserId()
+    }
     try {
-        const fetchPartyListId =  yield fetch(`${baseUrl}api/party/getById/${action.partyId}`, {
-            method: 'GET',
-            headers: getHeaders()
+        const fetchLocationId =  yield fetch(`${baseUrl}api/trading/location/list`, {
+            method: 'POST',
+            headers: { "Content-Type": "application/json", ...getHeaders() },
+            body:JSON.stringify(reqBody)
         });
-        if(fetchPartyListId.status === 200) {
-            const fetchPartyListResponse = yield fetchPartyListId.json();
-            yield put(fetchLocationListIdSuccess(fetchPartyListResponse));
-        } else if (fetchPartyListId.status === 401) {
+        if(fetchLocationId.status === 200) {
+            const fetchLocationResponse = yield fetchLocationId.json();
+            yield put(fetchLocationListIdSuccess(fetchLocationResponse));
+        } else if (fetchLocationId.status === 401) {
             yield put(userSignOutSuccess());
         } else
             yield put(fetchLocationListIdError('error'));
@@ -54,92 +78,28 @@ function* fetchLocationListById(action) {
 }
 
 function* addLocation(action) {
+    let body = action.payload;
+    const reqBody = {
+        locationName: body.locationName,
+        address1: body.locationAddress,
+        address2: body.locationAddress2,
+        city: body.city,
+        state: body.state,
+        pincode: body.pincode,
+        requestId: body.requestId,
+        gstNo: body.gstNo,
+        ipAddress: "1.1.1.1",
+        userId: getUserId()
+    }
     try {
-        const { partyName,
-            partyNickname,
-            contactName,
-            contactNumber,
-            gstNumber,
-            panNumber,
-            tanNumber,
-            email,
-            addressKeys,
-            address,
-            city,
-            state,
-            pincode,
-            phone,tags,endUsertags,
-            qualityTemplates,
-            showAmtDcPdfFlg,
-            dailyReportsList,
-            monthlyReportsList
-        } = action.party;
-
-        const getEmail = (mail) => {
-            const mailObj = {};
-            mail.forEach((key, idx) => {
-                mailObj[`email${idx+1}`] = key
-            });
-            return mailObj;
-        }
-
-        const getPhone = (phone) => {
-            const phoneObj = {};
-            phone.forEach((key, idx) => {
-                phoneObj[`phone${idx+1}`] = key
-            });
-            return phoneObj;
-        }
-
-        const getAddress = (addressKeys) => {
-            const addressObj = {};
-            addressKeys.forEach((key, idx) => {
-                addressObj[`address${idx+1}`] = {
-                    details: address[idx],
-                    city: city[idx],
-                    state: state[idx],
-                    pincode: pincode[idx]
-                }
-            });
-            return addressObj;
-        }
-        const getTags=()=>{
-            return tags.map(tagId => ({tagId}))
-        }
-        const getEndUserTags=()=>{
-            return endUsertags.map(tagId => ({tagId}))
-        }
-        const qualityTemplateIds =()=>{
-            return qualityTemplates.map(templateId => ({templateId
-            }))
-        }
-        const reqBody = {
-            partyName,
-            partyNickname,
-            contactName,
-            contactNumber,
-            gstNumber,
-            panNumber,
-            tanNumber,
-            tags:getTags(),
-            ...getEmail(email),
-            ...getAddress(addressKeys),
-            ...getPhone(phone),
-            endUserTags: getEndUserTags(),
-            templateIdList: qualityTemplateIds(),
-            showAmtDcPdfFlg,
-            dailyReportsList,
-            monthlyReportsList
-        }
-        const addParty = yield fetch(`${baseUrl}api/party/save`, {
+        const addLocation = yield fetch(`${baseUrl}api/trading/location/save`, {
             method: 'POST',
             headers: { "Content-Type": "application/json", ...getHeaders() },
             body:JSON.stringify(reqBody)
-
         });
-        if (addParty.status == 200) {
+        if (addLocation.status == 200) {
             yield put(addLocationSuccess());
-        } else if (addParty.status === 401) {
+        } else if (addLocation.status === 401) {
             yield put(userSignOutSuccess());
         } else
             yield put(addLocationError('error'));
@@ -149,100 +109,30 @@ function* addLocation(action) {
 }
 
 function* updateLocation(action) {
+    let body = action.payload;
+    const reqBody = {
+        locationId: body.locationId,
+        locationName: body.values.locationName,
+        address1: body.values.locationAddress,
+        address2: body.values.locationAddress2,
+        city: body.values.city,
+        state: body.values.state,
+        pincode: body.values.pincode,
+        requestId: "LOCATION_UPDATE",
+        // gstNo: body.gstNo,
+        ipAddress: "1.1.1.1",
+        userId: getUserId()
+    }
     try {
-        const {
-            values: {
-                partyName,
-                partyNickname,
-                contactName,
-                contactNumber,
-                gstNumber,
-                panNumber,
-                tanNumber,
-                email,
-                addressKeys,
-                address,
-                city,
-                state,
-                pincode,
-                phone,
-                tags,
-                endUsertags,
-                qualityTemplates,
-                showAmtDcPdfFlg,
-                dailyReportsList,
-                monthlyReportsList
-            },
-            id
-        } = action.party;
-
-        const getEmail = (mail) => {
-            const mailObj = {};
-            mail.forEach((key, idx) => {
-                mailObj[`email${idx+1}`] = key
-            });
-            return mailObj;
-        }
-
-        const getPhone = (phone) => {
-            const phoneObj = {};
-            phone.forEach((key, idx) => {
-                phoneObj[`phone${idx+1}`] = key
-            });
-            return phoneObj;
-        }
-
-        const getAddress = (addressKeys) => {
-            const addressObj = {};
-            addressKeys.forEach((key, idx) => {
-                addressObj[`address${idx+1}`] = {
-                    details: address[idx],
-                    city: city[idx],
-                    state: state[idx],
-                    pincode: pincode[idx]
-                }
-            });
-            return addressObj;
-        }
-        const getTags=()=>{
-            return tags.map(tagId => ({tagId}))
-        }
-        const getEndUserTags=()=>{
-            return endUsertags.map(tagId => ({tagId}))
-        }
-        const qualityTemplateIds =()=>{
-            return qualityTemplates.map(templateId => ({templateId
-            }))
-        }
-
-        const reqBody = {
-            nPartyId: id,
-            partyName,
-            partyNickname,
-            contactName,
-            contactNumber,
-            gstNumber,
-            panNumber,
-            tanNumber,
-            tags:getTags(),
-            endUserTags:getEndUserTags(),
-            ...getEmail(email),
-            ...getAddress(addressKeys),
-            ...getPhone(phone),
-            templateIdList: qualityTemplateIds(),
-            showAmtDcPdfFlg,
-            dailyReportsList,
-            monthlyReportsList
-        }
-        const updateParty = yield fetch(`${baseUrl}api/party/update`, {
+        const updateLocation = yield fetch(`${baseUrl}api/trading/location/update`, {
             method: 'PUT',
             headers: { "Content-Type": "application/json", ...getHeaders() },
             body:JSON.stringify(reqBody)
 
         });
-        if (updateParty.status == 200) {
+        if (updateLocation.status == 200) {
             yield put(updateLocationSuccess());
-        } else if (updateParty.status === 401) {
+        } else if (updateLocation.status === 401) {
             yield put(userSignOutSuccess());
         } else
             yield put(updateLocationError('error'));
@@ -252,12 +142,65 @@ function* updateLocation(action) {
     }
 }
 
+function* deleteLocationSaga(action) {
+    let body = action.payload;
+    const reqBody = {
+        ids: [body.ids],
+        requestId: "LOCATION_DELETE",
+        ipAddress: "1.1.1.1",
+        userId: getUserId()
+    }
+    try {
+        const deleteLocation = yield fetch(`${baseUrl}api/trading/location/delete`, {
+            method: 'POST',
+            headers: { "Content-Type": "application/json", ...getHeaders() },
+            body:JSON.stringify(reqBody)
+
+        });
+        if (deleteLocation.status == 200) {
+            yield put(deleteLocationSuccess());
+        } else if (deleteLocation.status === 401) {
+            yield put(userSignOutSuccess());
+        } else
+            yield put(deleteLocationError('error'));
+    } catch (error) {
+        console.log(error);
+        yield put(deleteLocationError(error));
+    }
+}
+
+function* fetchStateListSaga(action) {
+    let body = action.payload;
+    const reqBody = {
+        ipAddress: "1.1.1.1",
+        requestId: "STATE_LIST",
+        userId: getUserId()
+    }
+    try {
+        const fetchStateList =  yield fetch(`${baseUrl}api/trading/stateslist`, {
+            method: 'POST',
+            headers: { "Content-Type": "application/json", ...getHeaders() },
+            body:JSON.stringify(reqBody)
+        });
+        if(fetchStateList.status === 200) {
+            const fetchStateListResponse = yield fetchStateList.json();
+            yield put(fetchStateListSuccess(fetchStateListResponse));
+        } else if (fetchStateList.status === 401) {
+            yield put(userSignOutSuccess());
+        } else
+            yield put(fetchStateListError('error'));
+    } catch (error) {
+        yield put(fetchStateListError(error));
+    }
+}
 
 export function* watchFetchRequests() {
     yield takeLatest(FETCH_LOCATION_LIST_REQUEST, fetchLocationList);
     yield takeLatest(ADD_LOCATION_REQUEST, addLocation);
     yield takeLatest(UPDATE_LOCATION_REQUEST, updateLocation);
     yield takeLatest(FETCH_LOCATION_LIST_ID_REQUEST, fetchLocationListById);
+    yield takeLatest(DELETE_LOCATION_REQUEST, deleteLocationSaga);
+    yield takeLatest(FETCH_STATE_LIST_REQUEST, fetchStateListSaga);
 }
 
 export default function* locationSagas() {

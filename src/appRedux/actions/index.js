@@ -18,3 +18,4 @@ export * from './Vendor';
 export * from './Customer';
 export * from './Location';
 export * from './MaterialDV';
+export * from './Category';

@@ -11,12 +11,16 @@ import {
     UPDATE_LOCATION_REQUEST,
     UPDATE_LOCATION_SUCCESS,
     UPDATE_LOCATION_ERROR,
-    RESET_LOCATION_REQUEST
+    RESET_LOCATION_REQUEST,
+    FETCH_STATE_LIST_REQUEST,
+    FETCH_STATE_LIST_SUCCESS,
+    FETCH_STATE_LIST_ERROR
 } from "../../constants/ActionTypes";
 
 const INIT_STATE = {
     locationList: [],
-    location: {},
+    locationId: {},
+    StateList: [],
     loading: false,
     error: false,
 };
@@ -33,7 +37,7 @@ export default (state = INIT_STATE, action) => {
             return {
                 ...state,
                 loading: false,
-                locationList: action.locationList
+                locationList: action.LocationList
             }
         }
         case FETCH_LOCATION_LIST_ERROR: {
@@ -75,7 +79,7 @@ export default (state = INIT_STATE, action) => {
             return {
                 ...state,
                 loading: false,
-                location: action.location
+                locationId: action.Location
             }
         }
         case FETCH_LOCATION_LIST_ID_ERROR: {
@@ -110,6 +114,27 @@ export default (state = INIT_STATE, action) => {
                 ...state,
                 loading: false,
                 error: true,
+            }
+        }
+        case FETCH_STATE_LIST_REQUEST: {
+            return {
+                ...state,
+                loading: true
+            }
+        }
+        case FETCH_STATE_LIST_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                stateList: action.StateList
+            }
+        }
+        case FETCH_STATE_LIST_ERROR: {
+            return {
+                ...state,
+                loading: false,
+                stateList: [],
+                error: true
             }
         }
         

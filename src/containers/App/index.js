@@ -2,7 +2,7 @@ import React, {memo, useEffect} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import URLSearchParams from 'url-search-params'
 import {Redirect, Route, Switch, useHistory, useLocation, useRouteMatch} from "react-router-dom";
-import {LocaleProvider} from "antd";
+import {LocaleProvider, Modal} from "antd";
 import {IntlProvider} from "react-intl";
 import List from "../../routes/company/Partywise/List";
 import AppLocale from "lngProvider";
@@ -50,26 +50,36 @@ const App = (props) => {
   const match = useRouteMatch();
 
   useEffect(() => {
-    const refreshTokenIfNeeded = async () => {
-      const accessToken = localStorage.getItem('userToken');
-      const expiresIn = localStorage.getItem('expiresIn');
-        
-      if (accessToken && expiresIn) {
-        const currentTime = Date.now();
-        if (currentTime > expiresIn) {
-          console.log("Token is expired, refreshing...");
-          await dispatch(refreshToken());
-        } else {
-          console.log("Token is not expired");
+    // const refreshTokenIfNeeded = async () => {
+      const checkAccessTokenExpiration = setInterval(() => {
+        const accessToken = localStorage.getItem('userToken');
+        const expiresIn = localStorage.getItem('expiresIn');
+  
+        if (accessToken && expiresIn) {
+          const currentTime = Date.now();
+          if (currentTime > expiresIn) {
+            console.log("Token is expired, refreshing...");
+            console.log("token is expired")
+            // Modal.confirm({
+            //   title: 'Your session is about to expire. Do you want to continue?',
+            //   okText: 'OK',
+            //   onOk() {
+            //     dispatch(refreshToken());
+            //   },
+            //   onCancel() {
+            //     history.push('/signin');
+            //   }
+            // });
+            dispatch(refreshToken());
+          } else {
+            console.log("Token is not expired");
+          }
         }
-      }
-    };
+      return () => clearInterval(checkAccessTokenExpiration);
   
-    refreshTokenIfNeeded(); // Call the function once when component mounts
+      }, 10000); // Check token is expired every 10 sec
   
-    const tokenCheckInterval = setInterval(refreshTokenIfNeeded, 5000); // Check token expiration every 5 seconds
-  
-    return () => clearInterval(tokenCheckInterval);
+      return () => clearInterval(checkAccessTokenExpiration);
   }, [dispatch]);
 
   useEffect(() => {

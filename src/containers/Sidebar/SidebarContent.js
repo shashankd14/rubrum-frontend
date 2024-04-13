@@ -266,6 +266,27 @@ const SidebarContent = () => {
                     </Link>
                   </Menu.Item>}
 
+                  {menuLabelList.includes(sidebarMenuItems.weighbridge) && <Menu.Item key="company/master/weighbridge">
+                    <Link to="/company/master/weighbridge">
+                      <i className="icon icon-crypto"/>
+                      <span><IntlMessages id="sidebar.master.weighbridge"/></span>
+                    </Link>
+                  </Menu.Item>}
+
+                  {menuLabelList.includes(sidebarMenuItems.category) && <Menu.Item key="company/master/category">
+                    <Link to="/company/master/category">
+                      <i className="icon icon-crypto"/>
+                      <span><IntlMessages id="sidebar.master.category"/></span>
+                    </Link>
+                  </Menu.Item>}
+
+                  {menuLabelList.includes(sidebarMenuItems.subCategory) && <Menu.Item key="company/master/subCategory">
+                    <Link to="/company/master/subCategory">
+                      <i className="icon icon-crypto"/>
+                      <span><IntlMessages id="sidebar.master.subCategory"/></span>
+                    </Link>
+                  </Menu.Item>}
+
                   {/* <Menu.Item key="company/master/quality">
                     <Link to="/company/master/quality">
                       <i className="icon icon-crypto" />

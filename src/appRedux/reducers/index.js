@@ -20,6 +20,7 @@ import Location from './Location';
 import Customer from './Customer';
 import Vendor from './Vendor';
 import MaterialDV from './MaterialDV';
+import Category from './Category';
 
 const createRootReducer = (history) => combineReducers({
   router: connectRouter(history),
@@ -42,7 +43,8 @@ const createRootReducer = (history) => combineReducers({
   location: Location,
   customer: Customer,
   vendor: Vendor,
-  materialDV: MaterialDV
+  materialDV: MaterialDV,
+ category: Category
 });
 
 export default createRootReducer

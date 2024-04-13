@@ -16,6 +16,7 @@ import customerSagas from './Customer';
 import vendorSagas from './Vendor';
 import locationSagas from './Location';
 import DVmaterialSagas from './MaterialDV';
+import categorySagas from './Category';
 
 export default function* rootSaga() {
   yield all([fork(authSagas)]);
@@ -35,4 +36,5 @@ export default function* rootSaga() {
   yield all([fork(vendorSagas)]);
   yield all([fork(locationSagas)]);
   yield all([fork(DVmaterialSagas)]);
+  yield all([fork(categorySagas)]);
 }

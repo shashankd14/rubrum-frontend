@@ -5,7 +5,7 @@ import moment from 'moment';
 import SearchBox from "../../../components/SearchBox";
 
 import IntlMessages from "../../../util/IntlMessages";
-import { fetchPartyList, addParty, fetchPartyListId, updateParty, resetParty, fetchClassificationList,fetchEndUserTagsList, fetchTemplatesList } from "../../../appRedux/actions";
+import { fetchLocationList, deleteLocation, addLocation, fetchLocationListId, updateLocation, resetLocation, fetchStateList } from "../../../appRedux/actions";
 import { onDeleteContact } from "../../../appRedux/actions";
 
 const FormItem = Form.Item;
@@ -35,72 +35,60 @@ const Location = (props) => {
     const [viewLocationDate, setViewLocationData] = useState({});
     const [editLocation, setEditLocation] = useState(false);
     const [searchValue, setSearchValue] = useState('');
-    const [filteredInwardList, setFilteredInwardList] = useState(props.party?.partyList || []);
-    const [showAmtDcPdfFlg, setShowAmtDcPdfFlg] = useState(props.party?.showAmtDcPdfFlg==='Y'); // Default value
-    const [dailyReportsList, setDailyReportsList] = useState([]);
-    const [monthlyReportsList, setMonthlyReportsList] = useState([]); 
-
+    const [filteredLocationList, setFilteredLocationList] = useState(props?.location?.locationList?.content || []);
+    const [pageNo, setPageNo] = useState(1);
+    const [pageSize, setPageSize] = useState(15);
+    const [totalPageItems, setTotalPageItems] = useState(0);
+    const { totalItems } = props.location.locationList;
     const {getFieldDecorator, getFieldValue} = props.form;
-
-    const { party } = props.party;
-    const [tagsList, setTagsList] =useState([{tagId: 1}]);
-
-    getFieldDecorator('phoneKeys', {initialValue: [0]});
-    getFieldDecorator('addressKeys', {initialValue: [0]});
-    getFieldDecorator('emailKeys', {initialValue: [0]});
-
-    const phoneKeys = getFieldValue('phoneKeys');
-    const addressKeys = getFieldValue('addressKeys');
-    const emailKeys = getFieldValue('emailKeys');
-
 
     const columns = [{
         title: 'Location Id',
-        dataIndex: 'nPartyId',
-        key: 'nPartyId',
+        dataIndex: 'locationId',
+        key: 'locationId',
         filters: [],
         sorter: (a, b) => {
-            return a.nPartyId - b.nPartyId
+            return a.locationId - b.locationId
         },
-        sortOrder: sortedInfo.columnKey === 'nPartyId' && sortedInfo.order,
+        sortOrder: sortedInfo.columnKey === 'locationId' && sortedInfo.order,
     },
     {
         title: 'Location Name',
-        dataIndex: 'partyName',
-        key: 'partyName',
+        dataIndex: 'locationName',
+        key: 'locationName',
         filters: [],
-        sorter: (a, b) => a.partyName.length - b.partyName.length,
-        sortOrder: sortedInfo.columnKey === 'partyName' && sortedInfo.order,
+        sorter: (a, b) => a.locationName.length - b.locationName.length,
+        sortOrder: sortedInfo.columnKey === 'locationName' && sortedInfo.order,
     },
     {
         title: 'Location Address',
-        dataIndex: 'address1.city',
-        key: 'address1.city',
+        dataIndex: 'address1',
+        key: 'address1',
         sorter: (a, b) => a.address1?.city?.length - b.address1?.city?.length,
-        sortOrder: sortedInfo.columnKey === 'address1.city' && sortedInfo.order,
+        sortOrder: sortedInfo.columnKey === 'address1' && sortedInfo.order,
     },
     {
         title: 'City',
-        dataIndex: 'address1.city',
-        key: 'address1.city',
-        sorter: (a, b) => a.address1?.city?.length - b.address1?.city?.length,
-        sortOrder: sortedInfo.columnKey === 'address1.city' && sortedInfo.order,
+        dataIndex: 'city',
+        key: 'city',
+        sorter: (a, b) => a.city?.length - b.city?.length,
+        sortOrder: sortedInfo.columnKey === 'city' && sortedInfo.order,
     },
     {
         title: 'State',
-        dataIndex: 'address1.state',
-        key: 'address1.state',
-        sorter: (a, b) => a.address1?.state?.length - b.address1?.state?.length,
-        sortOrder: sortedInfo.columnKey === 'address1.state' && sortedInfo.order,
+        dataIndex: 'state',
+        key: 'state',
+        sorter: (a, b) => a.state?.length - b.state?.length,
+        sortOrder: sortedInfo.columnKey === 'state' && sortedInfo.order,
     },
-    {
-        title: 'GST Number',
-        dataIndex: 'gstNumber',
-        key: 'gstNumber',
-        filters: [],
-        sorter: (a, b) => a.gstNumber.length - b.gstNumber.length,
-        sortOrder: sortedInfo.columnKey === 'gstNumber' && sortedInfo.order,
-    },
+    // {
+    //     title: 'GST Number',
+    //     dataIndex: 'gstNo',
+    //     key: 'gstNo',
+    //     filters: [],
+    //     sorter: (a, b) => a.gstNo.length - b.gstNo.length,
+    //     sortOrder: sortedInfo.columnKey === 'gstNo' && sortedInfo.order,
+    // },
     {
         title: 'Action',
         dataIndex: '',
@@ -111,7 +99,7 @@ const Location = (props) => {
                 <Divider type="vertical"/>
                 <span className="gx-link" onClick={(e) => onEdit(record, e)}>Edit</span>
                 <Divider type="vertical"/>
-                <span className="gx-link"onClick={() => {}}>Delete</span>
+                <span className="gx-link" onClick={(e) => onDelete(record, e)}>Delete</span>
             </span>
         ),
     },
@@ -120,64 +108,73 @@ const Location = (props) => {
     const onView = (record, e) => {
         e.preventDefault();
          setViewLocationData(record);
-        props.fetchPartyListId(record.nPartyId);
+        props.fetchLocationListId({
+            id: record.locationId,
+            searchText: '',
+            pageNo: "1",
+            pageSize: "15",
+            ipAddress: '',
+            requestId: '',
+            userId: ''
+        });
         setViewLocation(true);
     }
     const onDelete = (record,key, e) => {
-        let id = []
-        id.push(record.inwardEntryId);
-        e.preventDefault();
-        props.deleteInwardEntryById(id)
+        props.deleteLocation({
+            ids: record.locationId,
+            ipAddress: "1.1.1.1",
+            requestId: "LOCATION_DELETE",
+            userId: ""
+        })
       }
 
       const onEdit = (record,e)=>{
         e.preventDefault();
-        let classificationObj = record.packetClassificationTags.length===0? [{tagId:1}]: record.packetClassificationTags;
-        setTagsList(classificationObj?.map(item =>item.tagId) || null)
-        props.fetchPartyListId(record.nPartyId);
+        props.fetchLocationListId({
+            id: record.locationId,
+            searchText: '',
+            pageNo: "1",
+            pageSize: "15",
+            ipAddress: '',
+            requestId: '',
+            userId: ''
+        });
         setEditLocation(true);
         setTimeout(() => {
             setShowAddLocation(true);
         }, 1000);
-
     }
 
     useEffect(() => {
+        debugger
         setTimeout(() => {
-            props.fetchPartyList();
-            props.fetchClassificationList();
-            props.fetchEndUserTagsList();
-            props.fetchTemplatesList()
+            props.fetchLocationList({
+                searchText:"",
+                pageNo:"1",
+                pageSize:"15",
+                ipAddress: "1.1.1.1",
+                requestId: "LOCATION_LIST_GET",
+                userId: ""
+            });
+            props.fetchStateList({
+                ipAddress: "1.1.1.1",
+                requestId: "STATE_LIST",
+                userId: ""
+            });
         }, 1000);
     }, [showAddLocation]);
 
     useEffect(() => {
-        const { loading, error, partyList } = props.party;
+        const { loading, error, locationList } = props.location;
         if (!loading && !error) {
-            setFilteredInwardList(partyList)
+            setFilteredLocationList(locationList)
 
         }
-    }, [props.party]);
+    }, [props.location]);
 
-    useEffect(() => {
-
-        const { party } = props;
-        if(searchValue) {
-            const filteredData = party?.partyList?.filter(party => {
-                if(party.nPartyId?.toString() === searchValue ||
-                    party.partyName?.toLowerCase().includes(searchValue.toLowerCase()) ||
-                    party.gstNumber?.includes(searchValue)) {
-                    return party;
-                }
-            });
-            setFilteredInwardList(filteredData);
-        } else {
-            setFilteredInwardList(party.partyList);
-        }
-    }, [searchValue])
     const handleChange = (pagination, filters, sorter) => {
         setSortedInfo(sorter);
-        setFilteredInfo(filters)
+        setFilteredInfo(filters);
     };
 
     const clearAll = () => {
@@ -193,41 +190,38 @@ const Location = (props) => {
         console.log('dfd');
     };
 
-    const addNewKey = (idx, key) => {
-        const {form} = props;
-        const value = form.getFieldValue(key);
-        const nextValue = value.concat(idx+1);
-        form.setFieldsValue({
-            [key]: nextValue
-        });
-    }
-
-    const removeKey = (index, key1, key2) => {
-        const {form} = props;
-        // can use data-binding to get
-        const value1 = form.getFieldValue(key1);
-        const value2 = form.getFieldValue(key2);
-        // We need at least one passenger
-        if (value1.length === 1) {
-            return;
-        }
-        // can use data-binding to set
-        form.setFieldsValue({
-            [key1]: value1.filter((key, idx) => idx !== index),
-            [key2]: value2.filter((key, idx) => idx !== index)
-        });
-    }
-    const handleSelectChange=(e)=>{
-        console.log(e)
-    }
-
     useEffect(() => {
-        // to show checked in checkbox
-        const {party} = props.party
-        setDailyReportsList(party.dailyReportsList || []);
-        setMonthlyReportsList(party.monthlyReportsList || []);
-      }, [party]);
-      const { dailyReportsList: initialDailyReportsList, monthlyReportsList: initialMonthlyReportsList, ...otherProps } = props.party.party;
+        if (totalItems) {
+          setTotalPageItems(totalItems);
+        }
+      }, [totalItems]);
+
+      useEffect(() => {
+        if (searchValue) {
+          if (searchValue.length >= 3) {
+            setPageNo(1);
+            props.fetchLocationList({
+                searchText:searchValue,
+                pageNo:"1",
+                pageSize:"15",
+                ipAddress: "1.1.1.1",
+                requestId: "LOCATION_LIST_GET",
+                userId: ""
+            });
+          }
+        } else {
+          setPageNo(1);
+          props.fetchLocationList({
+            searchText:searchValue,
+            pageNo:"1",
+            pageSize:"15",
+            ipAddress: "1.1.1.1",
+            requestId: "LOCATION_LIST_GET",
+            userId: ""
+        });
+        }
+      }, [searchValue]);
+      console.log("state111111", props.location);
 
     return (
         <div>
@@ -241,7 +235,7 @@ const Location = (props) => {
                     <div className="gx-flex-row gx-w-50">
                         <Button type="primary" icon={() => <i className="icon icon-add"/>} size="default"
                                 onClick={() => {
-                                    props.resetParty();
+                                    props.resetLocation();
                                     props.form.resetFields()
                                     setShowAddLocation(true)
                                 }}
@@ -252,8 +246,24 @@ const Location = (props) => {
                 <Table rowSelection={[]}
                     className="gx-table-responsive"
                     columns={columns}
-                    dataSource={filteredInwardList}
+                    dataSource={filteredLocationList.content}
                     onChange={handleChange}
+                    pagination={{
+                        pageSize: 15,
+                        onChange: (page) => {
+                          setPageNo(page);
+                          props.fetchLocationList({
+                            searchText:searchValue,
+                            pageNo: page,
+                            pageSize: pageSize,
+                            ipAddress: "1.1.1.1",
+                            requestId: "LOCATION_LIST_GET",
+                            userId: ""
+                        });
+                        },
+                        current: pageNo,
+                        total: totalPageItems,
+                      }}
                 />
                 <Modal
                     title='Party Details'
@@ -267,30 +277,13 @@ const Location = (props) => {
                         <Row>
                             <Col span={24}>
                                 <Card>
-                                    <p><strong>Location Name :</strong> {viewLocationDate?.partyName}</p>
-                                    {viewLocationDate?.partyNickname && <p><strong>Party Nickname :</strong> {viewLocationDate?.partyNickname}</p>}
-                                    <p><strong>Phone Number :</strong> {viewLocationDate?.phone1}</p>
-                                    {viewLocationDate?.phone2 && <p><strong>Alternate phone number 1 :</strong> {viewLocationDate?.phone2}</p>}
-                                    {viewLocationDate?.phone3 && <p><strong>Alternate phone number 2:</strong> {viewLocationDate?.phone3}</p>}
-                                    <p><strong>E-mail :</strong> {viewLocationDate?.email1}</p>
-                                    {viewLocationDate?.email2 && <p><strong>Alternate E-mail 1:</strong> {viewLocationDate?.email2}</p>}
-                                    {viewLocationDate?.email3 && <p><strong>Alternate E-mail 2:</strong> {viewLocationDate?.email3}</p>}
-                                    {viewLocationDate?.contactName && <p><strong>Contact Name :</strong> {viewLocationDate?.contactName}</p>}
-                                    {viewLocationDate?.contactNumber && <p><strong>Contact Number :</strong> {viewLocationDate?.contactNumber}</p>}
-                                    {viewLocationDate?.tanNumber && <p><strong>TAN Number :</strong> {viewLocationDate?.tanNumber}</p>}
-                                    {viewLocationDate?.panNumber && <p><strong>PAN Number :</strong> {viewLocationDate?.panNumber}</p>}
-                                    {viewLocationDate?.gstNumber && <p><strong>GST Number :</strong> {viewLocationDate?.gstNumber}</p>}
-                                    {viewLocationDate?.address1 && <>
-                                        <p><strong>Address :</strong> {viewLocationDate?.address1?.details}</p>
-                                        <p><strong>City :</strong> {viewLocationDate?.address1?.city}</p>
-                                        <p><strong>State :</strong> {viewLocationDate?.address1?.state}</p>
-                                        <p><strong>Pincode :</strong> {viewLocationDate?.address1?.pincode}</p>
-                                    </>}
-                                    {viewLocationDate?.packetClassificationTags && <p><strong>Tags:</strong>{viewLocationDate?.packetClassificationTags?.map(item=> item.tagName)}</p>}
-                                    {viewLocationDate?.endUserTags && <p><strong>EndUser Tags:</strong>{viewLocationDate?.endUserTags?.map(item=> item.tagName)}</p>}
-                                    {props.partyId.dailyReportsList && <p><strong>Daily Reports List :</strong> {props.partyId?.dailyReportsList}</p>}
-                                    {props.partyId?.monthlyReportsList && <p><strong>Monthly Reports List :</strong> {props.partyId?.monthlyReportsList}</p>}
-                                </Card>
+                                    <p><strong>Location Name :</strong> {viewLocationDate?.locationName}</p>
+                                    <p><strong>Location Address :</strong> {viewLocationDate?.address1}</p>
+                                    {viewLocationDate?.address2 && <p><strong>Location Address 2 :</strong> {viewLocationDate?.address2}</p>}
+                                    <p><strong>Location City :</strong> {viewLocationDate?.city}</p>
+                                    <p><strong>Location State :</strong> {viewLocationDate?.state}</p>
+                                    {viewLocationDate?.address2 && <p><strong>Pin code :</strong> {viewLocationDate?.pinCode}</p> }
+                                     </Card>
                             </Col>
                         </Row>
                     </Card>
@@ -300,23 +293,16 @@ const Location = (props) => {
                     visible={showAddLocation}
                     onOk={(e) => {
                         if (editLocation) {
-        
-                            // Set the initial state with the values from the API
-                            setDailyReportsList(initialDailyReportsList ? initialDailyReportsList.split(',') : []);
-                            setMonthlyReportsList(initialMonthlyReportsList ? initialMonthlyReportsList.split(',') : []);
                             e.preventDefault();
                             props.form.validateFields((err, values) => {
                                 if (!err) {
                                  const data = {
                                     values: {
                                       ...values,
-                                      showAmtDcPdfFlg: showAmtDcPdfFlg ? 'Y' : 'N',
-                                      dailyReportsList: dailyReportsList.join(','),
-                                      monthlyReportsList: monthlyReportsList.join(','),
                                     },
-                                    id: props.party?.party?.nPartyId
+                                    locationId: props?.location?.locationId.locationId
                                   }
-                                  props.updateParty(data);
+                                  props.updateLocation(data);
                                   props.form.resetFields();
                                   setShowAddLocation(false);
                                   setEditLocation(false);
@@ -326,12 +312,12 @@ const Location = (props) => {
                             props.form.validateFields((err, values) => {
                                 if (!err) {
                                  e.preventDefault();
-                                  // props.addParty(values);
-                                 props.addParty({
+                                  // props.addLocation(values);
+                                 props.addLocation({
                                     ...values,
-                                    showAmtDcPdfFlg: showAmtDcPdfFlg ? 'Y' : 'N',
-                                    dailyReportsList: dailyReportsList.join(','),
-                                    monthlyReportsList: monthlyReportsList.join(','),
+                                    ipAddress:"",
+                                    requestId: "ADD_LOCATION",
+                                    userId: ""
                                   });
                                   props.form.resetFields();
                                   setShowAddLocation(false);
@@ -351,10 +337,10 @@ const Location = (props) => {
                             <Col lg={24} md={24} sm={24} xs={24} className="gx-align-self-center">
                                 <Form {...formItemLayout} className="gx-pt-4">
                                     <Form.Item label="Location/Branch Nick Name">
-                                        {getFieldDecorator('partyName', {
+                                        {getFieldDecorator('locationName', {
                                             rules: [{ required: true, message: 'Please input location/branch name!' }],
                                         })(
-                                            <Input id="partyName" />
+                                            <Input id="locationName" />
                                         )}
                                     </Form.Item>
                                     <Form.Item label="Location Address">
@@ -364,11 +350,25 @@ const Location = (props) => {
                                             <Input id="locationAddress" />
                                         )}
                                     </Form.Item>
+                                    {/* <Form.Item label="Location Address2">
+                                        {getFieldDecorator('locationAddress2', {
+                                            // rules: [{ required: false, message: 'Please input address!' }],
+                                        })(
+                                            <Input id="locationAddress2" />
+                                        )}
+                                    </Form.Item> */}
                                     <Form.Item label="City">
                                         {getFieldDecorator('city', {
                                             rules: [{ required: false, message: 'Please input city!' }],
                                         })(
                                             <Input id="city" />
+                                        )}
+                                    </Form.Item>
+                                    <Form.Item label="PinCode">
+                                        {getFieldDecorator('pincode', {
+                                            rules: [{ required: false, message: 'Please input pincode!' }],
+                                        })(
+                                            <Input id="pincode" />
                                         )}
                                     </Form.Item>
                                     <Form.Item label="State">
@@ -384,20 +384,26 @@ const Location = (props) => {
                                             showSearch
                                             style={{ width: 300 }}
                                             placeholder="Select a state"
+                                            filterOption={(input, option) => {
+                                                return option?.props?.children?.toLowerCase().includes(input.toLowerCase());
+                                            }}
+                                            filterSort={(optionA, optionB) =>
+                                                optionA?.props?.children.toLowerCase().localeCompare(optionB?.props?.children.toLowerCase())
+                                            }
                                         >
-                                            {props.process?.processList?.map((process) => (
-                                            <Option key={process.processId} value={process.processId}>
-                                                {process.processName}
+                                             {props.location?.stateList?.map((state) => (
+                                            <Option key={state.stateName} value={state.stateName}>
+                                                {state.stateName}
                                             </Option>
-                                            ))}
+                                            ))} 
                                         </Select>
                                         )}
                                     </Form.Item>
                                     <Form.Item label="GST Number">
-                                        {getFieldDecorator('gstNumber', {
+                                        {getFieldDecorator('gstNo', {
                                             rules: [{ required: true, message: 'Please input the GST Number!' }],
                                         })(
-                                            <Input id="gstNumber" />
+                                            <Input id="gstNo" />
                                         )}
                                     </Form.Item>
                                 </Form>
@@ -411,119 +417,51 @@ const Location = (props) => {
 }
 
 const mapStateToProps = state => ({
-    party: state.party,
     packetClassification: state.packetClassification,
-    quality: state.quality,
-    partyId: state.party.party
+    location: state.location
 });
 
 const addLocationForm = Form.create({
     mapPropsToFields(props) {
-        const { party } = props.party;
-        const phone = party?.phone3 ? [party?.phone1,party?.phone2,party?.phone3] : (party?.phone2 ? [party?.phone1,party?.phone2] : [party?.phone1]);
-        const email = party?.email3 ? [party?.email1,party?.email2,party?.email3] : (party?.email2 ? [party?.email1,party?.email2] : [party?.email1]);
-        const address = party?.address2?.details ? [party?.address1?.details, party?.address2?.details] : [party?.address1?.details];
-        const city = party?.address2?.city ? [party?.address1?.city, party?.address2?.city] : [party?.address1?.city];
-        const state = party?.address2?.state ? [party?.address1?.state, party?.address2?.state] : [party?.address1?.state];
-        const pincode = party?.address2?.pincode ? [party?.address1?.pincode, party?.address2?.pincode] : [party?.address1?.pincode];
-        // const tags = props?.party?.party?.tags.map(item=> item.classificationName)
-       // const checkboxValuesDR = party?.dailyReportsList || [];
-       const checkboxValuesDR = (party?.dailyReportsList || '').split(',').map(value => value.trim());
-        const checkboxValuesMR = party?.monthlyReportsList || [];
-        // console.log('Received dailyReportsList:', party?.dailyReportsList);
-        // console.log('Parsed dailyReportsList:', checkboxValuesDR);
         return {
-            partyName:Form.createFormField ({
-                ...props.party?.party?.partyName,
-                value: props.party?.party?.partyName|| '',
+            locationName:Form.createFormField ({
+                ...props.location?.locationId?.locationName,
+                value: props.location?.locationId?.locationName|| '',
             }),
-            partyNickname: Form.createFormField({
-                ...props.party?.party?.partyNickname,
-                value: props.party?.party?.partyNickname || '',
+            locationAddress:Form.createFormField ({
+                ...props.location?.locationId?.address1,
+                value: props.location?.locationId?.address1|| '',
             }),
-            phone: Form.createFormField({
-                value: phone
+            locationAddress2:Form.createFormField ({
+                ...props.location?.locationId?.address2,
+                value: props.location?.locationId?.address2|| '',
             }),
-            phoneKeys: Form.createFormField({
-                value: phone,
+            city:Form.createFormField ({
+                ...props.location?.locationId?.city,
+                value: props.location?.locationId?.city|| '',
+            }),      
+            pincode:Form.createFormField ({
+                ...props.location?.locationId?.pincode,
+                value: props.location?.locationId?.pincode|| '',
             }),
-            contactName: Form.createFormField({
-                ...props.party?.party?.contactName,
-                value: props.party?.party?.contactName || '',
+            state:Form.createFormField ({
+                ...props.location?.locationId?.state,
+                value: props.location?.locationId?.state|| '',
             }),
-            contactNumber: Form.createFormField({
-                ...props.party?.party?.contactNumber,
-                value: props.party?.party?.contactNumber || '',
-            }),
-            address: Form.createFormField({
-                value: address
-            }),
-            addressKeys: Form.createFormField({
-                value: address
-            }),
-            city: Form.createFormField({
-                value: city
-            }),
-            state: Form.createFormField({
-                value: state
-            }),
-            pincode: Form.createFormField({
-                value: pincode
-            }),
-            email: Form.createFormField({
-                value: email
-            }),
-            emailKeys: Form.createFormField({
-                value: email
-            }),
-            panNumber: Form.createFormField({
-                ...party?.panNumber,
-                value: party?.panNumber || '',
-            }),
-            tanNumber: Form.createFormField({
-                ...party?.tanNumber,
-                value: party?.tanNumber || '',
-            }),
-            gstNumber: Form.createFormField({
-                ...party?.gstNumber,
-                value: party?.gstNumber || '',
-            }),
-            tags: Form.createFormField({
-                ...props.party?.party?.tags,
-                value: party?.tags?.map(item=> item.tagId) || [],
-            }),
-            endUsertags: Form.createFormField({
-                ...props.party?.party?.endUserTags,
-                value: party?.endUserTags?.map(item=> item.tagId) || [],
-            }),
-            qualityTemplates: Form.createFormField({
-                ...props.party?.party?.templateIdList,
-                value: party?.templateIdList?.map(item=> item.templateId) || [],
-            }),
-            showAmtDcPdfFlg: Form.createFormField({
-                ...party?.showAmtDcPdfFlg,
-                value: party?.showAmtDcPdfFlg || 'N',
-            }),
-            dailyReportsList: Form.createFormField({
-                ...party?.dailyReportsList,
-               //value: Array.isArray(checkboxValuesDR) ? checkboxValuesDR : [],
-               value:checkboxValuesDR
-            }),
-            monthlyReportsList: Form.createFormField({
-                ...party?.monthlyReportsList,
-               value: Array.isArray(checkboxValuesMR) ? checkboxValuesMR : [],
+            gstNo:Form.createFormField ({
+                ...props.location?.locationId?.gstNo,
+                value: props.location?.locationId?.gstNo|| '',
             }),
         };
     }
 })(Location);
 
 export default connect(mapStateToProps, {
-    fetchPartyList,
-    addParty,
-    fetchPartyListId,
-    updateParty,
-    resetParty,
-    fetchClassificationList,
-    fetchEndUserTagsList,
-    fetchTemplatesList
+    fetchLocationList,
+    addLocation,
+    fetchLocationListId,
+    updateLocation,
+    resetLocation,
+    deleteLocation,
+    fetchStateList
 })(addLocationForm);
