@@ -21,6 +21,7 @@ import Customer from './Customer';
 import Vendor from './Vendor';
 import MaterialDV from './MaterialDV';
 import Category from './Category';
+import Weighbridge from './Weighbridge';
 
 const createRootReducer = (history) => combineReducers({
   router: connectRouter(history),
@@ -44,7 +45,8 @@ const createRootReducer = (history) => combineReducers({
   customer: Customer,
   vendor: Vendor,
   materialDV: MaterialDV,
- category: Category
+ category: Category,
+ weighbridge: Weighbridge
 });
 
 export default createRootReducer

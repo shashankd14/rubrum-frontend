@@ -83,7 +83,7 @@ function* addCustomer(action) {
             phoneNo,
             showAmtDcPdfFlg,
             purchaseReportsList
-        } = action.party;
+        } = action.Customer;
 
         const getEmail = (mail) => {
             const mailObj = {};

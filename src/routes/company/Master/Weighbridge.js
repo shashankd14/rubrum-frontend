@@ -5,7 +5,7 @@ import moment from 'moment';
 import SearchBox from "../../../components/SearchBox";
 
 import IntlMessages from "../../../util/IntlMessages";
-import { fetchPartyList, addParty, fetchPartyListId, updateParty, resetParty, fetchClassificationList,fetchEndUserTagsList, fetchTemplatesList } from "../../../appRedux/actions";
+import { fetchWeighbridgeList, deleteWeighbridge, addWeighbridge, fetchWeighbridgeListId, updateWeighbridge, resetWeighbridge, fetchStateList } from "../../../appRedux/actions";
 import { onDeleteContact } from "../../../appRedux/actions";
 
 const FormItem = Form.Item;
@@ -31,71 +31,64 @@ const Weighbridge = (props) => {
     });
     const [filteredInfo, setFilteredInfo] = useState(null);
     const [showAddWeighbridge, setShowAddWeighbridge] = useState(false);
-    const [viewParty, setViewParty] = useState(false);
-    const [viewPartyDate, setViewPartyData] = useState({});
+    const [viewWeighbridge, setViewWeighbridge] = useState(false);
+    const [viewWeighbridgeData, setViewWeighbridgeData] = useState({});
     const [editWeighbridge, setEditWeighbridge] = useState(false);
     const [searchValue, setSearchValue] = useState('');
-    const [filteredInwardList, setFilteredInwardList] = useState(props.party?.partyList || []);
-
+    const [filteredWeighbridgeList, setFilteredWeighbridgeList] = useState(props?.weighbridge?.weighbridgeList?.content || []);
+    const [pageNo, setPageNo] = useState(1);
+    const [pageSize, setPageSize] = useState(15);
+    const [totalPageItems, setTotalPageItems] = useState(0);
+    const { totalItems } = props.weighbridge.weighbridgeList;
     const {getFieldDecorator, getFieldValue} = props.form;
-
-    const { party } = props.party;
-    const [tagsList, setTagsList] =useState([{tagId: 1}]);
-
-    getFieldDecorator('phoneKeys', {initialValue: [0]});
-    getFieldDecorator('addressKeys', {initialValue: [0]});
-    getFieldDecorator('emailKeys', {initialValue: [0]});
 
     const columns = [{
         title: 'Weighbridge Id',
-        dataIndex: 'nPartyId',
-        key: 'nPartyId',
+        dataIndex: 'weighbridgeId',
+        key: 'weighbridgeId',
         filters: [],
         sorter: (a, b) => {
-            return a.nPartyId - b.nPartyId
+            return a.weighbridgeId - b.weighbridgeId
         },
-        sortOrder: sortedInfo.columnKey === 'nPartyId' && sortedInfo.order,
+        sortOrder: sortedInfo.columnKey === 'weighbridgeId' && sortedInfo.order,
     },
     {
         title: 'Weighbridge Name',
-        dataIndex: 'partyName',
-        key: 'partyName',
+        dataIndex: 'weighbridgeName',
+        key: 'weighbridgeName',
         filters: [],
-        sorter: (a, b) => a.partyName.length - b.partyName.length,
-        sortOrder: sortedInfo.columnKey === 'partyName' && sortedInfo.order,
+        sorter: (a, b) => a.weighbridgeName.length - b.weighbridgeName.length,
+        sortOrder: sortedInfo.columnKey === 'weighbridgeName' && sortedInfo.order,
     },
     {
-        title: 'Location Address',
-        dataIndex: 'gstNumber',
-        key: 'gstNumber',
-        filters: [],
-        sorter: (a, b) => a.gstNumber.length - b.gstNumber.length,
-        sortOrder: sortedInfo.columnKey === 'gstNumber' && sortedInfo.order,
+        title: 'Weighbridge Address',
+        dataIndex: 'address1',
+        key: 'address1',
+        sorter: (a, b) => a.address1?.city?.length - b.address1?.city?.length,
+        sortOrder: sortedInfo.columnKey === 'address1' && sortedInfo.order,
     },
     {
         title: 'City',
-        dataIndex: 'address1.city',
-        key: 'address1.city',
-        sorter: (a, b) => a.address1?.city?.length - b.address1?.city?.length,
-        sortOrder: sortedInfo.columnKey === 'address1.city' && sortedInfo.order,
+        dataIndex: 'city',
+        key: 'city',
+        sorter: (a, b) => a.city?.length - b.city?.length,
+        sortOrder: sortedInfo.columnKey === 'city' && sortedInfo.order,
     },
     {
         title: 'State',
-        dataIndex: 'address1.state',
-        key: 'address1.state',
-        sorter: (a, b) => a.address1?.state?.length - b.address1?.state?.length,
-        sortOrder: sortedInfo.columnKey === 'address1.state' && sortedInfo.order,
+        dataIndex: 'state',
+        key: 'state',
+        sorter: (a, b) => a.state?.length - b.state?.length,
+        sortOrder: sortedInfo.columnKey === 'state' && sortedInfo.order,
     },
     {
         title: 'Contact Number',
-        dataIndex: 'packetClassificationTags',
-        render (value) {
-            return value?.map(item => item.tagName)
-        },
-        key: 'tags',
-        filters: []
+        dataIndex: 'contactNo',
+        key: 'contactNo',
+        filters: [],
+        sorter: (a, b) => a.contactNo.length - b.contactNo.length,
+        sortOrder: sortedInfo.columnKey === 'contactNo' && sortedInfo.order,
     },
-    
     {
         title: 'Action',
         dataIndex: '',
@@ -106,7 +99,7 @@ const Weighbridge = (props) => {
                 <Divider type="vertical"/>
                 <span className="gx-link" onClick={(e) => onEdit(record, e)}>Edit</span>
                 <Divider type="vertical"/>
-                <span className="gx-link"onClick={() => {}}>Delete</span>
+                <span className="gx-link" onClick={(e) => onDelete(record, e)}>Delete</span>
             </span>
         ),
     },
@@ -114,65 +107,75 @@ const Weighbridge = (props) => {
 
     const onView = (record, e) => {
         e.preventDefault();
-         setViewPartyData(record);
-        props.fetchPartyListId(record.nPartyId);
-        setViewParty(true);
+         setViewWeighbridgeData(record);
+        props.fetchWeighbridgeListId({
+            id: record.locationId,
+            searchText: '',
+            pageNo: "1",
+            pageSize: "15",
+            ipAddress: '',
+            requestId: '',
+            userId: ''
+        });
+        setViewWeighbridge(true);
     }
     const onDelete = (record,key, e) => {
-        let id = []
-        id.push(record.inwardEntryId);
-        e.preventDefault();
-        props.deleteInwardEntryById(id)
+        debugger
+        props.deleteWeighbridge({
+            ids: record.weighbridgeId,
+            ipAddress: "1.1.1.1",
+            requestId: "WEIGHBRIDGE_DELETE",
+            userId: ""
+        })
       }
 
       const onEdit = (record,e)=>{
+        debugger
         e.preventDefault();
-        let classificationObj = record.packetClassificationTags.length===0? [{tagId:1}]: record.packetClassificationTags;
-        setTagsList(classificationObj?.map(item =>item.tagId) || null)
-        props.fetchPartyListId(record.nPartyId);
+        props.fetchWeighbridgeListId({
+            id: record.weighbridgeId,
+            searchText: '',
+            pageNo: "1",
+            pageSize: "15",
+            ipAddress: '',
+            requestId: '',
+            userId: ''
+        });
         setEditWeighbridge(true);
         setTimeout(() => {
             setShowAddWeighbridge(true);
         }, 1000);
-
     }
 
     useEffect(() => {
         setTimeout(() => {
-            props.fetchPartyList();
-            props.fetchClassificationList();
-            props.fetchEndUserTagsList();
-            props.fetchTemplatesList()
+            props.fetchWeighbridgeList({
+                searchText:"",
+                pageNo:"1",
+                pageSize:"15",
+                ipAddress: "1.1.1.1",
+                requestId: "WEIGHBRIDGE_LIST_GET",
+                userId: ""
+            });
+            props.fetchStateList({
+                ipAddress: "1.1.1.1",
+                requestId: "STATE_LIST",
+                userId: ""
+            });
         }, 1000);
     }, [showAddWeighbridge]);
 
     useEffect(() => {
-        const { loading, error, partyList } = props.party;
+        const { loading, error, weighbridgeList } = props.weighbridge;
         if (!loading && !error) {
-            setFilteredInwardList(partyList)
+            setFilteredWeighbridgeList(weighbridgeList)
 
         }
-    }, [props.party]);
+    }, [props.weighbridge]);
 
-    useEffect(() => {
-
-        const { party } = props;
-        if(searchValue) {
-            const filteredData = party?.partyList?.filter(party => {
-                if(party.nPartyId?.toString() === searchValue ||
-                    party.partyName?.toLowerCase().includes(searchValue.toLowerCase()) ||
-                    party.gstNumber?.includes(searchValue)) {
-                    return party;
-                }
-            });
-            setFilteredInwardList(filteredData);
-        } else {
-            setFilteredInwardList(party.partyList);
-        }
-    }, [searchValue])
     const handleChange = (pagination, filters, sorter) => {
         setSortedInfo(sorter);
-        setFilteredInfo(filters)
+        setFilteredInfo(filters);
     };
 
     const clearAll = () => {
@@ -188,33 +191,38 @@ const Weighbridge = (props) => {
         console.log('dfd');
     };
 
-    const addNewKey = (idx, key) => {
-        const {form} = props;
-        const value = form.getFieldValue(key);
-        const nextValue = value.concat(idx+1);
-        form.setFieldsValue({
-            [key]: nextValue
-        });
-    }
-
-    const removeKey = (index, key1, key2) => {
-        const {form} = props;
-        // can use data-binding to get
-        const value1 = form.getFieldValue(key1);
-        const value2 = form.getFieldValue(key2);
-        // We need at least one passenger
-        if (value1.length === 1) {
-            return;
+    useEffect(() => {
+        debugger
+        if (totalItems) {
+          setTotalPageItems(totalItems);
         }
-        // can use data-binding to set
-        form.setFieldsValue({
-            [key1]: value1.filter((key, idx) => idx !== index),
-            [key2]: value2.filter((key, idx) => idx !== index)
+      }, [totalItems]);
+
+      useEffect(() => {
+        if (searchValue) {
+          if (searchValue.length >= 3) {
+            setPageNo(1);
+            props.fetchWeighbridgeList({
+                searchText:searchValue,
+                pageNo:"1",
+                pageSize:"15",
+                ipAddress: "1.1.1.1",
+                requestId: "WEIGHBRIDGE_LIST_GET",
+                userId: ""
+            });
+          }
+        } else {
+          setPageNo(1);
+          props.fetchWeighbridgeList({
+            searchText:searchValue,
+            pageNo:"1",
+            pageSize:"15",
+            ipAddress: "1.1.1.1",
+            requestId: "WEIGHBRIDGE_LIST_GET",
+            userId: ""
         });
-    }
-    const handleSelectChange=(e)=>{
-        console.log(e)
-    }
+        }
+      }, [searchValue]);
 
     return (
         <div>
@@ -228,53 +236,56 @@ const Weighbridge = (props) => {
                     <div className="gx-flex-row gx-w-50">
                         <Button type="primary" icon={() => <i className="icon icon-add"/>} size="default"
                                 onClick={() => {
-                                    props.resetParty();
+                                    props.resetWeighbridge();
                                     props.form.resetFields()
                                     setShowAddWeighbridge(true)
                                 }}
                         >Add Weighbridge</Button>
-                        <SearchBox styleName="gx-flex-1" placeholder="Search for party id or party name..." value={searchValue} onChange={(e) => setSearchValue(e.target.value)}/>
+                        <SearchBox styleName="gx-flex-1" placeholder="Search for weighbridge name..." value={searchValue} onChange={(e) => setSearchValue(e.target.value)}/>
                     </div>
                 </div>
                 <Table rowSelection={[]}
                     className="gx-table-responsive"
                     columns={columns}
-                    dataSource={filteredInwardList}
+                    dataSource={filteredWeighbridgeList.content}
                     onChange={handleChange}
+                    pagination={{
+                        pageSize: 15,
+                        onChange: (page) => {
+                          setPageNo(page);
+                          props.fetchWeighbridgeList({
+                            searchText:searchValue,
+                            pageNo: page,
+                            pageSize: pageSize,
+                            ipAddress: "1.1.1.1",
+                            requestId: "WEIGHBRIDGE_LIST_GET",
+                            userId: ""
+                        });
+                        },
+                        current: pageNo,
+                        total: totalPageItems,
+                      }}
                 />
                 <Modal
                     title='Weighbridge Details'
-                    visible={viewParty}
+                    visible={viewWeighbridge}
                     width={600}
-                    onOk={() => setViewParty(false)}
-                    onCancel={() => setViewParty(false)}
+                    onOk={() => setViewWeighbridge(false)}
+                    onCancel={() => setViewWeighbridge(false)}
 
                 >
                     <Card className="gx-card">
                         <Row>
                             <Col span={24}>
                                 <Card>
-                                    <p><strong>Party Name :</strong> {viewPartyDate?.partyName}</p>
-                                    {viewPartyDate?.partyNickname && <p><strong>Party Nickname :</strong> {viewPartyDate?.partyNickname}</p>}
-                                    <p><strong>Phone Number :</strong> {viewPartyDate?.phone1}</p>
-                                    {viewPartyDate?.phone2 && <p><strong>Alternate phone number 1 :</strong> {viewPartyDate?.phone2}</p>}
-                                    {viewPartyDate?.phone3 && <p><strong>Alternate phone number 2:</strong> {viewPartyDate?.phone3}</p>}
-                                    <p><strong>E-mail :</strong> {viewPartyDate?.email1}</p>
-                                    {viewPartyDate?.email2 && <p><strong>Alternate E-mail 1:</strong> {viewPartyDate?.email2}</p>}
-                                    {viewPartyDate?.email3 && <p><strong>Alternate E-mail 2:</strong> {viewPartyDate?.email3}</p>}
-                                    {viewPartyDate?.contactName && <p><strong>Contact Name :</strong> {viewPartyDate?.contactName}</p>}
-                                    {viewPartyDate?.contactNumber && <p><strong>Contact Number :</strong> {viewPartyDate?.contactNumber}</p>}
-                                    {viewPartyDate?.tanNumber && <p><strong>TAN Number :</strong> {viewPartyDate?.tanNumber}</p>}
-                                    {viewPartyDate?.panNumber && <p><strong>PAN Number :</strong> {viewPartyDate?.panNumber}</p>}
-                                    {viewPartyDate?.gstNumber && <p><strong>GST Number :</strong> {viewPartyDate?.gstNumber}</p>}
-                                    {viewPartyDate?.address1 && <>
-                                        <p><strong>Address :</strong> {viewPartyDate?.address1?.details}</p>
-                                        <p><strong>City :</strong> {viewPartyDate?.address1?.city}</p>
-                                        <p><strong>State :</strong> {viewPartyDate?.address1?.state}</p>
-                                        <p><strong>Pincode :</strong> {viewPartyDate?.address1?.pincode}</p>
-                                    </>}
-                                   
-                                </Card>
+                                    <p><strong>Weighbridge Name :</strong> {viewWeighbridgeData?.weighbridgeName}</p>
+                                    <p><strong>Weighbridge Address :</strong> {viewWeighbridgeData?.address1}</p>
+                                    {viewWeighbridgeData?.address2 && <p><strong>Location Address 2 :</strong> {viewWeighbridgeData?.address2}</p>}
+                                    <p><strong>Weighbridge City :</strong> {viewWeighbridgeData?.city}</p>
+                                    <p><strong>Weighbridge State :</strong> {viewWeighbridgeData?.state}</p>
+                                    <p><strong>Weighbridge Contact :</strong> {viewWeighbridgeData?.contactNo}</p>
+                                    {viewWeighbridgeData?.address2 && <p><strong>Pin code :</strong> {viewWeighbridgeData?.pincode}</p> }
+                                     </Card>
                             </Col>
                         </Row>
                     </Card>
@@ -286,14 +297,15 @@ const Weighbridge = (props) => {
                         if (editWeighbridge) {
                             e.preventDefault();
                             props.form.validateFields((err, values) => {
+                                debugger
                                 if (!err) {
                                  const data = {
                                     values: {
                                       ...values,
                                     },
-                                    id: props.party?.party?.nPartyId
+                                    weighbridgeId: props?.weighbridge?.weighbridgeId.weighbridgeId
                                   }
-                                  props.updateParty(data);
+                                  props.updateWeighbridge(data);
                                   props.form.resetFields();
                                   setShowAddWeighbridge(false);
                                   setEditWeighbridge(false);
@@ -301,11 +313,14 @@ const Weighbridge = (props) => {
                             });
                         } else {
                             props.form.validateFields((err, values) => {
+                                debugger
                                 if (!err) {
                                  e.preventDefault();
-                                  // props.addParty(values);
-                                 props.addParty({
+                                 props.addWeighbridge({
                                     ...values,
+                                    ipAddress:"",
+                                    requestId: "ADD_WEIGHBRIDGE",
+                                    userId: ""
                                   });
                                   props.form.resetFields();
                                   setShowAddWeighbridge(false);
@@ -325,55 +340,75 @@ const Weighbridge = (props) => {
                             <Col lg={24} md={24} sm={24} xs={24} className="gx-align-self-center">
                                 <Form {...formItemLayout} className="gx-pt-4">
                                     <Form.Item label="Weighbridge Name">
-                                        {getFieldDecorator('partyName', {
+                                        {getFieldDecorator('weighbridgeName', {
                                             rules: [{ required: true, message: 'Please input Weighbridge name!' }],
                                         })(
-                                            <Input id="partyName" />
+                                            <Input id="weighbridgeName" />
                                         )}
                                     </Form.Item>
                                     <Form.Item label="Weighbridge Address">
-                                        {getFieldDecorator('partyNickname', {
-                                            rules: [{ required: false, message: 'Please input Address!' }],
+                                        {getFieldDecorator('weighbridgeAddress', {
+                                            rules: [{ required: false, message: 'Please input address!' }],
                                         })(
-                                            <Input id="partyNickname" />
+                                            <Input id="weighbridgeAddress" />
                                         )}
                                     </Form.Item>
-
-                                    <Form.Item label="City">
-                                        {getFieldDecorator('contactName', {
-                                            rules: [{ required: false, message: 'Please input City!' }],
+                                    {/* <Form.Item label="Weighbridge Address2">
+                                        {getFieldDecorator('weighbridgeAddress2', {
+                                            // rules: [{ required: false, message: 'Please input address!' }],
                                         })(
-                                            <Input id="contactName" />
+                                            <Input id="weighbridgeAddress2" />
+                                        )}
+                                    </Form.Item> */}
+                                    <Form.Item label="City">
+                                        {getFieldDecorator('city', {
+                                            rules: [{ required: false, message: 'Please input city!' }],
+                                        })(
+                                            <Input id="city" />
+                                        )}
+                                    </Form.Item>
+                                    <Form.Item label="PinCode">
+                                        {getFieldDecorator('pincode', {
+                                            rules: [{ required: false, message: 'Please input pincode!' }],
+                                        })(
+                                            <Input id="pincode" />
                                         )}
                                     </Form.Item>
                                     <Form.Item label="State">
-                                        {getFieldDecorator('qualityTemplates', {
-                                            //rules: [{ required: true, message: 'Please enter Quality Templates!' }],
+                                        {getFieldDecorator("state", {
+                                        rules: [
+                                            {
+                                            required: true,
+                                            message: "Please select state!",
+                                            },
+                                        ],
                                         })(
-                                            <Select
-                                             id="qualityTemplates"
-                                             showSearch
-                                             style={{ width: '100%' }}
-                                             filterOption={(input, option) => {
+                                        <Select
+                                            showSearch
+                                            style={{ width: 300 }}
+                                            placeholder="Select a state"
+                                            filterOption={(input, option) => {
                                                 return option?.props?.children?.toLowerCase().includes(input.toLowerCase());
                                             }}
                                             filterSort={(optionA, optionB) =>
                                                 optionA?.props?.children.toLowerCase().localeCompare(optionB?.props?.children.toLowerCase())
                                             }
-                                             onChange={handleSelectChange}
-                                             >{props?.quality?.data?.map(item => {
-                                                return <Option value={item?.templateId}>{item.templateName}</Option>
-                                            })}</Select>
+                                        >
+                                             {props.location?.stateList?.map((state) => (
+                                            <Option key={state.stateName} value={state.stateName}>
+                                                {state.stateName}
+                                            </Option>
+                                            ))} 
+                                        </Select>
                                         )}
                                     </Form.Item>
                                     <Form.Item label="Contact Number">
-                                        {getFieldDecorator('panNumber', {
-                                            rules: [{ required: false, message: 'Please input the contact Number!' }],
+                                        {getFieldDecorator('contactNo', {
+                                            // rules: [{ required: true, message: 'Please input the contact Number!' }],
                                         })(
-                                            <Input id="panNumber" />
+                                            <Input id="contactNo" />
                                         )}
                                     </Form.Item>
-                                   
                                 </Form>
                             </Col>
                         </Row>
@@ -385,82 +420,52 @@ const Weighbridge = (props) => {
 }
 
 const mapStateToProps = state => ({
-    party: state.party,
     packetClassification: state.packetClassification,
-    quality: state.quality,
-    partyId: state.party.party
+    location: state.location,
+    weighbridge: state.weighbridge
 });
 
 const addWeighbridgeForm = Form.create({
     mapPropsToFields(props) {
-        const { party } = props.party;
-        const phone = party?.phone3 ? [party?.phone1,party?.phone2,party?.phone3] : (party?.phone2 ? [party?.phone1,party?.phone2] : [party?.phone1]);
-        const email = party?.email3 ? [party?.email1,party?.email2,party?.email3] : (party?.email2 ? [party?.email1,party?.email2] : [party?.email1]);
-        const address = party?.address2?.details ? [party?.address1?.details, party?.address2?.details] : [party?.address1?.details];
-        const city = party?.address2?.city ? [party?.address1?.city, party?.address2?.city] : [party?.address1?.city];
-        const state = party?.address2?.state ? [party?.address1?.state, party?.address2?.state] : [party?.address1?.state];
-        const pincode = party?.address2?.pincode ? [party?.address1?.pincode, party?.address2?.pincode] : [party?.address1?.pincode];
-        // const tags = props?.party?.party?.tags.map(item=> item.classificationName)
-       // const checkboxValuesDR = party?.dailyReportsList || [];
-       const checkboxValuesDR = (party?.dailyReportsList || '').split(',').map(value => value.trim());
-        const checkboxValuesMR = party?.monthlyReportsList || [];
-        // console.log('Received dailyReportsList:', party?.dailyReportsList);
-        // console.log('Parsed dailyReportsList:', checkboxValuesDR);
         return {
-            partyName:Form.createFormField ({
-                ...props.party?.party?.partyName,
-                value: props.party?.party?.partyName|| '',
+            weighbridgeName:Form.createFormField ({
+                ...props.weighbridge?.weighbridgeId?.weighbridgeName,
+                value: props.weighbridge?.weighbridgeId?.weighbridgeName|| '',
             }),
-            partyNickname: Form.createFormField({
-                ...props.party?.party?.partyNickname,
-                value: props.party?.party?.partyNickname || '',
+            weighbridgeAddress:Form.createFormField ({
+                ...props.weighbridge?.weighbridgeId?.address1,
+                value: props.weighbridge?.weighbridgeId?.address1|| '',
             }),
-            phone: Form.createFormField({
-                value: phone
+            weighbridgeAddress2:Form.createFormField ({
+                ...props.weighbridge?.weighbridgeId?.address2,
+                value: props.weighbridge?.weighbridgeId?.address2|| '',
             }),
-            phoneKeys: Form.createFormField({
-                value: phone,
+            city:Form.createFormField ({
+                ...props.weighbridge?.weighbridgeId?.city,
+                value: props.weighbridge?.weighbridgeId?.city|| '',
+            }),      
+            pincode:Form.createFormField ({
+                ...props.weighbridge?.weighbridgeId?.pincode,
+                value: props.weighbridge?.weighbridgeId?.pincode|| '',
             }),
-            contactName: Form.createFormField({
-                ...props.party?.party?.contactName,
-                value: props.party?.party?.contactName || '',
+            state:Form.createFormField ({
+                ...props.weighbridge?.weighbridgeId?.state,
+                value: props.weighbridge?.weighbridgeId?.state|| '',
             }),
-            contactNumber: Form.createFormField({
-                ...props.party?.party?.contactNumber,
-                value: props.party?.party?.contactNumber || '',
+            contactNo:Form.createFormField ({
+                ...props.weighbridge?.weighbridgeId?.contactNo,
+                value: props.weighbridge?.weighbridgeId?.contactNo|| '',
             }),
-            address: Form.createFormField({
-                value: address
-            }),
-            addressKeys: Form.createFormField({
-                value: address
-            }),
-            city: Form.createFormField({
-                value: city
-            }),
-            state: Form.createFormField({
-                value: state
-            }),
-            pincode: Form.createFormField({
-                value: pincode
-            }),
-          
-            tags: Form.createFormField({
-                ...props.party?.party?.tags,
-                value: party?.tags?.map(item=> item.tagId) || [],
-            }),
-            
         };
     }
 })(Weighbridge);
 
 export default connect(mapStateToProps, {
-    fetchPartyList,
-    addParty,
-    fetchPartyListId,
-    updateParty,
-    resetParty,
-    fetchClassificationList,
-    fetchEndUserTagsList,
-    fetchTemplatesList
+    fetchWeighbridgeList,
+    addWeighbridge,
+    fetchWeighbridgeListId,
+    updateWeighbridge,
+    resetWeighbridge,
+    deleteWeighbridge,
+    fetchStateList
 })(addWeighbridgeForm);

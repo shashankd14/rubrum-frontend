@@ -280,13 +280,6 @@ const SidebarContent = () => {
                     </Link>
                   </Menu.Item>}
 
-                  {menuLabelList.includes(sidebarMenuItems.subCategory) && <Menu.Item key="company/master/subCategory">
-                    <Link to="/company/master/subCategory">
-                      <i className="icon icon-crypto"/>
-                      <span><IntlMessages id="sidebar.master.subCategory"/></span>
-                    </Link>
-                  </Menu.Item>}
-
                   {/* <Menu.Item key="company/master/quality">
                     <Link to="/company/master/quality">
                       <i className="icon icon-crypto" />
@@ -369,6 +362,21 @@ const SidebarContent = () => {
                     <span><IntlMessages id="sidebar.company.userAccess"/></span>
                   </Link>
                 </Menu.Item>}
+
+                {menuLabelList.includes(sidebarMenuItems.inwardDV) && <Menu.Item key="company/inwardDV">
+                    <Link to="/company/inwardDV">
+                      <i className="icon icon-crypto"/>
+                      <span><IntlMessages id="sidebar.company.inward"/></span>
+                    </Link>
+                  </Menu.Item>}
+
+                  {menuLabelList.includes(sidebarMenuItems.inwardDV) && <Menu.Item key="company/stockRegister">
+                    <Link to="/company/stockRegister">
+                      <i className="icon icon-crypto"/>
+                      <span><IntlMessages id="sidebar.company.stockRegister"/></span>
+                    </Link>
+                  </Menu.Item>}
+                  
               </MenuItemGroup>
               <Menu.Item key="main/widgets">
                 <Link to="/main/widgets"><i className="icon icon-widgets"/>

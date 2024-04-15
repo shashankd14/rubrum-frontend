@@ -369,5 +369,7 @@
   "sidebar.master.subCategory": "Sub Category",
   "master.company.subCategoryList": "Sub Category List",
   "sidebar.master.weighbridge": "Weighbridge",
-  "master.company.weighbridgeList": "Weighbridge List"
+  "master.company.weighbridgeList": "Weighbridge List",
+  "sidebar.company.stockRegister": "Stock Register",
+  "sidebar.company.stockRegisterList": "Stock Register List"
 }

@@ -146,7 +146,6 @@ const Location = (props) => {
     }
 
     useEffect(() => {
-        debugger
         setTimeout(() => {
             props.fetchLocationList({
                 searchText:"",
@@ -221,7 +220,6 @@ const Location = (props) => {
         });
         }
       }, [searchValue]);
-      console.log("state111111", props.location);
 
     return (
         <div>
@@ -240,7 +238,7 @@ const Location = (props) => {
                                     setShowAddLocation(true)
                                 }}
                         >Add Location</Button>
-                        <SearchBox styleName="gx-flex-1" placeholder="Search for party id or party name..." value={searchValue} onChange={(e) => setSearchValue(e.target.value)}/>
+                        <SearchBox styleName="gx-flex-1" placeholder="Search for Location name..." value={searchValue} onChange={(e) => setSearchValue(e.target.value)}/>
                     </div>
                 </div>
                 <Table rowSelection={[]}
@@ -266,7 +264,7 @@ const Location = (props) => {
                       }}
                 />
                 <Modal
-                    title='Party Details'
+                    title='Location Details'
                     visible={viewLocation}
                     width={600}
                     onOk={() => setViewLocation(false)}
