@@ -480,34 +480,15 @@ const YieldLoss = (props) => {
                       ],
                     })(
                       <Select
-                        id='tags'
-                        placeholder='Select process tag'
                         showSearch
-                        mode='multiple'
-                        style={{ width: '100%' }}
-                        onChange={handleSelectChange}
-                        filterOption={(input, option) => {
-                          return option?.props?.children
-                            ?.toLowerCase()
-                            .includes(input.toLowerCase());
-                        }}
-                        filterSort={(optionA, optionB) =>
-                          optionA?.props?.children
-                            .toLowerCase()
-                            .localeCompare(
-                              optionB?.props?.children.toLowerCase()
-                            )
-                        }
+                        style={{ width: 300 }}
+                        placeholder="Select a Process"
                       >
-                        {props?.packetClassification?.processTags?.map(
-                          (item) => {
-                            return (
-                              <Option value={item?.tagId}>
-                                {item?.tagName}
-                              </Option>
-                            );
-                          }
-                        )}
+                        {props.process?.processList?.map((process) => (
+                          <Option key={process.processId} value={process.processId}>
+                            {process.processName}
+                          </Option>
+                        ))}
                       </Select>
                     )}
                   </Form.Item>
@@ -569,92 +550,6 @@ const YieldLoss = (props) => {
                       </div>
                     );
                   })}
-
-                  {/* {keys.map((k, index) => {
-                    return (
-                        <div key={k}>
-                            <Row gutter={16}>
-                                <Col span={12}>
-                                    <Form.Item label="Range from">
-                                        {getFieldDecorator(`rangeFrom[${index}]`, {
-                                            initialValue: props.material?.material?.materialGrade?.[index]?.rangeFrom || "",
-                                            rules: [{ required: true, message: 'Please enter range from' }]
-                                        })(
-                                            <Input id={`rangeFrom${index}`} {...getFieldProps}/>
-                                        )}
-                                    </Form.Item>
-                                </Col>
-                                <Col span={12}>
-                                    <Form.Item label="Range to">
-                                        {getFieldDecorator(`rangeTo[${index}]`, {
-                                            initialValue: props.material?.material?.materialGrade?.[index]?.rangeTo || "",
-                                            rules: [{ required: true, message: 'Please enter range to' }]
-                                        })(
-                                            <Input id={`rangeTo${index}`} {...getFieldProps}/>
-                                        )}
-                                    </Form.Item>
-                                </Col>
-                            </Row>
-                            <Form.Item label="Comment">
-                                {getFieldDecorator(`comment[${index}]`, {
-                                    initialValue: props.material?.material?.materialGrade?.[index]?.comment || "",
-                                })(
-                                    <Input id={`comment${index}`} {...getFieldProps}/>
-                                )}
-                            </Form.Item>
-                            {keys.length-1 > 0 && <i className="icon icon-trash gx-margin" onClick={() => removeKey(index)}/> }
-                            {index === keys.length-1 && (
-                                <Form.Item>
-                                    <i className="icon icon-add-circle" onClick={() => addNewKey(index)}/> 
-                                </Form.Item>
-                            )}
-                        </div>
-                    );
-                })} */}
-
-                 {/*  {keys.map((k, index) => {
-                    return (
-                        <div key={k}>
-                            <Row gutter={16}>
-                                <Col span={8}>
-                                    <Form.Item label="Range from">
-                                        {getFieldDecorator(`rangeFrom[${index}]`, {
-                                            initialValue: props.material?.material?.materialGrade?.[index]?.rangeFrom || "",
-                                            rules: [{ required: true, message: 'Please enter range from' }]
-                                        })(
-                                            <Input id={`rangeFrom${index}`} {...getFieldProps} style={{ width: '100%' }}/>
-                                        )}
-                                    </Form.Item>
-                                </Col>
-                                <Col span={8}>
-                                    <Form.Item label="Range to">
-                                        {getFieldDecorator(`rangeTo[${index}]`, {
-                                            initialValue: props.material?.material?.materialGrade?.[index]?.rangeTo || "",
-                                            rules: [{ required: true, message: 'Please enter range to' }]
-                                        })(
-                                            <Input id={`rangeTo${index}`} {...getFieldProps} style={{ width: '100%' }}/>
-                                        )}
-                                    </Form.Item>
-                                </Col>
-                                <Col span={8}>
-                                    <Form.Item label="Comment">
-                                        {getFieldDecorator(`comment[${index}]`, {
-                                            initialValue: props.material?.material?.materialGrade?.[index]?.comment || "",
-                                        })(
-                                            <Input id={`comment${index}`} {...getFieldProps} style={{ width: '100%' }}/>
-                                        )}
-                                    </Form.Item>
-                                </Col>
-                            </Row>
-                            {keys.length-1 > 0 && <i className="icon icon-trash gx-margin" onClick={() => removeKey(index)}/> }
-                            {index === keys.length-1 && (
-                                <Form.Item>
-                                    <i className="icon icon-add-circle" onClick={() => addNewKey(index)}/> 
-                                </Form.Item>
-                            )}
-                        </div>
-                    );
-                })} */}
                 </Form>
               </Col>
             </Row>
@@ -670,6 +565,7 @@ const mapStateToProps = (state) => ({
   material: state.material,
   party: state.party,
   packetClassification: state.packetClassification,
+  process: state.process
 });
 
 const addYieldLossForm = Form.create({
