@@ -1,11 +1,12 @@
 import React, {useEffect, useState} from "react";
-import {AutoComplete, Form, Input, Button, Icon, Row, Col, Card} from "antd";
+import {AutoComplete, Form, Input, Button, Icon, Row, Col, Card, Select} from "antd";
 import {connect} from "react-redux";
 
 import {formItemLayout} from '../Create';
 import {setInwardDetails, checkIfCoilExists, getGradeByMaterialId, fetchPartyList} from "../../../../appRedux/actions";
 
 const MaterialDetailsForm = (props) => {
+    const Option = Select.Option;
     const {getFieldDecorator} = props.form;
     const [dataSource, setDataSource] = useState([]);
     const [approxLength, setLength] = useState(0);
@@ -13,21 +14,21 @@ const MaterialDetailsForm = (props) => {
     
     const handleSubmit = e => {
         e.preventDefault();
-
-        props.form.validateFields((err, values) => {
-            if (!err) {
-                let length = props.params!== "" ?(parseFloat(parseFloat(props.inward.fpresent)/(parseFloat(props.inward.fThickness)* 7.85 *(props.inward.fWidth/1000))).toFixed(4))*1000:(parseFloat(parseFloat(props.inward.netWeight)/(parseFloat(props.inward.thickness)* 7.85 *(props.inward.width/1000))).toFixed(4))*1000;
-                let inward = props.inward;
-                if(props.params!== ""){
-                    inward.fLength = length;
-                }else{
-                    inward.length = length
-                }
-                props.setInwardDetails({ ...props.inward, ...inward});
-                props.getGradeByMaterialId(props.params!=="" ?props.inward.material.matId :props.inward.description);
-                props.updateStep(2);
-            }
-        });
+        props.updateStep(3);
+        // props.form.validateFields((err, values) => {
+        //     if (!err) {
+        //         let length = props.params!== "" ?(parseFloat(parseFloat(props.inward.fpresent)/(parseFloat(props.inward.fThickness)* 7.85 *(props.inward.fWidth/1000))).toFixed(4))*1000:(parseFloat(parseFloat(props.inward.netWeight)/(parseFloat(props.inward.thickness)* 7.85 *(props.inward.width/1000))).toFixed(4))*1000;
+        //         let inward = props.inward;
+        //         if(props.params!== ""){
+        //             inward.fLength = length;
+        //         }else{
+        //             inward.length = length
+        //         }
+        //         props.setInwardDetails({ ...props.inward, ...inward});
+        //         props.getGradeByMaterialId(props.params!=="" ?props.inward.material.matId :props.inward.description);
+        //         props.updateStep(3);
+        //     }
+        // });
     };
     const handleChange = (e,path) =>{
         if(path === 'material.description'){
@@ -79,17 +80,17 @@ const MaterialDetailsForm = (props) => {
     //     }   
     // }, [props.material]);
     // for the create flow
-    useEffect(() => {
-        if(props.material.materialList.length > 0) {
-            const { Option } = AutoComplete;
-            const options = props.material.materialList.map(material => (
-                <Option key={material.matId} value={`${material.matId}`}>
-                    {material.description}
-                </Option>
-            ));
-            setDataSource(options);
-        }
-    }, [props.material]);
+    // useEffect(() => {
+    //     if(props.material.materialList.length > 0) {
+    //         const { Option } = AutoComplete;
+    //         const options = props.material.materialList.map(material => (
+    //             <Option key={material.matId} value={`${material.matId}`}>
+    //                 {material.description}
+    //             </Option>
+    //         ));
+    //         setDataSource(options);
+    //     }
+    // }, [props.material]);
     useEffect(() => {
         props.fetchPartyList();
     }, []);
@@ -106,8 +107,9 @@ const MaterialDetailsForm = (props) => {
     return (
         <>
             <Col span={14}>
-            <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4">
-                <Form.Item
+            {/* <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4"> */}
+            <Form {...formItemLayout} className="login-form gx-pt-4">
+               {/* <Form.Item
                     label="Coil number"
                     hasFeedback
                     validateStatus={props.inward.coilNumber ? props.inwardStatus.loading ? 'validating' : !props.inwardStatus.loading && props.inwardStatus.success && !props.inwardStatus.duplicateCoil  ? 'success' : props.inwardStatus.error || props.inwardStatus.duplicateCoil ? 'error' : '' : ''}
@@ -174,28 +176,103 @@ const MaterialDetailsForm = (props) => {
                             <Input id="coilLength" value={props.params !=="" ?props.inward.fLength :approxLength} name="approxLength" />Approx
                         </>
                     )}
+                </Form.Item>*/}
+                <Form.Item label="Inward ID">
+                    {getFieldDecorator('width', {
+                        // rules: [{ required: true, message: 'Please input the coil width!' }
+                        // ],
+                    })(
+                        <Input id="coilWidth" onChange= {props.params!=="" ?(e) =>handleChange(e,'fWidth'):""}/>
+                    )}
+                </Form.Item>
+                <Form.Item label="Item Name">
+                    {getFieldDecorator('description', {
+                        // rules: [{ required: true, message: 'Please input the material description!' }],
+                    })(
+                        <AutoComplete
+                            // style={{width: 200}}
+                            placeholder="Select item"
+                            dataSource={dataSource}
+                            onChange= {props.params!=="" ?(e) =>handleChange(e,'material.description'):""}
+                            filterOption={(inputValue, option) => {
+                                return option.props.children?.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1 || false
+                            }
+                            }
+                        />
+                    )}
                 </Form.Item>
                 <Row className="gx-mt-4">
                     <Col span={24} style={{ textAlign: "center"}}>
-                        <Button style={{ marginLeft: 8 }} onClick={() => props.updateStep(1)}>
-                            <Icon type="left"/>Back
-                        </Button>
-                        <Button type="primary" htmlType="submit">
-                            Forward<Icon type="right"/>
-                        </Button>
+                         <Button type="primary" >
+                                Add Item
+                         </Button>
                     </Col>
                 </Row>
             </Form>
             </Col>
             <Col span={10} className="gx-pt-4">
-                <Card title="Inward Details" style={{ width: 300 }}>
+                <Card title="Inward Details" style={{ width: 500, padding: '0.5px 0.5px'}}>
+                    {props.inward.purposeType && <p>Purpose Type : {props.inward.purposeType}</p>}
                     <p>Vendor Name : {props.params !== "" && props.inward.party ? props.inward.party?.partyName:partyName(props.party.partyList)}</p>
-                    <p>Vendor ID : {props.params !== "" && props.inward.party ? props.inward.party?.partyName:partyName(props.party.partyList)}</p>
-                    <p>Transporter Name : {props.params !== "" && props.inward.party ? props.inward.party?.partyName:partyName(props.party.partyList)}</p>
-                    <p>Transporter Phone : {props.params !== "" && props.inward.party ? props.inward.party?.partyName:partyName(props.party.partyList)}</p>
-                    {props.inward.customerId && <p>Customer Id : {props.inward.customerId}</p>}
+                    <p>Vendor ID : 1234{props.params !== "" && props.inward.party ? props.inward.party?.partyName:partyName(props.party.partyList)} | Vendor Batch No. :</p>
+                    {/* <p>Transporter Name : {props.params !== "" && props.inward.party ? props.inward.party?.partyName:partyName(props.party.partyList)}</p>
+                    <p>Transporter Phone : {props.params !== "" && props.inward.party ? props.inward.party?.partyName:partyName(props.party.partyList)}</p> */}
+                   
                 </Card>
             </Col>
+            <Row>
+                <Col className="gx-ml-1">
+                        <AutoComplete
+                            // style={{width: 200}}
+                            placeholder="Select item"
+                            dataSource={dataSource}
+                            onChange= {props.params!=="" ?(e) =>handleChange(e,'material.description'):""}
+                            filterOption={(inputValue, option) => {
+                                return option.props.children?.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1 || false
+                            }
+                            }
+                        />
+                </Col>
+                <Col className="gx-ml-1">
+                {/* <Select value={selectedUnitmm} onChange={handleUnitChangemm} placeholder='Select unit'> */}
+                <Select >
+                        <Option value="inches">Meters</Option>
+                        <Option value="feet">Pieces</Option>
+                        <Option value="feet">Feet</Option>
+                    </Select>
+                </Col>
+                <Col className="gx-ml-1">
+                <Input></Input>
+                </Col>
+                <Col className="gx-ml-1">
+                <Input></Input>
+                </Col>
+                <Col className="gx-ml-1">
+                <Input></Input>
+                </Col>
+                <Col className="gx-ml-1">
+                <Input></Input>
+                </Col>
+                <Col className="gx-ml-1">
+                <Input></Input>
+                </Col>
+                <Col className="gx-ml-1">
+                <Input></Input>
+                </Col>
+            </Row>
+            {/* <Row className="gx-mt-4"> */}
+                    <Col span={24} style={{ textAlign: "left"}}>
+                        <Button style={{ marginLeft: 200 }} onClick={() => props.updateStep(1)}>
+                            <Icon type="left"/>Back
+                        </Button>
+                        {/* <Button type="primary" htmlType="submit">
+                            Forward<Icon type="right"/>
+                        </Button> */}
+                         <Button type="primary" onClick={handleSubmit}>
+                                Forward
+                         </Button>
+                    </Col>
+                {/* </Row> */}
         </>
     )
 }

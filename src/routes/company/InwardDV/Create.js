@@ -7,8 +7,8 @@ import InwardSummary from "./InwardSteps/InwardSummary";
 import CreatePurposeTypeForm from './InwardSteps/ChoosePurpose';
 import VendorDetails from './InwardSteps/VendorDetails';
 import MaterialDetails from './InwardSteps/MaterialDetails';
-import InwardPage1Form from './InwardSteps/InwardPage1';
-import InwardPage2Form from './InwardSteps/InwardPage2';
+import InwardDocPage1 from './InwardSteps/InwardDocPage1';
+import InwardDocPage2 from './InwardSteps/InwardDocPage2';
 import ReconciliationForm from './InwardSteps/Reconciliation';
 export const formItemLayout = {
     labelCol: {
@@ -54,12 +54,12 @@ const CreateForm = (props) => {
             {
                 title: 'Inward Doc Page 1',
                 // content: <InwardPage1Form updateStep={(step) => setCurrentStep(step)} params={props.match.params && props.match.params.inwardEntryId ?props.match.params.inwardEntryId: ''}/>,
-                content: <InwardPage1Form updateStep={(step) => setCurrentStep(step)} />,
+                content: <InwardDocPage1 updateStep={(step) => setCurrentStep(step)} />,
             },
             {
                 title: 'Inward Doc Page 2',
                 // content: <InwardPage2Form updateStep={(step) => setCurrentStep(step)} params={props.match.params && props.match.params.inwardEntryId ?props.match.params.inwardEntryId: ''}/>,
-                content: <InwardPage2Form updateStep={(step) => setCurrentStep(step)} />,
+                content: <InwardDocPage2 updateStep={(step) => setCurrentStep(step)} />,
             },
             {
                 title: 'Reconciliation',

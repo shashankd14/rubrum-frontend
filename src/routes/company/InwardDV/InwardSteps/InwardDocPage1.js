@@ -6,7 +6,7 @@ import {formItemLayout} from '../Create';
 
 const Option = Select.Option;
 
-const CreateVendorDetailsForm = (props) => {
+const CreateInwardDocPage1 = (props) => {
     const {getFieldDecorator} = props.form;
     const [dataSource, setDataSource] = useState([]);
     useEffect(() => {
@@ -44,12 +44,12 @@ const CreateVendorDetailsForm = (props) => {
         props.inward.party.partyName = e;
     }
     const handleSubmit = e => {
-        props.updateStep(2);
+        props.updateStep(4);
         // e.preventDefault();
 
         // props.form.validateFields((err, values) => {
         //     if (!err) {
-        //         props.updateStep(1);
+        //         props.updateStep(4);
         //     }
         // });
     };
@@ -103,7 +103,7 @@ const CreateVendorDetailsForm = (props) => {
                     </Form.Item>
                     <Row className="gx-mt-4">
                         <Col span={24} offset={4} style={{ textAlign: "center"}}>
-                            <Button style={{ marginLeft: 8 }} onClick={() => props.updateStep(0)}>
+                            <Button style={{ marginLeft: 8 }} onClick={() => props.updateStep(2)}>
                                 <Icon type="left"/>Back
                             </Button>
                             {/* <Button type="primary" htmlType="submit">
@@ -133,7 +133,7 @@ const mapStateToProps = state => ({
     inwardStatus: state.inward,
 });
 
-const VendorDetailsForm = Form.create({
+const InwardDocPage1 = Form.create({
     onFieldsChange(props, changedFields) {
     },
     mapPropsToFields(props) {
@@ -163,9 +163,9 @@ const VendorDetailsForm = Form.create({
     onValuesChange(props, values) {
         props.setInwardDetails({ ...props.inward, ...values});
     },
-})(CreateVendorDetailsForm);
+})(CreateInwardDocPage1);
 
 export default connect(mapStateToProps, {
     setInwardDetails,
     checkCustomerBatchNumber
-})(VendorDetailsForm);
+})(InwardDocPage1);
