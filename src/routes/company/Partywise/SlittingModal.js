@@ -1392,7 +1392,10 @@ const CreateSlittingDetailsForm = (props) => {
   const [storedTableDatapacketWeights, setStoredTableDatapacketWeights] = useState(new Array(panelList.length).fill(0));
   //addition of total loss weight for each table
   const [totaltableDatapacketWeight, setTotaltableDatapacketWeight] = useState(new Array(panelList.length).fill(0));
-  const [TDlossRatio, setTDlossRatio] = useState(0);
+  
+  const [storedTotalTableDatapacketWeights, setStoredTotalTableDatapacketWeights] = useState(new Array(panelList.length).fill(0));
+  const [totaltableDatapacketPlannedWeight, setTotaltableDatapacketPlannedWeight] = useState(new Array(panelList.length).fill(0));
+
  
   const  getPackatClassificationName = (value) =>{ 
     if(value===undefined)
@@ -1430,8 +1433,6 @@ const CreateSlittingDetailsForm = (props) => {
     });
 
     var TDlossRatio = (tableDatapacketWeight / tdTotalPlannedWeight) * 100;
-    console.log("TDlossRatio11111111", TDlossRatio);
-    setTDlossRatio(TDlossRatio);
     //addition of tableDatapacketWeight for total yield loss ratio
     var totaltableDatapacketWeight =0;
     totaltableDatapacketWeight += tableDatapacketWeight;
@@ -1442,15 +1443,39 @@ const CreateSlittingDetailsForm = (props) => {
     setStoredTableDatapacketWeights(updatedStoredTableDatapacketWeights);
 
     // Update totaltableDatapacketWeight with the cumulative tableDatapacketWeight for all table indices
-    const updatedTotaltableDatapacketWeight = updatedStoredTableDatapacketWeights.reduce((acc, curr) => acc + curr, 0);
-    setTotaltableDatapacketWeight(updatedTotaltableDatapacketWeight);
+    // const updatedTotaltableDatapacketWeight = updatedStoredTableDatapacketWeights.reduce((acc, curr) => acc + curr, 0);
+    // setTotaltableDatapacketWeight(updatedTotaltableDatapacketWeight);
+    const updatedTotaltableDatapacketWeight = updatedStoredTableDatapacketWeights.reduce((acc, curr) => {
+      // Check if the current element is a number
+      if (typeof curr === 'number' && !isNaN(curr)) {
+          return acc + curr; // Add only if it's a valid number
+      }
+      return acc; // Otherwise, return the accumulator unchanged
+  }, 0);
+  
+  setTotaltableDatapacketWeight(updatedTotaltableDatapacketWeight);
+
+  //Planned total weight calculation
+   const updatedStoredPlannedWeights = [...storedTotalTableDatapacketWeights];
+  updatedStoredPlannedWeights[tableIndex] = tdTotalPlannedWeight;
+  setStoredTotalTableDatapacketWeights(updatedStoredPlannedWeights);
+
+  const updatedTotalPlannedWeight = updatedStoredPlannedWeights.reduce((acc, curr) => {
+    // Check if the current element is a number
+    if (typeof curr === 'number' && !isNaN(curr)) {
+        return acc + curr; // Add only if it's a valid number
+    }
+    return acc; // Otherwise, return the accumulator unchanged
+}, 0);
+
+setTotaltableDatapacketPlannedWeight(updatedTotalPlannedWeight);
 
     const newArray = [...yieldLossRatio];
     newArray[tableIndex] = TDlossRatio !== undefined? TDlossRatio: 0;
     setYieldLossRatio(newArray);
 
   };
-
+console.log("setTotaltableDatapacketWeight", totaltableDatapacketWeight);
   useEffect(() => {
     let processTags = [{ tagId: 0, tagName: 'Select' }];
     processTags = [...processTags, ...props?.processTags];
@@ -1602,10 +1627,86 @@ const columnYieldLoss = [
     setDeletedSelected(false);
     props.setShowSlittingModal(false);
   };
+  
+  const sum = (totaltableDatapacketWeight / totaltableDatapacketPlannedWeight) * 100 || 0;
+  // useEffect(() => {
+  //   // debugger;
+  //   const updatedTmpGroupedInstructions = new Map();
 
-  const sum = (totaltableDatapacketWeight / tweight) * 100;
+  //   const tmpLossRatio = Array(panelList.length).fill(0);
+  //   // Group instructions by date
+  //   panelList.forEach((innerArray, panelIndex) => {
+  //     innerArray.forEach((item, rowIndex) => {
+  //       // const instructionDate = item.instructionDate.split(' ')[0];
+  //        const instructionDate = item.instructionDate;
+
+  //       if (!updatedTmpGroupedInstructions.has(instructionDate)) {
+  //         updatedTmpGroupedInstructions.set(instructionDate, []);
+  //       }
+
+  //       // Add 'tableIndex' property to each object inside the 'item' array
+  //       // and update another property using 'tableIndex' and 'rowIndex'
+  //       const updatedItem = {
+  //         ...item,
+  //         tableIndex: panelIndex,
+  //         // Add your logic to update another property based on 'tableIndex' and 'rowIndex'
+  //         anotherProperty: `${panelIndex}-${rowIndex}`,
+  //       };
+
+  //       updatedTmpGroupedInstructions.get(instructionDate).push(updatedItem);
+  //     });
+  //   });
+  
+  //   // Update the state with the new tmpGroupedInstructions
+  //   setGroupedInstructions(updatedTmpGroupedInstructions);
+
+
+  //   console.log('inside calc....');
+  //   const newArray = [...yieldLossRatio];
+  //   const updatedStoredTableDatapacketWeights = [...storedTableDatapacketWeights];
+        
+  //   for (let i = 0; i < panelList.length; i++) {
+  //     var tableDatapacketWeight = 0;
+  //     var tdTotalPlannedWeight = 0;
+
+  //     panelList[i].map((tableRecord) => {
+  //       // Update the relevant data in tableData
+  //       // if ( tableRecord.packetClassificationId === 26 || tableRecord.packetClassificationId === 27
+  //       if ( tableRecord?.packetClassification?.classificationName === 'WIP(EDGE TRIM)' || tableRecord?.packetClassification?.classificationName === 'WIP(CUT ENDS)'
+  //       ) 
+  //       {
+  //         tableDatapacketWeight += tableRecord?.plannedWeight !== undefined? parseFloat(tableRecord?.plannedWeight): 0;
+  //       }
+  //       tdTotalPlannedWeight += tableRecord?.plannedWeight !== undefined? parseFloat(tableRecord?.plannedWeight): 0;
+  //       // Return the original tableRecord for other indices
+  //       return tableRecord;
+  //     });
+
+  //     var TDlossRatio = tdTotalPlannedWeight!== 0 ? (tableDatapacketWeight / tdTotalPlannedWeight) * 100: 0;
+
+  //     //addition of tableDatapacketWeight for total yield loss ratio
+  //     var totaltableDatapacketWeight =0;
+  //     totaltableDatapacketWeight += tableDatapacketWeight;
+  //     console.log("totaltableDatapacketWeight", totaltableDatapacketWeight); 
+  //     // Update storedTableDatapacketWeights with the cumulative tableDatapacketWeight for the specific table index
+  //     updatedStoredTableDatapacketWeights[i] = tableDatapacketWeight;
+      
+
+  //     newArray[i] = TDlossRatio !== undefined? TDlossRatio: 0;
+
+  //     console.log('inside calc....2', newArray);
+  //     // setTotalYLR(totalsum);
+  //   }
+  //   setStoredTableDatapacketWeights(updatedStoredTableDatapacketWeights);
+
+  //     // Update totaltableDatapacketWeight with the cumulative tableDatapacketWeight for all table indices
+  //     const updatedTotaltableDatapacketWeight = updatedStoredTableDatapacketWeights.reduce((acc, curr) => acc + curr, 0);
+  //     setTotaltableDatapacketWeight(updatedTotaltableDatapacketWeight);
+  //   setYieldLossRatio(newArray);
+
+  // }, [panelList]); 
+
   useEffect(() => {
-    // debugger;
     const updatedTmpGroupedInstructions = new Map();
 
     const tmpLossRatio = Array(panelList.length).fill(0);
@@ -1631,58 +1732,10 @@ const columnYieldLoss = [
         updatedTmpGroupedInstructions.get(instructionDate).push(updatedItem);
       });
     });
-  
+
+    setYieldLossRatio(tmpLossRatio);
     // Update the state with the new tmpGroupedInstructions
     setGroupedInstructions(updatedTmpGroupedInstructions);
-
-
-    console.log('inside calc....');
-    const newArray = [...yieldLossRatio];
-    const updatedStoredTableDatapacketWeights = [...storedTableDatapacketWeights];
-        
-    for (let i = 0; i < panelList.length; i++) {
-      var tableDatapacketWeight = 0;
-      var tdTotalPlannedWeight = 0;
-
-      panelList[i].map((tableRecord) => {
-        // Update the relevant data in tableData
-        // if ( tableRecord.packetClassificationId === 26 || tableRecord.packetClassificationId === 27
-        if ( tableRecord?.packetClassification?.classificationName === 'WIP(EDGE TRIM)' || tableRecord?.packetClassification?.classificationName === 'WIP(CUT ENDS)'
-        ) 
-        {
-          tableDatapacketWeight += tableRecord?.plannedWeight !== undefined? parseFloat(tableRecord?.plannedWeight): 0;
-        }
-        tdTotalPlannedWeight += tableRecord?.plannedWeight !== undefined? parseFloat(tableRecord?.plannedWeight): 0;
-        // Return the original tableRecord for other indices
-        return tableRecord;
-      });
-
-      var TDlossRatio = tdTotalPlannedWeight!== 0 ? (tableDatapacketWeight / tdTotalPlannedWeight) * 100: 0;
-
-      //addition of tableDatapacketWeight for total yield loss ratio
-      var totaltableDatapacketWeight =0;
-      totaltableDatapacketWeight += tableDatapacketWeight;
-      console.log("totaltableDatapacketWeight", totaltableDatapacketWeight); 
-      // Update storedTableDatapacketWeights with the cumulative tableDatapacketWeight for the specific table index
-      updatedStoredTableDatapacketWeights[i] = tableDatapacketWeight;
-      
-
-      newArray[i] = TDlossRatio !== undefined? TDlossRatio: 0;
-
-      console.log('inside calc....2', newArray);
-      // setTotalYLR(totalsum);
-    }
-    setStoredTableDatapacketWeights(updatedStoredTableDatapacketWeights);
-
-      // Update totaltableDatapacketWeight with the cumulative tableDatapacketWeight for all table indices
-      const updatedTotaltableDatapacketWeight = updatedStoredTableDatapacketWeights.reduce((acc, curr) => acc + curr, 0);
-      setTotaltableDatapacketWeight(updatedTotaltableDatapacketWeight);
-    setYieldLossRatio(newArray);
-
-  }, [panelList]); // Add any dependencies that should trigger this effect when changed
-
-  useEffect(() => {
-    
   }, [panelList]);
 
   const savePlan = (e, name, record) => {
@@ -2292,14 +2345,14 @@ const columnYieldLoss = [
                               <Input
                                 id='plannedYieldLossRatio'
                                 disabled={true}
-                                value={TDlossRatio.toFixed(2)}
+                                value={sum.toFixed(2)}
                                 name='plannedYieldLossRatio'
                               />
                             </>
                           )}
                         </Form.Item>
                       </Col>
-                      <Col lg={12} md={12} sm={24} xs={24}>
+                      {/* <Col lg={12} md={12} sm={24} xs={24}>
                         <Form.Item label='Total yield loss (%)'>
                           {getFieldDecorator('totalYieldLossRatio', {
                             rules: [{ required: false }],
@@ -2314,7 +2367,7 @@ const columnYieldLoss = [
                             </>
                           )}
                         </Form.Item>
-                      </Col>
+                      </Col> */}
                     </Row>
                   </Col>
                 </Row>
