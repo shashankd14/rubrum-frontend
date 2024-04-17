@@ -25,7 +25,8 @@ import {
   resetYLR,
   fetchClassificationList,
   fetchPartyList,
-  deleteYLR
+  deleteYLR,
+  fetchProcessList
 } from '../../../appRedux/actions';
 import { onDeleteContact } from '../../../appRedux/actions';
 
@@ -189,6 +190,7 @@ const YieldLoss = (props) => {
       props.fetchMaterialList();
       props.fetchPartyList();
       props.fetchClassificationList();
+      props.fetchProcessList();
     }, 1000);
   }, [showAddYLR]);
 
@@ -604,5 +606,6 @@ export default connect(mapStateToProps, {
   resetYLR,
   fetchClassificationList,
   fetchPartyList,
-  deleteYLR
+  deleteYLR,
+  fetchProcessList
 })(addYieldLossForm);
