@@ -600,7 +600,10 @@ function* requestUpdateInstruction(action) {
     const filteredData = ins.filter(each => each.packetClassificationId !== 0 && each.packetClassificationId !== "");
     const req = {
         taskType: editFinish ?"FGtoFG":unfinish ? "FGtoWIP" :"WIPtoFG",
-        instructionDtos: (unfinish || editFinish) ? ins : filteredData
+        instructionDtos: (unfinish || editFinish) ? ins : filteredData,
+        actualYieldLossRatio: action.coil.actualYieldLossRatio,
+        plannedCoilLevelYLR: action.coil.plannedCoilLevelYLR,
+        actualCoilLevelYLR: action.coil.actualCoilLevelYLR
     }
     try {
         const updateInstruction = yield fetch(`${baseUrl}api/instruction/update`, {

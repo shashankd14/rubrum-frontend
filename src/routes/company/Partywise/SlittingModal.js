@@ -184,6 +184,7 @@ const SlittingWidths = (props) => {
   useEffect(() => {
     setWeightValue(props.coilDetails.fpresent);
   }, [props.coilDetails.fpresent]);
+  
   useEffect(() => {
     if (props.unfinish) {
       let actualUpdate = props.cuts.map((item) => {
@@ -1345,36 +1346,77 @@ const CreateSlittingDetailsForm = (props) => {
        }
       setTableData(newData);
         // Calculate total planned weight for SlitCut
-        const slitAndCutItems = newData.filter(item => item.isSlitAndCut);
+        // const slitAndCutItems = newData.filter(item => item.isSlitAndCut);
 
-        const edgeTrimWeightsSlitCut = slitAndCutItems.filter((record) => {
-          const classificationName = getPackatClassificationName(record.packetClassification?.classificationId || record.packetClassification?.tagId);
-          return classificationName === "EDGE TRIM" || classificationName === "CUT ENDS";
-        }).map((record) => record.plannedWeight);
+        // const edgeTrimWeightsSlitCut = slitAndCutItems.filter((record) => {
+        //   const classificationName = getPackatClassificationName(record.packetClassification?.classificationId || record.packetClassification?.tagId);
+        //   return classificationName === "EDGE TRIM" || classificationName === "CUT ENDS";
+        // }).map((record) => record.plannedWeight);
 
-        const totalPlannedWeight1 = slitAndCutItems.reduce((total, record) => total + record.plannedWeight, 0);
+        // const totalPlannedWeight1 = slitAndCutItems.reduce((total, record) => total + record.plannedWeight, 0);
 
-        const slitCutsumEdgeTrimWeight = edgeTrimWeightsSlitCut.reduce((total, weight) => total + weight, 0);
+        // const slitCutsumEdgeTrimWeight = edgeTrimWeightsSlitCut.reduce((total, weight) => total + weight, 0);
 
-        const yieldLossRatioSlitCut = (slitCutsumEdgeTrimWeight / totalPlannedWeight1) * 100; 
-        setactualSlitCutYLR(yieldLossRatioSlitCut);
+        // const yieldLossRatioSlitCut = (slitCutsumEdgeTrimWeight / totalPlannedWeight1) * 100; 
+        // setactualSlitCutYLR(yieldLossRatioSlitCut);
 
-        // Calculate total planned weight for Slitting
-        const slittingItems = newData.filter(item => item.isSlitAndCut === false);
+        // // Calculate total planned weight for Slitting
+        // const slittingItems = newData.filter(item => item.isSlitAndCut === false);
 
-        const edgeTrimWeightsSlitting = slittingItems.filter((record) => {
-          const classificationName = getPackatClassificationName(record.packetClassification?.classificationId || record.packetClassification?.tagId);
-          return classificationName === "EDGE TRIM" || classificationName === "CUT ENDS";
-        }).map((record) => record.plannedWeight);
+        // const edgeTrimWeightsSlitting = slittingItems.filter((record) => {
+        //   const classificationName = getPackatClassificationName(record.packetClassification?.classificationId || record.packetClassification?.tagId);
+        //   return classificationName === "EDGE TRIM" || classificationName === "CUT ENDS";
+        // }).map((record) => record.plannedWeight);
 
-        const totalPlannedWeight2 = slittingItems.reduce((total, record) => total + record.plannedWeight, 0);
+        // const totalPlannedWeight2 = slittingItems.reduce((total, record) => total + record.plannedWeight, 0);
 
-        const slittingsumEdgeTrimWeight = edgeTrimWeightsSlitting.reduce((total, weight) => total + weight, 0);
+        // const slittingsumEdgeTrimWeight = edgeTrimWeightsSlitting.reduce((total, weight) => total + weight, 0);
 
-        const yieldLossRatioSlitting = (slittingsumEdgeTrimWeight / totalPlannedWeight2) * 100; 
-        setactualSlittingYLR(yieldLossRatioSlitting);
+        // const yieldLossRatioSlitting = (slittingsumEdgeTrimWeight / totalPlannedWeight2) * 100; 
+        // setactualSlittingYLR(yieldLossRatioSlitting);
 
  };
+
+ //calculate Coil level yield loss ratio
+ const [plannedCoilLevelYLR, setPlannedCoilLevelYLR] = useState(0);
+ const [actualCoilLevelYLR, setActualCoilLevelYLR] = useState(0);
+ useEffect(() => {
+  let response = props.coilDetails.instruction;
+  const filteredInstructions = response?.filter(instruction =>
+    instruction.some(item =>      
+      (item.packetClassification?.classificationName ==="WIP(EDGE TRIM)" || item.packetClassification?.classificationName ==="WIP(CUT ENDS)" || item.packetClassification?.classificationName ==="EDGE TRIM" || item.packetClassification?.classificationName ==="CUT ENDS") && (item.packetClassification?.classificationName !==null)
+    )
+  );
+  //planned YLR
+  let sumOfScrapPlannedWeight = 0;
+    filteredInstructions.forEach(instruction => {
+      sumOfScrapPlannedWeight += (instruction[0].plannedWeight || 0);
+    });
+
+  //total plannedWeight
+  let sumOfTotalPlannedWeight = 0;
+    response.forEach(weight => {
+      sumOfTotalPlannedWeight += (weight[0].plannedWeight || 0);
+    });
+  let coilPlannedYLR = 0;
+  coilPlannedYLR = (sumOfScrapPlannedWeight / sumOfTotalPlannedWeight) *100;
+  setPlannedCoilLevelYLR(coilPlannedYLR);
+
+  //Actual YLR
+  let sumOfScrapActualWeight = 0;
+    filteredInstructions.forEach(instruction => {
+      sumOfScrapActualWeight += (instruction[0].actualWeight || 0);
+    });
+  //total actualWeight
+  let sumOfTotalActualWeight = 0;
+    response.forEach(weight => {
+      sumOfTotalActualWeight += (weight[0].actualWeight || 0);
+    });
+  let coilActualYLR = 0;
+  coilActualYLR = (sumOfScrapActualWeight / sumOfTotalActualWeight) *100;
+  setActualCoilLevelYLR(coilActualYLR);
+
+}, []);
 
     const handleTagsChange = (value, index, record) => {
 
@@ -1741,6 +1783,7 @@ const columnYieldLoss = [
   const savePlan = (e, name, record) => {
     if (props?.unfinish) {
       const coil = {
+        // actualYieldLossRatio: actualYLR,
         number: props.coil.coilNumber,
         instruction: tableData,
         unfinish: props?.unfinish,
@@ -1799,6 +1842,9 @@ const columnYieldLoss = [
             item?.packetClassification !== null
         );
         const coil = {
+          actualYieldLossRatio: actualYLR,
+          plannedCoilLevelYLR: plannedCoilLevelYLR,
+          actualCoilLevelYLR: actualCoilLevelYLR,
           number: props.coil.coilNumber,
           instruction: instructionList,
         };
@@ -2109,6 +2155,7 @@ const columnYieldLoss = [
                     </p>
                     <p>Inward Weight(kg) : {props.coil.fQuantity}</p>
                     <p>Grade: {props.coil.materialGrade.gradeName}</p>
+                    <p>Coil level Planned YLR (%): {plannedCoilLevelYLR.toFixed(2)}</p>
                   </Col>
 
                   <Col lg={8} md={12} sm={24} xs={24}>
@@ -2120,6 +2167,7 @@ const columnYieldLoss = [
                       Available Width(mm):{' '}
                       {props.childCoil ? insData.actualWidth : widthValue}
                     </p>
+                    <p>Coil level Actual YLR (%) : {actualCoilLevelYLR.toFixed(2)}</p>
                   </Col>
 
                   <Col lg={24} md={24} sm={24} xs={24}>
@@ -2182,7 +2230,7 @@ const columnYieldLoss = [
                         )}
                         </Form.Item>*/}
 
-                      <Form.Item label='SlitCut actual yield loss ratio  (%)'>
+                      {/* <Form.Item label='SlitCut actual yield loss ratio  (%)'>
                         {getFieldDecorator('actualYieldLossRatioSlitCut', {
                           initialValue: props.coil.party.plannedYieldLossRatio || '',
                           rules: [{ required: false }],
@@ -2211,8 +2259,8 @@ const columnYieldLoss = [
                             />
                           </>
                         )}
-                      </Form.Item>
-                      <Form.Item label='Total yield loss ratio (%)'>
+                      </Form.Item>  */}
+                      <Form.Item label='Actual yield loss ratio (plan level) (%)'>
                         {getFieldDecorator('actualYieldLossRatio', {
                           initialValue: props.coil.party.actualYieldLossRatio || '',
                           rules: [{ required: false }],
@@ -2474,9 +2522,9 @@ const SlittingDetailsForm = Form.create({
         ...props.inward.process.twidth,
         value: props.inward.process.twidth ? props.inward.process.twidth : '',
       }),
-      totalActualweight: Form.createFormField({
-        ...props.inward.process.totalActualweight,
-        value: props.inward.process.totalActualweight || '',
+      actualYieldLossRatio: Form.createFormField({
+        ...props.inward.process.actualYieldLossRatio,
+        value: props.inward.process.actualYieldLossRatio || '',
       }),
       targetWeight: Form.createFormField({
         ...props.inward.process.targetWeight,

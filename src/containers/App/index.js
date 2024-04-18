@@ -52,32 +52,26 @@ const App = (props) => {
   //refresh token api call
   const { confirm } = Modal;
   useEffect(() => {
-     const checkAccessTokenExpiration = setInterval(() => {
+      const refreshTokenIfNeeded = async () => {
       const accessToken = localStorage.getItem('userToken');
       const expiresIn = localStorage.getItem('expiresIn');
         
       if (accessToken && expiresIn) {
         const currentTime = Date.now();
         if (currentTime > expiresIn) {
-          console.log("token is expired")
-          Modal.confirm({
-            title: 'Your session is about to expire. Do you want to continue?',
-            okText: 'OK',
-            onOk() {
-              dispatch(refreshToken());
-            },
-            onCancel() {
-              history.push('/signin');
-            }
-          });
-        
+          console.log("Token is expired, refreshing...");
+          await dispatch(refreshToken());
+                  
         } else {
           console.log("Token is not expired");
         }
       }
-    }, 10000); // Check token is expired every 10 sec
+    };
 
-    return () => clearInterval(checkAccessTokenExpiration);
+    refreshTokenIfNeeded(); 
+
+    const tokenCheckInterval = setInterval(refreshTokenIfNeeded, 5000); // Check token expiration every 5 seconds
+    return () => clearInterval(tokenCheckInterval);
   
   }, [dispatch]);
 
