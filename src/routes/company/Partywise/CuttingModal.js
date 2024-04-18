@@ -1355,11 +1355,51 @@ useEffect(() => {
   }
 }, []); 
 
+//calculate Coil level yield loss ratio
+const [plannedCoilLevelYLR, setPlannedCoilLevelYLR] = useState(0);
+const [actualCoilLevelYLR, setActualCoilLevelYLR] = useState(0);
+useEffect(() => {
+ let response = props.coilDetails.instruction;
+ const filteredInstructions = response?.filter(instruction =>
+   instruction.some(item =>      
+     (item.packetClassification?.classificationName ==="WIP(EDGE TRIM)" || item.packetClassification?.classificationName ==="WIP(CUT ENDS)" || item.packetClassification?.classificationName ==="EDGE TRIM" || item.packetClassification?.classificationName ==="CUT ENDS") && (item.packetClassification?.classificationName !==null)
+   )
+ );
+ //planned YLR
+ let sumOfScrapPlannedWeight = 0;
+   filteredInstructions.forEach(instruction => {
+     sumOfScrapPlannedWeight += (instruction[0].plannedWeight || 0);
+   });
+
+ //total plannedWeight
+ let sumOfTotalPlannedWeight = 0;
+   response.forEach(weight => {
+     sumOfTotalPlannedWeight += (weight[0].plannedWeight || 0);
+   });
+ let coilPlannedYLR = 0;
+ coilPlannedYLR = (sumOfScrapPlannedWeight / sumOfTotalPlannedWeight) *100;
+ setPlannedCoilLevelYLR(coilPlannedYLR);
+
+ //Actual YLR
+ let sumOfScrapActualWeight = 0;
+   filteredInstructions.forEach(instruction => {
+     sumOfScrapActualWeight += (instruction[0].actualWeight || 0);
+   });
+ //total actualWeight
+ let sumOfTotalActualWeight = 0;
+   response.forEach(weight => {
+     sumOfTotalActualWeight += (weight[0].actualWeight || 0);
+   });
+ let coilActualYLR = 0;
+ coilActualYLR = (sumOfScrapActualWeight / sumOfTotalActualWeight) *100;
+ setActualCoilLevelYLR(coilActualYLR);
+
+}, []);
+
 const [cuttingfilteredData, setCuttingFilteredData] = useState();
 useEffect(() => {
   if (props.yieldLossRatioParty !== undefined) {
     const filterContentByProcessName = (processName, content) => {
-      debugger;
       return content.filter(item => item.processName === processName);
     }
 
@@ -1416,6 +1456,9 @@ useEffect(() => {
         const coil = {
           number: props.coil.coilNumber,
           instruction: instructionList,
+          actualYieldLossRatio: actualYLR,
+          plannedCoilLevelYLR: plannedCoilLevelYLR,
+          actualCoilLevelYLR: actualCoilLevelYLR,
         };
         props.updateInstruction(coil);
         props.labelPrintEditFinish(coil)
@@ -1991,6 +2034,7 @@ useEffect(() => {
                         )}
                         <p>Material Desc: {props.coil.material.description}</p>
                         <p>Grade: {props.coil.materialGrade.gradeName}</p>
+                    <p>Coil level Planned YLR (%): {plannedCoilLevelYLR.toFixed(2)}</p>
                       </Col>
 
                       <Col lg={8} md={12} sm={24} xs={24}>
@@ -2013,6 +2057,7 @@ useEffect(() => {
                           Available Width(mm) :{" "}
                           {props.childCoil ? insData.actualWidth : width}
                         </p>
+                       <p>Coil level Actual YLR (%) : {actualCoilLevelYLR.toFixed(2)}</p>
                       </Col>
                     </>
                   )}
@@ -2063,7 +2108,7 @@ useEffect(() => {
                             </>
                           )}
                         </Form.Item>
-                      <Form.Item label="Actual yield loss ratio">
+                      <Form.Item label="Actual yield loss ratio (plan level) %">
                         {getFieldDecorator("ratio", {
                           rules: [{ required: false }],
                         })(
