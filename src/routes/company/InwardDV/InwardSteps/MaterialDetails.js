@@ -109,74 +109,6 @@ const MaterialDetailsForm = (props) => {
             <Col span={14}>
             {/* <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4"> */}
             <Form {...formItemLayout} className="login-form gx-pt-4">
-               {/* <Form.Item
-                    label="Coil number"
-                    hasFeedback
-                    validateStatus={props.inward.coilNumber ? props.inwardStatus.loading ? 'validating' : !props.inwardStatus.loading && props.inwardStatus.success && !props.inwardStatus.duplicateCoil  ? 'success' : props.inwardStatus.error || props.inwardStatus.duplicateCoil ? 'error' : '' : ''}
-                    help={props.inwardStatus.loading ? 'We are checking if the coil number already exists' : (!props.inwardStatus.loading && props.inwardStatus.success && props.inwardStatus.duplicateCoil) ? "The coil number already exists" :  ''}
-                >
-                    {getFieldDecorator('coilNumber', {
-                        rules: [{ required: true, message: 'Please input the coil number!' },
-                            {validator: props.params ==="" ?checkCoilExists: ""}],
-                    })(
-                        <Input id="validating" onChange={(e) => props.checkIfCoilExists(e.target.value)} onBlur={props.params !== "" ? "" :(e) => props.checkIfCoilExists(e.target.value)} />
-                    )}
-                </Form.Item>
-                <Form.Item label="Material Description">
-                    {getFieldDecorator('description', {
-                        rules: [{ required: true, message: 'Please input the material description!' }],
-                    })(
-                        <AutoComplete
-                            style={{width: 200}}
-                            placeholder="enter material"
-                            dataSource={dataSource}
-                            onChange= {props.params!=="" ?(e) =>handleChange(e,'material.description'):""}
-                            filterOption={(inputValue, option) => {
-                                return option.props.children?.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1 || false
-                            }
-                            }
-                        />
-                    )}
-                </Form.Item>
-                <Form.Item label="Coil Width (in mm)">
-                    {getFieldDecorator('width', {
-                        rules: [{ required: true, message: 'Please input the coil width!' }
-                        ],
-                    })(
-                        <Input id="coilWidth" onChange= {props.params!=="" ?(e) =>handleChange(e,'fWidth'):""}/>
-                    )}
-                </Form.Item>
-                <Form.Item label="Coil Thickness (in mm)">
-                    {getFieldDecorator('thickness', {
-                        rules: [{ required: true, message: 'Please input the coil thickness!' }
-                        ],
-                    })(
-                        <Input id="coilThickness" onChange= {props.params!=="" ?(e) =>handleChange(e,'fThickness'):""}/>
-                    )}
-                </Form.Item>
-                <Form.Item label="Net Weight (in kgs)">
-                    {getFieldDecorator('netWeight', {
-                        rules: [{ required: true, message: 'Please input the coil net weight!' }],
-                    })(
-                        <Input id="coilNetWeight"  onChange= {props.params!=="" ?(e) =>handleChange(e,'fpresent'):""}/>
-                    )}
-                </Form.Item>
-                <Form.Item label="Gross Weight (in kgs)">
-                    {getFieldDecorator('grossWeight', {
-                        rules: [{ required: true, message: 'Please input the coil gross weight!' }],
-                    })(
-                        <Input id="coilGrossWeight" onChange={props.params!=="" ? (e)=>handleChange(e,'fQuantity'):""} />
-                    )}
-                </Form.Item>
-                <Form.Item label="Coil Length (in mts)">
-                    {getFieldDecorator('approxLength', {
-                        rules: [{ required: false, message: 'Please input the coil number!' }],
-                    })(
-                        <>
-                            <Input id="coilLength" value={props.params !=="" ?props.inward.fLength :approxLength} name="approxLength" />Approx
-                        </>
-                    )}
-                </Form.Item>*/}
                 <Form.Item label="Inward ID">
                     {getFieldDecorator('width', {
                         // rules: [{ required: true, message: 'Please input the coil width!' }
@@ -220,7 +152,7 @@ const MaterialDetailsForm = (props) => {
                    
                 </Card>
             </Col>
-            <Row>
+            <Row className="gx-ml-2">
                 <Col className="gx-ml-1">
                         <AutoComplete
                             // style={{width: 200}}
@@ -240,6 +172,12 @@ const MaterialDetailsForm = (props) => {
                         <Option value="feet">Pieces</Option>
                         <Option value="feet">Feet</Option>
                     </Select>
+                </Col>
+                <Col className="gx-ml-1">
+                <Input></Input>
+                </Col>
+                <Col className="gx-ml-1">
+                <Input></Input>
                 </Col>
                 <Col className="gx-ml-1">
                 <Input></Input>

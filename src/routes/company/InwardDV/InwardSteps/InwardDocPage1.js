@@ -1,8 +1,10 @@
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import {setInwardDetails, checkCustomerBatchNumber} from "../../../../appRedux/actions";
-import {Form, Spin, AutoComplete, Icon, Button, Col, Row, Input, Select, Card} from "antd";
+import {Form, Spin, AutoComplete, Icon, Button, Col, Row, Input, Select, Card, DatePicker} from "antd";
 import {formItemLayout} from '../Create';
+import { APPLICATION_DATE_FORMAT } from '../../../../constants';
+import moment from "moment";
 
 const Option = Select.Option;
 
@@ -59,48 +61,147 @@ const CreateInwardDocPage1 = (props) => {
         }
         callback('The coil number already exists');
     };
+    const handleChangeDate = (date, dateString) => {
+        props.form.setFieldsValue({
+            documentDate: moment(dateString, APPLICATION_DATE_FORMAT),
+        });
+      };
+      const handleChangeEwayBillDate = (date, dateString) => {
+        props.form.setFieldsValue({
+            ewayBillDate: moment(dateString, APPLICATION_DATE_FORMAT),
+        });
+      };
+
+
     return (
         <>
-        <Col span={14}>
+        <Col span={16}>
             {props.party.loading && <Spin className="gx-size-100 gx-flex-row gx-justify-content-center gx-align-items-center" size="large"/>}
             {props.party.partyList.length > 0 &&
                 // <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4" style={{"width":"70%"}}>
                 <Form {...formItemLayout} className="login-form gx-pt-4" >
-                    <Form.Item label="Vendor Name">
-                        {getFieldDecorator('partyName', {
-                            // rules: [{ required: true, message: 'Please input the Vendor name!' }],
+                    <Row>
+                        <Col span={12} >
+                    <Form.Item label="Vendor Batch No">
+                            {getFieldDecorator('vendorBatchNo', {
+                          
+                            })(
+                                <Input id="vendorBatchNo" disabled/>
+                            )}
+                    </Form.Item>
+                    {/* </Col>
+                    </Row>
+                    <Row>
+                        <Col span={12}> */}
+                    <Form.Item label="Consignment Id">
+                            {getFieldDecorator('consignmentId', {
+                           
+                            })(
+                                <Input id="consignmentId" disabled/>
+                            )}
+                    </Form.Item>
+                    <Form.Item label="Vehicle No">
+                            {getFieldDecorator('vehicleNo', {
+                            // rules: [{ required: false, message: 'Please input the transporter phone no!' }],
+                            })(
+                                <Input id="vehicleNo" />
+                            )}
+                    </Form.Item>
+                    <Form.Item label="Document No">
+                            {getFieldDecorator('documentNo', {
+                            // rules: [{ required: false, message: 'Please input the transporter phone no!' }],
+                            })(
+                                <Input id="documentNo" />
+                            )}
+                    </Form.Item>
+                    <Form.Item label="Eway bill No">
+                            {getFieldDecorator('ewayBillNo', {
+                            // rules: [{ required: false, message: 'Please input the transporter phone no!' }],
+                            })(
+                                <Input id="ewayBillNo" />
+                            )}
+                    </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                    <Form.Item label="Location Id">
+                        {getFieldDecorator("locationId", {
+                        //   rules: [
+                        //     {
+                        //       required: true,
+                        //       message: "Please select location Id!",
+                        //     },
+                        //   ],
                         })(
-                            <AutoComplete
-                                placeholder="Select vendor name"
-                                dataSource={dataSource}
-                                onChange= {props.params !== "" ?(e) =>handleChange(e): ""}
-                                filterOption={(inputValue, option) =>
-                                    option.props.children.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
-                                }
+                          <Select
+                            id="locationId"
+                            showSearch
+                            // mode="multiple"
+                            style={{ width: "100%" }}
+                          >
+                            {props.party?.partyList?.map((party) => (
+                              <Option key={party.nPartyId} value={party.nPartyId}>
+                                {party.partyName}
+                              </Option>
+                            ))}
+                          </Select>
+                        )}
+                      </Form.Item>
+                      <Form.Item label="Document type">
+                        {getFieldDecorator("documentType", {
+                        })(
+                          <Select
+                            id="documentType"
+                            showSearch
+                            // mode="multiple"
+                            style={{ width: "100%" }}
+                          >
+                            {props.party?.partyList?.map((party) => (
+                              <Option key={party.nPartyId} value={party.nPartyId}>
+                                {party.partyName}
+                              </Option>
+                            ))}
+                          </Select>
+                        )}
+                      </Form.Item>
+                      <Form.Item label="Document Date">
+                        {getFieldDecorator('documentDate', {
+                            initialValue: moment(props.inward.receivedDate || new Date(), APPLICATION_DATE_FORMAT),
+                            // rules: [{ required: true, message: 'Please select a document date' }],
+                        })(
+                            <DatePicker
+                                 style={{width: 260}}
+                                // className="gx-mb-3 gx-w-100"
+                                format={APPLICATION_DATE_FORMAT}
+                                onChange={handleChangeDate}
                             />
                         )}
                     </Form.Item>
-                    <Form.Item label="Vendor Id">
-                            {getFieldDecorator('vendorId', {
-                            rules: [{ required: false, message: 'Please input the coil number!' }],
+                    <Form.Item label="Eway Bill Date">
+                        {getFieldDecorator('ewayBillDate', {
+                            initialValue: moment(props.inward.ewayBilldDate || new Date(), APPLICATION_DATE_FORMAT),
+                            // rules: [{ required: true, message: 'Please select a eway bill date' }],
+                        })(
+                            <DatePicker
+                                 style={{width: 260}}
+                                // className="gx-mb-3 gx-w-100"
+                                format={APPLICATION_DATE_FORMAT}
+                                onChange={handleChangeEwayBillDate}
+                            />
+                        )}
+                    </Form.Item>
+                    </Col>
+                    </Row>
+                     <Row >
+                        <Col span={24} >
+                    <Form.Item label="Eway bill Value of goods">    
+                            {getFieldDecorator('ewayBillValueOfGoods', {
+                            rules: [{ required: false, message: 'Please input the Eway bill Value of goods!' }],
                             })(
-                                <Input id="customerId" disabled/>
+                                <Input id="ewayBillValueOfGoods"/>
                             )}
                     </Form.Item>
-                    <Form.Item label="Transporter Name">
-                            {getFieldDecorator('transporterName', {
-                            rules: [{ required: false, message: 'Please input the transporter name!' }],
-                            })(
-                                <Input id="transporterName" />
-                            )}
-                    </Form.Item>
-                    <Form.Item label="Transporter Phone no">
-                            {getFieldDecorator('transporterName', {
-                            rules: [{ required: false, message: 'Please input the transporter phone no!' }],
-                            })(
-                                <Input id="transporterPhone" />
-                            )}
-                    </Form.Item>
+                    </Col>
+                    </Row> 
                     <Row className="gx-mt-4">
                         <Col span={24} offset={4} style={{ textAlign: "center"}}>
                             <Button style={{ marginLeft: 8 }} onClick={() => props.updateStep(2)}>
@@ -117,10 +218,16 @@ const CreateInwardDocPage1 = (props) => {
                 </Form>
             }
             </Col>
-            <Col span={10} className="gx-pt-4">
-                <Card title="Inward Details" style={{ width: 300 }}>
-                    {props.inward.customerInvoiceNo && <p>Customer Invoice No : {props.inward.customerInvoiceNo}</p>}
+            <Col span={8} className="gx-pt-4">
+                <Card title="Inward Details" style={{ width: 400 }}>
                     {props.inward.purposeType && <p>Purpose Type : {props.inward.purposeType}</p>}
+                    <p>Vendor Name : {props.params !== "" }</p>
+                    <p>Vendor ID :  </p>
+                    <p>Vendor Batch No. :  </p>
+                    <p>Item Name : Chips {props.params !== "" } </p>
+                    <p>Net Weight :  {props.params !== "" } </p>
+                    <p>Item Name : Chips {props.params !== "" } </p>
+                    <p>Net Weight :  {props.params !== "" } </p>
                 </Card>
             </Col>
         </>

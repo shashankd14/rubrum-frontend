@@ -12,23 +12,11 @@ import {
     UPDATE_DV_MATERIAL_SUCCESS,
     UPDATE_DV_MATERIAL_ERROR,
     RESET_DV_MATERIAL_REQUEST,
-    FETCH_DV_MATERIAL_GRADES,
-    FETCH_DV_MATERIAL_GRADES_SUCCESS,
-    FETCH_DV_MATERIAL_GRADES_ERROR,
-    FETCH_WIDTHS,
-    FETCH_WIDTHS_SUCCESS,
-    FETCH_WIDTHS_ERROR,
-    FETCH_LENGTHS,
-    FETCH_LENGTHS_SUCCESS,
-    FETCH_LENGTHS_ERROR,
-    FETCH_THICKNESS,
-    FETCH_THICKNESS_SUCCESS,
-    FETCH_THICKNESS_ERROR,
 } from "../../constants/ActionTypes";
 
 const INIT_STATE = {
     DVMaterialList: [],
-    DVMaterial: {},
+    DVMaterialID: {},
     loading: false,
     error: false
 };
@@ -87,14 +75,14 @@ export default (state = INIT_STATE, action) => {
             return {
                 ...state,
                 loading: false,
-                DVMaterial: action.DVMaterial
+                DVMaterialID: action.DVMaterial
             }
         }
         case FETCH_DV_MATERIAL_LIST_ID_ERROR: {
             return {
                 ...state,
                 loading: false,
-                DVMaterial: {},
+                DVMaterialID: {},
                 error: true
             }
         }

@@ -5,7 +5,7 @@ import moment from 'moment';
 import SearchBox from "../../../components/SearchBox";
 
 import IntlMessages from "../../../util/IntlMessages";
-import { fetchPartyList, addParty, fetchPartyListId, updateParty, resetParty, fetchClassificationList,fetchEndUserTagsList, fetchTemplatesList } from "../../../appRedux/actions";
+import { fetchVendorList, fetchVendorListId, fetchPartyList, addParty, fetchPartyListId, updateParty, resetParty, fetchClassificationList,fetchEndUserTagsList, fetchTemplatesList } from "../../../appRedux/actions";
 import { onDeleteContact } from "../../../appRedux/actions";
 
 const FormItem = Form.Item;
@@ -35,11 +35,15 @@ const Vendor = (props) => {
     const [viewVendorDate, setViewVendorData] = useState({});
     const [editVendor, setEditVendor] = useState(false);
     const [searchValue, setSearchValue] = useState('');
-    const [filteredInwardList, setFilteredInwardList] = useState(props.party?.partyList || []);
+    const [filteredVendorList, setFilteredVendorList] = useState(props.vendor?.vendorList || []);
     const [showAmtDcPdfFlg, setShowAmtDcPdfFlg] = useState(props.party?.showAmtDcPdfFlg==='Y'); // Default value
     const [dailyReportsList, setDailyReportsList] = useState([]);
     const [monthlyReportsList, setMonthlyReportsList] = useState([]); 
-
+    const [pageNo, setPageNo] = useState(1);
+    const [pageSize, setPageSize] = useState(15);
+    const [totalPageItems, setTotalPageItems] = useState(0);
+    
+    const { totalItems } = props.vendor.vendorList;
     const {getFieldDecorator, getFieldValue} = props.form;
 
     const { party } = props.party;
@@ -56,28 +60,34 @@ const Vendor = (props) => {
 
     const columns = [{
         title: 'Vendor Id',
-        dataIndex: 'nPartyId',
-        key: 'nPartyId',
+        dataIndex: 'vendorId',
+        key: 'vendorId',
         filters: [],
         sorter: (a, b) => {
-            return a.nPartyId - b.nPartyId
+            return a.vendorId - b.vendorId
         },
-        sortOrder: sortedInfo.columnKey === 'nPartyId' && sortedInfo.order,
+        sortOrder: sortedInfo.columnKey === 'vendorId' && sortedInfo.order,
     },
     {
         title: 'Vendor Name',
-        dataIndex: 'partyName',
-        key: 'partyName',
+        dataIndex: 'vendorName',
+        key: 'vendorName',
         filters: [],
-        sorter: (a, b) => a.partyName.length - b.partyName.length,
-        sortOrder: sortedInfo.columnKey === 'partyName' && sortedInfo.order,
+        sorter: (a, b) => a.vendorName.length - b.vendorName.length,
+        sortOrder: sortedInfo.columnKey === 'vendorName' && sortedInfo.order,
     },
     {
         title: 'Contact Info',
-        dataIndex: 'address1.city',
-        key: 'address1.city',
-        sorter: (a, b) => a.address1?.city?.length - b.address1?.city?.length,
-        sortOrder: sortedInfo.columnKey === 'address1.city' && sortedInfo.order,
+        dataIndex: 'contactInfo',
+        key: 'contactInfo',
+        render: (text, record) => (
+           <div>
+                <div style={{ margin: '0' }}>
+                    <p style={{ margin: '0' }}>{record.contactNo}</p>
+                    <p style={{ margin: '0' }}>{record.emailId}</p>
+                </div> 
+            </div>
+        ),
     },
     {
         title: 'GST Number',
@@ -89,27 +99,27 @@ const Vendor = (props) => {
     },
     {
         title: 'City',
-        dataIndex: 'address1.city',
-        key: 'address1.city',
-        sorter: (a, b) => a.address1?.city?.length - b.address1?.city?.length,
-        sortOrder: sortedInfo.columnKey === 'address1.city' && sortedInfo.order,
+        dataIndex: 'city',
+        key: 'city',
+        sorter: (a, b) => a.city?.length - b.city?.length,
+        sortOrder: sortedInfo.columnKey === 'city' && sortedInfo.order,
     },
     {
         title: 'State',
-        dataIndex: 'address1.state',
-        key: 'address1.state',
-        sorter: (a, b) => a.address1?.state?.length - b.address1?.state?.length,
-        sortOrder: sortedInfo.columnKey === 'address1.state' && sortedInfo.order,
+        dataIndex: 'state',
+        key: 'state',
+        sorter: (a, b) => a.state?.length - b.state?.length,
+        sortOrder: sortedInfo.columnKey === 'state' && sortedInfo.order,
     },
-    {
-        title: 'Material Tags',
-        dataIndex: 'packetClassificationTags',
-        render (value) {
-          return value?.map(item => item.tagName)
-           },
-         key: 'tags',
-         filters: []
-    },
+    // {
+    //     title: 'Material Tags',
+    //     dataIndex: 'packetClassificationTags',
+    //     render (value) {
+    //       return value?.map(item => item.tagName)
+    //        },
+    //      key: 'tags',
+    //      filters: []
+    // },
     {
         title: 'Action',
         dataIndex: '',
@@ -120,7 +130,7 @@ const Vendor = (props) => {
                 <Divider type="vertical"/>
                 <span className="gx-link" onClick={(e) => onEdit(record, e)}>Edit</span>
                 <Divider type="vertical"/>
-                <span className="gx-link"onClick={() => {}}>Delete</span>
+                <span className="gx-link" onClick={(e) => onDelete(record, e)}>Delete</span>
             </span>
         ),
     },
@@ -129,14 +139,23 @@ const Vendor = (props) => {
     const onView = (record, e) => {
         e.preventDefault();
          setViewVendorData(record);
-        props.fetchPartyListId(record.nPartyId);
+         props.fetchVendorListId({
+            id: record.vendorId,
+            pageNo: 1,
+            pageSize: pageSize,
+            ipAddress: "1.1.1.1",
+            requestId: "VENDOR_ID_GET",
+            userId: ''
+        });
         setViewVendor(true);
     }
     const onDelete = (record,key, e) => {
-        let id = []
-        id.push(record.inwardEntryId);
-        e.preventDefault();
-        props.deleteInwardEntryById(id)
+        props.deleteVendor({
+            id: record.vendorId,
+            ipAddress: "1.1.1.1",
+            requestId: "VENDOR_DELETE",
+            userId: ''
+        })
       }
 
       const onEdit = (record,e)=>{
@@ -153,6 +172,14 @@ const Vendor = (props) => {
 
     useEffect(() => {
         setTimeout(() => {
+            props.fetchVendorList({
+                pageNo: 1,
+                pageSize: pageSize,
+                ipAddress: "1.1.1.1",
+                requestId: "Vendor_LIST_GET",
+                searchText: "",
+                userId: ''
+            });
             props.fetchPartyList();
             props.fetchClassificationList();
             props.fetchEndUserTagsList();
@@ -161,12 +188,12 @@ const Vendor = (props) => {
     }, [showAddVendor]);
 
     useEffect(() => {
-        const { loading, error, partyList } = props.party;
+        const { loading, error, vendorList } = props.vendor;
         if (!loading && !error) {
-            setFilteredInwardList(partyList)
+            setFilteredVendorList(vendorList)
 
         }
-    }, [props.party]);
+    }, [props.vendor]);
 
     useEffect(() => {
 
@@ -179,9 +206,9 @@ const Vendor = (props) => {
                     return party;
                 }
             });
-            setFilteredInwardList(filteredData);
+            setFilteredVendorList(filteredData);
         } else {
-            setFilteredInwardList(party.partyList);
+            setFilteredVendorList(party.partyList);
         }
     }, [searchValue])
     const handleChange = (pagination, filters, sorter) => {
@@ -231,6 +258,38 @@ const Vendor = (props) => {
     }
 
     useEffect(() => {
+        if (totalItems) {
+          setTotalPageItems(totalItems);
+        }
+      }, [totalItems]);
+
+      useEffect(() => {
+        if (searchValue) {
+          if (searchValue.length >= 3) {
+            setPageNo(1);
+            props.fetchVendorList({
+                searchText:searchValue,
+                pageNo:"1",
+                pageSize: pageSize,
+                ipAddress: "1.1.1.1",
+                requestId: "CUSTOMER_LIST_GET",
+                userId: ""
+            });
+          }
+        } else {
+          setPageNo(1);
+          props.fetchVendorList({
+            searchText:searchValue,
+            pageNo:"1",
+            pageSize: pageSize,
+            ipAddress: "1.1.1.1",
+            requestId: "CUSTOMER_LIST_GET",
+            userId: ""
+        });
+        }
+      }, [searchValue]);
+
+    useEffect(() => {
         // to show checked in checkbox
         const {party} = props.party
         setDailyReportsList(party.dailyReportsList || []);
@@ -255,14 +314,30 @@ const Vendor = (props) => {
                                     setShowAddVendor(true)
                                 }}
                         >Add Vendor</Button>
-                        <SearchBox styleName="gx-flex-1" placeholder="Search for party id or party name..." value={searchValue} onChange={(e) => setSearchValue(e.target.value)}/>
+                        <SearchBox styleName="gx-flex-1" placeholder="Search for vendor name..." value={searchValue} onChange={(e) => setSearchValue(e.target.value)}/>
                     </div>
                 </div>
                 <Table rowSelection={[]}
                     className="gx-table-responsive"
                     columns={columns}
-                    dataSource={filteredInwardList}
+                    dataSource={filteredVendorList.content}
                     onChange={handleChange}
+                    pagination={{
+                        pageSize: pageSize,
+                        onChange: (page) => {
+                          setPageNo(page);
+                          props.fetchVendorList({
+                            searchText:searchValue,
+                            pageNo: page,
+                            pageSize: pageSize,
+                            ipAddress: "1.1.1.1",
+                            requestId: "CUSTOMER_LIST_GET",
+                            userId: ""
+                        });
+                        },
+                        current: pageNo,
+                        total: totalPageItems,
+                      }}
                 />
                 <Modal
                     title='Vendor Details'
@@ -276,30 +351,28 @@ const Vendor = (props) => {
                         <Row>
                             <Col span={24}>
                                 <Card>
-                                    <p><strong>Vendor Name :</strong> {viewVendorDate?.partyName}</p>
-                                    {viewVendorDate?.partyNickname && <p><strong>Vendor Nickname :</strong> {viewVendorDate?.partyNickname}</p>}
-                                    <p><strong>Phone Number :</strong> {viewVendorDate?.phone1}</p>
-                                    {viewVendorDate?.phone2 && <p><strong>Alternate phone number 1 :</strong> {viewVendorDate?.phone2}</p>}
-                                    {viewVendorDate?.phone3 && <p><strong>Alternate phone number 2:</strong> {viewVendorDate?.phone3}</p>}
-                                    <p><strong>E-mail :</strong> {viewVendorDate?.email1}</p>
-                                    {viewVendorDate?.email2 && <p><strong>Alternate E-mail 1:</strong> {viewVendorDate?.email2}</p>}
-                                    {viewVendorDate?.email3 && <p><strong>Alternate E-mail 2:</strong> {viewVendorDate?.email3}</p>}
+                                    <p><strong>Vendor Name :</strong> {viewVendorDate?.vendorName}</p>
+                                    {viewVendorDate?.vendorNickName && <p><strong>Vendor Nickname :</strong> {viewVendorDate?.vendorNickName}</p>}
+                                    <p><strong>Phone Number :</strong> {viewVendorDate?.phoneNo}</p>
+                                    {/* {viewVendorDate?.phone2 && <p><strong>Alternate phone number 1 :</strong> {viewVendorDate?.phone2}</p>}
+                                    {viewVendorDate?.phone3 && <p><strong>Alternate phone number 2:</strong> {viewVendorDate?.phone3}</p>} */}
+                                    <p><strong>E-mail :</strong> {viewVendorDate?.emailId}</p>
+                                    {/* {viewVendorDate?.email2 && <p><strong>Alternate E-mail 1:</strong> {viewVendorDate?.email2}</p>}
+                                    {viewVendorDate?.email3 && <p><strong>Alternate E-mail 2:</strong> {viewVendorDate?.email3}</p>} */}
                                     {viewVendorDate?.contactName && <p><strong>Contact Name :</strong> {viewVendorDate?.contactName}</p>}
                                     {viewVendorDate?.contactNumber && <p><strong>Contact Number :</strong> {viewVendorDate?.contactNumber}</p>}
                                     {viewVendorDate?.tanNumber && <p><strong>TAN Number :</strong> {viewVendorDate?.tanNumber}</p>}
                                     {viewVendorDate?.panNumber && <p><strong>PAN Number :</strong> {viewVendorDate?.panNumber}</p>}
                                     {viewVendorDate?.gstNumber && <p><strong>GST Number :</strong> {viewVendorDate?.gstNumber}</p>}
-                                    {viewVendorDate?.address1 && <>
-                                        <p><strong>Address :</strong> {viewVendorDate?.address1?.details}</p>
-                                        <p><strong>City :</strong> {viewVendorDate?.address1?.city}</p>
-                                        <p><strong>State :</strong> {viewVendorDate?.address1?.state}</p>
-                                        <p><strong>Pincode :</strong> {viewVendorDate?.address1?.pincode}</p>
-                                    </>}
-                                    {viewVendorDate?.packetClassificationTags && <p><strong>Tags:</strong>{viewVendorDate?.packetClassificationTags?.map(item=> item.tagName)}</p>}
-                                    {viewVendorDate?.endUserTags && <p><strong>EndUser Tags:</strong>{viewVendorDate?.endUserTags?.map(item=> item.tagName)}</p>}
-                                    {props.partyId.dailyReportsList && <p><strong>Daily Reports List :</strong> {props.partyId?.dailyReportsList}</p>}
-                                    {props.partyId?.monthlyReportsList && <p><strong>Monthly Reports List :</strong> {props.partyId?.monthlyReportsList}</p>}
-                                </Card>
+                                    <p><strong>Address :</strong> {viewVendorDate?.address1}</p>
+                                    <p><strong>City :</strong> {viewVendorDate?.city}</p>
+                                    <p><strong>State :</strong> {viewVendorDate?.state}</p>
+                                    <p><strong>Pin code :</strong> {viewVendorDate?.pincode}</p>
+                                    {viewVendorDate?.alternateAddress1 && <p><strong>Alternate Address :</strong> {viewVendorDate?.alternateAddress1}</p>}
+                                    {viewVendorDate?.alternateCity && <p><strong>Alternate City :</strong> {viewVendorDate?.alternateCity}</p>}
+                                    {viewVendorDate?.alternateState && <p><strong>Alternate State :</strong> {viewVendorDate?.alternateState}</p>}
+                                    {viewVendorDate?.alternatePincode && <p><strong>Alternate Pincode :</strong> {viewVendorDate?.alternatePincode}</p>}
+                                     </Card>
                             </Col>
                         </Row>
                     </Card>
@@ -577,6 +650,7 @@ const Vendor = (props) => {
 }
 
 const mapStateToProps = state => ({
+    vendor: state.vendor,
     party: state.party,
     packetClassification: state.packetClassification,
     quality: state.quality,
@@ -684,6 +758,8 @@ const addVendorForm = Form.create({
 })(Vendor);
 
 export default connect(mapStateToProps, {
+    fetchVendorList,
+    fetchVendorListId,
     fetchPartyList,
     addParty,
     fetchPartyListId,

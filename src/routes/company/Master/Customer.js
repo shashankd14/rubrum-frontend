@@ -40,8 +40,11 @@ const Customer = (props) => {
     const [showAmtDcPdfFlg, setShowAmtDcPdfFlg] = useState(props.party?.showAmtDcPdfFlg==='Y'); // Default value
     const [purchaseReportsList, setPurchaseReportsList] = useState([]);
     const [monthlyReportsList, setMonthlyReportsList] = useState([]); 
-console.log("viewCustomerData", viewCustomerData)
+    const [pageNo, setPageNo] = useState(1);
+    const [pageSize, setPageSize] = useState(15);
+    const [totalPageItems, setTotalPageItems] = useState(0);
     const {getFieldDecorator, getFieldValue} = props.form;
+    const { totalItems } = props.customer.customerList;
 
     const { customer } = props.customer;
     const [tagsList, setTagsList] =useState([{tagId: 1}]);
@@ -126,7 +129,7 @@ console.log("viewCustomerData", viewCustomerData)
             id: record.customerId,
             searchText: '',
             pageNo: 1,
-            pageSize: 15,
+            pageSize: pageSize,
             ipAddress: "1.1.1.1",
             requestId: "CUSTOMER_GET",
             userId: ''
@@ -137,7 +140,7 @@ console.log("viewCustomerData", viewCustomerData)
         props.deleteCustomer({
             id: record.customerId,
             ipAddress: "1.1.1.1",
-            requestId: "CUSTOMER_GET",
+            requestId: "CUSTOMER_DELETE",
             userId: ''
         })
 
@@ -156,11 +159,10 @@ console.log("viewCustomerData", viewCustomerData)
     }
 
     useEffect(() => {
-        debugger
         setTimeout(() => {
             props.fetchCustomerList({
                 pageNo: 1,
-                pageSize: 11,
+                pageSize: pageSize,
                 ipAddress: "1.1.1.1",
                 requestId: "CUSTOMER_GET",
                 userId: ''
@@ -180,22 +182,7 @@ console.log("viewCustomerData", viewCustomerData)
         }
     }, [props.customer]);
 
-    useEffect(() => {
-
-        const { party } = props;
-        if(searchValue) {
-            const filteredData = party?.partyList?.filter(party => {
-                if(party.nPartyId?.toString() === searchValue ||
-                    party.partyName?.toLowerCase().includes(searchValue.toLowerCase()) ||
-                    party.gstNumber?.includes(searchValue)) {
-                    return party;
-                }
-            });
-            setFilteredInwardList(filteredData);
-        } else {
-            setFilteredInwardList(party.partyList);
-        }
-    }, [searchValue])
+  
     const handleChange = (pagination, filters, sorter) => {
         setSortedInfo(sorter);
         setFilteredInfo(filters)
@@ -243,6 +230,39 @@ console.log("viewCustomerData", viewCustomerData)
         console.log(e)
     }
 
+    useEffect(() => {
+        if (totalItems) {
+          setTotalPageItems(totalItems);
+        }
+      }, [totalItems]);
+
+      useEffect(() => {
+        if (searchValue) {
+          if (searchValue.length >= 3) {
+            setPageNo(1);
+            props.fetchCustomerList({
+                searchText:searchValue,
+                pageNo:"1",
+                pageSize: pageSize,
+                ipAddress: "1.1.1.1",
+                requestId: "CUSTOMER_LIST_GET",
+                userId: ""
+            });
+          }
+        } else {
+          setPageNo(1);
+          props.fetchCustomerList({
+            searchText:searchValue,
+            pageNo:"1",
+            pageSize: pageSize,
+            ipAddress: "1.1.1.1",
+            requestId: "CUSTOMER_LIST_GET",
+            userId: ""
+        });
+        }
+      }, [searchValue]);
+
+
     // useEffect(() => {
     //     // to show checked in checkbox
     //     const {customer} = props.customer
@@ -276,6 +296,22 @@ console.log("viewCustomerData", viewCustomerData)
                     columns={columns}
                     dataSource={filteredCustomerList}
                     onChange={handleChange}
+                    pagination={{
+                        pageSize: pageSize,
+                        onChange: (page) => {
+                          setPageNo(page);
+                          props.fetchCustomerList({
+                            searchText:searchValue,
+                            pageNo: page,
+                            pageSize: pageSize,
+                            ipAddress: "1.1.1.1",
+                            requestId: "CUSTOMER_LIST_GET",
+                            userId: ""
+                        });
+                        },
+                        current: pageNo,
+                        total: totalPageItems,
+                      }}
                 />
                 <Modal
                     title='Customer Details'
@@ -341,7 +377,7 @@ console.log("viewCustomerData", viewCustomerData)
                             });
                         } else {
                             props.form.validateFields((err, values) => {
-                                debugger
+                              
                                 if (!err) {
                                  e.preventDefault();
                                   // props.addCustomer(values);

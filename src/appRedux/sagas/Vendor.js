@@ -1,6 +1,6 @@
 import {all, put, fork, takeLatest} from "redux-saga/effects";
-import { getUserToken } from './common';
-import { FETCH_VENDOR_LIST_REQUEST, ADD_VENDOR_REQUEST, UPDATE_VENDOR_REQUEST, FETCH_VENDOR_LIST_ID_REQUEST } from "../../constants/ActionTypes";
+import { getUserToken, getUserId } from './common';
+import { FETCH_VENDOR_LIST_REQUEST, ADD_VENDOR_REQUEST, UPDATE_VENDOR_REQUEST, FETCH_VENDOR_LIST_ID_REQUEST, DELETE_VENDOR_REQUEST } from "../../constants/ActionTypes";
 import {fetchVendorListSuccess,
     fetchVendorListError,
     addVendorSuccess,
@@ -8,7 +8,9 @@ import {fetchVendorListSuccess,
     fetchVendorListIdSuccess,
     fetchVendorListIdError,
     updateVendorSuccess,
-    updateVendorError
+    updateVendorError,
+    deleteVendorSuccess,
+    deleteVendorError
 } from "../actions";
 import { userSignOutSuccess } from "../../appRedux/actions/Auth";
 
@@ -17,16 +19,25 @@ const getHeaders = () => ({
     Authorization: getUserToken()
 });
 
-function* fetchVendorList() {
+function* fetchVendorList({action}) {
+    const reqBody = {
+        pageNo: action.pageNo,
+        pageSize: action.pageSize,
+        ipAddress: action.ipAddress,
+        requestId: action.requestId,
+        searchText: action.searchText,
+        userId: getUserId
+    }
     try {
-        const fetchPartyList =  yield fetch(`${baseUrl}api/party/list`, {
-            method: 'GET',
-            headers: getHeaders()
+        const fetchVendorList =  yield fetch(`${baseUrl}api/trading/vendor/list`, {
+            method: 'POST',
+            headers: { "Content-Type": "application/json", ...getHeaders() },
+            body: JSON.stringify(reqBody)
         });
-        if(fetchPartyList.status === 200) {
-            const fetchPartyListResponse = yield fetchPartyList.json();
-            yield put(fetchVendorListSuccess(fetchPartyListResponse));
-        } else if (fetchPartyList.status === 401) {
+        if(fetchVendorList.status === 200) {
+            const fetchVendorListResponse = yield fetchVendorList.json();
+            yield put(fetchVendorListSuccess(fetchVendorListResponse));
+        } else if (fetchVendorList.status === 401) {
             yield put(userSignOutSuccess());
         } else
             yield put(fetchVendorListError('error'));
@@ -36,15 +47,24 @@ function* fetchVendorList() {
 }
 
 function* fetchVendorListById(action) {
+    const reqBody = {
+        id: action.id,
+        pageNo: action.pageNo,
+        pageSize: action.pageSize,
+        ipAddress: action.ipAddress,
+        requestId: action.requestId,
+        userId: getUserId
+    }
     try {
-        const fetchPartyListId =  yield fetch(`${baseUrl}api/party/getById/${action.partyId}`, {
-            method: 'GET',
-            headers: getHeaders()
+        const fetchVendorListId =  yield fetch(`${baseUrl}api/trading/vendor/list`, {
+            method: 'POST',
+            headers: { "Content-Type": "application/json", ...getHeaders() },
+            body: JSON.stringify(reqBody)
         });
-        if(fetchPartyListId.status === 200) {
-            const fetchPartyListResponse = yield fetchPartyListId.json();
-            yield put(fetchVendorListIdSuccess(fetchPartyListResponse));
-        } else if (fetchPartyListId.status === 401) {
+        if(fetchVendorListId.status === 200) {
+            const fetchVendorListResponse = yield fetchVendorListId.json();
+            yield put(fetchVendorListIdSuccess(fetchVendorListResponse));
+        } else if (fetchVendorListId.status === 401) {
             yield put(userSignOutSuccess());
         } else
             yield put(fetchVendorListIdError('error'));
@@ -251,6 +271,32 @@ function* updateVendor(action) {
         yield put(updateVendorError(error));
     }
 }
+function* deleteVendorSaga(action) {
+    let body = action.payload;
+    const reqBody = {
+        ids: [body.id],
+        requestId: "VENDOR_DELETE",
+        ipAddress: "1.1.1.1",
+        userId: getUserId()
+    }
+    try {
+        const deleteVendor = yield fetch(`${baseUrl}api/trading/vendor/delete`, {
+            method: 'POST',
+            headers: { "Content-Type": "application/json", ...getHeaders() },
+            body:JSON.stringify(reqBody)
+
+        });
+        if (deleteVendor.status == 200) {
+            yield put(deleteVendorSuccess());
+        } else if (deleteVendor.status === 401) {
+            yield put(userSignOutSuccess());
+        } else
+            yield put(deleteVendorError('error'));
+    } catch (error) {
+        console.log(error);
+        yield put(deleteVendorError(error));
+    }
+}
 
 
 export function* watchFetchRequests() {
@@ -258,6 +304,7 @@ export function* watchFetchRequests() {
     yield takeLatest(ADD_VENDOR_REQUEST, addVendor);
     yield takeLatest(UPDATE_VENDOR_REQUEST, updateVendor);
     yield takeLatest(FETCH_VENDOR_LIST_ID_REQUEST, fetchVendorListById);
+    yield takeLatest(DELETE_VENDOR_REQUEST, deleteVendorSaga);
 }
 
 export default function* vendorSagas() {

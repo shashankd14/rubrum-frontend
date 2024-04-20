@@ -49,7 +49,6 @@ const Category = (props) => {
     const [mode, setMode] = useState("top");
 
     const {getFieldDecorator, getFieldValue, getFieldProps} = props.form;
-    // const { totalItems } = props.location.locationList;
     const { totalItems } = props.category.mainCategoryList;
 
     const columns = [{
@@ -71,7 +70,7 @@ const Category = (props) => {
         sortOrder: sortedInfo.columnKey === 'categoryName' && sortedInfo.order,
     },
     {
-        title: 'Item Code',
+        title: 'Category Code',
         dataIndex: 'categoryHsnCode',
         key: 'categoryHsnCode',
         filters: [],
@@ -121,7 +120,7 @@ const Category = (props) => {
         sortOrder: sortedInfo.columnKey === 'subcategoryName' && sortedInfo.order,
     },
     {
-        title: 'Item Code',
+        title: 'Sub Category Code',
         dataIndex: 'subcategoryHsnCode',
         key: 'subcategoryHsnCode',
         filters: [],
@@ -206,7 +205,6 @@ const Category = (props) => {
     }
 
     const onEditSub = (record,e)=>{
-         debugger
         e.preventDefault();
         props.fetchSubCategoryId({
             id: record.subcategoryId,
@@ -466,7 +464,6 @@ const Category = (props) => {
                         } else {
                             props.form.validateFields(['categoryName', 'categoryHsnCode'],(err, values) => {
                                 if (!err) {
-                                    debugger
                                 //  e.preventDefault();
                                  props.addMainCategory({
                                     ...values,
@@ -525,11 +522,9 @@ const Category = (props) => {
                     title={editSubCategory?'Edit Category':'Add Category'}
                     visible={showAddSubCategory}
                     onOk={(e) => {
-                        debugger
                         if (editSubCategory) {
                             e.preventDefault();
                             props.form.validateFields(['subcategoryId', 'itemName', 'itemCode'],(err, values) => {
-                                debugger
                                 if (!err) {
                                  const data = {
                                     values: {

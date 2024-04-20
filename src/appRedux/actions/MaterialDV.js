@@ -18,10 +18,14 @@ import {
     FETCH_DV_MATERIAL_BY_ID_REQUSET,
     FETCH_DV_MATERIAL_BY_ID_SUCCESS,
     FETCH_DV_MATERIAL_BY_ID_ERROR,
+    DELETE_DV_MATERIAL_REQUEST,
+    DELETE_DV_MATERIAL_SUCCESS,
+    DELETE_DV_MATERIAL_ERROR,
 } from "../../constants/ActionTypes";
 
-export const fetchDVMaterialList = () => ({
+export const fetchDVMaterialList = (action) => ({
     type: FETCH_DV_MATERIAL_LIST_REQUEST,
+    action
 });
 
 export const fetchDVMaterialListSuccess = (DVMaterialList) => ({
@@ -67,9 +71,9 @@ export const updateDVMaterialError = (error) => ({
 });
 
 
-export const fetchDVMaterialListById = (DVmaterialId) => ({
+export const fetchDVMaterialListById = (action) => ({
     type: FETCH_DV_MATERIAL_LIST_ID_REQUEST,
-    DVmaterialId
+    action
 });
 
 export const fetchDVMaterialListByIdSuccess = (DVmaterial) => ({
@@ -79,6 +83,19 @@ export const fetchDVMaterialListByIdSuccess = (DVmaterial) => ({
 
 export const fetchDVMaterialListByIdError = (error) => ({
     type: FETCH_DV_MATERIAL_LIST_ID_ERROR,
+    error
+});
+export const deleteDVMaterial = (action) => ({
+    type: DELETE_DV_MATERIAL_REQUEST,
+    action
+});
+
+export const deleteDVMaterialSuccess = () => ({
+    type: DELETE_DV_MATERIAL_SUCCESS
+});
+
+export const deleteDVMaterialError = (error) => ({
+    type: DELETE_DV_MATERIAL_ERROR,
     error
 });
 

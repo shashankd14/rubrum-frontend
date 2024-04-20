@@ -61,7 +61,7 @@ const CreateVendorDetailsForm = (props) => {
     };
     return (
         <>
-        <Col span={14}>
+        <Col span={16}>
             {props.party.loading && <Spin className="gx-size-100 gx-flex-row gx-justify-content-center gx-align-items-center" size="large"/>}
             {props.party.partyList.length > 0 &&
                 // <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4" style={{"width":"70%"}}>
@@ -117,8 +117,8 @@ const CreateVendorDetailsForm = (props) => {
                 </Form>
             }
             </Col>
-            <Col span={10} className="gx-pt-4">
-                <Card title="Inward Details" style={{ width: 300 }}>
+            <Col span={8} className="gx-pt-4">
+                <Card title="Inward Details" style={{ width: 400 }}>
                     {props.inward.customerInvoiceNo && <p>Customer Invoice No : {props.inward.customerInvoiceNo}</p>}
                     {props.inward.purposeType && <p>Purpose Type : {props.inward.purposeType}</p>}
                 </Card>

@@ -33,7 +33,7 @@ export default (state = INIT_STATE, action) => {
             return {
                 ...state,
                 loading: false,
-                vendorList: action.vendorList
+                vendorList: action.VendorList
             }
         }
         case FETCH_VENDOR_LIST_ERROR: {
@@ -75,7 +75,7 @@ export default (state = INIT_STATE, action) => {
             return {
                 ...state,
                 loading: false,
-                vendor: action.vendor
+                vendor: action.Vendor
             }
         }
         case FETCH_VENDOR_LIST_ID_ERROR: {

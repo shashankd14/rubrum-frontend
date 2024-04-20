@@ -6,11 +6,15 @@ import {FETCH_VENDOR_LIST_ERROR, FETCH_VENDOR_LIST_REQUEST, FETCH_VENDOR_LIST_SU
     UPDATE_VENDOR_REQUEST,
     UPDATE_VENDOR_SUCCESS,
     UPDATE_VENDOR_ERROR,
-    RESET_VENDOR_REQUEST
+    RESET_VENDOR_REQUEST,
+    DELETE_VENDOR_REQUEST,
+    DELETE_VENDOR_SUCCESS,
+    DELETE_VENDOR_ERROR
 } from "../../constants/ActionTypes";
 
-export const fetchVendorList = () => ({
+export const fetchVendorList = (action) => ({
     type: FETCH_VENDOR_LIST_REQUEST,
+    action
 });
 
 export const fetchVendorListSuccess = (VendorList) => ({
@@ -37,9 +41,9 @@ export const addVendorError = (error) => ({
     error
 });
 
-export const fetchVendorListId = (VendorId) => ({
+export const fetchVendorListId = (action) => ({
     type: FETCH_VENDOR_LIST_ID_REQUEST,
-    VendorId
+    action
 });
 
 export const fetchVendorListIdSuccess = (Vendor) => ({
@@ -67,5 +71,18 @@ export const updateVendorSuccess = () => ({
 
 export const updateVendorError = (error) => ({
     type: UPDATE_VENDOR_ERROR,
+    error
+});
+export const deleteVendor = (payload) => ({
+    type: DELETE_VENDOR_REQUEST,
+    payload
+});
+
+export const deleteVendorSuccess = () => ({
+    type: DELETE_VENDOR_SUCCESS
+});
+
+export const deleteVendorError = (error) => ({
+    type: DELETE_VENDOR_ERROR,
     error
 });

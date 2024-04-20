@@ -20,12 +20,12 @@ const getHeaders = () => ({
 });
 
 function* fetchCustomerList({action}) {
-    debugger
     const reqBody = {
         pageNo: action.pageNo,
         pageSize: action.pageSize,
         ipAddress: action.ipAddress,
         requestId: action.requestId,
+        searchText: action.searchText,
         userId: localStorage.getItem('userId')
     }
     try {

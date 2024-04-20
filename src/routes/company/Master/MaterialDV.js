@@ -20,11 +20,14 @@ import SearchBox from '../../../components/SearchBox';
 
 import IntlMessages from '../../../util/IntlMessages';
 import {
-  fetchMaterialList,
-  addMaterial,
-  fetchMaterialListById,
-  updateMaterial,
+  fetchDVMaterialList,
+  addDVMaterial,
+  fetchDVMaterialListById,
+  updateDVMaterial,
   resetMaterial,
+  fetchMainCategoryList,
+  fetchSubCategoryList,
+  deleteDVMaterial
 } from '../../../appRedux/actions';
 import { onDeleteContact } from '../../../appRedux/actions';
 import '../../../styles/components/Master/MaterialDV.css';
@@ -59,46 +62,60 @@ const MaterialDV = (props) => {
   const [viewMaterialData, setViewMaterialData] = useState({});
   const [filteredInfo, setFilteredInfo] = useState(null);
   const [searchValue, setSearchValue] = useState('');
-  const [filteredInwardList, setFilteredInwardList] = useState(
-    props.material?.materialList || []
+  const [filteredMaterialList, setFilteredMaterialList] = useState(
+    props.materialDV.DVMaterialList || []
   );
   const [addSubCategory, setAddSubCategory] = useState(false);
   const [addMainCategory, setAddMainCategory] = useState(false);
   const [selectedUnitInches, setSelectedUnitInches] = useState();
   const [selectedUnitmm, setSelectedUnitmm] = useState();
+  const [pageNo, setPageNo] = useState(1);
+  const [pageSize, setPageSize] = useState(15);
+  const [totalPageItems, setTotalPageItems] = useState(0);
+  const { totalItems } = props.materialDV.DVMaterialList;
 
   const keys = getFieldValue('keys');
 
   const columns = [
     {
-      title: 'Sr. No',
-      dataIndex: 'matId',
-      key: 'matId',
+      title: 'Material ID',
+      dataIndex: 'itemId',
+      key: 'itemId',
       filters: [],
       sorter: (a, b) => {
-        return a.matId - b.matId;
+        return a.itemId - b.itemId;
       },
-      sortOrder: sortedInfo.columnKey === 'matId' && sortedInfo.order,
+      sortOrder: sortedInfo.columnKey === 'itemId' && sortedInfo.order,
+    },
+    {
+      title: 'Material Name',
+      dataIndex: 'itemName',
+      key: 'itemName',
+      filters: [],
+      sorter: (a, b) => {
+        return a.itemName - b.itemName;
+      },
+      sortOrder: sortedInfo.columnKey === 'itemName' && sortedInfo.order,
     },
     {
       title: 'Material Code',
-      dataIndex: 'materialCode',
-      key: 'materialCode',
+      dataIndex: 'itemCode',
+      key: 'itemCode',
       filters: [],
       sorter: (a, b) => {
-        return a.materialCode - b.materialCode;
+        return a.itemCode - b.itemCode;
       },
-      sortOrder: sortedInfo.columnKey === 'materialCode' && sortedInfo.order,
+      sortOrder: sortedInfo.columnKey === 'itemCode' && sortedInfo.order,
     },
     {
       title: 'HSN Code',
-      dataIndex: 'hsnCode',
-      key: 'hsnCode',
+      dataIndex: 'itemHsnCode',
+      key: 'itemHsnCode',
       filters: [],
       sorter: (a, b) => {
-        return a.hsnCode - b.hsnCode;
+        return a.itemHsnCode - b.itemHsnCode;
       },
-      sortOrder: sortedInfo.columnKey === 'hsnCode' && sortedInfo.order,
+      sortOrder: sortedInfo.columnKey === 'itemHsnCode' && sortedInfo.order,
     },
     {
       title: 'Material Date',
@@ -111,33 +128,34 @@ const MaterialDV = (props) => {
       sorter: (a, b) => a.createdOn.length - b.createdOn.length,
       sortOrder: sortedInfo.columnKey === 'createdOn' && sortedInfo.order,
     },
-    {
-      title: 'Material',
-      dataIndex: 'description',
-      key: 'description',
-      filteredValue: filteredInfo ? filteredInfo['description'] : null,
-      filters: [
-        ...new Set(props.material.materialList.map((item) => item.description)),
-      ].map((material) => {
-        return { text: material || '', value: material || '' };
-      }),
-      onFilter: (value, record) => record.description == value,
-      sorter: (a, b) => a.description?.length - b.description?.length,
-      sortOrder: sortedInfo.columnKey === 'description' && sortedInfo.order,
-    },
-    {
-      title: 'Material Grade',
-      dataIndex: 'materialGrade',
-      key: 'materialGrade',
-      render: (value) => {
-        const grade = value.map((grade) => {
-          return grade.gradeName;
-        });
-        return grade.toString();
-      },
-      sorter: (a, b) => a.materialGrade?.length - b.materialGrade?.length,
-      sortOrder: sortedInfo.columnKey === 'materialGrade' && sortedInfo.order,
-    },
+    
+    // {
+    //   title: 'Material',
+    //   dataIndex: 'description',
+    //   key: 'description',
+    //   // filteredValue: filteredInfo ? filteredInfo['description'] : null,
+    //   // filters: [
+    //   //   ...new Set(props.material.materialList.map((item) => item.description)),
+    //   // ].map((material) => {
+    //   //   return { text: material || '', value: material || '' };
+    //   // }),
+    //   // onFilter: (value, record) => record.description == value,
+    //   // sorter: (a, b) => a.description?.length - b.description?.length,
+    //   // sortOrder: sortedInfo.columnKey === 'description' && sortedInfo.order,
+    // },
+    // {
+    //   title: 'Material Grade',
+    //   dataIndex: 'materialGrade',
+    //   key: 'materialGrade',
+    //   render: (value) => {
+    //     const grade = value.map((grade) => {
+    //       return grade.gradeName;
+    //     });
+    //     return grade.toString();
+    //   },
+    //   sorter: (a, b) => a.materialGrade?.length - b.materialGrade?.length,
+    //   sortOrder: sortedInfo.columnKey === 'materialGrade' && sortedInfo.order,
+    // },
     {
       title: 'Action',
       dataIndex: '',
@@ -152,7 +170,7 @@ const MaterialDV = (props) => {
             Edit
           </span>
           <Divider type='vertical' />
-          <span className='gx-link' onClick={() => {}}>
+          <span className='gx-link' onClick={(e) => onDelete(record, e)}>
             Delete
           </span>
         </span>
@@ -163,19 +181,29 @@ const MaterialDV = (props) => {
   const onView = (record, e) => {
     e.preventDefault();
     setViewMaterialData(record);
+    props.fetchDVMaterialListById({
+      id: record.itemId,
+      pageNo: 1,
+      pageSize: pageSize,
+      ipAddress: "1.1.1.1",
+      requestId: "MATERIAL_ID_DELETE",
+      userId: ''
+  });
     setViewMaterial(true);
   };
 
   const onDelete = (record, key, e) => {
-    let id = [];
-    id.push(record.inwardEntryId);
-    e.preventDefault();
-    props.deleteInwardEntryById(id);
-    console.log(record, key);
+    debugger
+    props.deleteDVMaterial({
+      id: record.itemId,
+      ipAddress: "1.1.1.1",
+      requestId: "MATERIAL_ID_DELETE",
+      userId: ''
+  });
   };
   const onEdit = (record, e) => {
     e.preventDefault();
-    props.fetchMaterialListById(record.matId);
+    props.fetchDVMaterialListById(record.matId);
     setEditMaterial(true);
     setTimeout(() => {
       setShowAddMaterial(true);
@@ -184,36 +212,39 @@ const MaterialDV = (props) => {
 
   useEffect(() => {
     setTimeout(() => {
-      props.fetchMaterialList();
+      props.fetchDVMaterialList({
+        pageNo: 1,
+        searchText: searchValue,
+        pageSize: pageSize,
+        ipAddress: "1.1.1.1",
+        requestId: "Material_GET",
+        userId: ''
+    });
+    props.fetchMainCategoryList({
+      pageNo: 1,
+      searchText: "",
+      pageSize: pageSize,
+      ipAddress: "1.1.1.1",
+      requestId: "MAIN_CATEGORY_GET",
+      userId: ''
+  });
+    props.fetchSubCategoryList({
+      pageNo: 1,
+      searchText: "",
+      pageSize: pageSize,
+      ipAddress: "1.1.1.1",
+      requestId: "SUB_CATEGORY_GET",
+      userId: ''
+  });
     }, 1000);
   }, [showAddMaterial]);
 
   useEffect(() => {
-    const { loading, error, materialList } = props.material;
+    const { loading, error, DVMaterialList } = props.materialDV;
     if (!loading && !error) {
-      setFilteredInwardList(materialList);
+      setFilteredMaterialList(DVMaterialList);
     }
-  }, [props.material]);
-
-  useEffect(() => {
-    const { material } = props;
-    if (searchValue) {
-      const filteredData = material?.materialList?.filter((material) => {
-        if (
-          material.matId.toString() === searchValue ||
-          material.description
-            ?.toLowerCase()
-            .includes(searchValue.toLowerCase()) ||
-          material.materialGrade?.includes(searchValue)
-        ) {
-          return material;
-        }
-      });
-      setFilteredInwardList(filteredData);
-    } else {
-      setFilteredInwardList(material.materialList);
-    }
-  }, [searchValue]);
+  }, [props.materialDV]);
 
   const handleChange = (pagination, filters, sorter) => {
     setSortedInfo(sorter);
@@ -270,6 +301,37 @@ const MaterialDV = (props) => {
 
   const onCrossFileChange = (e) => {};
   const onItemFileChange = (e) => {};
+  useEffect(() => {
+    if (totalItems) {
+      setTotalPageItems(totalItems);
+    }
+  }, [totalItems]);
+
+  useEffect(() => {
+    if (searchValue) {
+      if (searchValue.length >= 3) {
+        setPageNo(1);
+        props.fetchDVMaterialList({
+            searchText:searchValue,
+            pageNo:"1",
+            pageSize: pageSize,
+            ipAddress: "1.1.1.1",
+            requestId: "MAIN_LIST_GET",
+            userId: ""
+        });
+      }
+    } else {
+      setPageNo(1);
+      props.fetchDVMaterialList({
+        searchText:searchValue,
+        pageNo:"1",
+        pageSize: pageSize,
+        ipAddress: "1.1.1.1",
+        requestId: "MAIN_LIST_GET",
+        userId: ""
+    });
+    }
+  }, [searchValue]);
 
   return (
     <div>
@@ -298,7 +360,7 @@ const MaterialDV = (props) => {
             </Button>
             <SearchBox
               styleName='gx-flex-1'
-              placeholder='Search for material or material grade...'
+              placeholder='Search for material name...'
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
             />
@@ -308,8 +370,24 @@ const MaterialDV = (props) => {
           rowSelection={[]}
           className='gx-table-responsive'
           columns={columns}
-          dataSource={filteredInwardList}
+          dataSource={filteredMaterialList.content}
           onChange={handleChange}
+          pagination={{
+            pageSize: pageSize,
+            onChange: (page) => {
+              setPageNo(page);
+              props.fetchDVMaterialList({
+                searchText:searchValue,
+                pageNo: page,
+                pageSize: pageSize,
+                ipAddress: "1.1.1.1",
+                requestId: "MATERIAL_LIST_GET",
+                userId: ""
+            });
+            },
+            current: pageNo,
+            total: totalPageItems,
+          }}
         />
 
         <Modal
@@ -359,7 +437,7 @@ const MaterialDV = (props) => {
                 if (!err) {
                   console.log('Received values of form: ', values);
                   const data = { values, id: props.material?.material?.matId };
-                  props.updateMaterial(data);
+                  props.updateDVMaterial(data);
                   setEditMaterial(false);
                   setShowAddMaterial(false);
                 }
@@ -369,7 +447,7 @@ const MaterialDV = (props) => {
               props.form.validateFields((err, values) => {
                 if (!err) {
                   console.log('Received values of form: ', values);
-                  props.addMaterial(values);
+                  props.addDVMaterial(values);
                   setShowAddMaterial(false);
                 }
               });
@@ -422,23 +500,36 @@ const MaterialDV = (props) => {
                       ],
                     })(<Input id='itemGrade' {...getFieldProps} />)}
                   </Form.Item>
-
-                  <Form.Item label='Item Main category'>
-                    <Col className='add-category-button'>
-                      {getFieldDecorator('mainCategory', {
-                        rules: [
-                          {
-                            required: false,
-                            message: 'Please enter Item main category',
-                          },
-                        ],
-                      })(
-                        <Input
-                          id='mainCategory'
-                          {...getFieldProps}
-                          style={{ marginRight: '8px' }}
-                        />
-                      )}
+                  
+                  <Form.Item label="Item Main category">
+                        {getFieldDecorator("mainCategory", {
+                          rules: [
+                            {
+                              required: true,
+                              message: "Please select category!",
+                            },
+                          ],
+                        })(
+                          <Select
+                            id="mainCategory"
+                            showSearch
+                            mode="multiple"
+                            style={{ width: "100%" }}
+                            filterOption={(input, option) =>
+                              option.props.children
+                                  .toLowerCase()
+                                  .indexOf(input.toLowerCase()) >= 0
+                          }
+                          allowClear
+                          >
+                            {props.category?.mainCategoryList?.content?.map((mcategory) => (
+                              <Option key={mcategory.categoryId} value={mcategory.categoryId}>
+                                {mcategory.categoryName}
+                              </Option>
+                            ))}
+                          </Select>
+                        )}
+                      </Form.Item>
                       {/* <Button
                         type='primary'
                         htmlType='submit'
@@ -490,25 +581,37 @@ const MaterialDV = (props) => {
                           </Form>
                         </Card>
                       </Modal>*/}
-                    </Col> 
-                  </Form.Item>
+                    {/* </Col>  */}
 
-                  <Form.Item label='Item sub category'>
-                    <Col className='add-category-button'>
-                      {getFieldDecorator('subCategory', {
-                        rules: [
-                          {
-                            required: false,
-                            message: 'Please enter Item sub category',
-                          },
-                        ],
-                      })(
-                        <Input
-                          id='subCategory'
-                          {...getFieldProps}
-                          style={{ marginRight: '8px' }}
-                        />
-                      )}
+                    <Form.Item label="Item Sub category">
+                        {getFieldDecorator("subCategory", {
+                          rules: [
+                            {
+                              required: true,
+                              message: "Please select category!",
+                            },
+                          ],
+                        })(
+                          <Select
+                            id="subCategory"
+                            showSearch
+                            mode="multiple"
+                            style={{ width: "100%" }}
+                            filterOption={(input, option) =>
+                              option.props.children
+                                  .toLowerCase()
+                                  .indexOf(input.toLowerCase()) >= 0
+                          }
+                          allowClear
+                          >
+                            {props.category?.subCategoryList?.content?.map((mcategory) => (
+                              <Option key={mcategory.subcategoryId} value={mcategory.subcategoryId}>
+                                {mcategory.subcategoryName}
+                              </Option>
+                            ))}
+                          </Select>
+                        )}
+                      </Form.Item>
                       {/* <Button
                         type='primary'
                         onClick={() => {
@@ -604,8 +707,7 @@ const MaterialDV = (props) => {
                           </Form>
                         </Card>
                       </Modal> */}
-                    </Col>
-                  </Form.Item>
+                    {/* </Col> */}
 
                   <Form.Item label='Display Name'>
                     {getFieldDecorator('displayName', {
@@ -1105,7 +1207,8 @@ const MaterialDV = (props) => {
 };
 
 const mapStateToProps = (state) => ({
-  material: state.material,
+  materialDV: state.materialDV,
+  category: state.category
 });
 
 const addMaterialDVForm = Form.create({
@@ -1134,9 +1237,12 @@ const addMaterialDVForm = Form.create({
 })(MaterialDV);
 
 export default connect(mapStateToProps, {
-  fetchMaterialList,
-  addMaterial,
-  fetchMaterialListById,
-  updateMaterial,
+  fetchDVMaterialList,
+  addDVMaterial,
+  fetchDVMaterialListById,
+  updateDVMaterial,
   resetMaterial,
+  fetchMainCategoryList,
+  fetchSubCategoryList,
+  deleteDVMaterial
 })(addMaterialDVForm);
