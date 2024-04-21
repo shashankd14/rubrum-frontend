@@ -1444,11 +1444,23 @@ const CreateSlittingDetailsForm = (props) => {
     {value=0;}
     return packetClassification.filter((item)=>item.tagId==value)?.[0].tagName;
   }
+
+  const calculateAdjustedIndex = (tableIndex, index) => {
+    // Get the current page and records per page from the state
+    const currentPage = page; // Assuming 'page' is the current page state variable
+    const recordsPerPage = 10; 
+
+    // Calculate adjusted index based on current page and records per page
+    const adjustedIndex = (currentPage - 1) * recordsPerPage + index;
+    return adjustedIndex;
+};
+
   const handleClassificationChange = (value, index, record) => {
     // debugger
     const tableIndex = record.tableIndex;
-    panelList[tableIndex][index].packetClassificationId = value;
-    panelList[tableIndex][index].packetClassificationName = getPackatClassificationName(value);
+    const adjustedIndex = calculateAdjustedIndex(record.tableIndex, index);
+    panelList[tableIndex][adjustedIndex].packetClassificationId = value;
+    panelList[tableIndex][adjustedIndex].packetClassificationName = getPackatClassificationName(value);
     // Assuming packetClassification is an object within record to display option name in dropdown
     if (
       record?.packetClassificationId === null ||
