@@ -1342,7 +1342,6 @@ const columnYieldLoss = [
 ]
 
 useEffect(() => {
-  debugger
   if (props.yieldLossRatioParty === undefined) {
     props.fetchYLRList({
       pageNo: "1",
@@ -1360,6 +1359,7 @@ const [plannedCoilLevelYLR, setPlannedCoilLevelYLR] = useState(0);
 const [actualCoilLevelYLR, setActualCoilLevelYLR] = useState(0);
 useEffect(() => {
  let response = props.coilDetails.instruction;
+ if(response !== undefined){
  const filteredInstructions = response?.filter(instruction =>
    instruction.some(item =>      
      (item.packetClassification?.classificationName ==="WIP(EDGE TRIM)" || item.packetClassification?.classificationName ==="WIP(CUT ENDS)" || item.packetClassification?.classificationName ==="EDGE TRIM" || item.packetClassification?.classificationName ==="CUT ENDS") && (item.packetClassification?.classificationName !==null)
@@ -1393,7 +1393,7 @@ useEffect(() => {
  let coilActualYLR = 0;
  coilActualYLR = (sumOfScrapActualWeight / sumOfTotalActualWeight) *100;
  setActualCoilLevelYLR(coilActualYLR);
-
+}
 }, []);
 
 const [cuttingfilteredData, setCuttingFilteredData] = useState();
