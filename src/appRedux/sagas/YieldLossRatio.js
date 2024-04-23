@@ -112,7 +112,7 @@ function* addYLRsaga(action) {
         const reqBody = {
             partyIdList,
             ratioList:getratioList(comments,lossRatioPercentageFrom,lossRatioPercentageTo),
-            processIdList:tags,
+            processIdList:[tags],
             ipAddress: '1.1.1.1',
             requestId: "YLR_MASTER_ADD",
             userId: getUserId()
@@ -212,6 +212,7 @@ function* deleteYLRById(action) {
             headers: { "Content-Type": "application/json", ...getHeaders() },
             body:JSON.stringify(reqBody)
         });
+        window.location.reload();
         if(deletedYLR.status === 200) {
             yield put(deleteYLRSuccess(deletedYLR));
         } else if (deletedYLR.status === 401) {
