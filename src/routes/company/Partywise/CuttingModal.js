@@ -1561,7 +1561,8 @@ useEffect(() => {
             {
               processId: props.slitCut === true? 2 : 1,
             // processId: 2,
-              instructionDate: "2022-04-28 21:04:49",
+              // instructionDate: "2022-04-28 21:04:49",
+              instructionDate: record?.instructionDate,
               plannedLength: record?.plannedLength,
               actualLength: record?.actualLength,
               actualNoOfPieces: record?.actualNoOfPieces,
