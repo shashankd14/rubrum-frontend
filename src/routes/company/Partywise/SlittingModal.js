@@ -2167,7 +2167,7 @@ const columnYieldLoss = [
                     </p>
                     <p>Inward Weight(kg) : {props.coil.fQuantity}</p>
                     <p>Grade: {props.coil.materialGrade.gradeName}</p>
-                    <p>Coil level Planned YLR (%): {plannedCoilLevelYLR.toFixed(2)}</p>
+                    <p>Coil level Planned YLR (%): {isNaN(plannedCoilLevelYLR) ? 0 : plannedCoilLevelYLR.toFixed(2)}</p>
                   </Col>
 
                   <Col lg={8} md={12} sm={24} xs={24}>
@@ -2179,7 +2179,7 @@ const columnYieldLoss = [
                       Available Width(mm):{' '}
                       {props.childCoil ? insData.actualWidth : widthValue}
                     </p>
-                    <p>Coil level Actual YLR (%) : {actualCoilLevelYLR.toFixed(2)}</p>
+                    <p>Coil level Actual YLR (%) : {isNaN(actualCoilLevelYLR) ? 0 : actualCoilLevelYLR.toFixed(2)}</p>
                   </Col>
 
                   <Col lg={24} md={24} sm={24} xs={24}>
@@ -2412,6 +2412,38 @@ const columnYieldLoss = [
                           )}
                         </Form.Item>
                       </Col>
+                      {/* <Row style={{ paddingLeft: 16 }}> */}
+                      <Col lg={24} md={24} sm={24} xs={24}>
+                        <Form.Item label='Coil level planned yield loss (%)'>
+                          {getFieldDecorator('plannedCoilLevelYLR', {
+                            rules: [{ required: false }],
+                          })(
+                            <>
+                              <Input
+                                id='plannedCoilLevelYLR'
+                                disabled={true}
+                                value={isNaN(plannedCoilLevelYLR) ? 0 : plannedCoilLevelYLR.toFixed(2)}
+                                name='plannedCoilLevelYLR'
+                              />
+                            </>
+                          )}
+                        </Form.Item>
+                        <Form.Item label='Coil level actual yield loss (%)' style={{marginLeft: 1}}>
+                          {getFieldDecorator('actualCoilLevelYLR', {
+                            rules: [{ required: false }],
+                          })(
+                            <>
+                              <Input
+                                id='actualCoilLevelYLR'
+                                disabled={true}
+                                value={isNaN(actualCoilLevelYLR) ? 0 : actualCoilLevelYLR.toFixed(2)}
+                                name='actualCoilLevelYLR'
+                              />
+                            </>
+                          )}
+                        </Form.Item>
+                      </Col>
+                      {/* </Row> */}
                       {/* <Col lg={12} md={12} sm={24} xs={24}>
                         <Form.Item label='Total yield loss (%)'>
                           {getFieldDecorator('totalYieldLossRatio', {
