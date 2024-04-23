@@ -7,6 +7,9 @@ import { APPLICATION_DATE_FORMAT } from '../../../../constants';
 import moment from "moment";
 
 const Option = Select.Option;
+const widthStyle = {
+    width: '50%', // Adjust the width as needed
+  };
 
 const CreateInwardDocPage1 = (props) => {
     const {getFieldDecorator} = props.form;
@@ -128,25 +131,72 @@ const CreateInwardDocPage1 = (props) => {
                     </div>
                     {/* <Col span={16} className="gx-mt-4" style={{ border: '1px solid #ccc', padding: '10px' }}> */}
                     <hr className="gx-mt-4"/>
-                    <Col span={16} className="gx-mt-1">
+                    <Col span={20} className="gx-mt-1">
                         <h3>Add Extra Charges</h3>
-                        {/* <col span={16}> */}
-                        <Form.Item label="Purpose Type">
+                        <Form.Item label="Select an option">
                         {getFieldDecorator('purposeType', {
                             rules: [{ required: true, message: 'Please select a purpose type!' }],
                         })(
-                            <Select placeholder="Select an option">
+                            <Select placeholder="Select an option" style={widthStyle}>
                                 <Option value="TRADING">Trading (SELF)</Option>
                                 <Option value="STEEL SERVICE CENTRE">Steel Service Centre (SSC)</Option>
                                 <Option value="EXTERNAL PROCESS AGENT">External Process Agent (EPA)</Option>
                             </Select>
                         )}
                     </Form.Item>
-                        {/* </col> */}
-                    </Col>
+                    <Form.Item label="Add Frieght Charges">
+                    {getFieldDecorator('frieghtCharges', {
+                       
+                    })(
+                        <Input id="frieghtCharges" onChange= {props.params!=="" ?(e) =>handleChange(e,'frieghtCharges'):""} style={widthStyle}/>
+                    )}
+                </Form.Item>
+                <Form.Item label="Add Insurance">
+                    {getFieldDecorator('addInsurance', {
+                       
+                    })(
+                        <Input id="addInsurance" onChange= {props.params!=="" ?(e) =>handleChange(e,'addInsurance'):""} style={widthStyle}/>
+                    )}
+                </Form.Item>
+                <Form.Item label="Add Loading and Unloading Charges">
+                    {getFieldDecorator('loadingAndUnloading', {
+                       
+                    })(
+                        <Input id="loadingAndUnloading" onChange= {props.params!=="" ?(e) =>handleChange(e,'loadingAndUnloading'):""} style={widthStyle}/>
+                    )}
+                </Form.Item>
+                <Form.Item label="Add weightmen Charges">
+                    {getFieldDecorator('weightmenCharges', {
+                       
+                    })(
+                        <Input id="weightmenCharges" onChange= {props.params!=="" ?(e) =>handleChange(e,'weightmenCharges'):""} style={widthStyle}/>
+                    )}
+                </Form.Item>
+                <Form.Item label="Add SGST">
+                    {getFieldDecorator('addSGST', {
+                       
+                    })(
+                        <Input id="addSGST" onChange= {props.params!=="" ?(e) =>handleChange(e,'addSGST'):""} style={widthStyle}/>
+                    )}
+                </Form.Item>
+                <Form.Item label="Add CGST">
+                    {getFieldDecorator('addCGST', {
+                       
+                    })(
+                        <Input id="addCGST" onChange= {props.params!=="" ?(e) =>handleChange(e,'addCGST'):""} style={widthStyle}/>
+                    )}
+                </Form.Item>
+                <Form.Item label="Total Inward Value">
+                    {getFieldDecorator('totalInward', {
+                       
+                    })(
+                        <Input id="totalInward" disabled onChange= {props.params!=="" ?(e) =>handleChange(e,'totalInward'):""} style={widthStyle}/>
+                    )}
+                </Form.Item>
+                </Col>
                     <Row className="gx-mt-4">
                         <Col span={20} offset={4} style={{ textAlign: "center"}}>
-                            <Button style={{ marginLeft: 6 }} onClick={() => props.updateStep(3)}>
+                            <Button style={{ marginLeft: 4 }} onClick={() => props.updateStep(3)}>
                                 <Icon type="left"/>Back
                             </Button>
                             {/* <Button type="primary" htmlType="submit">

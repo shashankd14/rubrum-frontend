@@ -110,8 +110,8 @@ function* addWeighbridge(action) {
 function* updateWeighbridge(action) {
     let body = action.payload;
     const reqBody = {
-        locationId: body.weighbridgeId,
-        locationName: body.values.weighbridgeName,
+        weighbridgeId: body.weighbridgeId,
+        weighbridgeName: body.values.weighbridgeName,
         address1: body.values.weighbridgeAddress,
         address2: body.values.weighbridgeAddress2,
         city: body.values.city,

@@ -3,7 +3,7 @@ import {AutoComplete, Form, Input, Button, Icon, Row, Col, Card, Select} from "a
 import {connect} from "react-redux";
 
 import {formItemLayout} from '../Create';
-import {setInwardDetails, checkIfCoilExists, getGradeByMaterialId, fetchPartyList} from "../../../../appRedux/actions";
+import {fetchDVMaterialList, setInwardDetails, checkIfCoilExists, getGradeByMaterialId, fetchPartyList} from "../../../../appRedux/actions";
 
 const MaterialDetailsForm = (props) => {
     const Option = Select.Option;
@@ -93,6 +93,14 @@ const MaterialDetailsForm = (props) => {
     // }, [props.material]);
     useEffect(() => {
         props.fetchPartyList();
+        props.fetchDVMaterialList({
+            searchText:"",
+            pageNo: "1",
+            pageSize: "15",
+            ipAddress: "1.1.1.1",
+            requestId: "MATERIAL_LIST_GET",
+            userId: ""
+        });
     }, []);
     useEffect(() => {
         if(props.inward.width && props.inward.thickness && props.inward.netWeight) {
@@ -104,6 +112,7 @@ const MaterialDetailsForm = (props) => {
         partyList = partyList.find(item => item.nPartyId===Number(props.inward.partyName))
         return partyList?.partyName
     }
+    console.log("props.materialDV.DVMaterialList", props.materialDV.DVMaterialList.content)
     return (
         <>
             <Col span={14}>
@@ -118,21 +127,33 @@ const MaterialDetailsForm = (props) => {
                     )}
                 </Form.Item>
                 <Form.Item label="Item Name">
-                    {getFieldDecorator('description', {
-                        // rules: [{ required: true, message: 'Please input the material description!' }],
-                    })(
-                        <AutoComplete
-                            // style={{width: 200}}
-                            placeholder="Select item"
-                            dataSource={dataSource}
-                            onChange= {props.params!=="" ?(e) =>handleChange(e,'material.description'):""}
-                            filterOption={(inputValue, option) => {
-                                return option.props.children?.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1 || false
-                            }
-                            }
-                        />
-                    )}
-                </Form.Item>
+                                {getFieldDecorator("coilNumber", {
+                                    rules: [{
+                                        required: true,
+                                        message: "Please select item!",
+                                    }],
+                                })(
+                                    <Select
+                                    id="itemName"
+                                    showSearch
+                                    style={{ width: "100%" }}
+                                    placeholder="Select item"
+                                    filterOption={(input, option) => {
+                                        return option?.props?.children?.toLowerCase().includes(input.toLowerCase());
+                                    }}
+                                    filterSort={(optionA, optionB) =>
+                                        optionA?.props?.children.toLowerCase().localeCompare(optionB?.props?.children.toLowerCase())
+                                    }
+                                    >
+                                    {props.materialDV?.DVMaterialList?.content?.map((category) => (
+                                        <Option key={category.itemId} value={category.itemId}>
+                                        {`${category.itemName}: ${category.categoryEntity.categoryName} | ${category.subCategoryEntity.subcategoryName}`}
+                                        </Option>
+                                    ))}
+                                    </Select>
+                                )}
+                                </Form.Item>
+              
                 <Row className="gx-mt-4">
                     <Col span={24} style={{ textAlign: "center"}}>
                          <Button type="primary" >
@@ -216,6 +237,7 @@ const MaterialDetailsForm = (props) => {
 }
 
 const mapStateToProps = state => ({
+    materialDV: state.materialDV,
     inward: state.inward.inward,
     material: state.material,
     inwardStatus: state.inward,
@@ -267,5 +289,6 @@ export default connect(mapStateToProps, {
     setInwardDetails,
     checkIfCoilExists,
     fetchPartyList,
-    getGradeByMaterialId
+    getGradeByMaterialId,
+    fetchDVMaterialList
 })(MaterialDetails);
