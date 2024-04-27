@@ -5,7 +5,7 @@ import moment from 'moment';
 import SearchBox from "../../../components/SearchBox";
 
 import IntlMessages from "../../../util/IntlMessages";
-import { fetchCustomerList, deleteCustomer, fetchPartyList, addCustomer, fetchCustomerListId, updateParty, resetParty, fetchClassificationList,fetchEndUserTagsList, fetchTemplatesList } from "../../../appRedux/actions";
+import { fetchCustomerList, deleteCustomer, fetchPartyList, addCustomer, fetchStateList, fetchCustomerListId, updateCustomer, resetCustomer, fetchClassificationList,fetchEndUserTagsList, fetchTemplatesList } from "../../../appRedux/actions";
 import { onDeleteContact } from "../../../appRedux/actions";
 
 const FormItem = Form.Item;
@@ -35,11 +35,9 @@ const Customer = (props) => {
     const [viewCustomerData, setViewCustomerData] = useState({});
     const [editCustomer, setEditCustomer] = useState(false);
     const [searchValue, setSearchValue] = useState('');
-    const [filteredInwardList, setFilteredInwardList] = useState(props.party?.partyList || []);
     const [filteredCustomerList, setFilteredCustomerList] = useState(props.customer?.customerList || []);
     const [showAmtDcPdfFlg, setShowAmtDcPdfFlg] = useState(props.party?.showAmtDcPdfFlg==='Y'); // Default value
-    const [purchaseReportsList, setPurchaseReportsList] = useState([]);
-    const [monthlyReportsList, setMonthlyReportsList] = useState([]); 
+    const [purchaseReport, setPurchaseReport] = useState();
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(15);
     const [totalPageItems, setTotalPageItems] = useState(0);
@@ -147,15 +145,20 @@ const Customer = (props) => {
       }
 
       const onEdit = (record,e)=>{
-        e.preventDefault();
-        let classificationObj = record.packetClassificationTags.length===0? [{tagId:1}]: record.packetClassificationTags;
-        setTagsList(classificationObj?.map(item =>item.tagId) || null)
-        props.fetchCustomerListId(record.nPartyId);
+         e.preventDefault();
+        props.fetchCustomerListId({
+            id: record.customerId,
+            searchText: '',
+            pageNo: 1,
+            pageSize: pageSize,
+            ipAddress: "1.1.1.1",
+            requestId: "CUSTOMER_GET",
+            userId: ''
+        });
         setEditCustomer(true);
         setTimeout(() => {
             setShowAddCustomer(true);
         }, 1000);
-
     }
 
     useEffect(() => {
@@ -167,10 +170,12 @@ const Customer = (props) => {
                 requestId: "CUSTOMER_GET",
                 userId: ''
             });
-            props.fetchPartyList();
-            props.fetchClassificationList();
-            props.fetchEndUserTagsList();
-            props.fetchTemplatesList()
+            props.fetchStateList({
+                ipAddress: "1.1.1.1",
+                requestId: "STATE_LIST",
+                userId: ""
+            });
+            
         }, 1000);
     }, []);
 
@@ -262,14 +267,13 @@ const Customer = (props) => {
         }
       }, [searchValue]);
 
-
-    // useEffect(() => {
-    //     // to show checked in checkbox
-    //     const {customer} = props.customer
-    //     setDailyReportsList(customer.dailyReportsList || []);
-    //     setMonthlyReportsList(customer.monthlyReportsList || []);
-    //   }, [customer]);
-    //   const { dailyReportsList: initialDailyReportsList, monthlyReportsList: initialMonthlyReportsList, ...otherProps } = props.customer.customer;
+    useEffect(() => {
+        // to show checked in checkbox
+        const {customer} = props.customer
+        setPurchaseReport(customer.purchaseReport || "");
+      }, [customer]);
+     
+      const { purchaseReport: initialPurchaseReport, ...otherProps } = props.customer.customer;
 
    return (
         <div>
@@ -283,7 +287,7 @@ const Customer = (props) => {
                     <div className="gx-flex-row gx-w-50">
                         <Button type="primary" icon={() => <i className="icon icon-add"/>} size="default"
                                 onClick={() => {
-                                    props.resetParty();
+                                    props.resetCustomer();
                                     props.form.resetFields()
                                     setShowAddCustomer(true)
                                 }}
@@ -340,10 +344,15 @@ const Customer = (props) => {
                                         <p><strong>State :</strong> {viewCustomerData?.state}</p>
                                         <p><strong>Pincode :</strong> {viewCustomerData?.pincode}</p>
                                     </>}
+                                    {viewCustomerData?.alternateAddress1 && <>
+                                        <p><strong>Alternate Address :</strong> {viewCustomerData?.alternateAddress1}</p>
+                                        <p><strong>Alternate City :</strong> {viewCustomerData?.alternateCity}</p>
+                                        <p><strong>Alternate State :</strong> {viewCustomerData?.alternateState}</p>
+                                        <p><strong>Alternate Pincode :</strong> {viewCustomerData?.alternatePincode}</p>
+                                    </>}
                                     {/* {viewCustomerData?.processTags && <p><strong>Tags:</strong>{viewCustomerData?.processTags?.map(item=> item.tagName)}</p>} */}
                                     {viewCustomerData?.processTags && <p><strong>Tags:</strong>{viewCustomerData?.processTags}</p>}
-                                    {/* {props.customerId.dailyReportsList && <p><strong>Daily Reports List :</strong> {props.customerId?.dailyReportsList}</p>}
-                                    {props.customerId?.monthlyReportsList && <p><strong>Monthly Reports List :</strong> {props.customerId?.monthlyReportsList}</p>} */}
+                                    {viewCustomerData?.purchaseReport && <p><strong>Purchase Report:</strong>{viewCustomerData?.purchaseReport}</p>}
                                 </Card>
                             </Col>
                         </Row>
@@ -354,22 +363,22 @@ const Customer = (props) => {
                     visible={showAddCustomer}
                     onOk={(e) => {
                         if (editCustomer) {
-        
                             // Set the initial state with the values from the API
-                            // setDailyReportsList(initialDailyReportsList ? initialDailyReportsList.split(',') : []);
-                            // setMonthlyReportsList(initialMonthlyReportsList ? initialMonthlyReportsList.split(',') : []);
+                            setPurchaseReport(initialPurchaseReport ? initialPurchaseReport : "");
                             e.preventDefault();
                             props.form.validateFields((err, values) => {
                                 if (!err) {
                                  const data = {
                                     values: {
                                       ...values,
-                                    //   dailyReportsList: dailyReportsList.join(','),
-                                    //   monthlyReportsList: monthlyReportsList.join(','),
+                                      ipAddress: "1.1.1.1",
+                                      requestId:"CUSTOMER_EDIT",
+                                      userId: "",
+                                      purchaseReport: purchaseReport.join(','),
                                     },
-                                    id: props.customer?.party?.nPartyId
+                                    id: props.customer?.customer?.customerId
                                   }
-                                  props.updateParty(data);
+                                  props.updateCustomer(data);
                                   props.form.resetFields();
                                   setShowAddCustomer(false);
                                   setEditCustomer(false);
@@ -377,16 +386,14 @@ const Customer = (props) => {
                             });
                         } else {
                             props.form.validateFields((err, values) => {
-                              
                                 if (!err) {
                                  e.preventDefault();
-                                  // props.addCustomer(values);
                                  props.addCustomer({
                                     ...values,
                                     ipAddress: "1.1.1.1",
                                     requestId:"CUSTOMER_INSERT",
                                     userId: "",
-                                    purchaseReportsList: purchaseReportsList.join(','),
+                                    purchaseReport: purchaseReport.join(','),
                                   });
                                   props.form.resetFields();
                                   setShowAddCustomer(false);
@@ -406,20 +413,27 @@ const Customer = (props) => {
                             <Col lg={24} md={24} sm={24} xs={24} className="gx-align-self-center">
                                 <Form {...formItemLayout} className="gx-pt-4">
                                     <Form.Item label="Party/Customer Name">
-                                        {getFieldDecorator('partyName', {
-                                            rules: [{ required: true, message: 'Please input Party name!' }],
+                                        {getFieldDecorator('customerName', {
+                                            rules: [{ required: true, message: 'Please input customer name!' }],
                                         })(
-                                            <Input id="partyName" />
+                                            <Input id="customerName" />
                                         )}
                                     </Form.Item>
                                     <Form.Item label="Party/Customer Nick Name">
-                                        {getFieldDecorator('partyNickname', {
-                                            rules: [{ required: false, message: 'Please input Party name!' }],
+                                        {getFieldDecorator('customerNickName', {
+                                            rules: [{ required: false, message: 'Please input nick name!' }],
                                         })(
-                                            <Input id="partyNickname" />
+                                            <Input id="customerNickName" />
                                         )}
                                     </Form.Item>
-                                    {phoneKeys.map((k, index) => {
+                                    <Form.Item label="Phone Number">
+                                        {getFieldDecorator('phoneNo', {
+                                            rules: [{ required: false, message: 'Please input phone No!' }],
+                                        })(
+                                            <Input id="phoneNo" />
+                                        )}
+                                    </Form.Item>
+                                    {/* {phoneKeys.map((k, index) => {
                                     const req = index ? false : true;
                                     const phone = customer?.phone3 ? [customer?.phone1,customer?.phone2,customer?.phone3] : (customer?.phone2 ? [customer?.phone1,customer?.phone2] : [customer?.phone1]);
                                     return (
@@ -435,7 +449,7 @@ const Customer = (props) => {
                                             {phoneKeys.length-1 > 0 && <i className="icon icon-trash gx-margin" onClick={() => removeKey(index, 'phoneKeys', 'phone')}/> }
                                             {index == phoneKeys.length-1 && phoneKeys.length <=2 && <i className="icon icon-add-circle" onClick={() => addNewKey(index, 'phoneKeys')}/> }
                                         </Form.Item>
-                                    )})}
+                                    )})} */}
 
                                     <Form.Item label="Contact Name">
                                         {getFieldDecorator('contactName', {
@@ -445,22 +459,22 @@ const Customer = (props) => {
                                         )}
                                     </Form.Item>
                                     <Form.Item label="Contact Number">
-                                        {getFieldDecorator('contactNumber', {
+                                        {getFieldDecorator('contactNo', {
                                             // rules: [{ required: false, message: 'Please input Contact number!' }],
                                         })(
-                                            <Input id="contactNumber" />
+                                            <Input id="contactNo" />
                                         )}
                                     </Form.Item>
 
                                     {addressKeys.map((k, index) => {
                                     const req = index ? false : true;
-                                    const address = customer?.address2?.details ? [customer?.address1?.details, customer?.address2?.details] : [customer?.address1?.details];
-                                    const city = customer?.address2?.city ? [customer?.address1?.city, customer?.address2?.city] : [customer?.address1?.city];
-                                    const state = customer?.address2?.state ? [customer?.address1?.state, customer?.address2?.state] : [customer?.address1?.state];
-                                    const pincode = customer?.address2?.pincode ? [customer?.address1?.pincode, customer?.address2?.pincode] : [customer?.address1?.pincode];
+                                    const address = customer?.address1? [customer?.address1, customer?.alternateAddress1] : [customer?.address1];
+                                    const city = customer?.city ? [customer?.city, customer?.alternateCity] : [customer?.city];
+                                    const state = customer?.state ? [customer?.state, customer?.alternateState] : [customer?.state];
+                                    const pincode = customer?.pincode ? [customer?.pincode, customer?.alternatePincode] : [customer?.pincode];
                                     return (
                                         <div>
-                                        <Form.Item  {...formItemLayout} className='address'
+                                        <Form.Item  {...formItemLayout}
                                             label={index ? `Alternate address ${index}` : 'Address'}
                                         >
                                             {getFieldDecorator(`address[${index}]`, {
@@ -470,7 +484,7 @@ const Customer = (props) => {
                                                 <Input id="address" />
                                             )}
                                         </Form.Item>
-                                        <Form.Item {...formItemLayout} className='address'
+                                        <Form.Item {...formItemLayout} 
                                             label='City'
                                         >
                                         {getFieldDecorator(`city[${index}]`, {
@@ -482,17 +496,33 @@ const Customer = (props) => {
 
                                         </Form.Item>
 
-                                        <Form.Item {...formItemLayout} className='address'
+                                        <Form.Item {...formItemLayout}
                                             label='State'
                                         >
                                         {getFieldDecorator(`state[${index}]`, {
                                                 initialValue: state[index],
-                                                rules: [{ required: req, message: 'Please input the State!' }],
+                                                rules: [{ required: req, message: 'Please select the State!' }],
                                             })(
-                                                <Input id="state" />
+                                                // <Input id="state" />
+                                                <Select
+                                            showSearch
+                                            // placeholder="Select a state"
+                                            filterOption={(input, option) => {
+                                                return option?.props?.children?.toLowerCase().includes(input.toLowerCase());
+                                            }}
+                                            filterSort={(optionA, optionB) =>
+                                                optionA?.props?.children.toLowerCase().localeCompare(optionB?.props?.children.toLowerCase())
+                                            }
+                                        >
+                                             {props.location?.stateList?.map((state) => (
+                                            <Option key={state.stateName} value={state.stateName}>
+                                                {state.stateName}
+                                            </Option>
+                                            ))} 
+                                        </Select>
                                             )}
                                         </Form.Item>
-                                        <Form.Item {...formItemLayout} className='address'
+                                        <Form.Item {...formItemLayout}
                                             label='Pincode'
                                         >
                                         {getFieldDecorator(`pincode[${index}]`, {
@@ -509,7 +539,7 @@ const Customer = (props) => {
                                         </div>
                                     )})}
 
-                                    {emailKeys.map((k, index) => {
+                                    {/* {emailKeys.map((k, index) => {
                                     const req = index ? false : true;
                                     const email = customer?.email3 ? [customer?.email1,customer?.email2,customer?.email3] : (customer?.email2 ? [customer?.email1,customer?.email2] : [customer?.email1]);
                                     return (
@@ -525,7 +555,14 @@ const Customer = (props) => {
                                             {emailKeys.length-1 > 0 && <i className="icon icon-trash gx-margin" onClick={() => removeKey(index, 'emailKeys', 'email')}/> }
                                             {index == emailKeys.length-1 && emailKeys.length <=2 && <i className="icon icon-add-circle" onClick={() => addNewKey(index, 'emailKeys')}/> }
                                         </Form.Item>
-                                    )})}
+                                    )})} */}
+                                    <Form.Item label="Email Id">
+                                        {getFieldDecorator('emailId', {
+                                            rules: [{ required: false, message: 'Please input emailId!' }],
+                                        })(
+                                            <Input id="emailId" />
+                                        )}
+                                    </Form.Item>
 
                                     <Form.Item label="PAN Number">
                                         {getFieldDecorator('panNumber', {
@@ -571,12 +608,12 @@ const Customer = (props) => {
                                     </Form.Item> */}
                                      <Form.Item label = "Purchase Reports">
                                         <Checkbox.Group
-                                            id="purchaseReports"
-                                            value={purchaseReportsList}
-                                            onChange={(checkedValues) => {setPurchaseReportsList(checkedValues)}}
+                                            id="purchaseReport"
+                                            value={purchaseReport} 
+                                            onChange={(checkedValues) => {setPurchaseReport(checkedValues)}} 
                                         >
-                                            <Checkbox value="Daily">Daily</Checkbox>
-                                            <Checkbox value="Monthly">Monthly</Checkbox>
+                                            <Checkbox value="DAILY">Daily</Checkbox>
+                                            <Checkbox value="MONTHLY">Monthly</Checkbox>
                                         </Checkbox.Group>
                                     </Form.Item> 
                                 </Form>
@@ -591,6 +628,7 @@ const Customer = (props) => {
 
 const mapStateToProps = state => ({
     customer: state.customer,
+    location: state.location,
     party: state.party,
     packetClassification: state.packetClassification,
     quality: state.quality,
@@ -602,33 +640,35 @@ const addCustomerForm = Form.create({
         const { customer } = props.customer;
         const phone = customer?.phone3 ? [customer?.phone1,customer?.phone2,customer?.phone3] : (customer?.phone2 ? [customer?.phone1,customer?.phone2] : [customer?.phone1]);
         const email = customer?.email3 ? [customer?.email1,customer?.email2,customer?.email3] : (customer?.email2 ? [customer?.email1,customer?.email2] : [customer?.email1]);
-        const address = customer?.address2?.details ? [customer?.address1?.details, customer?.address2?.details] : [customer?.address1?.details];
-        const city = customer?.address2?.city ? [customer?.address1?.city, customer?.address2?.city] : [customer?.address1?.city];
-        const state = customer?.address2?.state ? [customer?.address1?.state, customer?.address2?.state] : [customer?.address1?.state];
-        const pincode = customer?.address2?.pincode ? [customer?.address1?.pincode, customer?.address2?.pincode] : [customer?.address1?.pincode];
-        const checkboxValues = (customer?.dailyReportsList || '').split(',').map(value => value.trim());
+        const address = customer?.address1? [customer?.address1, customer?.alternateAddress1] : [customer?.address1];
+        const city = customer?.city ? [customer?.city, customer?.alternateCity] : [customer?.city];
+        const state = customer?.state ? [customer?.state, customer?.alternateState] : [customer?.state];
+        const pincode = customer?.pincode ? [customer?.pincode, customer?.alternatePincode] : [customer?.pincode];
+        // const checkboxValues = (customer?.purchaseReport || '').split(',').map(value => value.trim());
+        const checkboxValues = (customer?.purchaseReport || '');
         return {
             customerName:Form.createFormField ({
                 ...props.customer?.customer?.customerName,
                 value: props.customer?.customer?.customerName|| '',
             }),
-            customerNickname: Form.createFormField({
-                ...props.customer?.customer?.customerNickname,
-                value: props.customer?.customer?.customerNickname || '',
+            customerNickName: Form.createFormField({
+                ...props.customer?.customer?.customerNickName,
+                value: props.customer?.customer?.customerNickName || '',
             }),
-            phone: Form.createFormField({
-                value: phone
+            phoneNo: Form.createFormField({
+                ...props.customer?.customer?.phoneNo,
+                value: props.customer?.customer?.phoneNo || '',
             }),
-            phoneKeys: Form.createFormField({
-                value: phone,
-            }),
+            // phoneKeys: Form.createFormField({
+            //     value: phone,
+            // }),
             contactName: Form.createFormField({
                 ...props.customer?.customer?.contactName,
                 value: props.customer?.customer?.contactName || '',
             }),
-            contactNumber: Form.createFormField({
-                ...props.party?.customer?.contactNumber,
-                value: props.party?.customer?.contactNumber || '',
+            contactNo: Form.createFormField({
+                ...props.customer?.customer?.contactNo,
+                value: props.customer?.customer?.contactNo || '',
             }),
             address: Form.createFormField({
                 value: address
@@ -645,12 +685,13 @@ const addCustomerForm = Form.create({
             pincode: Form.createFormField({
                 value: pincode
             }),
-            email: Form.createFormField({
-                value: email
+            emailId: Form.createFormField({
+                ...props.customer?.customer?.emailId,
+                value: props.customer?.customer?.emailId|| '',
             }),
-            emailKeys: Form.createFormField({
-                value: email
-            }),
+            // emailKeys: Form.createFormField({
+            //     value: email
+            // }),
             panNumber: Form.createFormField({
                 ...customer?.panNumber,
                 value: customer?.panNumber || '',
@@ -667,8 +708,8 @@ const addCustomerForm = Form.create({
                 ...props.customer?.customer?.tags,
                 value: customer?.tags?.map(item=> item.tagId) || [],
             }),
-            purchaseReportsList: Form.createFormField({
-                ...customer?.purchaseReportsList,
+            purchaseReport: Form.createFormField({
+                ...customer?.purchaseReport,
                //value: Array.isArray(checkboxValuesDR) ? checkboxValuesDR : [],
                value:checkboxValues
             }),
@@ -685,8 +726,9 @@ export default connect(mapStateToProps, {
     addCustomer,
     deleteCustomer,
     fetchCustomerListId,
-    updateParty,
-    resetParty,
+    fetchStateList,
+    updateCustomer,
+    resetCustomer,
     fetchClassificationList,
     fetchEndUserTagsList,
     fetchTemplatesList,

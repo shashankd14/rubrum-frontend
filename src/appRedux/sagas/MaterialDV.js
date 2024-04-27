@@ -106,10 +106,11 @@ function* updateDVMaterial(action) {
 
 function* fetchDVMaterialListById(action) {
     const reqBody = {
-        pageNo: action.pageNo,
-        pageSize: action.pageSize,
-        ipAddress: action.ipAddress,
-        requestId: action.requestId,
+        id: action.action.id,
+        pageNo: action.action.pageNo,
+        pageSize: action.action.pageSize,
+        ipAddress: action.action.ipAddress,
+        requestId: action.action.requestId,
         userId: getUserId()
     }
     try {

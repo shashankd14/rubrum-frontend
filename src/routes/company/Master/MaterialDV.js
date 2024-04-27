@@ -186,14 +186,13 @@ const MaterialDV = (props) => {
       pageNo: 1,
       pageSize: pageSize,
       ipAddress: "1.1.1.1",
-      requestId: "MATERIAL_ID_DELETE",
+      requestId: "MATERIAL_ID_GET",
       userId: ''
   });
     setViewMaterial(true);
   };
 
   const onDelete = (record, key, e) => {
-    debugger
     props.deleteDVMaterial({
       id: record.itemId,
       ipAddress: "1.1.1.1",
@@ -401,7 +400,15 @@ const MaterialDV = (props) => {
             <Row>
               <Col span={24}>
                 <Card>
-                  {viewMaterialData?.description && (
+                  <p>Material Name: {viewMaterialData?.itemName}</p>
+                  <p>Material Code: {viewMaterialData?.itemCode}</p>
+                  <p>HSN Code: {viewMaterialData?.itemHsnCode}</p>
+                  {viewMaterialData?.categoryName && <p>Main Category Name: {viewMaterialData?.categoryName}</p> }
+                  {viewMaterialData?.categoryName &&<p>Sub Category Name: {viewMaterialData?.subcategoryName}</p>}
+                  <p>Display Name: {viewMaterialData?.displayName}</p>
+                  <p>Brand Name : {viewMaterialData?.brandName}</p>
+                  <p>Manufacturer Name: {viewMaterialData?.manufacturerName}</p>
+                 {/* {viewMaterialData?.description && (
                     <p>
                       <strong>Material Type :</strong>{' '}
                       {viewMaterialData.description}
@@ -420,7 +427,7 @@ const MaterialDV = (props) => {
                         ''
                       )}
                     </p>
-                  )}
+                  )}*/}
                 </Card>
               </Col>
             </Row>

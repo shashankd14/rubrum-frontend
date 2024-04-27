@@ -30,7 +30,6 @@ export default (state = INIT_STATE, action) => {
             }
         }
         case FETCH_CUSTOMER_LIST_SUCCESS: {
-            debugger
             return {
                 ...state,
                 loading: false,
@@ -76,7 +75,7 @@ export default (state = INIT_STATE, action) => {
             return {
                 ...state,
                 loading: false,
-                customer: action.customer
+                customer: action.Customer
             }
         }
         case FETCH_CUSTOMER_LIST_ID_ERROR: {

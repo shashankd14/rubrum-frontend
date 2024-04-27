@@ -48,12 +48,12 @@ function* fetchVendorList({action}) {
 
 function* fetchVendorListById(action) {
     const reqBody = {
-        id: action.id,
-        pageNo: action.pageNo,
-        pageSize: action.pageSize,
-        ipAddress: action.ipAddress,
-        requestId: action.requestId,
-        userId: getUserId
+        id: action.action?.id,
+        pageNo: action.action?.pageNo,
+        pageSize: action.action?.pageSize,
+        ipAddress: action.action?.ipAddress,
+        requestId: action.action?.requestId,
+        userId: getUserId()
     }
     try {
         const fetchVendorListId =  yield fetch(`${baseUrl}api/trading/vendor/list`, {
@@ -75,91 +75,57 @@ function* fetchVendorListById(action) {
 
 function* addVendor(action) {
     try {
-        const { partyName,
-            partyNickname,
+        const { vendorName,
+            vendorNickName,
             contactName,
-            contactNumber,
+            contactNo,
             gstNumber,
             panNumber,
             tanNumber,
-            email,
+            emailId,
             addressKeys,
             address,
             city,
             state,
             pincode,
-            phone,tags,endUsertags,
-            qualityTemplates,
-            showAmtDcPdfFlg,
-            dailyReportsList,
-            monthlyReportsList
-        } = action.party;
+            phoneNo,
+            includeRatesinDc,
+            purchaseReportsList
+        } = action.Vendor;
 
-        const getEmail = (mail) => {
-            const mailObj = {};
-            mail.forEach((key, idx) => {
-                mailObj[`email${idx+1}`] = key
-            });
-            return mailObj;
-        }
-
-        const getPhone = (phone) => {
-            const phoneObj = {};
-            phone.forEach((key, idx) => {
-                phoneObj[`phone${idx+1}`] = key
-            });
-            return phoneObj;
-        }
-
-        const getAddress = (addressKeys) => {
-            const addressObj = {};
-            addressKeys.forEach((key, idx) => {
-                addressObj[`address${idx+1}`] = {
-                    details: address[idx],
-                    city: city[idx],
-                    state: state[idx],
-                    pincode: pincode[idx]
-                }
-            });
-            return addressObj;
-        }
-        const getTags=()=>{
-            return tags.map(tagId => ({tagId}))
-        }
-        const getEndUserTags=()=>{
-            return endUsertags.map(tagId => ({tagId}))
-        }
-        const qualityTemplateIds =()=>{
-            return qualityTemplates.map(templateId => ({templateId
-            }))
-        }
         const reqBody = {
-            partyName,
-            partyNickname,
+            vendorName,
+            vendorNickName,
             contactName,
-            contactNumber,
+            contactNo,
             gstNumber,
             panNumber,
             tanNumber,
-            tags:getTags(),
-            ...getEmail(email),
-            ...getAddress(addressKeys),
-            ...getPhone(phone),
-            endUserTags: getEndUserTags(),
-            templateIdList: qualityTemplateIds(),
-            showAmtDcPdfFlg,
-            dailyReportsList,
-            monthlyReportsList
+            phoneNo,
+            emailId,
+            address1:address[0],
+            city: city[0],
+            state: state[0],
+            pincode: pincode[0],
+            alternateAddress1:address[1],
+            alternateCity: city[1],
+            alternateState: state[1],
+            alternatePincode: pincode[1],
+            includeRatesinDc: '',
+            purchaseReportsList,
+            ipAddress: "1.1.1.1",
+            requestId: "VENDOR_INSERT",
+            userId: getUserId()
         }
-        const addParty = yield fetch(`${baseUrl}api/party/save`, {
+        const addVendor = yield fetch(`${baseUrl}api/trading/vendor/save`, {
             method: 'POST',
             headers: { "Content-Type": "application/json", ...getHeaders() },
             body:JSON.stringify(reqBody)
 
         });
-        if (addParty.status == 200) {
+        if (addVendor.status == 200) {
             yield put(addVendorSuccess());
-        } else if (addParty.status === 401) {
+        } else if (addVendor.status === 401) {
             yield put(userSignOutSuccess());
         } else
             yield put(addVendorError('error'));
@@ -172,89 +138,52 @@ function* updateVendor(action) {
     try {
         const {
             values: {
-                partyName,
-                partyNickname,
+                vendorName,
+                vendorNickName,
                 contactName,
-                contactNumber,
+                contactNo,
                 gstNumber,
                 panNumber,
                 tanNumber,
-                email,
+                emailId,
                 addressKeys,
                 address,
                 city,
                 state,
                 pincode,
-                phone,
-                tags,
-                endUsertags,
-                qualityTemplates,
-                showAmtDcPdfFlg,
-                dailyReportsList,
-                monthlyReportsList
+                phoneNo,
+                includeRatesinDc,
+                purchaseReportsList
             },
             id
-        } = action.party;
-
-        const getEmail = (mail) => {
-            const mailObj = {};
-            mail.forEach((key, idx) => {
-                mailObj[`email${idx+1}`] = key
-            });
-            return mailObj;
-        }
-
-        const getPhone = (phone) => {
-            const phoneObj = {};
-            phone.forEach((key, idx) => {
-                phoneObj[`phone${idx+1}`] = key
-            });
-            return phoneObj;
-        }
-
-        const getAddress = (addressKeys) => {
-            const addressObj = {};
-            addressKeys.forEach((key, idx) => {
-                addressObj[`address${idx+1}`] = {
-                    details: address[idx],
-                    city: city[idx],
-                    state: state[idx],
-                    pincode: pincode[idx]
-                }
-            });
-            return addressObj;
-        }
-        const getTags=()=>{
-            return tags.map(tagId => ({tagId}))
-        }
-        const getEndUserTags=()=>{
-            return endUsertags.map(tagId => ({tagId}))
-        }
-        const qualityTemplateIds =()=>{
-            return qualityTemplates.map(templateId => ({templateId
-            }))
-        }
+        } = action.Vendor;
 
         const reqBody = {
-            nPartyId: id,
-            partyName,
-            partyNickname,
+            vendorId: id,
+            vendorName,
+            vendorNickName,
             contactName,
-            contactNumber,
+            contactNo,
             gstNumber,
             panNumber,
             tanNumber,
-            tags:getTags(),
-            endUserTags:getEndUserTags(),
-            ...getEmail(email),
-            ...getAddress(addressKeys),
-            ...getPhone(phone),
-            templateIdList: qualityTemplateIds(),
-            showAmtDcPdfFlg,
-            dailyReportsList,
-            monthlyReportsList
+            phoneNo,
+            emailId,
+            address1:address[0],
+            city: city[0],
+            state: state[0],
+            pincode: pincode[0],
+            alternateAddress1:address[1],
+            alternateCity: city[1],
+            alternateState: state[1],
+            alternatePincode: pincode[1],
+            includeRatesinDc: '',
+            purchaseReportsList,
+            ipAddress: "1.1.1.1",
+            requestId: "VENDOR_UPDATE",
+            userId: getUserId()
         }
-        const updateParty = yield fetch(`${baseUrl}api/party/update`, {
+        const updateParty = yield fetch(`${baseUrl}api/trading/vendor/update`, {
             method: 'PUT',
             headers: { "Content-Type": "application/json", ...getHeaders() },
             body:JSON.stringify(reqBody)

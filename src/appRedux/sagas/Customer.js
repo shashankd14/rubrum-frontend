@@ -47,15 +47,24 @@ function* fetchCustomerList({action}) {
 }
 
 function* fetchCustomerListById(action) {
+    const reqBody = {
+        id: action.CustomerId?.id,
+        pageNo: action.CustomerId?.pageNo,
+        pageSize: action.CustomerId?.pageSize,
+        ipAddress: action.CustomerId?.ipAddress,
+        requestId: action.CustomerId?.requestId,
+        userId: localStorage.getItem('userId')
+    }
     try {
-        const fetchPartyListId =  yield fetch(`${baseUrl}api/party/getById/${action.partyId}`, {
-            method: 'GET',
-            headers: getHeaders()
+        const fetchCustomerListId =  yield fetch(`${baseUrl}api/trading/customer/list`, {
+            method: 'POST',
+            headers: { "Content-Type": "application/json", ...getHeaders() },
+            body: JSON.stringify(reqBody)
         });
-        if(fetchPartyListId.status === 200) {
-            const fetchPartyListResponse = yield fetchPartyListId.json();
+        if(fetchCustomerListId.status === 200) {
+            const fetchPartyListResponse = yield fetchCustomerListId.json();
             yield put(fetchCustomerListIdSuccess(fetchPartyListResponse));
-        } else if (fetchPartyListId.status === 401) {
+        } else if (fetchCustomerListId.status === 401) {
             yield put(userSignOutSuccess());
         } else
             yield put(fetchCustomerListIdError('error'));
@@ -65,90 +74,56 @@ function* fetchCustomerListById(action) {
 }
 
 function* addCustomer(action) {
-    debugger
     try {
         const { customerName,
-            customerNickname,
+            customerNickName,
             contactName,
             contactNo,
             gstNumber,
             panNumber,
             tanNumber,
-            email,
-            addressKeys,
+            emailId,
             address,
             city,
             state,
             pincode,
             phoneNo,
-            showAmtDcPdfFlg,
-            purchaseReportsList
+            purchaseReport
         } = action.Customer;
 
-        const getEmail = (mail) => {
-            const mailObj = {};
-            mail.forEach((key, idx) => {
-                mailObj[`email${idx+1}`] = key
-            });
-            return mailObj;
-        }
-
-        const getPhone = (phone) => {
-            const phoneObj = {};
-            phone.forEach((key, idx) => {
-                phoneObj[`phone${idx+1}`] = key
-            });
-            return phoneObj;
-        }
-
-        const getAddress = (addressKeys) => {
-            const addressObj = {};
-            addressKeys.forEach((key, idx) => {
-                addressObj[`address${idx+1}`] = {
-                    details: address[idx],
-                    city: city[idx],
-                    state: state[idx],
-                    pincode: pincode[idx]
-                }
-            });
-            return addressObj;
-        }
-        // const getTags=()=>{
-        //     return tags.map(tagId => ({tagId}))
-        // }
-        // const getEndUserTags=()=>{
-        //     return endUsertags.map(tagId => ({tagId}))
-        // }
-        // const qualityTemplateIds =()=>{
-        //     return qualityTemplates.map(templateId => ({templateId
-        //     }))
-        // }
         const reqBody = {
             customerName,
-            customerNickname,
+            customerNickName,
             contactName,
             contactNo,
             gstNumber,
             panNumber,
             tanNumber,
-            ...getEmail(email),
-            ...getAddress(addressKeys),
-            ...getPhone(phoneNo),
-            showAmtDcPdfFlg,
-            purchaseReportsList,
+            phoneNo,
+            emailId,
+            address1:address[0],
+            city: city[0],
+            state: state[0],
+            pincode: pincode[0],
+            alternateAddress1:address[1],
+            alternateCity: city[1],
+            alternateState: state[1],
+            alternatePincode: pincode[1],
+            includeRatesinDc: '',
+            purchaseReport,
             ipAddress: "1.1.1.1",
             requestId: "CUSTOMER_INSERT",
             userId: getUserId()
         }
-        const addParty = yield fetch(`${baseUrl}api/trading/customer/save`, {
+        const addCustomer = yield fetch(`${baseUrl}api/trading/customer/save`, {
             method: 'POST',
             headers: { "Content-Type": "application/json", ...getHeaders() },
             body:JSON.stringify(reqBody)
 
         });
-        if (addParty.status == 200) {
+        if (addCustomer.status == 200) {
             yield put(addCustomerSuccess());
-        } else if (addParty.status === 401) {
+        } else if (addCustomer.status === 401) {
             yield put(userSignOutSuccess());
         } else
             yield put(addCustomerError('error'));
@@ -161,97 +136,58 @@ function* updateCustomer(action) {
     try {
         const {
             values: {
-                partyName,
-                partyNickname,
-                contactName,
-                contactNumber,
-                gstNumber,
-                panNumber,
-                tanNumber,
-                email,
-                addressKeys,
-                address,
-                city,
-                state,
-                pincode,
-                phone,
-                tags,
-                endUsertags,
-                qualityTemplates,
-                showAmtDcPdfFlg,
-                dailyReportsList,
-                monthlyReportsList
-            },
-            id
-        } = action.party;
-
-        const getEmail = (mail) => {
-            const mailObj = {};
-            mail.forEach((key, idx) => {
-                mailObj[`email${idx+1}`] = key
-            });
-            return mailObj;
-        }
-
-        const getPhone = (phone) => {
-            const phoneObj = {};
-            phone.forEach((key, idx) => {
-                phoneObj[`phone${idx+1}`] = key
-            });
-            return phoneObj;
-        }
-
-        const getAddress = (addressKeys) => {
-            const addressObj = {};
-            addressKeys.forEach((key, idx) => {
-                addressObj[`address${idx+1}`] = {
-                    details: address[idx],
-                    city: city[idx],
-                    state: state[idx],
-                    pincode: pincode[idx]
-                }
-            });
-            return addressObj;
-        }
-        const getTags=()=>{
-            return tags.map(tagId => ({tagId}))
-        }
-        const getEndUserTags=()=>{
-            return endUsertags.map(tagId => ({tagId}))
-        }
-        const qualityTemplateIds =()=>{
-            return qualityTemplates.map(templateId => ({templateId
-            }))
-        }
-
-        const reqBody = {
-            nPartyId: id,
-            partyName,
-            partyNickname,
+                customerName,
+            customerNickName,
             contactName,
-            contactNumber,
+            contactNo,
             gstNumber,
             panNumber,
             tanNumber,
-            tags:getTags(),
-            endUserTags:getEndUserTags(),
-            ...getEmail(email),
-            ...getAddress(addressKeys),
-            ...getPhone(phone),
-            templateIdList: qualityTemplateIds(),
-            showAmtDcPdfFlg,
-            dailyReportsList,
-            monthlyReportsList
+            emailId,
+            address,
+            city,
+            state,
+            pincode,
+            phoneNo,
+            purchaseReport
+            },
+            id
+        } = action.Customer;
+
+        const reqBody = {
+            customerId: id,
+            customerName,
+            customerNickName,
+            contactName,
+            contactNo,
+            gstNumber,
+            panNumber,
+            tanNumber,
+            phoneNo,
+            emailId,
+            address1:address[0],
+            city: city[0],
+            state: state[0],
+            pincode: pincode[0],
+            alternateAddress1:address[1],
+            alternateCity: city[1],
+            alternateState: state[1],
+            alternatePincode: pincode[1],
+            includeRatesinDc: '',
+            purchaseReport,
+            ipAddress: "1.1.1.1",
+            requestId: "CUSTOMER_INSERT",
+            userId: getUserId()
         }
-        const updateParty = yield fetch(`${baseUrl}api/trading/customer/update`, {
+        const updateCustomer = yield fetch(`${baseUrl}api/trading/customer/update`, {
             method: 'PUT',
             headers: { "Content-Type": "application/json", ...getHeaders() },
             body:JSON.stringify(reqBody)
 
         });
-        if (updateParty.status == 200) {
+        if (updateCustomer.status == 200) {
             yield put(updateCustomerSuccess());
-        } else if (updateParty.status === 401) {
+        } else if (updateCustomer.status === 401) {
             yield put(userSignOutSuccess());
         } else
             yield put(updateCustomerError('error'));

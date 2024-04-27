@@ -5,7 +5,7 @@ import moment from 'moment';
 import SearchBox from "../../../components/SearchBox";
 
 import IntlMessages from "../../../util/IntlMessages";
-import { fetchVendorList, fetchVendorListId, fetchPartyList, addParty, fetchPartyListId, updateParty, resetParty, fetchClassificationList,fetchEndUserTagsList, fetchTemplatesList } from "../../../appRedux/actions";
+import { fetchVendorList, fetchVendorListId, addVendor, updateVendor, fetchStateList, fetchPartyList, addParty, fetchPartyListId, updateParty, resetParty, fetchClassificationList,fetchEndUserTagsList, fetchTemplatesList } from "../../../appRedux/actions";
 import { onDeleteContact } from "../../../appRedux/actions";
 
 const FormItem = Form.Item;
@@ -37,8 +37,7 @@ const Vendor = (props) => {
     const [searchValue, setSearchValue] = useState('');
     const [filteredVendorList, setFilteredVendorList] = useState(props.vendor?.vendorList || []);
     const [showAmtDcPdfFlg, setShowAmtDcPdfFlg] = useState(props.party?.showAmtDcPdfFlg==='Y'); // Default value
-    const [dailyReportsList, setDailyReportsList] = useState([]);
-    const [monthlyReportsList, setMonthlyReportsList] = useState([]); 
+    const [purchaseReport, setPurchaseReport] = useState([]);
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(15);
     const [totalPageItems, setTotalPageItems] = useState(0);
@@ -46,7 +45,7 @@ const Vendor = (props) => {
     const { totalItems } = props.vendor.vendorList;
     const {getFieldDecorator, getFieldValue} = props.form;
 
-    const { party } = props.party;
+    const { vendor } = props.vendor;
     const [tagsList, setTagsList] =useState([{tagId: 1}]);
 
     getFieldDecorator('phoneKeys', {initialValue: [0]});
@@ -160,9 +159,14 @@ const Vendor = (props) => {
 
       const onEdit = (record,e)=>{
         e.preventDefault();
-        let classificationObj = record.packetClassificationTags.length===0? [{tagId:1}]: record.packetClassificationTags;
-        setTagsList(classificationObj?.map(item =>item.tagId) || null)
-        props.fetchPartyListId(record.nPartyId);
+        props.fetchVendorListId({
+            id: record.vendorId,
+            pageNo: 1,
+            pageSize: pageSize,
+            ipAddress: "1.1.1.1",
+            requestId: "VENDOR_GET",
+            userId: ''
+        });
         setEditVendor(true);
         setTimeout(() => {
             setShowAddVendor(true);
@@ -180,10 +184,12 @@ const Vendor = (props) => {
                 searchText: "",
                 userId: ''
             });
-            props.fetchPartyList();
-            props.fetchClassificationList();
-            props.fetchEndUserTagsList();
-            props.fetchTemplatesList()
+            props.fetchStateList({
+                ipAddress: "1.1.1.1",
+                requestId: "STATE_LIST",
+                userId: ""
+            });
+            
         }, 1000);
     }, [showAddVendor]);
 
@@ -195,22 +201,6 @@ const Vendor = (props) => {
         }
     }, [props.vendor]);
 
-    useEffect(() => {
-
-        const { party } = props;
-        if(searchValue) {
-            const filteredData = party?.partyList?.filter(party => {
-                if(party.nPartyId?.toString() === searchValue ||
-                    party.partyName?.toLowerCase().includes(searchValue.toLowerCase()) ||
-                    party.gstNumber?.includes(searchValue)) {
-                    return party;
-                }
-            });
-            setFilteredVendorList(filteredData);
-        } else {
-            setFilteredVendorList(party.partyList);
-        }
-    }, [searchValue])
     const handleChange = (pagination, filters, sorter) => {
         setSortedInfo(sorter);
         setFilteredInfo(filters)
@@ -272,7 +262,7 @@ const Vendor = (props) => {
                 pageNo:"1",
                 pageSize: pageSize,
                 ipAddress: "1.1.1.1",
-                requestId: "CUSTOMER_LIST_GET",
+                requestId: "VENDOR_LIST_GET",
                 userId: ""
             });
           }
@@ -283,19 +273,18 @@ const Vendor = (props) => {
             pageNo:"1",
             pageSize: pageSize,
             ipAddress: "1.1.1.1",
-            requestId: "CUSTOMER_LIST_GET",
+            requestId: "VENDOR_LIST_GET",
             userId: ""
         });
         }
       }, [searchValue]);
-
-    useEffect(() => {
+      useEffect(() => {
         // to show checked in checkbox
-        const {party} = props.party
-        setDailyReportsList(party.dailyReportsList || []);
-        setMonthlyReportsList(party.monthlyReportsList || []);
-      }, [party]);
-      const { dailyReportsList: initialDailyReportsList, monthlyReportsList: initialMonthlyReportsList, ...otherProps } = props.party.party;
+        const {vendor} = props.vendor
+        setPurchaseReport(vendor.purchaseReport || "");
+      }, [vendor]);
+     
+      const { purchaseReport: initialPurchaseReport, ...otherProps } = props.vendor.vendor;
 
     return (
         <div>
@@ -331,7 +320,7 @@ const Vendor = (props) => {
                             pageNo: page,
                             pageSize: pageSize,
                             ipAddress: "1.1.1.1",
-                            requestId: "CUSTOMER_LIST_GET",
+                            requestId: "VENDOR_LIST_GET",
                             userId: ""
                         });
                         },
@@ -372,6 +361,7 @@ const Vendor = (props) => {
                                     {viewVendorDate?.alternateCity && <p><strong>Alternate City :</strong> {viewVendorDate?.alternateCity}</p>}
                                     {viewVendorDate?.alternateState && <p><strong>Alternate State :</strong> {viewVendorDate?.alternateState}</p>}
                                     {viewVendorDate?.alternatePincode && <p><strong>Alternate Pincode :</strong> {viewVendorDate?.alternatePincode}</p>}
+                                    {viewVendorDate?.purchaseReport && <p><strong>Purchase Report:</strong>{viewVendorDate?.purchaseReport}</p>}
                                      </Card>
                             </Col>
                         </Row>
@@ -384,21 +374,21 @@ const Vendor = (props) => {
                         if (editVendor) {
         
                             // Set the initial state with the values from the API
-                            setDailyReportsList(initialDailyReportsList ? initialDailyReportsList.split(',') : []);
-                            setMonthlyReportsList(initialMonthlyReportsList ? initialMonthlyReportsList.split(',') : []);
+                            setPurchaseReport(initialPurchaseReport ? initialPurchaseReport : "");
                             e.preventDefault();
                             props.form.validateFields((err, values) => {
                                 if (!err) {
                                  const data = {
                                     values: {
                                       ...values,
-                                      showAmtDcPdfFlg: showAmtDcPdfFlg ? 'Y' : 'N',
-                                      dailyReportsList: dailyReportsList.join(','),
-                                      monthlyReportsList: monthlyReportsList.join(','),
+                                      ipAddress: "1.1.1.1",
+                                      requestId:"VENDOR_EDIT",
+                                      userId: "",
+                                      purchaseReportsList: purchaseReport.join(','),
                                     },
-                                    id: props.party?.party?.nPartyId
+                                    id: props.vendor?.vendor?.vendorId
                                   }
-                                  props.updateParty(data);
+                                  props.updateVendor(data);
                                   props.form.resetFields();
                                   setShowAddVendor(false);
                                   setEditVendor(false);
@@ -409,11 +399,12 @@ const Vendor = (props) => {
                                 if (!err) {
                                  e.preventDefault();
                                   // props.addParty(values);
-                                 props.addParty({
+                                  props.addVendor({
                                     ...values,
-                                    showAmtDcPdfFlg: showAmtDcPdfFlg ? 'Y' : 'N',
-                                    dailyReportsList: dailyReportsList.join(','),
-                                    monthlyReportsList: monthlyReportsList.join(','),
+                                    ipAddress: "1.1.1.1",
+                                    requestId:"VENDOR_INSERT",
+                                    userId: "",
+                                    purchaseReportsList: purchaseReport.join(','),
                                   });
                                   props.form.resetFields();
                                   setShowAddVendor(false);
@@ -433,20 +424,27 @@ const Vendor = (props) => {
                             <Col lg={24} md={24} sm={24} xs={24} className="gx-align-self-center">
                                 <Form {...formItemLayout} className="gx-pt-4">
                                     <Form.Item label="Vendor/Supplier">
-                                        {getFieldDecorator('partyName', {
+                                        {getFieldDecorator('vendorName', {
                                             rules: [{ required: true, message: 'Please input Vendor name!' }],
                                         })(
-                                            <Input id="partyName" />
+                                            <Input id="vendorName" />
                                         )}
                                     </Form.Item>
                                     <Form.Item label="Vendor/Supplier Nick Name">
-                                        {getFieldDecorator('partyNickname', {
+                                        {getFieldDecorator('vendorNickName', {
                                             rules: [{ required: false, message: 'Please input Vendor nick name!' }],
                                         })(
-                                            <Input id="partyNickname" />
+                                            <Input id="vendorNickName" />
                                         )}
                                     </Form.Item>
-                                    {phoneKeys.map((k, index) => {
+                                    <Form.Item label="Phone Number">
+                                        {getFieldDecorator('phoneNo', {
+                                            rules: [{ required: false, message: 'Please input phone No!' }],
+                                        })(
+                                            <Input id="phoneNo" />
+                                        )}
+                                    </Form.Item>
+                                    {/* {phoneKeys.map((k, index) => {
                                     const req = index ? false : true;
                                     const phone = party?.phone3 ? [party?.phone1,party?.phone2,party?.phone3] : (party?.phone2 ? [party?.phone1,party?.phone2] : [party?.phone1]);
                                     return (
@@ -462,7 +460,7 @@ const Vendor = (props) => {
                                             {phoneKeys.length-1 > 0 && <i className="icon icon-trash gx-margin" onClick={() => removeKey(index, 'phoneKeys', 'phone')}/> }
                                             {index == phoneKeys.length-1 && phoneKeys.length <=2 && <i className="icon icon-add-circle" onClick={() => addNewKey(index, 'phoneKeys')}/> }
                                         </Form.Item>
-                                    )})}
+                                    )})} */}
 
                                     <Form.Item label="Contact Name">
                                         {getFieldDecorator('contactName', {
@@ -472,40 +470,19 @@ const Vendor = (props) => {
                                         )}
                                     </Form.Item>
                                     <Form.Item label="Contact Number">
-                                        {getFieldDecorator('contactNumber', {
+                                        {getFieldDecorator('contactNo', {
                                             rules: [{ required: false, message: 'Please input Contact number!' }],
                                         })(
-                                            <Input id="contactNumber" />
+                                            <Input id="contactNo" />
                                         )}
                                     </Form.Item>
-                                    {/* <Form.Item label="Address">
-                                        {getFieldDecorator('address', {
-                                            rules: [{ required: false, message: 'Please input address!' }],
-                                        })(
-                                            <Input id="address" />
-                                        )}
-                                    </Form.Item>
-                                    <Form.Item label="City">
-                                        {getFieldDecorator('city', {
-                                            rules: [{ required: false, message: 'Please input city!' }],
-                                        })(
-                                            <Input id="city" />
-                                        )}
-                                    </Form.Item>
-                                    <Form.Item label="State">
-                                        {getFieldDecorator('state', {
-                                            rules: [{ required: false, message: 'Please input state!' }],
-                                        })(
-                                            <Input id="state" />
-                                        )}
-                                    </Form.Item> */}
 
                                      {addressKeys.map((k, index) => {
                                     const req = index ? false : true;
-                                    const address = party?.address2?.details ? [party?.address1?.details, party?.address2?.details] : [party?.address1?.details];
-                                    const city = party?.address2?.city ? [party?.address1?.city, party?.address2?.city] : [party?.address1?.city];
-                                    const state = party?.address2?.state ? [party?.address1?.state, party?.address2?.state] : [party?.address1?.state];
-                                    const pincode = party?.address2?.pincode ? [party?.address1?.pincode, party?.address2?.pincode] : [party?.address1?.pincode];
+                                    const address = vendor?.address1? [vendor?.address1, vendor?.alternateAddress1] : [vendor?.address1];
+                                    const city = vendor?.city ? [vendor?.city, vendor?.alternateCity] : [vendor?.city];
+                                    const state = vendor?.state ? [vendor?.state, vendor?.alternateState] : [vendor?.state];
+                                    const pincode = vendor?.pincode ? [vendor?.pincode, vendor?.alternatePincode] : [vendor?.pincode];
                                     return (
                                         <div>
                                         <Form.Item  {...formItemLayout} className='address'
@@ -537,7 +514,23 @@ const Vendor = (props) => {
                                                 initialValue: state[index],
                                                 rules: [{ required: req, message: 'Please input the State!' }],
                                             })(
-                                                <Input id="state" />
+                                                // <Input id="state" />
+                                                <Select
+                                                showSearch
+                                                // placeholder="Select a state"
+                                                filterOption={(input, option) => {
+                                                    return option?.props?.children?.toLowerCase().includes(input.toLowerCase());
+                                                }}
+                                                filterSort={(optionA, optionB) =>
+                                                    optionA?.props?.children.toLowerCase().localeCompare(optionB?.props?.children.toLowerCase())
+                                                }
+                                            >
+                                                 {props.location?.stateList?.map((state) => (
+                                                <Option key={state.stateName} value={state.stateName}>
+                                                    {state.stateName}
+                                                </Option>
+                                                ))} 
+                                            </Select>
                                             )}
                                         </Form.Item>
                                         <Form.Item {...formItemLayout} className='address'
@@ -557,9 +550,16 @@ const Vendor = (props) => {
                                         </div>
                                     )})} 
 
-                                    {emailKeys.map((k, index) => {
+                                    <Form.Item label="Email Id">
+                                        {getFieldDecorator('emailId', {
+                                            rules: [{ required: false, message: 'Please input emailId!' }],
+                                        })(
+                                            <Input id="emailId" />
+                                        )}
+                                    </Form.Item>
+                                    {/* {emailKeys.map((k, index) => {
                                     const req = index ? false : true;
-                                    const email = party?.email3 ? [party?.email1,party?.email2,party?.email3] : (party?.email2 ? [party?.email1,party?.email2] : [party?.email1]);
+                                    const email = vendor?.email3 ? [vendor?.email1,vendor?.email2,vendor?.email3] : (vendor?.email2 ? [vendor?.email1,vendor?.email2] : [vendor?.email1]);
                                     return (
                                         <Form.Item  {...formItemLayout} className='email'
                                             label={index ? `Alternate E-mail ${index}` : 'E-mail'}
@@ -573,7 +573,7 @@ const Vendor = (props) => {
                                             {emailKeys.length-1 > 0 && <i className="icon icon-trash gx-margin" onClick={() => removeKey(index, 'emailKeys', 'email')}/> }
                                             {index == emailKeys.length-1 && emailKeys.length <=2 && <i className="icon icon-add-circle" onClick={() => addNewKey(index, 'emailKeys')}/> }
                                         </Form.Item>
-                                    )})}
+                                    )})} */}
 
                                     <Form.Item label="PAN Number">
                                         {getFieldDecorator('panNumber', {
@@ -620,25 +620,15 @@ const Vendor = (props) => {
                                     </Form.Item> */}
                                     
                                     <Form.Item label = "Purchase Reports">
-                                        <Checkbox.Group
+                                    <Checkbox.Group
                                             id="purchaseReports"
-                                            value={dailyReportsList}
-                                            onChange={(checkedValues) => {setDailyReportsList(checkedValues)}}
+                                            value={purchaseReport}
+                                            onChange={(checkedValues) => {setPurchaseReport(checkedValues)}}
                                         >
-                                            <Checkbox value="Daily">Daily</Checkbox>
-                                            <Checkbox value="Monthly">Monthly</Checkbox>
+                                            <Checkbox value="DAILY">Daily</Checkbox>
+                                            <Checkbox value="MONTHLY">Monthly</Checkbox>
                                         </Checkbox.Group>
                                     </Form.Item>
-                                    {/* <Form.Item label = "Monthly Reports">
-                                        <Checkbox.Group id="monthlyReportsList"
-                                            value={monthlyReportsList}
-                                            onChange={(checkedValues) => {setMonthlyReportsList(checkedValues)}}>
-                                            <Checkbox value="INWARDREPORT">INWARDREPORT</Checkbox>
-                                            <Checkbox value="STOCKREPORT">STOCKREPORT</Checkbox>
-                                            <Checkbox value="OUTWARDREPORT">OUTWARDREPORT</Checkbox>
-                                            <Checkbox value="PROCESSINGREPORT ">PROCESSINGREPORT </Checkbox>
-                                        </Checkbox.Group>
-                                    </Form.Item> */}
                                 </Form>
                             </Col>
                         </Row>
@@ -651,6 +641,7 @@ const Vendor = (props) => {
 
 const mapStateToProps = state => ({
     vendor: state.vendor,
+    location: state.location,
     party: state.party,
     packetClassification: state.packetClassification,
     quality: state.quality,
@@ -659,41 +650,38 @@ const mapStateToProps = state => ({
 
 const addVendorForm = Form.create({
     mapPropsToFields(props) {
-        const { party } = props.party;
-        const phone = party?.phone3 ? [party?.phone1,party?.phone2,party?.phone3] : (party?.phone2 ? [party?.phone1,party?.phone2] : [party?.phone1]);
-        const email = party?.email3 ? [party?.email1,party?.email2,party?.email3] : (party?.email2 ? [party?.email1,party?.email2] : [party?.email1]);
-        const address = party?.address2?.details ? [party?.address1?.details, party?.address2?.details] : [party?.address1?.details];
-        const city = party?.address2?.city ? [party?.address1?.city, party?.address2?.city] : [party?.address1?.city];
-        const state = party?.address2?.state ? [party?.address1?.state, party?.address2?.state] : [party?.address1?.state];
-        const pincode = party?.address2?.pincode ? [party?.address1?.pincode, party?.address2?.pincode] : [party?.address1?.pincode];
-        // const tags = props?.party?.party?.tags.map(item=> item.classificationName)
-       // const checkboxValuesDR = party?.dailyReportsList || [];
-       const checkboxValuesDR = (party?.dailyReportsList || '').split(',').map(value => value.trim());
-        const checkboxValuesMR = party?.monthlyReportsList || [];
-        // console.log('Received dailyReportsList:', party?.dailyReportsList);
-        // console.log('Parsed dailyReportsList:', checkboxValuesDR);
+        const { vendor } = props.vendor;
+        const phone = vendor?.phone3 ? [vendor?.phone1,vendor?.phone2,vendor?.phone3] : (vendor?.phone2 ? [vendor?.phone1,vendor?.phone2] : [vendor?.phone1]);
+        const email = vendor?.email3 ? [vendor?.email1,vendor?.email2,vendor?.email3] : (vendor?.email2 ? [vendor?.email1,vendor?.email2] : [vendor?.email1]);
+        const address = vendor?.address2?.details ? [vendor?.address1?.details, vendor?.address2?.details] : [vendor?.address1?.details];
+        const city = vendor?.address2?.city ? [vendor?.address1?.city, vendor?.address2?.city] : [vendor?.address1?.city];
+        const state = vendor?.address2?.state ? [vendor?.address1?.state, vendor?.address2?.state] : [vendor?.address1?.state];
+        const pincode = vendor?.address2?.pincode ? [vendor?.address1?.pincode, vendor?.address2?.pincode] : [vendor?.address1?.pincode];
+        // const tags = props?.vendor?.vendor?.tags.map(item=> item.classificationName)
+        const checkboxValues = (vendor?.purchaseReport || '');
         return {
-            partyName:Form.createFormField ({
-                ...props.party?.party?.partyName,
-                value: props.party?.party?.partyName|| '',
+            vendorName:Form.createFormField ({
+                ...props.vendor?.vendor?.vendorName,
+                value: props.vendor?.vendor?.vendorName|| '',
             }),
-            partyNickname: Form.createFormField({
-                ...props.party?.party?.partyNickname,
-                value: props.party?.party?.partyNickname || '',
+            vendorNickName: Form.createFormField({
+                ...props.vendor?.vendor?.vendorNickName,
+                value: props.vendor?.vendor?.vendorNickName || '',
             }),
-            phone: Form.createFormField({
-                value: phone
+            phoneNo: Form.createFormField({
+                ...props.vendor?.vendor?.phoneNo,
+                value: props.vendor?.vendor?.phoneNo || '',
             }),
             phoneKeys: Form.createFormField({
                 value: phone,
             }),
             contactName: Form.createFormField({
-                ...props.party?.party?.contactName,
-                value: props.party?.party?.contactName || '',
+                ...props.vendor?.vendor?.contactName,
+                value: props.vendor?.vendor?.contactName || '',
             }),
-            contactNumber: Form.createFormField({
-                ...props.party?.party?.contactNumber,
-                value: props.party?.party?.contactNumber || '',
+            contactNo: Form.createFormField({
+                ...props.vendor?.vendor?.contactNo,
+                value: props.vendor?.vendor?.contactNo || '',
             }),
             address: Form.createFormField({
                 value: address
@@ -710,48 +698,45 @@ const addVendorForm = Form.create({
             pincode: Form.createFormField({
                 value: pincode
             }),
-            email: Form.createFormField({
-                value: email
+            emailId: Form.createFormField({
+                ...props.vendor?.vendor?.emailId,
+                value: props.vendor?.vendor?.emailId || '',
             }),
             emailKeys: Form.createFormField({
                 value: email
             }),
             panNumber: Form.createFormField({
-                ...party?.panNumber,
-                value: party?.panNumber || '',
+                ...vendor?.panNumber,
+                value: vendor?.panNumber || '',
             }),
             tanNumber: Form.createFormField({
-                ...party?.tanNumber,
-                value: party?.tanNumber || '',
+                ...vendor?.tanNumber,
+                value: vendor?.tanNumber || '',
             }),
             gstNumber: Form.createFormField({
-                ...party?.gstNumber,
-                value: party?.gstNumber || '',
+                ...vendor?.gstNumber,
+                value: vendor?.gstNumber || '',
             }),
             tags: Form.createFormField({
-                ...props.party?.party?.tags,
-                value: party?.tags?.map(item=> item.tagId) || [],
+                ...props.vendor?.vendor?.tags,
+                value: vendor?.tags?.map(item=> item.tagId) || [],
             }),
             endUsertags: Form.createFormField({
-                ...props.party?.party?.endUserTags,
-                value: party?.endUserTags?.map(item=> item.tagId) || [],
+                ...props.vendor?.vendor?.endUserTags,
+                value: vendor?.endUserTags?.map(item=> item.tagId) || [],
             }),
             qualityTemplates: Form.createFormField({
-                ...props.party?.party?.templateIdList,
-                value: party?.templateIdList?.map(item=> item.templateId) || [],
+                ...props.vendor?.vendor?.templateIdList,
+                value: vendor?.templateIdList?.map(item=> item.templateId) || [],
             }),
             showAmtDcPdfFlg: Form.createFormField({
-                ...party?.showAmtDcPdfFlg,
-                value: party?.showAmtDcPdfFlg || 'N',
+                ...vendor?.showAmtDcPdfFlg,
+                value: vendor?.showAmtDcPdfFlg || 'N',
             }),
-            dailyReportsList: Form.createFormField({
-                ...party?.dailyReportsList,
+            purchaseReport: Form.createFormField({
+                ...vendor?.purchaseReport,
                //value: Array.isArray(checkboxValuesDR) ? checkboxValuesDR : [],
-               value:checkboxValuesDR
-            }),
-            monthlyReportsList: Form.createFormField({
-                ...party?.monthlyReportsList,
-               value: Array.isArray(checkboxValuesMR) ? checkboxValuesMR : [],
+               value:checkboxValues
             }),
         };
     }
@@ -760,6 +745,9 @@ const addVendorForm = Form.create({
 export default connect(mapStateToProps, {
     fetchVendorList,
     fetchVendorListId,
+    addVendor,
+    updateVendor,
+    fetchStateList,
     fetchPartyList,
     addParty,
     fetchPartyListId,
