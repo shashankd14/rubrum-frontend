@@ -619,7 +619,7 @@ const Vendor = (props) => {
                                         )}
                                     </Form.Item> */}
                                     
-                                    <Form.Item label = "Purchase Reports">
+                                    {/* <Form.Item label = "Purchase Reports">
                                     <Checkbox.Group
                                             id="purchaseReports"
                                             value={purchaseReport}
@@ -628,7 +628,7 @@ const Vendor = (props) => {
                                             <Checkbox value="DAILY">Daily</Checkbox>
                                             <Checkbox value="MONTHLY">Monthly</Checkbox>
                                         </Checkbox.Group>
-                                    </Form.Item>
+                                    </Form.Item> */}
                                 </Form>
                             </Col>
                         </Row>

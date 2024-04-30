@@ -494,22 +494,22 @@ const MaterialDV = (props) => {
                     })(<Input id='itemCode' {...getFieldProps} />)}
                   </Form.Item>
                   <Form.Item label='Item HSN Code'>
-                    {getFieldDecorator('hsnCode', {
+                    {getFieldDecorator('itemHsnCode', {
                       rules: [
                         { required: true, message: 'Please enter HSN code' },
                       ],
-                    })(<Input id='hsnCode' {...getFieldProps} />)}
+                    })(<Input id='itemHsnCode' {...getFieldProps} />)}
                   </Form.Item>
                   <Form.Item label='Item Grade'>
-                    {getFieldDecorator('itemGrade', {
+                    {getFieldDecorator('itemGradeId', {
                       rules: [
                         { required: true, message: 'Please enter item grade' },
                       ],
-                    })(<Input id='itemGrade' {...getFieldProps} />)}
+                    })(<Input id='itemGradeId' {...getFieldProps} />)}
                   </Form.Item>
                   
                   <Form.Item label="Item Main category">
-                        {getFieldDecorator("mainCategory", {
+                        {getFieldDecorator("categoryId", {
                           rules: [
                             {
                               required: true,
@@ -518,7 +518,7 @@ const MaterialDV = (props) => {
                           ],
                         })(
                           <Select
-                            id="mainCategory"
+                            id="categoryId"
                             showSearch
                             mode="multiple"
                             style={{ width: "100%" }}
@@ -591,7 +591,7 @@ const MaterialDV = (props) => {
                     {/* </Col>  */}
 
                     <Form.Item label="Item Sub category">
-                        {getFieldDecorator("subCategory", {
+                        {getFieldDecorator("subCategoryId", {
                           rules: [
                             {
                               required: true,
@@ -600,7 +600,7 @@ const MaterialDV = (props) => {
                           ],
                         })(
                           <Select
-                            id="subCategory"
+                            id="subCategoryId"
                             showSearch
                             mode="multiple"
                             style={{ width: "100%" }}
@@ -732,9 +732,9 @@ const MaterialDV = (props) => {
                     })(<Input id='brandName' {...getFieldProps} />)}
                   </Form.Item>
                   <Form.Item label='Manufacturers Name'>
-                    {getFieldDecorator('manufacturersName', {
+                    {getFieldDecorator('manufacturerName', {
                       // rules: [{ required: false, message: 'Please enter manufacturers name' }],
-                    })(<Input id='manufacturersName' {...getFieldProps} />)}
+                    })(<Input id='manufacturerName' {...getFieldProps} />)}
                   </Form.Item>
                 </Col>
               </Row>
@@ -1135,9 +1135,9 @@ const MaterialDV = (props) => {
                   xs={24}
                 >
                   <Col lg={12} md={12} sm={24} xs={24}>
-                    {getFieldDecorator('sectionWeightKg', {
+                    {getFieldDecorator('perMeter', {
                       // rules: [{ required: false, message: 'Please enter manufacturers name' }],
-                    })(<Input id='sectionWeightKg' {...getFieldProps} />)}
+                    })(<Input id='perMeter' {...getFieldProps} />)}
                   </Col>
                   <Col lg={12} md={12} sm={24} xs={24}>
                     <label>Kg per meter</label>
@@ -1153,9 +1153,9 @@ const MaterialDV = (props) => {
                   xs={24}
                 >
                   <Col lg={12} md={12} sm={24} xs={24}>
-                    {getFieldDecorator('sectionWeightKg', {
+                    {getFieldDecorator('perFeet', {
                       // rules: [{ required: false, message: 'Please enter manufacturers name' }],
-                    })(<Input id='sectionWeightKg' {...getFieldProps} />)}
+                    })(<Input id='perFeet' {...getFieldProps} />)}
                   </Col>
                   <Col lg={12} md={12} sm={24} xs={24}>
                     <label>Kg per feet</label>
@@ -1171,9 +1171,9 @@ const MaterialDV = (props) => {
                   xs={24}
                 >
                   <Col lg={12} md={12} sm={24} xs={24}>
-                    {getFieldDecorator('sectionWeightKg', {
+                    {getFieldDecorator('perPC', {
                       // rules: [{ required: false, message: 'Please enter manufacturers name' }],
-                    })(<Input id='sectionWeightKg' {...getFieldProps} />)}
+                    })(<Input id='perPC' {...getFieldProps} />)}
                   </Col>
                   <Col lg={12} md={12} sm={24} xs={24}>
                     <label>Kg per pc</label>
@@ -1224,6 +1224,50 @@ const addMaterialDVForm = Form.create({
       (material) => material.gradeName
     );
     return {
+      itemName:Form.createFormField ({
+          ...props.materialDV?.DVMaterialID?.ItemName,
+          value: props.materialDV?.DVMaterialID?.ItemName|| '',
+      }),
+      itemCode:Form.createFormField ({
+          ...props.materialDV?.DVMaterialID?.itemCode,
+          value: props.materialDV?.DVMaterialID?.itemCode|| '',
+      }),
+      itemGradeId:Form.createFormField ({
+          ...props.materialDV?.DVMaterialID?.itemGradeId,
+          value: props.materialDV?.DVMaterialID?.itemGradeId|| '',
+      }),
+      categoryId:Form.createFormField ({
+          ...props.materialDV?.DVMaterialID?.categoryId,
+          value: props.materialDV?.DVMaterialID?.categoryId|| '',
+      }),
+      subCategoryId:Form.createFormField ({
+          ...props.materialDV?.DVMaterialID?.subCategoryId,
+          value: props.materialDV?.DVMaterialID?.subCategoryId|| '',
+      }),
+      displayName:Form.createFormField ({
+          ...props.materialDV?.DVMaterialID?.displayName,
+          value: props.materialDV?.DVMaterialID?.displayName|| '',
+      }),
+      brandName:Form.createFormField ({
+          ...props.materialDV?.DVMaterialID?.brandName,
+          value: props.materialDV?.DVMaterialID?.brandName|| '',
+      }),
+      manufacturerName:Form.createFormField ({
+          ...props.materialDV?.DVMaterialID?.manufacturerName,
+          value: props.materialDV?.DVMaterialID?.manufacturerName|| '',
+      }),
+      perMeter:Form.createFormField ({
+          ...props.materialDV?.DVMaterialID?.perMeter,
+          value: props.materialDV?.DVMaterialID?.perMeter|| '',
+      }),
+      perFeet:Form.createFormField ({
+          ...props.materialDV?.DVMaterialID?.perFeet,
+          value: props.materialDV?.DVMaterialID?.perFeet|| '',
+      }),
+      perPC:Form.createFormField ({
+          ...props.materialDV?.DVMaterialID?.perPC,
+          value: props.materialDV?.DVMaterialID?.perPC|| '',
+      }),
       description: Form.createFormField({
         value: props.material?.material?.description || '',
       }),

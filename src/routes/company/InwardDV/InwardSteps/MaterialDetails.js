@@ -147,7 +147,7 @@ const MaterialDetailsForm = (props) => {
                                     >
                                     {props.materialDV?.DVMaterialList?.content?.map((category) => (
                                         <Option key={category.itemId} value={category.itemId}>
-                                        {`${category.itemName}: ${category.categoryEntity.categoryName} | ${category.subCategoryEntity.subcategoryName}`}
+                                        {`${category.itemName}: ${category.categoryEntity?.categoryName || '-'} | ${category.subCategoryEntity?.subcategoryName || '-'}`}
                                         </Option>
                                     ))}
                                     </Select>
