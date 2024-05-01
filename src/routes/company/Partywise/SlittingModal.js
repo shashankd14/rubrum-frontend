@@ -1395,9 +1395,13 @@ const CreateSlittingDetailsForm = (props) => {
 
   //total plannedWeight
   let sumOfTotalPlannedWeight = 0;
-    response.forEach(weight => {
-      sumOfTotalPlannedWeight += (weight[0].plannedWeight || 0);
-    });
+    response.forEach(innerArray => {
+      innerArray.forEach(weight => {
+        if(weight.process.processId !== 3){
+          sumOfTotalPlannedWeight += (weight.plannedWeight || 0);
+        }
+      });
+  });
   let coilPlannedYLR = 0;
   coilPlannedYLR = (sumOfScrapPlannedWeight / sumOfTotalPlannedWeight) *100;
   setPlannedCoilLevelYLR(coilPlannedYLR);
@@ -1456,7 +1460,6 @@ const CreateSlittingDetailsForm = (props) => {
 };
 
   const handleClassificationChange = (value, index, record) => {
-    // debugger
     const tableIndex = record.tableIndex;
     const adjustedIndex = calculateAdjustedIndex(record.tableIndex, index);
     panelList[tableIndex][adjustedIndex].packetClassificationId = value;
@@ -1684,7 +1687,6 @@ const columnYieldLoss = [
   
   const sum = (totaltableDatapacketWeight / totaltableDatapacketPlannedWeight) * 100 || 0;
   // useEffect(() => {
-  //   // debugger;
   //   const updatedTmpGroupedInstructions = new Map();
 
   //   const tmpLossRatio = Array(panelList.length).fill(0);
@@ -2002,7 +2004,8 @@ const columnYieldLoss = [
               plannedLength: record?.plannedLength,
               actualLength: record?.actualLength,
               actualWidth: record?.actualWidth,
-              actualWeight: record?.actualWeight,
+              // actualWeight: record?.actualWeight,
+              actualWeight: record?.actualWeight || props?.coilDetails?.scrapWeight,
               plannedWidth: record?.plannedWidth,
               isSlitAndCut: false,
               plannedNoOfPieces: '1',
@@ -2010,9 +2013,9 @@ const columnYieldLoss = [
               createdBy: '1',
               updatedBy: '1',
               groupId: null,
-              // plannedWeight: props?.coilDetails?.scrapWeight || 0,
-              plannedWeight:
-                props?.coilDetails?.scrapWeight || record.actualWeight || 0,
+              // plannedWeight:
+              //   props?.coilDetails?.scrapWeight || record.actualWeight || 0,
+               plannedWeight: props?.coilDetails?.scrapWeight || 0,
               inwardId: props?.coilDetails?.inwardEntryId,
               parentInstructionId: '',
               endUserTagId: record?.endUserTagsentity?.tagId,
@@ -2035,7 +2038,6 @@ const columnYieldLoss = [
     }
   };
   const addRow = () => {
-    debugger
     setRowData(true);
     const newData = {
       processDate: new Date(),
