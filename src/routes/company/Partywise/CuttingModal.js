@@ -1373,9 +1373,13 @@ useEffect(() => {
 
  //total plannedWeight
  let sumOfTotalPlannedWeight = 0;
-   response.forEach(weight => {
-     sumOfTotalPlannedWeight += (weight[0].plannedWeight || 0);
-   });
+    response.forEach(innerArray => {
+      innerArray.forEach(weight => {
+        if(weight.process.processId !== 3){
+          sumOfTotalPlannedWeight += (weight.plannedWeight || 0);
+        }
+      });
+  });
  let coilPlannedYLR = 0;
  coilPlannedYLR = (sumOfScrapPlannedWeight / sumOfTotalPlannedWeight) *100;
  setPlannedCoilLevelYLR(coilPlannedYLR);
