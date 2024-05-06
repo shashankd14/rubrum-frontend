@@ -12,6 +12,7 @@ import {
   resetDeleteInward,
   fetchPartyListById,
 } from "../../../appRedux/actions/Inward";
+import { deleteInwardDV, updateInwardDV, fetchInwardDVListId, fetchInwardDVList } from '../../../appRedux/actions';
 import { onDeleteContact } from "../../../appRedux/actions";
 import {sidebarMenuItems} from "../../../constants";
 
@@ -30,167 +31,157 @@ const List = (props) => {
   const [filteredInfo, setFilteredInfo] = useState(null);
   const [searchValue, setSearchValue] = useState("");
   const [filteredInwardList, setFilteredInwardList] = useState(
-    props.inward.inwardList
+    props.inwardDV.inwardDVList
   );
 
   const [pageNo, setPageNo] = React.useState(1);
-  const [totalPageItems, setTotalItems] = React.useState(0);
+  const [totalPageItems, setTotalPageItems] = React.useState(0);
   const [menuInwardLabelList, setMenuInwardLabelList] = useState([]);
 
-  const { totalItems } = props.inward;
+  const { totalItems } = props.inwardDV.inwardDVList;
 
   const columns = [
+    // {
+    //   title: "Coil Number",
+    //   dataIndex: "coilNumber",
+    //   key: "coilNumber",
+    //   filters: [],
+    //   sorter: (a, b) => a.coilNumber.length - b.coilNumber.length,
+    //   sortOrder: sortedInfo.columnKey === "coilNumber" && sortedInfo.order,
+    // },
     {
-      title: "Coil Number",
-      dataIndex: "coilNumber",
-      key: "coilNumber",
+      title: "Vendor Batch No",
+      dataIndex: "vendorBatchNo",
+      key: "vendorBatchNo",
       filters: [],
-      sorter: (a, b) => a.coilNumber.length - b.coilNumber.length,
-      sortOrder: sortedInfo.columnKey === "coilNumber" && sortedInfo.order,
+      sorter: (a, b) => a.vendorBatchNo.length - b.vendorBatchNo.length,
+      sortOrder: sortedInfo.columnKey === "vendorBatchNo" && sortedInfo.order,
     },
     {
-      title: "Party Name",
-      dataIndex: "party.partyName",
-      key: "party.partyName",
-      filteredValue: filteredInfo ? filteredInfo["party.partyName"] : null,
-      onFilter: (value, record) => record.party.partyName == value,
-      filters:
-        props.inward.inwardList.length > 0
-          ? [
-              ...new Set(
-                props.inward.inwardList.map((item) => item.party.partyName)
-              ),
-            ].map((partyName) => ({ text: partyName, value: partyName }))
-          : [],
-      sorter: (a, b) => a.party.partyName.length - b.party.partyName.length,
-      sortOrder: sortedInfo.columnKey === "party.partyName" && sortedInfo.order,
+      title: "Vendor Name",
+      dataIndex: "vendorName",
+      key: "vendorName",
+      filters: [],
+      sorter: (a, b) => a.vendorName.length - b.vendorName.length,
+      sortOrder: sortedInfo.columnKey === "vendorName" && sortedInfo.order,
+    },
+    {
+      title: "Material Name",
+      dataIndex: "itemName",
+      key: "itemName",
+      render: (text, record) => (
+        <span>
+          {record.itemsList.map(item => (
+            <div key={item.itemchildId}>{item.itemName}</div>
+          ))}
+        </span>
+      ),     
     },
     {
       title: "Inward Date",
-      dataIndex: "dReceivedDate",
+      dataIndex: "documentDate",
       render(value) {
         return moment(value).format("Do MMM YYYY");
       },
-      key: "dReceivedDate",
+      key: "documentDate",
       filters: [],
-      sorter: (a, b) => a.dReceivedDate - b.dReceivedDate,
-      sortOrder: sortedInfo.columnKey === "dReceivedDate" && sortedInfo.order,
+      sorter: (a, b) => a.documentDate - b.documentDate,
+      sortOrder: sortedInfo.columnKey === "documentDate" && sortedInfo.order,
     },
+    // {
+    //   title: "Status",
+    //   dataIndex: "status.statusName",
+    //   key: "status.statusName",
+    //   filters: [],
+    //   sorter: (a, b) => a.status.statusName.length - b.status.statusName.length,
+    //   sortOrder:
+    //     sortedInfo.columnKey === "status.statusName" && sortedInfo.order,
+    // },
     {
-      title: "Material",
-      dataIndex: "material.description",
-      key: "material.description",
-      filteredValue: filteredInfo ? filteredInfo["material.description"] : null,
-      onFilter: (value, record) => record.material.description == value,
-      filters:
-        props.inward.inwardList.length > 0
-          ? [
-              ...new Set(
-                props.inward.inwardList.map((item) => item.material.description)
-              ),
-            ].map((material) => ({ text: material, value: material }))
-          : [],
-      sorter: (a, b) =>
-        a.material.description.length - b.material.description.length,
-      sortOrder:
-        sortedInfo.columnKey === "material.description" && sortedInfo.order,
-    },
-    {
-      title: "Status",
-      dataIndex: "status.statusName",
-      key: "status.statusName",
+      title: "ConsignmentId",
+      dataIndex: "consignmentId",
+      key: "consignmentId",
       filters: [],
-      sorter: (a, b) => a.status.statusName.length - b.status.statusName.length,
-      sortOrder:
-        sortedInfo.columnKey === "status.statusName" && sortedInfo.order,
-    },
-    {
-      title: "Thickness",
-      dataIndex: "fThickness",
-      key: "fThickness",
-      filters: [],
-      sorter: (a, b) => a.fThickness - b.fThickness,
-      sortOrder: sortedInfo.columnKey === "fThickness" && sortedInfo.order,
+      sorter: (a, b) => a.consignmentId - b.consignmentId,
+      sortOrder: sortedInfo.columnKey === "consignmentId" && sortedInfo.order,
     },
     {
       title: "Weight",
-      dataIndex: "fQuantity",
-      key: "fQuantity",
+      dataIndex: "totalWeight",
+      key: "totalWeight",
       filters: [],
-      sorter: (a, b) => a.fQuantity - b.fQuantity,
-      sortOrder: sortedInfo.columnKey === "fQuantity" && sortedInfo.order,
+      sorter: (a, b) => a.totalWeight - b.totalWeight,
+      sortOrder: sortedInfo.columnKey === "totalWeight" && sortedInfo.order,
     },
     {
       title: "Action",
       dataIndex: "",
       key: "x",
       render: (text, record, index) => (
+        // <span>
+        //   {menuInwardLabelList.length > 0 && menuInwardLabelList.includes(inwardMenuConstants.view) && <><span
+        //       className="gx-link"
+        //       onClick={() => props.history.push(`${record.coilNumber}`)}
+        //   >
+        //     View
+        //   </span>
+        //     <Divider type="vertical" />
+        //   </>}
+        //   {menuInwardLabelList.length > 0 && menuInwardLabelList.includes(inwardMenuConstants.edit) && <><span className="gx-link" onClick={(e) => onEdit(record, index, e)}>
+        //     Edit
+        //   </span>
+        //   <Divider type="vertical" /></>}
+        //   {menuInwardLabelList.length > 0 && menuInwardLabelList.includes(inwardMenuConstants.delete) && <span className="gx-link" onClick={(e) => onDelete(record, index, e)}>
+        //     Delete
+        //   </span>
+        //   }
+        // </span>
         <span>
-          {menuInwardLabelList.length > 0 && menuInwardLabelList.includes(inwardMenuConstants.view) && <><span
-              className="gx-link"
-              onClick={() => props.history.push(`${record.coilNumber}`)}
-          >
-            View
-          </span>
-            <Divider type="vertical" />
-          </>}
-          {menuInwardLabelList.length > 0 && menuInwardLabelList.includes(inwardMenuConstants.edit) && <><span className="gx-link" onClick={(e) => onEdit(record, index, e)}>
-            Edit
-          </span>
-          <Divider type="vertical" /></>}
-          {menuInwardLabelList.length > 0 && menuInwardLabelList.includes(inwardMenuConstants.delete) && <span className="gx-link" onClick={(e) => onDelete(record, index, e)}>
-            Delete
-          </span>
-          }
-        </span>
+          <span className="gx-link" >View</span>
+          <Divider type="vertical"/>
+          <span className="gx-link" onClick={(e) => onEdit(record, e)}>Edit</span>
+          <Divider type="vertical"/>
+          <span className="gx-link" onClick={(e) => onDelete(record, e)}>Delete</span>
+      </span>
       ),
     },
   ];
-  const onDelete = (record, key, e) => {
-    let id = [];
-    id.push(record.inwardEntryId);
+
+  const onDelete = (record,key, e) => {
+    props.deleteInwardDV({
+        ids: record.inwardId,
+        ipAddress: "1.1.1.1",
+        requestId: "INWARD_DELETE",
+        userId: ""
+    })
+  }
+
+  const onEdit = (record,e)=>{
     e.preventDefault();
-    props.deleteInwardEntryById(id);
-    console.log(record, key);
-  };
-  const onEdit = (record, key, e) => {
-    props.fetchPartyListById(record.inwardEntryId);
-    setTimeout(() => {
-      props.history.push(`create/${record.inwardEntryId}`);
-    }, 2000);
-  };
-  useEffect(() => {
-    if (props.inward.deleteSuccess) {
-      message.success("Successfully deleted the coil", 2).then(() => {
-        props.resetDeleteInward();
-      });
-    }
-  }, [props.inward.deleteSuccess]);
-  useEffect(() => {
-    if (props.inward.deleteFail) {
-      message.success("Unable to delete the coil", 2).then(() => {
-        props.resetDeleteInward();
-      });
-    }
-  }, [props.inward.deleteFail]);
-
-  useEffect(() => {
-    if (totalItems) {
-      setTotalItems(totalItems);
-    }
-  }, [totalItems]);
-
-  useEffect(() => {
-    if (searchValue) {
-      if (searchValue.length >= 3) {
-        setPageNo(1);
-        props.fetchInwardListOldAPI(1, 15, searchValue);
-      }
-    } else {
-      setPageNo(1);
-      props.fetchInwardListOldAPI(1, 15, searchValue);
-    }
-  }, [searchValue]);
+    props.fetchInwardDVListId({
+        id: record.inwardId,
+        searchText: '',
+        pageNo: pageNo,
+        pageSize: "15",
+        ipAddress: '',
+        requestId: '',
+        userId: ''
+    });
+}
+  // useEffect(() => {
+  //   if (props.inward.deleteSuccess) {
+  //     message.success("Successfully deleted the coil", 2).then(() => {
+  //       props.resetDeleteInward();
+  //     });
+  //   }
+  // }, [props.inward.deleteSuccess]);
+  // useEffect(() => {
+  //   if (props.inward.deleteFail) {
+  //     message.success("Unable to delete the coil", 2).then(() => {
+  //       props.resetDeleteInward();
+  //     });
+  //   }
+  // }, [props.inward.deleteFail]);
 
   const handleChange = (pagination, filters, sorter) => {
     setSortedInfo(sorter);
@@ -213,23 +204,58 @@ const List = (props) => {
   };
 
   useEffect(() => {
-    if (!props.inward.loading && props.inward.success) {
-      setFilteredInwardList(props.inward.inwardList);
+    const { loading, error, inwardDVList } = props.inwardDV;
+    if (!loading && !error) {
+      setFilteredInwardList(inwardDVList)
+
     }
-  }, [props.inward.loading, props.inward.success]);
+}, [props.inwardDV]);
+
+useEffect(() => {
+  debugger
+    setTimeout(() => {
+        props.fetchInwardDVList({
+            searchText:"",
+            pageNo: pageNo,
+            pageSize:"15",
+            ipAddress: "1.1.1.1",
+            requestId: "INWARD_LIST_GET",
+            userId: ""
+        });
+    }, 1000);
+}, []);
+
+useEffect(() => {
+    if (totalItems) {
+      setTotalPageItems(totalItems);
+    }
+  }, [totalItems]);
 
   useEffect(() => {
-    debugger
-    const menus = localStorage.getItem('Menus') ? JSON.parse(localStorage.getItem('Menus')) : [];
-    if(menus.length > 0) {
-      const menuLabels = menus.filter(menu => menu.menuKey === sidebarMenuItems.inward);
-      let menuInwardLabels = [];
-      if(menuLabels.length > 0) {
-        menuInwardLabels = menuLabels[0]?.permission ? menuLabels[0]?.permission?.split(',') : [];
+    if (searchValue) {
+      if (searchValue.length >= 3) {
+        setPageNo(1);
+        props.fetchInwardDVList({
+            searchText:searchValue,
+            pageNo: pageNo,
+            pageSize:"15",
+            ipAddress: "1.1.1.1",
+            requestId: "INWARD_LIST_GET",
+            userId: ""
+        });
       }
-      setMenuInwardLabelList(menuInwardLabels);
+    } else {
+      setPageNo(1);
+      props.fetchInwardDVList({
+        searchText:searchValue,
+        pageNo: pageNo,
+        pageSize:"15",
+        ipAddress: "1.1.1.1",
+        requestId: "INWARD_LIST_GET",
+        userId: ""
+    });
     }
-  }, [])
+  }, [searchValue]);
 
   return (
     <div>
@@ -270,13 +296,20 @@ const List = (props) => {
           rowSelection={[]}
           className="gx-table-responsive"
           columns={columns}
-          dataSource={filteredInwardList}
+          dataSource={filteredInwardList.content}
           onChange={handleChange}
           pagination={{
             pageSize: 15,
             onChange: (page) => {
               setPageNo(page);
-              props.fetchInwardListOldAPI(page, 15, searchValue);
+              props.fetchInwardDVList({
+                searchText:searchValue,
+                pageNo: page,
+                pageSize:"15",
+                ipAddress: "1.1.1.1",
+                requestId: "INWARD_LIST_GET",
+                userId: ""
+            });
             },
             current: pageNo,
             total: totalPageItems,
@@ -288,7 +321,7 @@ const List = (props) => {
 };
 
 const mapStateToProps = (state) => ({
-  inward: state.inward,
+  inwardDV: state.inwardDV,
 });
 
 export default connect(mapStateToProps, {
@@ -297,4 +330,8 @@ export default connect(mapStateToProps, {
   deleteInwardEntryById,
   fetchPartyListById,
   resetDeleteInward,
+  deleteInwardDV,
+  fetchInwardDVList,
+  fetchInwardDVListId,
+  updateInwardDV
 })(List);

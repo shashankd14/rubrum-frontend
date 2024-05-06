@@ -72,7 +72,6 @@ const CreateForm = (props) => {
                 content: <InwardSummary updateStep={(step) => setCurrentStep(step)} />,
             },
         ];
-        console.log("111", steps);
         setSteps(steps);
     }, []);
     console.log("current step out of hook", currentStep);

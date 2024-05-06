@@ -20,3 +20,6 @@ export * from './Location';
 export * from './MaterialDV';
 export * from './Category';
 export * from './Weighbridge';
+export * from './Manufacturer';
+export * from './ItemGrade';
+export * from './InwardDV';

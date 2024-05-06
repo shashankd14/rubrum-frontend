@@ -371,5 +371,9 @@
   "sidebar.master.weighbridge": "Weighbridge",
   "master.company.weighbridgeList": "Weighbridge List",
   "sidebar.company.stockRegister": "Stock Register",
-  "sidebar.company.stockRegisterList": "Stock Register List"
+  "sidebar.company.stockRegisterList": "Stock Register List",
+  "master.company.manufacturerList": "Manufacturer List",
+  "sidebar.master.manufacturer": "Manufacturer",
+  "master.company.itemGradeList": "Item Grade List",
+  "sidebar.master.itemGrade": "Item Grade"
 }

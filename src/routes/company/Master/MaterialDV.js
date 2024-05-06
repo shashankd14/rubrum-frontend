@@ -27,7 +27,9 @@ import {
   resetMaterial,
   fetchMainCategoryList,
   fetchSubCategoryList,
-  deleteDVMaterial
+  deleteDVMaterial,
+  fetchManufacturerList,
+  fetchItemGradeList
 } from '../../../appRedux/actions';
 import { onDeleteContact } from '../../../appRedux/actions';
 import '../../../styles/components/Master/MaterialDV.css';
@@ -201,8 +203,16 @@ const MaterialDV = (props) => {
   });
   };
   const onEdit = (record, e) => {
+    debugger
     e.preventDefault();
-    props.fetchDVMaterialListById(record.matId);
+    props.fetchDVMaterialListById({
+      id: record.itemId,
+      pageNo: 1,
+      pageSize: pageSize,
+      ipAddress: "1.1.1.1",
+      requestId: "MATERIAL_ID_GET",
+      userId: ''
+  });
     setEditMaterial(true);
     setTimeout(() => {
       setShowAddMaterial(true);
@@ -235,6 +245,22 @@ const MaterialDV = (props) => {
       requestId: "SUB_CATEGORY_GET",
       userId: ''
   });
+  props.fetchManufacturerList({
+    pageNo: 1,
+    searchText: "",
+    pageSize: pageSize,
+    ipAddress: "1.1.1.1",
+    requestId: "MANUFACTURER_GET",
+    userId: ''
+});
+props.fetchItemGradeList({
+  searchText:searchValue,
+  pageNo:"1",
+  pageSize:"15",
+  ipAddress: "1.1.1.1",
+  requestId: "itemgradeId_LIST_GET",
+  userId: ""
+});
     }, 1000);
   }, [showAddMaterial]);
 
@@ -298,8 +324,25 @@ const MaterialDV = (props) => {
     });
   };
 
-  const onCrossFileChange = (e) => {};
-  const onItemFileChange = (e) => {};
+const [itemImageFile, setItemImageFile] = useState();
+const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
+  const onCrossFileChange = (info) => {
+    if (info.file.status === 'uploading') {
+      // File has been uploaded successfully
+      setCrossSectionalImageFile(info.file.name);
+    } else if (info.file.status === 'error') {
+      // Error occurred while uploading the file
+      console.error('Error uploading file:', info.file.error);
+    }
+  };
+  const onItemFileChange = (info) => {
+    if (info.file.status === 'uploading') {
+      setItemImageFile(info.file.name);
+    } else if (info.file.status === 'error') {
+      console.error('Error uploading file:', info.file.error);
+    }
+  };
+ 
   useEffect(() => {
     if (totalItems) {
       setTotalPageItems(totalItems);
@@ -332,6 +375,179 @@ const MaterialDV = (props) => {
     }
   }, [searchValue]);
 
+  const [lengthMeterValue, setLengthMeterValue] = useState('');
+  const [widthMeterValue, setWidthMeterValue] = useState('');
+  const [flange1MM, setFlange1MM] = useState('');
+  const [flange2MM, setFlange2MM] = useState('');
+  const [heightMMValue, setHeightMMValue] = useState('');
+  const [ODMMValue, setODtMMValue] = useState('');
+  const [NBMMValue, setNBMMValue] = useState('');
+  const [thicknessmmInches, setThicknessmmInches] = useState('');
+  const [thicknessmmGuage, setThicknessmmGuage] = useState('');
+
+  const handleMeterChange = (e, setValue) => {
+    const meters = e.target.value;
+    const feet = meters * 3.28084; // 1 meter is approximately equal to 3.28084 feet
+    setValue(meters);
+    // Update the value of the corresponding feet input
+    const feetInput = document.getElementById(`${setValue === setLengthMeterValue ? 'lengthFeet' : 'widthFeet'}`);
+    if (feetInput) {
+      feetInput.value = feet.toFixed(2);
+    }
+  };
+
+  const handleMMChange = (e, setDimensionMM, inchesId) => {
+    const mm = e.target.value;
+    const inches = mm / 25.4; // Convert millimeters to inches
+    setDimensionMM(mm); // Update the state with millimeter value
+  
+    // Now update the corresponding inches input
+    const inchesInput = document.getElementById(inchesId);
+    if (inchesInput) {
+      inchesInput.value = inches.toFixed(2);
+    }
+  };
+
+  const handleThicknessMMChange = (e) => {
+    debugger
+    const mm = e.target.value;
+    const inches = mm / 25.4;
+    setThicknessmmInches(mm);
+    const gauge = (0.3249 * Math.pow(10, 4) / (mm - 215.15)).toFixed(2); // Example formula for gauge conversion
+    setThicknessmmGuage(gauge);
+    // Set values for inches and gauge fields
+    const inchesInput = document.getElementById('thicknessInches');
+    const gaugeInput = document.getElementById('thicknessGuage');
+    if (inchesInput && gaugeInput) {
+      inchesInput.value = inches.toFixed(2);
+      gaugeInput.value = gauge;
+    }
+  };
+
+  const handleCheckboxChange = (e, key) => {
+    setCheckboxStates({ ...checkboxStates, [key]: e.target.checked });
+  };
+  const [checkboxStates, setCheckboxStates] = useState({
+    length: false,
+    width: false,
+    flange1: false,
+    flange2: false,
+    thickness: false,
+    height: false,
+    OD: false,
+    NB: false
+  });
+  const additionalParas = [];
+
+  if (checkboxStates.length) {
+    additionalParas.push({
+      parameterName: 'Length',
+      unitType: 'Meters',
+      units: lengthMeterValue,
+    });
+    additionalParas.push({
+      parameterName: 'Length',
+      unitType: 'Feet',
+      units: (parseFloat(lengthMeterValue) * 3.28084).toFixed(2),
+    });
+  }
+
+  if (checkboxStates.width) {
+    additionalParas.push({
+      parameterName: 'Width',
+      unitType: 'Meters',
+      units: widthMeterValue,
+    });
+    additionalParas.push({
+      parameterName: 'Width',
+      unitType: 'Feet',
+      units: (parseFloat(widthMeterValue) * 3.28084).toFixed(2),
+    });
+  }
+
+  if (checkboxStates.flange1) {
+    additionalParas.push({
+      parameterName: 'Flange1',
+      unitType: 'mm',
+      units: flange1MM,
+    });
+    additionalParas.push({
+      parameterName: 'Flange1',
+      unitType: 'Inches',
+      units: (parseFloat(flange1MM) / 25.4).toFixed(2),
+    });
+  }
+
+  if (checkboxStates.flange2) {
+    additionalParas.push({
+      parameterName: 'Flange2',
+      unitType: 'mm',
+      units: flange2MM,
+    });
+    additionalParas.push({
+      parameterName: 'Flange2',
+      unitType: 'Inches',
+      units: (parseFloat(flange2MM) / 25.4).toFixed(2),
+    });
+  }
+
+  if (checkboxStates.thickness) {
+    additionalParas.push({
+      parameterName: 'Thickness',
+      unitType: 'mm',
+      units: thicknessmmInches,
+    });
+    additionalParas.push({
+      parameterName: 'Thickness',
+      unitType: 'Inches',
+      units: (parseFloat(thicknessmmInches) / 25.4).toFixed(2),
+    });
+    additionalParas.push({
+      parameterName: 'Thickness',
+      unitType: 'Guage',
+      units: (0.3249 * Math.pow(10, 4) / (thicknessmmInches - 215.15)).toFixed(2)
+    });
+  }
+
+  if (checkboxStates.height) {
+    additionalParas.push({
+      parameterName: 'Height',
+      unitType: 'mm',
+      units: heightMMValue,
+    });
+    additionalParas.push({
+      parameterName: 'Height',
+      unitType: 'Inches',
+      units: (parseFloat(heightMMValue) / 25.4).toFixed(2),
+    });
+  }
+
+  if (checkboxStates.height) {
+    additionalParas.push({
+      parameterName: 'OD',
+      unitType: 'mm',
+      units: ODMMValue,
+    });
+    additionalParas.push({
+      parameterName: 'OD',
+      unitType: 'Inches',
+      units: (parseFloat(ODMMValue) / 25.4).toFixed(2),
+    });
+  }
+
+  if (checkboxStates.height) {
+    additionalParas.push({
+      parameterName: 'NB',
+      unitType: 'mm',
+      units: ODMMValue,
+    });
+    additionalParas.push({
+      parameterName: 'NB',
+      unitType: 'Inches',
+      units: (parseFloat(NBMMValue) / 25.4).toFixed(2),
+    });
+  }
+  
   return (
     <div>
       <h1>
@@ -403,11 +619,39 @@ const MaterialDV = (props) => {
                   <p>Material Name: {viewMaterialData?.itemName}</p>
                   <p>Material Code: {viewMaterialData?.itemCode}</p>
                   <p>HSN Code: {viewMaterialData?.itemHsnCode}</p>
-                  {viewMaterialData?.categoryName && <p>Main Category Name: {viewMaterialData?.categoryName}</p> }
-                  {viewMaterialData?.categoryName &&<p>Sub Category Name: {viewMaterialData?.subcategoryName}</p>}
+                  {viewMaterialData?.categoryEntity && <p>Main Category Name: {viewMaterialData?.categoryEntity.categoryName}</p> }
+                  {viewMaterialData?.subCategoryEntity &&<p>Sub Category Name: {viewMaterialData?.subCategoryEntity.subcategoryName}</p>}
                   <p>Display Name: {viewMaterialData?.displayName}</p>
                   <p>Brand Name : {viewMaterialData?.brandName}</p>
                   <p>Manufacturer Name: {viewMaterialData?.manufacturerName}</p>
+                  {viewMaterialData?.additionalParams && (
+                  <div>
+                    <p>Additional Parameters:</p>
+                    {JSON.parse(viewMaterialData.additionalParams).map((param, index) => (
+                      <p key={index}>
+                        {param.parameterName}: {param.units} {param.unitType}
+                      </p>
+                    ))}
+                  </div>
+                )}
+                {viewMaterialData?.crossSectionalImage && (
+                <div>
+                  <p>Item Image:</p>
+                  <img src={viewMaterialData.itemImagePresignedURL} alt="ItemImage" />
+                </div>
+              )}
+              <p></p>
+              {viewMaterialData?.itemImage && (
+                <div>
+                  <p>Cross-sectional Image:</p>
+                  <img src={viewMaterialData.crossSectionalImagePresignedURL} alt="Cross-sectionalImage" />
+                </div>
+              )}
+              <p></p>
+              <p>Section Weight</p>
+              {viewMaterialData?.perFeet && <p>kg per meter: {viewMaterialData?.perFeet}</p> }
+              {viewMaterialData?.perMeter && <p>kg per feet: {viewMaterialData?.perMeter}</p> }
+              {viewMaterialData?.perPC && <p>per pc: {viewMaterialData?.perPC}</p> }
                  {/* {viewMaterialData?.description && (
                     <p>
                       <strong>Material Type :</strong>{' '}
@@ -443,7 +687,14 @@ const MaterialDV = (props) => {
               props.form.validateFields((err, values) => {
                 if (!err) {
                   console.log('Received values of form: ', values);
-                  const data = { values, id: props.material?.material?.matId };
+                  debugger
+                  const data = { 
+                    ...values, 
+                    id: props.materialDV?.DVMaterialID?.itemId, 
+                    itemImage: itemImageFile, 
+                    crossSectionalImage: crossSectionalImageFile,
+                    additionalParams: additionalParas 
+                  };
                   props.updateDVMaterial(data);
                   setEditMaterial(false);
                   setShowAddMaterial(false);
@@ -453,8 +704,15 @@ const MaterialDV = (props) => {
             } else {
               props.form.validateFields((err, values) => {
                 if (!err) {
+                  debugger
                   console.log('Received values of form: ', values);
-                  props.addDVMaterial(values);
+                  const data = { 
+                    ...values, 
+                    itemImage: itemImageFile, 
+                    crossSectionalImage: crossSectionalImageFile, 
+                    additionalParams: additionalParas 
+                  };
+                  props.addDVMaterial(data);
                   setShowAddMaterial(false);
                 }
               });
@@ -505,7 +763,25 @@ const MaterialDV = (props) => {
                       rules: [
                         { required: true, message: 'Please enter item grade' },
                       ],
-                    })(<Input id='itemGradeId' {...getFieldProps} />)}
+                    })(
+                    <Select
+                      id="itemGradeId"
+                      showSearch
+                      style={{ width: "100%" }}
+                      filterOption={(input, option) =>
+                        option.props.children
+                            .toLowerCase()
+                            .indexOf(input.toLowerCase()) >= 0
+                    }
+                    allowClear
+                    >
+                      {props.itemGrade?.itemGradeList?.content?.map((grade) => (
+                        <Option key={grade.itemgradeId} value={grade.itemgradeName}>
+                          {grade.itemgradeName}
+                        </Option>
+                      ))}
+                    </Select>
+                  )}
                   </Form.Item>
                   
                   <Form.Item label="Item Main category">
@@ -520,7 +796,6 @@ const MaterialDV = (props) => {
                           <Select
                             id="categoryId"
                             showSearch
-                            mode="multiple"
                             style={{ width: "100%" }}
                             filterOption={(input, option) =>
                               option.props.children
@@ -537,58 +812,6 @@ const MaterialDV = (props) => {
                           </Select>
                         )}
                       </Form.Item>
-                      {/* <Button
-                        type='primary'
-                        htmlType='submit'
-                        onClick={() => setAddMainCategory(true)}
-                      >
-                        Add
-                      </Button>
-                      <Modal
-                        title='Add Main Category'
-                        visible={addMainCategory}
-                        onCancel={() => setAddMainCategory(false)}
-                      >
-                        <Card className='gx-card'>
-                          <Form {...formItemLayout} className='gx-pt-4'>
-                            <Row>
-                              <Col
-                                lg={24}
-                                md={24}
-                                sm={24}
-                                xs={24}
-                                className='gx-align-self-center'
-                              >
-                                <Form.Item label='Item Name'>
-                                  {getFieldDecorator('itemName', {
-                                    rules: [
-                                      {
-                                        required: true,
-                                        message: 'Please enter Item Name',
-                                      },
-                                    ],
-                                  })(
-                                    <Input id='itemName' {...getFieldProps} />
-                                  )}
-                                </Form.Item>
-                                <Form.Item label='Item Code'>
-                                  {getFieldDecorator('itemCode', {
-                                    rules: [
-                                      {
-                                        required: true,
-                                        message: 'Please enter item code',
-                                      },
-                                    ],
-                                  })(
-                                    <Input id='itemCode' {...getFieldProps} />
-                                  )}
-                                </Form.Item>
-                              </Col>
-                            </Row>
-                          </Form>
-                        </Card>
-                      </Modal>*/}
-                    {/* </Col>  */}
 
                     <Form.Item label="Item Sub category">
                         {getFieldDecorator("subCategoryId", {
@@ -600,9 +823,8 @@ const MaterialDV = (props) => {
                           ],
                         })(
                           <Select
-                            id="subCategoryId"
+                            id="subCategoryId1"
                             showSearch
-                            mode="multiple"
                             style={{ width: "100%" }}
                             filterOption={(input, option) =>
                               option.props.children
@@ -619,102 +841,6 @@ const MaterialDV = (props) => {
                           </Select>
                         )}
                       </Form.Item>
-                      {/* <Button
-                        type='primary'
-                        onClick={() => {
-                          props.form.resetFields();
-                          props.resetMaterial();
-                          setAddSubCategory(true);
-                        }}
-                      >
-                        Add
-                      </Button>
-
-                      <Modal
-                        title='Add sub Category'
-                        visible={addSubCategory}
-                        onCancel={() => setAddSubCategory(false)}
-                      >
-                        <Card className='gx-card'>
-                          <Form {...formItemLayout} className='gx-pt-4'>
-                            <Row>
-                              <Col
-                                lg={24}
-                                md={24}
-                                sm={24}
-                                xs={24}
-                                className='gx-align-self-center'
-                              >
-                                <Form.Item label='Main Category'>
-                                  {getFieldDecorator('selectMainCategory', {
-                                    rules: [
-                                      {
-                                        required: true,
-                                        message: 'Please select Main Category!',
-                                      },
-                                    ],
-                                  })(
-                                    <Select
-                                      id='selectMainCategory'
-                                      showSearch
-                                      mode='multiple'
-                                      style={{ width: '100%' }}
-                                      //  onChange={handleSelectChange}
-                                      filterOption={(input, option) => {
-                                        return option?.props?.children
-                                          ?.toLowerCase()
-                                          .includes(input.toLowerCase());
-                                      }}
-                                      filterSort={(optionA, optionB) =>
-                                        optionA?.props?.children
-                                          .toLowerCase()
-                                          .localeCompare(
-                                            optionB?.props?.children.toLowerCase()
-                                          )
-                                      }
-                                    >
-                                      {props?.packetClassification?.processTags?.map(
-                                        (item) => {
-                                          return (
-                                            <Option value={item?.tagId}>
-                                              {item?.tagName}
-                                            </Option>
-                                          );
-                                        }
-                                      )}
-                                    </Select>
-                                  )}
-                                </Form.Item>
-                                <Form.Item label='Item Name'>
-                                  {getFieldDecorator('itemName', {
-                                    rules: [
-                                      {
-                                        required: true,
-                                        message: 'Please enter Item Name',
-                                      },
-                                    ],
-                                  })(
-                                    <Input id='itemName' {...getFieldProps} />
-                                  )}
-                                </Form.Item>
-                                <Form.Item label='Item Code'>
-                                  {getFieldDecorator('itemCode', {
-                                    rules: [
-                                      {
-                                        required: true,
-                                        message: 'Please enter item code',
-                                      },
-                                    ],
-                                  })(
-                                    <Input id='itemCode' {...getFieldProps} />
-                                  )}
-                                </Form.Item>
-                              </Col>
-                            </Row>
-                          </Form>
-                        </Card>
-                      </Modal> */}
-                    {/* </Col> */}
 
                   <Form.Item label='Display Name'>
                     {getFieldDecorator('displayName', {
@@ -731,11 +857,34 @@ const MaterialDV = (props) => {
                       // rules: [{ required: false, message: 'Please enter Item sub category' }],
                     })(<Input id='brandName' {...getFieldProps} />)}
                   </Form.Item>
-                  <Form.Item label='Manufacturers Name'>
-                    {getFieldDecorator('manufacturerName', {
-                      // rules: [{ required: false, message: 'Please enter manufacturers name' }],
-                    })(<Input id='manufacturerName' {...getFieldProps} />)}
-                  </Form.Item>
+                  <Form.Item label="Manufacturers Name">
+                        {getFieldDecorator("manufacturerName", {
+                          rules: [
+                            {
+                              required: true,
+                              message: "Please select manufacturer name!",
+                            },
+                          ],
+                        })(
+                          <Select
+                            id="manufacturerName"
+                            showSearch
+                            style={{ width: "100%" }}
+                            filterOption={(input, option) =>
+                              option.props.children
+                                  .toLowerCase()
+                                  .indexOf(input.toLowerCase()) >= 0
+                          }
+                          allowClear
+                          >
+                            {props.manufacturer?.manufacturerList?.content?.map((manufacturer) => (
+                              <Option key={manufacturer.manufacturerId} value={manufacturer.manufacturerId}>
+                                {manufacturer.manufacturerName}
+                              </Option>
+                            ))}
+                          </Select>
+                        )}
+                      </Form.Item>
                 </Col>
               </Row>
               <Row style={{ marginBottom: '-15px' }}>
@@ -747,8 +896,7 @@ const MaterialDV = (props) => {
                   className='gx-align-self-center'
                 >
                   <Form.Item>
-                    <Checkbox
-                    // onChange={checkboxChange}
+                    <Checkbox onChange={(e) => handleCheckboxChange(e, 'length')}
                     >
                       Length
                     </Checkbox>
@@ -757,18 +905,19 @@ const MaterialDV = (props) => {
 
                 <Form.Item>
                   <Col className='flex-row'>
-                    {getFieldDecorator('meter', {
-                      // rules: [{ required: false, message: 'Please enter manufacturers name' }],
-                    })(<Input id='meter' {...getFieldProps} />)}
+                    {getFieldDecorator('lengthMeter', {
+                      onChange: (e) => handleMeterChange(e, setLengthMeterValue),
+                      initialValue: lengthMeterValue 
+                    })(<Input id='lengthMeter' {...getFieldProps} />)}
                     <label className='left-side-label'>Meters</label>
                   </Col>
                 </Form.Item>
 
                 <Form.Item>
                   <Col className='flex-row'>
-                    {getFieldDecorator('feet', {
-                      // rules: [{ required: false, message: 'Please enter manufacturers name' }],
-                    })(<Input id='feet' {...getFieldProps} disabled />)}
+                    {getFieldDecorator('lengthFeet', {
+                       initialValue: (lengthMeterValue * 3.28084).toFixed(2)
+                    })(<Input id='lengthFeet' {...getFieldProps} disabled />)}
                     <label className='left-side-label'>Feet</label>
                   </Col>
                 </Form.Item>
@@ -784,7 +933,7 @@ const MaterialDV = (props) => {
                 >
                   <Form.Item>
                     <Checkbox
-                    // onChange={checkboxChange}
+                    onChange={(e) => handleCheckboxChange(e, 'width')}
                     >
                       Width
                     </Checkbox>
@@ -795,6 +944,8 @@ const MaterialDV = (props) => {
                   <Col className='flex-row'>
                     {getFieldDecorator('widthMeter', {
                       // rules: [{ required: false, message: 'Please enter manufacturers name' }],
+                      onChange: (e) => handleMeterChange(e, setWidthMeterValue),
+                      initialValue: widthMeterValue
                     })(<Input id='widthMeter' {...getFieldProps} />)}
                     <label className='left-side-label'>Meters</label>
                   </Col>
@@ -804,6 +955,7 @@ const MaterialDV = (props) => {
                   <Col className='flex-row'>
                     {getFieldDecorator('widthFeet', {
                       // rules: [{ required: false, message: 'Please enter manufacturers name' }],
+                      initialValue: (widthMeterValue * 3.28084).toFixed(2)
                     })(<Input id='widthFeet' {...getFieldProps} disabled />)}
                     <label className='left-side-label'>Feet</label>
                   </Col>
@@ -820,7 +972,7 @@ const MaterialDV = (props) => {
                 >
                   <Form.Item>
                     <Checkbox
-                    // onChange={checkboxChange}
+                     onChange={(e) => handleCheckboxChange(e, 'flange1')}
                     >
                       Flange1
                     </Checkbox>
@@ -829,18 +981,20 @@ const MaterialDV = (props) => {
 
                 <Form.Item>
                   <Col className='flex-row'>
-                    {getFieldDecorator('F1mm', {
+                    {getFieldDecorator('Flange1mm', {
                       // rules: [{ required: false, message: 'Please enter manufacturers name' }],
-                    })(<Input id='F1mm' {...getFieldProps} />)}
+                      onChange: (e) => handleMMChange(e, setFlange1MM),
+                      initialValue: flange1MM 
+                    })(<Input id='Flange1mm' {...getFieldProps} />)}
                     <label className='left-side-label'>mm</label>
                   </Col>
                 </Form.Item>
 
                 <Form.Item>
                   <Col className='flex-row-mm'>
-                    {getFieldDecorator('f1inches', {
-                      // rules: [{ required: false, message: 'Please enter manufacturers name' }],
-                    })(<Input id='f1inches' {...getFieldProps} disabled />)}
+                    {getFieldDecorator('flange1inches', {
+                      initialValue: (flange1MM / 25.4).toFixed(2)
+                    })(<Input id='flange1inches' {...getFieldProps} disabled />)}
                     <label className='left-side-label-mm'>Inches</label>
                   </Col>
                 </Form.Item>
@@ -856,7 +1010,7 @@ const MaterialDV = (props) => {
                 >
                   <Form.Item>
                     <Checkbox
-                    // onChange={checkboxChange}
+                     onChange={(e) => handleCheckboxChange(e, 'flange2')}
                     >
                       Flange2
                     </Checkbox>
@@ -865,18 +1019,19 @@ const MaterialDV = (props) => {
 
                 <Form.Item>
                   <Col className='flex-row'>
-                    {getFieldDecorator('F2mm', {
-                      // rules: [{ required: false, message: 'Please enter manufacturers name' }],
-                    })(<Input id='F2mm' {...getFieldProps} />)}
+                    {getFieldDecorator('Flange2mm', {
+                      onChange: (e) => handleMMChange(e, setFlange2MM),
+                      initialValue: flange2MM 
+                    })(<Input id='Flange2mm' {...getFieldProps} />)}
                     <label className='left-side-label'>mm</label>
                   </Col>
                 </Form.Item>
 
                 <Form.Item>
                   <Col className='flex-row-mm'>
-                    {getFieldDecorator('f2inches', {
-                      // rules: [{ required: false, message: 'Please enter manufacturers name' }],
-                    })(<Input id='f2inches' {...getFieldProps} disabled />)}
+                    {getFieldDecorator('flange2inches', {
+                      initialValue: (flange2MM / 25.4).toFixed(2)
+                    })(<Input id='flange2inches' {...getFieldProps} disabled />)}
                     <label className='left-side-label-mm'>Inches</label>
                   </Col>
                 </Form.Item>
@@ -892,7 +1047,7 @@ const MaterialDV = (props) => {
                 >
                   <Form.Item>
                     <Checkbox
-                    // onChange={checkboxChange}
+                     onChange={(e) => handleCheckboxChange(e, 'thickness')}
                     >
                       Thickness
                     </Checkbox>
@@ -902,7 +1057,8 @@ const MaterialDV = (props) => {
                 <Form.Item>
                   <Col className='flex-row'>
                     {getFieldDecorator('thicknessmm', {
-                      // rules: [{ required: false, message: 'Please enter manufacturers name' }],
+                      onChange: handleThicknessMMChange,
+                      //  initialValue: thicknessmmInches 
                     })(<Input id='thicknessmm' {...getFieldProps} />)}
                     <label className='left-side-label'>mm</label>
                   </Col>
@@ -911,7 +1067,7 @@ const MaterialDV = (props) => {
                 <Form.Item>
                   <Col className='flex-row-mm'>
                     {getFieldDecorator('thicknessInches', {
-                      // rules: [{ required: false, message: 'Please enter manufacturers name' }],
+                      initialValue: (thicknessmmInches / 25.4).toFixed(2)
                     })(
                       <Input id='thicknessInches' {...getFieldProps} disabled />
                     )}
@@ -922,7 +1078,7 @@ const MaterialDV = (props) => {
                 <Form.Item>
                   <Col className='flex-row' style={{ marginRight: '-40px' }}>
                     {getFieldDecorator('thicknessGuage', {
-                      // rules: [{ required: false, message: 'Please enter manufacturers name' }],
+                      initialValue: thicknessmmGuage
                     })(
                       <Input id='thicknessGuage' {...getFieldProps} disabled />
                     )}
@@ -946,7 +1102,7 @@ const MaterialDV = (props) => {
                 >
                   <Form.Item>
                     <Checkbox
-                    // onChange={checkboxChange}
+                     onChange={(e) => handleCheckboxChange(e, 'height')}
                     >
                       Height
                     </Checkbox>
@@ -956,7 +1112,8 @@ const MaterialDV = (props) => {
                 <Form.Item>
                   <Col className='flex-row'>
                     {getFieldDecorator('heightmm', {
-                      // rules: [{ required: false, message: 'Please enter manufacturers name' }],
+                      onChange: (e) => handleMMChange(e, setHeightMMValue),
+                      initialValue: heightMMValue 
                     })(<Input id='heightmm' {...getFieldProps} />)}
                     <label className='left-side-label'>mm</label>
                   </Col>
@@ -965,7 +1122,7 @@ const MaterialDV = (props) => {
                 <Form.Item>
                   <Col className='flex-row-mm'>
                     {getFieldDecorator('heightInches', {
-                      // rules: [{ required: false, message: 'Please enter manufacturers name' }],
+                      initialValue: (heightMMValue / 25.4).toFixed(2),
                     })(<Input id='heightInches' {...getFieldProps} disabled />)}
                     <label className='left-side-label-mm'>Inches</label>
                   </Col>
@@ -982,7 +1139,7 @@ const MaterialDV = (props) => {
                 >
                   <Form.Item>
                     <Checkbox
-                    // onChange={checkboxChange}
+                     onChange={(e) => handleCheckboxChange(e, 'OD')}
                     >
                       OD
                     </Checkbox>
@@ -992,7 +1149,8 @@ const MaterialDV = (props) => {
                 <Form.Item>
                   <Col className='flex-row'>
                     {getFieldDecorator('ODmm', {
-                      // rules: [{ required: false, message: 'Please enter manufacturers name' }],
+                      onChange: (e) => handleMMChange(e, setODtMMValue),
+                      initialValue: ODMMValue 
                     })(<Input id='ODmm' {...getFieldProps} />)}
                     <label className='left-side-label'>mm</label>
                   </Col>
@@ -1001,7 +1159,7 @@ const MaterialDV = (props) => {
                 <Form.Item>
                   <Col className='flex-row-mm'>
                     {getFieldDecorator('ODInches', {
-                      // rules: [{ required: false, message: 'Please enter manufacturers name' }],
+                      initialValue: (ODMMValue / 25.4).toFixed(2),
                     })(<Input id='ODInches' {...getFieldProps} disabled />)}
                     <label className='left-side-label-mm'>Inches</label>
                   </Col>
@@ -1018,7 +1176,7 @@ const MaterialDV = (props) => {
                 >
                   <Form.Item>
                     <Checkbox
-                    // onChange={checkboxChange}
+                     onChange={(e) => handleCheckboxChange(e, 'NB')}
                     >
                       NB
                     </Checkbox>
@@ -1028,7 +1186,8 @@ const MaterialDV = (props) => {
                 <Form.Item>
                   <Col className='flex-row'>
                     {getFieldDecorator('NBmm', {
-                      // rules: [{ required: false, message: 'Please enter manufacturers name' }],
+                      onChange: (e) => handleMMChange(e, setNBMMValue),
+                      initialValue: NBMMValue 
                     })(<Input id='NBmm' {...getFieldProps} />)}
                     <label className='left-side-label'>mm</label>
                   </Col>
@@ -1037,7 +1196,7 @@ const MaterialDV = (props) => {
                 <Form.Item>
                   <Col className='flex-row-mm'>
                     {getFieldDecorator('NBInches', {
-                      // rules: [{ required: false, message: 'Please enter manufacturers name' }],
+                      initialValue: (NBMMValue / 25.4).toFixed(2),
                     })(<Input id='NBInches' {...getFieldProps} disabled />)}
                     <label className='left-side-label-mm'>Inches</label>
                   </Col>
@@ -1111,7 +1270,7 @@ const MaterialDV = (props) => {
                   <Dragger
                     name='crossSectionalImage'
                     height={50}
-                    onChange={(e) => onItemFileChange(e)}
+                    onChange={(e) => onCrossFileChange(e)}
                   >
                     <p>
                       <Icon type='upload' />
@@ -1215,7 +1374,9 @@ const MaterialDV = (props) => {
 
 const mapStateToProps = (state) => ({
   materialDV: state.materialDV,
-  category: state.category
+  category: state.category,
+  manufacturer: state.manufacturer,
+  itemGrade: state.itemGrade
 });
 
 const addMaterialDVForm = Form.create({
@@ -1225,24 +1386,28 @@ const addMaterialDVForm = Form.create({
     );
     return {
       itemName:Form.createFormField ({
-          ...props.materialDV?.DVMaterialID?.ItemName,
-          value: props.materialDV?.DVMaterialID?.ItemName|| '',
+          ...props.materialDV?.DVMaterialID?.itemName,
+          value: props.materialDV?.DVMaterialID?.itemName|| '',
       }),
       itemCode:Form.createFormField ({
           ...props.materialDV?.DVMaterialID?.itemCode,
           value: props.materialDV?.DVMaterialID?.itemCode|| '',
+      }),
+      itemHsnCode:Form.createFormField ({
+          ...props.materialDV?.DVMaterialID?.itemHsnCode,
+          value: props.materialDV?.DVMaterialID?.itemHsnCode|| '',
       }),
       itemGradeId:Form.createFormField ({
           ...props.materialDV?.DVMaterialID?.itemGradeId,
           value: props.materialDV?.DVMaterialID?.itemGradeId|| '',
       }),
       categoryId:Form.createFormField ({
-          ...props.materialDV?.DVMaterialID?.categoryId,
-          value: props.materialDV?.DVMaterialID?.categoryId|| '',
+          ...props.materialDV?.DVMaterialID?.categoryEntity?.categoryId,
+          value: props.materialDV?.DVMaterialID?.categoryEntity?.categoryId|| '',
       }),
       subCategoryId:Form.createFormField ({
-          ...props.materialDV?.DVMaterialID?.subCategoryId,
-          value: props.materialDV?.DVMaterialID?.subCategoryId|| '',
+          ...props.materialDV?.DVMaterialID?.subCategoryEntity?.subcategoryId,
+          value: props.materialDV?.DVMaterialID?.subCategoryEntity?.subcategoryId|| '',
       }),
       displayName:Form.createFormField ({
           ...props.materialDV?.DVMaterialID?.displayName,
@@ -1283,6 +1448,7 @@ const addMaterialDVForm = Form.create({
       hsnCode: Form.createFormField({
         value: props.material?.material?.hsnCode || '',
       }),
+
     };
   },
 })(MaterialDV);
@@ -1295,5 +1461,7 @@ export default connect(mapStateToProps, {
   resetMaterial,
   fetchMainCategoryList,
   fetchSubCategoryList,
-  deleteDVMaterial
+  deleteDVMaterial,
+  fetchManufacturerList,
+  fetchItemGradeList
 })(addMaterialDVForm);

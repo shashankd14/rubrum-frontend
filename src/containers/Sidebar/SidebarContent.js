@@ -280,6 +280,20 @@ const SidebarContent = () => {
                     </Link>
                   </Menu.Item>}
 
+                  {menuLabelList.includes(sidebarMenuItems.manufacturer) && <Menu.Item key="company/master/manufacturer">
+                    <Link to="/company/master/manufacturer">
+                      <i className="icon icon-crypto"/>
+                      <span><IntlMessages id="sidebar.master.manufacturer"/></span>
+                    </Link>
+                  </Menu.Item>}
+
+                  {menuLabelList.includes(sidebarMenuItems.itemGrade) && <Menu.Item key="company/master/itemGrade">
+                    <Link to="/company/master/itemGrade">
+                      <i className="icon icon-crypto"/>
+                      <span><IntlMessages id="sidebar.master.itemGrade"/></span>
+                    </Link>
+                  </Menu.Item>}
+
                   {/* <Menu.Item key="company/master/quality">
                     <Link to="/company/master/quality">
                       <i className="icon icon-crypto" />

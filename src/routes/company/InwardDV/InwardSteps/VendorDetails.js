@@ -3,11 +3,11 @@ import {connect} from "react-redux";
 import {setInwardDetails, checkCustomerBatchNumber} from "../../../../appRedux/actions";
 import {Form, Spin, AutoComplete, Icon, Button, Col, Row, Input, Select, Card} from "antd";
 import {formItemLayout} from '../Create';
-
+import {fetchVendorList} from "../../../../appRedux/actions";
 const Option = Select.Option;
 
 const CreateVendorDetailsForm = (props) => {
-    const {getFieldDecorator} = props.form;
+    const {getFieldDecorator, setFieldsValue } = props.form;
     const [dataSource, setDataSource] = useState([]);
     useEffect(() => {
         if(props.params !=="") {
@@ -59,6 +59,18 @@ const CreateVendorDetailsForm = (props) => {
         }
         callback('The coil number already exists');
     };
+
+    useEffect(() => {
+        props.fetchVendorList({
+            searchText:"",
+            pageNo: "1",
+            pageSize: "15",
+            ipAddress: "1.1.1.1",
+            requestId: "VENDOR_LIST_GET",
+            userId: ""
+        });
+    }, []);
+
     return (
         <>
         <Col span={16}>
@@ -66,23 +78,42 @@ const CreateVendorDetailsForm = (props) => {
             {props.party.partyList.length > 0 &&
                 // <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4" style={{"width":"70%"}}>
                 <Form {...formItemLayout} className="login-form gx-pt-4" >
-                    <Form.Item label="Vendor Name">
-                        {getFieldDecorator('partyName', {
-                            // rules: [{ required: true, message: 'Please input the Vendor name!' }],
+                     <Form.Item label="Vendor Name">
+                        {getFieldDecorator("vendorName", {
+                          rules: [
+                            {
+                              required: true,
+                              message: "Please select vendor name!",
+                            },
+                          ],
                         })(
-                            <AutoComplete
-                                placeholder="Select vendor name"
-                                dataSource={dataSource}
-                                onChange= {props.params !== "" ?(e) =>handleChange(e): ""}
-                                filterOption={(inputValue, option) =>
-                                    option.props.children.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
-                                }
-                            />
+                          <Select
+                            id="vendorName"
+                            showSearch
+                            style={{ width: "100%" }}
+                            filterOption={(input, option) =>
+                              option.props.children
+                                  .toLowerCase()
+                                  .indexOf(input.toLowerCase()) >= 0
+                          }
+                          allowClear
+                          onChange={(value) => {
+                            // Set the value of the vendorId field when a vendor is selected
+                            setFieldsValue({ vendorId: value });
+                          }}
+                        >
+                          {props.vendor?.vendorList?.content?.map((vendor) => (
+                            <Option key={vendor.vendorId} value={vendor.vendorId}>
+                              {vendor.vendorName}
+                            </Option>
+                            ))}
+                          </Select>
                         )}
-                    </Form.Item>
+                      </Form.Item>
                     <Form.Item label="Vendor Id">
                             {getFieldDecorator('vendorId', {
                             rules: [{ required: false, message: 'Please input the coil number!' }],
+                            initialValue:''
                             })(
                                 <Input id="customerId" disabled/>
                             )}
@@ -131,6 +162,8 @@ const mapStateToProps = state => ({
     party: state.party,
     inward: state.inward.inward,
     inwardStatus: state.inward,
+    vendor: state.vendor,
+    inwardDV: state.inwardDV
 });
 
 const VendorDetailsForm = Form.create({
@@ -138,6 +171,14 @@ const VendorDetailsForm = Form.create({
     },
     mapPropsToFields(props) {
         return {
+            vendorName: Form.createFormField({
+                ...props.inwardDV.vendorName,
+                // value: props.inwardDV.vendorName: '',
+            }),
+            vendorId: Form.createFormField({
+                ...props.inwardDV.vendorId,
+                // value: props.inwardDV.vendorId: '',
+            }),
             partyName: Form.createFormField({
                 ...props.inward.partyName,
                 value: ( props.params !== "" && props.inward.party) ?props.inward.party.partyName :(props.inward.partyName) ? props.inward.partyName: '',
@@ -167,5 +208,6 @@ const VendorDetailsForm = Form.create({
 
 export default connect(mapStateToProps, {
     setInwardDetails,
-    checkCustomerBatchNumber
+    checkCustomerBatchNumber,
+    fetchVendorList
 })(VendorDetailsForm);

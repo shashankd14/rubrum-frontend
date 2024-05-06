@@ -52,18 +52,36 @@ function* fetchDVMaterialList({action}) {
 }
 
 function* addDVMaterial(action) {
+    let payload = action.DVMaterial
+    const materialMasterRequest = {
+        itemHsnCode: payload.values.itemHsnCode,
+        itemName: payload.values.itemName,
+        itemCode: payload.values.itemCode,
+        itemGradeId: payload.values.itemGradeId,
+        subCategoryId: payload.values.subCategoryId,
+        categoryId: payload.values.categoryId,
+        displayName: payload.values.displayName,
+        brandName: payload.values.brandName,
+        manufacturerName: payload.values.manufacturerName,
+        perMeter: payload.values.perMeter,
+        perFeet: payload.values.perFeet,
+        perPC: payload.values.perPC,
+        ipAddress: "11111",
+        requestId: "MATERIAL_ADD",
+        userId: getUserId()
+    }
+    
+    const formData = new FormData();
+    formData.append("materialMasterRequest", JSON.stringify(materialMasterRequest));
+    formData.append("additionalParams", JSON.stringify(payload.additionalParams));
+    formData.append("itemImage", JSON.stringify(payload.itemImage || ''));
+    formData.append("crossSectionalImage", JSON.stringify(payload.crossSectionalImage || ''));
+    
     try {
-        const { description, grade, hsnCode, materialCode } = action.material;
-        const materialObj = {
-            material: description,
-            grade,
-            hsnCode,
-            materialCode
-        }
-        const addMaterial = yield fetch(`${baseUrl}api/material/save`, {
+        const addMaterial = yield fetch(`${baseUrl}api/trading/material/save`, {
                 method: 'POST',
-                headers: { "Content-Type": "application/json", ...getHeaders() },
-                body:JSON.stringify(materialObj)
+                headers: {...getHeaders() },
+                body:formData
             
         });
         if (addMaterial.status == 200) {
@@ -78,19 +96,37 @@ function* addDVMaterial(action) {
 }
 
 function* updateDVMaterial(action) {
+    debugger
+    let payload = action.DVMaterial
+    const materialMasterRequest = {
+        itemId:payload.id,
+        itemHsnCode: payload.itemHsnCode,
+        itemName: payload.itemName,
+        itemCode: payload.itemCode,
+        itemGradeId: payload.itemGradeId,
+        subCategoryId: payload.subCategoryId,
+        categoryId: payload.categoryId,
+        displayName: payload.displayName,
+        brandName: payload.brandName,
+        manufacturerName: payload.manufacturerName,
+        perMeter: payload.perMeter,
+        perFeet: payload.perFeet,
+        perPC: payload.perPC,
+        ipAddress: "11111",
+        requestId: "MATERIAL_ADD",
+        userId: getUserId()
+    }
+    
+    const formData = new FormData();
+    formData.append("materialMasterRequest", JSON.stringify(materialMasterRequest));
+    formData.append("additionalParams", JSON.stringify(payload.additionalParams));
+    formData.append("itemImage", JSON.stringify(payload.itemImage || ''));
+    formData.append("crossSectionalImage", JSON.stringify(payload.crossSectionalImage || ''));
     try {
-        const { values: { description, grade, hsnCode, materialCode }, id } = action.material;
-        const materialObj = {
-            matId: id,
-            material: description,
-            grade,
-            materialCode,
-            hsnCode
-        }
-        const updateMaterial = yield fetch(`${baseUrl}api/material/update`, {
-                method: 'PUT',
-                headers: { "Content-Type": "application/json", ...getHeaders() },
-                body:JSON.stringify(materialObj)
+        const updateMaterial = yield fetch(`${baseUrl}api/trading/material/save`, {
+                method: 'POST',
+                headers: { ...getHeaders() },
+                body: formData
             
         });
         if (updateMaterial.status == 200) {

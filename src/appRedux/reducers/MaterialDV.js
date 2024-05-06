@@ -75,7 +75,7 @@ export default (state = INIT_STATE, action) => {
             return {
                 ...state,
                 loading: false,
-                DVMaterialID: action.DVMaterial
+                DVMaterialID: action.DVmaterial
             }
         }
         case FETCH_DV_MATERIAL_LIST_ID_ERROR: {

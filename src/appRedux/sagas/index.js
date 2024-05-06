@@ -18,6 +18,9 @@ import locationSagas from './Location';
 import DVmaterialSagas from './MaterialDV';
 import categorySagas from './Category';
 import weighbridgeSagas from './Weighbridge';
+import manufacturerSagas from './Manufacturer';
+import itemGradeSagas from './ItemGrade';
+import inwardDVSagas from './InwardDV';
 
 export default function* rootSaga() {
   yield all([fork(authSagas)]);
@@ -39,4 +42,7 @@ export default function* rootSaga() {
   yield all([fork(DVmaterialSagas)]);
   yield all([fork(categorySagas)]);
   yield all([fork(weighbridgeSagas)]);
+  yield all([fork(manufacturerSagas)]);
+  yield all([fork(itemGradeSagas)]);
+  yield all([fork(inwardDVSagas)]);
 }

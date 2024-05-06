@@ -61,6 +61,7 @@ const CreateTemplate = (props) => {
     }
 
     const handleCreate = (data) => {
+        debugger
         if (!templateName || templateName === "") {
             setTemplateNameErr(true);
             document.getElementById('templateName').focus();
@@ -87,6 +88,7 @@ const CreateTemplate = (props) => {
         request.append("stageName", stageName);
         request.append("userId", localStorage.getItem("userId").toString());
         request.append("templateDetails", JSON.stringify(templateDetails));
+        debugger
         if(action == 'create')
             props.saveQualityTemplate(request);
         else if(action == 'edit')

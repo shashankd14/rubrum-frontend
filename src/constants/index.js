@@ -29,5 +29,7 @@ export const sidebarMenuItems = {
     category: "Vendor",
     weighbridge: "Vendor",
     inwardDV: "Inward",
-    stockRegister: "Stock Register"
+    stockRegister: "Stock Register",
+    manufacturer: "Location",
+    itemGrade: "Location"
 }

@@ -120,7 +120,6 @@ const Weighbridge = (props) => {
         setViewWeighbridge(true);
     }
     const onDelete = (record,key, e) => {
-        debugger
         props.deleteWeighbridge({
             ids: record.weighbridgeId,
             ipAddress: "1.1.1.1",
@@ -130,7 +129,6 @@ const Weighbridge = (props) => {
       }
 
       const onEdit = (record,e)=>{
-        debugger
         e.preventDefault();
         props.fetchWeighbridgeListId({
             id: record.weighbridgeId,
@@ -192,7 +190,6 @@ const Weighbridge = (props) => {
     };
 
     useEffect(() => {
-        debugger
         if (totalItems) {
           setTotalPageItems(totalItems);
         }
@@ -297,7 +294,6 @@ const Weighbridge = (props) => {
                         if (editWeighbridge) {
                             e.preventDefault();
                             props.form.validateFields((err, values) => {
-                                debugger
                                 if (!err) {
                                  const data = {
                                     values: {
@@ -313,7 +309,6 @@ const Weighbridge = (props) => {
                             });
                         } else {
                             props.form.validateFields((err, values) => {
-                                debugger
                                 if (!err) {
                                  e.preventDefault();
                                  props.addWeighbridge({

@@ -2,16 +2,16 @@ import {all, put, fork, takeLatest} from "redux-saga/effects";
 import { getUserToken, getUserId } from './common';
 import {FETCH_WEIGHBRIDGE_LIST_REQUEST, ADD_WEIGHBRIDGE_REQUEST, UPDATE_WEIGHBRIDGE_REQUEST, FETCH_WEIGHBRIDGE_LIST_ID_REQUEST, DELETE_WEIGHBRIDGE_REQUEST } from "../../constants/ActionTypes";
 import {
-    addLocationSuccess,
-    addLocationError,
-    updateLocationSuccess,
-    updateLocationError,
-    deleteLocationSuccess,
-    deleteLocationError,
     fetchWeighbridgeListSuccess,
     fetchWeighbridgeListError,
     fetchWeighbridgeListIdSuccess,
     fetchWeighbridgeListIdError,
+    addWeighbridgeSuccess,
+    addWeighbridgeError,
+    updateWeighbridgeSuccess,
+    updateWeighbridgeError,
+    deleteWeighbridgeSuccess,
+    deleteWeighbridgeError,
 } from "../actions";
 import { userSignOutSuccess } from "../../appRedux/actions/Auth";
 
@@ -91,19 +91,19 @@ function* addWeighbridge(action) {
         userId: getUserId()
     }
     try {
-        const addLocation = yield fetch(`${baseUrl}api/trading/weighbridge/save`, {
+        const addWeighbridge = yield fetch(`${baseUrl}api/trading/weighbridge/save`, {
             method: 'POST',
             headers: { "Content-Type": "application/json", ...getHeaders() },
             body:JSON.stringify(reqBody)
         });
-        if (addLocation.status == 200) {
-            yield put(addLocationSuccess());
-        } else if (addLocation.status === 401) {
+        if (addWeighbridge.status == 200) {
+            yield put(addWeighbridgeSuccess());
+        } else if (addWeighbridge.status === 401) {
             yield put(userSignOutSuccess());
         } else
-            yield put(addLocationError('error'));
+            yield put(addWeighbridgeError('error'));
     } catch (error) {
-        yield put(addLocationError(error));
+        yield put(addWeighbridgeError(error));
     }
 }
 
@@ -123,21 +123,21 @@ function* updateWeighbridge(action) {
         userId: getUserId()
     }
     try {
-        const updateLocation = yield fetch(`${baseUrl}api/trading/weighbridge/update`, {
+        const updateWeighbridge = yield fetch(`${baseUrl}api/trading/weighbridge/update`, {
             method: 'PUT',
             headers: { "Content-Type": "application/json", ...getHeaders() },
             body:JSON.stringify(reqBody)
 
         });
-        if (updateLocation.status == 200) {
-            yield put(updateLocationSuccess());
-        } else if (updateLocation.status === 401) {
+        if (updateWeighbridge.status == 200) {
+            yield put(updateWeighbridgeSuccess());
+        } else if (updateWeighbridge.status === 401) {
             yield put(userSignOutSuccess());
         } else
-            yield put(updateLocationError('error'));
+            yield put(updateWeighbridgeError('error'));
     } catch (error) {
         console.log(error);
-        yield put(updateLocationError(error));
+        yield put(updateWeighbridgeError(error));
     }
 }
 
@@ -150,21 +150,21 @@ function* deleteWeighbridgeSaga(action) {
         userId: getUserId()
     }
     try {
-        const deleteLocation = yield fetch(`${baseUrl}api/trading/weighbridge/delete`, {
+        const deleteWeighbridge = yield fetch(`${baseUrl}api/trading/weighbridge/delete`, {
             method: 'POST',
             headers: { "Content-Type": "application/json", ...getHeaders() },
             body:JSON.stringify(reqBody)
 
         });
-        if (deleteLocation.status == 200) {
-            yield put(deleteLocationSuccess());
-        } else if (deleteLocation.status === 401) {
+        if (deleteWeighbridge.status == 200) {
+            yield put(deleteWeighbridgeSuccess());
+        } else if (deleteWeighbridge.status === 401) {
             yield put(userSignOutSuccess());
         } else
-            yield put(deleteLocationError('error'));
+            yield put(deleteWeighbridgeError('error'));
     } catch (error) {
         console.log(error);
-        yield put(deleteLocationError(error));
+        yield put(deleteWeighbridgeError(error));
     }
 }
 
