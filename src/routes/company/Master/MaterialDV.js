@@ -1261,7 +1261,7 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
                   >
                     <p>
                       <Icon type='upload' />
-                      &nbsp; Image upload here
+                      &nbsp; Upload image here
                     </p>
                   </Dragger>
                 </Col>
@@ -1274,7 +1274,7 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
                   >
                     <p>
                       <Icon type='upload' />
-                      &nbsp; Image upload here
+                      &nbsp; Upload image here
                     </p>
                   </Dragger>
                 </Col>

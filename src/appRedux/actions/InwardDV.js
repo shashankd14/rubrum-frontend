@@ -84,3 +84,39 @@ export const deleteInwardDVError = (error) => ({
     type: actionTypes.DELETE_INWARD_DV_ERROR,
     error
 });
+//Generate Inward Id
+export const generateInwardId = (payload) => ({
+    type: actionTypes.GENERATE_INWARD_ID_REQUEST,
+    payload
+});
+
+export const generateInwardIdSuccess = (InwardId) => ({
+    type: actionTypes.GENERATE_INWARD_ID_SUCCESS,
+    InwardId
+});
+
+export const generateInwardIdError = (error) => ({
+    type: actionTypes.GENERATE_INWARD_ID_ERROR,
+    error
+});
+
+export const setInwardDVDetails = (inward) => ({
+    type: actionTypes.SET_INWARD_DV_DETAILS,
+    inward
+});
+
+//Generate consignment Id
+export const generateConsignmentId = (payload) => ({
+    type: actionTypes.GENERATE_CONSIGNMENT_ID_REQUEST,
+    payload
+});
+
+export const generateConsignmentIdSuccess = (ConsignmentId) => ({
+    type: actionTypes.GENERATE_CONSIGNMENT_ID_SUCCESS,
+    ConsignmentId
+});
+
+export const generateConsignmentIdError = (error) => ({
+    type: actionTypes.GENERATE_CONSIGNMENT_ID_ERROR,
+    error
+});

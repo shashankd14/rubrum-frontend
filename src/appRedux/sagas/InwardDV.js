@@ -1,6 +1,6 @@
 import {all, put, fork, takeLatest} from "redux-saga/effects";
 import { getUserToken, getUserId } from './common';
-import { FETCH_ITEMGRADE_LIST_REQUEST, ADD_ITEMGRADE_REQUEST, UPDATE_ITEMGRADE_REQUEST, FETCH_ITEMGRADE_LIST_ID_REQUEST, DELETE_ITEMGRADE_REQUEST, FETCH_INWARD_DV_LIST_REQUEST, ADD_INWARD_DV_REQUEST, UPDATE_INWARD_DV_REQUEST, FETCH_INWARD_DV_LIST_ID_REQUEST, DELETE_INWARD_DV_REQUEST } from "../../constants/ActionTypes";
+import { FETCH_ITEMGRADE_LIST_REQUEST, ADD_ITEMGRADE_REQUEST, UPDATE_ITEMGRADE_REQUEST, FETCH_ITEMGRADE_LIST_ID_REQUEST, DELETE_ITEMGRADE_REQUEST, FETCH_INWARD_DV_LIST_REQUEST, ADD_INWARD_DV_REQUEST, UPDATE_INWARD_DV_REQUEST, FETCH_INWARD_DV_LIST_ID_REQUEST, DELETE_INWARD_DV_REQUEST, GENERATE_INWARD_ID_REQUEST, GENERATE_CONSIGNMENT_ID_REQUEST } from "../../constants/ActionTypes";
 import {
     fetchItemGradeListSuccess,
     fetchItemGradeListError,
@@ -18,6 +18,10 @@ import {
     fetchInwardListError,
     deleteInwardDVSuccess,
     deleteInwardDVError,
+    generateInwardIdSuccess,
+    generateInwardIdError,
+    generateConsignmentIdSuccess,
+    generateConsignmentIdError,
 } from "../actions";
 import { userSignOutSuccess } from "../../appRedux/actions/Auth";
 
@@ -165,12 +169,67 @@ function* deleteInwardSaga(action) {
     }
 }
 
+function* generateInwardIdSaga(action) {
+    debugger
+    let body = action.payload;
+    const reqBody = {
+        fieldName: body.fieldName,
+        ipAddress: "1.1.1.1",
+        requestId: body.requestId,
+        userId: getUserId()
+    }
+    try {
+        const generateInwardId =  yield fetch(`${baseUrl}api/trading/inward/generateSeq`, {
+            method: 'POST',
+            headers: { "Content-Type": "application/json", ...getHeaders() },
+            body:JSON.stringify(reqBody)
+        });
+        if(generateInwardId.status === 200) {
+            const generateInwardIDResponse = yield generateInwardId.json();
+            yield put(generateInwardIdSuccess(generateInwardIDResponse));
+        } else if (generateInwardId.status === 401) {
+            yield put(userSignOutSuccess());
+        } else
+            yield put(generateInwardIdError('error'));
+    } catch (error) {
+        yield put(generateInwardIdError(error));
+    }
+}
+
+function* generateConsignmentIdSaga(action) {
+    let body = action.payload;
+    const reqBody = {
+        fieldName: body.fieldName,
+        ipAddress: "1.1.1.1",
+        requestId: body.requestId,
+        userId: getUserId()
+    }
+    try {
+        const generateConsignmentId =  yield fetch(`${baseUrl}api/trading/inward/generateSeq`, {
+            method: 'POST',
+            headers: { "Content-Type": "application/json", ...getHeaders() },
+            body:JSON.stringify(reqBody)
+        });
+        if(generateConsignmentId.status === 200) {
+            const generateConsignmentIDResponse = yield generateConsignmentId.json();
+            yield put(generateConsignmentIdSuccess(generateConsignmentIDResponse));
+        } else if (generateConsignmentId.status === 401) {
+            yield put(userSignOutSuccess());
+        } else
+            yield put(generateConsignmentIdError('error'));
+    } catch (error) {
+        yield put(generateConsignmentIdError(error));
+    }
+}
+
 export function* watchFetchRequests() {
     yield takeLatest(FETCH_INWARD_DV_LIST_REQUEST, fetchInwardList);
     yield takeLatest(ADD_INWARD_DV_REQUEST, addItemGrade);
     yield takeLatest(UPDATE_INWARD_DV_REQUEST, updateItemGrade);
     yield takeLatest(FETCH_INWARD_DV_LIST_ID_REQUEST, fetchInwardListById);
     yield takeLatest(DELETE_INWARD_DV_REQUEST, deleteInwardSaga);
+    yield takeLatest(GENERATE_INWARD_ID_REQUEST, generateInwardIdSaga);
+    yield takeLatest(GENERATE_CONSIGNMENT_ID_REQUEST, generateConsignmentIdSaga);
 }
 
 export default function* inwardDVSagas() {

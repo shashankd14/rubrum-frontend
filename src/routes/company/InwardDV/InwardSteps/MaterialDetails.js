@@ -3,8 +3,8 @@ import {AutoComplete, Form, Input, Button, Icon, Row, Col, Card, Select} from "a
 import {connect} from "react-redux";
 
 import {formItemLayout} from '../Create';
-import {fetchDVMaterialList, setInwardDetails, checkIfCoilExists, getGradeByMaterialId, fetchPartyList} from "../../../../appRedux/actions";
-
+import {fetchDVMaterialList, fetchVendorList, setInwardDVDetails, checkIfCoilExists, getGradeByMaterialId, fetchPartyList} from "../../../../appRedux/actions";
+import { generateInwardId} from "../../../../appRedux/actions";
 const MaterialDetailsForm = (props) => {
     const Option = Select.Option;
     const {getFieldDecorator} = props.form;
@@ -24,7 +24,7 @@ const MaterialDetailsForm = (props) => {
         //         }else{
         //             inward.length = length
         //         }
-        //         props.setInwardDetails({ ...props.inward, ...inward});
+        //         props.setInwardDVDetails({ ...props.inward, ...inward});
         //         props.getGradeByMaterialId(props.params!=="" ?props.inward.material.matId :props.inward.description);
         //         props.updateStep(3);
         //     }
@@ -101,6 +101,20 @@ const MaterialDetailsForm = (props) => {
             requestId: "MATERIAL_LIST_GET",
             userId: ""
         });
+        props.generateInwardId({
+            fieldName: "INWARD_ITEM_ID",
+            ipAddress: "1.1.1.1",
+            requestId: "GENERATE_SEQ",
+            userId: ""
+        })
+        props.fetchVendorList({
+            searchText:"",
+            pageNo: "1",
+            pageSize: "15",
+            ipAddress: "1.1.1.1",
+            requestId: "VENDOR_LIST_GET",
+            userId: ""
+        });
     }, []);
     useEffect(() => {
         if(props.inward.width && props.inward.thickness && props.inward.netWeight) {
@@ -112,22 +126,35 @@ const MaterialDetailsForm = (props) => {
         partyList = partyList.find(item => item.nPartyId===Number(props.inward.partyName))
         return partyList?.partyName
     }
-    console.log("props.materialDV.DVMaterialList", props.materialDV.DVMaterialList.content)
+    const [vendorBatchNo, setVendorBatchNo] = useState();
+    const [vendorName, setVendorName] = useState();
+    useEffect(() => {
+      debugger
+      const vendorId = props.inwardDV.vendorName;
+      let vendorBatchNo = '';
+      let vendorName = '';
+      const response = props.vendor.content
+          const selectedVendorName = response.find(vendor => vendor.vendorId === vendorId);
+          vendorName = selectedVendorName.vendorName;
+      setVendorBatchNo(vendorBatchNo);
+      setVendorName(vendorName);
+    },[])
     return (
         <>
             <Col span={14}>
             {/* <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4"> */}
             <Form {...formItemLayout} className="login-form gx-pt-4">
                 <Form.Item label="Inward ID">
-                    {getFieldDecorator('width', {
+                    {getFieldDecorator('inwardId', {
+                        initialValue: props.inwardId?.seqNo
                         // rules: [{ required: true, message: 'Please input the coil width!' }
                         // ],
                     })(
-                        <Input id="coilWidth" onChange= {props.params!=="" ?(e) =>handleChange(e,'fWidth'):""}/>
+                        <Input id="inwardId" disabled/>
                     )}
                 </Form.Item>
                 <Form.Item label="Item Name">
-                                {getFieldDecorator("coilNumber", {
+                                {getFieldDecorator("itemName", {
                                     rules: [{
                                         required: true,
                                         message: "Please select item!",
@@ -165,11 +192,10 @@ const MaterialDetailsForm = (props) => {
             </Col>
             <Col span={10} className="gx-pt-4">
                 <Card title="Inward Details" style={{ width: 500, padding: '0.5px 0.5px'}}>
-                    {props.inward.purposeType && <p>Purpose Type : {props.inward.purposeType}</p>}
-                    <p>Vendor Name : {props.params !== "" && props.inward.party ? props.inward.party?.partyName:partyName(props.party.partyList)}</p>
-                    <p>Vendor ID : 1234{props.params !== "" && props.inward.party ? props.inward.party?.partyName:partyName(props.party.partyList)} | Vendor Batch No. :</p>
-                    {/* <p>Transporter Name : {props.params !== "" && props.inward.party ? props.inward.party?.partyName:partyName(props.party.partyList)}</p>
-                    <p>Transporter Phone : {props.params !== "" && props.inward.party ? props.inward.party?.partyName:partyName(props.party.partyList)}</p> */}
+                    {props.inwardDV.purposeType && <p>Purpose Type : {props.inwardDV.purposeType}</p>}
+                    {props.inwardDV.vendorName && <p>Vendor Name : {vendorName}</p>}
+                    {props.inwardDV.vendorName && <p>Vendor ID : {props.inwardDV.vendorName}</p>}
+                    {/* {props.inwardDV.vendorId && <p>Vendor BatchNo : {vendorBatchNo}</p>} */}
                    
                 </Card>
             </Col>
@@ -238,10 +264,13 @@ const MaterialDetailsForm = (props) => {
 
 const mapStateToProps = state => ({
     materialDV: state.materialDV,
+    inwardId: state.inwardDV.inwardId,
     inward: state.inward.inward,
     material: state.material,
     inwardStatus: state.inward,
-    party: state.party
+    party: state.party,
+    inwardDV: state.inwardDV.inward,
+    vendor: state.vendor.vendorList,
 });
 
 const MaterialDetails = Form.create({
@@ -249,9 +278,13 @@ const MaterialDetails = Form.create({
     },
     mapPropsToFields(props) {
         return {
-            coilNumber: Form.createFormField({
-                ...props.inward.coilNumber,
-                value: (props.inward.coilNumber) ? props.inward.coilNumber : '',
+            inwardId: Form.createFormField({
+                ...props.inwardDV.inwardId,
+                value: (props.inwardDV.inwardId) ? props.inwardDV.inwardId : props.inwardId?.seqNo,
+            }),
+            itemName: Form.createFormField({
+                ...props.inwardDV.itemName,
+                value: (props.inwardDV.itemName) ? props.inwardDV.itemName : '',
             }),
             // description: Form.createFormField({
             //     ...props.inward.description,
@@ -281,14 +314,16 @@ const MaterialDetails = Form.create({
         };
     },
     onValuesChange(props, values) {
-        props.setInwardDetails({ ...props.inward, ...values});
+        props.setInwardDVDetails({ ...props.inwardDV, ...values});
     },
 })(MaterialDetailsForm);
 
 export default connect(mapStateToProps, {
-    setInwardDetails,
+    setInwardDVDetails,
     checkIfCoilExists,
     fetchPartyList,
     getGradeByMaterialId,
-    fetchDVMaterialList
+    fetchDVMaterialList,
+    generateInwardId,
+    fetchVendorList
 })(MaterialDetails);

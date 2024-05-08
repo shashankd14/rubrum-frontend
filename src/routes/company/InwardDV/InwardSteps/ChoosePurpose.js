@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
-import {setInwardDetails, checkCustomerBatchNumber} from "../../../../appRedux/actions";
+import {setInwardDVDetails, checkCustomerBatchNumber} from "../../../../appRedux/actions";
 import {Form, Spin, AutoComplete, Icon, Button, Col, Row, Input, Select} from "antd";
 import {formItemLayout} from '../Create';
 
@@ -58,6 +58,7 @@ const mapStateToProps = state => ({
     party: state.party,
     inward: state.inward.inward,
     inwardStatus: state.inward,
+    inwardDV: state.inwardDV.inward
 });
 
 const PurposeTypeForm = Form.create({
@@ -66,17 +67,17 @@ const PurposeTypeForm = Form.create({
     mapPropsToFields(props) {
         return {
             purposeType: Form.createFormField({
-                ...props.inward.purposeType,
-                value: (props.inward.purposeType) ? props.inward.purposeType : '',
+                ...props.inwardDV.purposeType,
+                value: (props.inwardDV.purposeType) ? props.inwardDV.purposeType : '',
             }),
         };
     },
     onValuesChange(props, values) {
-        props.setInwardDetails({ ...props.inward, ...values});
+        props.setInwardDVDetails({ ...props.inwardDV, ...values});
     },
 })(CreatePurposeTypeForm);
 
 export default connect(mapStateToProps, {
-    setInwardDetails,
+    setInwardDVDetails,
     checkCustomerBatchNumber
 })(PurposeTypeForm);

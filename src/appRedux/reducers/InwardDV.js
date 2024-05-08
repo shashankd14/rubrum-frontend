@@ -12,6 +12,13 @@ import {
     UPDATE_INWARD_DV_SUCCESS,
     UPDATE_INWARD_DV_ERROR,
     RESET_INWARD_DV_REQUEST,
+    GENERATE_INWARD_ID_REQUEST,
+    GENERATE_INWARD_ID_SUCCESS,
+    GENERATE_INWARD_ID_ERROR,
+    GENERATE_CONSIGNMENT_ID_REQUEST,
+    GENERATE_CONSIGNMENT_ID_SUCCESS,
+    GENERATE_CONSIGNMENT_ID_ERROR,
+    SET_INWARD_DV_DETAILS,
 } from "../../constants/ActionTypes";
 
 const INIT_STATE = {
@@ -19,6 +26,10 @@ const INIT_STATE = {
     inwardDVId: {},
     loading: false,
     error: false,
+    inwardId: {},
+    consignmentId: {},
+    inward: {},
+    inwardEntry: {}
 };
 
 export default (state = INIT_STATE, action) => {
@@ -111,6 +122,57 @@ export default (state = INIT_STATE, action) => {
                 ...state,
                 loading: false,
                 error: true,
+            }
+        }
+        case GENERATE_INWARD_ID_REQUEST: {
+            return {
+                ...state,
+                loading: true
+            }
+        }
+        case GENERATE_INWARD_ID_SUCCESS: {
+            debugger
+            return {
+                ...state,
+                loading: false,
+                inwardId: action.InwardId
+            }
+        }
+        case GENERATE_INWARD_ID_ERROR: {
+            return {
+                ...state,
+                loading: false,
+                inwardId: {},
+                error: true
+            }
+        }
+        case GENERATE_CONSIGNMENT_ID_REQUEST: {
+            return {
+                ...state,
+                loading: true
+            }
+        }
+        case GENERATE_CONSIGNMENT_ID_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                consignmentId: action.ConsignmentId
+            }
+        }
+        case GENERATE_CONSIGNMENT_ID_ERROR: {
+            return {
+                ...state,
+                loading: false,
+                consignmentId: {},
+                error: true
+            }
+        }
+        case SET_INWARD_DV_DETAILS: {
+            debugger
+            return {
+                ...state,
+                inward: action.inward,
+                inwardEntry: action.inward
             }
         }
         

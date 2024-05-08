@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
-import {setInwardDetails, checkCustomerBatchNumber} from "../../../../appRedux/actions";
+import {setInwardDVDetails, checkCustomerBatchNumber} from "../../../../appRedux/actions";
 import {Form, Spin, AutoComplete, Icon, Button, Col, Row, Input, Select, Card} from "antd";
 import {formItemLayout} from '../Create';
 import {fetchVendorList} from "../../../../appRedux/actions";
@@ -70,7 +70,7 @@ const CreateVendorDetailsForm = (props) => {
             userId: ""
         });
     }, []);
-
+console.log("props.inwardDV.vendorId", props.inwardDV)
     return (
         <>
         <Col span={16}>
@@ -97,8 +97,8 @@ const CreateVendorDetailsForm = (props) => {
                                   .indexOf(input.toLowerCase()) >= 0
                           }
                           allowClear
-                          onChange={(value) => {
-                            // Set the value of the vendorId field when a vendor is selected
+                          onChange={(value, option) => {
+                            // Set the selected vendorId to the "vendorId" input
                             setFieldsValue({ vendorId: value });
                           }}
                         >
@@ -113,9 +113,8 @@ const CreateVendorDetailsForm = (props) => {
                     <Form.Item label="Vendor Id">
                             {getFieldDecorator('vendorId', {
                             rules: [{ required: false, message: 'Please input the coil number!' }],
-                            initialValue:''
                             })(
-                                <Input id="customerId" disabled/>
+                                <Input id="vendorId" disabled/>
                             )}
                     </Form.Item>
                     <Form.Item label="Transporter Name">
@@ -126,10 +125,10 @@ const CreateVendorDetailsForm = (props) => {
                             )}
                     </Form.Item>
                     <Form.Item label="Transporter Phone no">
-                            {getFieldDecorator('transporterName', {
+                            {getFieldDecorator('transporterPhoneNo', {
                             rules: [{ required: false, message: 'Please input the transporter phone no!' }],
                             })(
-                                <Input id="transporterPhone" />
+                                <Input id="transporterPhoneNo" />
                             )}
                     </Form.Item>
                     <Row className="gx-mt-4">
@@ -150,8 +149,7 @@ const CreateVendorDetailsForm = (props) => {
             </Col>
             <Col span={8} className="gx-pt-4">
                 <Card title="Inward Details" style={{ width: 400 }}>
-                    {props.inward.customerInvoiceNo && <p>Customer Invoice No : {props.inward.customerInvoiceNo}</p>}
-                    {props.inward.purposeType && <p>Purpose Type : {props.inward.purposeType}</p>}
+                    {props.inwardDV.purposeType && <p>Purpose Type : {props.inwardDV.purposeType}</p>}
                 </Card>
             </Col>
         </>
@@ -163,7 +161,7 @@ const mapStateToProps = state => ({
     inward: state.inward.inward,
     inwardStatus: state.inward,
     vendor: state.vendor,
-    inwardDV: state.inwardDV
+    inwardDV: state.inwardDV.inward
 });
 
 const VendorDetailsForm = Form.create({
@@ -173,11 +171,19 @@ const VendorDetailsForm = Form.create({
         return {
             vendorName: Form.createFormField({
                 ...props.inwardDV.vendorName,
-                // value: props.inwardDV.vendorName: '',
+                 value: props.inwardDV.vendorName || '',
             }),
             vendorId: Form.createFormField({
-                ...props.inwardDV.vendorId,
-                // value: props.inwardDV.vendorId: '',
+                ...props.inwardDV.vendorName,
+                 value: props.inwardDV.vendorName || '',
+            }),
+            transporterName: Form.createFormField({
+                ...props.inwardDV.transporterName,
+                 value: props.inwardDV.transporterName || '',
+            }),  
+            transporterPhoneNo: Form.createFormField({
+                ...props.inwardDV.transporterPhoneNo,
+                 value: props.inwardDV.transporterPhoneNo || '',
             }),
             partyName: Form.createFormField({
                 ...props.inward.partyName,
@@ -202,12 +208,12 @@ const VendorDetailsForm = Form.create({
         };
     },
     onValuesChange(props, values) {
-        props.setInwardDetails({ ...props.inward, ...values});
+        props.setInwardDVDetails({ ...props.inwardDV, ...values});
     },
 })(CreateVendorDetailsForm);
 
 export default connect(mapStateToProps, {
-    setInwardDetails,
+    setInwardDVDetails,
     checkCustomerBatchNumber,
-    fetchVendorList
+    fetchVendorList,
 })(VendorDetailsForm);

@@ -280,6 +280,7 @@ export default (state = INIT_STATE, action) => {
             }
         }
         case SET_INWARD_DETAILS: {
+            debugger
             return {
                 ...state,
                 inward: action.inward,

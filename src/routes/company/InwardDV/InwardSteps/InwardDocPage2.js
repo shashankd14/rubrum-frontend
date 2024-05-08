@@ -8,10 +8,10 @@ import moment from "moment";
 
 const Option = Select.Option;
 const widthStyle = {
-    width: '50%', // Adjust the width as needed
+    width: '50%',
   };
 
-const CreateInwardDocPage1 = (props) => {
+const CreateInwardDocPage2 = (props) => {
     const {getFieldDecorator} = props.form;
     const [dataSource, setDataSource] = useState([]);
     useEffect(() => {
@@ -232,7 +232,7 @@ const mapStateToProps = state => ({
     inwardStatus: state.inward,
 });
 
-const InwardDocPage1 = Form.create({
+const InwardDocPage2 = Form.create({
     onFieldsChange(props, changedFields) {
     },
     mapPropsToFields(props) {
@@ -262,9 +262,9 @@ const InwardDocPage1 = Form.create({
     onValuesChange(props, values) {
         props.setInwardDetails({ ...props.inward, ...values});
     },
-})(CreateInwardDocPage1);
+})(CreateInwardDocPage2);
 
 export default connect(mapStateToProps, {
     setInwardDetails,
     checkCustomerBatchNumber
-})(InwardDocPage1);
+})(InwardDocPage2);
