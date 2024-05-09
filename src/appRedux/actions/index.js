@@ -23,3 +23,4 @@ export * from './Weighbridge';
 export * from './Manufacturer';
 export * from './ItemGrade';
 export * from './InwardDV';
+export * from './DocumentType';

@@ -294,6 +294,13 @@ const SidebarContent = () => {
                     </Link>
                   </Menu.Item>}
 
+                  {/* {menuLabelList.includes(sidebarMenuItems.documentType) && <Menu.Item key="company/master/document">
+                    <Link to="/company/master/document">
+                      <i className="icon icon-crypto"/>
+                      <span><IntlMessages id="sidebar.master.document"/></span>
+                    </Link>
+                  </Menu.Item>} */}
+
                   {/* <Menu.Item key="company/master/quality">
                     <Link to="/company/master/quality">
                       <i className="icon icon-crypto" />

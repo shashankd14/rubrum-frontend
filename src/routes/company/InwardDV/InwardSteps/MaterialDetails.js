@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {AutoComplete, Form, Input, Button, Icon, Row, Col, Card, Select} from "antd";
+import {AutoComplete, Form, Input, Button, Icon, Row, Col, Card, Select, Collapse} from "antd";
 import {connect} from "react-redux";
 
 import {formItemLayout} from '../Create';
@@ -7,6 +7,7 @@ import {fetchDVMaterialList, fetchVendorList, setInwardDVDetails, checkIfCoilExi
 import { generateInwardId} from "../../../../appRedux/actions";
 const MaterialDetailsForm = (props) => {
     const Option = Select.Option;
+    const { Panel } = Collapse;
     const {getFieldDecorator} = props.form;
     const [dataSource, setDataSource] = useState([]);
     const [approxLength, setLength] = useState(0);
@@ -30,21 +31,21 @@ const MaterialDetailsForm = (props) => {
         //     }
         // });
     };
-    const handleChange = (e,path) =>{
-        if(path === 'material.description'){
-        props.inward.material.description = e.target.value;
-        } else if (path === 'fWidth'){
-            props.inward.fWidth = e.target.value;
-        }
-        else if (path === 'fThickness'){
-            props.inward.fThickness = e.target.value;
-        }
-        else if (path === 'fpresent'){
-            props.inward.fpresent = e.target.value;
-        } else if (path === 'fQuantity') {
-            props.inward.fQuantity = e.target.value;
-        }
-    }
+    // const handleChange = (e,path) =>{
+    //     if(path === 'material.description'){
+    //     props.inward.material.description = e.target.value;
+    //     } else if (path === 'fWidth'){
+    //         props.inward.fWidth = e.target.value;
+    //     }
+    //     else if (path === 'fThickness'){
+    //         props.inward.fThickness = e.target.value;
+    //     }
+    //     else if (path === 'fpresent'){
+    //         props.inward.fpresent = e.target.value;
+    //     } else if (path === 'fQuantity') {
+    //         props.inward.fQuantity = e.target.value;
+    //     }
+    // }
     const checkCoilExists = (rule, value, callback) => {
         if (!props.inwardStatus.loading && props.inwardStatus.success && !props.inwardStatus.duplicateCoil) {
             return callback();
@@ -139,6 +140,40 @@ const MaterialDetailsForm = (props) => {
       setVendorBatchNo(vendorBatchNo);
       setVendorName(vendorName);
     },[])
+
+    
+    const [selectedItem, setSelectedItem] = useState(null);
+    const [expandedList, setExpandedList] = useState([]);
+
+    const handleAddItem = () => {
+        if (selectedItem) {
+            setExpandedList([...expandedList, selectedItem]);
+            setSelectedItem(null);
+        }
+    };
+
+    // const handleChange = (value, option) => {
+    //     setSelectedItem(option.props.children);
+    // };
+    const handleChange = (value, option) => {
+        debugger
+        const itemId = parseInt(option.key); // Convert to number
+        console.log("Selected Item ID:", itemId);
+        console.log("Material List Content:", props.materialDV.DVMaterialList.content);
+        const selectedItemDetails = props.materialDV.DVMaterialList.content.find(item => {
+            console.log("Comparing with Item ID:", item.itemId);
+            return parseInt(item.itemId) === itemId; // Convert to number
+        });
+        console.log("Selected Item Details:", selectedItemDetails);
+        if (selectedItemDetails) {
+            setSelectedItem(selectedItemDetails);
+        } else {
+            // Handle case where item is not found
+            console.error(`Item with ID ${itemId} not found`);
+        }
+    };
+    const columnLabels = ["Item details", "Unit", "Unit value", "Net weight", "Rate", "Value", "Actual no.of pcs", "Theoretical weight", "Weight variance", "Theoretical no.of pcs"];
+    
     return (
         <>
             <Col span={14}>
@@ -161,29 +196,32 @@ const MaterialDetailsForm = (props) => {
                                     }],
                                 })(
                                     <Select
-                                    id="itemName"
                                     showSearch
-                                    style={{ width: "100%" }}
+                                    style={{ width: '100%' }}
                                     placeholder="Select item"
-                                    filterOption={(input, option) => {
-                                        return option?.props?.children?.toLowerCase().includes(input.toLowerCase());
-                                    }}
-                                    filterSort={(optionA, optionB) =>
-                                        optionA?.props?.children.toLowerCase().localeCompare(optionB?.props?.children.toLowerCase())
+                                    filterOption={(input, option) =>
+                                        option.props.children.toLowerCase().includes(input.toLowerCase())
                                     }
-                                    >
+                                    filterSort={(optionA, optionB) =>
+                                        optionA.props.children.toLowerCase().localeCompare(optionB.props.children.toLowerCase())
+                                    }
+                                    onChange={handleChange}
+                                    value={selectedItem && selectedItem.itemId}
+                                >
                                     {props.materialDV?.DVMaterialList?.content?.map((category) => (
                                         <Option key={category.itemId} value={category.itemId}>
-                                        {`${category.itemName}: ${category.categoryEntity?.categoryName || '-'} | ${category.subCategoryEntity?.subcategoryName || '-'}`}
+                                            {`${category.itemName}: ${category.categoryEntity?.categoryName || '-'} | ${
+                                                category.subCategoryEntity?.subcategoryName || '-'
+                                            }`}
                                         </Option>
                                     ))}
-                                    </Select>
-                                )}
-                                </Form.Item>
+                                </Select>
+                            )}
+                        </Form.Item>
               
                 <Row className="gx-mt-4">
                     <Col span={24} style={{ textAlign: "center"}}>
-                         <Button type="primary" >
+                         <Button type="primary" onClick={handleAddItem}>
                                 Add Item
                          </Button>
                     </Col>
@@ -199,54 +237,62 @@ const MaterialDetailsForm = (props) => {
                    
                 </Card>
             </Col>
-            <Row className="gx-ml-2">
-                <Col className="gx-ml-1">
-                        <AutoComplete
-                            // style={{width: 200}}
-                            placeholder="Select item"
-                            dataSource={dataSource}
-                            onChange= {props.params!=="" ?(e) =>handleChange(e,'material.description'):""}
-                            filterOption={(inputValue, option) => {
-                                return option.props.children?.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1 || false
-                            }
-                            }
-                        />
-                </Col>
-                <Col className="gx-ml-1">
-                {/* <Select value={selectedUnitmm} onChange={handleUnitChangemm} placeholder='Select unit'> */}
-                <Select >
-                        <Option value="inches">Meters</Option>
-                        <Option value="feet">Pieces</Option>
-                        <Option value="feet">Feet</Option>
-                    </Select>
-                </Col>
-                <Col className="gx-ml-1">
-                <Input></Input>
-                </Col>
-                <Col className="gx-ml-1">
-                <Input></Input>
-                </Col>
-                <Col className="gx-ml-1">
-                <Input></Input>
-                </Col>
-                <Col className="gx-ml-1">
-                <Input></Input>
-                </Col>
-                <Col className="gx-ml-1">
-                <Input></Input>
-                </Col>
-                <Col className="gx-ml-1">
-                <Input></Input>
-                </Col>
-                <Col className="gx-ml-1">
-                <Input></Input>
-                </Col>
-                <Col className="gx-ml-1">
-                <Input></Input>
-                </Col>
+            
+            <Row gutter={[16, 16]}>
+                {columnLabels.map((label, index) => (
+                    <Col key={index} lg={index === 0 ? 5 : 2} md={2} sm={24} xs={24}>
+                        <span>{label}</span>
+                    </Col>
+                ))}
             </Row>
+            <Row gutter={[16, 16]} className="gx-ml-2">
+                    {expandedList.map((item, index) => (
+                        <React.Fragment key={index}>
+                            <Col lg={5} md={5} sm={24} xs={24}>
+                                <Collapse>
+                                    <Panel header={`${item.itemName}: ${item.categoryEntity?.categoryName || '-'} | ${item.subCategoryEntity?.subcategoryName || '-'}`} key={index}>
+                                        <p>Item HSN code: {item.itemHsnCode}</p>
+                                        <p>Item code: {item.itemCode}</p>
+                                        <p>Item grade: {item.itemCode}</p>
+                                        <p>Item ID: {item.itemId}</p>
+                                        <p>Main category: {item.categoryEntity?.categoryName || '-'}</p>
+                                        <p>Sub category: {item.subCategoryEntity?.subcategoryName || '-'}</p>
+                                        <p>Main category HSN code: {item.categoryEntity?.categoryHsnCode || '-'}</p>
+                                        <p>Display name: {item.categoryEntity?.displayName || '-'}</p>
+                                        <p>Brand name: {item.categoryEntity?.brandName || '-'}</p>
+                                        <p>Manufacturers name: {item.categoryEntity?.manufacturerName || '-'}</p>
+                                        <p>Additional Parameters:</p>
+                                        <ul>
+                                            {item.additionalParams && JSON.parse(item.additionalParams).map((param, paramIndex) => (
+                                                <li key={paramIndex}>
+                                                    {param.parameterName}: {param.units} {param.unitType}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                        {item.itemImage && <img src={item.itemImage} alt="Item Image"/>}
+                                        {item.crossSectionalImage && <img src={item.crossSectionalImage} alt="Cross-sectional Image"/>} 
+                                    </Panel>
+                                </Collapse>
+                            </Col>
+                            <Col lg={2} md={2} sm={24} xs={24}>
+                                <Select style={{ width: '100%' }} defaultValue="Unit">
+                                    <Option value="meters">Meters</Option>
+                                    <Option value="pieces">Pieces</Option>
+                                    <Option value="feet">Feet</Option>
+                                </Select>
+                            </Col>
+                            {[1, 2, 3, 4, 5, 6, 7, 8].map((inputIndex) => (
+                                <Col key={inputIndex} lg={2} md={2} sm={24} xs={24}>
+                                    {/* <Input style={{ width: '100%' }} placeholder={`Input ${item.itemId}-${inputIndex}`}/> */}
+                                    <Input style={{ width: '100%' }} />
+                                </Col>
+                            ))}
+                        </React.Fragment>
+                    ))}
+                </Row>
+
             {/* <Row className="gx-mt-4"> */}
-                    <Col span={24} style={{ textAlign: "left"}}>
+                    <Col span={24} style={{ textAlign: "left"}} className="gx-mt-5 gx-ml-50">
                         <Button style={{ marginLeft: 200 }} onClick={() => props.updateStep(1)}>
                             <Icon type="left"/>Back
                         </Button>

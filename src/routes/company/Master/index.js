@@ -20,6 +20,7 @@ const Delivery = ({ match }) => (
         <Route path={`${match.url}/weighbridge`} component={asyncComponent(() => import('./Weighbridge'))} />
         <Route path={`${match.url}/manufacturer`} component={asyncComponent(() => import('./Manufacturer'))} />
         <Route path={`${match.url}/itemGrade`} component={asyncComponent(() => import('./ItemGrade'))} />
+        <Route path={`${match.url}/document`} component={asyncComponent(() => import('./DocumentType'))} />
     </Switch>
 );
 

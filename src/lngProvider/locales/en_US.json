@@ -375,5 +375,7 @@
   "master.company.manufacturerList": "Manufacturer List",
   "sidebar.master.manufacturer": "Manufacturer",
   "master.company.itemGradeList": "Item Grade List",
-  "sidebar.master.itemGrade": "Item Grade"
+  "sidebar.master.itemGrade": "Item Grade",
+  "master.company.DocumentList": "Documents List",
+  "sidebar.master.document": "Document"
 }

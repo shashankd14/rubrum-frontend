@@ -21,6 +21,7 @@ import weighbridgeSagas from './Weighbridge';
 import manufacturerSagas from './Manufacturer';
 import itemGradeSagas from './ItemGrade';
 import inwardDVSagas from './InwardDV';
+import documentTypeSagas from './DocumentType';
 
 export default function* rootSaga() {
   yield all([fork(authSagas)]);
@@ -45,4 +46,5 @@ export default function* rootSaga() {
   yield all([fork(manufacturerSagas)]);
   yield all([fork(itemGradeSagas)]);
   yield all([fork(inwardDVSagas)]);
+  yield all([fork(documentTypeSagas)]);
 }
