@@ -359,6 +359,7 @@ const handleTransferToFinalTable = () => {
   setFinalDataSource(mappedData);
   handleFinalInspectionTableChange(mappedData)
 };
+console.log("location.state.selectedItemForQr.plannedYieldLossRatio", location.state.selectedItemForQr)
   return (
     <div id='slittingform'>
       <Card title='Slitting Process Form'>
@@ -444,7 +445,7 @@ const handleTransferToFinalTable = () => {
               ></Input>
             </Col>
             <Col span={12}>
-              <label>AspenCoil No.</label>
+              <label>Internal Coil No</label>
               <Input
                 disabled
                 value={props.inward?.plan?.coilNumber}
@@ -471,9 +472,13 @@ const handleTransferToFinalTable = () => {
             </Col>
           </Row>
           <Row>
-                <Col span={24}>
+                <Col span={12}>
                   <label>Target Weight</label>
                   <Input disabled value={location.state.selectedItemForQr.targetWeight} onChange={(e) => onOptionChange('plannedWeight', e)}></Input>
+                </Col>
+                <Col span={12}>
+                  <label>Planned Yield Loss (%)</label>
+                  <Input disabled value={location.state.selectedItemForQr.plannedYieldLossRatio} onChange={(e) => onOptionChange('plannedYieldLossRatio', e)}></Input>
                 </Col>
          </Row>
           <Row>

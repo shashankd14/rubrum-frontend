@@ -677,7 +677,7 @@ const SlitAndCutForm = (props) => {
                             <Input onChange={(e) => onOptionChange('motherCoilNumber', e)}></Input>
                         </Col>
                         <Col span={12}>
-                            <label>AspenCoil No.</label>
+                            <label>Internal Coil No</label>
                             <Input disabled value={props.inward?.plan?.coilNumber} onChange={(e) => onOptionChange('aspenCoilNumber', e)}></Input>
                         </Col>
 
@@ -693,10 +693,14 @@ const SlitAndCutForm = (props) => {
                         </Col>
                     </Row>
                     <Row>
-                        <Col span={24}>
+                        <Col span={12}>
                             <label>Target Weight</label>
                             <Input disabled value={location.state.selectedItemForQr.targetWeight} onChange={(e) => onOptionChange('plannedWeight', e)}></Input>
                         </Col>
+                        <Col span={12}>
+                            <label>Total Yield Loss (%)</label>
+                            <Input disabled value={location.state.selectedItemForQr.plannedYieldLossRatio} onChange={(e) => onOptionChange('plannedYieldLossRatio', e)}></Input>
+                         </Col>
                     </Row>
                     <Row>
                         <Col span={24}>

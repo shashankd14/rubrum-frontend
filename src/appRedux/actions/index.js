@@ -14,3 +14,4 @@ export * from './Reports';
 export * from './Quality';
 export * from './Packing';
 export * from './LabelPrint';
+export * from './YieldLossRatio';

@@ -2,7 +2,7 @@ import React, {memo, useEffect} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import URLSearchParams from 'url-search-params'
 import {Redirect, Route, Switch, useHistory, useLocation, useRouteMatch} from "react-router-dom";
-import {LocaleProvider} from "antd";
+import {LocaleProvider, Modal} from "antd";
 import {IntlProvider} from "react-intl";
 import List from "../../routes/company/Partywise/List";
 import AppLocale from "lngProvider";
@@ -22,7 +22,7 @@ import {
   NAV_STYLE_DEFAULT_HORIZONTAL,
   NAV_STYLE_INSIDE_HEADER_HORIZONTAL
 } from "../../constants/ThemeSetting";
-import { refreshToken } from '../../appRedux/actions';
+import { getIPAddress, refreshToken, userSignOutSuccess } from '../../appRedux/actions';
 
 const RestrictedRoute = ({component: Component, location, authUser, ...rest}) =>
   <Route
@@ -49,25 +49,36 @@ const App = (props) => {
   const history = useHistory();
   const match = useRouteMatch();
 
-  // useEffect(() => {
-  //   // Check if access token is expired and refresh if necessary
-  //   const checkAccessTokenExpiration = setInterval(() => {
-  //     const accessToken = localStorage.getItem('userToken');
-  //     const expiresIn = localStorage.getItem('expiresIn');
-      
-  //     if (accessToken && expiresIn) {
-  //       const currentTime = Date.now();
-  //       if (currentTime > expiresIn) {
-  //         console.log("token is expired")
-  //        dispatch(refreshToken());
-  //       } else {
-  //         console.log("token is not expired")
-  //       }
-  //     }
-  //   }, 10000); // Check token is expired every 10 sec
+  //refresh token api call
+  const { confirm } = Modal;
+  useEffect(() => {
+      const refreshTokenIfNeeded = async () => {
+      const accessToken = localStorage.getItem('userToken');
+      const expiresIn = localStorage.getItem('expiresIn');
+        
+      if (accessToken && expiresIn) {
+        const currentTime = Date.now();
+        if (currentTime > expiresIn) {
+          console.log("Token is expired, refreshing...");
+          await dispatch(refreshToken());
+                  
+        } else {
+          console.log("Token is not expired");
+        }
+      }
+    };
 
-  //   return () => clearInterval(checkAccessTokenExpiration);
-  // });
+    refreshTokenIfNeeded(); 
+
+    const tokenCheckInterval = setInterval(refreshTokenIfNeeded, 5000); // Check token expiration every 5 seconds
+    return () => clearInterval(tokenCheckInterval);
+  
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(getIPAddress());
+  },[]);
+
 
   useEffect(() => {
     let link = document.createElement('link');
