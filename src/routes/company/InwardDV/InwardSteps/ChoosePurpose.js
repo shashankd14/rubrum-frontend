@@ -10,24 +10,24 @@ const CreatePurposeTypeForm = (props) => {
     const {getFieldDecorator} = props.form;
     const [dataSource, setDataSource] = useState([]);
   
-    // const handleSubmit = e => {
-    //     debugger
-    //     e.preventDefault();
-
-    //     props.form.validateFields((err, values) => {
-    //         if (!err) {
-    //              props.updateStep(1);
-    //         }
-    //     });
-    // };
     const handleSubmit = e => {
-        props.updateStep(1);
-    }
+        debugger
+        e.preventDefault();
+
+        props.form.validateFields((err, values) => {
+            if (!err) {
+                 props.updateStep(1);
+            }
+        });
+    };
+    // const handleSubmit = e => {
+    //     props.updateStep(1);
+    // }
        
     return (
         <>
-                {/* <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4" style={{"width":"70%"}}> */}
-                <Form {...formItemLayout} className="login-form gx-pt-4" style={{"width":"70%"}}>    
+                <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4" style={{"width":"70%"}}>
+                {/* <Form {...formItemLayout} className="login-form gx-pt-4" style={{"width":"70%"}}>     */}
                     <Form.Item label="Purpose Type">
                         {getFieldDecorator('purposeType', {
                             rules: [{ required: true, message: 'Please select a purpose type!' }],
@@ -41,12 +41,12 @@ const CreatePurposeTypeForm = (props) => {
                     </Form.Item>
                     <Row className="gx-mt-4">
                         <Col span={12} offset={4} style={{ textAlign: "center"}}>
-                            {/* <Button type="primary" htmlType="submit">
+                            <Button type="primary" htmlType="submit">
                                 Forward<Icon type="right"/>
-                            </Button> */}
-                             <Button type="primary" onClick={handleSubmit}>
-                                Forward
                             </Button>
+                             {/* <Button type="primary" onClick={handleSubmit}>
+                                Forward
+                            </Button> */}
                         </Col>
                     </Row>
                 </Form>

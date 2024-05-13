@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
-import {setInwardDVDetails, checkCustomerBatchNumber, generateConsignmentId, fetchLocationList, fetchVendorList} from "../../../../appRedux/actions";
+import {setInwardDVDetails, checkCustomerBatchNumber, generateConsignmentId, fetchLocationList, fetchVendorList, fetchDocumentTypeList} from "../../../../appRedux/actions";
 import {Form, Spin, AutoComplete, Icon, Button, Col, Row, Input, Select, Card, DatePicker} from "antd";
 import {formItemLayout} from '../Create';
 import { APPLICATION_DATE_FORMAT } from '../../../../constants';
@@ -48,6 +48,11 @@ const CreateInwardDocPage1 = (props) => {
             requestId: "VENDOR_LIST_GET",
             userId: ""
         });
+        props.fetchDocumentTypeList({
+            ipAddress: "1.1.1.1",
+            requestId: "VENDOR_LIST_GET",
+            userId: ""
+        });
     }, []);
 
     useEffect(() => {
@@ -73,14 +78,15 @@ const CreateInwardDocPage1 = (props) => {
         props.inward.party.partyName = e;
     }
     const handleSubmit = e => {
+        debugger
         props.updateStep(4);
-        // e.preventDefault();
+        e.preventDefault();
 
-        // props.form.validateFields((err, values) => {
-        //     if (!err) {
-        //         props.updateStep(4);
-        //     }
-        // });
+        props.form.validateFields((err, values) => {
+            if (!err) {
+                props.updateStep(4);
+            }
+        });
     };
     const checkBatchNoExist = (rule, value, callback) => {
         if (!props.inwardStatus.loading && props.inwardStatus.success && !props.inwardStatus.duplicateBatchNo) {
@@ -116,10 +122,10 @@ const CreateInwardDocPage1 = (props) => {
     return (
         <>
         <Col span={16}>
-            {props.party.loading && <Spin className="gx-size-100 gx-flex-row gx-justify-content-center gx-align-items-center" size="large"/>}
-            {props.party.partyList.length > 0 &&
-                // <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4" style={{"width":"70%"}}>
-                <Form {...formItemLayout} className="login-form gx-pt-4" >
+            {/* {props.party.loading && <Spin className="gx-size-100 gx-flex-row gx-justify-content-center gx-align-items-center" size="large"/>}
+            {props.party.partyList.length > 0 && */}
+                <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4" style={{"width":"70%"}}>
+                 {/* <Form {...formItemLayout} className="login-form gx-pt-4" > */}
                     <Row>
                         <Col span={12} >
                     <Form.Item label="Vendor Batch No">
@@ -194,9 +200,9 @@ const CreateInwardDocPage1 = (props) => {
                             // mode="multiple"
                             style={{ width: "100%" }}
                           >
-                            {props.party?.partyList?.map((party) => (
-                              <Option key={party.nPartyId} value={party.nPartyId}>
-                                {party.partyName}
+                            {props.document?.map((party) => (
+                              <Option key={party.docId} value={party.docId}>
+                                {party.docName}
                               </Option>
                             ))}
                           </Select>
@@ -246,16 +252,16 @@ const CreateInwardDocPage1 = (props) => {
                             <Button style={{ marginLeft: 8 }} onClick={() => props.updateStep(2)}>
                                 <Icon type="left"/>Back
                             </Button>
-                            {/* <Button type="primary" htmlType="submit">
+                            <Button type="primary" htmlType="submit">
                                 Forward<Icon type="right"/>
-                            </Button> */}
-                            <Button type="primary" onClick={handleSubmit}>
-                                Forward
                             </Button>
+                            {/* <Button type="primary" onClick={handleSubmit}>
+                                Forward
+                            </Button> */}
                         </Col>
                     </Row>
                 </Form>
-            }
+            {/* } */}
             </Col>
             <Col span={8} className="gx-pt-4">
                 <Card title="Inward Details" style={{ width: 400 }}>
@@ -281,6 +287,7 @@ const mapStateToProps = state => ({
     location: state.location,
     inwardDV: state.inwardDV.inward,
     vendor: state.vendor.vendorList,
+    document: state.documentType.documentTypeList
 });
 
 const InwardDocPage1 = Form.create({
@@ -374,5 +381,6 @@ export default connect(mapStateToProps, {
     checkCustomerBatchNumber,
     generateConsignmentId,
     fetchLocationList,
-    fetchVendorList
+    fetchVendorList,
+    fetchDocumentTypeList
 })(InwardDocPage1);

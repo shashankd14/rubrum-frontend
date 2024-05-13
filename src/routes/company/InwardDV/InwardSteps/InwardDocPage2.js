@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
-import {setInwardDetails, checkCustomerBatchNumber} from "../../../../appRedux/actions";
+import {setInwardDetails, checkCustomerBatchNumber, setInwardDVDetails} from "../../../../appRedux/actions";
 import {Form, Spin, AutoComplete, Icon, Button, Col, Row, Input, Select, Card, DatePicker} from "antd";
 import {formItemLayout} from '../Create';
 import { APPLICATION_DATE_FORMAT } from '../../../../constants';
@@ -79,10 +79,10 @@ const CreateInwardDocPage2 = (props) => {
     return (
         <>
         <Col span={24}>
-            {props.party.loading && <Spin className="gx-size-100 gx-flex-row gx-justify-content-center gx-align-items-center" size="large"/>}
-            {props.party.partyList.length > 0 &&
-                // <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4" style={{"width":"70%"}}>
-                <Form {...formItemLayout} className="login-form gx-pt-4" >
+            {/* {props.party.loading && <Spin className="gx-size-100 gx-flex-row gx-justify-content-center gx-align-items-center" size="large"/>}
+            {props.party.partyList.length > 0 && */}
+                 <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4" style={{"width":"70%"}}>
+                {/* <Form {...formItemLayout} className="login-form gx-pt-4" > */}
                    
                     <div>
                         <Row gutter={16}>
@@ -199,16 +199,16 @@ const CreateInwardDocPage2 = (props) => {
                             <Button style={{ marginLeft: 4 }} onClick={() => props.updateStep(3)}>
                                 <Icon type="left"/>Back
                             </Button>
-                            {/* <Button type="primary" htmlType="submit">
+                            <Button type="primary" htmlType="submit">
                                 Forward<Icon type="right"/>
-                            </Button> */}
-                            <Button type="primary" onClick={handleSubmit}>
-                                Forward
                             </Button>
+                            {/* <Button type="primary" onClick={handleSubmit}>
+                                Forward
+                            </Button> */}
                         </Col>
                     </Row>
                 </Form>
-            }
+            {/* } */}
             </Col>
             {/* <Col span={8} className="gx-pt-4">
                 <Card title="Inward Details" style={{ width: 400 }}>
@@ -230,6 +230,7 @@ const mapStateToProps = state => ({
     party: state.party,
     inward: state.inward.inward,
     inwardStatus: state.inward,
+    inwardDV: state.inwardDV.inward,
 });
 
 const InwardDocPage2 = Form.create({
@@ -237,22 +238,22 @@ const InwardDocPage2 = Form.create({
     },
     mapPropsToFields(props) {
         return {
-            partyName: Form.createFormField({
-                ...props.inward.partyName,
-                value: ( props.params !== "" && props.inward.party) ?props.inward.party.partyName :(props.inward.partyName) ? props.inward.partyName: '',
-            }),
-            customerId: Form.createFormField({
-                ...props.inward.customerId,
-                value: props.params !== "" ? props.inward.party?.nPartyId:(props.inward.customerId) ? props.inward.customerId : props.inward.partyName,
-            }),
-            customerBatchNo: Form.createFormField({
-                ...props.inward.customerBatchNo,
-                value: props.params !== "" ? props.inward.customerBatchId:(props.inward.customerBatchNo) ? props.inward.customerBatchNo : '',
-            }),
-            customerInvoiceNo: Form.createFormField({
-                ...props.inward.customerInvoiceNo,
-                value: (props.inward.customerInvoiceNo) ? props.inward.customerInvoiceNo : '',
-            }),
+            // partyName: Form.createFormField({
+            //     ...props.inward.partyName,
+            //     value: ( props.params !== "" && props.inward.party) ?props.inward.party.partyName :(props.inward.partyName) ? props.inward.partyName: '',
+            // }),
+            // customerId: Form.createFormField({
+            //     ...props.inward.customerId,
+            //     value: props.params !== "" ? props.inward.party?.nPartyId:(props.inward.customerId) ? props.inward.customerId : props.inward.partyName,
+            // }),
+            // customerBatchNo: Form.createFormField({
+            //     ...props.inward.customerBatchNo,
+            //     value: props.params !== "" ? props.inward.customerBatchId:(props.inward.customerBatchNo) ? props.inward.customerBatchNo : '',
+            // }),
+            // customerInvoiceNo: Form.createFormField({
+            //     ...props.inward.customerInvoiceNo,
+            //     value: (props.inward.customerInvoiceNo) ? props.inward.customerInvoiceNo : '',
+            // }),
             purposeType: Form.createFormField({
                 ...props.inward.purposeType,
                 value: (props.inward.purposeType) ? props.inward.purposeType : '',
@@ -260,11 +261,12 @@ const InwardDocPage2 = Form.create({
         };
     },
     onValuesChange(props, values) {
-        props.setInwardDetails({ ...props.inward, ...values});
+        props.setInwardDVDetails({ ...props.inward, ...values});
     },
 })(CreateInwardDocPage2);
 
 export default connect(mapStateToProps, {
     setInwardDetails,
+    setInwardDVDetails,
     checkCustomerBatchNumber
 })(InwardDocPage2);

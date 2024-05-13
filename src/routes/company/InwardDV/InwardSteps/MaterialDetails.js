@@ -14,38 +14,19 @@ const MaterialDetailsForm = (props) => {
 
     
     const handleSubmit = e => {
+        debugger
         e.preventDefault();
         props.updateStep(3);
-        // props.form.validateFields((err, values) => {
-        //     if (!err) {
-        //         let length = props.params!== "" ?(parseFloat(parseFloat(props.inward.fpresent)/(parseFloat(props.inward.fThickness)* 7.85 *(props.inward.fWidth/1000))).toFixed(4))*1000:(parseFloat(parseFloat(props.inward.netWeight)/(parseFloat(props.inward.thickness)* 7.85 *(props.inward.width/1000))).toFixed(4))*1000;
-        //         let inward = props.inward;
-        //         if(props.params!== ""){
-        //             inward.fLength = length;
-        //         }else{
-        //             inward.length = length
-        //         }
-        //         props.setInwardDVDetails({ ...props.inward, ...inward});
-        //         props.getGradeByMaterialId(props.params!=="" ?props.inward.material.matId :props.inward.description);
-        //         props.updateStep(3);
-        //     }
-        // });
-    };
-    // const handleChange = (e,path) =>{
-    //     if(path === 'material.description'){
-    //     props.inward.material.description = e.target.value;
-    //     } else if (path === 'fWidth'){
-    //         props.inward.fWidth = e.target.value;
-    //     }
-    //     else if (path === 'fThickness'){
-    //         props.inward.fThickness = e.target.value;
-    //     }
-    //     else if (path === 'fpresent'){
-    //         props.inward.fpresent = e.target.value;
-    //     } else if (path === 'fQuantity') {
-    //         props.inward.fQuantity = e.target.value;
-    //     }
-    // }
+        props.setInwardDVDetails({ ...props.inwardDV, itemsList:dataArr});
+
+        props.form.validateFields((err, values) => {
+            if (!err) {
+                 props.updateStep(3);
+                 
+        props.setInwardDVDetails({ ...props.inwardDV, itemsList:dataArr});
+            }
+        });
+    }
     const checkCoilExists = (rule, value, callback) => {
         if (!props.inwardStatus.loading && props.inwardStatus.success && !props.inwardStatus.duplicateCoil) {
             return callback();
@@ -66,32 +47,7 @@ const MaterialDetailsForm = (props) => {
         }
         callback('Thickness must be less than 100mm');
     };
-// for the edit flow
-    // useEffect(() => {
-    //     if (props.params !== ""){
-    //         props.getGradeByMaterialId(props.inward.material.matId);
-    //         const { Option } = AutoComplete;
-    //         const options = props.material.materialList.filter(material => {
-    //         if (material.matId===  props.inward.material.matId)
-    //             return (<Option key={material.matId} value={`${material.matId}`}>
-    //                     {material.description}
-    //                 </Option>)
-    //             });
-    //             setDataSource(options);
-    //     }   
-    // }, [props.material]);
-    // for the create flow
-    // useEffect(() => {
-    //     if(props.material.materialList.length > 0) {
-    //         const { Option } = AutoComplete;
-    //         const options = props.material.materialList.map(material => (
-    //             <Option key={material.matId} value={`${material.matId}`}>
-    //                 {material.description}
-    //             </Option>
-    //         ));
-    //         setDataSource(options);
-    //     }
-    // }, [props.material]);
+
     useEffect(() => {
         props.fetchPartyList();
         props.fetchDVMaterialList({
@@ -117,12 +73,12 @@ const MaterialDetailsForm = (props) => {
             userId: ""
         });
     }, []);
-    useEffect(() => {
-        if(props.inward.width && props.inward.thickness && props.inward.netWeight) {
-            setLength((parseFloat(parseFloat(props.inward.netWeight)/(parseFloat(props.inward.thickness)* 7.85 *(props.inward.width/1000))).toFixed(4))*1000);
+    // useEffect(() => {
+    //     if(props.inward.width && props.inward.thickness && props.inward.netWeight) {
+    //         setLength((parseFloat(parseFloat(props.inward.netWeight)/(parseFloat(props.inward.thickness)* 7.85 *(props.inward.width/1000))).toFixed(4))*1000);
             
-        }
-    }, [props.inward]);
+    //     }
+    // }, [props.inward]);
     const partyName =(partyList) =>{
         partyList = partyList.find(item => item.nPartyId===Number(props.inward.partyName))
         return partyList?.partyName
@@ -145,11 +101,30 @@ const MaterialDetailsForm = (props) => {
     const [selectedItem, setSelectedItem] = useState(null);
     const [expandedList, setExpandedList] = useState([]);
 
+    const [dataArr, setDataArr] = useState([]);
+    const defaultDataArrProps = {
+        "itemId": "",
+        "inwardItemId": "",
+        "inwardId": "",
+        "unit": "",
+        "unitVolume": "",
+        "netWeight": "",
+        "rate": "",
+        "volume": "",
+        "actualNoofPieces": "",
+        "theoreticalWeight": "",
+        "weightVariance": "",
+        "theoreticalNoofPieces": ""
+    };
     const handleAddItem = () => {
+        debugger
         if (selectedItem) {
             setExpandedList([...expandedList, selectedItem]);
             setSelectedItem(null);
         }
+        console.log("1111111111111", expandedList);
+        console.log("222222222222", selectedItem);
+        setDataArr([...dataArr, defaultDataArrProps]);
     };
 
     // const handleChange = (value, option) => {
@@ -172,18 +147,143 @@ const MaterialDetailsForm = (props) => {
             console.error(`Item with ID ${itemId} not found`);
         }
     };
-    const columnLabels = ["Item details", "Unit", "Unit value", "Net weight", "Rate", "Value", "Actual no.of pcs", "Theoretical weight", "Weight variance", "Theoretical no.of pcs"];
-    
+    const columnLabels = ["", "Unit", "Unit value", "Net weight", "Rate", "Value", "Actual no.of pcs", "Theoretical weight", "Weight variance", "Theoretical no.of pcs"];
+
+    const [netWeight, setNetWeights] = useState(Array(expandedList.length).fill(0));
+
+const handleNetWeightChange = (e, index, value) => {
+    const newValue = parseFloat(e.target.value || 0);
+    const newNetWeights = [...netWeight];
+    newNetWeights[index] = newValue;
+    setNetWeights(newNetWeights);
+    setNetWeightValues(newNetWeights)
+    dataArr[index][value] = e.target.value;
+};
+const totalNetWeight = netWeight.reduce((total, current) => total + current, 0);
+
+const [unitValues, setUnitValues] = useState(Array(expandedList.length).fill(''));
+const [rateValues, setRateValues] = useState(Array(expandedList.length).fill(''));
+const [valueValues, setValueValues] = useState(Array(expandedList.length).fill(''));
+
+// Update unit value state when input changes
+const handleUnitChange = (e, index, value) => {
+        const newUnitValues = [...unitValues];
+        newUnitValues[index] = e.target.value;
+        setUnitValues(newUnitValues);
+     dataArr[index][value] = e.target.value;
+};
+
+// Update rate value state when input changes
+const handleRateChange = (e, index, value) => {
+    const newRateValues = [...rateValues];
+    newRateValues[index] = e.target.value;
+    setRateValues(newRateValues);
+    dataArr[index][value] = e.target.value;
+};
+
+// Calculate value based on unit and rate
+const calculateValue = (unit, rate) => {
+    return unit * rate;
+};
+
+// Update value state whenever unit or rate changes
+useEffect(() => {
+    const newValues = unitValues.map((unit, index) => {
+        return calculateValue(parseFloat(unit), parseFloat(rateValues[index]));
+    });
+    setValueValues(newValues);
+}, [unitValues, rateValues]);
+
+const [totalValue, setTotalValue] = useState(0);
+
+// Calculate total value by summing up individual values
+const calculateTotalValue = () => {
+    let total = 0;
+    valueValues.forEach(value => {
+        total += parseFloat(value);
+    });
+    return total;
+};
+
+// Update total value whenever individual values change
+useEffect(() => {
+    const newTotalValue = calculateTotalValue();
+    setTotalValue(newTotalValue);
+}, [valueValues]);
+
+const [selectedUnit, setSelectedUnit] = useState('meters');
+
+// Handler for unit change
+const handleUnitOptionChange = (value) => {
+    setSelectedUnit(value);
+};
+const calculateTheoreticalWeight = (item, selectedUnit, unitValue) => {
+    let rate;
+    switch (selectedUnit) {
+        case 'METERS':
+            rate = item.perMeter;
+            break;
+        case 'PIECES':
+            rate = item.perPC;
+            break;
+        case 'FEET':
+            rate = item.perFeet;
+            break;
+        default:
+            rate = 0;
+    }
+    // If rate is available, calculate theoretical weight
+    if (rate) {
+        return unitValue * rate;
+    } else {
+        return '';
+    }
+};
+const [netWeightValues, setNetWeightValues] = useState(Array(expandedList.length).fill(''));
+// Define function to calculate weight variance
+const calculateWeightVariance = (theoreticalWeight, netWeight) => {
+    return theoreticalWeight - netWeight;
+};
+
+const onDataChange = (e, index, value) => {
+     debugger;
+        setSelectedUnit(e);
+        console.log(e, index);
+        dataArr[index][value] = e;
+        console.log(dataArr);    
+};
+
+const onBlurrChange = (e, index, value) => {
+    debugger;
+    //    setSelectedUnit(e);
+       console.log(e, index);
+       dataArr[index][value] = e.target.value;
+       console.log(dataArr);    
+};
+
+const [actualPieces, setActualPieces] = useState([]);
+
+const handleActualPiecesChange = (e, index, value) => {
+    const newActualPieces = [...actualPieces];
+    newActualPieces[index] = e.target.value;
+    setActualPieces(newActualPieces);
+    dataArr[index][value] = e.target.value;
+};
+
+const calculateTheoreticalPieces = (perPiece, actualPieces) => {
+    return perPiece * actualPieces;
+};
+
     return (
         <>
+        <div>
+        <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4">
+            <Row gutter={16}>
             <Col span={14}>
             {/* <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4"> */}
-            <Form {...formItemLayout} className="login-form gx-pt-4">
                 <Form.Item label="Inward ID">
                     {getFieldDecorator('inwardId', {
                         initialValue: props.inwardId?.seqNo
-                        // rules: [{ required: true, message: 'Please input the coil width!' }
-                        // ],
                     })(
                         <Input id="inwardId" disabled/>
                     )}
@@ -226,21 +326,20 @@ const MaterialDetailsForm = (props) => {
                          </Button>
                     </Col>
                 </Row>
-            </Form>
+            {/* </Form> */}
             </Col>
-            <Col span={10} className="gx-pt-4">
+            <Col span={10} >
                 <Card title="Inward Details" style={{ width: 500, padding: '0.5px 0.5px'}}>
                     {props.inwardDV.purposeType && <p>Purpose Type : {props.inwardDV.purposeType}</p>}
                     {props.inwardDV.vendorName && <p>Vendor Name : {vendorName}</p>}
                     {props.inwardDV.vendorName && <p>Vendor ID : {props.inwardDV.vendorName}</p>}
-                    {/* {props.inwardDV.vendorId && <p>Vendor BatchNo : {vendorBatchNo}</p>} */}
-                   
                 </Card>
             </Col>
-            
+            </Row>
+            <Col span={24}>
             <Row gutter={[16, 16]}>
                 {columnLabels.map((label, index) => (
-                    <Col key={index} lg={index === 0 ? 5 : 2} md={2} sm={24} xs={24}>
+                    <Col key={index} lg={index === 0 ? 5 : 2} md={2} sm={24} xs={24} style={{ marginLeft: index < 2 ? '10px' : 0 }}>
                         <span>{label}</span>
                     </Col>
                 ))}
@@ -248,7 +347,8 @@ const MaterialDetailsForm = (props) => {
             <Row gutter={[16, 16]} className="gx-ml-2">
                     {expandedList.map((item, index) => (
                         <React.Fragment key={index}>
-                            <Col lg={5} md={5} sm={24} xs={24}>
+                            <Col lg={5} md={5} sm={24} xs={24} style={{ marginRight: '-20' }}>
+                            {/* <Form.Item style={{width: '100%'}}> */}
                                 <Collapse>
                                     <Panel header={`${item.itemName}: ${item.categoryEntity?.categoryName || '-'} | ${item.subCategoryEntity?.subcategoryName || '-'}`} key={index}>
                                         <p>Item HSN code: {item.itemHsnCode}</p>
@@ -261,6 +361,9 @@ const MaterialDetailsForm = (props) => {
                                         <p>Display name: {item.categoryEntity?.displayName || '-'}</p>
                                         <p>Brand name: {item.categoryEntity?.brandName || '-'}</p>
                                         <p>Manufacturers name: {item.categoryEntity?.manufacturerName || '-'}</p>
+                                        <p>Per Meter: {item.perMeter}</p>
+                                        <p>Per Feet: {item.perFeet}</p>
+                                        <p>Per Pc: {item.perPC}</p>
                                         <p>Additional Parameters:</p>
                                         <ul>
                                             {item.additionalParams && JSON.parse(item.additionalParams).map((param, paramIndex) => (
@@ -273,37 +376,91 @@ const MaterialDetailsForm = (props) => {
                                         {item.crossSectionalImage && <img src={item.crossSectionalImage} alt="Cross-sectional Image"/>} 
                                     </Panel>
                                 </Collapse>
+                            {/* </Form.Item> */}
+                            </Col>
+                            <Col lg={2} md={2} sm={24} xs={24} style={{ marginRight: '-20' }}>
+                            {/* <Form.Item> */}
+                                {/* <Select style={{ width: '100%' }}  defaultValue="meters" onChange={onDataChange}> */}
+                                <Select name='unit' style={{ width: '100%' }}  defaultValue="meters" onChange={(e) => {onDataChange(e, index, 'unit')}}>
+                                    <Option value="METERS">Meters</Option>
+                                    <Option value="PIECES">Pieces</Option>
+                                    <Option value="FEET">Feet</Option>
+                                </Select>
+                            {/* </Form.Item> */}
                             </Col>
                             <Col lg={2} md={2} sm={24} xs={24}>
-                                <Select style={{ width: '100%' }} defaultValue="Unit">
-                                    <Option value="meters">Meters</Option>
-                                    <Option value="pieces">Pieces</Option>
-                                    <Option value="feet">Feet</Option>
-                                </Select>
+                                {/* unit value */}
+                                <Input name='unitVolume' onChange={(e) => handleUnitChange(e, index, 'unitVolume')} value={unitValues[index]} ></Input>
+                              
                             </Col>
-                            {[1, 2, 3, 4, 5, 6, 7, 8].map((inputIndex) => (
-                                <Col key={inputIndex} lg={2} md={2} sm={24} xs={24}>
-                                    {/* <Input style={{ width: '100%' }} placeholder={`Input ${item.itemId}-${inputIndex}`}/> */}
-                                    <Input style={{ width: '100%' }} />
-                                </Col>
-                            ))}
+                            <Col lg={2} md={2} sm={24} xs={24}>
+                                {/* net weight */}
+                                <Input name='netWeight' onChange={(e) => handleNetWeightChange(e, index, 'netWeight')}></Input>
+                               
+                            </Col>
+                            <Col lg={2} md={2} sm={24} xs={24}>
+                                {/* Rate */}
+                                <Input name='rate' onChange={(e) => handleRateChange(e, index, 'rate')} value={rateValues[index]}></Input>
+                               
+                            </Col>
+                            <Col lg={2} md={2} sm={24} xs={24}>
+                                {/*  value */}
+                                <Input name='volume' onKeyUp={(e) => onDataChange(e, index, 'volume')} value={valueValues[index]} disabled></Input>
+                                
+                            </Col>
+                            <Col lg={2} md={2} sm={24} xs={24}>
+                                {/* Actual no of pieces */}
+                                <Input name='actualNoofPieces' onChange={(e) => handleActualPiecesChange(e, index, 'actualNoofPieces')} value={actualPieces[index]}></Input>
+                            </Col>
+                            <Col lg={2} md={2} sm={24} xs={24}>
+                                {/* theoretical weight */}
+                                <Input name='theoreticalWeight' onFocus={(e) => onBlurrChange(e, index, 'theoreticalWeight')} value={calculateTheoreticalWeight(item, selectedUnit, unitValues[index])} ></Input>
+                               
+                            </Col>
+                            <Col lg={2} md={2} sm={24} xs={24}>
+                                {/*  weight varience */}
+                                <Input name='weightVariance' onKeyUp={(e) => onBlurrChange(e, index, 'weightVariance')} value={calculateWeightVariance(calculateTheoreticalWeight(item, selectedUnit, unitValues[index]), netWeightValues[index])} ></Input>
+                               
+                            </Col>
+                            <Col lg={2} md={2} sm={24} xs={24}>
+                                {/* theoretical no of pieces */}
+                                <Input name='theoreticalNoofPieces' onBlur={(e) => onBlurrChange(e, index, 'theoreticalNoofPieces')} value={calculateTheoreticalPieces(item.perPC, actualPieces[index])} ></Input>
+                            </Col>
+                            
                         </React.Fragment>
                     ))}
                 </Row>
-
+                   
+                <div className="gx-mt-4" style={{ backgroundColor: 'rgba(135, 206, 235, 0.2)', padding: '5px' }} >
+                        <Row gutter={10} >
+                            <Col span={9} className="gx-mt-2" style={{textAlign: 'right'}}>
+                            <h3>Total</h3> 
+                            </Col>
+                            <Col span={2}>
+                            <Input style={{ backgroundColor: 'blue', color: 'white' }} value={totalNetWeight}/>
+                            </Col>
+                            <Col span={2}></Col>
+                            <Col span={2}>
+                            <Input style={{ backgroundColor: 'blue', color: 'white' }} value={totalValue}/>
+                            </Col>
+                        </Row>
+                        </div>
+                {/* </Form> */}
+                </Col>
             {/* <Row className="gx-mt-4"> */}
                     <Col span={24} style={{ textAlign: "left"}} className="gx-mt-5 gx-ml-50">
                         <Button style={{ marginLeft: 200 }} onClick={() => props.updateStep(1)}>
                             <Icon type="left"/>Back
                         </Button>
-                        {/* <Button type="primary" htmlType="submit">
+                        <Button type="primary" htmlType="submit">
                             Forward<Icon type="right"/>
-                        </Button> */}
-                         <Button type="primary" onClick={handleSubmit}>
+                        </Button>
+                         {/* <Button type="primary" onClick={handleSubmit}>
                                 Forward
-                         </Button>
+                         </Button> */}
                     </Col>
-                {/* </Row> */}
+                    </Form>
+               </div> 
         </>
     )
 }
@@ -311,7 +468,6 @@ const MaterialDetailsForm = (props) => {
 const mapStateToProps = state => ({
     materialDV: state.materialDV,
     inwardId: state.inwardDV.inwardId,
-    inward: state.inward.inward,
     material: state.material,
     inwardStatus: state.inward,
     party: state.party,
@@ -332,31 +488,6 @@ const MaterialDetails = Form.create({
                 ...props.inwardDV.itemName,
                 value: (props.inwardDV.itemName) ? props.inwardDV.itemName : '',
             }),
-            // description: Form.createFormField({
-            //     ...props.inward.description,
-            //     value: props.params !== "" ?props.inward.material.description :(props.inward.description) ? (props.inward.description):'' ,
-            // }),
-            width: Form.createFormField({
-                ...props.inward.width,
-                value: props.params !== "" ? props.inward.fWidth :(props.inward.width) ? props.inward.width : '',
-            }),
-            thickness: Form.createFormField({
-                ...props.inward.thickness,
-                value:  props.params !== "" ? props.inward.fThickness :(props.inward.thickness) ? props.inward.thickness : '',
-            }),
-            approxLength: Form.createFormField({
-                ...props.inward.length,
-                value: props.params !== "" ? props.inward.fLength: (props.inward.length) ? props.inward.length : '',
-            }),
-            netWeight: Form.createFormField({
-                ...props.inward.netWeight,
-                value:  props.params !== "" ? props.inward.fpresent :(props.inward.netWeight) ? props.inward.netWeight : '',
-            }),
-            grossWeight: Form.createFormField({
-                ...props.inward.grossWeight,
-                value: props.params !== "" ? props.inward.fQuantity :(props.inward.grossWeight) ? props.inward.grossWeight : '',
-            }),
-
         };
     },
     onValuesChange(props, values) {

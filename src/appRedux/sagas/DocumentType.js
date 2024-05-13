@@ -2,16 +2,6 @@ import {all, put, fork, takeLatest} from "redux-saga/effects";
 import { getUserToken, getUserId } from './common';
 import {FETCH_MANUFACTURER_LIST_REQUEST, ADD_MANUFACTURER_REQUEST, UPDATE_MANUFACTURER_REQUEST, FETCH_MANUFACTURER_LIST_ID_REQUEST, DELETE_MANUFACTURER_REQUEST, FETCH_DOCUMENT_TYPE_LIST_REQUEST, ADD_DOCUMENT_TYPE_REQUEST, UPDATE_DOCUMENT_TYPE_REQUEST, FETCH_DOCUMENT_TYPE_LIST_ID_REQUEST, DELETE_DOCUMENT_TYPE_REQUEST } from "../../constants/ActionTypes";
 import {
-    fetchManufacturerListSuccess,
-    fetchManufacturerListError,
-    fetchManufacturerListIdSuccess,
-    fetchManufacturerListIdError,
-    addManufacturerSuccess,
-    addManufacturerError,
-    updateManufacturerSuccess,
-    updateManufacturerError,
-    deleteManufacturerSuccess,
-    deleteManufacturerError,
     fetchDocumentTypeListSuccess,
     fetchDocumentTypeListError,
     fetchDocumentTypeListIdSuccess,

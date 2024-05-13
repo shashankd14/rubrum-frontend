@@ -44,14 +44,15 @@ const CreateVendorDetailsForm = (props) => {
         props.inward.party.partyName = e;
     }
     const handleSubmit = e => {
-        props.updateStep(2);
-        // e.preventDefault();
+        debugger
+        // props.updateStep(2);
+        e.preventDefault();
 
-        // props.form.validateFields((err, values) => {
-        //     if (!err) {
-        //         props.updateStep(1);
-        //     }
-        // });
+        props.form.validateFields((err, values) => {
+            if (!err) {
+                props.updateStep(2);
+            }
+        });
     };
     const checkBatchNoExist = (rule, value, callback) => {
         if (!props.inwardStatus.loading && props.inwardStatus.success && !props.inwardStatus.duplicateBatchNo) {
@@ -76,8 +77,8 @@ console.log("props.inwardDV.vendorId", props.inwardDV)
         <Col span={16}>
             {props.party.loading && <Spin className="gx-size-100 gx-flex-row gx-justify-content-center gx-align-items-center" size="large"/>}
             {props.party.partyList.length > 0 &&
-                // <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4" style={{"width":"70%"}}>
-                <Form {...formItemLayout} className="login-form gx-pt-4" >
+                <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4" style={{"width":"70%"}}>
+                {/* <Form {...formItemLayout} className="login-form gx-pt-4" > */}
                      <Form.Item label="Vendor Name">
                         {getFieldDecorator("vendorName", {
                           rules: [
@@ -136,12 +137,12 @@ console.log("props.inwardDV.vendorId", props.inwardDV)
                             <Button style={{ marginLeft: 8 }} onClick={() => props.updateStep(0)}>
                                 <Icon type="left"/>Back
                             </Button>
-                            {/* <Button type="primary" htmlType="submit">
+                            <Button type="primary" htmlType="submit">
                                 Forward<Icon type="right"/>
-                            </Button> */}
-                            <Button type="primary" onClick={handleSubmit}>
-                                Forward
                             </Button>
+                            {/* <Button type="primary" onClick={handleSubmit}>
+                                Forward
+                            </Button> */}
                         </Col>
                     </Row>
                 </Form>
