@@ -8,11 +8,10 @@ import { generateInwardId} from "../../../../appRedux/actions";
 const MaterialDetailsForm = (props) => {
     const Option = Select.Option;
     const { Panel } = Collapse;
-    const {getFieldDecorator} = props.form;
+    const {getFieldDecorator, setFieldsValue} = props.form;
     const [dataSource, setDataSource] = useState([]);
     const [approxLength, setLength] = useState(0);
 
-    
     const handleSubmit = e => {
         debugger
         e.preventDefault();
@@ -109,8 +108,8 @@ const MaterialDetailsForm = (props) => {
         "unit": "",
         "unitVolume": "",
         "netWeight": "",
-        "rate": "",
-        "volume": "",
+        "rate": 0,
+        "volume": 0,
         "actualNoofPieces": "",
         "theoreticalWeight": "",
         "weightVariance": "",
@@ -119,12 +118,18 @@ const MaterialDetailsForm = (props) => {
     const handleAddItem = () => {
         debugger
         if (selectedItem) {
-            setExpandedList([...expandedList, selectedItem]);
+            const newDataItem = {
+                ...defaultDataArrProps,
+                itemId: selectedItem.itemId // Assuming selectedItem has an itemId property
+            };
+    
+            setDataArr(prevDataArr => [...prevDataArr, newDataItem]);
+            setExpandedList(prevExpandedList => [...prevExpandedList, selectedItem]);
             setSelectedItem(null);
+    
+            console.log("Expanded List:", expandedList);
+            console.log("Selected Item:", selectedItem);
         }
-        console.log("1111111111111", expandedList);
-        console.log("222222222222", selectedItem);
-        setDataArr([...dataArr, defaultDataArrProps]);
     };
 
     // const handleChange = (value, option) => {
@@ -133,13 +138,9 @@ const MaterialDetailsForm = (props) => {
     const handleChange = (value, option) => {
         debugger
         const itemId = parseInt(option.key); // Convert to number
-        console.log("Selected Item ID:", itemId);
-        console.log("Material List Content:", props.materialDV.DVMaterialList.content);
         const selectedItemDetails = props.materialDV.DVMaterialList.content.find(item => {
-            console.log("Comparing with Item ID:", item.itemId);
             return parseInt(item.itemId) === itemId; // Convert to number
         });
-        console.log("Selected Item Details:", selectedItemDetails);
         if (selectedItemDetails) {
             setSelectedItem(selectedItemDetails);
         } else {
@@ -171,6 +172,8 @@ const handleUnitChange = (e, index, value) => {
         newUnitValues[index] = e.target.value;
         setUnitValues(newUnitValues);
      dataArr[index][value] = e.target.value;
+     //for value calculation
+     dataArr[index]["volume"] =  dataArr[index]["rate"] * dataArr[index][value];
 };
 
 // Update rate value state when input changes
@@ -179,20 +182,22 @@ const handleRateChange = (e, index, value) => {
     newRateValues[index] = e.target.value;
     setRateValues(newRateValues);
     dataArr[index][value] = e.target.value;
+    //for value calculation
+    dataArr[index]["volume"] =  dataArr[index]["unitVolume"] * dataArr[index][value];
 };
 
 // Calculate value based on unit and rate
-const calculateValue = (unit, rate) => {
-    return unit * rate;
-};
+// const calculateValue = (unit, rate) => {
+//     return unit * rate;
+// };
 
-// Update value state whenever unit or rate changes
-useEffect(() => {
-    const newValues = unitValues.map((unit, index) => {
-        return calculateValue(parseFloat(unit), parseFloat(rateValues[index]));
-    });
-    setValueValues(newValues);
-}, [unitValues, rateValues]);
+// // Update value state whenever unit or rate changes
+// useEffect(() => {
+//     const newValues = unitValues.map((unit, index) => {
+//         return calculateValue(parseFloat(unit), parseFloat(rateValues[index]));
+//     });
+//     setValueValues(newValues);
+// }, [unitValues, rateValues]);
 
 const [totalValue, setTotalValue] = useState(0);
 
@@ -274,6 +279,23 @@ const calculateTheoreticalPieces = (perPiece, actualPieces) => {
     return perPiece * actualPieces;
 };
 
+useEffect(() => {
+    debugger
+    let totalNetWeight = 0;
+    dataArr.forEach(item => {
+        totalNetWeight += parseFloat(item.netWeight) || 0;
+    });
+    let volumeTotal = 0;
+    dataArr.forEach(item => {
+        volumeTotal += parseFloat(item.volume) || 0;
+    });
+    // Update form fields when state values change
+    setFieldsValue({
+        // totalVolume: totalValue,
+        totalVolume: volumeTotal,
+        totalWeight: totalNetWeight,
+    });
+}, [totalValue, totalNetWeight, setFieldsValue]);
     return (
         <>
         <div>
@@ -405,7 +427,8 @@ const calculateTheoreticalPieces = (perPiece, actualPieces) => {
                             </Col>
                             <Col lg={2} md={2} sm={24} xs={24}>
                                 {/*  value */}
-                                <Input name='volume' onKeyUp={(e) => onDataChange(e, index, 'volume')} value={valueValues[index]} disabled></Input>
+                                {/* <Input name='volume' onKeyUp={(e) => onDataChange(e, index, 'volume')} value={valueValues[index]} disabled></Input> */}
+                                <Input name='volume' onKeyUp={(e) => onDataChange(e, index, 'volume')} value={dataArr[index]["volume"]} disabled></Input>
                                 
                             </Col>
                             <Col lg={2} md={2} sm={24} xs={24}>
@@ -436,12 +459,26 @@ const calculateTheoreticalPieces = (perPiece, actualPieces) => {
                             <Col span={9} className="gx-mt-2" style={{textAlign: 'right'}}>
                             <h3>Total</h3> 
                             </Col>
-                            <Col span={2}>
-                            <Input style={{ backgroundColor: 'blue', color: 'white' }} value={totalNetWeight}/>
+                            <Col span={3}>
+                            {/* <Input style={{ backgroundColor: 'blue', color: 'white' }} value={totalNetWeight}/> */}
+                            <Form.Item >
+                            {getFieldDecorator('totalWeight', {
+                                initialValue: props.totalWeight || totalNetWeight
+                            })(
+                                <Input id="totalWeight" value={totalNetWeight} style={{ backgroundColor: 'blue', color: 'white'}}/>
+                            )}
+                        </Form.Item>
                             </Col>
-                            <Col span={2}></Col>
-                            <Col span={2}>
-                            <Input style={{ backgroundColor: 'blue', color: 'white' }} value={totalValue}/>
+                            <Col span={1}></Col>
+                            <Col span={3}>
+                            {/* <Input style={{ backgroundColor: 'blue', color: 'white' }} value={totalValue}/> */}
+                            <Form.Item >
+                            {getFieldDecorator('totalVolume', {
+                                initialValue: props.totalVolume || totalValue
+                            })(
+                                <Input id="totalVolume" value={totalValue} style={{ backgroundColor: 'blue', color: 'white'}}/>
+                            )}
+                        </Form.Item>
                             </Col>
                         </Row>
                         </div>
@@ -468,7 +505,7 @@ const calculateTheoreticalPieces = (perPiece, actualPieces) => {
 const mapStateToProps = state => ({
     materialDV: state.materialDV,
     inwardId: state.inwardDV.inwardId,
-    material: state.material,
+    material: state.materialDV,
     inwardStatus: state.inward,
     party: state.party,
     inwardDV: state.inwardDV.inward,
@@ -477,8 +514,10 @@ const mapStateToProps = state => ({
 
 const MaterialDetails = Form.create({
     onFieldsChange(props, changedFields) {
+        console.log("propsppppp onFields change", props)
     },
     mapPropsToFields(props) {
+        console.log("propsppppp mapPropsToField", props)
         return {
             inwardId: Form.createFormField({
                 ...props.inwardDV.inwardId,
@@ -487,6 +526,14 @@ const MaterialDetails = Form.create({
             itemName: Form.createFormField({
                 ...props.inwardDV.itemName,
                 value: (props.inwardDV.itemName) ? props.inwardDV.itemName : '',
+            }),
+            totalVolume: Form.createFormField({
+                // ...props.inwardDV.totalVolume,
+                 value: props.totalValue || props.totalVolume,
+            }),
+            totalWeight: Form.createFormField({
+                // ...props.inwardDV.totalWeight,
+                 value: props.totalNetWeight || props.totalWeight,
             }),
         };
     },

@@ -3,7 +3,7 @@ import {connect} from "react-redux";
 import {setInwardDVDetails, checkCustomerBatchNumber, generateConsignmentId, fetchLocationList, fetchVendorList, fetchDocumentTypeList} from "../../../../appRedux/actions";
 import {Form, Spin, AutoComplete, Icon, Button, Col, Row, Input, Select, Card, DatePicker} from "antd";
 import {formItemLayout} from '../Create';
-import { APPLICATION_DATE_FORMAT } from '../../../../constants';
+// import { APPLICATION_DATE_FORMAT } from '../../../../constants';
 import moment from "moment";
 import { useHistory } from 'react-router-dom';
 
@@ -95,13 +95,14 @@ const CreateInwardDocPage1 = (props) => {
         callback('The coil number already exists');
     };
     const handleChangeDate = (date, dateString) => {
+        debugger
         props.form.setFieldsValue({
-            documentDate: moment(dateString, APPLICATION_DATE_FORMAT),
+            documentDate: moment(dateString),
         });
       };
       const handleChangeEwayBillDate = (date, dateString) => {
         props.form.setFieldsValue({
-            ewayBillDate: moment(dateString, APPLICATION_DATE_FORMAT),
+            ewayBillDate: moment(dateString),
         });
       };
 
@@ -109,22 +110,25 @@ const CreateInwardDocPage1 = (props) => {
       const [vendorName, setVendorName] = useState();
       useEffect(() => {
         debugger
+        if (vendorName !== undefined){
         const vendorId = props.inwardDV.vendorName;
         let vendorBatchNo = '';
         let vendorName = '';
-        const response = props.vendor.content
+            const response = props.vendor.content
             const selectedVendorName = response.find(vendor => vendor.vendorId === vendorId);
             vendorName = selectedVendorName.vendorName;
         setVendorBatchNo(vendorBatchNo);
         setVendorName(vendorName);
-      },[])
+        }
+       
+      },[props.vendor])
       
     return (
         <>
-        <Col span={16}>
+        <Col span={16} >
             {/* {props.party.loading && <Spin className="gx-size-100 gx-flex-row gx-justify-content-center gx-align-items-center" size="large"/>}
             {props.party.partyList.length > 0 && */}
-                <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4" style={{"width":"70%"}}>
+                <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4" >
                  {/* <Form {...formItemLayout} className="login-form gx-pt-4" > */}
                     <Row>
                         <Col span={12} >
@@ -181,7 +185,7 @@ const CreateInwardDocPage1 = (props) => {
                           <Select
                             id="locationId"
                             showSearch
-                            style={{ width: "100%" }}
+                            style={{ width: 260 }}
                           >
                             {props.location?.locationList?.content?.map((party) => (
                               <Option key={party.locationId} value={party.locationId}>
@@ -198,7 +202,7 @@ const CreateInwardDocPage1 = (props) => {
                             id="documentType"
                             showSearch
                             // mode="multiple"
-                            style={{ width: "100%" }}
+                            style={{ width: 260 }}
                           >
                             {props.document?.map((party) => (
                               <Option key={party.docId} value={party.docId}>
@@ -210,26 +214,29 @@ const CreateInwardDocPage1 = (props) => {
                       </Form.Item>
                       <Form.Item label="Document Date">
                         {getFieldDecorator('documentDate', {
-                            initialValue: moment(props.inward.receivedDate || new Date(), APPLICATION_DATE_FORMAT),
+                            // initialValue: moment(props.inward.receivedDate || new Date(), APPLICATION_DATE_FORMAT),
+                            initialValue: props.inwardDV.documentDate ? moment(props.inwardDV.documentDate, 'YYYY-MM-DD') : moment(),
                             // rules: [{ required: true, message: 'Please select a document date' }],
                         })(
                             <DatePicker
                                  style={{width: 260}}
                                 // className="gx-mb-3 gx-w-100"
-                                format={APPLICATION_DATE_FORMAT}
+                                // format={APPLICATION_DATE_FORMAT}
+                                format= "YYYY-MM-DD"
                                 onChange={handleChangeDate}
                             />
                         )}
                     </Form.Item>
                     <Form.Item label="Eway Bill Date">
                         {getFieldDecorator('ewayBillDate', {
-                            initialValue: moment(props.inward.ewayBilldDate || new Date(), APPLICATION_DATE_FORMAT),
+                            // initialValue: moment(props.inward.ewayBilldDate || new Date(), APPLICATION_DATE_FORMAT),
+                            initialValue: props.inwardDV.ewayBillDate ? moment(props.inwardDV.ewayBillDate, 'YYYY-MM-DD') : moment(),
                             // rules: [{ required: true, message: 'Please select a eway bill date' }],
                         })(
                             <DatePicker
                                  style={{width: 260}}
                                 // className="gx-mb-3 gx-w-100"
-                                format={APPLICATION_DATE_FORMAT}
+                                format= "YYYY-MM-DD"
                                 onChange={handleChangeEwayBillDate}
                             />
                         )}
@@ -270,9 +277,9 @@ const CreateInwardDocPage1 = (props) => {
                     {props.inwardDV.vendorId && <p>Vendor ID : {props.inwardDV.vendorName}</p>}
                     {props.inwardDV.vendorBatchNo && <p>Vendor BatchNo : {vendorBatchNo}</p>}
                     {props.inwardDV.itemName && <p>Item Name : {props.inwardDV.itemName}</p>}
-                    <p>Net Weight :   </p>
+                    {/* <p>Net Weight :   </p>
                     <p>Item Name :  </p>
-                    <p>Net Weight :   </p>
+                    <p>Net Weight :   </p> */}
                 </Card>
             </Col>
         </>
@@ -333,12 +340,14 @@ const InwardDocPage1 = Form.create({
             documentDate: Form.createFormField({
                 ...props.inwardDV.documentDate,
                 // value: ( props.params !== "" && props.inward.party) ?props.inward.party.partyName :(props.inward.partyName) ? props.inward.partyName: '',
-                value: (props.inwardDV.documentDate) ? props.inwardDV.documentDate : ''
+                // value: moment(props.inwardDV.documentDate || new Date(), APPLICATION_DATE_FORMAT)
+                value: moment(props.inwardDV.documentDate || moment(props.inwardDV.documentDate, 'YYYY-MM-DD') || new Date()),
             }),
             ewayBillDate: Form.createFormField({
                 ...props.inwardDV.ewayBillDate,
                 // value: ( props.params !== "" && props.inward.party) ?props.inward.party.partyName :(props.inward.partyName) ? props.inward.partyName: '',
-                value: (props.inwardDV.ewayBillDate) ? props.inwardDV.ewayBillDate : ''
+                // value: (props.inwardDV.ewayBillDate) ? props.inwardDV.ewayBillDate : ''
+                value: moment(props.inwardDV.ewayBillDate || moment(props.inwardDV.ewayBillDate, 'YYYY-MM-DD') || new Date()),
             }),
             valueOfGoods: Form.createFormField({
                 ...props.inwardDV.valueOfGoods,
@@ -360,14 +369,6 @@ const InwardDocPage1 = Form.create({
             customerInvoiceNo: Form.createFormField({
                 ...props.inward.customerInvoiceNo,
                 value: (props.inward.customerInvoiceNo) ? props.inward.customerInvoiceNo : '',
-            }),
-            purposeType: Form.createFormField({
-                ...props.inward.purposeType,
-                value: (props.inward.purposeType) ? props.inward.purposeType : '',
-            }),
-            locationId: Form.createFormField({
-                ...props.inwardDV.locationId,
-                value: (props.inwardDV.locationId) ? props.inwardDV.locationId : '',
             }),
         };
     },

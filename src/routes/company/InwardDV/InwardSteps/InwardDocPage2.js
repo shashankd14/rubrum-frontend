@@ -1,18 +1,20 @@
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
-import {setInwardDetails, checkCustomerBatchNumber, setInwardDVDetails} from "../../../../appRedux/actions";
-import {Form, Spin, AutoComplete, Icon, Button, Col, Row, Input, Select, Card, DatePicker} from "antd";
+import {setInwardDVDetails, fetchDVMaterialList, checkCustomerBatchNumber, generateConsignmentId, fetchLocationList, fetchVendorList, fetchDocumentTypeList} from "../../../../appRedux/actions";
+import {Form, Spin, AutoComplete, Icon, Button, Col, Row, Input, Select, Card, DatePicker, Collapse} from "antd";
 import {formItemLayout} from '../Create';
 import { APPLICATION_DATE_FORMAT } from '../../../../constants';
 import moment from "moment";
+import { useHistory } from 'react-router-dom';
 
 const Option = Select.Option;
+const { Panel } = Collapse;
 const widthStyle = {
     width: '50%',
   };
 
 const CreateInwardDocPage2 = (props) => {
-    const {getFieldDecorator} = props.form;
+    const {getFieldDecorator, setFieldsValue} = props.form;
     const [dataSource, setDataSource] = useState([]);
     useEffect(() => {
         if(props.params !=="") {
@@ -26,6 +28,45 @@ const CreateInwardDocPage2 = (props) => {
             setDataSource(options);
         }
     }, [props.party]);
+
+    useEffect(() => {     
+        props.generateConsignmentId({
+            fieldName: "CONSIGNMENT",
+            ipAddress: "1.1.1.1",
+            requestId: "GENERATE_SEQ",
+            userId: ""
+        })
+        props.fetchLocationList({
+            searchText:'',
+            pageNo:"1",
+            pageSize:"15",
+            ipAddress: "1.1.1.1",
+            requestId: "LOCATION_LIST_GET",
+            userId: ""
+        });
+        props.fetchVendorList({
+            searchText:"",
+            pageNo: "1",
+            pageSize: "15",
+            ipAddress: "1.1.1.1",
+            requestId: "VENDOR_LIST_GET",
+            userId: ""
+        });
+        props.fetchDocumentTypeList({
+            ipAddress: "1.1.1.1",
+            requestId: "VENDOR_LIST_GET",
+            userId: ""
+        });
+        props.fetchDVMaterialList({
+            searchText:"",
+            pageNo: "1",
+            pageSize: "15",
+            ipAddress: "1.1.1.1",
+            requestId: "MATERIAL_LIST_GET",
+            userId: ""
+        });
+    }, []);
+
     useEffect(() => {
         if(props.party.partyList.length > 0) {
 
@@ -49,14 +90,15 @@ const CreateInwardDocPage2 = (props) => {
         props.inward.party.partyName = e;
     }
     const handleSubmit = e => {
+        debugger
         props.updateStep(5);
-        // e.preventDefault();
+        e.preventDefault();
 
-        // props.form.validateFields((err, values) => {
-        //     if (!err) {
-        //         props.updateStep(4);
-        //     }
-        // });
+        props.form.validateFields((err, values) => {
+            if (!err) {
+                props.updateStep(5);
+            }
+        });
     };
     const checkBatchNoExist = (rule, value, callback) => {
         if (!props.inwardStatus.loading && props.inwardStatus.success && !props.inwardStatus.duplicateBatchNo) {
@@ -75,56 +117,112 @@ const CreateInwardDocPage2 = (props) => {
         });
       };
 
+      const [vendorBatchNo, setVendorBatchNo] = useState();
+      const [vendorName, setVendorName] = useState();
+      useEffect(() => {
+        debugger
+        if (vendorName !== undefined){
+        const vendorId = props.inwardDV.vendorName;
+        let vendorBatchNo = '';
+        let vendorName = '';
+            const response = props.vendor.content
+            const selectedVendorName = response.find(vendor => vendor.vendorId === vendorId);
+            vendorName = selectedVendorName.vendorName;
+        setVendorBatchNo(vendorBatchNo);
+        setVendorName(vendorName);
+        }
+       
+      },[props.vendor])
 
+      const getItemDetails = (itemId) => {
+        return props.material?.DVMaterialList?.content?.find(materialItem => materialItem.itemId === itemId);
+      };
+
+    //   const totalInwardVolume = 
+    const handleExtraChargesChange = () => {
+        debugger
+        const extraCharges = props.form.getFieldsValue([
+            'frieghtCharges', 'addInsurance', 'loadingAndUnloading', 'weightmenCharges', 'addSGST', 'addCGST'
+        ]);
+        const totalAdditionalCharges = Object.values(extraCharges).reduce((acc, value) => acc + (parseFloat(value) || 0), 0);
+        const totalInward = totalAdditionalCharges + (props.inwardDV.totalVolume);
+        setFieldsValue({
+            totalInward: totalInward,
+        });
+    };
+      
     return (
         <>
-        <Col span={24}>
-            {/* {props.party.loading && <Spin className="gx-size-100 gx-flex-row gx-justify-content-center gx-align-items-center" size="large"/>}
-            {props.party.partyList.length > 0 && */}
-                 <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4" style={{"width":"70%"}}>
-                {/* <Form {...formItemLayout} className="login-form gx-pt-4" > */}
+        <Col span={24} className="gx-ml-2">
+                 {/* <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4" style={{"width":"70%"}}> */}
+                 <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4">
                    
                     <div>
-                        <Row gutter={16}>
+                         <Row gutter={16}>
                             <Col span={8} ></Col>
                             <Col span={4} style={{textAlign: 'center'}}>Net Weight</Col>
                             <Col span={4} style={{textAlign: 'center'}}>Rate</Col>
                             <Col span={4} style={{textAlign: 'center'}}>Value</Col>
                         </Row>
-                        <Row gutter={16}>
-                        <Col span={8}>
-                        <AutoComplete
-                            // style={{width: 200}}
-                            placeholder="Select item"
-                            dataSource={dataSource}
-                            onChange= {props.params!=="" ?(e) =>handleChange(e,'material.description'):""}
-                            filterOption={(inputValue, option) => {
-                                return option.props.children?.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1 || false
-                            }
-                            }
-                        />
-                        </Col>
-                        <Col span={4}>
-                        <Input></Input>
-                        </Col>
-                        <Col span={4}>
-                        <Input></Input>
-                        </Col>
-                        <Col span={4}>
-                        <Input></Input>
-                        </Col>
-                        </Row>
+                            {props.inwardDV?.itemsList?.map((item, index) => {
+                        const itemDetails = getItemDetails(item.itemId);
+                        return (
+                        <Row gutter={16} key={index}>
+                            <Col span={8}>
+                            <Collapse>
+                                {itemDetails && (
+                                <Panel header={`${itemDetails.itemName}: ${itemDetails.categoryEntity?.categoryName || '-'} | ${itemDetails.subCategoryEntity?.subcategoryName || '-'}`} key={index}>
+                                    <p>Item HSN code: {itemDetails.itemHsnCode}</p>
+                                    <p>Item code: {itemDetails.itemCode}</p>
+                                    <p>Item grade: {itemDetails.itemGrade}</p>
+                                    <p>Item ID: {itemDetails.itemId}</p>
+                                    <p>Main category: {itemDetails.categoryEntity?.categoryName || '-'}</p>
+                                    <p>Sub category: {itemDetails.subCategoryEntity?.subcategoryName || '-'}</p>
+                                    <p>Main category HSN code: {itemDetails.categoryEntity?.categoryHsnCode || '-'}</p>
+                                    <p>Display name: {itemDetails.categoryEntity?.displayName || '-'}</p>
+                                    <p>Brand name: {itemDetails.categoryEntity?.brandName || '-'}</p>
+                                    <p>Manufacturers name: {itemDetails.categoryEntity?.manufacturerName || '-'}</p>
+                                    <p>Per Meter: {itemDetails.perMeter}</p>
+                                    <p>Per Feet: {itemDetails.perFeet}</p>
+                                    <p>Per Pc: {itemDetails.perPC}</p>
+                                    <p>Additional Parameters:</p>
+                                    <ul>
+                                    {itemDetails.additionalParams && JSON.parse(itemDetails.additionalParams).map((param, paramIndex) => (
+                                        <li key={paramIndex}>
+                                        {param.parameterName}: {param.units} {param.unitType}
+                                        </li>
+                                    ))}
+                                    </ul>
+                                    {itemDetails.itemImage && <img src={itemDetails.itemImage} alt="Item Image" />}
+                                    {itemDetails.crossSectionalImage && <img src={itemDetails.crossSectionalImage} alt="Cross-sectional Image" />}
+                                </Panel>
+                                )}
+                            </Collapse>
+                               
+                            </Col>
+                            <Col span={4}>
+                                <Input value={item.netWeight} readOnly />
+                            </Col>
+                            <Col span={4}>
+                                <Input value={item.rate} readOnly />
+                            </Col>
+                            <Col span={4}>
+                                <Input value={item.netWeight * item.rate} disabled /> {/* Calculate value */}
+                            </Col>
+                            </Row>
+                    );
+                })}
                         <div className="gx-mt-4" style={{ backgroundColor: 'rgba(135, 206, 235, 0.2)', padding: '5px' }} >
                         <Row gutter={10} >
                             <Col span={8} className="gx-mt-2" style={{textAlign: 'right'}}>
                             <h3>Total</h3> 
                             </Col>
                             <Col span={4}>
-                            <Input style={{ backgroundColor: 'blue', color: 'white' }} />
+                            <Input value={props.inwardDV.totalWeight} style={{ backgroundColor: 'blue', color: 'white' }} />
                             </Col>
                             <Col span={4}></Col>
                             <Col span={4}>
-                            <Input style={{ backgroundColor: 'blue', color: 'white' }} />
+                            <Input value={props.inwardDV.totalVolume} style={{ backgroundColor: 'blue', color: 'white' }} />
                             </Col>
                         </Row>
                         </div>
@@ -134,13 +232,13 @@ const CreateInwardDocPage2 = (props) => {
                     <Col span={20} className="gx-mt-1">
                         <h3>Add Extra Charges</h3>
                         <Form.Item label="Select an option">
-                        {getFieldDecorator('purposeType', {
-                            rules: [{ required: true, message: 'Please select a purpose type!' }],
+                        {getFieldDecorator('options', {
+                            rules: [{ required: true, message: 'Please select a option!' }],
                         })(
                             <Select placeholder="Select an option" style={widthStyle}>
-                                <Option value="TRADING">Trading (SELF)</Option>
-                                <Option value="STEEL SERVICE CENTRE">Steel Service Centre (SSC)</Option>
-                                <Option value="EXTERNAL PROCESS AGENT">External Process Agent (EPA)</Option>
+                                <Option value="OPTION-1">OPTION-1</Option>
+                                <Option value="OPTION-2">OPTION-2</Option>
+                                <Option value="OPTION-3">OPTION-3</Option>
                             </Select>
                         )}
                     </Form.Item>
@@ -148,49 +246,50 @@ const CreateInwardDocPage2 = (props) => {
                     {getFieldDecorator('frieghtCharges', {
                        
                     })(
-                        <Input id="frieghtCharges" onChange= {props.params!=="" ?(e) =>handleChange(e,'frieghtCharges'):""} style={widthStyle}/>
+                        // <Input id="frieghtCharges" onChange= {props.params!=="" ?(e) =>handleChange(e,'frieghtCharges'):""} style={widthStyle}/>
+                        <Input id="frieghtCharges"  style={widthStyle} onChange={handleExtraChargesChange}/>
                     )}
                 </Form.Item>
                 <Form.Item label="Add Insurance">
                     {getFieldDecorator('addInsurance', {
                        
                     })(
-                        <Input id="addInsurance" onChange= {props.params!=="" ?(e) =>handleChange(e,'addInsurance'):""} style={widthStyle}/>
+                        <Input id="addInsurance"style={widthStyle} onChange={handleExtraChargesChange}/>
                     )}
                 </Form.Item>
                 <Form.Item label="Add Loading and Unloading Charges">
                     {getFieldDecorator('loadingAndUnloading', {
                        
                     })(
-                        <Input id="loadingAndUnloading" onChange= {props.params!=="" ?(e) =>handleChange(e,'loadingAndUnloading'):""} style={widthStyle}/>
+                        <Input id="loadingAndUnloading"  style={widthStyle} onChange={handleExtraChargesChange}/>
                     )}
                 </Form.Item>
                 <Form.Item label="Add weightmen Charges">
                     {getFieldDecorator('weightmenCharges', {
                        
                     })(
-                        <Input id="weightmenCharges" onChange= {props.params!=="" ?(e) =>handleChange(e,'weightmenCharges'):""} style={widthStyle}/>
+                        <Input id="weightmenCharges"  style={widthStyle} onChange={handleExtraChargesChange}/>
                     )}
                 </Form.Item>
                 <Form.Item label="Add SGST">
                     {getFieldDecorator('addSGST', {
                        
                     })(
-                        <Input id="addSGST" onChange= {props.params!=="" ?(e) =>handleChange(e,'addSGST'):""} style={widthStyle}/>
+                        <Input id="addSGST" style={widthStyle} onChange={handleExtraChargesChange}/>
                     )}
                 </Form.Item>
                 <Form.Item label="Add CGST">
                     {getFieldDecorator('addCGST', {
                        
                     })(
-                        <Input id="addCGST" onChange= {props.params!=="" ?(e) =>handleChange(e,'addCGST'):""} style={widthStyle}/>
+                        <Input id="addCGST" style={widthStyle} onChange={handleExtraChargesChange}/>
                     )}
                 </Form.Item>
                 <Form.Item label="Total Inward Value">
                     {getFieldDecorator('totalInward', {
                        
                     })(
-                        <Input id="totalInward" disabled onChange= {props.params!=="" ?(e) =>handleChange(e,'totalInward'):""} style={widthStyle}/>
+                        <Input id="totalInward" disabled  style={widthStyle} onChange={handleExtraChargesChange}/>
                     )}
                 </Form.Item>
                 </Col>
@@ -230,7 +329,12 @@ const mapStateToProps = state => ({
     party: state.party,
     inward: state.inward.inward,
     inwardStatus: state.inward,
+    consignmentId: state.inwardDV.consignmentId,
+    location: state.location,
     inwardDV: state.inwardDV.inward,
+    vendor: state.vendor.vendorList,
+    document: state.documentType.documentTypeList,
+    material: state.materialDV,
 });
 
 const InwardDocPage2 = Form.create({
@@ -238,35 +342,51 @@ const InwardDocPage2 = Form.create({
     },
     mapPropsToFields(props) {
         return {
-            // partyName: Form.createFormField({
-            //     ...props.inward.partyName,
-            //     value: ( props.params !== "" && props.inward.party) ?props.inward.party.partyName :(props.inward.partyName) ? props.inward.partyName: '',
-            // }),
-            // customerId: Form.createFormField({
-            //     ...props.inward.customerId,
-            //     value: props.params !== "" ? props.inward.party?.nPartyId:(props.inward.customerId) ? props.inward.customerId : props.inward.partyName,
-            // }),
-            // customerBatchNo: Form.createFormField({
-            //     ...props.inward.customerBatchNo,
-            //     value: props.params !== "" ? props.inward.customerBatchId:(props.inward.customerBatchNo) ? props.inward.customerBatchNo : '',
-            // }),
-            // customerInvoiceNo: Form.createFormField({
-            //     ...props.inward.customerInvoiceNo,
-            //     value: (props.inward.customerInvoiceNo) ? props.inward.customerInvoiceNo : '',
-            // }),
-            purposeType: Form.createFormField({
-                ...props.inward.purposeType,
-                value: (props.inward.purposeType) ? props.inward.purposeType : '',
+             options: Form.createFormField({
+                ...props.inward.options,
+                value: (props.inwardDV.options) ? props.inwardDV.options : '',
+            }),
+            frieghtCharges: Form.createFormField({
+                ...props.inwardDV.frieghtCharges,
+                value: (props.inwardDV.frieghtCharges) ? props.inwardDV.frieghtCharges : '',
+            }),
+            addInsurance: Form.createFormField({
+                ...props.inwardDV.addInsurance,
+                value: (props.inwardDV.addInsurance) ? props.inwardDV.addInsurance : '',
+            }),
+            loadingAndUnloading: Form.createFormField({
+                ...props.inwardDV.loadingAndUnloading,
+                value: (props.inwardDV.loadingAndUnloading) ? props.inwardDV.loadingAndUnloading : '',
+            }),
+            weightmenCharges: Form.createFormField({
+                ...props.inwardDV.weightmenCharges,
+                value: (props.inwardDV.weightmenCharges) ? props.inwardDV.weightmenCharges : '',
+            }),
+            addSGST: Form.createFormField({
+                ...props.inwardDV.addSGST,
+                value: (props.inwardDV.addSGST) ? props.inwardDV.addSGST : '',
+            }),
+            addCGST: Form.createFormField({
+                ...props.inwardDV.addCGST,
+                value: (props.inwardDV.addCGST) ? props.inwardDV.addCGST : '',
+            }),
+            totalInward: Form.createFormField({
+                ...props.inwardDV.totalInward,
+                value: (props.inwardDV.totalInward) ? props.inwardDV.totalInward : '',
             }),
         };
     },
     onValuesChange(props, values) {
-        props.setInwardDVDetails({ ...props.inward, ...values});
+        props.setInwardDVDetails({ ...props.inwardDV, ...values});
     },
 })(CreateInwardDocPage2);
 
 export default connect(mapStateToProps, {
-    setInwardDetails,
     setInwardDVDetails,
-    checkCustomerBatchNumber
+    checkCustomerBatchNumber,
+    generateConsignmentId,
+    fetchLocationList,
+    fetchVendorList,
+    fetchDocumentTypeList,
+    fetchDVMaterialList
 })(InwardDocPage2);

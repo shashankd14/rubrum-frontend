@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
-import {setInwardDVDetails, checkCustomerBatchNumber, generateConsignmentId, fetchLocationList, fetchVendorList, fetchWeighbridgeList} from "../../../../appRedux/actions";
-import {Form, Spin, AutoComplete, Icon, Button, Col, Row, Input, Select, Card, DatePicker} from "antd";
+import {setInwardDVDetails, fetchDVMaterialList, checkCustomerBatchNumber, generateConsignmentId, fetchLocationList, fetchVendorList, fetchWeighbridgeList} from "../../../../appRedux/actions";
+import {Form, Spin, AutoComplete, Icon, Button, Col, Row, Input, Select, Card, DatePicker, Table} from "antd";
 import {formItemLayout} from '../Create';
 import { APPLICATION_DATE_FORMAT } from '../../../../constants';
 import moment from "moment";
@@ -16,18 +16,92 @@ const widthStyle = {
 const CreateRecociliation = (props) => {
     const {getFieldDecorator} = props.form;
     const [dataSource, setDataSource] = useState([]);
+    const [itemDetails, setItemDetails] = useState([]); 
+
     useEffect(() => {
-        if(props.params !=="") {
-            const { Option } = AutoComplete;
-            const options = props.party.partyList.filter(party => {
-            if (party?.nPartyId===  props.inward.party?.nPartyId)
-            return (<Option key={party.nPartyId} value={`${party.nPartyId}`}>
-                    {party.partyName}
-                </Option>)
+        debugger
+        const { inwardDV, materialDV } = props;
+        if (inwardDV && materialDV && materialDV.DVMaterialList) {
+            const materialContent = materialDV.DVMaterialList?.content;
+
+            // Map the itemDetails with the item names
+            const updatedItemDetails = inwardDV?.itemsList?.map(item => {
+                const matchedMaterial = materialContent?.find(material => material.itemId === item.itemId);
+                return {
+                    ...item,
+                    itemName: matchedMaterial ? matchedMaterial.itemName : 'Unknown'
+                };
             });
-            setDataSource(options);
+
+            setItemDetails(updatedItemDetails);
         }
-    }, [props.party]);
+    }, [props.inwardDV, props.materialDV]);
+    // useEffect(() => {
+    //     if(props.params !=="") {
+    //         const { Option } = AutoComplete;
+    //         const options = props.party.partyList.filter(party => {
+    //         if (party?.nPartyId===  props.inward.party?.nPartyId)
+    //         return (<Option key={party.nPartyId} value={`${party.nPartyId}`}>
+    //                 {party.partyName}
+    //             </Option>)
+    //         });
+    //         setDataSource(options);
+    //     }
+    // }, [props.party]);
+
+
+    const columns = [
+        {
+            title: 'Item Name',
+            dataIndex: 'itemName',
+            key: 'itemName',
+            // filters: [],
+            // sorter: (a, b) => {
+            //     return a.nPartyId - b.nPartyId
+            // },
+            // sortOrder: sortedInfo.columnKey === 'nPartyId' && sortedInfo.order,
+        },
+        {
+            title: 'No. of Pcs',
+            dataIndex: 'actualNoofPieces',
+            key: 'actualNoofPieces',
+        },
+        {
+            title: 'Net Weight',
+            dataIndex: 'netWeight',
+            key: 'netWeight',
+        },
+        {
+            title: 'Theoretical No.of Pcs',
+            dataIndex: 'theoreticalNoofPieces',
+            key: 'theoreticalNoofPieces',
+        },
+        {
+            title: 'Theoretical Weight',
+            dataIndex: 'theoreticalWeight',
+            key: 'theoreticalWeight',
+        },
+        {
+            title: 'Average Weight (netWeight / actualNoofPieces)',
+            key: 'averageWeight',
+            render: (text, record) => {
+                debugger
+                const { netWeight, actualNoofPieces } = record;
+                const averageWeight = actualNoofPieces ? (netWeight / actualNoofPieces).toFixed(2) : 'N/A';
+                return averageWeight;
+            }
+        },
+        {
+            title: 'Weight Variance',
+            dataIndex: 'weightVariance',
+            key: 'weightVariance',
+        },
+    ]
+
+    // const handleTableChange = (pagination, filters, sorter) => {
+    //     setSortedInfo(sorter);
+    //     setFilteredInfo(filters)
+    // };
 
     useEffect(() => {     
         props.generateConsignmentId({
@@ -60,39 +134,52 @@ const CreateRecociliation = (props) => {
             requestId: "WEIGHBRIDGE_LIST_GET",
             userId: ""
         });
+        props.fetchDVMaterialList({
+            searchText:"",
+            pageNo: "1",
+            pageSize: "15",
+            ipAddress: "1.1.1.1",
+            requestId: "MATERIAL_LIST_GET",
+            userId: ""
+        });
     }, []);
 
-    useEffect(() => {
-        if(props.party.partyList.length > 0) {
+    useEffect (() => {
+        debugger
+        setItemDetails(props.inwardDV?.itemsList);
+    }, [props.inwardDV]);
+console.log("iiiiiiiii", itemDetails);
+    // useEffect(() => {
+    //     if(props.party.partyList.length > 0) {
 
-            const { Option } = AutoComplete;
-            const options = props.party.partyList.map(party => (
-                <Option key={party.nPartyId} value={`${party.nPartyId}`}>
-                    {party.partyName}
-                </Option>
-            ));
-            setDataSource(options);
-        }
-    }, [props.party]);
+    //         const { Option } = AutoComplete;
+    //         const options = props.party.partyList.map(party => (
+    //             <Option key={party.nPartyId} value={`${party.nPartyId}`}>
+    //                 {party.partyName}
+    //             </Option>
+    //         ));
+    //         setDataSource(options);
+    //     }
+    // }, [props.party]);
 
-    useEffect(() => {
-        if (props.params !== '') {
-            props.inward.customerId = props.inward.party?.nPartyId || '';
-            props.inward.customerBatchNo = props.inward.customerBatchId;
-        }
-    }, [props.params])
+    // useEffect(() => {
+    //     if (props.params !== '') {
+    //         props.inward.customerId = props.inward.party?.nPartyId || '';
+    //         props.inward.customerBatchNo = props.inward.customerBatchId;
+    //     }
+    // }, [props.params])
     const handleChange = e =>{
-        props.inward.party.partyName = e;
+        // props.inward.party.partyName = e;
     }
     const handleSubmit = e => {
         props.updateStep(6);
-        // e.preventDefault();
+        e.preventDefault();
 
-        // props.form.validateFields((err, values) => {
-        //     if (!err) {
-        //         props.updateStep(4);
-        //     }
-        // });
+        props.form.validateFields((err, values) => {
+            if (!err) {
+                props.updateStep(6);
+            }
+        });
     };
     const checkBatchNoExist = (rule, value, callback) => {
         if (!props.inwardStatus.loading && props.inwardStatus.success && !props.inwardStatus.duplicateBatchNo) {
@@ -120,18 +207,18 @@ const CreateRecociliation = (props) => {
         setVendorName(vendorName);
       },[props.inwardDV.vendorName])
 
-      console.log("1111111111", props)
-      console.log("vendorName", vendorName)
-      const location = useLocation()
-console.log("locationLLLLLLLLL", location.state);
+//       console.log("1111111111", props)
+//       console.log("vendorName", vendorName)
+//       const location = useLocation()
+// console.log("locationLLLLLLLLL", location.state);
       
     return (
         <>
-        <Col span={24}>
-            {props.party.loading && <Spin className="gx-size-100 gx-flex-row gx-justify-content-center gx-align-items-center" size="large"/>}
-            {props.party.partyList.length > 0 &&
-                // <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4" style={{"width":"70%"}}>
-                <Form {...formItemLayout} className="login-form gx-pt-4" >
+         <Col span={24}>
+          {/*  {props.party.loading && <Spin className="gx-size-100 gx-flex-row gx-justify-content-center gx-align-items-center" size="large"/>}
+            {props.party.partyList.length > 0 && */}
+                 <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4">
+                {/* <Form {...formItemLayout} className="login-form gx-pt-4" > */}
                    <Row>
                         <Col span={12} >
                     <Form.Item label="Vendor Name">
@@ -160,45 +247,24 @@ console.log("locationLLLLLLLLL", location.state);
                       </Col>
                     </Row>
                 <div>
-                    {/* <Row gutter={16}>
-                        <Col span={8} ></Col>
-                        <Col span={4} style={{textAlign: 'center'}}>Net Weight</Col>
-                        <Col span={4} style={{textAlign: 'center'}}>Rate</Col>
-                        <Col span={4} style={{textAlign: 'center'}}>Value</Col>
-                    </Row> */}
                     <Row gutter={16}>
-                    <Col span={8}>
-                    <AutoComplete
-                        // style={{width: 200}}
-                        placeholder="Select item"
-                        dataSource={dataSource}
-                        onChange= {props.params!=="" ?(e) =>handleChange(e,'material.description'):""}
-                        filterOption={(inputValue, option) => {
-                            return option.props.children?.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1 || false
-                        }
-                        }
-                    />
-                    </Col>
-                    <Col span={4}>
-                    <Input></Input>
-                    </Col>
-                    <Col span={4}>
-                    <Input></Input>
-                    </Col>
-                    <Col span={4}>
-                    <Input></Input>
-                    </Col>
-                    </Row>
+                    <Table rowSelection={[]}
+                    className="gx-table-responsive"
+                    columns={columns}
+                   dataSource={itemDetails}
+                    // onChange={handleChange}
+                />
+                   </Row>
                     <div className="gx-mt-4" style={{ backgroundColor: 'rgba(135, 206, 235, 0.2)', padding: '5px' }} >
                     <Row gutter={10} >
-                        <Col span={8} className="gx-mt-2" style={{textAlign: 'right'}}>
+                        <Col span={4} className="gx-mt-2" style={{textAlign: 'right'}}>
                         <h3>Total</h3> 
                         </Col>
-                        <Col span={4}>
-                        <Input style={{ backgroundColor: 'blue', color: 'white' }} />
+                        <Col span={3}>
+                        <Input value={props.inwardDV.totalWeight} style={{ backgroundColor: 'blue', color: 'white' }} />
                         </Col>
-                        <Col span={4}></Col>
-                        <Col span={4}>
+                        <Col span={3}></Col>
+                        <Col span={3}>
                         <Input style={{ backgroundColor: 'blue', color: 'white' }} />
                         </Col>
                     </Row>
@@ -254,32 +320,33 @@ console.log("locationLLLLLLLLL", location.state);
                 {getFieldDecorator('weighmentToalWeight', {
                    
                 })(
-                    <Input id="weighmentToalWeight" onChange= {props.params!=="" ?(e) =>handleChange(e,'frieghtCharges'):""}/>
+                    // <Input id="weighmentToalWeight" onChange= {props.params!=="" ?(e) =>handleChange(e,'frieghtCharges'):""}/>
+                    <Input id="weighmentToalWeight"/>
                 )}
             </Form.Item>
             <Form.Item label="Variance">
                 {getFieldDecorator('variance', {
                    
                 })(
-                    <Input id="variance" onChange= {props.params!=="" ?(e) =>handleChange(e,'addInsurance'):""}/>
+                    <Input id="variance"/>
                 )}
             </Form.Item>
                 <Form.Item label="Loss or profit Amount">
                 {getFieldDecorator('lossOrProfitAmount', {
                    
                 })(
-                    <Input id="lossOrProfitAmount" onChange= {props.params!=="" ?(e) =>handleChange(e,'frieghtCharges'):""}/>
+                    <Input id="lossOrProfitAmount" />
                 )}
             </Form.Item>
             <Form.Item label="Remarks">
                 {getFieldDecorator('remarks', {
                    
                 })(
-                    <Input id="remarks" onChange= {props.params!=="" ?(e) =>handleChange(e,'addInsurance'):""}/>
+                    <Input id="remarks" />
                 )}
             </Form.Item>
             <Form.Item label="Frieght deducted">
-                {getFieldDecorator('deductedOption', {
+                {getFieldDecorator('frieghtDeductedOption', {
                    
                 })(
                     <Select placeholder="Select an option">
@@ -290,10 +357,10 @@ console.log("locationLLLLLLLLL", location.state);
             </Form.Item>
             
             <Form.Item label="Frieght deducted Amount">
-                {getFieldDecorator('deductedAmount', {
+                {getFieldDecorator('frieghtDeductedAmount', {
                    
                 })(
-                    <Input id="deductedAmount" onChange= {props.params!=="" ?(e) =>handleChange(e,'addInsurance'):""}/>
+                    <Input id="frieghtDeductedAmount"/>
                 )}
             </Form.Item>
             <Form.Item label="Debit note raised">
@@ -310,21 +377,21 @@ console.log("locationLLLLLLLLL", location.state);
                 {getFieldDecorator('debitQTY', {
                    
                 })(
-                    <Input id="debitQTY" onChange= {props.params!=="" ?(e) =>handleChange(e,'addInsurance'):""}/>
+                    <Input id="debitQTY" />
                 )}
             </Form.Item>
             <Form.Item label="Debit note rate">
                 {getFieldDecorator('debitRate', {
                    
                 })(
-                    <Input id="debitRate" onChange= {props.params!=="" ?(e) =>handleChange(e,'addInsurance'):""}/>
+                    <Input id="debitRate" />
                 )}
             </Form.Item>
             <Form.Item label="Debit note value">
                 {getFieldDecorator('debitValue', {
                    
                 })(
-                    <Input id="debitValue" onChange= {props.params!=="" ?(e) =>handleChange(e,'addInsurance'):""}/>
+                    <Input id="debitValue" />
                 )}
             </Form.Item>
             
@@ -332,26 +399,26 @@ console.log("locationLLLLLLLLL", location.state);
                 {getFieldDecorator('finalLossOrProfit', {
                    
                 })(
-                    <Input id="finalLossOrProfit" onChange= {props.params!=="" ?(e) =>handleChange(e,'addInsurance'):""}/>
+                    <Input id="finalLossOrProfit" />
                 )}
             </Form.Item>
             </Col>       
             </Row>
                 <Row className="gx-mt-4">
                     <Col span={20} offset={4} style={{ textAlign: "center"}}>
-                        <Button style={{ marginLeft: 4 }} onClick={() => props.updateStep(3)}>
+                        <Button style={{ marginLeft: 4 }} onClick={() => props.updateStep(4)}>
                             <Icon type="left"/>Back
                         </Button>
-                        {/* <Button type="primary" htmlType="submit">
+                        <Button type="primary" htmlType="submit">
                             Forward<Icon type="right"/>
-                        </Button> */}
-                        <Button type="primary" onClick={handleSubmit}>
-                            Forward
                         </Button>
+                        {/* <Button type="primary" onClick={handleSubmit}>
+                            Forward
+                        </Button> */}
                     </Col>
                 </Row>
             </Form>
-            }
+            {/* } */}
             </Col>
             {/* <Col span={8} className="gx-pt-4">
                 <Card title="Inward Details" style={{ width: 400 }}>
@@ -377,7 +444,8 @@ const mapStateToProps = state => ({
     location: state.location,
     inwardDV: state.inwardDV.inward,
     vendor: state.vendor.vendorList,
-    weighbridge: state.weighbridge
+    weighbridge: state.weighbridge,
+    materialDV: state.materialDV,
 });
 
 const Recociliation = Form.create({
@@ -385,79 +453,65 @@ const Recociliation = Form.create({
     },
     mapPropsToFields(props) {
         return {
-            vendorNameReco: Form.createFormField({
-                ...props.inwardDV.vendorName,
+            weighbridgeName: Form.createFormField({
+                ...props.inwardDV.weighbridgeName,
                 // value: ( props.params !== "" && props.inward.party) ?props.inward.party.partyName :(props.inward.partyName) ? props.inward.partyName: '',
-                value: (props.inwardDV.vendorName) ? props.inwardDV.vendorName : props.vendorName
+                value: (props.inwardDV.weighbridgeName) ? props.inwardDV.weighbridgeName : ''
             }),
-            consignmentId: Form.createFormField({
-                ...props.inwardDV.consignmentId,
+            weighmentToalWeight: Form.createFormField({
+                ...props.inwardDV.weighmentToalWeight,
                 // value: ( props.params !== "" && props.inward.party) ?props.inward.party.partyName :(props.inward.partyName) ? props.inward.partyName: '',
-                value: (props.inwardDV.consignmentId) ? props.inwardDV.vendorBatchNo : props.consignmentId?.seqNo
+                value: (props.inwardDV.weighmentToalWeight) ? props.inwardDV.weighmentToalWeight : ''
             }),
-            vehicleNoReco: Form.createFormField({
-                ...props.inwardDV.vehicleNo,
+            variance: Form.createFormField({
+                ...props.inwardDV.variance,
                 // value: ( props.params !== "" && props.inward.party) ?props.inward.party.partyName :(props.inward.partyName) ? props.inward.partyName: '',
-                value: (props.inwardDV.vehicleNo) ? props.inwardDV.vehicleNo : ''
+                value: (props.inwardDV.variance) ? props.inwardDV.variance : ''
             }),
-            documentNo: Form.createFormField({
-                ...props.inwardDV.documentNo,
+            lossOrProfitAmount: Form.createFormField({
+                ...props.inwardDV.lossOrProfitAmount,
                 // value: ( props.params !== "" && props.inward.party) ?props.inward.party.partyName :(props.inward.partyName) ? props.inward.partyName: '',
-                value: (props.inwardDV.documentNo) ? props.inwardDV.documentNo : ''
+                value: (props.inwardDV.lossOrProfitAmount) ? props.inwardDV.lossOrProfitAmount : ''
             }),
-            ewayBillNo: Form.createFormField({
-                ...props.inwardDV.ewayBillNo,
+            remarks: Form.createFormField({
+                ...props.inwardDV.remarks,
                 // value: ( props.params !== "" && props.inward.party) ?props.inward.party.partyName :(props.inward.partyName) ? props.inward.partyName: '',
-                value: (props.inwardDV.ewayBillNo) ? props.inwardDV.ewayBillNo : ''
+                value: (props.inwardDV.remarks) ? props.inwardDV.remarks : ''
             }),
-            locationId: Form.createFormField({
-                ...props.inwardDV.locationId,
+            frieghtDeductedOption: Form.createFormField({
+                ...props.inwardDV.frieghtDeductedOption,
                 // value: ( props.params !== "" && props.inward.party) ?props.inward.party.partyName :(props.inward.partyName) ? props.inward.partyName: '',
-                value: (props.inwardDV.locationId) ? props.inwardDV.locationId : ''
+                value: (props.inwardDV.frieghtDeductedOption) ? props.inwardDV.frieghtDeductedOption : ''
             }),
-            documentType: Form.createFormField({
-                ...props.inwardDV.documentType,
+            frieghtDeductedAmount: Form.createFormField({
+                ...props.inwardDV.frieghtDeductedAmount,
                 // value: ( props.params !== "" && props.inward.party) ?props.inward.party.partyName :(props.inward.partyName) ? props.inward.partyName: '',
-                value: (props.inwardDV.documentType) ? props.inwardDV.documentType : ''
+                value: (props.inwardDV.frieghtDeductedAmount) ? props.inwardDV.frieghtDeductedAmount : ''
             }),
-            documentDate: Form.createFormField({
-                ...props.inwardDV.documentDate,
+            debitQTY: Form.createFormField({
+                ...props.inwardDV.debitQTY,
                 // value: ( props.params !== "" && props.inward.party) ?props.inward.party.partyName :(props.inward.partyName) ? props.inward.partyName: '',
-                value: (props.inwardDV.documentDate) ? props.inwardDV.documentDate : ''
+                value: (props.inwardDV.debitQTY) ? props.inwardDV.debitQTY : ''
             }),
-            ewayBillDate: Form.createFormField({
-                ...props.inwardDV.ewayBillDate,
+            debitRate: Form.createFormField({
+                ...props.inwardDV.debitRate,
                 // value: ( props.params !== "" && props.inward.party) ?props.inward.party.partyName :(props.inward.partyName) ? props.inward.partyName: '',
-                value: (props.inwardDV.ewayBillDate) ? props.inwardDV.ewayBillDate : ''
+                value: (props.inwardDV.debitRate) ? props.inwardDV.debitRate : ''
             }),
-            valueOfGoods: Form.createFormField({
-                ...props.inwardDV.valueOfGoods,
+            debitValue: Form.createFormField({
+                ...props.inwardDV.debitValue,
                 // value: ( props.params !== "" && props.inward.party) ?props.inward.party.partyName :(props.inward.partyName) ? props.inward.partyName: '',
-                value: (props.inwardDV.valueOfGoods) ? props.inwardDV.valueOfGoods : ''
+                value: (props.inwardDV.debitValue) ? props.inwardDV.debitValue : ''
             }),
-            partyName: Form.createFormField({
-                ...props.inward.partyName,
-                value: ( props.params !== "" && props.inward.party) ?props.inward.party.partyName :(props.inward.partyName) ? props.inward.partyName: '',
+            debitNoteOption: Form.createFormField({
+                ...props.inwardDV.debitNoteOption,
+                // value: ( props.params !== "" && props.inward.party) ?props.inward.party.partyName :(props.inward.partyName) ? props.inward.partyName: '',
+                value: (props.inwardDV.debitNoteOption) ? props.inwardDV.debitNoteOption : ''
             }),
-            customerId: Form.createFormField({
-                ...props.inward.customerId,
-                value: props.params !== "" ? props.inward.party?.nPartyId:(props.inward.customerId) ? props.inward.customerId : props.inward.partyName,
-            }),
-            customerBatchNo: Form.createFormField({
-                ...props.inward.customerBatchNo,
-                value: props.params !== "" ? props.inward.customerBatchId:(props.inward.customerBatchNo) ? props.inward.customerBatchNo : '',
-            }),
-            customerInvoiceNo: Form.createFormField({
-                ...props.inward.customerInvoiceNo,
-                value: (props.inward.customerInvoiceNo) ? props.inward.customerInvoiceNo : '',
-            }),
-            purposeType: Form.createFormField({
-                ...props.inward.purposeType,
-                value: (props.inward.purposeType) ? props.inward.purposeType : '',
-            }),
-            locationId: Form.createFormField({
-                ...props.inwardDV.locationId,
-                value: (props.inwardDV.locationId) ? props.inwardDV.locationId : '',
+            finalLossOrProfit: Form.createFormField({
+                ...props.inwardDV.finalLossOrProfit,
+                // value: ( props.params !== "" && props.inward.party) ?props.inward.party.partyName :(props.inward.partyName) ? props.inward.partyName: '',
+                value: (props.inwardDV.finalLossOrProfit) ? props.inwardDV.finalLossOrProfit : ''
             }),
         };
     },
@@ -472,5 +526,6 @@ export default connect(mapStateToProps, {
     generateConsignmentId,
     fetchLocationList,
     fetchVendorList,
-    fetchWeighbridgeList
+    fetchWeighbridgeList,
+    fetchDVMaterialList
 })(Recociliation);
