@@ -843,6 +843,13 @@ function* generateQMreportInwardPdf(action) {
                   },
                 body: JSON.stringify(action.payload.dcIds)
             });
+            if(pdfGenerate.status === 200) {
+                const pdfGenerateResponse = yield pdfGenerate.json();
+                if (pdfGenerateResponse.dc_pdfs && pdfGenerateResponse.dc_pdfs.length > 0) {
+                    const pdfUrl = pdfGenerateResponse.dc_pdfs[0].pdfS3Url;
+                    window.open(pdfUrl, '_blank'); 
+                }               
+                yield put(pdfGenerateQMreportInwardSuccess(pdfGenerateResponse));}
         } else if(action.payload.type === 'QR'){
             pdfGenerate = yield fetch(`${baseUrl}api/pdf/qirpdf/${action.payload.qirId}`, {
                 method: 'POST',
