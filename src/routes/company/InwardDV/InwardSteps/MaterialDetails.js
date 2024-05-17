@@ -106,14 +106,14 @@ const MaterialDetailsForm = (props) => {
         "inwardItemId": "",
         "inwardId": "",
         "unit": "",
-        "unitVolume": "",
-        "netWeight": "",
-        "rate": 0,
-        "volume": 0,
-        "actualNoofPieces": "",
-        "theoreticalWeight": "",
-        "weightVariance": "",
-        "theoreticalNoofPieces": ""
+        "unitVolume": "0",
+        "netWeight": "0",
+        "rate": "0",
+        "volume": "0",
+        "actualNoofPieces": "0",
+        "theoreticalWeight": "0",
+        "weightVariance": "0",
+        "theoreticalNoofPieces": "0"
     };
     const handleAddItem = () => {
         debugger

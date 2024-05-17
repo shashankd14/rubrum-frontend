@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
-import {setInwardDVDetails, checkCustomerBatchNumber, generateConsignmentId, fetchLocationList, fetchVendorList, fetchDocumentTypeList} from "../../../../appRedux/actions";
+import {setInwardDVDetails, fetchDVMaterialList, checkCustomerBatchNumber, generateConsignmentId, fetchLocationList, fetchVendorList, fetchDocumentTypeList} from "../../../../appRedux/actions";
 import {Form, Spin, AutoComplete, Icon, Button, Col, Row, Input, Select, Card, DatePicker} from "antd";
 import {formItemLayout} from '../Create';
 // import { APPLICATION_DATE_FORMAT } from '../../../../constants';
@@ -10,7 +10,7 @@ import { useHistory } from 'react-router-dom';
 const Option = Select.Option;
 
 const CreateInwardDocPage1 = (props) => {
-    const {getFieldDecorator} = props.form;
+    const {getFieldDecorator, setFieldsValue} = props.form;
     const [dataSource, setDataSource] = useState([]);
     useEffect(() => {
         if(props.params !=="") {
@@ -53,6 +53,14 @@ const CreateInwardDocPage1 = (props) => {
             requestId: "VENDOR_LIST_GET",
             userId: ""
         });
+        props.fetchDVMaterialList({
+            searchText:"",
+            pageNo: "1",
+            pageSize: "15",
+            ipAddress: "1.1.1.1",
+            requestId: "MATERIAL_LIST_GET",
+            userId: ""
+        });
     }, []);
 
     useEffect(() => {
@@ -74,11 +82,8 @@ const CreateInwardDocPage1 = (props) => {
             props.inward.customerBatchNo = props.inward.customerBatchId;
         }
     }, [props.params])
-    const handleChange = e =>{
-        props.inward.party.partyName = e;
-    }
+   
     const handleSubmit = e => {
-        debugger
         props.updateStep(4);
         e.preventDefault();
 
@@ -88,12 +93,7 @@ const CreateInwardDocPage1 = (props) => {
             }
         });
     };
-    const checkBatchNoExist = (rule, value, callback) => {
-        if (!props.inwardStatus.loading && props.inwardStatus.success && !props.inwardStatus.duplicateBatchNo) {
-            return callback();
-        }
-        callback('The coil number already exists');
-    };
+    
     const handleChangeDate = (date, dateString) => {
         debugger
         props.form.setFieldsValue({
@@ -106,22 +106,28 @@ const CreateInwardDocPage1 = (props) => {
         });
       };
 
-      const [vendorBatchNo, setVendorBatchNo] = useState();
       const [vendorName, setVendorName] = useState();
       useEffect(() => {
-        debugger
-        if (vendorName !== undefined){
+        if (props.inwardDV.vendorName !== undefined){
         const vendorId = props.inwardDV.vendorName;
-        let vendorBatchNo = '';
         let vendorName = '';
             const response = props.vendor.content
             const selectedVendorName = response.find(vendor => vendor.vendorId === vendorId);
             vendorName = selectedVendorName.vendorName;
-        setVendorBatchNo(vendorBatchNo);
         setVendorName(vendorName);
         }
        
       },[props.vendor])
+
+      useEffect(() => {
+        setFieldsValue({
+            consignmentId: props.consignmentId?.seqNo || props.inwardDV?.consignmentId,
+        });
+    }, [props.consignmentId?.seqNo, props.inwardDV?.consignmentId]);
+
+    const getItemDetails = (itemId) => {
+        return props.material?.DVMaterialList?.content.find(item => item.itemId === itemId);
+    };
       
     return (
         <>
@@ -145,7 +151,7 @@ const CreateInwardDocPage1 = (props) => {
                         <Col span={12}> */}
                     <Form.Item label="Consignment Id">
                             {getFieldDecorator('consignmentId', {
-                            initialValue: props.consignmentId?.seqNo
+                            initialValue: props.inwardDV.consignmentId
                             })(
                                 <Input id="consignmentId" disabled/>
                             )}
@@ -201,7 +207,6 @@ const CreateInwardDocPage1 = (props) => {
                           <Select
                             id="documentType"
                             showSearch
-                            // mode="multiple"
                             style={{ width: 260 }}
                           >
                             {props.document?.map((party) => (
@@ -273,13 +278,23 @@ const CreateInwardDocPage1 = (props) => {
             <Col span={8} className="gx-pt-4">
                 <Card title="Inward Details" style={{ width: 400 }}>
                     {props.inwardDV.purposeType && <p>Purpose Type : {props.inwardDV.purposeType}</p>}
+                    {props.inwardDV.vendorName && <p>Vendor ID : {props.inwardDV.vendorName}</p>}
                     {props.inwardDV.vendorName && <p>Vendor Name : { vendorName}</p>}
-                    {props.inwardDV.vendorId && <p>Vendor ID : {props.inwardDV.vendorName}</p>}
-                    {props.inwardDV.vendorBatchNo && <p>Vendor BatchNo : {vendorBatchNo}</p>}
-                    {props.inwardDV.itemName && <p>Item Name : {props.inwardDV.itemName}</p>}
-                    {/* <p>Net Weight :   </p>
-                    <p>Item Name :  </p>
-                    <p>Net Weight :   </p> */}
+                    {props.inwardDV.vendorBatchNo && <p>Vendor BatchNo : {props.inwardDV.vendorBatchNo}</p>}
+                    {props.inwardDV?.itemsList?.map((item, index) => {
+                            const matchedItem = getItemDetails(item.itemId);
+                            return (
+                                <div key={index}>
+                                    <p>Item ID: {item.itemId}</p>
+                                    {matchedItem && (
+                                        <>
+                                            <p>Item Name: {matchedItem.itemName}</p>
+                                            <p>Net Weight: {item.netWeight}</p>
+                                        </>
+                                    )}
+                                </div>
+                            );
+                        })}
                 </Card>
             </Col>
         </>
@@ -294,7 +309,8 @@ const mapStateToProps = state => ({
     location: state.location,
     inwardDV: state.inwardDV.inward,
     vendor: state.vendor.vendorList,
-    document: state.documentType.documentTypeList
+    document: state.documentType.documentTypeList,
+    material: state.materialDV,
 });
 
 const InwardDocPage1 = Form.create({
@@ -308,9 +324,10 @@ const InwardDocPage1 = Form.create({
                 value: (props.inwardDV.vendorBatchNo) ? props.inwardDV.vendorBatchNo : ''
             }),
             consignmentId: Form.createFormField({
-                ...props.inwardDV.consignmentId,
+                // ...props.inwardDV.consignmentId,
                 // value: ( props.params !== "" && props.inward.party) ?props.inward.party.partyName :(props.inward.partyName) ? props.inward.partyName: '',
-                value: (props.inwardDV.consignmentId) ? props.inwardDV.vendorBatchNo : props.consignmentId?.seqNo
+                // value: (props.inwardDV.consignmentId) ? props.inwardDV.vendorBatchNo : props.consignmentId?.seqNo
+                value: props.inwardDV.consignmentId
             }),
             vehicleNo: Form.createFormField({
                 ...props.inwardDV.vehicleNo,
@@ -383,5 +400,6 @@ export default connect(mapStateToProps, {
     generateConsignmentId,
     fetchLocationList,
     fetchVendorList,
-    fetchDocumentTypeList
+    fetchDocumentTypeList,
+    fetchDVMaterialList
 })(InwardDocPage1);

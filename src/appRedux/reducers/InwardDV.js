@@ -131,7 +131,6 @@ export default (state = INIT_STATE, action) => {
             }
         }
         case GENERATE_INWARD_ID_SUCCESS: {
-            debugger
             return {
                 ...state,
                 loading: false,
@@ -168,7 +167,6 @@ export default (state = INIT_STATE, action) => {
             }
         }
         case SET_INWARD_DV_DETAILS: {
-            debugger
             return {
                 ...state,
                 inward: action.inward,

@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
-import {setInwardDVDetails, fetchDVMaterialList, checkCustomerBatchNumber, generateConsignmentId, fetchLocationList, fetchVendorList, fetchWeighbridgeList} from "../../../../appRedux/actions";
+import {setInwardDVDetails, fetchDVMaterialList, checkCustomerBatchNumber, fetchLocationList, fetchVendorList, fetchWeighbridgeList} from "../../../../appRedux/actions";
 import {Form, Spin, AutoComplete, Icon, Button, Col, Row, Input, Select, Card, DatePicker, Table} from "antd";
 import {formItemLayout} from '../Create';
 import { APPLICATION_DATE_FORMAT } from '../../../../constants';
@@ -103,13 +103,7 @@ const CreateRecociliation = (props) => {
     //     setFilteredInfo(filters)
     // };
 
-    useEffect(() => {     
-        props.generateConsignmentId({
-            fieldName: "CONSIGNMENT",
-            ipAddress: "1.1.1.1",
-            requestId: "GENERATE_SEQ",
-            userId: ""
-        })
+    useEffect(() => {  
         props.fetchLocationList({
             searchText:'',
             pageNo:"1",
@@ -230,7 +224,7 @@ console.log("iiiiiiiii", itemDetails);
                     </Form.Item>
                     <Form.Item label="Consignment Id">
                             {getFieldDecorator('consignmentIdReco', {
-                            initialValue: props.consignmentId?.seqNo
+                            initialValue: props.inwardDV.consignmentId
                             })(
                                 <Input id="consignmentIdReco" disabled/>
                             )}
@@ -440,7 +434,6 @@ const mapStateToProps = state => ({
     party: state.party,
     inward: state.inward.inward,
     inwardStatus: state.inward,
-    consignmentId: state.inwardDV.consignmentId,
     location: state.location,
     inwardDV: state.inwardDV.inward,
     vendor: state.vendor.vendorList,
@@ -523,7 +516,6 @@ const Recociliation = Form.create({
 export default connect(mapStateToProps, {
     setInwardDVDetails,
     checkCustomerBatchNumber,
-    generateConsignmentId,
     fetchLocationList,
     fetchVendorList,
     fetchWeighbridgeList,

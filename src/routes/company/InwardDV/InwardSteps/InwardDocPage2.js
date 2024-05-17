@@ -207,7 +207,7 @@ const CreateInwardDocPage2 = (props) => {
                                 <Input value={item.rate} readOnly />
                             </Col>
                             <Col span={4}>
-                                <Input value={item.netWeight * item.rate} disabled /> {/* Calculate value */}
+                                <Input value={item.volume} disabled /> {/* Calculate value */}
                             </Col>
                             </Row>
                     );

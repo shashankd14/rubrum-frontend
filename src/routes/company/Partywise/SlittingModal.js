@@ -510,7 +510,8 @@ const SlittingWidths = (props) => {
 
     settargetWeight(weightValue / equalParts);
     if (e.target.value === 1) {
-      setavailLength((length * (weightValue / equalParts / weight)).toFixed(0));
+      let equalPartsdevide = (weightValue / equalParts / weight).toFixed(2);
+      setavailLength((length * equalPartsdevide).toFixed(0));
     } else {
       setavailLength(0);
       settargetWeight(0);

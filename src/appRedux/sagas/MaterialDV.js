@@ -123,8 +123,8 @@ function* updateDVMaterial(action) {
     formData.append("itemImage", JSON.stringify(payload.itemImage || ''));
     formData.append("crossSectionalImage", JSON.stringify(payload.crossSectionalImage || ''));
     try {
-        const updateMaterial = yield fetch(`${baseUrl}api/trading/material/save`, {
-                method: 'POST',
+        const updateMaterial = yield fetch(`${baseUrl}api/trading/material/update`, {
+                method: 'PUT',
                 headers: { ...getHeaders() },
                 body: formData
             
@@ -191,31 +191,12 @@ function* DeleteDVMaterialSaga({action}) {
     }
 }
 
-// function* fetchMaterialGrades() {
-//     try {
-//         const fetchMaterialList =  yield fetch(`${baseUrl}api/material/list`, {
-//             method: 'GET',
-//             headers: getHeaders()
-//         });
-//         if(fetchMaterialList.status === 200) {
-//             const fetchMaterialListResponse = yield fetchMaterialList.json();
-//             yield put(fetchDVMaterialListSuccess(fetchMaterialListResponse));
-//         } else if (fetchMaterialList.status === 401) {
-//             yield put(userSignOutSuccess());
-//         } else
-//             yield put(fetchDVMaterialListError('error'));
-//     } catch (error) {
-//         yield put(fetchDVMaterialListError(error));
-//     }
-// }
-
 export function* watchFetchRequests() {
     yield takeLatest(FETCH_DV_MATERIAL_LIST_REQUEST, fetchDVMaterialList);
     yield takeLatest(ADD_DV_MATERIAL_REQUEST, addDVMaterial);
     yield takeLatest(FETCH_DV_MATERIAL_LIST_ID_REQUEST, fetchDVMaterialListById);
     yield takeLatest(UPDATE_DV_MATERIAL_REQUEST, updateDVMaterial);
     yield takeLatest(DELETE_DV_MATERIAL_REQUEST, DeleteDVMaterialSaga);
-    // yield takeLatest(FETCH_MATERIAL_GRADES, fetchMaterialGrades);
 }
 
 export default function* DVmaterialSagas() {

@@ -2,16 +2,30 @@ import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import moment from "moment";
 
-import {submitInwardEntry, resetInwardForm,updateInward, pdfGenerateInward, QrGenerateInward} from "../../../../appRedux/actions";
-import {Button, Card, Col, Icon, message, Row, Spin, Modal} from "antd";
+import {submitInwardEntry, resetInwardForm,updateInward, pdfGenerateInward, QrGenerateInward, setInwardDVDetails, fetchDVMaterialList} from "../../../../appRedux/actions";
+import {Button, Card, Col, Icon, message, Row, Spin, Modal, Collapse, Input} from "antd";
 import { withRouter } from 'react-router-dom';
 
 import {APPLICATION_DATE_FORMAT} from '../../../../constants/index';
+
+const { Panel } = Collapse;
 
 const InwardSummary = (props) => {
     const [generate, setGenerate]= useState(true);
     const [payload, setPayload]= useState({});
     const [showCreateModal, setShowCreateModal] = useState(false);
+
+    useEffect(() => {
+        props.fetchDVMaterialList({
+            searchText:"",
+            pageNo: "1",
+            pageSize: "15",
+            ipAddress: "1.1.1.1",
+            requestId: "MATERIAL_LIST_GET",
+            userId: ""
+        });
+    }, []);
+
     useEffect(() => {
         if(props.inwardUpdateSuccess) {
             message.success('Inward entry has been updated successfully', 2);
@@ -52,6 +66,10 @@ const InwardSummary = (props) => {
     let dimensionEdit = `${props.inward.fWidth} X ${props.inward.fThickness} X ${props.inward.fLength}`;
     let dimension = `${props.inward.width} X ${props.inward.thickness} X ${props.inward.length}`
 
+    const getItemDetails = (itemId) => {
+        return props.material?.DVMaterialList?.content?.find(materialItem => materialItem.itemId === itemId);
+      };
+
     return (
         <>
             {props.inwardSubmitLoading ? <Spin className="gx-size-100 gx-flex-row gx-justify-content-center gx-align-items-center" size="large"/> :
@@ -60,29 +78,37 @@ const InwardSummary = (props) => {
                     {/* <Row> */}
                         <Col span={12}>
                             <Card title="Inward Details" style={{ width: 500 }}>
-                                {props.inwardDV.purposeType && <p>Purpose Type : {props.inwardDV.purposeType}</p>}
-                                {props.inwardDV.vendorId && <p>Vendor Id : {props.inwardDV.vendorId}</p>}
-                                {props.inwardDV.vendorName && <p>Vendor Name : {props.inwardDV.vendorName}</p>}
-                                {props.inwardDV.vendorBatchNo && <p>Vendor Batch No : {props.inwardDV.vendorBatchNo}</p>}
+                                {props.inwardDV?.purposeType && <p>Purpose Type : {props.inwardDV?.purposeType}</p>}
+                                {props.inwardDV?.vendorName && <p>Vendor Id : {props.inwardDV?.vendorName}</p>}
+                                {props.inwardDV?.vendorId && <p>Vendor Name : {props.inwardDV?.vendorId}</p>}
+                                {props.inwardDV?.vendorBatchNo && <p>Vendor Batch No : {props.inwardDV?.vendorBatchNo}</p>}
                                 
                             </Card>
                         </Col>
                         <Col span={12}>
                             <Card title="Inward Document Details" style={{ width: 500 }}>
-                                <p>Coil number : {props.inward.coilNumber}</p>
-                                {(props.inward.material || props.inward.description) && <p>Material Description : {props.params !== ""? props.inward.material.description : props.inward.description}</p>}
-                                <p>Dimensions : {props.params !== ""?dimensionEdit: dimension}</p>
-                                <p>Net Weight : {props.params !== "" ? props.inward.fpresent: props.inward.netWeight}</p>
-                                <p>Gross Weight : {props.inward.grossWeight}</p>
+                                {props.inwardDV?.consignmentId && <p>consignment Id : {props.inwardDV?.consignmentId}</p>}
+                                {props.inwardDV?.vehicleNo && <p>Vehicle No : {props.inwardDV?.vehicleNo}</p>}
+                                {props.inwardDV?.locationId && <p>Location Id : {props.inwardDV?.locationId}</p>}
+                                {props.inwardDV?.documentNo && <p>Document No : {props.inwardDV?.documentNo}</p>}
+                                {props.inwardDV?.documentType && <p>Document Type : {props.inwardDV?.documentType}</p>}
+                                {/* {props.inwardDV?.documentDate && <p>Document Date : {props.inwardDV?.documentDate}</p>} */}
+                                {props.inwardDV?.ewayBillNo && <p>Eway Bill No : {props.inwardDV?.ewayBillNo}</p>}
+                                {/* {props.inwardDV?.ewayBillDate && <p>Eway Bill Date : {props.inwardDV?.ewayBillDate}</p>} */}
+                                {props.inwardDV?.valueOfGoods && <p>Eway Bill value of goods : {props.inwardDV?.valueOfGoods}</p>}
+                                
                             </Card>
                         </Col>
                         <Col span={12}>
                             <Card title="Extra Charges" style={{ width: 500 }}>
-                                <p>Coil number : {props.inward.coilNumber}</p>
-                                {(props.inward.material || props.inward.description) && <p>Material Description : {props.params !== ""? props.inward.material.description : props.inward.description}</p>}
-                                <p>Dimensions : {props.params !== ""?dimensionEdit: dimension}</p>
-                                <p>Net Weight : {props.params !== "" ? props.inward.fpresent: props.inward.netWeight}</p>
-                                <p>Gross Weight : {props.inward.grossWeight}</p>
+                                {props.inwardDV?.frieghtCharges && <p>Add Frieght Charges : {props.inwardDV?.frieghtCharges}</p>}
+                                {props.inwardDV?.addInsurance && <p>Add Insurance : {props.inwardDV?.addInsurance}</p>}
+                                {props.inwardDV?.loadingAndUnloading && <p>Add Loading & Unloading Charges : {props.inwardDV?.loadingAndUnloading}</p>}
+                                {props.inwardDV?.weightmenCharges && <p>Add weightment Charges : {props.inwardDV?.weightmenCharges}</p>}
+                                {props.inwardDV?.addSGST && <p>Add SGST : {props.inwardDV?.addSGST}</p>}
+                                {props.inwardDV?.addCGST && <p>Add CGST : {props.inwardDV?.addCGST}</p>}
+                                {props.inwardDV?.addIGST && <p>Add IGST : {props.inwardDV?.addIGST}</p>}
+                                {props.inwardDV?.totalInwardValue && <p>TotalInwardValue : {props.inwardDV?.totalInwardValue}</p>}
                             </Card>
                         </Col>
                         </Col>
@@ -91,11 +117,74 @@ const InwardSummary = (props) => {
                     <Col span={14} className="gx-pt-4">
                         <Col span={12}>
                             <Card title="Material Details" style={{ width: 700 }}>
-                                <p>Received Date : {moment(props.inward.dReceivedDate).format(APPLICATION_DATE_FORMAT)}</p>
-                                {props.inward.batchNo && <p>Batch No : {props.inward.batchNo}</p>}
-                                {props.inward.vehicleNumber && <p>Vehicle number : {props.inward.vehicleNumber}</p>}
-                                {props.inward.invoiceNumber && <p>Invoice number : {props.inward.invoiceNumber}</p>}
-                                {props.inward.invoiceDate && <p>Invoice date : {moment(props.inward.invoiceDate).format(APPLICATION_DATE_FORMAT)}</p>}
+                         <Row gutter={20}>
+                            <Col span={12} ></Col>
+                            <Col span={4} style={{textAlign: 'center'}}>Net Weight</Col>
+                            <Col span={4} style={{textAlign: 'center'}}>Rate</Col>
+                            <Col span={4} style={{textAlign: 'center'}}>Value</Col>
+                        </Row>
+                            {props.inwardDV?.itemsList?.map((item, index) => {
+                        const itemDetails = getItemDetails(item.itemId);
+                        return (
+                        <Row gutter={20} key={index}>
+                            <Col span={12}>
+                            <Collapse>
+                                {itemDetails && (
+                                <Panel header={`${itemDetails.itemName}: ${itemDetails.categoryEntity?.categoryName || '-'} | ${itemDetails.subCategoryEntity?.subcategoryName || '-'}`} key={index}>
+                                    <p>Item HSN code: {itemDetails.itemHsnCode}</p>
+                                    <p>Item code: {itemDetails.itemCode}</p>
+                                    <p>Item grade: {itemDetails.itemGrade}</p>
+                                    <p>Item ID: {itemDetails.itemId}</p>
+                                    <p>Main category: {itemDetails.categoryEntity?.categoryName || '-'}</p>
+                                    <p>Sub category: {itemDetails.subCategoryEntity?.subcategoryName || '-'}</p>
+                                    <p>Main category HSN code: {itemDetails.categoryEntity?.categoryHsnCode || '-'}</p>
+                                    <p>Display name: {itemDetails.categoryEntity?.displayName || '-'}</p>
+                                    <p>Brand name: {itemDetails.categoryEntity?.brandName || '-'}</p>
+                                    <p>Manufacturers name: {itemDetails.categoryEntity?.manufacturerName || '-'}</p>
+                                    <p>Per Meter: {itemDetails.perMeter}</p>
+                                    <p>Per Feet: {itemDetails.perFeet}</p>
+                                    <p>Per Pc: {itemDetails.perPC}</p>
+                                    <p>Additional Parameters:</p>
+                                    <ul>
+                                    {itemDetails.additionalParams && JSON.parse(itemDetails.additionalParams).map((param, paramIndex) => (
+                                        <li key={paramIndex}>
+                                        {param.parameterName}: {param.units} {param.unitType}
+                                        </li>
+                                    ))}
+                                    </ul>
+                                    {itemDetails.itemImage && <img src={itemDetails.itemImage} alt="Item Image" />}
+                                    {itemDetails.crossSectionalImage && <img src={itemDetails.crossSectionalImage} alt="Cross-sectional Image" />}
+                                </Panel>
+                                )}
+                            </Collapse>
+                               
+                            </Col>
+                            <Col span={4}>
+                                <Input value={item.netWeight} readOnly />
+                            </Col>
+                            <Col span={4}>
+                                <Input value={item.rate} readOnly />
+                            </Col>
+                            <Col span={4}>
+                                <Input value={item.volume} disabled /> {/* Calculate value */}
+                            </Col>
+                            </Row>
+                        );
+                    })}
+                    <div className="gx-mt-4" style={{ backgroundColor: 'rgba(135, 206, 235, 0.2)', padding: '5px' }} >
+                            <Row gutter={14} >
+                                <Col span={12} className="gx-mt-2" style={{textAlign: 'right'}}>
+                                <h3>Total</h3> 
+                                </Col>
+                                <Col span={4}>
+                                <Input value={props.inwardDV.totalWeight} style={{ backgroundColor: 'blue', color: 'white' }} />
+                                </Col>
+                                <Col span={4}></Col>
+                                <Col span={4}>
+                                <Input value={props.inwardDV.totalVolume} style={{ backgroundColor: 'blue', color: 'white' }} />
+                                </Col>
+                            </Row>
+                            </div>
                             </Card>
                         </Col>
                 </Col>
@@ -132,6 +221,7 @@ const mapStateToProps = state => ({
     inwardObject: state.inward,
     party: state.party,
     inwardDV: state.inwardDV.inward,
+    material: state.materialDV,
 });
 
 export default withRouter(connect(mapStateToProps, {
@@ -139,5 +229,7 @@ export default withRouter(connect(mapStateToProps, {
     resetInwardForm,
     updateInward,
     pdfGenerateInward,
-    QrGenerateInward
+    QrGenerateInward,
+    setInwardDVDetails,
+    fetchDVMaterialList
 })(InwardSummary));
