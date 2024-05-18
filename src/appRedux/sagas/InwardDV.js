@@ -22,6 +22,10 @@ import {
     generateInwardIdError,
     generateConsignmentIdSuccess,
     generateConsignmentIdError,
+    addInwardDVSuccess,
+    addInwardDVError,
+    updateInwardDVSuccess,
+    updateInwardDVError,
 } from "../actions";
 import { userSignOutSuccess } from "../../appRedux/actions/Auth";
 
@@ -87,58 +91,106 @@ function* fetchInwardListById(action) {
     }
 }
 
-function* addItemGrade(action) {
+function* addInwardDVSaga(action) {
     let body = action.payload;
     const reqBody = {
-        itemgradeName: body.itemgradeName,
-        itemgradeDesc: body.itemgradeDesc,
-        requestId: "itemGrade add",
+        purposeType: body.purposeType,
+        vendorId: body.vendorName,
+        transporterName: body.transporterName,
+        transporterPhoneNo: body.transporterPhoneNo,
+        vendorBatchNo: body.vendorBatchNo,
+        consignmentId: body.consignmentId,
+        locationId: body.locationId,
+        vehicleNo: body.vehicleNo,
+        documentNo: body.documentNo,
+        documentType: body.documentType,
+        documentDate: body.documentDate,
+        ewayBillNo: body.ewayBillNo,
+        ewayBillDate: body.ewayBillDate,
+        valueOfGoods: body.valueOfGoods,
+        extraChargesOption: body.options,
+        freightCharges: body.frieghtCharges,
+        insuranceAmount: body.addInsurance,
+        loadingCharges: body.loadingAndUnloading,
+        weightmenCharges: body.weightmenCharges,
+        cgst: body.addCGST,
+        sgst: body.addSGST,
+        igst: body.addIGST,
+        totalInwardVolume: body.totalInwardValue,
+        totalWeight: body.totalWeight,
+        totalVolume: body.totalVolume,
+        itemsList: body.itemsList,
+        requestId: "INWARD_TRADING_INSERT",
         ipAddress: "1.1.1.1",
         userId: getUserId()
     }
     try {
-        const addItemGrade = yield fetch(`${baseUrl}api/trading/itemgrade/save`, {
+        const addInward = yield fetch(`${baseUrl}api/trading/inward/save`, {
             method: 'POST',
             headers: { "Content-Type": "application/json", ...getHeaders() },
             body:JSON.stringify(reqBody)
         });
-        if (addItemGrade.status == 200) {
-            yield put(addItemGradeSuccess());
-        } else if (addItemGrade.status === 401) {
+        if (addInward.status == 200) {
+            yield put(addInwardDVSuccess());
+        } else if (addInward.status === 401) {
             yield put(userSignOutSuccess());
         } else
-            yield put(addItemGradeError('error'));
+            yield put(addInwardDVError('error'));
     } catch (error) {
-        yield put(addItemGradeError(error));
+        yield put(addInwardDVError(error));
     }
 }
 
-function* updateItemGrade(action) {
+function* updateInwardDVSaga(action) {
     let body = action.payload;
     const reqBody = {
-        itemgradeId: body.itemgradeId,
-        itemgradeName: body.values.itemgradeName,
-        itemgradeDesc: body.values.itemgradeDesc,
-        requestId: "ITEMGRADE_UPDATE",
+        inwardId: body.inwardId,
+        purposeType: body.purposeType,
+        vendorId: body.vendorId,
+        transporterName: body.transporterName,
+        transporterPhoneNo: body.transporterPhoneNo,
+        vendorBatchNo: body.vendorBatchNo,
+        consignmentId: body.consignmentId,
+        locationId: body.locationId,
+        vehicleNo: body.vehicleNo,
+        documentNo: body.documentNo,
+        documentType: body.documentType,
+        documentDate: body.documentDate,
+        ewayBillNo: body.ewayBillNo,
+        ewayBillDate: body.ewayBillDate,
+        valueOfGoods: body.valueOfGoods,
+        extraChargesOption: body.extraChargesOption,
+        freightCharges: body.freightCharges,
+        insuranceAmount: body.addInsurance,
+        loadingCharges: body.loadingAndUnloading,
+        weightmenCharges: body.weightmenCharges,
+        cgst: body.addCGST,
+        sgst: body.addSGST,
+        igst: body.addIGST,
+        totalInwardVolume: body.totalInwardValue,
+        totalWeight: body.totalWeight,
+        totalVolume: body.totalVolume,
+        itemsList: body.itemsList,
+        requestId: "INWARD_TRADING_UPDATE",
         ipAddress: "1.1.1.1",
         userId: getUserId()
     }
     try {
-        const updateItemGrade = yield fetch(`${baseUrl}api/trading/itemgrade/update`, {
+        const updateInward = yield fetch(`${baseUrl}api/trading/inward/update`, {
             method: 'PUT',
             headers: { "Content-Type": "application/json", ...getHeaders() },
             body:JSON.stringify(reqBody)
 
         });
-        if (updateItemGrade.status == 200) {
-            yield put(updateItemGradeSuccess());
-        } else if (updateItemGrade.status === 401) {
+        if (updateInward.status == 200) {
+            yield put(updateInwardDVSuccess());
+        } else if (updateInward.status === 401) {
             yield put(userSignOutSuccess());
         } else
-            yield put(updateItemGradeError('error'));
+            yield put(updateInwardDVError('error'));
     } catch (error) {
         console.log(error);
-        yield put(updateItemGradeError(error));
+        yield put(updateInwardDVError(error));
     }
 }
 
@@ -170,7 +222,6 @@ function* deleteInwardSaga(action) {
 }
 
 function* generateInwardIdSaga(action) {
-    debugger
     let body = action.payload;
     const reqBody = {
         fieldName: body.fieldName,
@@ -224,8 +275,8 @@ function* generateConsignmentIdSaga(action) {
 
 export function* watchFetchRequests() {
     yield takeLatest(FETCH_INWARD_DV_LIST_REQUEST, fetchInwardList);
-    yield takeLatest(ADD_INWARD_DV_REQUEST, addItemGrade);
-    yield takeLatest(UPDATE_INWARD_DV_REQUEST, updateItemGrade);
+    yield takeLatest(ADD_INWARD_DV_REQUEST, addInwardDVSaga);
+    yield takeLatest(UPDATE_INWARD_DV_REQUEST, updateInwardDVSaga);
     yield takeLatest(FETCH_INWARD_DV_LIST_ID_REQUEST, fetchInwardListById);
     yield takeLatest(DELETE_INWARD_DV_REQUEST, deleteInwardSaga);
     yield takeLatest(GENERATE_INWARD_ID_REQUEST, generateInwardIdSaga);

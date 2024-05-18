@@ -16,13 +16,7 @@ import { deleteInwardDV, updateInwardDV, fetchInwardDVListId, fetchInwardDVList 
 import { onDeleteContact } from "../../../appRedux/actions";
 import {sidebarMenuItems} from "../../../constants";
 
-const inwardMenuConstants = {
-  'view': "View",
-  'addInward': 'Add Inward',
-  'export': 'Export',
-  'edit': 'Edit',
-  'delete': 'Delete',
-}
+
 const List = (props) => {
   const [sortedInfo, setSortedInfo] = useState({
     order: "descend",
@@ -41,14 +35,6 @@ const List = (props) => {
   const { totalItems } = props.inwardDV.inwardDVList;
 
   const columns = [
-    // {
-    //   title: "Coil Number",
-    //   dataIndex: "coilNumber",
-    //   key: "coilNumber",
-    //   filters: [],
-    //   sorter: (a, b) => a.coilNumber.length - b.coilNumber.length,
-    //   sortOrder: sortedInfo.columnKey === "coilNumber" && sortedInfo.order,
-    // },
     {
       title: "Vendor Batch No",
       dataIndex: "vendorBatchNo",
@@ -88,15 +74,6 @@ const List = (props) => {
       sorter: (a, b) => a.documentDate - b.documentDate,
       sortOrder: sortedInfo.columnKey === "documentDate" && sortedInfo.order,
     },
-    // {
-    //   title: "Status",
-    //   dataIndex: "status.statusName",
-    //   key: "status.statusName",
-    //   filters: [],
-    //   sorter: (a, b) => a.status.statusName.length - b.status.statusName.length,
-    //   sortOrder:
-    //     sortedInfo.columnKey === "status.statusName" && sortedInfo.order,
-    // },
     {
       title: "ConsignmentId",
       dataIndex: "consignmentId",
@@ -118,24 +95,6 @@ const List = (props) => {
       dataIndex: "",
       key: "x",
       render: (text, record, index) => (
-        // <span>
-        //   {menuInwardLabelList.length > 0 && menuInwardLabelList.includes(inwardMenuConstants.view) && <><span
-        //       className="gx-link"
-        //       onClick={() => props.history.push(`${record.coilNumber}`)}
-        //   >
-        //     View
-        //   </span>
-        //     <Divider type="vertical" />
-        //   </>}
-        //   {menuInwardLabelList.length > 0 && menuInwardLabelList.includes(inwardMenuConstants.edit) && <><span className="gx-link" onClick={(e) => onEdit(record, index, e)}>
-        //     Edit
-        //   </span>
-        //   <Divider type="vertical" /></>}
-        //   {menuInwardLabelList.length > 0 && menuInwardLabelList.includes(inwardMenuConstants.delete) && <span className="gx-link" onClick={(e) => onDelete(record, index, e)}>
-        //     Delete
-        //   </span>
-        //   }
-        // </span>
         <span>
           <span className="gx-link" >View</span>
           <Divider type="vertical"/>
@@ -212,7 +171,6 @@ const List = (props) => {
 }, [props.inwardDV]);
 
 useEffect(() => {
-  debugger
     setTimeout(() => {
         props.fetchInwardDVList({
             searchText:"",
@@ -265,13 +223,9 @@ useEffect(() => {
       <Card>
         <div className="gx-flex-row gx-flex-1">
           <div className="table-operations gx-col">
-            {menuInwardLabelList.length > 0 && menuInwardLabelList.includes(inwardMenuConstants.delete) &&
-                <Button onClick={deleteSelectedCoils}>Delete</Button>}
-            {menuInwardLabelList.length > 0 && menuInwardLabelList.includes(inwardMenuConstants.export) && <Button onClick={exportSelectedData}>Export</Button>}
-            <Button onClick={clearFilters}>Clear All filters</Button>
+            <Button onClick={clearFilters}>Clear All filters</Button> 
           </div>
           <div className="gx-flex-row gx-w-50">
-          {/* {menuInwardLabelList.length > 0 && menuInwardLabelList.includes(inwardMenuConstants.addInward) &&  */}
           <Button
               type="primary"
               icon={() => <i className="icon icon-add" />}
@@ -283,7 +237,6 @@ useEffect(() => {
             >
               Add Inward
             </Button>
-            {/* } */}
               <SearchBox
               styleName="gx-flex-1"
               placeholder="Search for coil number or party name..."

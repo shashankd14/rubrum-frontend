@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import moment from "moment";
 
-import {submitInwardEntry, resetInwardForm,updateInward, pdfGenerateInward, QrGenerateInward, setInwardDVDetails, fetchDVMaterialList} from "../../../../appRedux/actions";
+import {addInwardDV, resetInwardForm,updateInward, pdfGenerateInward, QrGenerateInward, setInwardDVDetails, fetchDVMaterialList} from "../../../../appRedux/actions";
 import {Button, Card, Col, Icon, message, Row, Spin, Modal, Collapse, Input} from "antd";
 import { withRouter } from 'react-router-dom';
 
@@ -194,7 +194,8 @@ const InwardSummary = (props) => {
                     </Button>
                     <Button type="primary" htmlType="submit" disabled={props.inwardSubmitSuccess} onClick={(e) => {
                         e.preventDefault();
-                        props.params!== ""? props.updateInward(props.inward):props.submitInwardEntry(props.inward)
+                        // props.params!== ""? props.updateInward(props.inward):props.addInwardDV(props.inwardDV)
+                        props.addInwardDV(props.inwardDV)
                     }}>
                         Submit <Icon type="right"/>
                     </Button>
@@ -225,7 +226,7 @@ const mapStateToProps = state => ({
 });
 
 export default withRouter(connect(mapStateToProps, {
-    submitInwardEntry,
+    addInwardDV,
     resetInwardForm,
     updateInward,
     pdfGenerateInward,

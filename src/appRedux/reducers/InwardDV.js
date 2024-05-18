@@ -29,7 +29,10 @@ const INIT_STATE = {
     inwardId: {},
     consignmentId: {},
     inward: {},
-    inwardEntry: {}
+    inwardEntry: {},
+    inwardSubmitLoading: false,
+    inwardSubmitSuccess: false,
+    inwardSubmitError: false,
 };
 
 export default (state = INIT_STATE, action) => {
@@ -66,14 +69,16 @@ export default (state = INIT_STATE, action) => {
         case ADD_INWARD_DV_SUCCESS: {
             return {
                 ...state,
-                loading: false
+                inwardSubmitLoading: false,
+                inwardSubmitSuccess: true
             }
         }
         case ADD_INWARD_DV_ERROR: {
             return {
                 ...state,
-                loading: false,
-                error: true,
+                inwardSubmitLoading: false,
+                inwardSubmitError: true,
+                inwardSubmitSuccess: false
             }
         }
 
@@ -101,7 +106,10 @@ export default (state = INIT_STATE, action) => {
         case RESET_INWARD_DV_REQUEST: {
             return {
                 ...state,
-                inwardDVId: {}
+                inwardDVId: {},
+                inwardSubmitLoading: false,
+                inwardSubmitSuccess: false,
+                inwardSubmitError: false,
             }
         }
 

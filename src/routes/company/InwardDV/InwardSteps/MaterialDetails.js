@@ -96,25 +96,26 @@ const MaterialDetailsForm = (props) => {
       setVendorName(vendorName);
     },[])
 
+
     
     const [selectedItem, setSelectedItem] = useState(null);
     const [expandedList, setExpandedList] = useState([]);
-
-    const [dataArr, setDataArr] = useState([]);
+    const [dataArr, setDataArr] = useState(props?.inwardDV?.itemsList || []);
     const defaultDataArrProps = {
         "itemId": "",
         "inwardItemId": "",
         "inwardId": "",
         "unit": "",
-        "unitVolume": "0",
-        "netWeight": "0",
-        "rate": "0",
-        "volume": "0",
+        "unitVolume": 0,
+        "netWeight": 0,
+        "rate": 0,
+        "volume": 0,
         "actualNoofPieces": "0",
         "theoreticalWeight": "0",
         "weightVariance": "0",
         "theoreticalNoofPieces": "0"
     };
+
     const handleAddItem = () => {
         debugger
         if (selectedItem) {
@@ -124,17 +125,14 @@ const MaterialDetailsForm = (props) => {
             };
     
             setDataArr(prevDataArr => [...prevDataArr, newDataItem]);
-            setExpandedList(prevExpandedList => [...prevExpandedList, selectedItem]);
+            // setExpandedList(prevExpandedList => [...prevExpandedList, selectedItem]);
             setSelectedItem(null);
-    
+    console.log("11111111111111", dataArr)
             console.log("Expanded List:", expandedList);
             console.log("Selected Item:", selectedItem);
         }
     };
 
-    // const handleChange = (value, option) => {
-    //     setSelectedItem(option.props.children);
-    // };
     const handleChange = (value, option) => {
         debugger
         const itemId = parseInt(option.key); // Convert to number
@@ -148,9 +146,15 @@ const MaterialDetailsForm = (props) => {
             console.error(`Item with ID ${itemId} not found`);
         }
     };
+
+    const getInwardItem = (itemId) => {
+        return props.materialDV?.DVMaterialList?.content.find(e=>e.itemId === itemId);
+    }
+
+
     const columnLabels = ["", "Unit", "Unit value", "Net weight", "Rate", "Value", "Actual no.of pcs", "Theoretical weight", "Weight variance", "Theoretical no.of pcs"];
 
-    const [netWeight, setNetWeights] = useState(Array(expandedList.length).fill(0));
+    const [netWeight, setNetWeights] = useState(Array(dataArr.length).fill(0));
 
 const handleNetWeightChange = (e, index, value) => {
     const newValue = parseFloat(e.target.value || 0);
@@ -162,9 +166,9 @@ const handleNetWeightChange = (e, index, value) => {
 };
 const totalNetWeight = netWeight.reduce((total, current) => total + current, 0);
 
-const [unitValues, setUnitValues] = useState(Array(expandedList.length).fill(''));
-const [rateValues, setRateValues] = useState(Array(expandedList.length).fill(''));
-const [valueValues, setValueValues] = useState(Array(expandedList.length).fill(''));
+const [unitValues, setUnitValues] = useState(Array(dataArr.length).fill(''));
+const [rateValues, setRateValues] = useState(Array(dataArr.length).fill(''));
+const [valueValues, setValueValues] = useState(Array(dataArr.length).fill(''));
 
 // Update unit value state when input changes
 const handleUnitChange = (e, index, value) => {
@@ -174,6 +178,7 @@ const handleUnitChange = (e, index, value) => {
      dataArr[index][value] = e.target.value;
      //for value calculation
      dataArr[index]["volume"] =  dataArr[index]["rate"] * dataArr[index][value];
+     calculateTotalVolumeAndWaight();
 };
 
 // Update rate value state when input changes
@@ -184,20 +189,25 @@ const handleRateChange = (e, index, value) => {
     dataArr[index][value] = e.target.value;
     //for value calculation
     dataArr[index]["volume"] =  dataArr[index]["unitVolume"] * dataArr[index][value];
+    calculateTotalVolumeAndWaight();
 };
 
-// Calculate value based on unit and rate
-// const calculateValue = (unit, rate) => {
-//     return unit * rate;
-// };
+function calculateTotalVolumeAndWaight() {
+    let totalNetWeight = 0;
+    dataArr.forEach(item => {
+        totalNetWeight += parseFloat(item.netWeight) || 0;
+    });
 
-// // Update value state whenever unit or rate changes
-// useEffect(() => {
-//     const newValues = unitValues.map((unit, index) => {
-//         return calculateValue(parseFloat(unit), parseFloat(rateValues[index]));
-//     });
-//     setValueValues(newValues);
-// }, [unitValues, rateValues]);
+    let volumeTotal = 0;
+    dataArr.forEach(item => {
+        volumeTotal += parseFloat(item.volume) || 0;
+    });
+    setFieldsValue({
+        totalVolume: volumeTotal,
+        totalWeight: totalNetWeight,
+    });
+}
+
 
 const [totalValue, setTotalValue] = useState(0);
 
@@ -244,7 +254,7 @@ const calculateTheoreticalWeight = (item, selectedUnit, unitValue) => {
         return '';
     }
 };
-const [netWeightValues, setNetWeightValues] = useState(Array(expandedList.length).fill(''));
+const [netWeightValues, setNetWeightValues] = useState(Array(dataArr.length).fill(''));
 // Define function to calculate weight variance
 const calculateWeightVariance = (theoreticalWeight, netWeight) => {
     return theoreticalWeight - netWeight;
@@ -260,7 +270,6 @@ const onDataChange = (e, index, value) => {
 
 const onBlurrChange = (e, index, value) => {
     debugger;
-    //    setSelectedUnit(e);
        console.log(e, index);
        dataArr[index][value] = e.target.value;
        console.log(dataArr);    
@@ -279,23 +288,6 @@ const calculateTheoreticalPieces = (perPiece, actualPieces) => {
     return perPiece * actualPieces;
 };
 
-useEffect(() => {
-    debugger
-    let totalNetWeight = 0;
-    dataArr.forEach(item => {
-        totalNetWeight += parseFloat(item.netWeight) || 0;
-    });
-    let volumeTotal = 0;
-    dataArr.forEach(item => {
-        volumeTotal += parseFloat(item.volume) || 0;
-    });
-    // Update form fields when state values change
-    setFieldsValue({
-        // totalVolume: totalValue,
-        totalVolume: volumeTotal,
-        totalWeight: totalNetWeight,
-    });
-}, [totalValue, totalNetWeight, setFieldsValue]);
     return (
         <>
         <div>
@@ -367,35 +359,36 @@ useEffect(() => {
                 ))}
             </Row>
             <Row gutter={[16, 16]} className="gx-ml-2">
-                    {expandedList.map((item, index) => (
-                        <React.Fragment key={index}>
+                    {dataArr.map((item, index) => {
+                        let inwardItem = getInwardItem(item.itemId);
+                        return <React.Fragment key={index}>
                             <Col lg={5} md={5} sm={24} xs={24} style={{ marginRight: '-20' }}>
                             {/* <Form.Item style={{width: '100%'}}> */}
                                 <Collapse>
-                                    <Panel header={`${item.itemName}: ${item.categoryEntity?.categoryName || '-'} | ${item.subCategoryEntity?.subcategoryName || '-'}`} key={index}>
-                                        <p>Item HSN code: {item.itemHsnCode}</p>
-                                        <p>Item code: {item.itemCode}</p>
-                                        <p>Item grade: {item.itemCode}</p>
-                                        <p>Item ID: {item.itemId}</p>
-                                        <p>Main category: {item.categoryEntity?.categoryName || '-'}</p>
-                                        <p>Sub category: {item.subCategoryEntity?.subcategoryName || '-'}</p>
-                                        <p>Main category HSN code: {item.categoryEntity?.categoryHsnCode || '-'}</p>
-                                        <p>Display name: {item.categoryEntity?.displayName || '-'}</p>
-                                        <p>Brand name: {item.categoryEntity?.brandName || '-'}</p>
-                                        <p>Manufacturers name: {item.categoryEntity?.manufacturerName || '-'}</p>
-                                        <p>Per Meter: {item.perMeter}</p>
-                                        <p>Per Feet: {item.perFeet}</p>
-                                        <p>Per Pc: {item.perPC}</p>
+                                    <Panel header={`${inwardItem.itemName}: ${inwardItem.categoryEntity?.categoryName || '-'} | ${inwardItem.subCategoryEntity?.subcategoryName || '-'}`} key={index}>
+                                        <p>Item HSN code: {inwardItem.itemHsnCode}</p>
+                                        <p>Item code: {inwardItem.itemCode}</p>
+                                        <p>Item grade: {inwardItem.itemCode}</p>
+                                        <p>Item ID: {inwardItem.itemId}</p>
+                                        <p>Main category: {inwardItem.categoryEntity?.categoryName || '-'}</p>
+                                        <p>Sub category: {inwardItem.subCategoryEntity?.subcategoryName || '-'}</p>
+                                        <p>Main category HSN code: {inwardItem.categoryEntity?.categoryHsnCode || '-'}</p>
+                                        <p>Display name: {inwardItem.categoryEntity?.displayName || '-'}</p>
+                                        <p>Brand name: {inwardItem.categoryEntity?.brandName || '-'}</p>
+                                        <p>Manufacturers name: {inwardItem.categoryEntity?.manufacturerName || '-'}</p>
+                                        <p>Per Meter: {inwardItem.perMeter}</p>
+                                        <p>Per Feet: {inwardItem.perFeet}</p>
+                                        <p>Per Pc: {inwardItem.perPC}</p>
                                         <p>Additional Parameters:</p>
                                         <ul>
-                                            {item.additionalParams && JSON.parse(item.additionalParams).map((param, paramIndex) => (
+                                            {inwardItem.additionalParams && JSON.parse(inwardItem.additionalParams).map((param, paramIndex) => (
                                                 <li key={paramIndex}>
                                                     {param.parameterName}: {param.units} {param.unitType}
                                                 </li>
                                             ))}
                                         </ul>
-                                        {item.itemImage && <img src={item.itemImage} alt="Item Image"/>}
-                                        {item.crossSectionalImage && <img src={item.crossSectionalImage} alt="Cross-sectional Image"/>} 
+                                        {inwardItem.itemImage && <img src={inwardItem.itemImage} alt="Item Image"/>}
+                                        {inwardItem.crossSectionalImage && <img src={inwardItem.crossSectionalImage} alt="Cross-sectional Image"/>} 
                                     </Panel>
                                 </Collapse>
                             {/* </Form.Item> */}
@@ -422,13 +415,13 @@ useEffect(() => {
                             </Col>
                             <Col lg={2} md={2} sm={24} xs={24}>
                                 {/* Rate */}
-                                <Input name='rate' onChange={(e) => handleRateChange(e, index, 'rate')} value={rateValues[index]}></Input>
+                                <Input name='rate' onChange={(e) => handleRateChange(e, index, 'rate')} value={dataArr[index]["rate"]}></Input>
                                
                             </Col>
                             <Col lg={2} md={2} sm={24} xs={24}>
                                 {/*  value */}
                                 {/* <Input name='volume' onKeyUp={(e) => onDataChange(e, index, 'volume')} value={valueValues[index]} disabled></Input> */}
-                                <Input name='volume' onKeyUp={(e) => onDataChange(e, index, 'volume')} value={dataArr[index]["volume"]} disabled></Input>
+                                <Input name='volume' value={dataArr[index]["volume"]} disabled></Input>
                                 
                             </Col>
                             <Col lg={2} md={2} sm={24} xs={24}>
@@ -451,7 +444,7 @@ useEffect(() => {
                             </Col>
                             
                         </React.Fragment>
-                    ))}
+})}
                 </Row>
                    
                 <div className="gx-mt-4" style={{ backgroundColor: 'rgba(135, 206, 235, 0.2)', padding: '5px' }} >
@@ -463,9 +456,9 @@ useEffect(() => {
                             {/* <Input style={{ backgroundColor: 'blue', color: 'white' }} value={totalNetWeight}/> */}
                             <Form.Item >
                             {getFieldDecorator('totalWeight', {
-                                initialValue: props.totalWeight || totalNetWeight
+                                initialValue: props.inwardDV.totalWeight
                             })(
-                                <Input id="totalWeight" value={totalNetWeight} style={{ backgroundColor: 'blue', color: 'white'}}/>
+                                <Input id="totalWeight" value={props.inwardDV.totalWeight} style={{ backgroundColor: 'blue', color: 'white'}}/>
                             )}
                         </Form.Item>
                             </Col>
@@ -474,9 +467,9 @@ useEffect(() => {
                             {/* <Input style={{ backgroundColor: 'blue', color: 'white' }} value={totalValue}/> */}
                             <Form.Item >
                             {getFieldDecorator('totalVolume', {
-                                initialValue: props.totalVolume || totalValue
+                                initialValue: props.inwardDV.totalVolume
                             })(
-                                <Input id="totalVolume" value={totalValue} style={{ backgroundColor: 'blue', color: 'white'}}/>
+                                <Input id="totalVolume" value={props.inwardDV.totalVolume} style={{ backgroundColor: 'blue', color: 'white'}}/>
                             )}
                         </Form.Item>
                             </Col>
@@ -529,11 +522,11 @@ const MaterialDetails = Form.create({
             }),
             totalVolume: Form.createFormField({
                 // ...props.inwardDV.totalVolume,
-                 value: props.totalValue || props.totalVolume,
+                 value: props.inwardDV.totalVolume,
             }),
             totalWeight: Form.createFormField({
                 // ...props.inwardDV.totalWeight,
-                 value: props.totalNetWeight || props.totalWeight,
+                 value: props.inwardDV.totalWeight,
             }),
         };
     },

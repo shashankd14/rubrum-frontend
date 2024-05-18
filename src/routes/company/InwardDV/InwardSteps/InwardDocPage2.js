@@ -285,6 +285,13 @@ const CreateInwardDocPage2 = (props) => {
                         <Input id="addCGST" style={widthStyle} onChange={handleExtraChargesChange}/>
                     )}
                 </Form.Item>
+                <Form.Item label="Add IGST">
+                    {getFieldDecorator('addIGST', {
+                       
+                    })(
+                        <Input id="addIGST" style={widthStyle} onChange={handleExtraChargesChange}/>
+                    )}
+                </Form.Item>
                 <Form.Item label="Total Inward Value">
                     {getFieldDecorator('totalInward', {
                        
@@ -369,6 +376,10 @@ const InwardDocPage2 = Form.create({
             addCGST: Form.createFormField({
                 ...props.inwardDV.addCGST,
                 value: (props.inwardDV.addCGST) ? props.inwardDV.addCGST : '',
+            }),
+            addIGST: Form.createFormField({
+                ...props.inwardDV.addIGST,
+                value: (props.inwardDV.addIGST) ? props.inwardDV.addIGST : '',
             }),
             totalInward: Form.createFormField({
                 ...props.inwardDV.totalInward,
