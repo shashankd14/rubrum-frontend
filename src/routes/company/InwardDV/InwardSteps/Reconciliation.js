@@ -17,6 +17,18 @@ const CreateRecociliation = (props) => {
     const {getFieldDecorator} = props.form;
     const [dataSource, setDataSource] = useState([]);
     const [itemDetails, setItemDetails] = useState([]); 
+    const [totalTheoreticalWeight, setTotalTheoreticalWeight] = useState(0);
+
+    useEffect(() => {
+        debugger
+        // Calculate the total theoretical weight
+        const totalWeight = props.inwardDV?.itemsList?.reduce((sum, item) => {
+            const weight = parseFloat(item.theoreticalWeight) || 0;
+            return sum + weight;
+        }, 0);
+        
+        setTotalTheoreticalWeight(totalWeight);
+    }, [props.itemDetails]);
 
     useEffect(() => {
         debugger
@@ -55,11 +67,6 @@ const CreateRecociliation = (props) => {
             title: 'Item Name',
             dataIndex: 'itemName',
             key: 'itemName',
-            // filters: [],
-            // sorter: (a, b) => {
-            //     return a.nPartyId - b.nPartyId
-            // },
-            // sortOrder: sortedInfo.columnKey === 'nPartyId' && sortedInfo.order,
         },
         {
             title: 'No. of Pcs',
@@ -142,7 +149,7 @@ const CreateRecociliation = (props) => {
         debugger
         setItemDetails(props.inwardDV?.itemsList);
     }, [props.inwardDV]);
-console.log("iiiiiiiii", itemDetails);
+
     // useEffect(() => {
     //     if(props.party.partyList.length > 0) {
 
@@ -175,13 +182,7 @@ console.log("iiiiiiiii", itemDetails);
             }
         });
     };
-    const checkBatchNoExist = (rule, value, callback) => {
-        if (!props.inwardStatus.loading && props.inwardStatus.success && !props.inwardStatus.duplicateBatchNo) {
-            return callback();
-        }
-        callback('The coil number already exists');
-    };
-
+   
     const [weighbridgeImage, setWeighbridgeImage] = useState()
     const onImageFileChange = (info) => {
         if (info.file.status === 'uploading') {
@@ -201,18 +202,11 @@ console.log("iiiiiiiii", itemDetails);
         setVendorName(vendorName);
       },[props.inwardDV.vendorName])
 
-//       console.log("1111111111", props)
-//       console.log("vendorName", vendorName)
-//       const location = useLocation()
-// console.log("locationLLLLLLLLL", location.state);
       
     return (
         <>
          <Col span={24}>
-          {/*  {props.party.loading && <Spin className="gx-size-100 gx-flex-row gx-justify-content-center gx-align-items-center" size="large"/>}
-            {props.party.partyList.length > 0 && */}
                  <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4">
-                {/* <Form {...formItemLayout} className="login-form gx-pt-4" > */}
                    <Row>
                         <Col span={12} >
                     <Form.Item label="Vendor Name">
@@ -246,7 +240,7 @@ console.log("iiiiiiiii", itemDetails);
                     className="gx-table-responsive"
                     columns={columns}
                    dataSource={itemDetails}
-                    // onChange={handleChange}
+                   pagination={{ pageSize: 2 }}
                 />
                    </Row>
                     <div className="gx-mt-4" style={{ backgroundColor: 'rgba(135, 206, 235, 0.2)', padding: '5px' }} >
@@ -259,12 +253,11 @@ console.log("iiiiiiiii", itemDetails);
                         </Col>
                         <Col span={3}></Col>
                         <Col span={3}>
-                        <Input style={{ backgroundColor: 'blue', color: 'white' }} />
+                        <Input value={totalTheoreticalWeight} style={{ backgroundColor: 'blue', color: 'white' }} />
                         </Col>
                     </Row>
                     </div>
                 </div>
-                {/* <Col span={16} className="gx-mt-4" style={{ border: '1px solid #ccc', padding: '10px' }}> */}
                 <hr className="gx-mt-4"/>
                 <Row>
                 <Col span={10} className="gx-mt-1">
@@ -406,26 +399,10 @@ console.log("iiiiiiiii", itemDetails);
                         <Button type="primary" htmlType="submit">
                             Forward<Icon type="right"/>
                         </Button>
-                        {/* <Button type="primary" onClick={handleSubmit}>
-                            Forward
-                        </Button> */}
                     </Col>
                 </Row>
             </Form>
-            {/* } */}
             </Col>
-            {/* <Col span={8} className="gx-pt-4">
-                <Card title="Inward Details" style={{ width: 400 }}>
-                    {props.inwardDV.purposeType && <p>Purpose Type : {props.inwardDV.purposeType}</p>}
-                    {props.inwardDV.vendorName && <p>Vendor Name : { vendorName}</p>}
-                    {props.inwardDV.vendorId && <p>Vendor ID : {props.inwardDV.vendorName}</p>}
-                    {props.inwardDV.vendorBatchNo && <p>Vendor BatchNo : {vendorBatchNo}</p>}
-                    {props.inwardDV.itemName && <p>Item Name : {props.inwardDV.itemName}</p>}
-                    <p>Net Weight :   </p>
-                    <p>Item Name :  </p>
-                    <p>Net Weight :   </p>
-                </Card>
-            </Col> */}
         </>
     )
 }

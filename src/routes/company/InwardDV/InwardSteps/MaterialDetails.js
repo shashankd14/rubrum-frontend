@@ -29,7 +29,6 @@ const MaterialDetailsForm = (props) => {
   const { getFieldDecorator, setFieldsValue } = props.form;
 
   const handleSubmit = (e) => {
-    debugger;
     e.preventDefault();
     props.updateStep(3);
     props.setInwardDVDetails({ ...props.inwardDV, itemsList: dataArr });
@@ -101,11 +100,10 @@ const MaterialDetailsForm = (props) => {
   };
 
   const handleAddItem = () => {
-    debugger;
     if (selectedItem) {
       const newDataItem = {
         ...defaultDataArrProps,
-        itemId: selectedItem.itemId, // Assuming selectedItem has an itemId property
+        itemId: selectedItem.itemId, 
       };
 
       setDataArr((prevDataArr) => [...prevDataArr, newDataItem]);
@@ -114,7 +112,6 @@ const MaterialDetailsForm = (props) => {
   };
 
   const handleChange = (value, option) => {
-    debugger;
     const itemId = parseInt(option.key); // Convert to number
     const selectedItemDetails = props.materialDV.DVMaterialList.content.find(
       (item) => {
@@ -130,7 +127,6 @@ const MaterialDetailsForm = (props) => {
   };
 
   const calculateTheoreticalWeight = (index, value) => {
-    debugger;
     let item = getInwardItem(dataArr[index].itemId);
     let theoreticalWeight = 0;
     if (dataArr[index].unit === 'METERS') {
@@ -141,7 +137,6 @@ const MaterialDetailsForm = (props) => {
         theoreticalWeight = item.perFeet  * value;
     }
     dataArr[index].theoreticalWeight = theoreticalWeight;
-    console.log(dataArr[index].unit);
   };
 
   const getInwardItem = (itemId) => {
@@ -173,7 +168,6 @@ const MaterialDetailsForm = (props) => {
   const [noOfPieces, setNoOfPieces] = useState(Array(dataArr.length).fill(''));
 
   const handleNetWeightChange = (e, index, value) => {
-    debugger;
     const newValue = parseFloat(e.target.value || 0);
     const newNetWeights = [...netWeight];
     newNetWeights[index] = newValue;
@@ -224,16 +218,12 @@ const MaterialDetailsForm = (props) => {
   }
   
   const onUnitChange = (e, index, value) => {
-    debugger;
     setSelectedUnit(e);
-    console.log(e, index);
     dataArr[index]['unit'] = e;
-    console.log(dataArr);
     calculateTheoreticalWeight(index, dataArr[index].unitVolume);
   };
 
   const onActualNoofPcChange = (e, index, value) =>{
-    debugger
     let noOfPC = [...noOfPieces];
     noOfPC[index] = e.target.value;
     setNoOfPieces(noOfPC);
@@ -242,15 +232,15 @@ const MaterialDetailsForm = (props) => {
     calculateTheoreticalNoofPc(index, e.target.value);
   }
   const calculateTheoreticalNoofPc = (index, value) => {
-    debugger;
     let item = getInwardItem(dataArr[index].itemId);
     let theoreticalnoofPC = 0;
+    let numericValue = parseFloat(value);
     if (dataArr[index].unit === 'PIECES') {
-        theoreticalnoofPC = item.perPC  * parseFloat(value);
+        theoreticalnoofPC = (item.perPC)  * (numericValue);
     } 
     dataArr[index].theoreticalNoofPieces = theoreticalnoofPC;
-    console.log(dataArr[index].theoreticalNoofPieces);
   };
+  
   return (
     <>
       <div>
@@ -491,15 +481,15 @@ const MaterialDetailsForm = (props) => {
                     </Col>
                     <Col lg={2} md={2} sm={24} xs={24}>
                       {/* theoretical weight */}
-                      <Input name='theoreticalWeight' value={dataArr[index]['theoreticalWeight']}></Input>
+                      <Input name='theoreticalWeight' value={dataArr[index]['theoreticalWeight']} disabled></Input>
                     </Col>
                     <Col lg={2} md={2} sm={24} xs={24}>
                       {/*  weight varience */}
-                      <Input name='weightVariance' value={dataArr[index]['weightVariance']}></Input>
+                      <Input name='weightVariance' value={dataArr[index]['weightVariance']} disabled></Input>
                     </Col>
                     <Col lg={2} md={2} sm={24} xs={24}>
                       {/* theoretical no of pieces */}
-                      <Input name='theoreticalNoofPieces'></Input>
+                      <Input name='theoreticalNoofPieces' value={dataArr[index]['theoreticalNoofPieces']} disabled></Input>
                     </Col>
                   </React.Fragment>
                 );
