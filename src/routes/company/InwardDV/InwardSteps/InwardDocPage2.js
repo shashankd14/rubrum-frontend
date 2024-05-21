@@ -15,20 +15,7 @@ const widthStyle = {
 
 const CreateInwardDocPage2 = (props) => {
     const {getFieldDecorator, setFieldsValue} = props.form;
-    const [dataSource, setDataSource] = useState([]);
-    useEffect(() => {
-        if(props.params !=="") {
-            const { Option } = AutoComplete;
-            const options = props.party.partyList.filter(party => {
-            if (party?.nPartyId===  props.inward.party?.nPartyId)
-            return (<Option key={party.nPartyId} value={`${party.nPartyId}`}>
-                    {party.partyName}
-                </Option>)
-            });
-            setDataSource(options);
-        }
-    }, [props.party]);
-
+   
     useEffect(() => {     
         props.generateConsignmentId({
             fieldName: "CONSIGNMENT",
@@ -68,27 +55,12 @@ const CreateInwardDocPage2 = (props) => {
     }, []);
 
     useEffect(() => {
-        if(props.party.partyList.length > 0) {
-
-            const { Option } = AutoComplete;
-            const options = props.party.partyList.map(party => (
-                <Option key={party.nPartyId} value={`${party.nPartyId}`}>
-                    {party.partyName}
-                </Option>
-            ));
-            setDataSource(options);
-        }
-    }, [props.party]);
-
-    useEffect(() => {
         if (props.params !== '') {
             props.inward.customerId = props.inward.party?.nPartyId || '';
             props.inward.customerBatchNo = props.inward.customerBatchId;
         }
     }, [props.params])
-    const handleChange = e =>{
-        props.inward.party.partyName = e;
-    }
+
     const handleSubmit = e => {
         debugger
         props.updateStep(5);
@@ -154,7 +126,6 @@ const CreateInwardDocPage2 = (props) => {
     return (
         <>
         <Col span={24} className="gx-ml-2">
-                 {/* <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4" style={{"width":"70%"}}> */}
                  <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4">
                    
                     <div>
@@ -227,7 +198,6 @@ const CreateInwardDocPage2 = (props) => {
                         </Row>
                         </div>
                     </div>
-                    {/* <Col span={16} className="gx-mt-4" style={{ border: '1px solid #ccc', padding: '10px' }}> */}
                     <hr className="gx-mt-4"/>
                     <Col span={20} className="gx-mt-1">
                         <h3>Add Extra Charges</h3>
@@ -308,9 +278,6 @@ const CreateInwardDocPage2 = (props) => {
                             <Button type="primary" htmlType="submit">
                                 Forward<Icon type="right"/>
                             </Button>
-                            {/* <Button type="primary" onClick={handleSubmit}>
-                                Forward
-                            </Button> */}
                         </Col>
                     </Row>
                 </Form>

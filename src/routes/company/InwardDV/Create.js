@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import { Card, Form, Steps, Row} from "antd";
 import {connect} from "react-redux";
-import {fetchPartyList, fetchMaterialList, setInwardDetails, submitInwardEntry} from "../../../appRedux/actions";
+import {fetchPartyList, fetchMaterialList, setInwardDVDetails, submitInwardEntry} from "../../../appRedux/actions";
 
 import InwardSummary from "./InwardSteps/InwardSummary";
 import CreatePurposeTypeForm from './InwardSteps/ChoosePurpose';
@@ -28,63 +28,51 @@ const { Step } = Steps;
 const CreateForm = (props) => {
     const [currentStep, setCurrentStep] = useState(0);
     const [steps, setSteps] = useState([]);
-    useEffect(() => {
-        props.fetchMaterialList();
-        props.fetchPartyList();
-    }, []);
     
+    console.log("props1111", props.params)
     useEffect(() => {
         debugger
         const steps = [
             {
                 title: 'Choose Purpose',
-                // content: <CreatePurposeTypeForm updateStep={(step) => setCurrentStep(step)} params={props.match.params && props.match.params.inwardEntryId ?props.match.params.inwardEntryId: ''}/>,
-                content: <CreatePurposeTypeForm updateStep={(step) => setCurrentStep(step)} params={props.match.params} />,
+                content: <CreatePurposeTypeForm updateStep={(step) => setCurrentStep(step)} params={props.match.params && props.match.params.inwardEntryId ?props.match.params.inwardEntryId: ''} />,
             },
             {
                 title: 'Vendor',
-                // content: <VendorDetails updateStep={(step) => setCurrentStep(step)} params={props.match.params && props.match.params.inwardEntryId ?props.match.params.inwardEntryId: ''}/>,
-                content: <VendorDetails updateStep={(step) => setCurrentStep(step)} params={props.match.params}/>,
+                content: <VendorDetails updateStep={(step) => setCurrentStep(step)} params={props.match.params && props.match.params.inwardEntryId ?props.match.params.inwardEntryId: ''}/>,
             },
             {
                 title: 'Material',
-                // content: <MaterialDetails updateStep={(step) => setCurrentStep(step)} params={props.match.params && props.match.params.inwardEntryId ?props.match.params.inwardEntryId: ''}/>,
-                content: <MaterialDetails updateStep={(step) => setCurrentStep(step)} params={props.match.params}/>,
+                content: <MaterialDetails updateStep={(step) => setCurrentStep(step)} params={props.match.params && props.match.params.inwardEntryId ?props.match.params.inwardEntryId: ''}/>,
             },
             {
                 title: 'Inward Doc Page 1',
-                // content: <InwardPage1Form updateStep={(step) => setCurrentStep(step)} params={props.match.params && props.match.params.inwardEntryId ?props.match.params.inwardEntryId: ''}/>,
-                content: <InwardDocPage1 updateStep={(step) => setCurrentStep(step)} />,
+                content: <InwardDocPage1 updateStep={(step) => setCurrentStep(step)} params={props.match.params && props.match.params.inwardEntryId ?props.match.params.inwardEntryId: ''} />,
             },
             {
                 title: 'Inward Doc Page 2',
-                // content: <InwardPage2Form updateStep={(step) => setCurrentStep(step)} params={props.match.params && props.match.params.inwardEntryId ?props.match.params.inwardEntryId: ''}/>,
-                content: <InwardDocPage2 updateStep={(step) => setCurrentStep(step)} />,
+                content: <InwardDocPage2 updateStep={(step) => setCurrentStep(step)} params={props.match.params && props.match.params.inwardEntryId ?props.match.params.inwardEntryId: ''} />,
             },
             {
                 title: 'Reconciliation',
-                // content: <ReconciliationForm updateStep={(step) => setCurrentStep(step)} params={props.match.params && props.match.params.inwardEntryId ?props.match.params.inwardEntryId: ''}/>,
-                content: <ReconciliationForm updateStep={(step) => setCurrentStep(step)} />,
+                content: <ReconciliationForm updateStep={(step) => setCurrentStep(step)} params={props.match.params && props.match.params.inwardEntryId ?props.match.params.inwardEntryId: ''}/>,
             },
             {
                 title: 'Summary',
-                // content: <InwardSummary updateStep={(step) => setCurrentStep(step)} params={props.match.params && props.match.params.inwardEntryId ?props.match.params.inwardEntryId: ''}/>,
-                content: <InwardSummary updateStep={(step) => setCurrentStep(step)} />,
+                content: <InwardSummary updateStep={(step) => setCurrentStep(step)} params={props.match.params && props.match.params.inwardEntryId ?props.match.params.inwardEntryId: ''}/>,
             },
         ];
         setSteps(steps);
     }, []);
     console.log("current step out of hook", currentStep);
     useEffect(()=>{
-        if(props.inward.inwardEntry && (props.match.params.inwardEntryId === "" || props.match.params.inwardEntryId === undefined)){
-            let inwardValue = props.inward.inwardEntry;
-            inwardValue.thickness = "";
-            inwardValue.batchNo ="";
-            inwardValue.coilNumber = "";
-            inwardValue.grossWeight = "";
-            inwardValue.netWeight = "";
-            props.setInwardDetails({...props.inward.inward, ...inwardValue})
-        }
+        debugger
+        if (props.inwardDV?.inwardDVId?.content?.length > 0) {
+        let firstItem = props.inwardDV?.inwardDVId?.content[0];
+        
+            props.setInwardDVDetails({...props.inwardDV.inward, ...firstItem})
+        
+    }
     },[])
     
     
@@ -107,9 +95,8 @@ const CreateForm = (props) => {
 }
 
 const mapStateToProps = state => ({
-    party: state.party,
-    material: state.material,
     inward: state.inward,
+    inwardDV: state.inwardDV
 });
 
 const Create = Form.create({
@@ -117,61 +104,17 @@ const Create = Form.create({
     },
     mapPropsToFields(props) {
         return {
-            partyName: Form.createFormField({
-                ...props.inward.inward.partyName,
-                value: (props.match.params && props.match.params.inwardEntryId && props.inward.inward.party) ? props.inward.inward.party.partyName : (props.inward.inward.partyName) ? props.inward.inward.partyName : '',
-            }),
-            coilNumber: Form.createFormField({
-                ...props.inward.inward.coilNumber,
-                value: (props.inward.inward.coilNumber) ? props.inward.inward.coilNumber : '',
-            }),
-            inwardDate: Form.createFormField({
-                ...props.inward.inward.inwardDate,
-                value: (props.inward.inward.inwardDate) ? props.inward.inward.inwardDate : '',
-            }),
-            vehicleNumber: Form.createFormField({
-                ...props.inward.inward.vehicleNumber,
-                value: (props.inward.inward.vehicleNumber) ? props.inward.inward.vehicleNumber : '',
-            }),
-            invoiceNumber: Form.createFormField({
-                ...props.inward.inward.invoiceNumber,
-                value: (props.inward.inward.invoiceNumber) ? props.inward.inward.invoiceNumber : '',
-            }),
-            invoiceDate: Form.createFormField({
-                ...props.inward.inward.invoiceDate,
-                value: (props.inward.inward.invoiceDate) ? props.inward.inward.invoiceDate : '',
-            }),
-            description: Form.createFormField({
-                ...props.inward.inward.description,
-                value: (props.match.params && props.match.params.inwardEntryId && props.inward.inward.material)  ? props.inward.inward.material.description :(props.inward.inward.description) ? props.inward.inward.description : '',
-            }),
-            width: Form.createFormField({
-                ...props.inward.inward.width,
-                value:props.match.params ?props.inward.inward.fWidth: (props.inward.inward.width) ? props.inward.inward.width : '',
-            }),
-            thickness: Form.createFormField({
-                ...props.inward.inward.thickness,
-                value: props.match.params ?props.inward.inward.fThickness:(props.inward.inward.thickness) ? props.inward.inward.thickness : '',
-            }),
-            weight: Form.createFormField({
-                ...props.inward.inward.weight,
-                value: props.match.params ?props.inward.inward.fQuantity:(props.inward.inward.weight) ? props.inward.inward.weight : '',
-            }),
-            length: Form.createFormField({
-                ...props.inward.inward.length,
-                value: props.match.params ?props.inward.inward.fLength:(props.inward.inward.length) ? props.inward.inward.length : '',
-            }),
         };
     },
     onValuesChange(props, values) {
-        props.setInwardDetails({ ...props.inward.inward, ...values});
+        props.setInwardDVDetails({ ...props.inward.inward, ...values});
     },
 })(CreateForm);
 
 export default connect(mapStateToProps, {
     fetchPartyList,
     fetchMaterialList,
-    setInwardDetails,
+    setInwardDVDetails,
     submitInwardEntry
     
 })(Create);

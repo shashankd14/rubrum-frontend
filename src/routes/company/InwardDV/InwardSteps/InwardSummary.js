@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import moment from "moment";
 
-import {addInwardDV, resetInwardForm,updateInward, pdfGenerateInward, QrGenerateInward, setInwardDVDetails, fetchDVMaterialList} from "../../../../appRedux/actions";
+import {addInwardDV, resetInwardForm,updateInwardDV, pdfGenerateInward, QrGenerateInward, setInwardDVDetails, fetchDVMaterialList} from "../../../../appRedux/actions";
 import {Button, Card, Col, Icon, message, Row, Spin, Modal, Collapse, Input} from "antd";
 import { withRouter } from 'react-router-dom';
 
@@ -57,15 +57,6 @@ const InwardSummary = (props) => {
         }
     }, [props.inwardObject.pdfSuccess]);
 
-    const partyName =(partyList) =>{
-        
-       partyList = partyList.find(item => item.nPartyId===Number(props.inward.partyName))
-       return partyList.partyName
-    
-    }
-    let dimensionEdit = `${props.inward.fWidth} X ${props.inward.fThickness} X ${props.inward.fLength}`;
-    let dimension = `${props.inward.width} X ${props.inward.thickness} X ${props.inward.length}`
-
     const getItemDetails = (itemId) => {
         return props.material?.DVMaterialList?.content?.find(materialItem => materialItem.itemId === itemId);
       };
@@ -75,7 +66,6 @@ const InwardSummary = (props) => {
             {props.inwardSubmitLoading ? <Spin className="gx-size-100 gx-flex-row gx-justify-content-center gx-align-items-center" size="large"/> :
             <>
                 <Col span={10} className="gx-pt-4">
-                    {/* <Row> */}
                         <Col span={12}>
                             <Card title="Inward Details" style={{ width: 500 }}>
                                 {props.inwardDV?.purposeType && <p>Purpose Type : {props.inwardDV?.purposeType}</p>}
@@ -112,8 +102,6 @@ const InwardSummary = (props) => {
                             </Card>
                         </Col>
                         </Col>
-                    {/* </Row>
-                    <Row> */}
                     <Col span={14} className="gx-pt-4">
                         <Col span={12}>
                             <Card title="Material Details" style={{ width: 700 }}>
@@ -194,16 +182,11 @@ const InwardSummary = (props) => {
                     </Button>
                     <Button type="primary" htmlType="submit" disabled={props.inwardSubmitSuccess} onClick={(e) => {
                         e.preventDefault();
-                        // props.params!== ""? props.updateInward(props.inward):props.addInwardDV(props.inwardDV)
-                        props.addInwardDV(props.inwardDV)
+                         props.params!== ""? props.updateInwardDV(props.inwardId):props.addInwardDV(props.inwardDV)
+                        // props.addInwardDV(props.inwardDV)
                     }}>
                         Submit <Icon type="right"/>
                     </Button>
-                    {/* <Button type="primary" disabled={generate} onClick={(e) => {
-                        e.preventDefault();
-                        props.pdfGenerateInward(payload)
-                        props.QrGenerateInward(payload);
-                    }}>Generate PDF & QR</Button> */}
                 </Col>
             </>
             }
@@ -228,7 +211,7 @@ const mapStateToProps = state => ({
 export default withRouter(connect(mapStateToProps, {
     addInwardDV,
     resetInwardForm,
-    updateInward,
+    updateInwardDV,
     pdfGenerateInward,
     QrGenerateInward,
     setInwardDVDetails,

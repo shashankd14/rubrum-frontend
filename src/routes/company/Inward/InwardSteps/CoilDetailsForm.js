@@ -103,6 +103,7 @@ const CoilDetailsForm = (props) => {
         partyList = partyList.find(item => item.nPartyId===Number(props.inward.partyName))
         return partyList?.partyName
     }
+    console.log("111111", props.inward);
     return (
         <>
             <Col span={14}>

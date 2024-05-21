@@ -317,6 +317,7 @@ export default (state = INIT_STATE, action) => {
             }
         }
         case FETCH_INWARD_LIST_BY_PARTY_SUCCESS: {
+            debugger
             return {
                 ...state,
                 loading: false,

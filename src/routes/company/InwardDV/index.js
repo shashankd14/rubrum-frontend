@@ -8,7 +8,7 @@ const InwardDV = ({match}) => (
         <Redirect exact from={`${match.url}/`} to={`${match.url}/list`}/>
         <Route path={`${match.url}/list`} component={asyncComponent(() => import('./ListDV'))}/>
         <Route path={`${match.url}/create/:inwardEntryId?`} component={asyncComponent(() => import('./Create'))}/>
-        <Route path={`${match.url}/:coilNumber`} component={asyncComponent(() => import('./View'))}/>
+        <Route path={`${match.url}/:inwardId`} component={asyncComponent(() => import('./View'))}/>
         
     </Switch>
 );

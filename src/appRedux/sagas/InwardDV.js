@@ -63,10 +63,10 @@ function* fetchInwardList(action) {
 }
 
 function* fetchInwardListById(action) {
+    debugger
     let body = action.payload;
     const reqBody = {
-        id: body.id,
-        searchText: body.searchText,
+        inwardId: body.id,
         pageNo: body.pageNo,
         pageSize: body.pageSize,
         requestId: "GET_BY_ID",
@@ -142,6 +142,7 @@ function* addInwardDVSaga(action) {
 }
 
 function* updateInwardDVSaga(action) {
+    debugger
     let body = action.payload;
     const reqBody = {
         inwardId: body.inwardId,

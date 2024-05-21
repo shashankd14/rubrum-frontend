@@ -96,7 +96,12 @@ const List = (props) => {
       key: "x",
       render: (text, record, index) => (
         <span>
-          <span className="gx-link" >View</span>
+          <span
+              className="gx-link"
+              onClick={() => props.history.push(`${record.inwardId}`)}
+          >
+            View
+          </span>
           <Divider type="vertical"/>
           <span className="gx-link" onClick={(e) => onEdit(record, e)}>Edit</span>
           <Divider type="vertical"/>
@@ -116,16 +121,19 @@ const List = (props) => {
   }
 
   const onEdit = (record,e)=>{
+    debugger
     e.preventDefault();
     props.fetchInwardDVListId({
         id: record.inwardId,
-        searchText: '',
         pageNo: pageNo,
         pageSize: "15",
         ipAddress: '',
         requestId: '',
         userId: ''
     });
+    setTimeout(() => {
+      props.history.push(`create/${record.inwardId}`);
+    }, 2000);
 }
   // useEffect(() => {
   //   if (props.inward.deleteSuccess) {
@@ -239,7 +247,7 @@ useEffect(() => {
             </Button>
               <SearchBox
               styleName="gx-flex-1"
-              placeholder="Search for coil number or party name..."
+              placeholder="Search for vendor name..."
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
             />  

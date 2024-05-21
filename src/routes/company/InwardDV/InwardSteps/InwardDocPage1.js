@@ -12,18 +12,7 @@ const Option = Select.Option;
 const CreateInwardDocPage1 = (props) => {
     const {getFieldDecorator, setFieldsValue} = props.form;
     const [dataSource, setDataSource] = useState([]);
-    useEffect(() => {
-        if(props.params !=="") {
-            const { Option } = AutoComplete;
-            const options = props.party.partyList.filter(party => {
-            if (party?.nPartyId===  props.inward.party?.nPartyId)
-            return (<Option key={party.nPartyId} value={`${party.nPartyId}`}>
-                    {party.partyName}
-                </Option>)
-            });
-            setDataSource(options);
-        }
-    }, [props.party]);
+    
 
     useEffect(() => {     
         props.generateConsignmentId({
@@ -62,19 +51,6 @@ const CreateInwardDocPage1 = (props) => {
             userId: ""
         });
     }, []);
-
-    useEffect(() => {
-        if(props.party.partyList.length > 0) {
-
-            const { Option } = AutoComplete;
-            const options = props.party.partyList.map(party => (
-                <Option key={party.nPartyId} value={`${party.nPartyId}`}>
-                    {party.partyName}
-                </Option>
-            ));
-            setDataSource(options);
-        }
-    }, [props.party]);
 
     useEffect(() => {
         if (props.params !== '') {
@@ -132,10 +108,7 @@ const CreateInwardDocPage1 = (props) => {
     return (
         <>
         <Col span={16} >
-            {/* {props.party.loading && <Spin className="gx-size-100 gx-flex-row gx-justify-content-center gx-align-items-center" size="large"/>}
-            {props.party.partyList.length > 0 && */}
                 <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4" >
-                 {/* <Form {...formItemLayout} className="login-form gx-pt-4" > */}
                     <Row>
                         <Col span={12} >
                     <Form.Item label="Vendor Batch No">
@@ -145,10 +118,6 @@ const CreateInwardDocPage1 = (props) => {
                                 <Input id="vendorBatchNo" />
                             )}
                     </Form.Item>
-                    {/* </Col>
-                    </Row>
-                    <Row>
-                        <Col span={12}> */}
                     <Form.Item label="Consignment Id">
                             {getFieldDecorator('consignmentId', {
                             initialValue: props.inwardDV.consignmentId
@@ -267,9 +236,6 @@ const CreateInwardDocPage1 = (props) => {
                             <Button type="primary" htmlType="submit">
                                 Forward<Icon type="right"/>
                             </Button>
-                            {/* <Button type="primary" onClick={handleSubmit}>
-                                Forward
-                            </Button> */}
                         </Col>
                     </Row>
                 </Form>

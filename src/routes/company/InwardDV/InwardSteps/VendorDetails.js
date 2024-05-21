@@ -8,44 +8,16 @@ const Option = Select.Option;
 
 const CreateVendorDetailsForm = (props) => {
     const {getFieldDecorator, setFieldsValue } = props.form;
-    const [dataSource, setDataSource] = useState([]);
-    useEffect(() => {
-        if(props.params !=="") {
-            const { Option } = AutoComplete;
-            const options = props.party.partyList.filter(party => {
-            if (party?.nPartyId===  props.inward.party?.nPartyId)
-            return (<Option key={party.nPartyId} value={`${party.nPartyId}`}>
-                    {party.partyName}
-                </Option>)
-            });
-            setDataSource(options);
-        }
-    }, [props.party]);
-    useEffect(() => {
-        if(props.party.partyList.length > 0) {
+   
+    // useEffect(() => {
+    //     if (props.params !== '') {
+    //         props.inward.customerId = props.inward.party?.nPartyId || '';
+    //         props.inward.customerBatchNo = props.inward.customerBatchId;
+    //     }
+    // }, [props.params])
 
-            const { Option } = AutoComplete;
-            const options = props.party.partyList.map(party => (
-                <Option key={party.nPartyId} value={`${party.nPartyId}`}>
-                    {party.partyName}
-                </Option>
-            ));
-            setDataSource(options);
-        }
-    }, [props.party]);
-
-    useEffect(() => {
-        if (props.params !== '') {
-            props.inward.customerId = props.inward.party?.nPartyId || '';
-            props.inward.customerBatchNo = props.inward.customerBatchId;
-        }
-    }, [props.params])
-    const handleChange = e =>{
-        props.inward.party.partyName = e;
-    }
     const handleSubmit = e => {
         debugger
-        // props.updateStep(2);
         e.preventDefault();
 
         props.form.validateFields((err, values) => {
@@ -54,12 +26,7 @@ const CreateVendorDetailsForm = (props) => {
             }
         });
     };
-    const checkBatchNoExist = (rule, value, callback) => {
-        if (!props.inwardStatus.loading && props.inwardStatus.success && !props.inwardStatus.duplicateBatchNo) {
-            return callback();
-        }
-        callback('The coil number already exists');
-    };
+    console.log("22222")
 
     useEffect(() => {
         props.fetchVendorList({
@@ -71,14 +38,11 @@ const CreateVendorDetailsForm = (props) => {
             userId: ""
         });
     }, []);
-console.log("props.inwardDV.vendorId", props.inwardDV)
+
     return (
         <>
         <Col span={16}>
-            {props.party.loading && <Spin className="gx-size-100 gx-flex-row gx-justify-content-center gx-align-items-center" size="large"/>}
-            {props.party.partyList.length > 0 &&
                 <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4" style={{"width":"70%"}}>
-                {/* <Form {...formItemLayout} className="login-form gx-pt-4" > */}
                      <Form.Item label="Vendor Name">
                         {getFieldDecorator("vendorName", {
                           rules: [
@@ -140,13 +104,9 @@ console.log("props.inwardDV.vendorId", props.inwardDV)
                             <Button type="primary" htmlType="submit">
                                 Forward<Icon type="right"/>
                             </Button>
-                            {/* <Button type="primary" onClick={handleSubmit}>
-                                Forward
-                            </Button> */}
                         </Col>
                     </Row>
                 </Form>
-            }
             </Col>
             <Col span={8} className="gx-pt-4">
                 <Card title="Inward Details" style={{ width: 400 }}>
@@ -158,9 +118,6 @@ console.log("props.inwardDV.vendorId", props.inwardDV)
 }
 
 const mapStateToProps = state => ({
-    party: state.party,
-    inward: state.inward.inward,
-    inwardStatus: state.inward,
     vendor: state.vendor,
     inwardDV: state.inwardDV.inward
 });
@@ -185,26 +142,6 @@ const VendorDetailsForm = Form.create({
             transporterPhoneNo: Form.createFormField({
                 ...props.inwardDV.transporterPhoneNo,
                  value: props.inwardDV.transporterPhoneNo || '',
-            }),
-            partyName: Form.createFormField({
-                ...props.inward.partyName,
-                value: ( props.params !== "" && props.inward.party) ?props.inward.party.partyName :(props.inward.partyName) ? props.inward.partyName: '',
-            }),
-            customerId: Form.createFormField({
-                ...props.inward.customerId,
-                value: props.params !== "" ? props.inward.party?.nPartyId:(props.inward.customerId) ? props.inward.customerId : props.inward.partyName,
-            }),
-            customerBatchNo: Form.createFormField({
-                ...props.inward.customerBatchNo,
-                value: props.params !== "" ? props.inward.customerBatchId:(props.inward.customerBatchNo) ? props.inward.customerBatchNo : '',
-            }),
-            customerInvoiceNo: Form.createFormField({
-                ...props.inward.customerInvoiceNo,
-                value: (props.inward.customerInvoiceNo) ? props.inward.customerInvoiceNo : '',
-            }),
-            purposeType: Form.createFormField({
-                ...props.inward.purposeType,
-                value: (props.inward.purposeType) ? props.inward.purposeType : '',
             }),
         };
     },

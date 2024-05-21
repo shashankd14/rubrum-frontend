@@ -20,14 +20,11 @@ const CreatePurposeTypeForm = (props) => {
             }
         });
     };
-    // const handleSubmit = e => {
-    //     props.updateStep(1);
-    // }
-       
+    debugger
+       console.log("props", props);
     return (
         <>
                 <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4" style={{"width":"70%"}}>
-                {/* <Form {...formItemLayout} className="login-form gx-pt-4" style={{"width":"70%"}}>     */}
                     <Form.Item label="Purpose Type">
                         {getFieldDecorator('purposeType', {
                             rules: [{ required: true, message: 'Please select a purpose type!' }],
@@ -44,9 +41,6 @@ const CreatePurposeTypeForm = (props) => {
                             <Button type="primary" htmlType="submit">
                                 Forward<Icon type="right"/>
                             </Button>
-                             {/* <Button type="primary" onClick={handleSubmit}>
-                                Forward
-                            </Button> */}
                         </Col>
                     </Row>
                 </Form>
@@ -55,7 +49,6 @@ const CreatePurposeTypeForm = (props) => {
 }
 
 const mapStateToProps = state => ({
-    party: state.party,
     inward: state.inward.inward,
     inwardStatus: state.inward,
     inwardDV: state.inwardDV.inward
