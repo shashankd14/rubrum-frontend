@@ -65,18 +65,12 @@ const CreateInwardDocPage2 = (props) => {
         debugger
         props.updateStep(5);
         e.preventDefault();
-
+        props.setInwardDVDetails({ ...props.inwardDV, totalInwardValume: totalInwardAdd});
         props.form.validateFields((err, values) => {
             if (!err) {
                 props.updateStep(5);
             }
         });
-    };
-    const checkBatchNoExist = (rule, value, callback) => {
-        if (!props.inwardStatus.loading && props.inwardStatus.success && !props.inwardStatus.duplicateBatchNo) {
-            return callback();
-        }
-        callback('The coil number already exists');
     };
     const handleChangeDate = (date, dateString) => {
         props.form.setFieldsValue({
@@ -111,18 +105,20 @@ const CreateInwardDocPage2 = (props) => {
       };
 
     //   const totalInwardVolume = 
+    const [totalInwardAdd, setTotalInwardAdd] = useState(0);
     const handleExtraChargesChange = () => {
         debugger
         const extraCharges = props.form.getFieldsValue([
-            'frieghtCharges', 'addInsurance', 'loadingAndUnloading', 'weightmenCharges', 'addSGST', 'addCGST'
+            'frieghtCharges', 'addInsurance', 'loadingAndUnloading', 'weightmenCharges', 'addSGST', 'addCGST', 'addIGST'
         ]);
         const totalAdditionalCharges = Object.values(extraCharges).reduce((acc, value) => acc + (parseFloat(value) || 0), 0);
-        const totalInward = totalAdditionalCharges + (props.inwardDV.totalVolume);
-        setFieldsValue({
-            totalInward: totalInward,
-        });
+        const totalInward = totalAdditionalCharges + (props.inwardDV.totalVolume || 0);
+        // setFieldsValue({
+        //     totalInwardValume: totalInward,
+        // });
+         setTotalInwardAdd(totalInward);
     };
-      
+    
     return (
         <>
         <Col span={24} className="gx-ml-2">
@@ -263,10 +259,10 @@ const CreateInwardDocPage2 = (props) => {
                     )}
                 </Form.Item>
                 <Form.Item label="Total Inward Value">
-                    {getFieldDecorator('totalInward', {
-                       
+                    {getFieldDecorator('totalInwardValume', {
+                       initialValue: props.inwardDV?.totalInwardVolume ? props.inwardDV?.totalInwardVolume : totalInwardAdd
                     })(
-                        <Input id="totalInward" disabled  style={widthStyle} onChange={handleExtraChargesChange}/>
+                        <Input id="totalInwardValume" disabled value={props.inwardDV?.totalInwardVolume? props.inwardDV.totalInwardVolume : totalInwardAdd} style={widthStyle}/>
                     )}
                 </Form.Item>
                 </Col>
@@ -348,10 +344,10 @@ const InwardDocPage2 = Form.create({
                 ...props.inwardDV.addIGST,
                 value: (props.inwardDV.addIGST) ? props.inwardDV.addIGST : '',
             }),
-            totalInward: Form.createFormField({
-                ...props.inwardDV.totalInward,
-                value: (props.inwardDV.totalInward) ? props.inwardDV.totalInward : '',
-            }),
+            // totalInwardValume: Form.createFormField({
+            //     ...props.inwardDV.totalInwardValume,
+            //     value: (props.inwardDV.totalInwardValume) ? props.inwardDV.totalInwardValume : props.totalInwardAdd,
+            // }),
         };
     },
     onValuesChange(props, values) {

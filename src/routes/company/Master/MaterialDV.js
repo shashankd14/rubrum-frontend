@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import {
   Button,
@@ -34,6 +34,7 @@ import {
 import { onDeleteContact } from '../../../appRedux/actions';
 import '../../../styles/components/Master/MaterialDV.css';
 import Dragger from 'antd/lib/upload/Dragger';
+import { values } from 'lodash';
 
 export const formItemLayout = {
   labelCol: {
@@ -56,7 +57,7 @@ const MaterialDV = (props) => {
     order: 'descend',
     columnKey: 'age',
   });
-  const { getFieldDecorator, getFieldValue, getFieldProps } = props.form;
+  const { getFieldDecorator, getFieldValue, getFieldProps, setFieldsValue } = props.form;
   getFieldDecorator('keys', { initialValue: [0] });
   const [showAddMaterial, setShowAddMaterial] = useState(false);
   const [viewMaterial, setViewMaterial] = useState(false);
@@ -75,8 +76,6 @@ const MaterialDV = (props) => {
   const [pageSize, setPageSize] = useState(15);
   const [totalPageItems, setTotalPageItems] = useState(0);
   const { totalItems } = props.materialDV.DVMaterialList;
-
-  const keys = getFieldValue('keys');
 
   const columns = [
     {
@@ -130,34 +129,6 @@ const MaterialDV = (props) => {
       sorter: (a, b) => a.createdOn.length - b.createdOn.length,
       sortOrder: sortedInfo.columnKey === 'createdOn' && sortedInfo.order,
     },
-    
-    // {
-    //   title: 'Material',
-    //   dataIndex: 'description',
-    //   key: 'description',
-    //   // filteredValue: filteredInfo ? filteredInfo['description'] : null,
-    //   // filters: [
-    //   //   ...new Set(props.material.materialList.map((item) => item.description)),
-    //   // ].map((material) => {
-    //   //   return { text: material || '', value: material || '' };
-    //   // }),
-    //   // onFilter: (value, record) => record.description == value,
-    //   // sorter: (a, b) => a.description?.length - b.description?.length,
-    //   // sortOrder: sortedInfo.columnKey === 'description' && sortedInfo.order,
-    // },
-    // {
-    //   title: 'Material Grade',
-    //   dataIndex: 'materialGrade',
-    //   key: 'materialGrade',
-    //   render: (value) => {
-    //     const grade = value.map((grade) => {
-    //       return grade.gradeName;
-    //     });
-    //     return grade.toString();
-    //   },
-    //   sorter: (a, b) => a.materialGrade?.length - b.materialGrade?.length,
-    //   sortOrder: sortedInfo.columnKey === 'materialGrade' && sortedInfo.order,
-    // },
     {
       title: 'Action',
       dataIndex: '',
@@ -215,7 +186,7 @@ const MaterialDV = (props) => {
   });
     setEditMaterial(true);
     setTimeout(() => {
-      setShowAddMaterial(true);
+       setShowAddMaterial(true);
     }, 1000);
   };
 
@@ -297,31 +268,6 @@ props.fetchItemGradeList({
 
   const deleteSelectedCoils = () => {
     console.log('dfd');
-  };
-
-  const addNewKey = (idx) => {
-    const { form } = props;
-    const keys = form.getFieldValue('keys');
-    const nextKeys = keys.concat(idx + 1);
-    form.setFieldsValue({
-      keys: nextKeys,
-    });
-  };
-
-  const removeKey = (k) => {
-    const { form } = props;
-    // can use data-binding to get
-    const keys = form.getFieldValue('keys');
-    const grade = form.getFieldValue('grade');
-    // We need at least one passenger
-    if (keys.length === 1) {
-      return;
-    }
-    // can use data-binding to set
-    form.setFieldsValue({
-      keys: keys.filter((key, idx) => idx !== k),
-      grade: grade.filter((key, idx) => idx !== k),
-    });
   };
 
 const [itemImageFile, setItemImageFile] = useState();
@@ -547,7 +493,26 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
       units: (parseFloat(NBMMValue) / 25.4).toFixed(2),
     });
   }
-  
+
+  const [editAdditionalValues, setEditAdditionalValues] = useState([]);
+  useEffect(() => {
+    debugger
+    if (props.materialDV?.DVMaterialID?.additionalParams) {
+      const parsedParams = JSON.parse(props.materialDV?.DVMaterialID?.additionalParams);
+      const values = {};
+
+      parsedParams.forEach(param => {
+        const { parameterName, unitType, units } = param;
+        // Concatenate parameterName and unitType to create a unique key
+        const key = `${parameterName.toLowerCase()}${unitType.toLowerCase()}`;
+        // Store units value in the state object with the unique key
+        values[key] = units;
+      });
+      console.log('Fields to set:', values);
+      setEditAdditionalValues(values);
+    }
+  }, [props.materialDV]);
+
   return (
     <div>
       <h1>
@@ -652,26 +617,6 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
               {viewMaterialData?.perFeet && <p>kg per meter: {viewMaterialData?.perFeet}</p> }
               {viewMaterialData?.perMeter && <p>kg per feet: {viewMaterialData?.perMeter}</p> }
               {viewMaterialData?.perPC && <p>per pc: {viewMaterialData?.perPC}</p> }
-                 {/* {viewMaterialData?.description && (
-                    <p>
-                      <strong>Material Type :</strong>{' '}
-                      {viewMaterialData.description}
-                    </p>
-                  )}
-                  {viewMaterialData?.materialGrade && (
-                    <p>
-                      <strong>Material Grade :</strong>{' '}
-                      {viewMaterialData?.materialGrade?.reduce(
-                        (acc, grade, index, arr) =>
-                          acc.concat(
-                            `${grade.gradeName}${
-                              index === arr.length - 1 ? '' : ','
-                            } `
-                          ),
-                        ''
-                      )}
-                    </p>
-                  )}*/}
                 </Card>
               </Col>
             </Row>

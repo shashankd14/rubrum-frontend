@@ -89,7 +89,9 @@ const CreateInwardDocPage1 = (props) => {
         let vendorName = '';
             const response = props.vendor.content
             const selectedVendorName = response.find(vendor => vendor.vendorId === vendorId);
-            vendorName = selectedVendorName.vendorName;
+            if (selectedVendorName !== undefined){
+                vendorName = selectedVendorName.vendorName;
+                   }
         setVendorName(vendorName);
         }
        
@@ -239,12 +241,11 @@ const CreateInwardDocPage1 = (props) => {
                         </Col>
                     </Row>
                 </Form>
-            {/* } */}
             </Col>
             <Col span={8} className="gx-pt-4">
                 <Card title="Inward Details" style={{ width: 400 }}>
                     {props.inwardDV.purposeType && <p>Purpose Type : {props.inwardDV.purposeType}</p>}
-                    {props.inwardDV.vendorName && <p>Vendor ID : {props.inwardDV.vendorName}</p>}
+                    {props.inwardDV.vendorId && <p>Vendor ID : {props.inwardDV.vendorId}</p>}
                     {props.inwardDV.vendorName && <p>Vendor Name : { vendorName}</p>}
                     {props.inwardDV.vendorBatchNo && <p>Vendor BatchNo : {props.inwardDV.vendorBatchNo}</p>}
                     {props.inwardDV?.itemsList?.map((item, index) => {
@@ -270,7 +271,6 @@ const CreateInwardDocPage1 = (props) => {
 const mapStateToProps = state => ({
     party: state.party,
     inward: state.inward.inward,
-    inwardStatus: state.inward,
     consignmentId: state.inwardDV.consignmentId,
     location: state.location,
     inwardDV: state.inwardDV.inward,
@@ -290,68 +290,41 @@ const InwardDocPage1 = Form.create({
                 value: (props.inwardDV.vendorBatchNo) ? props.inwardDV.vendorBatchNo : ''
             }),
             consignmentId: Form.createFormField({
-                // ...props.inwardDV.consignmentId,
-                // value: ( props.params !== "" && props.inward.party) ?props.inward.party.partyName :(props.inward.partyName) ? props.inward.partyName: '',
-                // value: (props.inwardDV.consignmentId) ? props.inwardDV.vendorBatchNo : props.consignmentId?.seqNo
                 value: props.inwardDV.consignmentId
             }),
             vehicleNo: Form.createFormField({
                 ...props.inwardDV.vehicleNo,
-                // value: ( props.params !== "" && props.inward.party) ?props.inward.party.partyName :(props.inward.partyName) ? props.inward.partyName: '',
                 value: (props.inwardDV.vehicleNo) ? props.inwardDV.vehicleNo : ''
             }),
             documentNo: Form.createFormField({
                 ...props.inwardDV.documentNo,
-                // value: ( props.params !== "" && props.inward.party) ?props.inward.party.partyName :(props.inward.partyName) ? props.inward.partyName: '',
                 value: (props.inwardDV.documentNo) ? props.inwardDV.documentNo : ''
             }),
             ewayBillNo: Form.createFormField({
                 ...props.inwardDV.ewayBillNo,
-                // value: ( props.params !== "" && props.inward.party) ?props.inward.party.partyName :(props.inward.partyName) ? props.inward.partyName: '',
                 value: (props.inwardDV.ewayBillNo) ? props.inwardDV.ewayBillNo : ''
             }),
             locationId: Form.createFormField({
                 ...props.inwardDV.locationId,
-                // value: ( props.params !== "" && props.inward.party) ?props.inward.party.partyName :(props.inward.partyName) ? props.inward.partyName: '',
                 value: (props.inwardDV.locationId) ? props.inwardDV.locationId : ''
             }),
             documentType: Form.createFormField({
                 ...props.inwardDV.documentType,
-                // value: ( props.params !== "" && props.inward.party) ?props.inward.party.partyName :(props.inward.partyName) ? props.inward.partyName: '',
                 value: (props.inwardDV.documentType) ? props.inwardDV.documentType : ''
             }),
             documentDate: Form.createFormField({
                 ...props.inwardDV.documentDate,
-                // value: ( props.params !== "" && props.inward.party) ?props.inward.party.partyName :(props.inward.partyName) ? props.inward.partyName: '',
                 // value: moment(props.inwardDV.documentDate || new Date(), APPLICATION_DATE_FORMAT)
                 value: moment(props.inwardDV.documentDate || moment(props.inwardDV.documentDate, 'YYYY-MM-DD') || new Date()),
             }),
             ewayBillDate: Form.createFormField({
                 ...props.inwardDV.ewayBillDate,
-                // value: ( props.params !== "" && props.inward.party) ?props.inward.party.partyName :(props.inward.partyName) ? props.inward.partyName: '',
                 // value: (props.inwardDV.ewayBillDate) ? props.inwardDV.ewayBillDate : ''
                 value: moment(props.inwardDV.ewayBillDate || moment(props.inwardDV.ewayBillDate, 'YYYY-MM-DD') || new Date()),
             }),
             valueOfGoods: Form.createFormField({
                 ...props.inwardDV.valueOfGoods,
-                // value: ( props.params !== "" && props.inward.party) ?props.inward.party.partyName :(props.inward.partyName) ? props.inward.partyName: '',
                 value: (props.inwardDV.valueOfGoods) ? props.inwardDV.valueOfGoods : ''
-            }),
-            partyName: Form.createFormField({
-                ...props.inward.partyName,
-                value: ( props.params !== "" && props.inward.party) ?props.inward.party.partyName :(props.inward.partyName) ? props.inward.partyName: '',
-            }),
-            customerId: Form.createFormField({
-                ...props.inward.customerId,
-                value: props.params !== "" ? props.inward.party?.nPartyId:(props.inward.customerId) ? props.inward.customerId : props.inward.partyName,
-            }),
-            customerBatchNo: Form.createFormField({
-                ...props.inward.customerBatchNo,
-                value: props.params !== "" ? props.inward.customerBatchId:(props.inward.customerBatchNo) ? props.inward.customerBatchNo : '',
-            }),
-            customerInvoiceNo: Form.createFormField({
-                ...props.inward.customerInvoiceNo,
-                value: (props.inward.customerInvoiceNo) ? props.inward.customerInvoiceNo : '',
             }),
         };
     },

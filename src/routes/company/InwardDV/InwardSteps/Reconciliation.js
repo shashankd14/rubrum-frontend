@@ -9,9 +9,6 @@ import Dragger from 'antd/lib/upload/Dragger';
 import { useLocation } from 'react-router-dom/cjs/react-router-dom';
 
 const Option = Select.Option;
-const widthStyle = {
-    width: '50%',
-  };
 
 const CreateRecociliation = (props) => {
     const {getFieldDecorator} = props.form;
@@ -20,8 +17,6 @@ const CreateRecociliation = (props) => {
     const [totalTheoreticalWeight, setTotalTheoreticalWeight] = useState(0);
 
     useEffect(() => {
-        debugger
-        // Calculate the total theoretical weight
         const totalWeight = props.inwardDV?.itemsList?.reduce((sum, item) => {
             const weight = parseFloat(item.theoreticalWeight) || 0;
             return sum + weight;
@@ -198,7 +193,9 @@ const CreateRecociliation = (props) => {
         let vendorName = '';
         const response = props.vendor.content
             const selectedVendorName = response.find(vendor => vendor.vendorId === vendorId);
-            vendorName = selectedVendorName.vendorName;
+            if (selectedVendorName !== undefined){
+                vendorName = selectedVendorName.vendorName;
+                   }
         setVendorName(vendorName);
       },[props.inwardDV.vendorName])
 
@@ -211,7 +208,7 @@ const CreateRecociliation = (props) => {
                         <Col span={12} >
                     <Form.Item label="Vendor Name">
                             {getFieldDecorator('vendorNameReco', {
-                                initialValue: vendorName
+                                initialValue: vendorName? vendorName : props.inwardDV?.vendorName
                             })(
                                 <Input id="vendorNameReco" disabled/>
                             )}
@@ -410,7 +407,6 @@ const CreateRecociliation = (props) => {
 const mapStateToProps = state => ({
     party: state.party,
     inward: state.inward.inward,
-    inwardStatus: state.inward,
     location: state.location,
     inwardDV: state.inwardDV.inward,
     vendor: state.vendor.vendorList,

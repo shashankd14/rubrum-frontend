@@ -52,8 +52,7 @@ const View = (props) => {
             userId: ""
         });
     }, []);
-console.log("1111111111", filteredInwardList)
-console.log("filteredInwardList[0].totalWeight", filteredInwardList[0]?.totalWeight);
+    
     const getItemDetails = (itemId) => {
         return props.material?.DVMaterialList?.content?.find(materialItem => materialItem.itemId === itemId);
       };

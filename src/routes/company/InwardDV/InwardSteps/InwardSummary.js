@@ -182,8 +182,8 @@ const InwardSummary = (props) => {
                     </Button>
                     <Button type="primary" htmlType="submit" disabled={props.inwardSubmitSuccess} onClick={(e) => {
                         e.preventDefault();
-                         props.params!== ""? props.updateInwardDV(props.inwardId):props.addInwardDV(props.inwardDV)
-                        // props.addInwardDV(props.inwardDV)
+                        //  props.params!== ""? props.updateInwardDV(props.inwardId):props.addInwardDV(props.inwardDV)
+                         props.addInwardDV(props.inwardDV)
                     }}>
                         Submit <Icon type="right"/>
                     </Button>

@@ -43,7 +43,6 @@ const MaterialDetailsForm = (props) => {
   };
 
   useEffect(() => {
-    // props.fetchPartyList();
     props.fetchDVMaterialList({
       searchText: '',
       pageNo: '1',
@@ -70,15 +69,15 @@ const MaterialDetailsForm = (props) => {
 
   const [vendorName, setVendorName] = useState();
   useEffect(() => {
-    const vendorId = props.inwardDV.vendorName;
+    const vendorId = props.inwardDV.vendorId;
     let vendorName = '';
     const response = props.vendor.content;
     const selectedVendorName = response.find(
       (vendor) => vendor.vendorId === vendorId
     );
-    //   if (selectedVendorName !== undefined){
+       if (selectedVendorName !== undefined){
     vendorName = selectedVendorName.vendorName;
-    //   }
+       }
     setVendorName(vendorName);
   }, []);
 
@@ -140,11 +139,9 @@ const MaterialDetailsForm = (props) => {
   };
 
   const getInwardItem = (itemId) => {
-    // if (props.materialDV?.DVMaterialList.length > 0){
-    return props.materialDV?.DVMaterialList?.content.find(
+    return props.materialDV?.DVMaterialList?.content?.find(
       (e) => e.itemId === itemId
     );
-    //  }
   };
 
   const columnLabels = [
@@ -313,9 +310,9 @@ const MaterialDetailsForm = (props) => {
                 {props.inwardDV.purposeType && (
                   <p>Purpose Type : {props.inwardDV.purposeType}</p>
                 )}
-                {props.inwardDV.vendorName && <p>Vendor Name : {vendorName}</p>}
-                {props.inwardDV.vendorName && (
-                  <p>Vendor ID : {props.inwardDV.vendorName}</p>
+                {props.inwardDV.vendorName && <p>Vendor Name : {props.inwardDV.vendorName? props.inwardDV.vendorName : vendorName}</p>}
+                {props.inwardDV.vendorId && (
+                  <p>Vendor ID : {props.inwardDV.vendorId}</p>
                 )}
               </Card>
             </Col>

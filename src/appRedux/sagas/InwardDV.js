@@ -95,7 +95,7 @@ function* addInwardDVSaga(action) {
     let body = action.payload;
     const reqBody = {
         purposeType: body.purposeType,
-        vendorId: body.vendorName,
+        vendorId: body.vendorId,
         transporterName: body.transporterName,
         transporterPhoneNo: body.transporterPhoneNo,
         vendorBatchNo: body.vendorBatchNo,
@@ -168,7 +168,7 @@ function* updateInwardDVSaga(action) {
         cgst: body.addCGST,
         sgst: body.addSGST,
         igst: body.addIGST,
-        totalInwardVolume: body.totalInwardValue,
+        totalInwardVolume: body.totalInwardValume,
         totalWeight: body.totalWeight,
         totalVolume: body.totalVolume,
         itemsList: body.itemsList,
