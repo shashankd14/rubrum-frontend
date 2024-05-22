@@ -721,7 +721,7 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
                     allowClear
                     >
                       {props.itemGrade?.itemGradeList?.content?.map((grade) => (
-                        <Option key={grade.itemgradeId} value={grade.itemgradeName}>
+                        <Option key={grade.itemgradeId} value={grade.itemgradeId}>
                           {grade.itemgradeName}
                         </Option>
                       ))}
@@ -852,8 +852,8 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
                   <Col className='flex-row'>
                     {getFieldDecorator('lengthMeter', {
                       onChange: (e) => handleMeterChange(e, setLengthMeterValue),
-                      initialValue: lengthMeterValue 
-                    })(<Input id='lengthMeter' {...getFieldProps} />)}
+                      initialValue: lengthMeterValue || editAdditionalValues["lengthmeters"]
+                    })(<Input id='lengthMeter' {...getFieldProps}  />)}
                     <label className='left-side-label'>Meters</label>
                   </Col>
                 </Form.Item>
@@ -861,7 +861,7 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
                 <Form.Item>
                   <Col className='flex-row'>
                     {getFieldDecorator('lengthFeet', {
-                       initialValue: (lengthMeterValue * 3.28084).toFixed(2)
+                       initialValue: ((lengthMeterValue || editAdditionalValues["lengthmeters"]) * 3.28084).toFixed(2) 
                     })(<Input id='lengthFeet' {...getFieldProps} disabled />)}
                     <label className='left-side-label'>Feet</label>
                   </Col>
@@ -890,7 +890,7 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
                     {getFieldDecorator('widthMeter', {
                       // rules: [{ required: false, message: 'Please enter manufacturers name' }],
                       onChange: (e) => handleMeterChange(e, setWidthMeterValue),
-                      initialValue: widthMeterValue
+                      initialValue: widthMeterValue || editAdditionalValues["widthmeters"]
                     })(<Input id='widthMeter' {...getFieldProps} />)}
                     <label className='left-side-label'>Meters</label>
                   </Col>
@@ -900,7 +900,7 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
                   <Col className='flex-row'>
                     {getFieldDecorator('widthFeet', {
                       // rules: [{ required: false, message: 'Please enter manufacturers name' }],
-                      initialValue: (widthMeterValue * 3.28084).toFixed(2)
+                      initialValue: ((widthMeterValue || editAdditionalValues["widthmeters"]) * 3.28084).toFixed(2)
                     })(<Input id='widthFeet' {...getFieldProps} disabled />)}
                     <label className='left-side-label'>Feet</label>
                   </Col>
@@ -929,7 +929,7 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
                     {getFieldDecorator('Flange1mm', {
                       // rules: [{ required: false, message: 'Please enter manufacturers name' }],
                       onChange: (e) => handleMMChange(e, setFlange1MM),
-                      initialValue: flange1MM 
+                      initialValue: flange1MM || editAdditionalValues["flange1mm"]
                     })(<Input id='Flange1mm' {...getFieldProps} />)}
                     <label className='left-side-label'>mm</label>
                   </Col>
@@ -937,8 +937,8 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
 
                 <Form.Item>
                   <Col className='flex-row-mm'>
-                    {getFieldDecorator('flange1inches', {
-                      initialValue: (flange1MM / 25.4).toFixed(2)
+                    {getFieldDecorator('flange1inches', { 
+                      initialValue: (parseFloat((flange1MM || editAdditionalValues["flange1mm"])) / 25.4).toFixed(2)
                     })(<Input id='flange1inches' {...getFieldProps} disabled />)}
                     <label className='left-side-label-mm'>Inches</label>
                   </Col>
@@ -966,7 +966,7 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
                   <Col className='flex-row'>
                     {getFieldDecorator('Flange2mm', {
                       onChange: (e) => handleMMChange(e, setFlange2MM),
-                      initialValue: flange2MM 
+                      initialValue: flange2MM || editAdditionalValues["flange2mm"]
                     })(<Input id='Flange2mm' {...getFieldProps} />)}
                     <label className='left-side-label'>mm</label>
                   </Col>
@@ -974,8 +974,8 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
 
                 <Form.Item>
                   <Col className='flex-row-mm'>
-                    {getFieldDecorator('flange2inches', {
-                      initialValue: (flange2MM / 25.4).toFixed(2)
+                    {getFieldDecorator('flange2inches', { 
+                      initialValue: (parseFloat((flange2MM || editAdditionalValues["flange2mm"])) / 25.4).toFixed(2)
                     })(<Input id='flange2inches' {...getFieldProps} disabled />)}
                     <label className='left-side-label-mm'>Inches</label>
                   </Col>
@@ -1003,7 +1003,8 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
                   <Col className='flex-row'>
                     {getFieldDecorator('thicknessmm', {
                       onChange: handleThicknessMMChange,
-                      //  initialValue: thicknessmmInches 
+                      // initialValue: thicknessmmInches
+                        initialValue: thicknessmmInches || editAdditionalValues["thicknessmm"]
                     })(<Input id='thicknessmm' {...getFieldProps} />)}
                     <label className='left-side-label'>mm</label>
                   </Col>
@@ -1012,7 +1013,8 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
                 <Form.Item>
                   <Col className='flex-row-mm'>
                     {getFieldDecorator('thicknessInches', {
-                      initialValue: (thicknessmmInches / 25.4).toFixed(2)
+                      // initialValue: (thicknessmmInches / 25.4).toFixed(2)
+                      initialValue: (parseFloat((thicknessmmInches || editAdditionalValues["thicknessmm"])) / 25.4).toFixed(2)
                     })(
                       <Input id='thicknessInches' {...getFieldProps} disabled />
                     )}
@@ -1023,7 +1025,7 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
                 <Form.Item>
                   <Col className='flex-row' style={{ marginRight: '-40px' }}>
                     {getFieldDecorator('thicknessGuage', {
-                      initialValue: thicknessmmGuage
+                      initialValue: thicknessmmGuage || editAdditionalValues["thicknessguage"]
                     })(
                       <Input id='thicknessGuage' {...getFieldProps} disabled />
                     )}
@@ -1058,7 +1060,7 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
                   <Col className='flex-row'>
                     {getFieldDecorator('heightmm', {
                       onChange: (e) => handleMMChange(e, setHeightMMValue),
-                      initialValue: heightMMValue 
+                      initialValue: heightMMValue || editAdditionalValues["heightmm"]
                     })(<Input id='heightmm' {...getFieldProps} />)}
                     <label className='left-side-label'>mm</label>
                   </Col>
@@ -1067,7 +1069,7 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
                 <Form.Item>
                   <Col className='flex-row-mm'>
                     {getFieldDecorator('heightInches', {
-                      initialValue: (heightMMValue / 25.4).toFixed(2),
+                      initialValue: (parseFloat((heightMMValue || editAdditionalValues["heightmm"])) / 25.4).toFixed(2)
                     })(<Input id='heightInches' {...getFieldProps} disabled />)}
                     <label className='left-side-label-mm'>Inches</label>
                   </Col>
@@ -1095,7 +1097,7 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
                   <Col className='flex-row'>
                     {getFieldDecorator('ODmm', {
                       onChange: (e) => handleMMChange(e, setODtMMValue),
-                      initialValue: ODMMValue 
+                      initialValue: ODMMValue || editAdditionalValues["odmm"]
                     })(<Input id='ODmm' {...getFieldProps} />)}
                     <label className='left-side-label'>mm</label>
                   </Col>
@@ -1104,7 +1106,7 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
                 <Form.Item>
                   <Col className='flex-row-mm'>
                     {getFieldDecorator('ODInches', {
-                      initialValue: (ODMMValue / 25.4).toFixed(2),
+                      initialValue: (parseFloat((ODMMValue || editAdditionalValues["odmm"])) / 25.4).toFixed(2)
                     })(<Input id='ODInches' {...getFieldProps} disabled />)}
                     <label className='left-side-label-mm'>Inches</label>
                   </Col>
@@ -1132,7 +1134,7 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
                   <Col className='flex-row'>
                     {getFieldDecorator('NBmm', {
                       onChange: (e) => handleMMChange(e, setNBMMValue),
-                      initialValue: NBMMValue 
+                      initialValue: NBMMValue || editAdditionalValues["nbmm"]
                     })(<Input id='NBmm' {...getFieldProps} />)}
                     <label className='left-side-label'>mm</label>
                   </Col>
@@ -1141,7 +1143,7 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
                 <Form.Item>
                   <Col className='flex-row-mm'>
                     {getFieldDecorator('NBInches', {
-                      initialValue: (NBMMValue / 25.4).toFixed(2),
+                      initialValue: (parseFloat((NBMMValue || editAdditionalValues["nbmm"])) / 25.4).toFixed(2)
                     })(<Input id='NBInches' {...getFieldProps} disabled />)}
                     <label className='left-side-label-mm'>Inches</label>
                   </Col>

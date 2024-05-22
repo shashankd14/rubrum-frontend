@@ -54,18 +54,18 @@ function* fetchDVMaterialList({action}) {
 function* addDVMaterial(action) {
     let payload = action.DVMaterial
     const materialMasterRequest = {
-        itemHsnCode: payload.values.itemHsnCode,
-        itemName: payload.values.itemName,
-        itemCode: payload.values.itemCode,
-        itemGradeId: payload.values.itemGradeId,
-        subCategoryId: payload.values.subCategoryId,
-        categoryId: payload.values.categoryId,
-        displayName: payload.values.displayName,
-        brandName: payload.values.brandName,
-        manufacturerName: payload.values.manufacturerName,
-        perMeter: payload.values.perMeter,
-        perFeet: payload.values.perFeet,
-        perPC: payload.values.perPC,
+        itemHsnCode: payload.itemHsnCode,
+        itemName: payload.itemName,
+        itemCode: payload.itemCode,
+        itemGradeId: payload.itemGradeId,
+        subCategoryId: payload.subCategoryId,
+        categoryId: payload.categoryId,
+        displayName: payload.displayName,
+        brandName: payload.brandName,
+        manufacturerName: payload.manufacturerName,
+        perMeter: payload.perMeter,
+        perFeet: payload.perFeet,
+        perPC: payload.perPC,
         ipAddress: "11111",
         requestId: "MATERIAL_ADD",
         userId: getUserId()
@@ -96,7 +96,6 @@ function* addDVMaterial(action) {
 }
 
 function* updateDVMaterial(action) {
-    debugger
     let payload = action.DVMaterial
     const materialMasterRequest = {
         itemId:payload.id,
@@ -179,6 +178,7 @@ function* DeleteDVMaterialSaga({action}) {
             headers: { "Content-Type": "application/json", ...getHeaders() },
             body: JSON.stringify(reqBody)
         });
+        window.location.reload();
         if(deleteMaterial.status === 200) {
             const deleteMaterialResponse = yield deleteMaterial.json();
             yield put(deleteDVMaterialSuccess(deleteMaterialResponse));
