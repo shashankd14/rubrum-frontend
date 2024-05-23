@@ -1,19 +1,14 @@
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
-import moment from "moment";
 
-import {addInwardDV, resetInwardForm,updateInwardDV, pdfGenerateInward, QrGenerateInward, setInwardDVDetails, fetchDVMaterialList} from "../../../../appRedux/actions";
-import {Button, Card, Col, Icon, message, Row, Spin, Modal, Collapse, Input} from "antd";
+import {addInwardDV, resetInwardForm,updateInwardDV, setInwardDVDetails, fetchDVMaterialList} from "../../../../appRedux/actions";
+import {Button, Card, Col, Icon, message, Row, Spin, Collapse, Input} from "antd";
 import { withRouter } from 'react-router-dom';
-
-import {APPLICATION_DATE_FORMAT} from '../../../../constants/index';
 
 const { Panel } = Collapse;
 
 const InwardSummary = (props) => {
-    const [generate, setGenerate]= useState(true);
     const [payload, setPayload]= useState({});
-    const [showCreateModal, setShowCreateModal] = useState(false);
 
     useEffect(() => {
         props.fetchDVMaterialList({
@@ -24,46 +19,37 @@ const InwardSummary = (props) => {
             requestId: "MATERIAL_LIST_GET",
             userId: ""
         });
+        setPayload(props.inwardDV);
     }, []);
 
     useEffect(() => {
-        if(props.inwardUpdateSuccess) {
-            message.success('Inward entry has been updated successfully', 2);
+        if(props.inwardUpdateSuccessDV) {
+            message.success('Inward entry has been updated successfully');
             setTimeout(() => {
-                props.history.push('/company/inward/list');
+                props.history.push('/company/inwardDV/list');
             }, 2000);
             props.resetInwardForm();
         }
-    }, [props.inwardUpdateSuccess]);
+    }, [props.inwardUpdateSuccessDV]);
     useEffect(() => {
-        if(props.inwardSubmitSuccess) {
-            setGenerate(false)
-            setPayload({
-                payloadObj:{
-                    inwardId: props.inwardObject.submitInward
-                },
-                type:'inward'
-            });
-        }
-    }, [props.inwardSubmitSuccess]);
-    useEffect(() => {
-        if(props.inwardObject.pdfSuccess) {
-           
-            message.success('Inward Saved & PDF generated successfully', 2);
+        debugger
+        if(props.inwardSubmitSuccessDV) {
+            message.success('Inward entry has been submitted successfully');
             setTimeout(() => {
-                props.history.push('list');
+                props.history.push('/company/inwardDV/list');
             }, 2000);
             props.resetInwardForm();
         }
-    }, [props.inwardObject.pdfSuccess]);
+    }, [props.inwardSubmitSuccessDV]);
 
     const getItemDetails = (itemId) => {
         return props.material?.DVMaterialList?.content?.find(materialItem => materialItem.itemId === itemId);
       };
-
+     
+console.log("1111111111, - ", props);
     return (
         <>
-            {props.inwardSubmitLoading ? <Spin className="gx-size-100 gx-flex-row gx-justify-content-center gx-align-items-center" size="large"/> :
+            {props.inwardSubmitLoadingDV ? <Spin className="gx-size-100 gx-flex-row gx-justify-content-center gx-align-items-center" size="large"/> :
             <>
                 <Col span={10} className="gx-pt-4">
                         <Col span={12}>
@@ -91,14 +77,14 @@ const InwardSummary = (props) => {
                         </Col>
                         <Col span={12}>
                             <Card title="Extra Charges" style={{ width: 500 }}>
-                                {props.inwardDV?.frieghtCharges && <p>Add Frieght Charges : {props.inwardDV?.frieghtCharges}</p>}
-                                {props.inwardDV?.addInsurance && <p>Add Insurance : {props.inwardDV?.addInsurance}</p>}
-                                {props.inwardDV?.loadingAndUnloading && <p>Add Loading & Unloading Charges : {props.inwardDV?.loadingAndUnloading}</p>}
+                               <p>Add Frieght Charges : {props.inwardDV?.frieghtCharges || props.inwardDV.freightCharges}</p>
+                                <p>Add Insurance : {props.inwardDV?.addInsurance || props.inwardDV.insuranceAmount}</p>
+                                <p>Add Loading & Unloading Charges : {props.inwardDV?.loadingAndUnloading || props.inwardDV.loadingCharges}</p>
                                 {props.inwardDV?.weightmenCharges && <p>Add weightment Charges : {props.inwardDV?.weightmenCharges}</p>}
-                                {props.inwardDV?.addSGST && <p>Add SGST : {props.inwardDV?.addSGST}</p>}
-                                {props.inwardDV?.addCGST && <p>Add CGST : {props.inwardDV?.addCGST}</p>}
-                                {props.inwardDV?.addIGST && <p>Add IGST : {props.inwardDV?.addIGST}</p>}
-                                {props.inwardDV?.totalInwardValue && <p>TotalInwardValue : {props.inwardDV?.totalInwardValue}</p>}
+                                 <p>Add SGST : {props.inwardDV?.addSGST || props.inwardDV.sgst}</p>
+                                <p>Add CGST : {props.inwardDV?.addCGST || props.inwardDV.cgst}</p>
+                                <p>Add IGST : {props.inwardDV?.addIGST || props.inwardDV.igst}</p>
+                                <p>TotalInwardValue : {props.inwardDV?.totalInwardValue || props.inwardDV.totalInwardVolume}</p>
                             </Card>
                         </Col>
                         </Col>
@@ -180,10 +166,10 @@ const InwardSummary = (props) => {
                     <Button style={{ marginLeft: 8 }} onClick={() => props.updateStep(5)}>
                         <Icon type="left"/>Back
                     </Button>
-                    <Button type="primary" htmlType="submit" disabled={props.inwardSubmitSuccess} onClick={(e) => {
+                    <Button type="primary" htmlType="submit" disabled={props.inwardSubmitSuccessDV} onClick={(e) => {
                         e.preventDefault();
                         //  props.params!== ""? props.updateInwardDV(props.inwardId):props.addInwardDV(props.inwardDV)
-                         props.addInwardDV(props.inwardDV)
+                        props.params === ""? props.addInwardDV(props.inwardDV) : props.updateInwardDV({inwardDV:payload, inwardId:props.params})
                     }}>
                         Submit <Icon type="right"/>
                     </Button>
@@ -195,25 +181,17 @@ const InwardSummary = (props) => {
 }
 
 const mapStateToProps = state => ({
-    inward: state.inward.inward,
-    inwardSubmitLoading: state.inward.inwardSubmitLoading,
-    inwardSubmitSuccess: state.inward.inwardSubmitSuccess,
-    inwardSubmitError: state.inward.inwardSubmitError,
-    inwardUpdateLoading: state.inward.inwardUpdateLoading,
-    inwardUpdateSuccess: state.inward.inwardUpdateSuccess,
-    inwardUpdateError: state.inward.inwardUpdateError,
-    inwardObject: state.inward,
-    party: state.party,
     inwardDV: state.inwardDV.inward,
     material: state.materialDV,
+    inwardSubmitSuccessDV: state.inwardDV.inwardSubmitSuccess,
+    inwardUpdateSuccessDV: state.inwardDV.inwardUpdateSuccess,
+    inwardSubmitLoadingDV: state.inwardDV.inwardSubmitLoadingDV,
 });
 
 export default withRouter(connect(mapStateToProps, {
     addInwardDV,
     resetInwardForm,
     updateInwardDV,
-    pdfGenerateInward,
-    QrGenerateInward,
     setInwardDVDetails,
     fetchDVMaterialList
 })(InwardSummary));

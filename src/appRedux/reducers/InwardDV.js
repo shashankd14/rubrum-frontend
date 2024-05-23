@@ -33,6 +33,9 @@ const INIT_STATE = {
     inwardSubmitLoading: false,
     inwardSubmitSuccess: false,
     inwardSubmitError: false,
+    inwardUpdateLoading: false,
+    inwardUpdateSuccess: false,
+    inwardUpdateError: false,
 };
 
 export default (state = INIT_STATE, action) => {
@@ -116,20 +119,22 @@ export default (state = INIT_STATE, action) => {
         case UPDATE_INWARD_DV_REQUEST: {
             return {
                 ...state,
-                loading: true
+                inwardUpdateLoading: true,
             }
         }
         case UPDATE_INWARD_DV_SUCCESS: {
             return {
                 ...state,
-                loading: false
+                inwardUpdateLoading: false,
+                inwardUpdateSuccess: true,
             }
         }
         case UPDATE_INWARD_DV_ERROR: {
             return {
                 ...state,
-                loading: false,
-                error: true,
+                inwardUpdateLoading: false,
+                inwardUpdateSuccess: false,
+                inwardUpdateError: true,
             }
         }
         case GENERATE_INWARD_ID_REQUEST: {

@@ -224,7 +224,6 @@ const MaterialDetailsForm = (props) => {
     let noOfPC = [...noOfPieces];
     noOfPC[index] = e.target.value;
     setNoOfPieces(noOfPC);
-    // let newValue = e.target.value;
     dataArr[index][value] = e.target.value;
     calculateTheoreticalNoofPc(index, e.target.value);
   }
@@ -232,9 +231,7 @@ const MaterialDetailsForm = (props) => {
     let item = getInwardItem(dataArr[index].itemId);
     let theoreticalnoofPC = 0;
     let numericValue = parseFloat(value);
-    if (dataArr[index].unit === 'PIECES') {
         theoreticalnoofPC = (item.perPC)  * (numericValue);
-    } 
     dataArr[index].theoreticalNoofPieces = theoreticalnoofPC;
   };
   

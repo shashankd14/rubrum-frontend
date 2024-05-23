@@ -43,20 +43,7 @@ const CreateRecociliation = (props) => {
             setItemDetails(updatedItemDetails);
         }
     }, [props.inwardDV, props.materialDV]);
-    // useEffect(() => {
-    //     if(props.params !=="") {
-    //         const { Option } = AutoComplete;
-    //         const options = props.party.partyList.filter(party => {
-    //         if (party?.nPartyId===  props.inward.party?.nPartyId)
-    //         return (<Option key={party.nPartyId} value={`${party.nPartyId}`}>
-    //                 {party.partyName}
-    //             </Option>)
-    //         });
-    //         setDataSource(options);
-    //     }
-    // }, [props.party]);
-
-
+    
     const columns = [
         {
             title: 'Item Name',
@@ -145,28 +132,6 @@ const CreateRecociliation = (props) => {
         setItemDetails(props.inwardDV?.itemsList);
     }, [props.inwardDV]);
 
-    // useEffect(() => {
-    //     if(props.party.partyList.length > 0) {
-
-    //         const { Option } = AutoComplete;
-    //         const options = props.party.partyList.map(party => (
-    //             <Option key={party.nPartyId} value={`${party.nPartyId}`}>
-    //                 {party.partyName}
-    //             </Option>
-    //         ));
-    //         setDataSource(options);
-    //     }
-    // }, [props.party]);
-
-    // useEffect(() => {
-    //     if (props.params !== '') {
-    //         props.inward.customerId = props.inward.party?.nPartyId || '';
-    //         props.inward.customerBatchNo = props.inward.customerBatchId;
-    //     }
-    // }, [props.params])
-    const handleChange = e =>{
-        // props.inward.party.partyName = e;
-    }
     const handleSubmit = e => {
         props.updateStep(6);
         e.preventDefault();
@@ -189,7 +154,7 @@ const CreateRecociliation = (props) => {
       
       const [vendorName, setVendorName] = useState();
       useEffect(() => {
-        const vendorId = props.inwardDV.vendorName;
+        const vendorId = props.inwardDV.vendorId;
         let vendorName = '';
         const response = props.vendor.content
             const selectedVendorName = response.find(vendor => vendor.vendorId === vendorId);
@@ -198,7 +163,6 @@ const CreateRecociliation = (props) => {
                    }
         setVendorName(vendorName);
       },[props.inwardDV.vendorName])
-
       
     return (
         <>
@@ -301,11 +265,11 @@ const CreateRecociliation = (props) => {
             </Col>
             <Col span={14} className="gx-mt-1">
                 <Form.Item label="As per weighment total weight">
-                {getFieldDecorator('weighmentToalWeight', {
+                {getFieldDecorator('weighmentTotalWeight', {
                    
                 })(
-                    // <Input id="weighmentToalWeight" onChange= {props.params!=="" ?(e) =>handleChange(e,'frieghtCharges'):""}/>
-                    <Input id="weighmentToalWeight"/>
+                    // <Input id="weighmentTotalWeight" onChange= {props.params!=="" ?(e) =>handleChange(e,'frieghtCharges'):""}/>
+                    <Input id="weighmentTotalWeight"/>
                 )}
             </Form.Item>
             <Form.Item label="Variance">
@@ -421,57 +385,46 @@ const Recociliation = Form.create({
         return {
             weighbridgeName: Form.createFormField({
                 ...props.inwardDV.weighbridgeName,
-                // value: ( props.params !== "" && props.inward.party) ?props.inward.party.partyName :(props.inward.partyName) ? props.inward.partyName: '',
                 value: (props.inwardDV.weighbridgeName) ? props.inwardDV.weighbridgeName : ''
             }),
-            weighmentToalWeight: Form.createFormField({
-                ...props.inwardDV.weighmentToalWeight,
-                // value: ( props.params !== "" && props.inward.party) ?props.inward.party.partyName :(props.inward.partyName) ? props.inward.partyName: '',
-                value: (props.inwardDV.weighmentToalWeight) ? props.inwardDV.weighmentToalWeight : ''
+            weighmentTotalWeight: Form.createFormField({
+                ...props.inwardDV.weighmentTotalWeight,
+                value: (props.inwardDV.weighmentTotalWeight) ? props.inwardDV.weighmentTotalWeight : ''
             }),
             variance: Form.createFormField({
                 ...props.inwardDV.variance,
-                // value: ( props.params !== "" && props.inward.party) ?props.inward.party.partyName :(props.inward.partyName) ? props.inward.partyName: '',
                 value: (props.inwardDV.variance) ? props.inwardDV.variance : ''
             }),
             lossOrProfitAmount: Form.createFormField({
                 ...props.inwardDV.lossOrProfitAmount,
-                // value: ( props.params !== "" && props.inward.party) ?props.inward.party.partyName :(props.inward.partyName) ? props.inward.partyName: '',
                 value: (props.inwardDV.lossOrProfitAmount) ? props.inwardDV.lossOrProfitAmount : ''
             }),
             remarks: Form.createFormField({
                 ...props.inwardDV.remarks,
-                // value: ( props.params !== "" && props.inward.party) ?props.inward.party.partyName :(props.inward.partyName) ? props.inward.partyName: '',
                 value: (props.inwardDV.remarks) ? props.inwardDV.remarks : ''
             }),
             frieghtDeductedOption: Form.createFormField({
                 ...props.inwardDV.frieghtDeductedOption,
-                // value: ( props.params !== "" && props.inward.party) ?props.inward.party.partyName :(props.inward.partyName) ? props.inward.partyName: '',
                 value: (props.inwardDV.frieghtDeductedOption) ? props.inwardDV.frieghtDeductedOption : ''
             }),
             frieghtDeductedAmount: Form.createFormField({
                 ...props.inwardDV.frieghtDeductedAmount,
-                // value: ( props.params !== "" && props.inward.party) ?props.inward.party.partyName :(props.inward.partyName) ? props.inward.partyName: '',
                 value: (props.inwardDV.frieghtDeductedAmount) ? props.inwardDV.frieghtDeductedAmount : ''
             }),
             debitQTY: Form.createFormField({
                 ...props.inwardDV.debitQTY,
-                // value: ( props.params !== "" && props.inward.party) ?props.inward.party.partyName :(props.inward.partyName) ? props.inward.partyName: '',
                 value: (props.inwardDV.debitQTY) ? props.inwardDV.debitQTY : ''
             }),
             debitRate: Form.createFormField({
                 ...props.inwardDV.debitRate,
-                // value: ( props.params !== "" && props.inward.party) ?props.inward.party.partyName :(props.inward.partyName) ? props.inward.partyName: '',
                 value: (props.inwardDV.debitRate) ? props.inwardDV.debitRate : ''
             }),
             debitValue: Form.createFormField({
                 ...props.inwardDV.debitValue,
-                // value: ( props.params !== "" && props.inward.party) ?props.inward.party.partyName :(props.inward.partyName) ? props.inward.partyName: '',
                 value: (props.inwardDV.debitValue) ? props.inwardDV.debitValue : ''
             }),
             debitNoteOption: Form.createFormField({
                 ...props.inwardDV.debitNoteOption,
-                // value: ( props.params !== "" && props.inward.party) ?props.inward.party.partyName :(props.inward.partyName) ? props.inward.partyName: '',
                 value: (props.inwardDV.debitNoteOption) ? props.inwardDV.debitNoteOption : ''
             }),
             finalLossOrProfit: Form.createFormField({

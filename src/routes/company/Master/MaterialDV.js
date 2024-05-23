@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import {
   Button,
@@ -31,10 +31,8 @@ import {
   fetchManufacturerList,
   fetchItemGradeList
 } from '../../../appRedux/actions';
-import { onDeleteContact } from '../../../appRedux/actions';
 import '../../../styles/components/Master/MaterialDV.css';
 import Dragger from 'antd/lib/upload/Dragger';
-import { values } from 'lodash';
 
 export const formItemLayout = {
   labelCol: {
@@ -174,7 +172,6 @@ const MaterialDV = (props) => {
   });
   };
   const onEdit = (record, e) => {
-    debugger
     e.preventDefault();
     props.fetchDVMaterialListById({
       id: record.itemId,

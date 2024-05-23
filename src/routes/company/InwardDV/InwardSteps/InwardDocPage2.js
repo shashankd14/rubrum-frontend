@@ -15,7 +15,7 @@ const widthStyle = {
 
 const CreateInwardDocPage2 = (props) => {
     const {getFieldDecorator, setFieldsValue} = props.form;
-   
+   const [totalInwardVolume, setTotalInwardVolume] = useState();
     useEffect(() => {     
         props.generateConsignmentId({
             fieldName: "CONSIGNMENT",
@@ -52,20 +52,14 @@ const CreateInwardDocPage2 = (props) => {
             requestId: "MATERIAL_LIST_GET",
             userId: ""
         });
+        const totalInwardVolume = props.inwardDV.totalInwardVolume;
+        setTotalInwardVolume(totalInwardVolume);
     }, []);
 
-    useEffect(() => {
-        if (props.params !== '') {
-            props.inward.customerId = props.inward.party?.nPartyId || '';
-            props.inward.customerBatchNo = props.inward.customerBatchId;
-        }
-    }, [props.params])
-
     const handleSubmit = e => {
-        debugger
         props.updateStep(5);
         e.preventDefault();
-        props.setInwardDVDetails({ ...props.inwardDV, totalInwardValume: totalInwardAdd});
+         props.setInwardDVDetails({ ...props.inwardDV, totalInwardVolume: totalInwardAdd? totalInwardAdd : totalInwardVolume});
         props.form.validateFields((err, values) => {
             if (!err) {
                 props.updateStep(5);
@@ -83,18 +77,14 @@ const CreateInwardDocPage2 = (props) => {
         });
       };
 
-      const [vendorBatchNo, setVendorBatchNo] = useState();
       const [vendorName, setVendorName] = useState();
       useEffect(() => {
-        debugger
         if (vendorName !== undefined){
         const vendorId = props.inwardDV.vendorName;
-        let vendorBatchNo = '';
         let vendorName = '';
             const response = props.vendor.content
             const selectedVendorName = response.find(vendor => vendor.vendorId === vendorId);
             vendorName = selectedVendorName.vendorName;
-        setVendorBatchNo(vendorBatchNo);
         setVendorName(vendorName);
         }
        
@@ -103,21 +93,44 @@ const CreateInwardDocPage2 = (props) => {
       const getItemDetails = (itemId) => {
         return props.material?.DVMaterialList?.content?.find(materialItem => materialItem.itemId === itemId);
       };
+ 
+     const [totalInwardAdd, setTotalInwardAdd] = useState(0);
+    
+  const handleExtraChargesChange = (allValues = {}) => {
+    const {
+      frieghtCharges = 0,
+      addInsurance = 0,
+      loadingAndUnloading = 0,
+      weightmenCharges = 0,
+      addSGST = 0,
+      addCGST = 0,
+      addIGST = 0,
+    } = allValues;
+    const totalAdditionalCharges = [
+      frieghtCharges,
+      addInsurance,
+      loadingAndUnloading,
+      weightmenCharges,
+      addSGST,
+      addCGST,
+      addIGST,
+    ].reduce((acc, value) => acc + (parseFloat(value) || 0), 0);
+    const totalInward = totalAdditionalCharges + (props.inwardDV.totalVolume || 0);
+    setTotalInwardAdd(totalInward);
+  };
 
-    //   const totalInwardVolume = 
-    const [totalInwardAdd, setTotalInwardAdd] = useState(0);
-    const handleExtraChargesChange = () => {
-        debugger
-        const extraCharges = props.form.getFieldsValue([
-            'frieghtCharges', 'addInsurance', 'loadingAndUnloading', 'weightmenCharges', 'addSGST', 'addCGST', 'addIGST'
-        ]);
-        const totalAdditionalCharges = Object.values(extraCharges).reduce((acc, value) => acc + (parseFloat(value) || 0), 0);
-        const totalInward = totalAdditionalCharges + (props.inwardDV.totalVolume || 0);
-        // setFieldsValue({
-        //     totalInwardValume: totalInward,
-        // });
-         setTotalInwardAdd(totalInward);
-    };
+  useEffect(() => {
+    const initialValues = props.form.getFieldsValue([
+      'frieghtCharges',
+      'addInsurance',
+      'loadingAndUnloading',
+      'weightmenCharges',
+      'addSGST',
+      'addCGST',
+      'addIGST',
+    ]);
+    handleExtraChargesChange({}, initialValues);
+  }, [props.form]);
     
     return (
         <>
@@ -212,7 +225,6 @@ const CreateInwardDocPage2 = (props) => {
                     {getFieldDecorator('frieghtCharges', {
                        
                     })(
-                        // <Input id="frieghtCharges" onChange= {props.params!=="" ?(e) =>handleChange(e,'frieghtCharges'):""} style={widthStyle}/>
                         <Input id="frieghtCharges"  style={widthStyle} onChange={handleExtraChargesChange}/>
                     )}
                 </Form.Item>
@@ -259,10 +271,10 @@ const CreateInwardDocPage2 = (props) => {
                     )}
                 </Form.Item>
                 <Form.Item label="Total Inward Value">
-                    {getFieldDecorator('totalInwardValume', {
-                       initialValue: props.inwardDV?.totalInwardVolume ? props.inwardDV?.totalInwardVolume : totalInwardAdd
+                    {getFieldDecorator('totalInwardVolume', {
+                        initialValue:  props.inwardDV.totalInwardVolume ?  props.inwardDV.totalInwardVolume : totalInwardAdd
                     })(
-                        <Input id="totalInwardValume" disabled value={props.inwardDV?.totalInwardVolume? props.inwardDV.totalInwardVolume : totalInwardAdd} style={widthStyle}/>
+                         <Input id="totalInwardVolume" disabled value={props.inwardDV.totalInwardVolume ?  props.inwardDV.totalInwardVolume : totalInwardAdd} style={widthStyle}/>
                     )}
                 </Form.Item>
                 </Col>
@@ -277,20 +289,7 @@ const CreateInwardDocPage2 = (props) => {
                         </Col>
                     </Row>
                 </Form>
-            {/* } */}
             </Col>
-            {/* <Col span={8} className="gx-pt-4">
-                <Card title="Inward Details" style={{ width: 400 }}>
-                    {props.inward.purposeType && <p>Purpose Type : {props.inward.purposeType}</p>}
-                    <p>Vendor Name : {props.params !== "" }</p>
-                    <p>Vendor ID :  </p>
-                    <p>Vendor Batch No. :  </p>
-                    <p>Item Name : Chips {props.params !== "" } </p>
-                    <p>Net Weight :  {props.params !== "" } </p>
-                    <p>Item Name : Chips {props.params !== "" } </p>
-                    <p>Net Weight :  {props.params !== "" } </p>
-                </Card>
-            </Col> */}
         </>
     )
 }
@@ -314,19 +313,19 @@ const InwardDocPage2 = Form.create({
         return {
              options: Form.createFormField({
                 ...props.inward.options,
-                value: (props.inwardDV.options) ? props.inwardDV.options : '',
+                value: (props.inwardDV.options) ? props.inwardDV.options : props.inwardDV.extraChargesOption,
             }),
             frieghtCharges: Form.createFormField({
                 ...props.inwardDV.frieghtCharges,
-                value: (props.inwardDV.frieghtCharges) ? props.inwardDV.frieghtCharges : '',
+                value: (props.inwardDV.frieghtCharges) ? props.inwardDV.frieghtCharges : props.inwardDV.freightCharges,
             }),
             addInsurance: Form.createFormField({
                 ...props.inwardDV.addInsurance,
-                value: (props.inwardDV.addInsurance) ? props.inwardDV.addInsurance : '',
+                value: (props.inwardDV.addInsurance) ? props.inwardDV.addInsurance :  props.inwardDV.insuranceAmount,
             }),
             loadingAndUnloading: Form.createFormField({
                 ...props.inwardDV.loadingAndUnloading,
-                value: (props.inwardDV.loadingAndUnloading) ? props.inwardDV.loadingAndUnloading : '',
+                value: (props.inwardDV.loadingAndUnloading) ? props.inwardDV.loadingAndUnloading : props.inwardDV.loadingCharges,
             }),
             weightmenCharges: Form.createFormField({
                 ...props.inwardDV.weightmenCharges,
@@ -334,20 +333,16 @@ const InwardDocPage2 = Form.create({
             }),
             addSGST: Form.createFormField({
                 ...props.inwardDV.addSGST,
-                value: (props.inwardDV.addSGST) ? props.inwardDV.addSGST : '',
+                value: (props.inwardDV.addSGST) ? props.inwardDV.addSGST : props.inwardDV.sgst,
             }),
             addCGST: Form.createFormField({
                 ...props.inwardDV.addCGST,
-                value: (props.inwardDV.addCGST) ? props.inwardDV.addCGST : '',
+                value: (props.inwardDV.addCGST) ? props.inwardDV.addCGST : props.inwardDV.cgst,
             }),
             addIGST: Form.createFormField({
                 ...props.inwardDV.addIGST,
-                value: (props.inwardDV.addIGST) ? props.inwardDV.addIGST : '',
-            }),
-            // totalInwardValume: Form.createFormField({
-            //     ...props.inwardDV.totalInwardValume,
-            //     value: (props.inwardDV.totalInwardValume) ? props.inwardDV.totalInwardValume : props.totalInwardAdd,
-            // }),
+                value: (props.inwardDV.addIGST) ? props.inwardDV.addIGST : props.inwardDV.igst,
+            })
         };
     },
     onValuesChange(props, values) {

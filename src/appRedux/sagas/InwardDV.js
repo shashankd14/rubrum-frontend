@@ -1,17 +1,7 @@
 import {all, put, fork, takeLatest} from "redux-saga/effects";
 import { getUserToken, getUserId } from './common';
-import { FETCH_ITEMGRADE_LIST_REQUEST, ADD_ITEMGRADE_REQUEST, UPDATE_ITEMGRADE_REQUEST, FETCH_ITEMGRADE_LIST_ID_REQUEST, DELETE_ITEMGRADE_REQUEST, FETCH_INWARD_DV_LIST_REQUEST, ADD_INWARD_DV_REQUEST, UPDATE_INWARD_DV_REQUEST, FETCH_INWARD_DV_LIST_ID_REQUEST, DELETE_INWARD_DV_REQUEST, GENERATE_INWARD_ID_REQUEST, GENERATE_CONSIGNMENT_ID_REQUEST } from "../../constants/ActionTypes";
+import { FETCH_INWARD_DV_LIST_REQUEST, ADD_INWARD_DV_REQUEST, UPDATE_INWARD_DV_REQUEST, FETCH_INWARD_DV_LIST_ID_REQUEST, DELETE_INWARD_DV_REQUEST, GENERATE_INWARD_ID_REQUEST, GENERATE_CONSIGNMENT_ID_REQUEST } from "../../constants/ActionTypes";
 import {
-    fetchItemGradeListSuccess,
-    fetchItemGradeListError,
-    fetchItemGradeListIdError,
-    fetchItemGradeListIdSuccess,
-    addItemGradeSuccess,
-    addItemGradeError,
-    updateItemGradeSuccess,
-    updateItemGradeError,
-    deleteItemGradeSuccess,
-    deleteItemGradeError,
     fetchInwardDVListSuccess,
     fetchInwardDVListError,
     fetchInwardDVListIdSuccess,
@@ -116,7 +106,7 @@ function* addInwardDVSaga(action) {
         cgst: body.addCGST,
         sgst: body.addSGST,
         igst: body.addIGST,
-        totalInwardVolume: body.totalInwardValue,
+        totalInwardVolume: body.totalInwardVolume,
         totalWeight: body.totalWeight,
         totalVolume: body.totalVolume,
         itemsList: body.itemsList,
@@ -146,39 +136,39 @@ function* updateInwardDVSaga(action) {
     let body = action.payload;
     const reqBody = {
         inwardId: body.inwardId,
-        purposeType: body.purposeType,
-        vendorId: body.vendorId,
-        transporterName: body.transporterName,
-        transporterPhoneNo: body.transporterPhoneNo,
-        vendorBatchNo: body.vendorBatchNo,
-        consignmentId: body.consignmentId,
-        locationId: body.locationId,
-        vehicleNo: body.vehicleNo,
-        documentNo: body.documentNo,
-        documentType: body.documentType,
-        documentDate: body.documentDate,
-        ewayBillNo: body.ewayBillNo,
-        ewayBillDate: body.ewayBillDate,
-        valueOfGoods: body.valueOfGoods,
-        extraChargesOption: body.extraChargesOption,
-        freightCharges: body.freightCharges,
-        insuranceAmount: body.addInsurance,
-        loadingCharges: body.loadingAndUnloading,
-        weightmenCharges: body.weightmenCharges,
-        cgst: body.addCGST,
-        sgst: body.addSGST,
-        igst: body.addIGST,
-        totalInwardVolume: body.totalInwardValume,
-        totalWeight: body.totalWeight,
-        totalVolume: body.totalVolume,
-        itemsList: body.itemsList,
+        purposeType: body.inwardDV.purposeType,
+        vendorId: body.inwardDV.vendorId,
+        transporterName: body.inwardDV.transporterName,
+        transporterPhoneNo: body.inwardDV.transporterPhoneNo,
+        vendorBatchNo: body.inwardDV.vendorBatchNo,
+        consignmentId: body.inwardDV.consignmentId,
+        locationId: body.inwardDV.locationId,
+        vehicleNo: body.inwardDV.vehicleNo,
+        documentNo: body.inwardDV.documentNo,
+        documentType: body.inwardDV.documentType,
+        documentDate: body.inwardDV.documentDate || "",
+        ewayBillNo: body.inwardDV.ewayBillNo,
+        ewayBillDate: body.inwardDV.ewayBillDate || "",
+        valueOfGoods: body.inwardDV.valueOfGoods,
+        extraChargesOption: body.inwardDV.extraChargesOption,
+        freightCharges: body.inwardDV.freightCharges,
+        insuranceAmount: body.inwardDV.insuranceAmount,
+        loadingCharges: body.inwardDV.loadingCharges,
+        weightmenCharges: body.inwardDV.weightmenCharges,
+        cgst: body.inwardDV.cgst,
+        sgst: body.inwardDV.sgst,
+        igst: body.inwardDV.igst,
+        totalInwardVolume: body.inwardDV.totalInwardVolume || "",
+        totalWeight: body.inwardDV.totalWeight,
+        totalVolume: body.inwardDV.totalVolume,
+        itemsList: body.inwardDV.itemsList,
         requestId: "INWARD_TRADING_UPDATE",
         ipAddress: "1.1.1.1",
         userId: getUserId()
     }
     try {
         const updateInward = yield fetch(`${baseUrl}api/trading/inward/update`, {
-            method: 'PUT',
+            method: 'POST',
             headers: { "Content-Type": "application/json", ...getHeaders() },
             body:JSON.stringify(reqBody)
 
@@ -208,8 +198,8 @@ function* deleteInwardSaga(action) {
             method: 'POST',
             headers: { "Content-Type": "application/json", ...getHeaders() },
             body:JSON.stringify(reqBody)
-
         });
+        window.location.reload();
         if (deleteInward.status == 200) {
             yield put(deleteInwardDVSuccess());
         } else if (deleteInward.status === 401) {
