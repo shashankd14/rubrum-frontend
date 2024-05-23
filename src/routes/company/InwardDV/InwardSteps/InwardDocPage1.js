@@ -11,8 +11,6 @@ const Option = Select.Option;
 
 const CreateInwardDocPage1 = (props) => {
     const {getFieldDecorator, setFieldsValue} = props.form;
-    const [dataSource, setDataSource] = useState([]);
-    
 
     useEffect(() => {     
         props.generateConsignmentId({
@@ -51,13 +49,6 @@ const CreateInwardDocPage1 = (props) => {
             userId: ""
         });
     }, []);
-
-    useEffect(() => {
-        if (props.params !== '') {
-            props.inward.customerId = props.inward.party?.nPartyId || '';
-            props.inward.customerBatchNo = props.inward.customerBatchId;
-        }
-    }, [props.params])
    
     const handleSubmit = e => {
         props.updateStep(4);
@@ -129,21 +120,21 @@ const CreateInwardDocPage1 = (props) => {
                     </Form.Item>
                     <Form.Item label="Vehicle No">
                             {getFieldDecorator('vehicleNo', {
-                            // rules: [{ required: false, message: 'Please input the transporter phone no!' }],
+                             rules: [{ required: false, message: 'Please input the vehicle no!' }],
                             })(
                                 <Input id="vehicleNo" />
                             )}
                     </Form.Item>
                     <Form.Item label="Document No">
                             {getFieldDecorator('documentNo', {
-                            // rules: [{ required: false, message: 'Please input the transporter phone no!' }],
+                             rules: [{ required: false, message: 'Please input the doc no!' }],
                             })(
                                 <Input id="documentNo" />
                             )}
                     </Form.Item>
                     <Form.Item label="Eway bill No">
                             {getFieldDecorator('ewayBillNo', {
-                            // rules: [{ required: false, message: 'Please input the transporter phone no!' }],
+                             rules: [{ required: false, message: 'Please input the eway bill no!' }],
                             })(
                                 <Input id="ewayBillNo" />
                             )}
@@ -269,8 +260,6 @@ const CreateInwardDocPage1 = (props) => {
 }
 
 const mapStateToProps = state => ({
-    party: state.party,
-    inward: state.inward.inward,
     consignmentId: state.inwardDV.consignmentId,
     location: state.location,
     inwardDV: state.inwardDV.inward,

@@ -47,7 +47,6 @@ export default (state = INIT_STATE, action) => {
             }
         }
         case FETCH_INWARD_DV_LIST_SUCCESS: {
-            debugger
             return {
                 ...state,
                 loading: false,

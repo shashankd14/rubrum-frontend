@@ -97,6 +97,7 @@ const CreateInwardDocPage2 = (props) => {
      const [totalInwardAdd, setTotalInwardAdd] = useState(0);
     
   const handleExtraChargesChange = (allValues = {}) => {
+    debugger
     const {
       frieghtCharges = 0,
       addInsurance = 0,
@@ -129,7 +130,7 @@ const CreateInwardDocPage2 = (props) => {
       'addCGST',
       'addIGST',
     ]);
-    handleExtraChargesChange({}, initialValues);
+    handleExtraChargesChange(initialValues);
   }, [props.form]);
     
     return (
@@ -223,13 +224,14 @@ const CreateInwardDocPage2 = (props) => {
                     </Form.Item>
                     <Form.Item label="Add Frieght Charges">
                     {getFieldDecorator('frieghtCharges', {
-                       
+                       initialValue:0
                     })(
                         <Input id="frieghtCharges"  style={widthStyle} onChange={handleExtraChargesChange}/>
                     )}
                 </Form.Item>
                 <Form.Item label="Add Insurance">
                     {getFieldDecorator('addInsurance', {
+                       initialValue:0
                        
                     })(
                         <Input id="addInsurance"style={widthStyle} onChange={handleExtraChargesChange}/>
