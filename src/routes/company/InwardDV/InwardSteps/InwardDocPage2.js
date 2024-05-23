@@ -97,7 +97,6 @@ const CreateInwardDocPage2 = (props) => {
      const [totalInwardAdd, setTotalInwardAdd] = useState(0);
     
   const handleExtraChargesChange = (allValues = {}) => {
-    debugger
     const {
       frieghtCharges = 0,
       addInsurance = 0,

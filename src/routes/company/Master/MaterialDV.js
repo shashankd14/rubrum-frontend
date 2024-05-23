@@ -352,7 +352,6 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
   };
 
   const handleThicknessMMChange = (e) => {
-    debugger
     const mm = e.target.value;
     const inches = mm / 25.4;
     setThicknessmmInches(mm);
@@ -497,6 +496,7 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
     if (props.materialDV?.DVMaterialID?.additionalParams) {
       const parsedParams = JSON.parse(props.materialDV?.DVMaterialID?.additionalParams);
       const values = {};
+      const initialCheckboxStates = { ...checkboxStates };
 
       parsedParams.forEach(param => {
         const { parameterName, unitType, units } = param;
@@ -504,9 +504,13 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
         const key = `${parameterName.toLowerCase()}${unitType.toLowerCase()}`;
         // Store units value in the state object with the unique key
         values[key] = units;
+        // Check the checkbox if value is present
+        const checkboxKey = parameterName.toLowerCase();
+        initialCheckboxStates[checkboxKey] = !!units;
       });
       console.log('Fields to set:', values);
       setEditAdditionalValues(values);
+      setCheckboxStates(initialCheckboxStates);
     }
   }, [props.materialDV]);
 
@@ -629,7 +633,6 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
               props.form.validateFields((err, values) => {
                 if (!err) {
                   console.log('Received values of form: ', values);
-                  debugger
                   const data = { 
                     ...values, 
                     id: props.materialDV?.DVMaterialID?.itemId, 
@@ -646,7 +649,6 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
             } else {
               props.form.validateFields((err, values) => {
                 if (!err) {
-                  debugger
                   console.log('Received values of form: ', values);
                   const data = { 
                     ...values, 
@@ -839,6 +841,7 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
                 >
                   <Form.Item>
                     <Checkbox onChange={(e) => handleCheckboxChange(e, 'length')}
+                    checked={checkboxStates.length}
                     >
                       Length
                     </Checkbox>
@@ -876,6 +879,7 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
                   <Form.Item>
                     <Checkbox
                     onChange={(e) => handleCheckboxChange(e, 'width')}
+                    checked={checkboxStates.width}
                     >
                       Width
                     </Checkbox>
@@ -915,6 +919,7 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
                   <Form.Item>
                     <Checkbox
                      onChange={(e) => handleCheckboxChange(e, 'flange1')}
+                     checked={checkboxStates.flange1}
                     >
                       Flange1
                     </Checkbox>
@@ -953,6 +958,7 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
                   <Form.Item>
                     <Checkbox
                      onChange={(e) => handleCheckboxChange(e, 'flange2')}
+                     checked={checkboxStates.flange2}
                     >
                       Flange2
                     </Checkbox>
@@ -990,6 +996,7 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
                   <Form.Item>
                     <Checkbox
                      onChange={(e) => handleCheckboxChange(e, 'thickness')}
+                     checked={checkboxStates.thickness}
                     >
                       Thickness
                     </Checkbox>
@@ -1047,6 +1054,7 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
                   <Form.Item>
                     <Checkbox
                      onChange={(e) => handleCheckboxChange(e, 'height')}
+                     checked={checkboxStates.height}
                     >
                       Height
                     </Checkbox>
@@ -1084,6 +1092,7 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
                   <Form.Item>
                     <Checkbox
                      onChange={(e) => handleCheckboxChange(e, 'OD')}
+                     checked={checkboxStates.OD}
                     >
                       OD
                     </Checkbox>
@@ -1121,6 +1130,7 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
                   <Form.Item>
                     <Checkbox
                      onChange={(e) => handleCheckboxChange(e, 'NB')}
+                     checked={checkboxStates.NB}
                     >
                       NB
                     </Checkbox>
