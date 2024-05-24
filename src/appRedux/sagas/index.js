@@ -22,6 +22,7 @@ import manufacturerSagas from './Manufacturer';
 import itemGradeSagas from './ItemGrade';
 import inwardDVSagas from './InwardDV';
 import documentTypeSagas from './DocumentType';
+import brandSagas from './Brand';
 
 export default function* rootSaga() {
   yield all([fork(authSagas)]);
@@ -47,4 +48,5 @@ export default function* rootSaga() {
   yield all([fork(itemGradeSagas)]);
   yield all([fork(inwardDVSagas)]);
   yield all([fork(documentTypeSagas)]);
+  yield all([fork(brandSagas)]);
 }

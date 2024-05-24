@@ -24,3 +24,4 @@ export * from './Manufacturer';
 export * from './ItemGrade';
 export * from './InwardDV';
 export * from './DocumentType';
+export * from './Brand';

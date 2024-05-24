@@ -26,6 +26,7 @@ import Manufacturer from './Manufacturer';
 import ItemGrade from './ItemGrade';
 import InwardDV from './InwardDV';
 import DocumentType from './DocumentType';
+import Brand from './Brand';
 
 const createRootReducer = (history) => combineReducers({
   router: connectRouter(history),
@@ -54,7 +55,8 @@ const createRootReducer = (history) => combineReducers({
  manufacturer: Manufacturer,
  itemGrade: ItemGrade,
  inwardDV: InwardDV,
- documentType: DocumentType
+ documentType: DocumentType,
+ brand: Brand
 });
 
 export default createRootReducer

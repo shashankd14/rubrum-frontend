@@ -387,114 +387,260 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
   // const additionalParas = [];
   const [additionalParas, setAdditionalParas] = useState([]);
 
-  if (checkboxStates.length) {
-    additionalParas.push({
-      parameterName: 'Length',
-      unitType: 'Meters',
-      units: lengthMeterValue,
-    });
-    additionalParas.push({
-      parameterName: 'Length',
-      unitType: 'Feet',
-      units: (parseFloat(lengthMeterValue) * 3.28084).toFixed(2),
-    });
-  }
+  // if (checkboxStates.length) {
+  //   additionalParas.push({
+  //     parameterName: 'Length',
+  //     unitType: 'Meters',
+  //     units: lengthMeterValue,
+  //   });
+  //   additionalParas.push({
+  //     parameterName: 'Length',
+  //     unitType: 'Feet',
+  //     units: (parseFloat(lengthMeterValue) * 3.28084).toFixed(2),
+  //   });
+  // }
 
-  if (checkboxStates.width) {
-    additionalParas.push({
-      parameterName: 'Width',
-      unitType: 'Meters',
-      units: widthMeterValue,
-    });
-    additionalParas.push({
-      parameterName: 'Width',
-      unitType: 'Feet',
-      units: (parseFloat(widthMeterValue) * 3.28084).toFixed(2),
-    });
-  }
+  // if (checkboxStates.width) {
+  //   additionalParas.push({
+  //     parameterName: 'Width',
+  //     unitType: 'Meters',
+  //     units: widthMeterValue,
+  //   });
+  //   additionalParas.push({
+  //     parameterName: 'Width',
+  //     unitType: 'Feet',
+  //     units: (parseFloat(widthMeterValue) * 3.28084).toFixed(2),
+  //   });
+  // }
 
-  if (checkboxStates.flange1) {
-    additionalParas.push({
-      parameterName: 'Flange1',
-      unitType: 'mm',
-      units: flange1MM,
-    });
-    additionalParas.push({
-      parameterName: 'Flange1',
-      unitType: 'Inches',
-      units: (parseFloat(flange1MM) / 25.4).toFixed(2),
-    });
-  }
+  // if (checkboxStates.flange1) {
+  //   additionalParas.push({
+  //     parameterName: 'Flange1',
+  //     unitType: 'mm',
+  //     units: flange1MM,
+  //   });
+  //   additionalParas.push({
+  //     parameterName: 'Flange1',
+  //     unitType: 'Inches',
+  //     units: (parseFloat(flange1MM) / 25.4).toFixed(2),
+  //   });
+  // }
 
-  if (checkboxStates.flange2) {
-    additionalParas.push({
-      parameterName: 'Flange2',
-      unitType: 'mm',
-      units: flange2MM,
-    });
-    additionalParas.push({
-      parameterName: 'Flange2',
-      unitType: 'Inches',
-      units: (parseFloat(flange2MM) / 25.4).toFixed(2),
-    });
-  }
+  // if (checkboxStates.flange2) {
+  //   additionalParas.push({
+  //     parameterName: 'Flange2',
+  //     unitType: 'mm',
+  //     units: flange2MM,
+  //   });
+  //   additionalParas.push({
+  //     parameterName: 'Flange2',
+  //     unitType: 'Inches',
+  //     units: (parseFloat(flange2MM) / 25.4).toFixed(2),
+  //   });
+  // }
 
-  if (checkboxStates.thickness) {
-    additionalParas.push({
-      parameterName: 'Thickness',
-      unitType: 'mm',
-      units: thicknessmmInches,
-    });
-    additionalParas.push({
-      parameterName: 'Thickness',
-      unitType: 'Inches',
-      units: (parseFloat(thicknessmmInches) / 25.4).toFixed(2),
-    });
-    additionalParas.push({
-      parameterName: 'Thickness',
-      unitType: 'Guage',
-      units: (0.3249 * Math.pow(10, 4) / (thicknessmmInches - 215.15)).toFixed(2)
-    });
-  }
+  // if (checkboxStates.thickness) {
+  //   additionalParas.push({
+  //     parameterName: 'Thickness',
+  //     unitType: 'mm',
+  //     units: thicknessmmInches,
+  //   });
+  //   additionalParas.push({
+  //     parameterName: 'Thickness',
+  //     unitType: 'Inches',
+  //     units: (parseFloat(thicknessmmInches) / 25.4).toFixed(2),
+  //   });
+  //   additionalParas.push({
+  //     parameterName: 'Thickness',
+  //     unitType: 'Guage',
+  //     units: (0.3249 * Math.pow(10, 4) / (thicknessmmInches - 215.15)).toFixed(2)
+  //   });
+  // }
 
-  if (checkboxStates.height) {
-    additionalParas.push({
-      parameterName: 'Height',
-      unitType: 'mm',
-      units: heightMMValue,
-    });
-    additionalParas.push({
-      parameterName: 'Height',
-      unitType: 'Inches',
-      units: (parseFloat(heightMMValue) / 25.4).toFixed(2),
-    });
-  }
+  // if (checkboxStates.height) {
+  //   additionalParas.push({
+  //     parameterName: 'Height',
+  //     unitType: 'mm',
+  //     units: heightMMValue,
+  //   });
+  //   additionalParas.push({
+  //     parameterName: 'Height',
+  //     unitType: 'Inches',
+  //     units: (parseFloat(heightMMValue) / 25.4).toFixed(2),
+  //   });
+  // }
 
-  if (checkboxStates.height) {
-    additionalParas.push({
-      parameterName: 'OD',
-      unitType: 'mm',
-      units: ODMMValue,
-    });
-    additionalParas.push({
-      parameterName: 'OD',
-      unitType: 'Inches',
-      units: (parseFloat(ODMMValue) / 25.4).toFixed(2),
-    });
-  }
+  // if (checkboxStates.height) {
+  //   additionalParas.push({
+  //     parameterName: 'OD',
+  //     unitType: 'mm',
+  //     units: ODMMValue,
+  //   });
+  //   additionalParas.push({
+  //     parameterName: 'OD',
+  //     unitType: 'Inches',
+  //     units: (parseFloat(ODMMValue) / 25.4).toFixed(2),
+  //   });
+  // }
 
-  if (checkboxStates.height) {
-    additionalParas.push({
-      parameterName: 'NB',
-      unitType: 'mm',
-      units: ODMMValue,
-    });
-    additionalParas.push({
-      parameterName: 'NB',
-      unitType: 'Inches',
-      units: (parseFloat(NBMMValue) / 25.4).toFixed(2),
-    });
-  }
+  // if (checkboxStates.height) {
+  //   additionalParas.push({
+  //     parameterName: 'NB',
+  //     unitType: 'mm',
+  //     units: ODMMValue,
+  //   });
+  //   additionalParas.push({
+  //     parameterName: 'NB',
+  //     unitType: 'Inches',
+  //     units: (parseFloat(NBMMValue) / 25.4).toFixed(2),
+  //   });
+  // }
+  useEffect(() => {
+    debugger
+    updateAdditionalParas();
+  }, [checkboxStates, lengthMeterValue, widthMeterValue, flange1MM, flange2MM, thicknessmmInches, heightMMValue, ODMMValue, NBMMValue]);
+  const updateAdditionalParas = () => {
+    const newAdditionalParas = [];
+
+    if (checkboxStates.length) {
+      newAdditionalParas.push({
+        parameterName: 'Length',
+        unitType: 'Meters',
+        units: lengthMeterValue,
+      });
+      newAdditionalParas.push({
+        parameterName: 'Length',
+        unitType: 'Feet',
+        units: (parseFloat(lengthMeterValue) * 3.28084).toFixed(2),
+      });
+    }
+
+    if (checkboxStates.width) {
+      newAdditionalParas.push({
+        parameterName: 'Width',
+        unitType: 'Meters',
+        units: widthMeterValue,
+      });
+      newAdditionalParas.push({
+        parameterName: 'Width',
+        unitType: 'Feet',
+        units: (parseFloat(widthMeterValue) * 3.28084).toFixed(2),
+      });
+    }
+
+    if (checkboxStates.flange1) {
+      newAdditionalParas.push({
+        parameterName: 'Flange1',
+        unitType: 'mm',
+        units: flange1MM,
+      });
+      newAdditionalParas.push({
+        parameterName: 'Flange1',
+        unitType: 'Inches',
+        units: (parseFloat(flange1MM) / 25.4).toFixed(2),
+      });
+    }
+
+    if (checkboxStates.flange2) {
+      newAdditionalParas.push({
+        parameterName: 'Flange2',
+        unitType: 'mm',
+        units: flange2MM,
+      });
+      newAdditionalParas.push({
+        parameterName: 'Flange2',
+        unitType: 'Inches',
+        units: (parseFloat(flange2MM) / 25.4).toFixed(2),
+      });
+    }
+
+    if (checkboxStates.thickness) {
+      newAdditionalParas.push({
+        parameterName: 'Thickness',
+        unitType: 'mm',
+        units: thicknessmmInches,
+      });
+      newAdditionalParas.push({
+        parameterName: 'Thickness',
+        unitType: 'Inches',
+        units: (parseFloat(thicknessmmInches) / 25.4).toFixed(2),
+      });
+      newAdditionalParas.push({
+        parameterName: 'Thickness',
+        unitType: 'Guage',
+        units: (0.3249 * Math.pow(10, 4) / (thicknessmmInches - 215.15)).toFixed(2)
+      });
+    }
+
+    if (checkboxStates.height) {
+      newAdditionalParas.push({
+        parameterName: 'Height',
+        unitType: 'mm',
+        units: heightMMValue,
+      });
+      newAdditionalParas.push({
+        parameterName: 'Height',
+        unitType: 'Inches',
+        units: (parseFloat(heightMMValue) / 25.4).toFixed(2),
+      });
+    }
+
+    if (checkboxStates.OD) {
+      newAdditionalParas.push({
+        parameterName: 'OD',
+        unitType: 'mm',
+        units: ODMMValue,
+      });
+      newAdditionalParas.push({
+        parameterName: 'OD',
+        unitType: 'Inches',
+        units: (parseFloat(ODMMValue) / 25.4).toFixed(2),
+      });
+    }
+
+    if (checkboxStates.NB) {
+      newAdditionalParas.push({
+        parameterName: 'NB',
+        unitType: 'mm',
+        units: NBMMValue,
+      });
+      newAdditionalParas.push({
+        parameterName: 'NB',
+        unitType: 'Inches',
+        units: (parseFloat(NBMMValue) / 25.4).toFixed(2),
+      });
+    }
+
+    setAdditionalParas(newAdditionalParas);
+  };
+
+  const handleAddParameter = () => {
+    debugger
+    const newParas = [...additionalParas];
+
+    if (newParamName && newParamMM) {
+      newParas.push({
+        parameterName: newParamName,
+        unitType: selectedUnitmm,
+        units: newParamMM,
+      });
+    }
+
+    if (newParamName && newParamInches) {
+      newParas.push({
+        parameterName: newParamName,
+        unitType: selectedUnitInches,
+        units: newParamInches,
+      });
+    }
+
+    setAdditionalParas(newParas);
+
+    // Clear the inputs
+    setNewParamName('');
+    setNewParamMM('');
+    setNewParamInches('');
+  };
 
   const [editAdditionalValues, setEditAdditionalValues] = useState([]);
   useEffect(() => {
@@ -519,32 +665,32 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
     }
   }, [props.materialDV]);
 
-  const handleAddParameter = () => {
-    debugger
-    const newParas = [...additionalParas];
+  // const handleAddParameter = () => {
+  //   debugger
+  //   const newParas = [...additionalParas];
     
-    if (newParamName && newParamMM) {
-      newParas.push({
-        parameterName: newParamName,
-        unitType: selectedUnitmm,
-        units: newParamMM,
-      });
-    }
+  //   if (newParamName && newParamMM) {
+  //     newParas.push({
+  //       parameterName: newParamName,
+  //       unitType: selectedUnitmm,
+  //       units: newParamMM,
+  //     });
+  //   }
 
-    if (newParamName && newParamInches) {
-      newParas.push({
-        parameterName: newParamName,
-        unitType: selectedUnitInches,
-        units: newParamInches,
-      });
-    }
+  //   if (newParamName && newParamInches) {
+  //     newParas.push({
+  //       parameterName: newParamName,
+  //       unitType: selectedUnitInches,
+  //       units: newParamInches,
+  //     });
+  //   }
 
-    setAdditionalParas(newParas);
-    // Clear the inputs
-    setNewParamName('');
-    setNewParamMM('');
-    setNewParamInches('');
-  };
+  //   setAdditionalParas(newParas);
+  //   // Clear the inputs
+  //   setNewParamName('');
+  //   setNewParamMM('');
+  //   setNewParamInches('');
+  // };
 
   return (
     <div>
