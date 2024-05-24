@@ -68,8 +68,8 @@ const MaterialDV = (props) => {
   );
   const [addSubCategory, setAddSubCategory] = useState(false);
   const [addMainCategory, setAddMainCategory] = useState(false);
-  const [selectedUnitInches, setSelectedUnitInches] = useState();
-  const [selectedUnitmm, setSelectedUnitmm] = useState();
+  // const [selectedUnitInches, setSelectedUnitInches] = useState();
+  // const [selectedUnitmm, setSelectedUnitmm] = useState();
   const [pageNo, setPageNo] = useState(1);
   const [pageSize, setPageSize] = useState(15);
   const [totalPageItems, setTotalPageItems] = useState(0);
@@ -327,6 +327,11 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
   const [NBMMValue, setNBMMValue] = useState('');
   const [thicknessmmInches, setThicknessmmInches] = useState('');
   const [thicknessmmGuage, setThicknessmmGuage] = useState('');
+  const [selectedUnitmm, setSelectedUnitmm] = useState('meters');
+  const [selectedUnitInches, setSelectedUnitInches] = useState('inches');
+  const [newParamName, setNewParamName] = useState('');
+  const [newParamMM, setNewParamMM] = useState('');
+  const [newParamInches, setNewParamInches] = useState('');
 
   const handleMeterChange = (e, setValue) => {
     const meters = e.target.value;
@@ -379,7 +384,8 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
     OD: false,
     NB: false
   });
-  const additionalParas = [];
+  // const additionalParas = [];
+  const [additionalParas, setAdditionalParas] = useState([]);
 
   if (checkboxStates.length) {
     additionalParas.push({
@@ -492,7 +498,6 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
 
   const [editAdditionalValues, setEditAdditionalValues] = useState([]);
   useEffect(() => {
-    debugger
     if (props.materialDV?.DVMaterialID?.additionalParams) {
       const parsedParams = JSON.parse(props.materialDV?.DVMaterialID?.additionalParams);
       const values = {};
@@ -513,6 +518,33 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
       setCheckboxStates(initialCheckboxStates);
     }
   }, [props.materialDV]);
+
+  const handleAddParameter = () => {
+    debugger
+    const newParas = [...additionalParas];
+    
+    if (newParamName && newParamMM) {
+      newParas.push({
+        parameterName: newParamName,
+        unitType: selectedUnitmm,
+        units: newParamMM,
+      });
+    }
+
+    if (newParamName && newParamInches) {
+      newParas.push({
+        parameterName: newParamName,
+        unitType: selectedUnitInches,
+        units: newParamInches,
+      });
+    }
+
+    setAdditionalParas(newParas);
+    // Clear the inputs
+    setNewParamName('');
+    setNewParamMM('');
+    setNewParamInches('');
+  };
 
   return (
     <div>
@@ -649,6 +681,7 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
             } else {
               props.form.validateFields((err, values) => {
                 if (!err) {
+                  debugger
                   console.log('Received values of form: ', values);
                   const data = { 
                     ...values, 
@@ -1167,11 +1200,13 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
                 >
                   <Form.Item>
                     <Checkbox
-                    // onChange={checkboxChange}
+                    
                     ></Checkbox>
                     <Input
                       placeholder='Enter parameter name'
                       {...getFieldProps}
+                      value={newParamName}
+                      onChange={(e) => setNewParamName(e.target.value)}
                       style={{ marginRight: '-70px', marginLeft: '8px' }}
                     />
                   </Form.Item>
@@ -1179,21 +1214,28 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
 
                 <Form.Item>
                   <Col className='flex-row' style={{ marginTop: '6px' }}>
-                    {getFieldDecorator('parametermm', {
-                      // rules: [{ required: false, message: 'Please enter manufacturers name' }],
+                    {/* {getFieldDecorator('parametermm', {
+
                     })(<Input id='parametermm' {...getFieldProps} />)}
                      <Select value={selectedUnitmm} onChange={handleUnitChangemm} placeholder='Select unit'>
                         <Option value="inches">Meters</Option>
-                        <Option value="feet">mm</Option>
+                        <Option value="feet">mm</Option> */}
+                        {getFieldDecorator('parametermm', {})(<Input id='parametermm' value={newParamMM} onChange={(e) => setNewParamMM(e.target.value)} />)}
+                    <Select value={selectedUnitmm} onChange={(value) => setSelectedUnitmm(value)} placeholder='Select unit'>
+                      <Option value="meters">Meters</Option>
+                      <Option value="mm">mm</Option>
                     </Select>
                   </Col>
                 </Form.Item>
                 <Form.Item>
                   <Col className='flex-row' style={{ marginTop: '6px' }}>
-                    {getFieldDecorator('parameterInches', {
-                      // rules: [{ required: false, message: 'Please enter manufacturers name' }],
+                    {/* {getFieldDecorator('parameterInches', {
                     })(<Input id='parameterInches' {...getFieldProps} />)}
                     <Select value={selectedUnitInches} onChange={handleUnitChangeInches} placeholder='Select unit'>
+                        <Option value="inches">Inches</Option>
+                        <Option value="feet">Feet</Option> */}
+                        {getFieldDecorator('parameterInches', {})(<Input id='parameterInches' value={newParamInches} onChange={(e) => setNewParamInches(e.target.value)} />)}
+                      <Select value={selectedUnitInches} onChange={(value) => setSelectedUnitInches(value)} placeholder='Select unit'>
                         <Option value="inches">Inches</Option>
                         <Option value="feet">Feet</Option>
                     </Select>
@@ -1201,7 +1243,7 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
                 </Form.Item>
               </Row>
 
-              <Button type='primary' htmlType='submit' icon='plus'>
+              <Button type='primary' icon='plus' onClick={handleAddParameter}>
                 Add Parameter
               </Button>
 
