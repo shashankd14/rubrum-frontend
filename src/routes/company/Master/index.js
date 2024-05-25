@@ -21,6 +21,7 @@ const Delivery = ({ match }) => (
         <Route path={`${match.url}/manufacturer`} component={asyncComponent(() => import('./Manufacturer'))} />
         <Route path={`${match.url}/itemGrade`} component={asyncComponent(() => import('./ItemGrade'))} />
         <Route path={`${match.url}/document`} component={asyncComponent(() => import('./DocumentType'))} />
+        <Route path={`${match.url}/brand`} component={asyncComponent(() => import('./Brand'))} />
     </Switch>
 );
 

@@ -32,5 +32,6 @@ export const sidebarMenuItems = {
     stockRegister: "Stock Register",
     manufacturer: "Location",
     itemGrade: "Location",
-    documentType: "Location"
+    documentType: "Location",
+    brand: "Location"
 }

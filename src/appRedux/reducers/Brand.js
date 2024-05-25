@@ -33,7 +33,7 @@ export default (state = INIT_STATE, action) => {
             return {
                 ...state,
                 loading: false,
-                brandList: action.WeighbridgeList
+                brandList: action.BrandList
             }
         }
         case FETCH_BRAND_LIST_ERROR: {
@@ -75,7 +75,7 @@ export default (state = INIT_STATE, action) => {
             return {
                 ...state,
                 loading: false,
-                brandId: action.Weighbridge
+                brandId: action.Brand
             }
         }
         case FETCH_BRAND_LIST_ID_ERROR: {
@@ -89,7 +89,7 @@ export default (state = INIT_STATE, action) => {
         case RESET_BRAND_REQUEST: {
             return {
                 ...state,
-                Weighbridge: {}
+                Brand: {}
             }
         }
 

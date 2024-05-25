@@ -102,11 +102,12 @@ function* addBrand(action) {
     }
 }
 
-function* updateWeighbridge(action) {
+function* updateBrand(action) {
     let body = action.payload;
     const reqBody = {
-        brandName: body.brandName,
-        brandDesc: body.brandDesc,
+        brandId: body.brandId,
+        brandName: body.values.brandName,
+        brandDesc: body.values.brandDesc,
         requestId: "BRAND_UPDATE",
         ipAddress: "1.1.1.1",
         userId: getUserId()
@@ -160,7 +161,7 @@ function* deleteBrandSaga(action) {
 export function* watchFetchRequests() {
     yield takeLatest(FETCH_BRAND_LIST_REQUEST, fetchBrandList);
     yield takeLatest(ADD_BRAND_REQUEST, addBrand);
-    yield takeLatest(UPDATE_BRAND_REQUEST, updateWeighbridge);
+    yield takeLatest(UPDATE_BRAND_REQUEST, updateBrand);
     yield takeLatest(FETCH_BRAND_LIST_ID_REQUEST, fetchBrandListById);
     yield takeLatest(DELETE_BRAND_REQUEST, deleteBrandSaga);
 }

@@ -29,7 +29,8 @@ import {
   fetchSubCategoryList,
   deleteDVMaterial,
   fetchManufacturerList,
-  fetchItemGradeList
+  fetchItemGradeList,
+  fetchBrandList
 } from '../../../appRedux/actions';
 import '../../../styles/components/Master/MaterialDV.css';
 import Dragger from 'antd/lib/upload/Dragger';
@@ -227,6 +228,14 @@ props.fetchItemGradeList({
   pageSize:"15",
   ipAddress: "1.1.1.1",
   requestId: "itemgradeId_LIST_GET",
+  userId: ""
+});
+props.fetchBrandList({
+  searchText:searchValue,
+  pageNo:"1",
+  pageSize:"15",
+  ipAddress: "1.1.1.1",
+  requestId: "BRAND_LIST_GET",
   userId: ""
 });
     }, 1000);
@@ -975,11 +984,34 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
                       ],
                     })(<Input id='displayName' {...getFieldProps} />)}
                   </Form.Item>
-                  <Form.Item label='Brand Name'>
-                    {getFieldDecorator('brandName', {
-                      // rules: [{ required: false, message: 'Please enter Item sub category' }],
-                    })(<Input id='brandName' {...getFieldProps} />)}
-                  </Form.Item>
+                   <Form.Item label="Brand Name">
+                        {getFieldDecorator("brandName", {
+                          rules: [
+                            {
+                              required: true,
+                              message: "Please select brand name!",
+                            },
+                          ],
+                        })(
+                          <Select
+                            id="brandName"
+                            showSearch
+                            style={{ width: "100%" }}
+                            filterOption={(input, option) =>
+                              option.props.children
+                                  .toLowerCase()
+                                  .indexOf(input.toLowerCase()) >= 0
+                          }
+                          allowClear
+                          >
+                            {props.brand?.brandList?.content?.map((brand) => (
+                              <Option key={brand.brandId} value={brand.brandId}>
+                                {brand.brandName}
+                              </Option>
+                            ))}
+                          </Select>
+                        )}
+                      </Form.Item>
                   <Form.Item label="Manufacturers Name">
                         {getFieldDecorator("manufacturerName", {
                           rules: [
@@ -1518,7 +1550,8 @@ const mapStateToProps = (state) => ({
   materialDV: state.materialDV,
   category: state.category,
   manufacturer: state.manufacturer,
-  itemGrade: state.itemGrade
+  itemGrade: state.itemGrade,
+  brand: state.brand
 });
 
 const addMaterialDVForm = Form.create({
@@ -1605,5 +1638,6 @@ export default connect(mapStateToProps, {
   fetchSubCategoryList,
   deleteDVMaterial,
   fetchManufacturerList,
-  fetchItemGradeList
+  fetchItemGradeList,
+  fetchBrandList
 })(addMaterialDVForm);
