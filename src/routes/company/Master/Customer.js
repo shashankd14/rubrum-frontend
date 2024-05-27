@@ -177,7 +177,7 @@ const Customer = (props) => {
             });
             
         }, 1000);
-    }, []);
+    }, [showAddCustomer]);
 
     useEffect(() => {
         const { loading, error, customerList } = props.customer;
@@ -374,7 +374,8 @@ const Customer = (props) => {
                                       ipAddress: "1.1.1.1",
                                       requestId:"CUSTOMER_EDIT",
                                       userId: "",
-                                      purchaseReport: purchaseReport.join(','),
+                                    //   purchaseReport: purchaseReport.join(','),
+                                    purchaseReport: purchaseReport
                                     },
                                     id: props.customer?.customer?.customerId
                                   }

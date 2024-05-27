@@ -384,7 +384,7 @@ const Vendor = (props) => {
                                       ipAddress: "1.1.1.1",
                                       requestId:"VENDOR_EDIT",
                                       userId: "",
-                                      purchaseReportsList: purchaseReport.join(','),
+                                    //   purchaseReportsList: purchaseReport.join(','),
                                     },
                                     id: props.vendor?.vendor?.vendorId
                                   }
@@ -404,7 +404,7 @@ const Vendor = (props) => {
                                     ipAddress: "1.1.1.1",
                                     requestId:"VENDOR_INSERT",
                                     userId: "",
-                                    purchaseReportsList: purchaseReport.join(','),
+                                    // purchaseReportsList: purchaseReport.join(','),
                                   });
                                   props.form.resetFields();
                                   setShowAddVendor(false);

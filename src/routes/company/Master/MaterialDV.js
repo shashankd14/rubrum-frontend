@@ -341,6 +341,10 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
   const [newParamName, setNewParamName] = useState('');
   const [newParamMM, setNewParamMM] = useState('');
   const [newParamInches, setNewParamInches] = useState('');
+  const [inputUnitType, setInputUnitType] = useState('Meters');
+  const [outputUnitType, setOutputUnitType] = useState('Feet');
+  const [inputValue, setInputValue] = useState('');
+  const [outputValue, setOutputputValue] = useState('');
 
   const handleMeterChange = (e, setValue) => {
     const meters = e.target.value;
@@ -391,7 +395,8 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
     thickness: false,
     height: false,
     OD: false,
-    NB: false
+    NB: false,
+    userDefinedParamName: false
   });
   // const additionalParas = [];
   const [additionalParas, setAdditionalParas] = useState([]);
@@ -504,6 +509,29 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
   //     units: (parseFloat(NBMMValue) / 25.4).toFixed(2),
   //   });
   // }
+
+  const handleUserDefinedParam = (inputValue, inputUnitType, outputUnitType) =>{
+    debugger
+    setInputUnitType(inputUnitType);
+    setOutputUnitType(outputUnitType);
+    setInputValue(inputValue);
+    let userDefinedParamOutputUnitValue = 0;
+		if (inputUnitType === 'Meters' && outputUnitType === 'Feet'){
+			userDefinedParamOutputUnitValue = inputValue * 3.28084;
+		}
+		if (inputUnitType === 'Meters' && outputUnitType === 'Inches'){
+			userDefinedParamOutputUnitValue = inputValue / 0.0254;
+		}
+		if (inputUnitType === 'mm' && outputUnitType === 'Feet'){
+			userDefinedParamOutputUnitValue = inputValue / 304.8;
+		}
+		if (inputUnitType === 'mm' && outputUnitType === 'Inches'){
+			userDefinedParamOutputUnitValue = inputValue / 25.4;
+		}
+		// return userDefinedParamOutputUnitValue;
+    setOutputputValue(userDefinedParamOutputUnitValue);
+		}
+
   useEffect(() => {
     debugger
     updateAdditionalParas();
@@ -627,32 +655,34 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
     debugger
     const newParas = [...additionalParas];
 
-    if (newParamName && newParamMM) {
+    if (newParamName && inputUnitType) {
       newParas.push({
-        parameterName: newParamName,
-        unitType: selectedUnitmm,
-        units: newParamMM,
+        parameterName: 'UDP_' + newParamName,
+        unitType: inputUnitType,
+        units: inputValue,
       });
     }
 
-    if (newParamName && newParamInches) {
+    if (newParamName && outputUnitType) {
       newParas.push({
-        parameterName: newParamName,
-        unitType: selectedUnitInches,
-        units: newParamInches,
+        parameterName: 'UDP_' + newParamName,
+        unitType: outputUnitType,
+        units: outputValue,
       });
     }
 
     setAdditionalParas(newParas);
 
     // Clear the inputs
-    setNewParamName('');
-    setNewParamMM('');
-    setNewParamInches('');
+    // setNewParamName('');
+    // setNewParamMM('');
+    // setNewParamInches('');
+    setButtonDisabled(true);
   };
 
   const [editAdditionalValues, setEditAdditionalValues] = useState([]);
   useEffect(() => {
+    debugger
     if (props.materialDV?.DVMaterialID?.additionalParams) {
       const parsedParams = JSON.parse(props.materialDV?.DVMaterialID?.additionalParams);
       const values = {};
@@ -673,6 +703,18 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
       setCheckboxStates(initialCheckboxStates);
     }
   }, [props.materialDV]);
+
+  const [buttonVisible, setButtonVisible] = useState(false);
+  const [buttonDisabled, setButtonDisabled] = useState(false);
+
+  useEffect(() => {
+    if (newParamName && inputValue) {
+      setButtonVisible(true);
+    } else {
+      setButtonVisible(false);
+    }
+  }, [newParamName, inputValue]);
+
 
   // const handleAddParameter = () => {
   //   debugger
@@ -1377,9 +1419,10 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
                   className='gx-align-self-center'
                 >
                   <Form.Item>
-                    <Checkbox
-                    
-                    ></Checkbox>
+                  <Checkbox 
+                    onChange={(e) => handleCheckboxChange(e, 'userDefinedParamName')}
+                    checked={checkboxStates.userDefinedParamName}
+                   />
                     <Input
                       placeholder='Enter parameter name'
                       {...getFieldProps}
@@ -1392,38 +1435,51 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
 
                 <Form.Item>
                   <Col className='flex-row' style={{ marginTop: '6px' }}>
-                    {/* {getFieldDecorator('parametermm', {
-
-                    })(<Input id='parametermm' {...getFieldProps} />)}
-                     <Select value={selectedUnitmm} onChange={handleUnitChangemm} placeholder='Select unit'>
-                        <Option value="inches">Meters</Option>
-                        <Option value="feet">mm</Option> */}
-                        {getFieldDecorator('parametermm', {})(<Input id='parametermm' value={newParamMM} onChange={(e) => setNewParamMM(e.target.value)} />)}
-                    <Select value={selectedUnitmm} onChange={(value) => setSelectedUnitmm(value)} placeholder='Select unit'>
-                      <Option value="meters">Meters</Option>
+                        {getFieldDecorator('inputValue', {})(
+                        <Input 
+                        id='inputValue' 
+                         value={inputValue} 
+                         onChange={(e) => handleUserDefinedParam(e.target.value, inputUnitType, outputUnitType)} 
+                        />
+                        )}
+                    <Select 
+                     value={inputUnitType} 
+                     onChange={(e) => handleUserDefinedParam(inputValue, e, outputUnitType)} 
+                    placeholder='Select unit'>
+                      <Option value="Meters">Meters</Option>
                       <Option value="mm">mm</Option>
                     </Select>
                   </Col>
                 </Form.Item>
                 <Form.Item>
                   <Col className='flex-row' style={{ marginTop: '6px' }}>
-                    {/* {getFieldDecorator('parameterInches', {
-                    })(<Input id='parameterInches' {...getFieldProps} />)}
-                    <Select value={selectedUnitInches} onChange={handleUnitChangeInches} placeholder='Select unit'>
-                        <Option value="inches">Inches</Option>
-                        <Option value="feet">Feet</Option> */}
-                        {getFieldDecorator('parameterInches', {})(<Input id='parameterInches' value={newParamInches} onChange={(e) => setNewParamInches(e.target.value)} />)}
-                      <Select value={selectedUnitInches} onChange={(value) => setSelectedUnitInches(value)} placeholder='Select unit'>
-                        <Option value="inches">Inches</Option>
-                        <Option value="feet">Feet</Option>
+                        {getFieldDecorator('outputValue', {
+                          initialValue: parseFloat(outputValue).toFixed(2)
+                        })(
+                        <Input 
+                        id='outputValue' 
+                         value={outputValue}
+                        />
+                        )}
+                      <Select 
+                       value={outputUnitType} 
+                       onChange={(e) => handleUserDefinedParam(inputValue, inputUnitType, e)}
+                      placeholder='Select unit'>
+                        <Option value="Inches">Inches</Option>
+                        <Option value="Feet">Feet</Option>
                     </Select>
                   </Col>
                 </Form.Item>
               </Row>
 
-              <Button type='primary' icon='plus' onClick={handleAddParameter}>
+              {/* <Button type='primary' icon='plus' onClick={handleAddParameter}>
                 Add Parameter
-              </Button>
+              </Button> */}
+               {buttonVisible && (
+                <Button type='primary' icon='plus' onClick={handleAddParameter} disabled={buttonDisabled}>
+                  Add Parameter
+                </Button>
+              )}
 
               <Row>
                 <Col lg={12} md={12} sm={24} xs={24}>
