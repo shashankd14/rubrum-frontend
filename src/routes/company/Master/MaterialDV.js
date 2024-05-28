@@ -56,7 +56,7 @@ const MaterialDV = (props) => {
     order: 'descend',
     columnKey: 'age',
   });
-  const { getFieldDecorator, getFieldValue, getFieldProps, setFieldsValue } = props.form;
+  const { getFieldDecorator, getFieldProps } = props.form;
   getFieldDecorator('keys', { initialValue: [0] });
   const [showAddMaterial, setShowAddMaterial] = useState(false);
   const [viewMaterial, setViewMaterial] = useState(false);
@@ -67,10 +67,6 @@ const MaterialDV = (props) => {
   const [filteredMaterialList, setFilteredMaterialList] = useState(
     props.materialDV.DVMaterialList || []
   );
-  const [addSubCategory, setAddSubCategory] = useState(false);
-  const [addMainCategory, setAddMainCategory] = useState(false);
-  // const [selectedUnitInches, setSelectedUnitInches] = useState();
-  // const [selectedUnitmm, setSelectedUnitmm] = useState();
   const [pageNo, setPageNo] = useState(1);
   const [pageSize, setPageSize] = useState(15);
   const [totalPageItems, setTotalPageItems] = useState(0);
@@ -275,7 +271,7 @@ props.fetchBrandList({
   const deleteSelectedCoils = () => {
     console.log('dfd');
   };
-
+console.log("111111111111", viewMaterialData)
 const [itemImageFile, setItemImageFile] = useState();
 const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
   const onCrossFileChange = (info) => {
@@ -339,12 +335,11 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
   const [selectedUnitmm, setSelectedUnitmm] = useState('meters');
   const [selectedUnitInches, setSelectedUnitInches] = useState('inches');
   const [newParamName, setNewParamName] = useState('');
-  const [newParamMM, setNewParamMM] = useState('');
-  const [newParamInches, setNewParamInches] = useState('');
   const [inputUnitType, setInputUnitType] = useState('Meters');
   const [outputUnitType, setOutputUnitType] = useState('Feet');
   const [inputValue, setInputValue] = useState('');
-  const [outputValue, setOutputputValue] = useState('');
+  const [outputValue, setOutputValue] = useState('');
+  const [editAdditionalValues, setEditAdditionalValues] = useState([]);
 
   const handleMeterChange = (e, setValue) => {
     const meters = e.target.value;
@@ -398,120 +393,10 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
     NB: false,
     userDefinedParamName: false
   });
-  // const additionalParas = [];
+ 
   const [additionalParas, setAdditionalParas] = useState([]);
 
-  // if (checkboxStates.length) {
-  //   additionalParas.push({
-  //     parameterName: 'Length',
-  //     unitType: 'Meters',
-  //     units: lengthMeterValue,
-  //   });
-  //   additionalParas.push({
-  //     parameterName: 'Length',
-  //     unitType: 'Feet',
-  //     units: (parseFloat(lengthMeterValue) * 3.28084).toFixed(2),
-  //   });
-  // }
-
-  // if (checkboxStates.width) {
-  //   additionalParas.push({
-  //     parameterName: 'Width',
-  //     unitType: 'Meters',
-  //     units: widthMeterValue,
-  //   });
-  //   additionalParas.push({
-  //     parameterName: 'Width',
-  //     unitType: 'Feet',
-  //     units: (parseFloat(widthMeterValue) * 3.28084).toFixed(2),
-  //   });
-  // }
-
-  // if (checkboxStates.flange1) {
-  //   additionalParas.push({
-  //     parameterName: 'Flange1',
-  //     unitType: 'mm',
-  //     units: flange1MM,
-  //   });
-  //   additionalParas.push({
-  //     parameterName: 'Flange1',
-  //     unitType: 'Inches',
-  //     units: (parseFloat(flange1MM) / 25.4).toFixed(2),
-  //   });
-  // }
-
-  // if (checkboxStates.flange2) {
-  //   additionalParas.push({
-  //     parameterName: 'Flange2',
-  //     unitType: 'mm',
-  //     units: flange2MM,
-  //   });
-  //   additionalParas.push({
-  //     parameterName: 'Flange2',
-  //     unitType: 'Inches',
-  //     units: (parseFloat(flange2MM) / 25.4).toFixed(2),
-  //   });
-  // }
-
-  // if (checkboxStates.thickness) {
-  //   additionalParas.push({
-  //     parameterName: 'Thickness',
-  //     unitType: 'mm',
-  //     units: thicknessmmInches,
-  //   });
-  //   additionalParas.push({
-  //     parameterName: 'Thickness',
-  //     unitType: 'Inches',
-  //     units: (parseFloat(thicknessmmInches) / 25.4).toFixed(2),
-  //   });
-  //   additionalParas.push({
-  //     parameterName: 'Thickness',
-  //     unitType: 'Guage',
-  //     units: (0.3249 * Math.pow(10, 4) / (thicknessmmInches - 215.15)).toFixed(2)
-  //   });
-  // }
-
-  // if (checkboxStates.height) {
-  //   additionalParas.push({
-  //     parameterName: 'Height',
-  //     unitType: 'mm',
-  //     units: heightMMValue,
-  //   });
-  //   additionalParas.push({
-  //     parameterName: 'Height',
-  //     unitType: 'Inches',
-  //     units: (parseFloat(heightMMValue) / 25.4).toFixed(2),
-  //   });
-  // }
-
-  // if (checkboxStates.height) {
-  //   additionalParas.push({
-  //     parameterName: 'OD',
-  //     unitType: 'mm',
-  //     units: ODMMValue,
-  //   });
-  //   additionalParas.push({
-  //     parameterName: 'OD',
-  //     unitType: 'Inches',
-  //     units: (parseFloat(ODMMValue) / 25.4).toFixed(2),
-  //   });
-  // }
-
-  // if (checkboxStates.height) {
-  //   additionalParas.push({
-  //     parameterName: 'NB',
-  //     unitType: 'mm',
-  //     units: ODMMValue,
-  //   });
-  //   additionalParas.push({
-  //     parameterName: 'NB',
-  //     unitType: 'Inches',
-  //     units: (parseFloat(NBMMValue) / 25.4).toFixed(2),
-  //   });
-  // }
-
   const handleUserDefinedParam = (inputValue, inputUnitType, outputUnitType) =>{
-    debugger
     setInputUnitType(inputUnitType);
     setOutputUnitType(outputUnitType);
     setInputValue(inputValue);
@@ -528,14 +413,13 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
 		if (inputUnitType === 'mm' && outputUnitType === 'Inches'){
 			userDefinedParamOutputUnitValue = inputValue / 25.4;
 		}
-		// return userDefinedParamOutputUnitValue;
-    setOutputputValue(userDefinedParamOutputUnitValue);
+    setOutputValue(userDefinedParamOutputUnitValue);
 		}
 
   useEffect(() => {
-    debugger
     updateAdditionalParas();
   }, [checkboxStates, lengthMeterValue, widthMeterValue, flange1MM, flange2MM, thicknessmmInches, heightMMValue, ODMMValue, NBMMValue]);
+ 
   const updateAdditionalParas = () => {
     const newAdditionalParas = [];
 
@@ -652,7 +536,6 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
   };
 
   const handleAddParameter = () => {
-    debugger
     const newParas = [...additionalParas];
 
     if (newParamName && inputUnitType) {
@@ -680,27 +563,59 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
     setButtonDisabled(true);
   };
 
-  const [editAdditionalValues, setEditAdditionalValues] = useState([]);
   useEffect(() => {
-    debugger
     if (props.materialDV?.DVMaterialID?.additionalParams) {
       const parsedParams = JSON.parse(props.materialDV?.DVMaterialID?.additionalParams);
       const values = {};
+      const udpValues = {};
       const initialCheckboxStates = { ...checkboxStates };
-
+      let hasUdpParams = false;
+  
       parsedParams.forEach(param => {
         const { parameterName, unitType, units } = param;
-        // Concatenate parameterName and unitType to create a unique key
         const key = `${parameterName.toLowerCase()}${unitType.toLowerCase()}`;
-        // Store units value in the state object with the unique key
-        values[key] = units;
-        // Check the checkbox if value is present
-        const checkboxKey = parameterName.toLowerCase();
-        initialCheckboxStates[checkboxKey] = !!units;
+  
+        if (parameterName.toLowerCase().includes('udp_')) {
+          udpValues[key] = units;
+          hasUdpParams = true;
+          // Extract the string after "UDP_" and set it as the newParamName
+          setNewParamName(parameterName.substring(parameterName.indexOf('_') + 1));
+        } else {
+          values[key] = units;
+          const checkboxKey = parameterName.toLowerCase();
+          initialCheckboxStates[checkboxKey] = !!units;
+        }
       });
-      console.log('Fields to set:', values);
+  
+      const udpKeys = Object.keys(udpValues);
+      if (udpKeys.length > 0) {
+        const [firstKey, secondKey] = udpKeys;
+        setInputValue(udpValues[firstKey]);
+        setOutputValue(udpValues[secondKey]);
+      }
+      console.log('Regular Fields to set:', values);
+      console.log('UDP Fields to set:', udpValues);
+  
       setEditAdditionalValues(values);
       setCheckboxStates(initialCheckboxStates);
+  
+      // Check the checkbox if there are UDP parameters
+      if (hasUdpParams) {
+        setCheckboxStates(prevState => ({
+          ...prevState,
+          userDefinedParamName: true
+        }));
+      }
+       // Extract unit types for UDP parameters
+        const udpUnitTypes = parsedParams
+        .filter(param => param.parameterName.toLowerCase().includes('udp_'))
+        .map(param => param.unitType);
+
+      // Set unit types for input and output dropdowns
+      if (udpUnitTypes.length === 2) {
+        setInputUnitType(udpUnitTypes[0]);
+        setOutputUnitType(udpUnitTypes[1]);
+      }
     }
   }, [props.materialDV]);
 
@@ -708,40 +623,12 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
   const [buttonDisabled, setButtonDisabled] = useState(false);
 
   useEffect(() => {
-    if (newParamName && inputValue) {
+    if (newParamName) {
       setButtonVisible(true);
     } else {
       setButtonVisible(false);
     }
-  }, [newParamName, inputValue]);
-
-
-  // const handleAddParameter = () => {
-  //   debugger
-  //   const newParas = [...additionalParas];
-    
-  //   if (newParamName && newParamMM) {
-  //     newParas.push({
-  //       parameterName: newParamName,
-  //       unitType: selectedUnitmm,
-  //       units: newParamMM,
-  //     });
-  //   }
-
-  //   if (newParamName && newParamInches) {
-  //     newParas.push({
-  //       parameterName: newParamName,
-  //       unitType: selectedUnitInches,
-  //       units: newParamInches,
-  //     });
-  //   }
-
-  //   setAdditionalParas(newParas);
-  //   // Clear the inputs
-  //   setNewParamName('');
-  //   setNewParamMM('');
-  //   setNewParamInches('');
-  // };
+  }, [newParamName]);
 
   return (
     <div>
@@ -878,7 +765,6 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
             } else {
               props.form.validateFields((err, values) => {
                 if (!err) {
-                  debugger
                   console.log('Received values of form: ', values);
                   const data = { 
                     ...values, 
@@ -1114,7 +1000,7 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
                 <Form.Item>
                   <Col className='flex-row'>
                     {getFieldDecorator('lengthFeet', {
-                       initialValue: ((lengthMeterValue || editAdditionalValues["lengthmeters"]) * 3.28084).toFixed(2) 
+                       initialValue: ((lengthMeterValue || editAdditionalValues["lengthmeters"]) * 3.28084 || 0 ).toFixed(2) 
                     })(<Input id='lengthFeet' {...getFieldProps} disabled />)}
                     <label className='left-side-label'>Feet</label>
                   </Col>
@@ -1154,7 +1040,7 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
                   <Col className='flex-row'>
                     {getFieldDecorator('widthFeet', {
                       // rules: [{ required: false, message: 'Please enter manufacturers name' }],
-                      initialValue: ((widthMeterValue || editAdditionalValues["widthmeters"]) * 3.28084).toFixed(2)
+                      initialValue: ((widthMeterValue || editAdditionalValues["widthmeters"]) * 3.28084 || 0 ).toFixed(2)
                     })(<Input id='widthFeet' {...getFieldProps} disabled />)}
                     <label className='left-side-label'>Feet</label>
                   </Col>
@@ -1193,7 +1079,7 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
                 <Form.Item>
                   <Col className='flex-row-mm'>
                     {getFieldDecorator('flange1inches', { 
-                      initialValue: (parseFloat((flange1MM || editAdditionalValues["flange1mm"])) / 25.4).toFixed(2)
+                      initialValue: (parseFloat((flange1MM || editAdditionalValues["flange1mm"]) || 0 ) / 25.4).toFixed(2)
                     })(<Input id='flange1inches' {...getFieldProps} disabled />)}
                     <label className='left-side-label-mm'>Inches</label>
                   </Col>
@@ -1231,7 +1117,7 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
                 <Form.Item>
                   <Col className='flex-row-mm'>
                     {getFieldDecorator('flange2inches', { 
-                      initialValue: (parseFloat((flange2MM || editAdditionalValues["flange2mm"])) / 25.4).toFixed(2)
+                      initialValue: (parseFloat((flange2MM || editAdditionalValues["flange2mm"]) || 0 ) / 25.4).toFixed(2)
                     })(<Input id='flange2inches' {...getFieldProps} disabled />)}
                     <label className='left-side-label-mm'>Inches</label>
                   </Col>
@@ -1271,7 +1157,7 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
                   <Col className='flex-row-mm'>
                     {getFieldDecorator('thicknessInches', {
                       // initialValue: (thicknessmmInches / 25.4).toFixed(2)
-                      initialValue: (parseFloat((thicknessmmInches || editAdditionalValues["thicknessmm"])) / 25.4).toFixed(2)
+                      initialValue: (parseFloat((thicknessmmInches || editAdditionalValues["thicknessmm"]) || 0 ) / 25.4).toFixed(2)
                     })(
                       <Input id='thicknessInches' {...getFieldProps} disabled />
                     )}
@@ -1327,7 +1213,7 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
                 <Form.Item>
                   <Col className='flex-row-mm'>
                     {getFieldDecorator('heightInches', {
-                      initialValue: (parseFloat((heightMMValue || editAdditionalValues["heightmm"])) / 25.4).toFixed(2)
+                      initialValue: (parseFloat((heightMMValue || editAdditionalValues["heightmm"]) || 0 ) / 25.4).toFixed(2)
                     })(<Input id='heightInches' {...getFieldProps} disabled />)}
                     <label className='left-side-label-mm'>Inches</label>
                   </Col>
@@ -1365,7 +1251,7 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
                 <Form.Item>
                   <Col className='flex-row-mm'>
                     {getFieldDecorator('ODInches', {
-                      initialValue: (parseFloat((ODMMValue || editAdditionalValues["odmm"])) / 25.4).toFixed(2)
+                      initialValue: (parseFloat((ODMMValue || editAdditionalValues["odmm"]) || 0 ) / 25.4).toFixed(2)
                     })(<Input id='ODInches' {...getFieldProps} disabled />)}
                     <label className='left-side-label-mm'>Inches</label>
                   </Col>
@@ -1403,7 +1289,7 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
                 <Form.Item>
                   <Col className='flex-row-mm'>
                     {getFieldDecorator('NBInches', {
-                      initialValue: (parseFloat((NBMMValue || editAdditionalValues["nbmm"])) / 25.4).toFixed(2)
+                      initialValue: (parseFloat((NBMMValue || editAdditionalValues["nbmm"]) || 0 ) / 25.4).toFixed(2)
                     })(<Input id='NBInches' {...getFieldProps} disabled />)}
                     <label className='left-side-label-mm'>Inches</label>
                   </Col>
@@ -1435,7 +1321,9 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
 
                 <Form.Item>
                   <Col className='flex-row' style={{ marginTop: '6px' }}>
-                        {getFieldDecorator('inputValue', {})(
+                        {getFieldDecorator('inputValue', {
+                          initialValue: inputValue
+                        })(
                         <Input 
                         id='inputValue' 
                          value={inputValue} 
@@ -1454,7 +1342,7 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
                 <Form.Item>
                   <Col className='flex-row' style={{ marginTop: '6px' }}>
                         {getFieldDecorator('outputValue', {
-                          initialValue: parseFloat(outputValue).toFixed(2)
+                          initialValue: parseFloat((outputValue) || 0 ).toFixed(2)
                         })(
                         <Input 
                         id='outputValue' 
@@ -1646,11 +1534,11 @@ const addMaterialDVForm = Form.create({
       }),
       brandName:Form.createFormField ({
           ...props.materialDV?.DVMaterialID?.brandName,
-          value: props.materialDV?.DVMaterialID?.brandName|| '',
+          value: props.materialDV?.DVMaterialID?.brandName|| props.materialDV?.DVMaterialID?.brandId,
       }),
       manufacturerName:Form.createFormField ({
           ...props.materialDV?.DVMaterialID?.manufacturerName,
-          value: props.materialDV?.DVMaterialID?.manufacturerName|| '',
+          value: props.materialDV?.DVMaterialID?.manufacturerName|| props.materialDV?.DVMaterialID?.manufacturerId,
       }),
       perMeter:Form.createFormField ({
           ...props.materialDV?.DVMaterialID?.perMeter,

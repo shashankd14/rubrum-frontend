@@ -22,6 +22,21 @@ const InwardSummary = (props) => {
         setPayload(props.inwardDV);
     }, []);
 
+    const [vendorName, setVendorName] = useState();
+      useEffect(() => {
+        if (props.inwardDV.vendorId !== undefined){
+        const vendorId = props.inwardDV.vendorId;
+        let vendorName = '';
+            const response = props.vendor.content
+            const selectedVendorName = response.find(vendor => vendor.vendorId === vendorId);
+            if (selectedVendorName !== undefined){
+                vendorName = selectedVendorName.vendorName;
+                   }
+        setVendorName(vendorName);
+        }
+       
+      },[props.vendor])
+
     useEffect(() => {
         if(props.inwardUpdateSuccessDV) {
             message.success('Inward entry has been updated successfully');
@@ -31,8 +46,8 @@ const InwardSummary = (props) => {
             props.resetInwardForm();
         }
     }, [props.inwardUpdateSuccessDV]);
+
     useEffect(() => {
-        debugger
         if(props.inwardSubmitSuccessDV) {
             message.success('Inward entry has been submitted successfully');
             setTimeout(() => {
@@ -55,8 +70,8 @@ console.log("1111111111, - ", props);
                         <Col span={12}>
                             <Card title="Inward Details" style={{ width: 500 }}>
                                 {props.inwardDV?.purposeType && <p>Purpose Type : {props.inwardDV?.purposeType}</p>}
-                                {props.inwardDV?.vendorName && <p>Vendor Id : {props.inwardDV?.vendorName}</p>}
-                                {props.inwardDV?.vendorId && <p>Vendor Name : {props.inwardDV?.vendorId}</p>}
+                                {props.inwardDV?.vendorId && <p>Vendor Id : {props.inwardDV?.vendorId}</p>}
+                                {props.inwardDV?.vendorId && <p>Vendor Name : {props.inwardDV?.vendorName ? props.inwardDV?.vendorName : vendorName}</p>}
                                 {props.inwardDV?.vendorBatchNo && <p>Vendor Batch No : {props.inwardDV?.vendorBatchNo}</p>}
                                 
                             </Card>
@@ -186,6 +201,7 @@ const mapStateToProps = state => ({
     inwardSubmitSuccessDV: state.inwardDV.inwardSubmitSuccess,
     inwardUpdateSuccessDV: state.inwardDV.inwardUpdateSuccess,
     inwardSubmitLoadingDV: state.inwardDV.inwardSubmitLoadingDV,
+    vendor: state.vendor.vendorList,
 });
 
 export default withRouter(connect(mapStateToProps, {

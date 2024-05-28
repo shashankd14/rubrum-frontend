@@ -6,6 +6,7 @@ import {formItemLayout} from '../Create';
 // import { APPLICATION_DATE_FORMAT } from '../../../../constants';
 import moment from "moment";
 import { useHistory } from 'react-router-dom';
+import { APPLICATION_DATE_FORMAT } from '../../../../constants';
 
 const Option = Select.Option;
 
@@ -75,8 +76,8 @@ const CreateInwardDocPage1 = (props) => {
 
       const [vendorName, setVendorName] = useState();
       useEffect(() => {
-        if (props.inwardDV.vendorName !== undefined){
-        const vendorId = props.inwardDV.vendorName;
+        if (props.inwardDV.vendorId !== undefined){
+        const vendorId = props.inwardDV.vendorId;
         let vendorName = '';
             const response = props.vendor.content
             const selectedVendorName = response.find(vendor => vendor.vendorId === vendorId);
@@ -181,8 +182,8 @@ const CreateInwardDocPage1 = (props) => {
                       </Form.Item>
                       <Form.Item label="Document Date">
                         {getFieldDecorator('documentDate', {
-                            // initialValue: moment(props.inward.receivedDate || new Date(), APPLICATION_DATE_FORMAT),
-                            initialValue: props.inwardDV.documentDate ? moment(props.inwardDV.documentDate, 'YYYY-MM-DD') : moment(),
+                             initialValue: moment(props.inwardDV.documentDate || new Date()),
+                            // initialValue: props.inwardDV.documentDate ? moment(props.inwardDV.documentDate, 'YYYY-MM-DD') : moment(),
                             // rules: [{ required: true, message: 'Please select a document date' }],
                         })(
                             <DatePicker
@@ -196,8 +197,8 @@ const CreateInwardDocPage1 = (props) => {
                     </Form.Item>
                     <Form.Item label="Eway Bill Date">
                         {getFieldDecorator('ewayBillDate', {
-                            // initialValue: moment(props.inward.ewayBilldDate || new Date(), APPLICATION_DATE_FORMAT),
-                            initialValue: props.inwardDV.ewayBillDate ? moment(props.inwardDV.ewayBillDate, 'YYYY-MM-DD') : moment(),
+                             initialValue: moment(props.inwardDV.ewayBilldDate || new Date()),
+                            // initialValue: props.inwardDV.ewayBillDate ? moment(props.inwardDV.ewayBillDate, 'YYYY-MM-DD') : moment(),
                             // rules: [{ required: true, message: 'Please select a eway bill date' }],
                         })(
                             <DatePicker
@@ -237,7 +238,7 @@ const CreateInwardDocPage1 = (props) => {
                 <Card title="Inward Details" style={{ width: 400 }}>
                     {props.inwardDV.purposeType && <p>Purpose Type : {props.inwardDV.purposeType}</p>}
                     {props.inwardDV.vendorId && <p>Vendor ID : {props.inwardDV.vendorId}</p>}
-                    {props.inwardDV.vendorName && <p>Vendor Name : { vendorName}</p>}
+                    {props.inwardDV.vendorId && <p>Vendor Name : { props.inwardDV.vendorName? props.inwardDV.vendorName : vendorName}</p>}
                     {props.inwardDV.vendorBatchNo && <p>Vendor BatchNo : {props.inwardDV.vendorBatchNo}</p>}
                     {props.inwardDV?.itemsList?.map((item, index) => {
                             const matchedItem = getItemDetails(item.itemId);

@@ -307,7 +307,7 @@ const MaterialDetailsForm = (props) => {
                 {props.inwardDV.purposeType && (
                   <p>Purpose Type : {props.inwardDV.purposeType}</p>
                 )}
-                {props.inwardDV.vendorName && <p>Vendor Name : {props.inwardDV.vendorName? props.inwardDV.vendorName : vendorName}</p>}
+                {props.inwardDV.vendorId && <p>Vendor Name : {props.inwardDV.vendorName? props.inwardDV.vendorName : vendorName}</p>}
                 {props.inwardDV.vendorId && (
                   <p>Vendor ID : {props.inwardDV.vendorId}</p>
                 )}
@@ -374,12 +374,12 @@ const MaterialDetailsForm = (props) => {
                             {inwardItem.categoryEntity?.displayName || '-'}
                           </p>
                           <p>
-                            Brand name:{' '}
-                            {inwardItem.categoryEntity?.brandName || '-'}
+                            Brand Id:{' '}
+                            {inwardItem.categoryEntity?.brandId || '-'}
                           </p>
                           <p>
-                            Manufacturers name:{' '}
-                            {inwardItem.categoryEntity?.manufacturerName || '-'}
+                            Manufacturers Id:{' '}
+                            {inwardItem.categoryEntity?.manufacturerId || '-'}
                           </p>
                           <p>Per Meter: {inwardItem.perMeter}</p>
                           <p>Per Feet: {inwardItem.perFeet}</p>
