@@ -178,7 +178,6 @@ export default (state = INIT_STATE, action) => {
             }
         }
         case FETCH_SUB_CATEGORY_LIST_ID_SUCCESS: {
-            debugger
             return {
                 ...state,
                 loading: false,

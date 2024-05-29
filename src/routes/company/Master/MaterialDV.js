@@ -355,7 +355,7 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
   const handleMMChange = (e, setDimensionMM, inchesId) => {
     const mm = e.target.value;
     const inches = mm / 25.4; // Convert millimeters to inches
-    setDimensionMM(mm); // Update the state with millimeter value
+    setDimensionMM(mm);
   
     // Now update the corresponding inches input
     const inchesInput = document.getElementById(inchesId);
@@ -1319,50 +1319,47 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
                   </Form.Item>
                 </Col>
 
-                <Form.Item>
-                  <Col className='flex-row' style={{ marginTop: '6px' }}>
+                  <Col className='flex-row' style={{ marginTop: '6px'}}>
                         {getFieldDecorator('inputValue', {
                           initialValue: inputValue
                         })(
                         <Input 
                         id='inputValue' 
                          value={inputValue} 
+                         style={{ width: '100px', marginRight: '8px' }}
                          onChange={(e) => handleUserDefinedParam(e.target.value, inputUnitType, outputUnitType)} 
                         />
                         )}
                     <Select 
                      value={inputUnitType} 
+                     style={{ width: '100px' }}
                      onChange={(e) => handleUserDefinedParam(inputValue, e, outputUnitType)} 
                     placeholder='Select unit'>
                       <Option value="Meters">Meters</Option>
                       <Option value="mm">mm</Option>
                     </Select>
                   </Col>
-                </Form.Item>
-                <Form.Item>
-                  <Col className='flex-row' style={{ marginTop: '6px' }}>
+                  <Col className='flex-row' style={{ marginTop: '6px'}}>
                         {getFieldDecorator('outputValue', {
                           initialValue: parseFloat((outputValue) || 0 ).toFixed(2)
                         })(
                         <Input 
                         id='outputValue' 
+                        style={{ width: '100px', marginRight: '8px', marginLeft: '30px' }}
                          value={outputValue}
                         />
                         )}
                       <Select 
-                       value={outputUnitType} 
+                       value={outputUnitType}
+                       style={{ width: '100px' }} 
                        onChange={(e) => handleUserDefinedParam(inputValue, inputUnitType, e)}
                       placeholder='Select unit'>
                         <Option value="Inches">Inches</Option>
                         <Option value="Feet">Feet</Option>
                     </Select>
                   </Col>
-                </Form.Item>
               </Row>
 
-              {/* <Button type='primary' icon='plus' onClick={handleAddParameter}>
-                Add Parameter
-              </Button> */}
                {buttonVisible && (
                 <Button type='primary' icon='plus' onClick={handleAddParameter} disabled={buttonDisabled}>
                   Add Parameter

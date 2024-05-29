@@ -96,13 +96,13 @@ const View = (props) => {
                         <Col span={12}>
                             <Card title="Extra Charges" style={{ width: 500 }}>
                                 {filteredInwardList[0]?.frieghtCharges && <p>Add Frieght Charges : {filteredInwardList[0]?.frieghtCharges}</p>}
-                                {filteredInwardList[0]?.addInsurance && <p>Add Insurance : {filteredInwardList[0]?.insuranceAmount}</p>}
-                                {filteredInwardList[0]?.loadingAndUnloading && <p>Add Loading & Unloading Charges : {filteredInwardList[0]?.loadingCharges}</p>}
+                                {filteredInwardList[0]?.insuranceAmount && <p>Add Insurance : {filteredInwardList[0]?.insuranceAmount}</p>}
+                                {filteredInwardList[0]?.loadingCharges && <p>Add Loading & Unloading Charges : {filteredInwardList[0]?.loadingCharges}</p>}
                                 {filteredInwardList[0]?.weightmenCharges && <p>Add weightment Charges : {filteredInwardList[0]?.weightmenCharges}</p>}
-                                {filteredInwardList[0]?.addSGST && <p>Add SGST : {filteredInwardList[0]?.sgst}</p>}
-                                {filteredInwardList[0]?.addCGST && <p>Add CGST : {filteredInwardList[0]?.cgst}</p>}
-                                {filteredInwardList[0]?.addIGST && <p>Add IGST : {filteredInwardList[0]?.igst}</p>}
-                                {filteredInwardList[0]?.totalInwardValue && <p>TotalInwardValue : {filteredInwardList[0]?.totalInwardVolume}</p>}
+                                {filteredInwardList[0]?.sgst && <p>Add SGST : {filteredInwardList[0]?.sgst}</p>}
+                                {filteredInwardList[0]?.cgst && <p>Add CGST : {filteredInwardList[0]?.cgst}</p>}
+                                {filteredInwardList[0]?.igst && <p>Add IGST : {filteredInwardList[0]?.igst}</p>}
+                                {filteredInwardList[0]?.totalInwardVolume && <p>TotalInwardValue : {filteredInwardList[0]?.totalInwardVolume}</p>}
                             </Card>
                         </Col>
                         </Col>

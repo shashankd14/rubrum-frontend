@@ -208,7 +208,7 @@ function* addSubCategorySaga(action) {
     let body = action.payload;
     const reqBody = {
         subcategoryName:body.itemName,
-        categoryId: body.subcategoryId,
+        categoryId: body.categoryId,
         subcategoryHsnCode: body.itemCode,
         requestId: "ADD_SUB_CATEGORY",
         ipAddress: "1.1.1.1",
@@ -232,12 +232,11 @@ function* addSubCategorySaga(action) {
 }
 
 function* updateSubCategorySaga(action) {
-    debugger
     let body = action.payload;
     const reqBody = {
-        subcategoryName:body.values.itemName,
-        id:body.values.subcategoryId,
         subcategoryId: body.id,
+        subcategoryName:body.values.itemName,
+        categoryId:body.values.categoryId,
         subcategoryHsnCode: body.values.itemCode,
         requestId: "UPDATE_SUB_CATEGORY",
         ipAddress: "1.1.1.1",

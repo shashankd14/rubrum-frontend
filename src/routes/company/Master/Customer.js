@@ -5,7 +5,7 @@ import moment from 'moment';
 import SearchBox from "../../../components/SearchBox";
 
 import IntlMessages from "../../../util/IntlMessages";
-import { fetchCustomerList, deleteCustomer, fetchPartyList, addCustomer, fetchStateList, fetchCustomerListId, updateCustomer, resetCustomer, fetchClassificationList,fetchEndUserTagsList, fetchTemplatesList } from "../../../appRedux/actions";
+import { fetchCustomerList, deleteCustomer, addCustomer, fetchStateList, fetchCustomerListId, updateCustomer, resetCustomer, fetchClassificationList,fetchEndUserTagsList, fetchTemplatesList } from "../../../appRedux/actions";
 import { onDeleteContact } from "../../../appRedux/actions";
 
 const FormItem = Form.Item;
@@ -36,7 +36,6 @@ const Customer = (props) => {
     const [editCustomer, setEditCustomer] = useState(false);
     const [searchValue, setSearchValue] = useState('');
     const [filteredCustomerList, setFilteredCustomerList] = useState(props.customer?.customerList || []);
-    const [showAmtDcPdfFlg, setShowAmtDcPdfFlg] = useState(props.party?.showAmtDcPdfFlg==='Y'); // Default value
     const [purchaseReport, setPurchaseReport] = useState();
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(15);
@@ -45,7 +44,6 @@ const Customer = (props) => {
     const { totalItems } = props.customer.customerList;
 
     const { customer } = props.customer;
-    const [tagsList, setTagsList] =useState([{tagId: 1}]);
 
     getFieldDecorator('phoneKeys', {initialValue: [0]});
     getFieldDecorator('addressKeys', {initialValue: [0]});
@@ -95,15 +93,6 @@ const Customer = (props) => {
         sorter: (a, b) => a.address1?.state?.length - b.address1?.state?.length,
         sortOrder: sortedInfo.columnKey === 'state' && sortedInfo.order,
     },
-    // {
-    //     title: 'Process Tags',
-    //     dataIndex: 'packetClassificationTags',
-    //     render (value) {
-    //         return value?.map(item => item.tagName)
-    //     },
-    //     key: 'tags',
-    //     filters: []
-    // },
     {
         title: 'Action',
         dataIndex: '',
@@ -329,8 +318,8 @@ const Customer = (props) => {
                         <Row>
                             <Col span={24}>
                                 <Card>
-                                    <p><strong>Party Name :</strong> {viewCustomerData?.customerName}</p>
-                                    {viewCustomerData?.customerNickName && <p><strong>Party Nickname :</strong> {viewCustomerData?.customerNickName}</p>}
+                                    <p><strong>Buyer Name :</strong> {viewCustomerData?.customerName}</p>
+                                    {viewCustomerData?.customerNickName && <p><strong>Buyer Nickname :</strong> {viewCustomerData?.customerNickName}</p>}
                                     <p><strong>Phone Number :</strong> {viewCustomerData?.phoneNo}</p>
                                     <p><strong>E-mail :</strong> {viewCustomerData?.emailId}</p>
                                     {viewCustomerData?.contactName && <p><strong>Contact Name :</strong> {viewCustomerData?.contactName}</p>}
@@ -413,14 +402,14 @@ const Customer = (props) => {
                         <Row>
                             <Col lg={24} md={24} sm={24} xs={24} className="gx-align-self-center">
                                 <Form {...formItemLayout} className="gx-pt-4">
-                                    <Form.Item label="Party/Customer Name">
+                                    <Form.Item label="Buyer/Customer Name">
                                         {getFieldDecorator('customerName', {
                                             rules: [{ required: true, message: 'Please input customer name!' }],
                                         })(
                                             <Input id="customerName" />
                                         )}
                                     </Form.Item>
-                                    <Form.Item label="Party/Customer Nick Name">
+                                    <Form.Item label="Buyer/Customer Nick Name">
                                         {getFieldDecorator('customerNickName', {
                                             rules: [{ required: false, message: 'Please input nick name!' }],
                                         })(
@@ -639,13 +628,10 @@ const mapStateToProps = state => ({
 const addCustomerForm = Form.create({
     mapPropsToFields(props) {
         const { customer } = props.customer;
-        const phone = customer?.phone3 ? [customer?.phone1,customer?.phone2,customer?.phone3] : (customer?.phone2 ? [customer?.phone1,customer?.phone2] : [customer?.phone1]);
-        const email = customer?.email3 ? [customer?.email1,customer?.email2,customer?.email3] : (customer?.email2 ? [customer?.email1,customer?.email2] : [customer?.email1]);
         const address = customer?.address1? [customer?.address1, customer?.alternateAddress1] : [customer?.address1];
         const city = customer?.city ? [customer?.city, customer?.alternateCity] : [customer?.city];
         const state = customer?.state ? [customer?.state, customer?.alternateState] : [customer?.state];
         const pincode = customer?.pincode ? [customer?.pincode, customer?.alternatePincode] : [customer?.pincode];
-        // const checkboxValues = (customer?.purchaseReport || '').split(',').map(value => value.trim());
         const checkboxValues = (customer?.purchaseReport || '');
         return {
             customerName:Form.createFormField ({
@@ -711,19 +697,13 @@ const addCustomerForm = Form.create({
             }),
             purchaseReport: Form.createFormField({
                 ...customer?.purchaseReport,
-               //value: Array.isArray(checkboxValuesDR) ? checkboxValuesDR : [],
                value:checkboxValues
             }),
-            // monthlyReportsList: Form.createFormField({
-            //     ...customer?.monthlyReportsList,
-            //    value: Array.isArray(checkboxValuesMR) ? checkboxValuesMR : [],
-            // }),
         };
     }
 })(Customer);
 
 export default connect(mapStateToProps, {
-    fetchPartyList,
     addCustomer,
     deleteCustomer,
     fetchCustomerListId,

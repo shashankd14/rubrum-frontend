@@ -173,7 +173,7 @@ const CreateInwardDocPage1 = (props) => {
                             style={{ width: 260 }}
                           >
                             {props.document?.map((party) => (
-                              <Option key={party.docId} value={party.docId}>
+                              <Option key={party.docName} value={party.docName}>
                                 {party.docName}
                               </Option>
                             ))}
@@ -182,7 +182,7 @@ const CreateInwardDocPage1 = (props) => {
                       </Form.Item>
                       <Form.Item label="Document Date">
                         {getFieldDecorator('documentDate', {
-                             initialValue: moment(props.inwardDV.documentDate || new Date()),
+                             initialValue: props.inwardDV.documentDate? moment(props.inwardDV.documentDate) : new Date(),
                             // initialValue: props.inwardDV.documentDate ? moment(props.inwardDV.documentDate, 'YYYY-MM-DD') : moment(),
                             // rules: [{ required: true, message: 'Please select a document date' }],
                         })(
@@ -305,12 +305,12 @@ const InwardDocPage1 = Form.create({
             documentDate: Form.createFormField({
                 ...props.inwardDV.documentDate,
                 // value: moment(props.inwardDV.documentDate || new Date(), APPLICATION_DATE_FORMAT)
-                value: moment(props.inwardDV.documentDate || moment(props.inwardDV.documentDate, 'YYYY-MM-DD') || new Date()),
+                value: props.inwardDV.documentDate ? moment(props.inwardDV.documentDate, 'YYYY-MM-DD') : moment(new Date(), 'YYYY-MM-DD'),
             }),
             ewayBillDate: Form.createFormField({
                 ...props.inwardDV.ewayBillDate,
                 // value: (props.inwardDV.ewayBillDate) ? props.inwardDV.ewayBillDate : ''
-                value: moment(props.inwardDV.ewayBillDate || moment(props.inwardDV.ewayBillDate, 'YYYY-MM-DD') || new Date()),
+                value: props.inwardDV.ewayBillDate ? moment(props.inwardDV.ewayBillDate, 'YYYY-MM-DD') : moment(new Date(), 'YYYY-MM-DD'),
             }),
             valueOfGoods: Form.createFormField({
                 ...props.inwardDV.valueOfGoods,

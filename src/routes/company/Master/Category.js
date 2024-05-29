@@ -45,11 +45,13 @@ const Category = (props) => {
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(15);
     const [totalPageItems, setTotalPageItems] = useState(0);
+    const [totalPageItemsSubCategory, setTotalPageItemsSubCategory] = useState(0);
     const [tabKey, setTabKey] = useState("1");
     const [mode, setMode] = useState("top");
 
     const {getFieldDecorator, getFieldValue, getFieldProps} = props.form;
     const { totalItems } = props.category.mainCategoryList;
+    const { totalItemsSubCategory } = props.category.subCategoryList;
 
     const columns = [{
         title: 'Category Id',
@@ -278,6 +280,11 @@ const Category = (props) => {
           setTotalPageItems(totalItems);
         }
       }, [totalItems]);
+      useEffect(() => {
+        if (totalItemsSubCategory) {
+            setTotalPageItemsSubCategory(totalItemsSubCategory);
+        }
+      }, [totalItemsSubCategory]);
 
       useEffect(() => {
         if (searchValue) {
@@ -382,7 +389,7 @@ const Category = (props) => {
                             pageNo: page,
                             pageSize: pageSize,
                             ipAddress: "1.1.1.1",
-                            requestId: "LOCATION_LIST_GET",
+                            requestId: "CATEGORY_LIST_GET",
                             userId: ""
                         });
                         },
@@ -397,6 +404,22 @@ const Category = (props) => {
                     columns={columnsSub}
                     dataSource={filteredSubCategoryList.content}
                     onChange={handleChange}
+                    pagination={{
+                        pageSize: 15,
+                        onChange: (page) => {
+                          setPageNo(page);
+                          props.fetchSubCategoryList({
+                            searchText:searchValue,
+                            pageNo: page,
+                            pageSize: pageSize,
+                            ipAddress: "1.1.1.1",
+                            requestId: "CATEGORY_LIST_GET",
+                            userId: ""
+                        });
+                        },
+                        current: pageNo,
+                        total: totalPageItemsSubCategory,
+                      }}
                 />
               </TabPane>
               </Tabs>
@@ -412,8 +435,8 @@ const Category = (props) => {
                         <Row>
                             <Col span={24}>
                                 <Card>
-                                {viewMainCategoryData?.categoryName && <p><strong>Item Name :</strong> {viewMainCategoryData?.categoryName}</p>}
-                                {viewMainCategoryData?.categoryHsnCode && <p><strong>Item code :</strong> {viewMainCategoryData?.categoryHsnCode}</p>}
+                                {viewMainCategoryData?.categoryName && <p><strong>Category Name :</strong> {viewMainCategoryData?.categoryName}</p>}
+                                {viewMainCategoryData?.categoryHsnCode && <p><strong>Category code :</strong> {viewMainCategoryData?.categoryHsnCode}</p>}
                                </Card>
                             </Col>
                         </Row>
@@ -431,8 +454,8 @@ const Category = (props) => {
                         <Row>
                             <Col span={24}>
                                 <Card>
-                                {viewSubCategoryData?.subcategoryName && <p><strong>Item Name :</strong> {viewSubCategoryData?.subcategoryName}</p>}
-                                {viewSubCategoryData?.subcategoryHsnCode && <p><strong>Item code :</strong> {viewSubCategoryData?.subcategoryHsnCode}</p>}
+                                {viewSubCategoryData?.subcategoryName && <p><strong>Category Name :</strong> {viewSubCategoryData?.subcategoryName}</p>}
+                                {viewSubCategoryData?.subcategoryHsnCode && <p><strong>Category code :</strong> {viewSubCategoryData?.subcategoryHsnCode}</p>}
                                 </Card>
                             </Col>
                         </Row>
@@ -488,19 +511,19 @@ const Category = (props) => {
                         <Row>
                             <Col lg={24} md={24} sm={24} xs={24} className="gx-align-self-center">
                                 <Form {...formItemLayout} className="gx-pt-4">
-                                <Form.Item label='Item Name'>
+                                <Form.Item label='Category Name'>
                                   {getFieldDecorator('categoryName', {
                                     rules: [
                                       {
                                         required: true,
-                                        message: 'Please enter Item Name',
+                                        message: 'Please enter Category Name',
                                       },
                                     ],
                                   })(
                                     <Input id='categoryName' {...getFieldProps} />
                                   )}
                                 </Form.Item>
-                                <Form.Item label='Item Code'>
+                                <Form.Item label='Category Code'>
                                   {getFieldDecorator('categoryHsnCode', {
                                     rules: [
                                       {
@@ -524,7 +547,7 @@ const Category = (props) => {
                     onOk={(e) => {
                         if (editSubCategory) {
                             e.preventDefault();
-                            props.form.validateFields(['subcategoryId', 'itemName', 'itemCode'],(err, values) => {
+                            props.form.validateFields(['categoryId', 'itemName', 'itemCode'],(err, values) => {
                                 if (!err) {
                                  const data = {
                                     values: {
@@ -542,7 +565,7 @@ const Category = (props) => {
                                 }
                             });
                         } else {
-                            props.form.validateFields(['subcategoryId', 'itemName', 'itemCode'],(err, values) => {
+                            props.form.validateFields(['categoryId', 'itemName', 'itemCode'],(err, values) => {
                                 if (!err) {
                                  e.preventDefault();
                                  props.addSubCategory({
@@ -569,14 +592,14 @@ const Category = (props) => {
                             <Col lg={24} md={24} sm={24} xs={24} className="gx-align-self-center">
                                 <Form {...formItemLayout} className="gx-pt-4">
                                 <Form.Item label="Main Category">
-                                {getFieldDecorator("subcategoryId", {
+                                {getFieldDecorator("categoryId", {
                                     rules: [{
                                         required: true,
                                         message: "Please select main category!",
                                     }],
                                 })(
                                     <Select
-                                    id="subcategoryId"
+                                    id="categoryId"
                                     showSearch
                                     // mode='multiple'
                                     style={{ width: "100%" }}
@@ -595,19 +618,19 @@ const Category = (props) => {
                                     </Select>
                                 )}
                                 </Form.Item>
-                                <Form.Item label='Item Name'>
+                                <Form.Item label='Category Name'>
                                   {getFieldDecorator('itemName', {
                                     rules: [
                                       {
                                         required: true,
-                                        message: 'Please enter Item Name',
+                                        message: 'Please enter Category Name',
                                       },
                                     ],
                                   })(
                                     <Input id='itemName' {...getFieldProps} />
                                   )}
                                 </Form.Item>
-                                <Form.Item label='Item Code'>
+                                <Form.Item label='Category Code'>
                                   {getFieldDecorator('itemCode', {
                                     rules: [
                                       {
@@ -647,7 +670,7 @@ const addCategoryForm = Form.create({
                 value: props.category?.mainCategoryId?.categoryHsnCode || '',
             }),
             
-            subcategoryId: Form.createFormField({
+            categoryId: Form.createFormField({
                 ...props.category?.subCategoryId?.categoryId,
                 value: props.category?.subCategoryId?.categoryId || '',
             }),

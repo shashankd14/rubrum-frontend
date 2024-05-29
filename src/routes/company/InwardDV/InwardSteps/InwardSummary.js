@@ -60,8 +60,7 @@ const InwardSummary = (props) => {
     const getItemDetails = (itemId) => {
         return props.material?.DVMaterialList?.content?.find(materialItem => materialItem.itemId === itemId);
       };
-     
-console.log("1111111111, - ", props);
+    
     return (
         <>
             {props.inwardSubmitLoadingDV ? <Spin className="gx-size-100 gx-flex-row gx-justify-content-center gx-align-items-center" size="large"/> :
