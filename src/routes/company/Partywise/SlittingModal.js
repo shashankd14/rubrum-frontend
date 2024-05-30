@@ -1423,15 +1423,25 @@ const CreateSlittingDetailsForm = (props) => {
 }, []);
 
     const handleTagsChange = (value, index, record) => {
-
       const tableIndex = record.tableIndex;
-      panelList[tableIndex][index].endUserTagId = value;
+      let newIndex = 0;
+
+      if (page !== 1){
+        newIndex = ((page -1) * 10) + index
+      }
+      else{
+        newIndex = index;
+      }
+      
+      panelList[tableIndex][newIndex].endUserTagId = value;
       if (
         record?.endUserTagId === null ||
         record?.endUserTagId !== value
       ) {
         record.endUserTagId = value;
       }
+
+      setPanelList([...panelList])
     };
 
     // Initialize an array to store tableDatapacketWeight for each table index
