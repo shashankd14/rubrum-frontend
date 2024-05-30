@@ -51,12 +51,12 @@ const MaterialDetailsForm = (props) => {
       requestId: 'MATERIAL_LIST_GET',
       userId: '',
     });
-    props.generateInwardId({
-      fieldName: 'INWARD_ITEM_ID',
-      ipAddress: '1.1.1.1',
-      requestId: 'GENERATE_SEQ',
-      userId: '',
-    });
+    // props.generateInwardId({
+    //   fieldName: 'INWARD_ITEM_ID',
+    //   ipAddress: '1.1.1.1',
+    //   requestId: 'GENERATE_SEQ',
+    //   userId: '',
+    // });
     props.fetchVendorList({
       searchText: '',
       pageNo: '1',
@@ -75,14 +75,15 @@ const MaterialDetailsForm = (props) => {
     const selectedVendorName = response.find(
       (vendor) => vendor.vendorId === vendorId
     );
-       if (selectedVendorName !== undefined){
-    vendorName = selectedVendorName.vendorName;
-       }
+    if (selectedVendorName !== undefined) {
+      vendorName = selectedVendorName.vendorName;
+    }
     setVendorName(vendorName);
   }, []);
 
   const [selectedItem, setSelectedItem] = useState(null);
   const [dataArr, setDataArr] = useState(props?.inwardDV?.itemsList || []);
+  const [inwardId, setInwardId] = useState('');
   const defaultDataArrProps = {
     itemId: '',
     inwardItemId: '',
@@ -97,31 +98,51 @@ const MaterialDetailsForm = (props) => {
     weightVariance: 0,
     theoreticalNoofPieces: 0,
   };
+  const handleChange = async (value, option) => {
+    const itemId = parseInt(option.key); // Convert to number
+    const selectedItemDetails = props.materialDV.DVMaterialList.content.find(
+      (item) => parseInt(item.itemId) === itemId // Convert to number
+    );
+
+    if (selectedItemDetails) {
+      setSelectedItem(selectedItemDetails);
+
+      try {
+        // Call the API
+        const inwardIdResponse = await props.generateInwardId({
+          fieldName: 'INWARD_ITEM_ID',
+          ipAddress: '1.1.1.1',
+          requestId: 'GENERATE_SEQ',
+          userId: '',
+        });
+
+        // Extract the inwardId from the response
+        const itemInwardId = inwardIdResponse.data?.seqNo;
+
+        // Set the inward ID state
+        setInwardId(itemInwardId);
+      } catch (error) {
+        console.error('Error fetching inward ID:', error);
+      }
+    } else {
+      // Handle case where item is not found
+      console.error(`Item with ID ${itemId} not found`);
+    }
+  };
 
   const handleAddItem = () => {
+    debugger;
+    setInwardId(props.inwardId.seqNo);
     if (selectedItem) {
       const newDataItem = {
         ...defaultDataArrProps,
-        itemId: selectedItem.itemId, 
+        itemId: selectedItem.itemId,
+        itemInwardId: inwardId || props.inwardId.seqNo,
       };
 
       setDataArr((prevDataArr) => [...prevDataArr, newDataItem]);
       setSelectedItem(null);
-    }
-  };
-
-  const handleChange = (value, option) => {
-    const itemId = parseInt(option.key); // Convert to number
-    const selectedItemDetails = props.materialDV.DVMaterialList.content.find(
-      (item) => {
-        return parseInt(item.itemId) === itemId; // Convert to number
-      }
-    );
-    if (selectedItemDetails) {
-      setSelectedItem(selectedItemDetails);
-    } else {
-      // Handle case where item is not found
-      console.error(`Item with ID ${itemId} not found`);
+      setInwardId('');
     }
   };
 
@@ -129,11 +150,11 @@ const MaterialDetailsForm = (props) => {
     let item = getInwardItem(dataArr[index].itemId);
     let theoreticalWeight = 0;
     if (dataArr[index].unit === 'METERS') {
-        theoreticalWeight = item.perMeter * value;
+      theoreticalWeight = item.perMeter * value;
     } else if (dataArr[index].unit === 'PIECES') {
-        theoreticalWeight = item.perPC  * value;
+      theoreticalWeight = item.perPC * value;
     } else if (dataArr[index].unit === 'FEET') {
-        theoreticalWeight = item.perFeet  * value;
+      theoreticalWeight = item.perFeet * value;
     }
     dataArr[index].theoreticalWeight = theoreticalWeight;
   };
@@ -159,7 +180,9 @@ const MaterialDetailsForm = (props) => {
 
   const [netWeight, setNetWeights] = useState(Array(dataArr.length).fill(0));
   const [selectedUnit, setSelectedUnit] = useState('meters');
-  const [netWeightValues, setNetWeightValues] = useState(Array(dataArr.length).fill(''));
+  const [netWeightValues, setNetWeightValues] = useState(
+    Array(dataArr.length).fill('')
+  );
   const [unitValues, setUnitValues] = useState(Array(dataArr.length).fill(''));
   const [rateValues, setRateValues] = useState(Array(dataArr.length).fill(''));
   const [noOfPieces, setNoOfPieces] = useState(Array(dataArr.length).fill(''));
@@ -171,7 +194,8 @@ const MaterialDetailsForm = (props) => {
     setNetWeights(newNetWeights);
     setNetWeightValues(newNetWeights);
     dataArr[index][value] = e.target.value;
-    dataArr[index]['weightVariance'] = dataArr[index].theoreticalWeight - newValue
+    dataArr[index]['weightVariance'] =
+      dataArr[index].theoreticalWeight - newValue;
   };
 
   // Update unit value state when input changes
@@ -213,28 +237,28 @@ const MaterialDetailsForm = (props) => {
       totalWeight: totalNetWeight,
     });
   }
-  
+
   const onUnitChange = (e, index, value) => {
     setSelectedUnit(e);
     dataArr[index]['unit'] = e;
     calculateTheoreticalWeight(index, dataArr[index].unitVolume);
   };
 
-  const onActualNoofPcChange = (e, index, value) =>{
+  const onActualNoofPcChange = (e, index, value) => {
     let noOfPC = [...noOfPieces];
     noOfPC[index] = e.target.value;
     setNoOfPieces(noOfPC);
     dataArr[index][value] = e.target.value;
     calculateTheoreticalNoofPc(index, e.target.value);
-  }
+  };
   const calculateTheoreticalNoofPc = (index, value) => {
     let item = getInwardItem(dataArr[index].itemId);
     let theoreticalnoofPC = 0;
     let numericValue = parseFloat(value);
-        theoreticalnoofPC = (item.perPC)  * (numericValue);
+    theoreticalnoofPC = item.perPC * numericValue;
     dataArr[index].theoreticalNoofPieces = theoreticalnoofPC;
   };
-  
+
   return (
     <>
       <div>
@@ -250,6 +274,22 @@ const MaterialDetailsForm = (props) => {
                   initialValue: props.inwardId?.seqNo,
                 })(<Input id='inwardId' disabled />)}
               </Form.Item>
+              {/* <Form.Item label='Inward ID'>
+            <Input.Group compact>
+              {getFieldDecorator('inwardId', {
+                initialValue: props.inwardId?.seqNo,
+              })(
+                <Input
+                  id='inwardId'
+                  disabled
+                  style={{ width: '150px' }}
+                />
+              )}
+              <Button type="primary" style={{ width: '200px' }}>
+                Generate Item InwardId
+              </Button>
+            </Input.Group>
+          </Form.Item> */}
               <Form.Item label='Item Name'>
                 {getFieldDecorator('itemName', {
                   rules: [
@@ -307,7 +347,14 @@ const MaterialDetailsForm = (props) => {
                 {props.inwardDV.purposeType && (
                   <p>Purpose Type : {props.inwardDV.purposeType}</p>
                 )}
-                {props.inwardDV.vendorId && <p>Vendor Name : {props.inwardDV.vendorName? props.inwardDV.vendorName : vendorName}</p>}
+                {props.inwardDV.vendorId && (
+                  <p>
+                    Vendor Name :{' '}
+                    {props.inwardDV.vendorName
+                      ? props.inwardDV.vendorName
+                      : vendorName}
+                  </p>
+                )}
                 {props.inwardDV.vendorId && (
                   <p>Vendor ID : {props.inwardDV.vendorId}</p>
                 )}
@@ -468,22 +515,37 @@ const MaterialDetailsForm = (props) => {
                     </Col>
                     <Col lg={2} md={2} sm={24} xs={24}>
                       {/* Actual no of pieces */}
-                      <Input name='actualNoofPieces'  onChange={(e) =>
+                      <Input
+                        name='actualNoofPieces'
+                        onChange={(e) =>
                           onActualNoofPcChange(e, index, 'actualNoofPieces')
                         }
-                        value={dataArr[index]['actualNoofPieces']}></Input>
+                        value={dataArr[index]['actualNoofPieces']}
+                      ></Input>
                     </Col>
                     <Col lg={2} md={2} sm={24} xs={24}>
                       {/* theoretical weight */}
-                      <Input name='theoreticalWeight' value={dataArr[index]['theoreticalWeight']} disabled></Input>
+                      <Input
+                        name='theoreticalWeight'
+                        value={dataArr[index]['theoreticalWeight']}
+                        disabled
+                      ></Input>
                     </Col>
                     <Col lg={2} md={2} sm={24} xs={24}>
                       {/*  weight varience */}
-                      <Input name='weightVariance' value={dataArr[index]['weightVariance']} disabled></Input>
+                      <Input
+                        name='weightVariance'
+                        value={dataArr[index]['weightVariance']}
+                        disabled
+                      ></Input>
                     </Col>
                     <Col lg={2} md={2} sm={24} xs={24}>
                       {/* theoretical no of pieces */}
-                      <Input name='theoreticalNoofPieces' value={dataArr[index]['theoreticalNoofPieces']} disabled></Input>
+                      <Input
+                        name='theoreticalNoofPieces'
+                        value={dataArr[index]['theoreticalNoofPieces']}
+                        disabled
+                      ></Input>
                     </Col>
                   </React.Fragment>
                 );

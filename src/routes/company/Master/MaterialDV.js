@@ -13,6 +13,7 @@ import {
   Checkbox,
   Select,
   Icon,
+  Image
 } from 'antd';
 import { PlusCircleOutlined } from '@ant-design/icons';
 import moment from 'moment';
@@ -271,7 +272,7 @@ props.fetchBrandList({
   const deleteSelectedCoils = () => {
     console.log('dfd');
   };
-console.log("111111111111", viewMaterialData)
+
 const [itemImageFile, setItemImageFile] = useState();
 const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
   const onCrossFileChange = (info) => {
@@ -629,7 +630,7 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
       setButtonVisible(false);
     }
   }, [newParamName]);
-
+console.log("2222222222222222", props.materialDV.DVMaterialID)
   return (
     <div>
       <h1>
@@ -1379,6 +1380,14 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
                       &nbsp; Upload image here
                     </p>
                   </Dragger>
+                  {props.materialDV?.DVMaterialID?.itemImagePresignedURL && (
+                  <img
+                    width={300}
+                    src={props.materialDV?.DVMaterialID?.itemImagePresignedURL}
+                    alt={props.materialDV?.DVMaterialID?.itemImage}
+                    style={{ marginTop: 16 }}
+                  />
+                )}
                 </Col>
                 <Col lg={12} md={12} sm={24} xs={24}>
                   <h4>Cross Sectional Image</h4>
@@ -1392,6 +1401,14 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
                       &nbsp; Upload image here
                     </p>
                   </Dragger>
+                  {props.materialDV?.DVMaterialID?.crossSectionalImagePresignedURL && (
+                  <img
+                    width={300}
+                    src={props.materialDV?.DVMaterialID?.crossSectionalImagePresignedURL}
+                    alt={props.materialDV?.DVMaterialID?.crossSectionalImage}
+                    style={{ marginTop: 16 }}
+                  />
+                )}
                 </Col>
               </Row>
 
