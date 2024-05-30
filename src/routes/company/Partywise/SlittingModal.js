@@ -30,7 +30,10 @@ import {
   resetIsDeleted,
   QrCodeGeneratePlan,
 } from '../../../appRedux/actions/Inward';
-import { fetchClassificationList, fetchYLRList } from '../../../appRedux/actions';
+import {
+  fetchClassificationList,
+  fetchYLRList,
+} from '../../../appRedux/actions';
 import { labelPrintEditFinish } from '../../../appRedux/actions/LabelPrint';
 import IntlMessages from 'util/IntlMessages';
 import { set } from 'nprogress';
@@ -71,7 +74,7 @@ let uuid = 0;
 
 const SlittingWidths = (props) => {
   const { getFieldDecorator, getFieldValue, getFieldProps } = props.form;
-  getFieldDecorator("keys", { initialValue: [{ width: 0, no: 0, weight: 0 }] });
+  getFieldDecorator('keys', { initialValue: [{ width: 0, no: 0, weight: 0 }] });
   const [value, setValue] = useState(props.value);
   const [targetWeight, settargetWeight] = useState(0);
   const [availLength, setavailLength] = useState(0);
@@ -124,7 +127,10 @@ const SlittingWidths = (props) => {
   let cutWidth = callBackValue('width');
   let noParts = 0;
   useEffect(() => {
-    console.log("slitInstruction set to slitInstructionList", props.slitInstruction)
+    console.log(
+      'slitInstruction set to slitInstructionList',
+      props.slitInstruction
+    );
     props.setSlitInstructionList(props.slitInstruction);
   }, [props.slitInstruction]);
   useEffect(() => {
@@ -184,7 +190,7 @@ const SlittingWidths = (props) => {
   useEffect(() => {
     setWeightValue(props.coilDetails.fpresent);
   }, [props.coilDetails.fpresent]);
-  
+
   useEffect(() => {
     if (props.unfinish) {
       let actualUpdate = props.cuts.map((item) => {
@@ -225,7 +231,7 @@ const SlittingWidths = (props) => {
             )
           : 0;
       props.totalActualweight(actualTotalWeight);
-    } 
+    }
   }, [props.cuts]);
 
   useEffect(() => {
@@ -343,7 +349,7 @@ const SlittingWidths = (props) => {
                 : '',
               isScrapWeightUsed: false,
               deleteUniqId: unsavedDeleteId,
-              packetClassificationName:null,
+              packetClassificationName: null,
               packetClassificationId: null,
               endUserTagId: null,
             };
@@ -952,27 +958,27 @@ const CreateSlittingDetailsForm = (props) => {
       },
     },
     {
-      title: "End User Tags",
-      dataIndex: "party.endUserTags",
+      title: 'End User Tags',
+      dataIndex: 'party.endUserTags',
       render: (text, record, index) => {
         return (
           <Select
             showSearch
             disabled={props.unfinish}
             dropdownMatchSelectWidth={false}
-            optionFilterProp="children"
+            optionFilterProp='children'
             filterOption={(input, option) => {
               return option?.props?.children
                 ?.toLowerCase()
                 .includes(input.toLowerCase());
             }}
-            style={{ width: "100px" }}
+            style={{ width: '100px' }}
             value={record?.endUserTagsentity?.tagId}
             onChange={onInputChange(
-              "endUserTagsentity",
+              'endUserTagsentity',
               index,
               record,
-              "select"
+              'select'
             )}
           >
             {props.coilDetails.party.endUserTags?.map((item) => {
@@ -992,7 +998,7 @@ const CreateSlittingDetailsForm = (props) => {
         ),
     },
   ];
-  
+
   const desiredTags = ['WIP(CUT ENDS)', 'WIP(EDGE TRIM)', 'WIP(FG)'];
   const columnsPlan = [
     {
@@ -1057,9 +1063,9 @@ const CreateSlittingDetailsForm = (props) => {
         return (
           <Select
             showSearch
-            style={{ width: "100px" }}
+            style={{ width: '100px' }}
             dropdownMatchSelectWidth={false}
-            optionFilterProp="children"
+            optionFilterProp='children'
             filterOption={(input, option) => {
               return option?.props?.children
                 ?.toLowerCase()
@@ -1076,12 +1082,14 @@ const CreateSlittingDetailsForm = (props) => {
                 : record?.endUserTagId
             }
             // onChange={(e) => handleTagsChange(record, e, "endUser")}
-            onChange={(value) =>
-              handleTagsChange(value, index, record)
-            }
+            onChange={(value) => handleTagsChange(value, index, record)}
           >
             {props?.coilDetails.party?.endUserTags?.map((item) => {
-              return <Option key={item.tagId} value={item.tagId}>{item.tagName}</Option>;
+              return (
+                <Option key={item.tagId} value={item.tagId}>
+                  {item.tagName}
+                </Option>
+              );
             })}
           </Select>
         );
@@ -1290,19 +1298,7 @@ const CreateSlittingDetailsForm = (props) => {
       setTableData(newData);
     }
     props.resetIsDeleted(false);
-    
   }, [props.coilDetails]);
-
-  
-  // const handleTagsChange = useCallback((record, e, type) => {
-  //   console.log("record in handletagsChange", record)
-  //   setTagsName(e);
-  //   if (type === 'endUser') {
-  //     record.endUserTagId = e;
-  //   } else {
-  //     record.packetClassificationId = e;
-  //   }
-  // }, []);
 
   const onInputChange =
     (key, index, record, type) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1313,12 +1309,12 @@ const CreateSlittingDetailsForm = (props) => {
       const newData = [...tableData];
       const newIndex = (page - 1) * 10 + index;
       newData[newIndex][key] =
-        type === "select"
-          ? key === "endUserTagsentity"
+        type === 'select'
+          ? key === 'endUserTagsentity'
             ? { tagId: Number(e) }
             : { classificationId: Number(e) }
           : Number(e.target.value);
-      if (key === "actualWeight") {
+      if (key === 'actualWeight') {
         const data =
           (e.target.value /
             ((newData[newIndex]['actualWidth'] / 1000) *
@@ -1330,140 +1326,147 @@ const CreateSlittingDetailsForm = (props) => {
           : data.toFixed(1);
       }
       // Yield loss Ratio
-      if ((key === "packetClassification" && type === "select") || key === "actualWeight"){
-
-        const edgeTrimWeights = newData.filter((record) => {
-          const classificationName = getPackatClassificationName(record.packetClassification?.classificationId || record.packetClassification?.tagId);
-          return classificationName === "EDGE TRIM" || classificationName === "CUT ENDS";
-        }).map((record) => record.actualWeight);
-      
-        const totalActualWeight = newData.reduce((total, record) => total + record.actualWeight, 0);
-      
-        const sumEdgeTrimWeight = edgeTrimWeights.reduce((total, weight) => total + weight, 0);
-      
-        const yieldLossRatio = (sumEdgeTrimWeight / totalActualWeight) * 100; 
-        setactualYLR(yieldLossRatio);
-       }
-      setTableData(newData);
-        // Calculate total planned weight for SlitCut
-        // const slitAndCutItems = newData.filter(item => item.isSlitAndCut);
-
-        // const edgeTrimWeightsSlitCut = slitAndCutItems.filter((record) => {
-        //   const classificationName = getPackatClassificationName(record.packetClassification?.classificationId || record.packetClassification?.tagId);
-        //   return classificationName === "EDGE TRIM" || classificationName === "CUT ENDS";
-        // }).map((record) => record.plannedWeight);
-
-        // const totalPlannedWeight1 = slitAndCutItems.reduce((total, record) => total + record.plannedWeight, 0);
-
-        // const slitCutsumEdgeTrimWeight = edgeTrimWeightsSlitCut.reduce((total, weight) => total + weight, 0);
-
-        // const yieldLossRatioSlitCut = (slitCutsumEdgeTrimWeight / totalPlannedWeight1) * 100; 
-        // setactualSlitCutYLR(yieldLossRatioSlitCut);
-
-        // // Calculate total planned weight for Slitting
-        // const slittingItems = newData.filter(item => item.isSlitAndCut === false);
-
-        // const edgeTrimWeightsSlitting = slittingItems.filter((record) => {
-        //   const classificationName = getPackatClassificationName(record.packetClassification?.classificationId || record.packetClassification?.tagId);
-        //   return classificationName === "EDGE TRIM" || classificationName === "CUT ENDS";
-        // }).map((record) => record.plannedWeight);
-
-        // const totalPlannedWeight2 = slittingItems.reduce((total, record) => total + record.plannedWeight, 0);
-
-        // const slittingsumEdgeTrimWeight = edgeTrimWeightsSlitting.reduce((total, weight) => total + weight, 0);
-
-        // const yieldLossRatioSlitting = (slittingsumEdgeTrimWeight / totalPlannedWeight2) * 100; 
-        // setactualSlittingYLR(yieldLossRatioSlitting);
-
- };
-
- //calculate Coil level yield loss ratio
- const [plannedCoilLevelYLR, setPlannedCoilLevelYLR] = useState(0);
- const [actualCoilLevelYLR, setActualCoilLevelYLR] = useState(0);
- useEffect(() => {
-  let response = props.coilDetails.instruction;
-  const filteredInstructions = response?.filter(instruction =>
-    instruction.some(item =>      
-      (item.packetClassification?.classificationName ==="WIP(EDGE TRIM)" || item.packetClassification?.classificationName ==="WIP(CUT ENDS)" || item.packetClassification?.classificationName ==="EDGE TRIM" || item.packetClassification?.classificationName ==="CUT ENDS") && (item.packetClassification?.classificationName !==null)
-    )
-  );
-  //planned YLR
-  let sumOfScrapPlannedWeight = 0;
-    filteredInstructions.forEach(instruction => {
-      sumOfScrapPlannedWeight += (instruction[0].plannedWeight || 0);
-    });
-
-  //total plannedWeight
-  let sumOfTotalPlannedWeight = 0;
-    response.forEach(innerArray => {
-      innerArray.forEach(weight => {
-        if(weight.process.processId !== 3){
-          sumOfTotalPlannedWeight += (weight.plannedWeight || 0);
-        }
-      });
-  });
-  let coilPlannedYLR = 0;
-  coilPlannedYLR = (sumOfScrapPlannedWeight / sumOfTotalPlannedWeight) *100;
-  setPlannedCoilLevelYLR(coilPlannedYLR);
-
-  //Actual YLR
-  let sumOfScrapActualWeight = 0;
-    filteredInstructions.forEach(instruction => {
-      sumOfScrapActualWeight += (instruction[0].actualWeight || 0);
-    });
-  //total actualWeight
-  let sumOfTotalActualWeight = 0;
-    response.forEach(weight => {
-      sumOfTotalActualWeight += (weight[0].actualWeight || 0);
-    });
-  let coilActualYLR = 0;
-  coilActualYLR = (sumOfScrapActualWeight / sumOfTotalActualWeight) *100;
-  setActualCoilLevelYLR(coilActualYLR);
-
-}, []);
-
-    const handleTagsChange = (value, index, record) => {
-
-      const tableIndex = record.tableIndex;
-      panelList[tableIndex][index].endUserTagId = value;
       if (
-        record?.endUserTagId === null ||
-        record?.endUserTagId !== value
+        (key === 'packetClassification' && type === 'select') ||
+        key === 'actualWeight'
       ) {
-        record.endUserTagId = value;
+        const edgeTrimWeights = newData
+          .filter((record) => {
+            const classificationName = getPackatClassificationName(
+              record.packetClassification?.classificationId ||
+                record.packetClassification?.tagId
+            );
+            return (
+              classificationName === 'EDGE TRIM' ||
+              classificationName === 'CUT ENDS'
+            );
+          })
+          .map((record) => record.actualWeight);
+
+        const totalActualWeight = newData.reduce(
+          (total, record) => total + record.actualWeight,
+          0
+        );
+
+        const sumEdgeTrimWeight = edgeTrimWeights.reduce(
+          (total, weight) => total + weight,
+          0
+        );
+
+        const yieldLossRatio = (sumEdgeTrimWeight / totalActualWeight) * 100;
+        setactualYLR(yieldLossRatio);
       }
+      setTableData(newData);
     };
 
-    // Initialize an array to store tableDatapacketWeight for each table index
-  const [storedTableDatapacketWeights, setStoredTableDatapacketWeights] = useState(new Array(panelList.length).fill(0));
-  //addition of total loss weight for each table
-  const [totaltableDatapacketWeight, setTotaltableDatapacketWeight] = useState(new Array(panelList.length).fill(0));
-  
-  const [storedTotalTableDatapacketWeights, setStoredTotalTableDatapacketWeights] = useState(new Array(panelList.length).fill(0));
-  const [totaltableDatapacketPlannedWeight, setTotaltableDatapacketPlannedWeight] = useState(new Array(panelList.length).fill(0));
+  //calculate Coil level yield loss ratio
+  const [plannedCoilLevelYLR, setPlannedCoilLevelYLR] = useState(0);
+  const [actualCoilLevelYLR, setActualCoilLevelYLR] = useState(0);
+  useEffect(() => {
+    let response = props.coilDetails.instruction;
+    const filteredInstructions = response?.filter((instruction) =>
+      instruction.some(
+        (item) =>
+          (item.packetClassification?.classificationName === 'WIP(EDGE TRIM)' ||
+            item.packetClassification?.classificationName === 'WIP(CUT ENDS)' ||
+            item.packetClassification?.classificationName === 'EDGE TRIM' ||
+            item.packetClassification?.classificationName === 'CUT ENDS') &&
+          item.packetClassification?.classificationName !== null
+      )
+    );
+    //planned YLR
+    let sumOfScrapPlannedWeight = 0;
+    filteredInstructions.forEach((instruction) => {
+      sumOfScrapPlannedWeight += instruction[0].plannedWeight || 0;
+    });
 
- 
-  const  getPackatClassificationName = (value) =>{ 
-    if(value===undefined)
-    {value=0;}
-    return packetClassification.filter((item)=>item.tagId==value)?.[0].tagName;
-  }
+    //total plannedWeight
+    let sumOfTotalPlannedWeight = 0;
+    response.forEach((innerArray) => {
+      innerArray.forEach((weight) => {
+        if (weight.process.processId !== 3) {
+          sumOfTotalPlannedWeight += weight.plannedWeight || 0;
+        }
+      });
+    });
+    let coilPlannedYLR = 0;
+    coilPlannedYLR = (sumOfScrapPlannedWeight / sumOfTotalPlannedWeight) * 100;
+    setPlannedCoilLevelYLR(coilPlannedYLR);
+
+    //Actual YLR
+    let sumOfScrapActualWeight = 0;
+    filteredInstructions.forEach((instruction) => {
+      sumOfScrapActualWeight += instruction[0].actualWeight || 0;
+    });
+    //total actualWeight
+    let sumOfTotalActualWeight = 0;
+    response.forEach((weight) => {
+      sumOfTotalActualWeight += weight[0].actualWeight || 0;
+    });
+    let coilActualYLR = 0;
+    coilActualYLR = (sumOfScrapActualWeight / sumOfTotalActualWeight) * 100;
+    setActualCoilLevelYLR(coilActualYLR);
+  }, []);
+
+  const handleTagsChange = (value, index, record) => {
+    const tableIndex = record.tableIndex;
+    let newIndex = 0;
+
+    if (page !== 1) {
+      newIndex = (page - 1) * 10 + index;
+    } else {
+      newIndex = index;
+    }
+
+    panelList[tableIndex][newIndex].endUserTagId = value;
+    if (record?.endUserTagId === null || record?.endUserTagId !== value) {
+      record.endUserTagId = value;
+    }
+
+    setPanelList([...panelList]);
+  };
+
+  // Initialize an array to store tableDatapacketWeight for each table index
+  const [storedTableDatapacketWeights, setStoredTableDatapacketWeights] =
+    useState(new Array(panelList.length).fill(0));
+  //addition of total loss weight for each table
+  const [totaltableDatapacketWeight, setTotaltableDatapacketWeight] = useState(
+    new Array(panelList.length).fill(0)
+  );
+
+  const [
+    storedTotalTableDatapacketWeights,
+    setStoredTotalTableDatapacketWeights,
+  ] = useState(new Array(panelList.length).fill(0));
+  const [
+    totaltableDatapacketPlannedWeight,
+    setTotaltableDatapacketPlannedWeight,
+  ] = useState(new Array(panelList.length).fill(0));
+
+  const getPackatClassificationName = (value) => {
+    if (value === undefined) {
+      value = 0;
+    }
+    return packetClassification.filter((item) => item.tagId == value)?.[0]
+      .tagName;
+  };
 
   const calculateAdjustedIndex = (tableIndex, index) => {
     // Get the current page and records per page from the state
     const currentPage = page; // Assuming 'page' is the current page state variable
-    const recordsPerPage = 10; 
+    const recordsPerPage = 10;
 
     // Calculate adjusted index based on current page and records per page
     const adjustedIndex = (currentPage - 1) * recordsPerPage + index;
     return adjustedIndex;
-};
+  };
 
   const handleClassificationChange = (value, index, record) => {
     const tableIndex = record.tableIndex;
     const adjustedIndex = calculateAdjustedIndex(record.tableIndex, index);
     panelList[tableIndex][adjustedIndex].packetClassificationId = value;
-    panelList[tableIndex][adjustedIndex].packetClassificationName = getPackatClassificationName(value);
+    panelList[tableIndex][adjustedIndex].packetClassificationName =
+      getPackatClassificationName(value);
     // Assuming packetClassification is an object within record to display option name in dropdown
     if (
       record?.packetClassificationId === null ||
@@ -1478,61 +1481,69 @@ const CreateSlittingDetailsForm = (props) => {
 
     panelList[tableIndex].map((tableRecord) => {
       // Update the relevant data in tableData
-      // if ( tableRecord.packetClassificationId === 26 || tableRecord.packetClassificationId === 27
-      if ( tableRecord.packetClassificationName === 'WIP(EDGE TRIM)' || tableRecord.packetClassificationName === 'WIP(CUT ENDS)'
-      ) 
-      {
-        tableDatapacketWeight += tableRecord.plannedWeight!== undefined? parseFloat(tableRecord.plannedWeight): 0;
+      if (
+        tableRecord.packetClassificationName === 'WIP(EDGE TRIM)' ||
+        tableRecord.packetClassificationName === 'WIP(CUT ENDS)'
+      ) {
+        tableDatapacketWeight +=
+          tableRecord.plannedWeight !== undefined
+            ? parseFloat(tableRecord.plannedWeight)
+            : 0;
       }
-      tdTotalPlannedWeight += tableRecord.plannedWeight!== undefined? parseFloat(tableRecord.plannedWeight): 0;
+      tdTotalPlannedWeight +=
+        tableRecord.plannedWeight !== undefined
+          ? parseFloat(tableRecord.plannedWeight)
+          : 0;
       // Return the original tableRecord for other indices
       return tableRecord;
     });
 
     var TDlossRatio = (tableDatapacketWeight / tdTotalPlannedWeight) * 100;
     //addition of tableDatapacketWeight for total yield loss ratio
-    var totaltableDatapacketWeight =0;
+    var totaltableDatapacketWeight = 0;
     totaltableDatapacketWeight += tableDatapacketWeight;
-    console.log("totaltableDatapacketWeight", totaltableDatapacketWeight); 
+    console.log('totaltableDatapacketWeight', totaltableDatapacketWeight);
     // Update storedTableDatapacketWeights with the cumulative tableDatapacketWeight for the specific table index
-    const updatedStoredTableDatapacketWeights = [...storedTableDatapacketWeights];
+    const updatedStoredTableDatapacketWeights = [
+      ...storedTableDatapacketWeights,
+    ];
     updatedStoredTableDatapacketWeights[tableIndex] = tableDatapacketWeight;
     setStoredTableDatapacketWeights(updatedStoredTableDatapacketWeights);
 
-    // Update totaltableDatapacketWeight with the cumulative tableDatapacketWeight for all table indices
-    // const updatedTotaltableDatapacketWeight = updatedStoredTableDatapacketWeights.reduce((acc, curr) => acc + curr, 0);
-    // setTotaltableDatapacketWeight(updatedTotaltableDatapacketWeight);
-    const updatedTotaltableDatapacketWeight = updatedStoredTableDatapacketWeights.reduce((acc, curr) => {
-      // Check if the current element is a number
-      if (typeof curr === 'number' && !isNaN(curr)) {
+    const updatedTotaltableDatapacketWeight =
+      updatedStoredTableDatapacketWeights.reduce((acc, curr) => {
+        // Check if the current element is a number
+        if (typeof curr === 'number' && !isNaN(curr)) {
           return acc + curr; // Add only if it's a valid number
-      }
-      return acc; // Otherwise, return the accumulator unchanged
-  }, 0);
-  
-  setTotaltableDatapacketWeight(updatedTotaltableDatapacketWeight);
+        }
+        return acc; // Otherwise, return the accumulator unchanged
+      }, 0);
 
-  //Planned total weight calculation
-   const updatedStoredPlannedWeights = [...storedTotalTableDatapacketWeights];
-  updatedStoredPlannedWeights[tableIndex] = tdTotalPlannedWeight;
-  setStoredTotalTableDatapacketWeights(updatedStoredPlannedWeights);
+    setTotaltableDatapacketWeight(updatedTotaltableDatapacketWeight);
 
-  const updatedTotalPlannedWeight = updatedStoredPlannedWeights.reduce((acc, curr) => {
-    // Check if the current element is a number
-    if (typeof curr === 'number' && !isNaN(curr)) {
-        return acc + curr; // Add only if it's a valid number
-    }
-    return acc; // Otherwise, return the accumulator unchanged
-}, 0);
+    //Planned total weight calculation
+    const updatedStoredPlannedWeights = [...storedTotalTableDatapacketWeights];
+    updatedStoredPlannedWeights[tableIndex] = tdTotalPlannedWeight;
+    setStoredTotalTableDatapacketWeights(updatedStoredPlannedWeights);
 
-setTotaltableDatapacketPlannedWeight(updatedTotalPlannedWeight);
+    const updatedTotalPlannedWeight = updatedStoredPlannedWeights.reduce(
+      (acc, curr) => {
+        // Check if the current element is a number
+        if (typeof curr === 'number' && !isNaN(curr)) {
+          return acc + curr; // Add only if it's a valid number
+        }
+        return acc; // Otherwise, return the accumulator unchanged
+      },
+      0
+    );
+
+    setTotaltableDatapacketPlannedWeight(updatedTotalPlannedWeight);
 
     const newArray = [...yieldLossRatio];
-    newArray[tableIndex] = TDlossRatio !== undefined? TDlossRatio: 0;
+    newArray[tableIndex] = TDlossRatio !== undefined ? TDlossRatio : 0;
     setYieldLossRatio(newArray);
-
   };
-console.log("setTotaltableDatapacketWeight", totaltableDatapacketWeight);
+  console.log('setTotaltableDatapacketWeight', totaltableDatapacketWeight);
   useEffect(() => {
     let processTags = [{ tagId: 0, tagName: 'Select' }];
     processTags = [...processTags, ...props?.processTags];
@@ -1566,57 +1577,63 @@ console.log("setTotaltableDatapacketWeight", totaltableDatapacketWeight);
         });
     }
   }, [props.inward.pdfSuccess]);
-//Yield loss ratio
-const columnYieldLoss = [
-  {
-    title: 'Sr. No',
-    key: 'index',
-    render: (text, record, index) => (page - 1) * 10 + index + 1,
-  },
-  {
-    title: 'Customer Name',
-    dataIndex: 'partyName',
-    key: 'partyName',
-  },
-  {
-    title: 'Loss Ratio from',
-    dataIndex: 'lossRatioPercentageFrom',
-    key: 'lossRatioPercentageFrom',
-  },
-  {
-    title: 'Loss Ratio to',
-    dataIndex: 'lossRatioPercentageTo',
-    key: 'lossRatioPercentageTo',
-  },
-  {
-    title: 'Comments',
-    dataIndex: 'comments',
-    key: 'comments',
-  },
-]
+  //Yield loss ratio
+  const columnYieldLoss = [
+    {
+      title: 'Sr. No',
+      key: 'index',
+      render: (text, record, index) => (page - 1) * 10 + index + 1,
+    },
+    {
+      title: 'Customer Name',
+      dataIndex: 'partyName',
+      key: 'partyName',
+    },
+    {
+      title: 'Loss Ratio from',
+      dataIndex: 'lossRatioPercentageFrom',
+      key: 'lossRatioPercentageFrom',
+    },
+    {
+      title: 'Loss Ratio to',
+      dataIndex: 'lossRatioPercentageTo',
+      key: 'lossRatioPercentageTo',
+    },
+    {
+      title: 'Comments',
+      dataIndex: 'comments',
+      key: 'comments',
+    },
+  ];
   useEffect(() => {
     if (props.yieldLossRatioParty === undefined) {
       props.fetchYLRList({
-        pageNo: "1",
-        pageSize: "500",
+        pageNo: '1',
+        pageSize: '500',
         partyId: props.coil.party.nPartyId,
-        ipAddress: "",
-        requestId: "YLR_PLAN_GET",
-        userId: ""
+        ipAddress: '',
+        requestId: 'YLR_PLAN_GET',
+        userId: '',
       });
     }
-  }, []); 
-  
+  }, []);
+
   const [slittingfilteredData, setSlittingFilteredData] = useState();
   const [slitCutfilteredData, setSlitCutFilteredData] = useState();
   useEffect(() => {
     if (props.yieldLossRatioParty !== undefined) {
       const filterContentByProcessName = (processName, content) => {
-        return content.filter(item => item.processName === processName);
-      }
-  
-      const filteredDataSlitting = filterContentByProcessName("SLITTING", props.yieldLossRatioParty);
-      const filteredDataSlitCut = filterContentByProcessName("SLIT AND CUT", props.yieldLossRatioParty);
+        return content.filter((item) => item.processName === processName);
+      };
+
+      const filteredDataSlitting = filterContentByProcessName(
+        'SLITTING',
+        props.yieldLossRatioParty
+      );
+      const filteredDataSlitCut = filterContentByProcessName(
+        'SLIT AND CUT',
+        props.yieldLossRatioParty
+      );
       setSlittingFilteredData(filteredDataSlitting);
       setSlitCutFilteredData(filteredDataSlitCut);
     }
@@ -1684,83 +1701,9 @@ const columnYieldLoss = [
     setDeletedSelected(false);
     props.setShowSlittingModal(false);
   };
-  
-  const sum = (totaltableDatapacketWeight / totaltableDatapacketPlannedWeight) * 100 || 0;
-  // useEffect(() => {
-  //   const updatedTmpGroupedInstructions = new Map();
 
-  //   const tmpLossRatio = Array(panelList.length).fill(0);
-  //   // Group instructions by date
-  //   panelList.forEach((innerArray, panelIndex) => {
-  //     innerArray.forEach((item, rowIndex) => {
-  //       // const instructionDate = item.instructionDate.split(' ')[0];
-  //        const instructionDate = item.instructionDate;
-
-  //       if (!updatedTmpGroupedInstructions.has(instructionDate)) {
-  //         updatedTmpGroupedInstructions.set(instructionDate, []);
-  //       }
-
-  //       // Add 'tableIndex' property to each object inside the 'item' array
-  //       // and update another property using 'tableIndex' and 'rowIndex'
-  //       const updatedItem = {
-  //         ...item,
-  //         tableIndex: panelIndex,
-  //         // Add your logic to update another property based on 'tableIndex' and 'rowIndex'
-  //         anotherProperty: `${panelIndex}-${rowIndex}`,
-  //       };
-
-  //       updatedTmpGroupedInstructions.get(instructionDate).push(updatedItem);
-  //     });
-  //   });
-  
-  //   // Update the state with the new tmpGroupedInstructions
-  //   setGroupedInstructions(updatedTmpGroupedInstructions);
-
-
-  //   console.log('inside calc....');
-  //   const newArray = [...yieldLossRatio];
-  //   const updatedStoredTableDatapacketWeights = [...storedTableDatapacketWeights];
-        
-  //   for (let i = 0; i < panelList.length; i++) {
-  //     var tableDatapacketWeight = 0;
-  //     var tdTotalPlannedWeight = 0;
-
-  //     panelList[i].map((tableRecord) => {
-  //       // Update the relevant data in tableData
-  //       // if ( tableRecord.packetClassificationId === 26 || tableRecord.packetClassificationId === 27
-  //       if ( tableRecord?.packetClassification?.classificationName === 'WIP(EDGE TRIM)' || tableRecord?.packetClassification?.classificationName === 'WIP(CUT ENDS)'
-  //       ) 
-  //       {
-  //         tableDatapacketWeight += tableRecord?.plannedWeight !== undefined? parseFloat(tableRecord?.plannedWeight): 0;
-  //       }
-  //       tdTotalPlannedWeight += tableRecord?.plannedWeight !== undefined? parseFloat(tableRecord?.plannedWeight): 0;
-  //       // Return the original tableRecord for other indices
-  //       return tableRecord;
-  //     });
-
-  //     var TDlossRatio = tdTotalPlannedWeight!== 0 ? (tableDatapacketWeight / tdTotalPlannedWeight) * 100: 0;
-
-  //     //addition of tableDatapacketWeight for total yield loss ratio
-  //     var totaltableDatapacketWeight =0;
-  //     totaltableDatapacketWeight += tableDatapacketWeight;
-  //     console.log("totaltableDatapacketWeight", totaltableDatapacketWeight); 
-  //     // Update storedTableDatapacketWeights with the cumulative tableDatapacketWeight for the specific table index
-  //     updatedStoredTableDatapacketWeights[i] = tableDatapacketWeight;
-      
-
-  //     newArray[i] = TDlossRatio !== undefined? TDlossRatio: 0;
-
-  //     console.log('inside calc....2', newArray);
-  //     // setTotalYLR(totalsum);
-  //   }
-  //   setStoredTableDatapacketWeights(updatedStoredTableDatapacketWeights);
-
-  //     // Update totaltableDatapacketWeight with the cumulative tableDatapacketWeight for all table indices
-  //     const updatedTotaltableDatapacketWeight = updatedStoredTableDatapacketWeights.reduce((acc, curr) => acc + curr, 0);
-  //     setTotaltableDatapacketWeight(updatedTotaltableDatapacketWeight);
-  //   setYieldLossRatio(newArray);
-
-  // }, [panelList]); 
+  const sum =
+    (totaltableDatapacketWeight / totaltableDatapacketPlannedWeight) * 100 || 0;
 
   useEffect(() => {
     const updatedTmpGroupedInstructions = new Map();
@@ -1770,7 +1713,7 @@ const columnYieldLoss = [
     panelList.forEach((innerArray, panelIndex) => {
       innerArray.forEach((item, rowIndex) => {
         // const instructionDate = item.instructionDate.split(' ')[0];
-         const instructionDate = item.instructionDate;
+        const instructionDate = item.instructionDate;
 
         if (!updatedTmpGroupedInstructions.has(instructionDate)) {
           updatedTmpGroupedInstructions.set(instructionDate, []);
@@ -1804,7 +1747,7 @@ const columnYieldLoss = [
         editFinish: props?.editFinish,
       };
       props.updateInstruction(coil);
-      props.labelPrintEditFinish(coil)
+      props.labelPrintEditFinish(coil);
       props.setShowSlittingModal(false);
     } else if (props.editFinish) {
       const instructionList = tableData.filter((item) =>
@@ -1819,20 +1762,24 @@ const columnYieldLoss = [
         editFinish: props?.editFinish,
       };
       props.updateInstruction(coil);
-       props.labelPrintEditFinish(coil);
+      props.labelPrintEditFinish(coil);
       props.setShowSlittingModal(false);
-    } else if(props.editFinish){
-      const instructionList = tableData.filter(item =>editedRecordState.some(record=> record.instructionId === item.instructionId))
+    } else if (props.editFinish) {
+      const instructionList = tableData.filter((item) =>
+        editedRecordState.some(
+          (record) => record.instructionId === item.instructionId
+        )
+      );
       const coil = {
         number: props.coil.coilNumber,
         instruction: instructionList,
         unfinish: props?.unfinish,
-        editFinish: props?.editFinish
+        editFinish: props?.editFinish,
       };
       props.updateInstruction(coil);
       props.labelPrintEditFinish(coil);
       props.setShowSlittingModal(false);
-    }else if (props.wip) {
+    } else if (props.wip) {
       //
       const isAllWip = tableData.every(
         (item) =>
@@ -1872,27 +1819,32 @@ const columnYieldLoss = [
       if (slitInstruction.length === parts) {
         setValue(value + 3);
         setDeletedSelected(false);
-        if (name === "Slitting") {
+        if (name === 'Slitting') {
           if (slitPayload.length > 0) {
-            const modifiedSlitInstruction = slitInstruction.map((instruction) => {
-              // Map over each instruction in instructionRequestDTOs and add instructionwiseLoss
-              const updatedInstructions = instruction.instructionRequestDTOs.map((instructionDTO, index) => {
+            const modifiedSlitInstruction = slitInstruction.map(
+              (instruction) => {
+                // Map over each instruction in instructionRequestDTOs and add instructionwiseLoss
+                const updatedInstructions =
+                  instruction.instructionRequestDTOs.map(
+                    (instructionDTO, index) => {
+                      return {
+                        ...instructionDTO,
+                        // instructionwiseLoss: yieldLossRatio[index] // Assuming yieldLoss array is synchronized with instructionRequestDTOs
+                      };
+                    }
+                  );
+
+                // Add totalYield to partDetailsRequest1
                 return {
-                  ...instructionDTO,
-                  // instructionwiseLoss: yieldLossRatio[index] // Assuming yieldLoss array is synchronized with instructionRequestDTOs
+                  ...instruction,
+                  partDetailsRequest: {
+                    ...instruction.partDetailsRequest,
+                    plannedYieldLossRatio: sum,
+                  },
+                  instructionRequestDTOs: updatedInstructions, // Replace instructionRequestDTOs with updated array
                 };
-              });
-    
-              // Add totalYield to partDetailsRequest1
-              return {
-                ...instruction,
-                partDetailsRequest: {
-                  ...instruction.partDetailsRequest,
-                  plannedYieldLossRatio: sum,
-                },
-                instructionRequestDTOs: updatedInstructions // Replace instructionRequestDTOs with updated array
-              };
-            });
+              }
+            );
             // props.saveSlittingInstruction(slitInstruction);
             props.saveSlittingInstruction(modifiedSlitInstruction);
           } else {
@@ -1900,11 +1852,9 @@ const columnYieldLoss = [
             props.setShowSlittingModal(false);
           }
         } else {
-          if (name === "SlitCut") {
+          if (name === 'SlitCut') {
             if (slitPayload.length > 0) {
-           
-                props.saveSlittingInstruction(slitInstruction);
-             
+              props.saveSlittingInstruction(slitInstruction);
             }
           } else {
             props.resetIsDeleted(false);
@@ -1912,7 +1862,7 @@ const columnYieldLoss = [
           }
         }
       } else {
-        if (name === "slittingDetail") {
+        if (name === 'slittingDetail') {
           setValue(value + 3);
           props.resetIsDeleted(false);
           props.setShowSlittingModal(false);
@@ -1924,7 +1874,7 @@ const columnYieldLoss = [
         }
       }
     } else {
-      if (name === "slittingDetail") {
+      if (name === 'slittingDetail') {
         setValue(value + 3);
         props.resetIsDeleted(false);
         props.setShowSlittingModal(false);
@@ -1933,29 +1883,32 @@ const columnYieldLoss = [
         setDeletedSelected(false);
       }
     }
-  }
+  };
 
   const { confirm } = Modal;
   const handleOk = (e, name, record) => {
-    if(slittingfilteredData !== undefined){
-     
-        const lossRatioPercentageToValues = slittingfilteredData.map(item => item.lossRatioPercentageTo);
+    if (slittingfilteredData !== undefined) {
+      const lossRatioPercentageToValues = slittingfilteredData.map(
+        (item) => item.lossRatioPercentageTo
+      );
 
-        const compareYieldLoss = lossRatioPercentageToValues.filter(value => sum > value);
+      const compareYieldLoss = lossRatioPercentageToValues.filter(
+        (value) => sum > value
+      );
 
-        console.log("compareYieldLoss:", compareYieldLoss);
+      console.log('compareYieldLoss:', compareYieldLoss);
 
-        if (compareYieldLoss.length > 0) {
-            // message.warning('take approval from customer or change the plan');
-            confirm({
-              title: 'take approval from customer or change the plan.',
-              okText: 'OK',
-              onOk() {
-                  savePlan(e, name, record);
-              },
-          });
-            return;
-        }
+      if (compareYieldLoss.length > 0) {
+        // message.warning('take approval from customer or change the plan');
+        confirm({
+          title: 'take approval from customer or change the plan.',
+          okText: 'OK',
+          onOk() {
+            savePlan(e, name, record);
+          },
+        });
+        return;
+      }
     }
 
     // e.preventDefault();
@@ -1963,7 +1916,7 @@ const columnYieldLoss = [
   };
 
   const handleWeight = (e, record) => {
-    console.log("record", record)
+    console.log('record', record);
     e.preventDefault();
     // if (
     //   Number(record.plannedWeight) + totalActualweight > tweight ||
@@ -1990,10 +1943,10 @@ const columnYieldLoss = [
       const instructionPayload = [
         {
           partDetailsRequest: {
-            targetWeight: "0",
-            length: "0",
-            createdBy: "1",
-            updatedBy: "1",
+            targetWeight: '0',
+            length: '0',
+            createdBy: '1',
+            updatedBy: '1',
             deleteUniqId: 0,
           },
           instructionRequestDTOs: [
@@ -2005,7 +1958,8 @@ const columnYieldLoss = [
               actualLength: record?.actualLength,
               actualWidth: record?.actualWidth,
               // actualWeight: record?.actualWeight,
-              actualWeight: record?.actualWeight || props?.coilDetails?.scrapWeight,
+              actualWeight:
+                record?.actualWeight || props?.coilDetails?.scrapWeight,
               plannedWidth: record?.plannedWidth,
               isSlitAndCut: false,
               plannedNoOfPieces: '1',
@@ -2015,7 +1969,7 @@ const columnYieldLoss = [
               groupId: null,
               // plannedWeight:
               //   props?.coilDetails?.scrapWeight || record.actualWeight || 0,
-               plannedWeight: props?.coilDetails?.scrapWeight || 0,
+              plannedWeight: props?.coilDetails?.scrapWeight || 0,
               inwardId: props?.coilDetails?.inwardEntryId,
               parentInstructionId: '',
               endUserTagId: record?.endUserTagsentity?.tagId,
@@ -2049,15 +2003,15 @@ const columnYieldLoss = [
           : props?.coilDetails?.scrapWeight,
       actualWeight: '',
       packetClassification: {
-        tagName: "",
+        tagName: '',
       },
       endUserTags: {
-        tagsName: "",
+        tagsName: '',
       },
     };
     setTableData([...tableData, newData]);
   };
-  console.log("tableData Add row", tableData);
+  console.log('tableData Add row', tableData);
   const getFooterButtons = (type) => {
     return [
       <Button key='back' onClick={handleCancel}>
@@ -2169,7 +2123,12 @@ const columnYieldLoss = [
                     </p>
                     <p>Inward Weight(kg) : {props.coil.fQuantity}</p>
                     <p>Grade: {props.coil.materialGrade.gradeName}</p>
-                    <p>Coil level Planned YLR (%): {isNaN(plannedCoilLevelYLR) ? 0 : plannedCoilLevelYLR.toFixed(2)}</p>
+                    <p>
+                      Coil level Planned YLR (%):{' '}
+                      {isNaN(plannedCoilLevelYLR)
+                        ? 0
+                        : plannedCoilLevelYLR.toFixed(2)}
+                    </p>
                   </Col>
 
                   <Col lg={8} md={12} sm={24} xs={24}>
@@ -2181,7 +2140,12 @@ const columnYieldLoss = [
                       Available Width(mm):{' '}
                       {props.childCoil ? insData.actualWidth : widthValue}
                     </p>
-                    <p>Coil level Actual YLR (%) : {isNaN(actualCoilLevelYLR) ? 0 : actualCoilLevelYLR.toFixed(2)}</p>
+                    <p>
+                      Coil level Actual YLR (%) :{' '}
+                      {isNaN(actualCoilLevelYLR)
+                        ? 0
+                        : actualCoilLevelYLR.toFixed(2)}
+                    </p>
                   </Col>
 
                   <Col lg={24} md={24} sm={24} xs={24}>
@@ -2228,7 +2192,7 @@ const columnYieldLoss = [
                         )}
                       </Form.Item>
 
-                     {/* <Form.Item label='Planned yield loss ratio (%)'>
+                      {/* <Form.Item label='Planned yield loss ratio (%)'>
                         {getFieldDecorator('plannedYieldLossRatio', {
                           initialValue: props.coil.party.plannedYieldLossRatio || '',
                           rules: [{ required: false }],
@@ -2276,7 +2240,8 @@ const columnYieldLoss = [
                       </Form.Item>  */}
                       <Form.Item label='Actual yield loss ratio (plan level) (%)'>
                         {getFieldDecorator('actualYieldLossRatio', {
-                          initialValue: props.coil.party.actualYieldLossRatio || '',
+                          initialValue:
+                            props.coil.party.actualYieldLossRatio || '',
                           rules: [{ required: false }],
                         })(
                           <>
@@ -2358,7 +2323,12 @@ const columnYieldLoss = [
                             )} Slitting Date: ${date} ${String.fromCharCode(
                               160
                             )} Yield loss (%): ${
-                              yieldLossRatio[tableIndex] ? parseFloat(yieldLossRatio[tableIndex]).toFixed(2) : '0.00'} `}
+                              yieldLossRatio[tableIndex]
+                                ? parseFloat(
+                                    yieldLossRatio[tableIndex]
+                                  ).toFixed(2)
+                                : '0.00'
+                            } `}
                             key={date}
                           >
                             <Table
@@ -2424,13 +2394,20 @@ const columnYieldLoss = [
                               <Input
                                 id='plannedCoilLevelYLR'
                                 disabled={true}
-                                value={isNaN(plannedCoilLevelYLR) ? 0 : plannedCoilLevelYLR.toFixed(2)}
+                                value={
+                                  isNaN(plannedCoilLevelYLR)
+                                    ? 0
+                                    : plannedCoilLevelYLR.toFixed(2)
+                                }
                                 name='plannedCoilLevelYLR'
                               />
                             </>
                           )}
                         </Form.Item>
-                        <Form.Item label='Coil level actual yield loss (%)' style={{marginLeft: 1}}>
+                        <Form.Item
+                          label='Coil level actual yield loss (%)'
+                          style={{ marginLeft: 1 }}
+                        >
                           {getFieldDecorator('actualCoilLevelYLR', {
                             rules: [{ required: false }],
                           })(
@@ -2438,7 +2415,11 @@ const columnYieldLoss = [
                               <Input
                                 id='actualCoilLevelYLR'
                                 disabled={true}
-                                value={isNaN(actualCoilLevelYLR) ? 0 : actualCoilLevelYLR.toFixed(2)}
+                                value={
+                                  isNaN(actualCoilLevelYLR)
+                                    ? 0
+                                    : actualCoilLevelYLR.toFixed(2)
+                                }
                                 name='actualCoilLevelYLR'
                               />
                             </>
@@ -2518,7 +2499,11 @@ const columnYieldLoss = [
                     <Table
                       className='gx-table-responsive'
                       columns={columnYieldLoss}
-                      dataSource={props.slitCut ? slitCutfilteredData  : slittingfilteredData }
+                      dataSource={
+                        props.slitCut
+                          ? slitCutfilteredData
+                          : slittingfilteredData
+                      }
                     />
                   </Col>
                 </Row>
@@ -2535,7 +2520,7 @@ const mapStateToProps = (state) => ({
   party: state.party,
   inward: state.inward,
   processTags: state.packetClassification?.processTags,
-  yieldLossRatioParty: state.yieldLossRatio.YLRList.content
+  yieldLossRatioParty: state.yieldLossRatio.YLRList.content,
 });
 
 const SlittingDetailsForm = Form.create({
@@ -2606,5 +2591,5 @@ export default connect(mapStateToProps, {
   QrCodeGeneratePlan,
   labelPrintEditFinish,
   fetchClassificationList,
-  fetchYLRList
+  fetchYLRList,
 })(SlittingDetailsForm);
