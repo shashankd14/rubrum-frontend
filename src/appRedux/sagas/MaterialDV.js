@@ -74,8 +74,8 @@ function* addDVMaterial(action) {
     const formData = new FormData();
     formData.append("materialMasterRequest", JSON.stringify(materialMasterRequest));
     formData.append("additionalParams", JSON.stringify(payload.additionalParams));
-    formData.append("itemImage", JSON.stringify(payload.itemImage || ''));
-    formData.append("crossSectionalImage", JSON.stringify(payload.crossSectionalImage || ''));
+    formData.append("itemImage", (payload.itemImage || ''));
+    formData.append("crossSectionalImage", (payload.crossSectionalImage || ''));
     
     try {
         const addMaterial = yield fetch(`${baseUrl}api/trading/material/save`, {
@@ -119,8 +119,8 @@ function* updateDVMaterial(action) {
     const formData = new FormData();
     formData.append("materialMasterRequest", JSON.stringify(materialMasterRequest));
     formData.append("additionalParams", JSON.stringify(payload.additionalParams));
-    formData.append("itemImage", JSON.stringify(payload.itemImage || ''));
-    formData.append("crossSectionalImage", JSON.stringify(payload.crossSectionalImage || ''));
+    formData.append("itemImage", (payload.itemImage || ''));
+    formData.append("crossSectionalImage", (payload.crossSectionalImage || ''));
     try {
         const updateMaterial = yield fetch(`${baseUrl}api/trading/material/update`, {
                 method: 'PUT',

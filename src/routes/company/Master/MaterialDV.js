@@ -12,8 +12,7 @@ import {
   Input,
   Checkbox,
   Select,
-  Icon,
-  Image
+  Icon
 } from 'antd';
 import { PlusCircleOutlined } from '@ant-design/icons';
 import moment from 'moment';
@@ -275,20 +274,16 @@ props.fetchBrandList({
 
 const [itemImageFile, setItemImageFile] = useState();
 const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
-  const onCrossFileChange = (info) => {
-    if (info.file.status === 'uploading') {
-      // File has been uploaded successfully
-      setCrossSectionalImageFile(info.file.name);
-    } else if (info.file.status === 'error') {
-      // Error occurred while uploading the file
-      console.error('Error uploading file:', info.file.error);
-    }
-  };
+
+const onCrossFileChange = (info) => {
+  if (info.file.status === 'done' || info.file.status === 'uploading') {
+    setCrossSectionalImageFile(info.file.originFileObj);
+  }
+};
+
   const onItemFileChange = (info) => {
-    if (info.file.status === 'uploading') {
-      setItemImageFile(info.file.name);
-    } else if (info.file.status === 'error') {
-      console.error('Error uploading file:', info.file.error);
+    if (info.file.status === 'done' || info.file.status === 'uploading') {
+      setItemImageFile(info.file.originFileObj);
     }
   };
  
@@ -630,7 +625,7 @@ const [crossSectionalImageFile, setCrossSectionalImageFile] = useState();
       setButtonVisible(false);
     }
   }, [newParamName]);
-console.log("2222222222222222", props.materialDV.DVMaterialID)
+
   return (
     <div>
       <h1>
