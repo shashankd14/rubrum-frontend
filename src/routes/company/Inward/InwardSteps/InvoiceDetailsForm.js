@@ -40,6 +40,7 @@ const InvoiceDetailsForm = props => {
     React.useEffect(() => {
         if (props.params !== '') {
             props.inward.batchNo = props.inward.batchNumber;
+            props.inward.tdcNo = props.inward.tdcNo;
             props.inward.vehicleNumber = props.inward.vLorryNo;
             props.inward.invoiceNumber = props.inward.vInvoiceNo;
         }
@@ -71,9 +72,16 @@ const InvoiceDetailsForm = props => {
                     </Form.Item>
                     <Form.Item label="Batch No.">
                         {getFieldDecorator('batchNo', {
-                            rules: [{ required: false, message: 'Please select a received date' }],
+                            rules: [{ required: false, message: 'Please select a Batch No' }],
                         })(
                             <Input id="batchNo" />
+                        )}
+                    </Form.Item>
+                    <Form.Item label="TDC No">
+                        {getFieldDecorator('tdcNo', {
+                            rules: [{ required: false, message: 'Please select a TDC No' }],
+                        })(
+                            <Input id="tdcNo" />
                         )}
                     </Form.Item>
                     <Form.Item label="Vehicle number">
@@ -157,6 +165,10 @@ const InvoiceDetails = Form.create({
             batchNo: Form.createFormField({
                 ...props.inward.batchNo,
                 value:  props.inward.batchNo || '',
+            }), 
+            tdcNo: Form.createFormField({
+                ...props.inward.tdcNo,
+                value:  props.inward.tdcNo || '',
             }),
             vehicleNumber: Form.createFormField({
                 ...props.inward.vehicleNumber,
