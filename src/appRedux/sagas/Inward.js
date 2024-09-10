@@ -337,6 +337,7 @@ function* submitInward(action) {
         // invoice details
         data.append('inwardDate', moment(action.inward.receivedDate).format('YYYY-MM-DD HH:mm:ss'));
         data.append('batchNumber', action.inward.batchNo);
+        data.append('tdcNo', action.inward.tdcNo);
         data.append('vehicleNumber', action.inward.vehicleNumber);
         data.append('invoiceDate', moment(action.inward.invoiceDate).format('YYYY-MM-DD HH:mm:ss'));
         data.append('invoiceNumber', action.inward.invoiceNumber);

@@ -402,7 +402,7 @@ const CreateCuttingDetailsForm = (props) => {
             onChange={(e) => handleTagsChange(record, e, "endUser")}
           >
             {props?.coilDetails.party?.endUserTags?.map((item) => {
-              return <Option value={item.tagId}>{item.tagName}</Option>;
+              return <Option value={item.tagId} key={item.tagId}>{item.tagName}</Option>;
             })}
           </Select>
         );
@@ -486,6 +486,7 @@ const CreateCuttingDetailsForm = (props) => {
       render: (text, record, index) => {
         return (
           <Select
+            key={record.groupId}
             style={{ width: "100px" }}
             dropdownMatchSelectWidth={false}
             showSearch
@@ -509,7 +510,7 @@ const CreateCuttingDetailsForm = (props) => {
             onChange={(e) => handleTagsChange(record, e, "endUser")}
           >
             {endUserTagList?.map((item) => {
-              return <Option value={item?.tagId}>{item?.tagName}</Option>;
+              return <Option value={item?.tagId} key={item?.tagId}>{item?.tagName}</Option>;
             })}
           </Select>
         );

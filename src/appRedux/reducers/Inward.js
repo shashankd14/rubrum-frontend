@@ -169,8 +169,6 @@ export default (state = INIT_STATE, action) => {
         }
 
         case actionTypes.COIL_NOT_FOUND: {
-            debugger
-            console.log("staterrrrrrrrr", state);
             return {
                 ...state,
                 loading: true,

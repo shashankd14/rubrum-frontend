@@ -48,6 +48,7 @@ const List = (props) => {
   const [filteredInwardList, setFilteredInwardList] = useState(filter);
   const [expandedRow, setExpandedRecord] = useState([]);
   const [menuPartyWiseLabelList, setMenuPartyWiseLabelList] = useState([]);
+  const [partywisepermission, setPartywisePermission] = useState([]);
 
   const [selectedCBKeys, setSelectedCBKeys] = React.useState([]);
   const [selectedRowData, setSelectedRowData] = React.useState([]);
@@ -191,12 +192,12 @@ const List = (props) => {
       dataIndex: "packetClassification.classificationName",
       key: "packetClassification.classificationName",
     },
-    {
+    partywisepermission  === 'ENDUSER_TAG_WISE_PACKETS' ? {} : {
       title: "End User Tags",
       dataIndex: "endUserTagsentity.tagName",
       key: "endUserTagsentity.tagName",
     },
-    {
+    partywisepermission  === 'ENDUSER_TAG_WISE_PACKETS' ? {} : {
       title: "Action",
       dataIndex: "",
       key: "x",
@@ -261,6 +262,8 @@ const List = (props) => {
       let menuPartyWiseLabels = [];
       if(menuLabels.length > 0) {
         menuPartyWiseLabels = menuLabels[0]?.permission ? menuLabels[0]?.permission?.split(',') : [];
+        if(menuLabels.length === 1)
+          setPartywisePermission(menuLabels[0].permission);
       }
       setMenuPartyWiseLabelList(menuPartyWiseLabels);
     }
@@ -337,7 +340,7 @@ const List = (props) => {
     if (value) {
       setCustomerValue(value);
       setPageNo(1);
-      props.fetchInwardList(1, pageSize, searchValue, value);
+      props.fetchInwardList(1, pageSize, searchValue, value, '', '', partywisepermission  === 'ENDUSER_TAG_WISE_PACKETS' ? 'ENDUSER' : '');
     } else {
       setCustomerValue("");
       setFilteredInwardList(inwardList);
@@ -555,7 +558,7 @@ const List = (props) => {
           dataSource={filteredInwardList}
           // dataSource={filteredInwardListWithoutDispatched}
           onChange={handleChange}
-          rowSelection={rowSelection}
+          rowSelection={partywisepermission  === 'ENDUSER_TAG_WISE_PACKETS' ? false : rowSelection}
           // onExpand={(expanded, record, data) => {
           //   const motherRecord = {
           //     key: record.key,
@@ -575,7 +578,7 @@ const List = (props) => {
             pageSize: 15,
             onChange: (page) => {
               setPageNo(page);
-              props.fetchInwardList(page, pageSize, searchValue, customerValue, sortOrder, sortColumn);
+              props.fetchInwardList(page, pageSize, searchValue, customerValue, sortOrder, sortColumn, partywisepermission  === 'ENDUSER_TAG_WISE_PACKETS' ? 'ENDUSER' : '');
             },
             current: pageNo,
             total: totalPageItems,
