@@ -15,10 +15,17 @@ const InwardEntrySummary = (props) => {
     useEffect(() => {
         if(props.inwardUpdateSuccess) {
             message.success('Inward entry has been updated successfully', 2);
-            setTimeout(() => {
-                props.history.push('/company/inward/list');
-            }, 2000);
-            props.resetInwardForm();
+            setGenerate(false)
+            setPayload({
+                payloadObj:{
+                    inwardId: props.inward.inwardEntryId
+                },
+                type:'inward'
+            });
+           // setTimeout(() => {
+            //    props.history.push('/company/inward/list');
+            //}, 2000);
+           // props.resetInwardForm();
         }
     }, [props.inwardUpdateSuccess]);
     useEffect(() => {
@@ -112,9 +119,9 @@ const InwardEntrySummary = (props) => {
                     }}>
                         Submit <Icon type="right"/>
                     </Button>
-                    <Button type="primary" disabled={generate} onClick={(e) => {
+                    <Button type="primary" onClick={(e) => {
                         e.preventDefault();
-                        props.pdfGenerateInward(payload)
+                       props.pdfGenerateInward(payload)
                         props.QrGenerateInward(payload);
                     }}>Generate PDF & QR</Button>
                 </Col>
