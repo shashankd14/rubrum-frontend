@@ -22454,7 +22454,7 @@ tr.ant-table-expanded-row td>.ant-table-wrapper {
   list-style: none;
   font-feature-settings: 'tnum';
   position: relative;
-  overflow: hidden;
+  /* overflow: hidden; */
   zoom: 1;
 }
 
@@ -44630,4 +44630,8 @@ textarea.gx-chat-textarea {
   top: 0;
   background-color: #fff; 
   z-index: 1;
+}
+
+.ant-card{
+  overflow: auto;
 }

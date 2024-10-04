@@ -124,6 +124,12 @@ const PreDispatchReport = (props) => {
                 sortedInfo.columnKey === "endUserTags" && sortedInfo.order,
         },
         {
+            title: "Delivery Remarks",
+            dataIndex: "deliveryRemarks",
+            key: "deliveryRemarks",
+            sortOrder: sortedInfo.columnKey === "deliveryRemarks" && sortedInfo.order,
+        },
+        {
             title: "Customer Invoice No.",
             dataIndex: "customerInvoiceNo",
             key: "customerInvoiceNo",
