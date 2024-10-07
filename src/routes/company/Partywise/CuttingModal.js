@@ -24,7 +24,8 @@ import {
   deleteInstructionById,
   instructionGroupsave,
   pdfGenerateInward,
-  QrCodeGeneratePlan
+  QrCodeGeneratePlan,
+  updateClassificationSlitAndCutBeforeFinish
 } from "../../../appRedux/actions/Inward";
 import { labelPrintEditFinish } from '../../../appRedux/actions/LabelPrint';
 import { APPLICATION_DATE_FORMAT } from "../../../constants";
@@ -231,6 +232,8 @@ const CreateCuttingDetailsForm = (props) => {
       dataIndex: "packetClassification",
       render: (text, record, index) => {
         return (
+          <div>
+            {console.log(record)}
           <Select
             disabled={props.unfinish}
             dropdownMatchSelectWidth={false}
@@ -245,12 +248,21 @@ const CreateCuttingDetailsForm = (props) => {
               record,
               "select"
             )}
-          >
-            {packetClassification?.map((item) => {
-              return <Option value={item.tagId}>{item.tagName}</Option>;
-            })}
-          </Select>
+            >
+              {packetClassification?.map((item) => {
+                return <Option value={item.tagId}>{item.tagName}</Option>;
+              })}
+            </Select>
+
+            {record.process.processId === 3 &&
+              < Button className="icon icon-edit" onClick= {() => onUpdateClassificationWIP(index, record)
+            } ><i className="icon icon-edit gx-mr-1"/></Button>}
+            
+          </div>
+
         );
+
+       
       },
     },
     {
@@ -1083,6 +1095,7 @@ const CreateCuttingDetailsForm = (props) => {
     }
     return packetClassification.filter((item)=>item.tagId==value)?.[0].tagName;
   }
+
   const onInputChange =
     (key, index, record, type) => (e: React.ChangeEvent<HTMLInputElement>) => {
       let editedRecord = [];
@@ -1114,6 +1127,18 @@ const CreateCuttingDetailsForm = (props) => {
        }
       setTableData(newData);
     };
+
+   
+  const onUpdateClassificationWIP=
+  (index, record) => {
+    let payload = {
+      instructionId: record.instructionId,
+      inwardId: record.inwardEntryId,
+      packetClassificationId: record.packetClassification.classificationId
+    };
+    //console.log('payload  ==  ',payload);
+    props.updateClassificationSlitAndCutBeforeFinish(payload);
+  };
 
   const handleChange = (e) => {
     if (e.target.value !== "") {
@@ -2257,5 +2282,6 @@ export default connect(mapStateToProps, {
   pdfGenerateInward,
   QrCodeGeneratePlan,
   labelPrintEditFinish,
-  fetchYLRList
+  fetchYLRList,  
+  updateClassificationSlitAndCutBeforeFinish,
 })(CuttingDetailsForm);

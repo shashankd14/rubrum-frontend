@@ -18,7 +18,7 @@ const InwardEntrySummary = (props) => {
             setGenerate(false)
             setPayload({
                 payloadObj:{
-                    inwardId: props.inward.inwardEntryId
+                    inwardId: props.inward?.inwardEntryId
                 },
                 type:'inward'
             });
