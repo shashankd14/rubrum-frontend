@@ -120,7 +120,7 @@ const CreateCuttingDetailsForm = (props) => {
         : props.coilDetails.childInstructions
       : cuts
   );
-  const columns = [
+   const columns = [
     {
       title: "Serial No",
       dataIndex: "instructionId",
@@ -232,8 +232,7 @@ const CreateCuttingDetailsForm = (props) => {
       dataIndex: "packetClassification",
       render: (text, record, index) => {
         return (
-          <div>
-            {console.log(record)}
+          <div> 
           <Select
             disabled={props.unfinish}
             dropdownMatchSelectWidth={false}
@@ -994,10 +993,10 @@ const CreateCuttingDetailsForm = (props) => {
           item.actualWeight = item.plannedWeight;
         if (!item.actualWidth && item.actualWidth !== 0)
           item.actualWidth = item.plannedWidth;
-        if (!item.packetClassification?.tagId)
-          item.packetClassification = {
-            tagId: 0,
-          };
+        // if (!item.packetClassification?.tagId)
+        //   item.packetClassification = {
+        //     tagId: 0,
+        //   };
         return item;
       });
       setTableData(actualUpdate);
