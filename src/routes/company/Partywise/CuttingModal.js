@@ -1466,7 +1466,7 @@ useEffect(() => {
       props.setShowSlittingModal(false);
     } else if (props.wip) {
       const isAllWip = tableData.every(
-        (item) => item.packetClassification.tagId === 0
+        (item) => item?.packetClassification?.tagId === 0
       );
       if (isAllWip) {
         message.error(
