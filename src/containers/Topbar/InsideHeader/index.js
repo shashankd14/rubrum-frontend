@@ -34,20 +34,6 @@ const InsideHeader = () => {
   const locale = useSelector(({settings}) => settings.locale);
   const navCollapsed = useSelector(({settings}) => settings.navCollapsed);
 
-  const languageMenu = () => (
-    <CustomScrollbars className="gx-popover-lang-scroll">
-      <ul className="gx-sub-popover">
-        {languageData.map(language =>
-          <li className="gx-media gx-pointer" key={JSON.stringify(language)} onClick={(e) =>
-            dispatch(switchLanguage(language))
-          }>
-            <i className={`flag flag-24 gx-mr-2 flag-${language.icon}`}/>
-            <span className="gx-language-text">{language.name}</span>
-          </li>
-        )}
-      </ul>
-    </CustomScrollbars>);
-
   const updateSearchChatUser = (evt) => {
     setSearchText(evt.target.value)
   };
@@ -123,14 +109,6 @@ const InsideHeader = () => {
                 <i className="icon icon-chat-new"/>
                 <span className="gx-status gx-status-rtl gx-small gx-orange"/>
                 </span>
-                </Popover>
-              </li>
-              <li className="gx-language">
-                <Popover overlayClassName="gx-popover-horizantal" placement="bottomRight"
-                         content={languageMenu()} trigger="click">
-              <span className="gx-pointer gx-flex-row gx-align-items-center"><i
-                className={`flag flag-24 flag-${locale.icon}`}/>
-              </span>
                 </Popover>
               </li>
               <li className="gx-user-nav"><UserInfo/></li>

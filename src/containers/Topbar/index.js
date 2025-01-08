@@ -23,20 +23,6 @@ const Topbar = () => {
   const {searchText, setSearchText} = useState('');
   const dispatch = useDispatch();
 
-  const languageMenu = () => (
-    <CustomScrollbars className="gx-popover-lang-scroll">
-      <ul className="gx-sub-popover">
-        {languageData.map(language =>
-          <li className="gx-media gx-pointer" key={JSON.stringify(language)} onClick={(e) =>
-            dispatch(switchLanguage(language))
-          }>
-            <i className={`flag flag-24 gx-mr-2 flag-${language.icon}`}/>
-            <span className="gx-language-text">{language.name}</span>
-          </li>
-        )}
-      </ul>
-    </CustomScrollbars>);
-
   const updateSearchChatUser = (evt) => {
     setSearchText(evt.target.value);
   };
@@ -88,16 +74,6 @@ const Topbar = () => {
             </li>
           </Auxiliary>
         }
-        <li className="gx-language">
-          <Popover overlayClassName="gx-popover-horizantal" placement="bottomRight" content={languageMenu()}
-                   trigger="click">
-                <span className="gx-pointer gx-flex-row gx-align-items-center">
-                  <i className={`flag flag-24 flag-${locale.icon}`}/>
-                  <span className="gx-pl-2 gx-language-name">{locale.name}</span>
-                  <i className="icon icon-chevron-down gx-pl-2"/>
-                </span>
-          </Popover>
-        </li>
         {width >= TAB_SIZE ? null :
           <Auxiliary>
             <li className="gx-user-nav"><UserInfo/></li>

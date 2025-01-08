@@ -157,14 +157,6 @@ const AboveHeader = () => {
                 </span>
                 </Popover>
               </li>
-              <li className="gx-language">
-                <Popover overlayClassName="gx-popover-horizantal" placement="bottomRight"
-                         content={languageMenu()} trigger="click">
-              <span className="gx-pointer gx-flex-row gx-align-items-center"><i
-                className={`flag flag-24 flag-${locale.icon}`}/>
-              </span>
-                </Popover>
-              </li>
               <li className="gx-user-nav"><UserInfo/></li>
             </ul>
           </div>
