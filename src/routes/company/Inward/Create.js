@@ -61,6 +61,7 @@ const CreateForm = (props) => {
             let inwardValue = props.inward.inwardEntry;
             inwardValue.thickness = "";
             inwardValue.batchNo ="";
+            inwardValue.tdcNo ="";
             inwardValue.coilNumber = "";
             inwardValue.grossWeight = "";
             inwardValue.netWeight = "";
