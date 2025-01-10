@@ -84,237 +84,237 @@ import {
   DELETE_QUALITY_REPORT_ERROR,
   UPDATE_TEMPLATE_PROCESSING_FORM_DATA,
   UPDATE_QR_PROCESSING_FORM_DATA,
-} from "constants/ActionTypes";
-import * as actionTypes from "../../constants/ActionTypes";
+} from 'constants/ActionTypes';
+import * as actionTypes from '../../constants/ActionTypes';
 
 export const fetchTemplatesList = () => ({
   type: FETCH_TEMPLATE_LIST,
 });
 
-export const fetchTemplatesListSuccess = (templateList) => ({
+export const fetchTemplatesListSuccess = templateList => ({
   type: FETCH_TEMPLATE_LIST_SUCCESS,
-  templateList
+  templateList,
 });
 
-export const fetchTemplatesListError = (error) => ({
+export const fetchTemplatesListError = error => ({
   type: FETCH_TEMPLATE_LIST_ERROR,
-  error
+  error,
 });
 
 export const createFormFields = (fieldsObj, formName) => {
   return {
     type: CREATE_FORM_FIELDS,
     payload: fieldsObj,
-    formName
+    formName,
   };
 };
 
 export const setTemplateName = name => {
   return {
     type: TEMPLATE_NAME,
-    name
-  }
-}
+    name,
+  };
+};
 
 export const saveTemplate = payload => {
   return {
     type: SAVE_TEMPLATE_REQUEST,
-    payload
-  }
+    payload,
+  };
 };
 
 export const saveTemplateSuccess = () => {
   return {
-    type: SAVE_TEMPLATE_SUCCESS
-  }
+    type: SAVE_TEMPLATE_SUCCESS,
+  };
 };
 
 export const saveTemplateError = error => {
   return {
     type: SAVE_TEMPLATE_ERROR,
-    error
-  }
+    error,
+  };
 };
 
 export const saveQualityTemplate = payload => {
   return {
     type: SAVE_QUALITY_TEMPLATE_REQUEST,
-    payload
-  }
+    payload,
+  };
 };
 
 export const saveQualityTemplateSuccess = () => {
   return {
-    type: SAVE_QUALITY_TEMPLATE_SUCCESS
-  }
+    type: SAVE_QUALITY_TEMPLATE_SUCCESS,
+  };
 };
 
 export const saveQualityTemplateError = error => {
   return {
     type: SAVE_QUALITY_TEMPLATE_ERROR,
-    error
-  }
+    error,
+  };
 };
 
 export const getQualityTemplateById = payload => {
   return {
     type: GET_QUALITY_TEMPLATE_BY_ID_REQUEST,
-    payload
-  }
+    payload,
+  };
 };
 
-export const getQualityTemplateByIdSuccess = (templateDetails) => {
+export const getQualityTemplateByIdSuccess = templateDetails => {
   return {
     type: GET_QUALITY_TEMPLATE_BY_ID_SUCCESS,
-    templateDetails
-  }
+    templateDetails,
+  };
 };
 
 export const getQualityTemplateByIdError = error => {
   return {
     type: GET_QUALITY_TEMPLATE_BY_ID_ERROR,
-    error
-  }
+    error,
+  };
 };
 
 export const updateQualityTemplate = payload => {
   return {
     type: UPDATE_QUALITY_TEMPLATE_REQUEST,
-    payload
-  }
+    payload,
+  };
 };
 
 export const updateQualityTemplateSuccess = () => {
   return {
-    type: UPDATE_QUALITY_TEMPLATE_SUCCESS
-  }
+    type: UPDATE_QUALITY_TEMPLATE_SUCCESS,
+  };
 };
 
 export const updateQualityTemplateError = error => {
   return {
     type: UPDATE_QUALITY_TEMPLATE_ERROR,
-    error
-  }
+    error,
+  };
 };
 
 export const deleteQualityTemplate = payload => {
   return {
     type: DELETE_QUALITY_TEMPLATE_REQUEST,
-    payload
-  }
+    payload,
+  };
 };
 
 export const deleteQualityTemplateSuccess = () => {
   return {
-    type: DELETE_QUALITY_TEMPLATE_SUCCESS
-  }
+    type: DELETE_QUALITY_TEMPLATE_SUCCESS,
+  };
 };
 
 export const deleteQualityTemplateError = error => {
   return {
     type: DELETE_QUALITY_TEMPLATE_ERROR,
-    error
-  }
+    error,
+  };
 };
 
-export const fetchTemplatesLinkList = (params) => ({
+export const fetchTemplatesLinkList = params => ({
   type: FETCH_TEMPLATE_LINK_LIST,
-  params
+  params,
 });
 
-export const fetchTemplatesLinkListSuccess = (templateList) => ({
+export const fetchTemplatesLinkListSuccess = templateList => ({
   type: FETCH_TEMPLATE_LINK_LIST_SUCCESS,
-  templateList
+  templateList,
 });
 
-export const fetchTemplatesLinkListError = (error) => ({
+export const fetchTemplatesLinkListError = error => ({
   type: FETCH_TEMPLATE_LINK_LIST_ERROR,
-  error
+  error,
 });
 //it is used to show templateName in QR view
-export const storeLinkListData = (linkListData) => ({
+export const storeLinkListData = linkListData => ({
   type: actionTypes.STORE_LINK_LIST_DATA,
   payload: linkListData,
 });
 export const saveQualityTemplateLink = payload => {
   return {
     type: SAVE_QUALITY_TEMPLATE_LINK_REQUEST,
-    payload
-  }
+    payload,
+  };
 };
 
 export const saveQualityTemplateLinkSuccess = () => {
   return {
-    type: SAVE_QUALITY_TEMPLATE_LINK_SUCCESS
-  }
+    type: SAVE_QUALITY_TEMPLATE_LINK_SUCCESS,
+  };
 };
 
 export const saveQualityTemplateLinkError = error => {
   return {
     type: SAVE_QUALITY_TEMPLATE_LINK_ERROR,
-    error
-  }
+    error,
+  };
 };
 
 export const getQualityTemplateLinkById = payload => {
   return {
     type: GET_QUALITY_TEMPLATE_LINK_BY_ID_REQUEST,
-    payload
-  }
+    payload,
+  };
 };
 
-export const getQualityTemplateLinkByIdSuccess = (templateDetails) => {
+export const getQualityTemplateLinkByIdSuccess = templateDetails => {
   return {
     type: GET_QUALITY_TEMPLATE_LINK_BY_ID_SUCCESS,
-    templateDetails
-  }
+    templateDetails,
+  };
 };
 
 export const getQualityTemplateLinkByIdError = error => {
   return {
     type: GET_QUALITY_TEMPLATE_LINK_BY_ID_ERROR,
-    error
-  }
+    error,
+  };
 };
 
 export const updateQualityTemplateLink = payload => {
   return {
     type: UPDATE_QUALITY_TEMPLATE_LINK_REQUEST,
-    payload
-  }
+    payload,
+  };
 };
 
 export const updateQualityTemplateLinkSuccess = () => {
   return {
-    type: UPDATE_QUALITY_TEMPLATE_LINK_SUCCESS
-  }
+    type: UPDATE_QUALITY_TEMPLATE_LINK_SUCCESS,
+  };
 };
 
 export const updateQualityTemplateLinkError = error => {
   return {
     type: UPDATE_QUALITY_TEMPLATE_LINK_ERROR,
-    error
-  }
+    error,
+  };
 };
 
 export const deleteQualityTemplateLink = payload => {
   return {
     type: DELETE_QUALITY_TEMPLATE_LINK_REQUEST,
-    payload
-  }
+    payload,
+  };
 };
 
 export const deleteQualityTemplateLinkSuccess = () => {
   return {
-    type: DELETE_QUALITY_TEMPLATE_LINK_SUCCESS
-  }
+    type: DELETE_QUALITY_TEMPLATE_LINK_SUCCESS,
+  };
 };
 
 export const deleteQualityTemplateLinkError = error => {
   return {
     type: DELETE_QUALITY_TEMPLATE_LINK_ERROR,
-    error
-  }
+    error,
+  };
 };
 
 /////////
@@ -323,95 +323,95 @@ export const fetchKqpLinkList = () => ({
   type: FETCH_KQP_LINK_LIST,
 });
 
-export const fetchKqpLinkListSuccess = (templateList) => ({
+export const fetchKqpLinkListSuccess = templateList => ({
   type: FETCH_KQP_LINK_LIST_SUCCESS,
-  templateList
+  templateList,
 });
 
-export const fetchKqpLinkListError = (error) => ({
+export const fetchKqpLinkListError = error => ({
   type: FETCH_KQP_LINK_LIST_ERROR,
-  error
+  error,
 });
 
 export const saveKqpLink = payload => {
   return {
     type: SAVE_KQP_LINK_REQUEST,
-    payload
-  }
+    payload,
+  };
 };
 
 export const saveKqpLinkSuccess = () => {
   return {
-    type: SAVE_KQP_LINK_SUCCESS
-  }
+    type: SAVE_KQP_LINK_SUCCESS,
+  };
 };
 
 export const saveKqpLinkError = error => {
   return {
     type: SAVE_KQP_LINK_ERROR,
-    error
-  }
+    error,
+  };
 };
 
 export const getKqpLinkById = payload => {
   return {
     type: GET_KQP_LINK_BY_ID_REQUEST,
-    payload
-  }
+    payload,
+  };
 };
 
-export const getKqpLinkByIdSuccess = (templateDetails) => {
+export const getKqpLinkByIdSuccess = templateDetails => {
   return {
     type: GET_KQP_LINK_BY_ID_SUCCESS,
-    templateDetails
-  }
+    templateDetails,
+  };
 };
 
 export const getKqpLinkByIdError = error => {
   return {
     type: GET_KQP_LINK_BY_ID_ERROR,
-    error
-  }
+    error,
+  };
 };
 
 export const updateKqpLink = payload => {
   return {
     type: UPDATE_KQP_LINK_REQUEST,
-    payload
-  }
+    payload,
+  };
 };
 
 export const updateKqpLinkSuccess = () => {
   return {
-    type: UPDATE_KQP_LINK_SUCCESS
-  }
+    type: UPDATE_KQP_LINK_SUCCESS,
+  };
 };
 
 export const updateKqpLinkError = error => {
   return {
     type: UPDATE_KQP_LINK_ERROR,
-    error
-  }
+    error,
+  };
 };
 
 export const deleteKqpLink = payload => {
   return {
     type: DELETE_KQP_LINK_REQUEST,
-    payload
-  }
+    payload,
+  };
 };
 
 export const deleteKqpLinkSuccess = () => {
   return {
-    type: DELETE_KQP_LINK_SUCCESS
-  }
+    type: DELETE_KQP_LINK_SUCCESS,
+  };
 };
 
 export const deleteKqpLinkError = error => {
   return {
     type: DELETE_KQP_LINK_ERROR,
-    error
-  }
+    error,
+  };
 };
 
 //######################
@@ -420,299 +420,299 @@ export const fetchKqpList = () => ({
   type: FETCH_KQP_LIST,
 });
 
-export const fetchKqpListSuccess = (templateList) => ({
+export const fetchKqpListSuccess = templateList => ({
   type: FETCH_KQP_LIST_SUCCESS,
-  templateList
+  templateList,
 });
 
-export const fetchKqpListError = (error) => ({
+export const fetchKqpListError = error => ({
   type: FETCH_KQP_LIST_ERROR,
-  error
+  error,
 });
 
 export const saveKqp = payload => {
   return {
     type: SAVE_KQP_REQUEST,
-    payload
-  }
+    payload,
+  };
 };
 
 export const saveKqpSuccess = () => {
   return {
-    type: SAVE_KQP_SUCCESS
-  }
+    type: SAVE_KQP_SUCCESS,
+  };
 };
 
 export const saveKqpError = error => {
   return {
     type: SAVE_KQP_ERROR,
-    error
-  }
+    error,
+  };
 };
 
 export const getKqpById = payload => {
   return {
     type: GET_KQP_BY_ID_REQUEST,
-    payload
-  }
+    payload,
+  };
 };
 
-export const getKqpByIdSuccess = (templateDetails) => {
+export const getKqpByIdSuccess = templateDetails => {
   return {
     type: GET_KQP_BY_ID_SUCCESS,
-    templateDetails
-  }
+    templateDetails,
+  };
 };
 
 export const getKqpByIdError = error => {
   return {
     type: GET_KQP_BY_ID_ERROR,
-    error
-  }
+    error,
+  };
 };
 
 export const updateKqp = payload => {
   return {
     type: UPDATE_KQP_REQUEST,
-    payload
-  }
+    payload,
+  };
 };
 
 export const updateKqpSuccess = () => {
   return {
-    type: UPDATE_KQP_SUCCESS
-  }
+    type: UPDATE_KQP_SUCCESS,
+  };
 };
 
 export const updateKqpError = error => {
   return {
     type: UPDATE_KQP_ERROR,
-    error
-  }
+    error,
+  };
 };
 
 export const deleteKqp = payload => {
   return {
     type: DELETE_KQP_REQUEST,
-    payload
-  }
+    payload,
+  };
 };
 
 export const deleteKqpSuccess = () => {
   return {
-    type: DELETE_KQP_SUCCESS
-  }
+    type: DELETE_KQP_SUCCESS,
+  };
 };
 
 export const deleteKqpError = error => {
   return {
     type: DELETE_KQP_ERROR,
-    error
-  }
+    error,
+  };
 };
 
 // quality report
 
-export const fetchQualityReportStageList = (payload) => {
+export const fetchQualityReportStageList = payload => {
   return {
     type: FETCH_QUALITY_REPORT_STAGE_REQUEST,
-    payload
-  }
+    payload,
+  };
 };
 
-export const fetchQualityReportStageListSuccess = (templateList) => ({
+export const fetchQualityReportStageListSuccess = templateList => ({
   type: FETCH_QUALITY_REPORT_STAGE_SUCCESS,
-  templateList
+  templateList,
 });
 
-export const fetchQualityReportStageListError = (error) => ({
+export const fetchQualityReportStageListError = error => ({
   type: FETCH_QUALITY_REPORT_STAGE_ERROR,
-  error
+  error,
 });
 
 export const fetchQualityReportList = () => ({
   type: FETCH_QUALITY_REPORT_REQUEST,
 });
 
-export const fetchQualityReportListSuccess = (templateList) => ({
+export const fetchQualityReportListSuccess = templateList => ({
   type: FETCH_QUALITY_REPORT_SUCCESS,
-  templateList
+  templateList,
 });
 
-export const fetchQualityReportListError = (error) => ({
+export const fetchQualityReportListError = error => ({
   type: FETCH_QUALITY_REPORT_ERROR,
-  error
+  error,
 });
 
 export const saveQualityReport = payload => {
   return {
     type: SAVE_QUALITY_REPORT_REQUEST,
-    payload
-  }
+    payload,
+  };
 };
 
 export const saveQualityReportSuccess = () => {
   return {
-    type: SAVE_QUALITY_REPORT_SUCCESS
-  }
+    type: SAVE_QUALITY_REPORT_SUCCESS,
+  };
 };
 
 export const saveQualityReportError = error => {
   return {
     type: SAVE_QUALITY_REPORT_ERROR,
-    error
-  }
+    error,
+  };
 };
 
 export const getQualityReportById = payload => {
   return {
     type: GET_QUALITY_REPORT_BY_ID_REQUEST,
-    payload
-  }
+    payload,
+  };
 };
 
-export const getQualityReportByIdSuccess = (reportById) => {
+export const getQualityReportByIdSuccess = reportById => {
   return {
     type: GET_QUALITY_REPORT_BY_ID_SUCCESS,
-    reportById
-  }
+    reportById,
+  };
 };
 
 export const getQualityReportByIdError = error => {
   return {
     type: GET_QUALITY_REPORT_BY_ID_ERROR,
-    error
-  }
+    error,
+  };
 };
 
 export const updateQualityReport = payload => {
   return {
     type: UPDATE_QUALITY_REPORT_REQUEST,
-    payload
-  }
+    payload,
+  };
 };
 
 export const updateQualityReportSuccess = () => {
   return {
-    type: UPDATE_QUALITY_REPORT_SUCCESS
-  }
+    type: UPDATE_QUALITY_REPORT_SUCCESS,
+  };
 };
 
 export const updateQualityReportError = error => {
   return {
     type: UPDATE_QUALITY_REPORT_ERROR,
-    error
-  }
+    error,
+  };
 };
 
 export const deleteQualityReport = payload => {
   return {
     type: DELETE_QUALITY_REPORT_REQUEST,
-    payload
-  }
+    payload,
+  };
 };
 
 export const deleteQualityReportSuccess = () => {
   return {
-    type: DELETE_QUALITY_REPORT_SUCCESS
-  }
+    type: DELETE_QUALITY_REPORT_SUCCESS,
+  };
 };
 
 export const deleteQualityReportError = error => {
   return {
     type: DELETE_QUALITY_REPORT_ERROR,
-    error
-  }
+    error,
+  };
 };
 
 export const updateTemplateFormData = payload => {
   return {
     type: UPDATE_TEMPLATE_PROCESSING_FORM_DATA,
     formData: payload.formData,
-    action: payload.action
-  }
-}
+    action: payload.action,
+  };
+};
 
 export const updateQRFormData = payload => {
   return {
     type: UPDATE_QR_PROCESSING_FORM_DATA,
     formData: payload.formData,
-    action: payload.action
-  }
-}
+    action: payload.action,
+  };
+};
 //get List of thickness QM dropdown
 export const getThicknessListQM = () => ({
-  type: actionTypes.GET_THICKNESS_LIST_QM_REQUEST
+  type: actionTypes.GET_THICKNESS_LIST_QM_REQUEST,
 });
 
-export const getThicknessListQMSuccess = (thicknessList) => ({
+export const getThicknessListQMSuccess = thicknessList => ({
   type: actionTypes.GET_THICKNESS_LIST_QM_SUCCESS,
-  thicknessList
+  thicknessList,
 });
 
-export const getThicknessListQMError = (error) => ({
+export const getThicknessListQMError = error => ({
   type: actionTypes.GET_THICKNESS_LIST_QM_ERROR,
-  error
+  error,
 });
 
 //get List of width QM dropdown
 export const getWidthListQM = () => ({
-  type: actionTypes.GET_WIDTH_LIST_QM_REQUEST
+  type: actionTypes.GET_WIDTH_LIST_QM_REQUEST,
 });
 
-export const getWidthListQMSuccess = (widthList) => ({
+export const getWidthListQMSuccess = widthList => ({
   type: actionTypes.GET_WIDTH_LIST_QM_SUCCESS,
-  widthList
+  widthList,
 });
 
-export const getWidthListQMError = (error) => ({
+export const getWidthListQMError = error => ({
   type: actionTypes.GET_WIDTH_LIST_QM_ERROR,
-  error
+  error,
 });
 
 //get List of length QM dropdown
 export const getLengthListQM = () => ({
-  type: actionTypes.GET_LENGTH_LIST_QM_REQUEST
+  type: actionTypes.GET_LENGTH_LIST_QM_REQUEST,
 });
 
-export const getLengthListQMSuccess = (lengthList) => ({
+export const getLengthListQMSuccess = lengthList => ({
   type: actionTypes.GET_LENGTH_LIST_QM_SUCCESS,
-  lengthList
+  lengthList,
 });
 
-export const getLengthListQMError = (error) => ({
+export const getLengthListQMError = error => ({
   type: actionTypes.GET_LENGTH_LIST_QM_ERROR,
-  error
+  error,
 });
 
 //Get packetDetails in quality processStage
-export const getQualityPacketDetails = (payload) => ({
+export const getQualityPacketDetails = payload => ({
   type: actionTypes.GET_PACKET_DETAILS_QUALITY_PROCESS_REQUEST,
-  payload
+  payload,
 });
 
-export const getQualityPacketDetailsSuccess = (packetDetails) => ({
+export const getQualityPacketDetailsSuccess = packetDetails => ({
   type: actionTypes.GET_PACKET_DETAILS_QUALITY_PROCESS_SUCCESS,
-  packetDetails
+  packetDetails,
 });
 
-export const getQualityPacketDetailsError = (error) => ({
+export const getQualityPacketDetailsError = error => ({
   type: actionTypes.GET_PACKET_DETAILS_QUALITY_PROCESS_ERROR,
-  error
+  error,
 });
 
 //Generate QM Report Inward pdf
-export const pdfGenerateQMreportInward = (payload) => ({
+export const pdfGenerateQMreportInward = payload => ({
   type: actionTypes.GENERATE_INWARD_PDF_QUALITY_MODULE_REPORT_REQUEST,
-  payload
+  payload,
 });
 
-export const pdfGenerateQMreportInwardSuccess = (payload) => ({
+export const pdfGenerateQMreportInwardSuccess = payload => ({
   type: actionTypes.GENERATE_INWARD_PDF_QUALITY_MODULE_REPORT_SUCCESS,
-  payload
+  payload,
 });
 
-export const pdfGenerateQMreportInwardError = (error) => ({
+export const pdfGenerateQMreportInwardError = error => ({
   type: actionTypes.GENERATE_INWARD_PDF_QUALITY_MODULE_REPORT_ERROR,
-  error
+  error,
 });

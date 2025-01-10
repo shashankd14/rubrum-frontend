@@ -1,16 +1,16 @@
-import { Button, Card, Col, Select, Modal, message } from "antd";
-import moment from "moment";
-import React, { useEffect, useState } from "react";
-import { connect } from "react-redux";
+import { Button, Card, Col, Select, Modal, message } from 'antd';
+import moment from 'moment';
+import React, { useEffect, useState } from 'react';
+import { connect } from 'react-redux';
 import {
   getCoilPlanDetails,
   fetchClassificationList,
-} from "../../../appRedux/actions";
-import IntlMessages from "../../../util/IntlMessages";
-import CuttingModal from "./CuttingModal";
-import SlittingModal from "./SlittingModal";
+} from '../../../appRedux/actions';
+import IntlMessages from '../../../util/IntlMessages';
+import CuttingModal from './CuttingModal';
+import SlittingModal from './SlittingModal';
 
-const Unfinish = (props) => {
+const Unfinish = props => {
   const { instruction } = props.inward.plan;
   const [showCuttingModal, setShowCuttingModal] = useState(false);
   const [showSlittingModal, setShowSlittingModal] = useState(false);
@@ -20,29 +20,29 @@ const Unfinish = (props) => {
   const [slitCut, setSlitCut] = useState(false);
   const [defaultValue, setdefaultValue] = useState();
   const { Option } = Select;
-  const getPlannedLength = (ins) => {
+  const getPlannedLength = ins => {
     let length = 0;
     let actualLength = 0;
     let childLength = 0;
     actualLength = ins.fLength
       ? ins.fLength
       : ins.actualLength != null
-      ? ins.actualLength
-      : ins.plannedLength;
+        ? ins.actualLength
+        : ins.plannedLength;
     if (ins.instruction && ins.instruction?.length > 0) {
       let instruction = ins.instruction.flat();
-      length = instruction.map((i) => {
+      length = instruction.map(i => {
         return i.process.processId === 1
           ? i.plannedLength * i.plannedNoOfPieces
           : i.plannedLength;
       });
       length = [...new Set(length)];
-      childLength = instruction.map((i) => {
+      childLength = instruction.map(i => {
         if (i.childInstructions && i.childInstructions?.length > 0) {
           return i.plannedLength;
         }
       });
-      childLength = childLength.filter((i) => i !== undefined);
+      childLength = childLength.filter(i => i !== undefined);
       childLength =
         childLength?.length > 0
           ? childLength.reduce((total, num) => total + num)
@@ -51,7 +51,7 @@ const Unfinish = (props) => {
         length?.length > 0 ? length.reduce((total, num) => total + num) : 0;
     } else {
       if (ins.childInstructions && ins.childInstructions?.length > 0) {
-        length = ins.childInstructions.map((i) => i.plannedLength);
+        length = ins.childInstructions.map(i => i.plannedLength);
 
         length = length.reduce((total, num) => total + num);
       }
@@ -63,27 +63,27 @@ const Unfinish = (props) => {
     }
     return length;
   };
-  const getPlannedWidth = (ins) => {
+  const getPlannedWidth = ins => {
     let width = 0;
     let actualWidth = 0;
     let childWidth = 0;
     actualWidth = ins.fWidth
       ? ins.fWidth
       : ins.actualWidth != null
-      ? ins.actualWidth
-      : ins.plannedWidth;
+        ? ins.actualWidth
+        : ins.plannedWidth;
 
     if (ins.instruction && ins.instruction?.length > 0) {
       let instruction = ins.instruction.flat();
-      width = instruction.map((i) =>
-        i.process.processId !== 1 ? i.plannedWidth : 0
+      width = instruction.map(i =>
+        i.process.processId !== 1 ? i.plannedWidth : 0,
       );
-      childWidth = instruction.map((i) => {
+      childWidth = instruction.map(i => {
         if (i.childInstructions && i.childInstructions?.length > 0) {
           return i.plannedWidth;
         }
       });
-      childWidth = childWidth.filter((i) => i !== undefined);
+      childWidth = childWidth.filter(i => i !== undefined);
       childWidth =
         childWidth?.length > 0
           ? childWidth.reduce((total, num) => total + num)
@@ -91,7 +91,7 @@ const Unfinish = (props) => {
       width = width.reduce((total, num) => total + num);
     } else {
       if (ins.childInstructions && ins.childInstructions?.length > 0) {
-        width = ins.childInstructions.map((i) => i.plannedWidth);
+        width = ins.childInstructions.map(i => i.plannedWidth);
         width = width.reduce((total, num) => total + num);
       }
     }
@@ -102,24 +102,24 @@ const Unfinish = (props) => {
     }
     return width;
   };
-  const getPlannedWeight = (ins) => {
+  const getPlannedWeight = ins => {
     let weight = 0;
     let childWeight = 0;
     let actualWeight = 0;
     actualWeight = ins.fpresent
       ? ins.fpresent
       : ins.actualWeight != null
-      ? ins.actualWeight
-      : ins.plannedWeight;
+        ? ins.actualWeight
+        : ins.plannedWeight;
     if (ins.instruction && ins.instruction?.length > 0) {
       let instruction = ins.instruction.flat();
-      weight = instruction.map((i) => i.plannedWeight);
-      childWeight = instruction.map((i) => {
+      weight = instruction.map(i => i.plannedWeight);
+      childWeight = instruction.map(i => {
         if (i.childInstructions && i.childInstructions?.length > 0) {
           return i.plannedWeight;
         }
       });
-      childWeight = childWeight.filter((i) => i !== undefined);
+      childWeight = childWeight.filter(i => i !== undefined);
       childWeight =
         childWeight?.length > 0
           ? childWeight.reduce((total, num) => total + num)
@@ -128,7 +128,7 @@ const Unfinish = (props) => {
         weight?.length > 0 ? weight.reduce((total, num) => total + num) : 0;
     } else {
       if (ins.childInstructions && ins.childInstructions?.length > 0) {
-        weight = ins.childInstructions.map((i) => i.plannedWeight);
+        weight = ins.childInstructions.map(i => i.plannedWeight);
         weight = weight.reduce((total, num) => total + num);
       }
     }
@@ -171,11 +171,11 @@ const Unfinish = (props) => {
     value.map((item, index) =>
       value.status &&
       value.status.statusName &&
-      value.status.statusName === "DELIVERED"
+      value.status.statusName === 'DELIVERED'
         ? (tempDelValue += getPlannedLength(item))
-        : (tempAvailValue += getPlannedLength(item))
+        : (tempAvailValue += getPlannedLength(item)),
     );
-    if (type === "Delivered") {
+    if (type === 'Delivered') {
       return tempDelValue;
     } else {
       return tempAvailValue;
@@ -187,36 +187,36 @@ const Unfinish = (props) => {
     let tempAvailValue = 0;
     value.map((item, index) =>
       (value.status && value.status.statusName && value.status.statusName) ===
-      "DELIVERED"
+      'DELIVERED'
         ? (tempDelValue += getPlannedWeight(item))
-        : (tempAvailValue += getPlannedWeight(item))
+        : (tempAvailValue += getPlannedWeight(item)),
     );
-    if (type === "Delivered") {
+    if (type === 'Delivered') {
       return tempDelValue;
     } else {
       return tempAvailValue;
     }
   };
   const handleSelectChange = (value, n, ins) => {
-    if (value === "Slitting") {
+    if (value === 'Slitting') {
       setSlitCut(false);
       setSlittingCoil(ins);
       setShowSlittingModal(true);
-    } else if (value === "Cutting") {
+    } else if (value === 'Cutting') {
       setSlitCut(false);
       setCuttingCoil(ins);
       setShowCuttingModal(true);
-    } else if (value === "Slit & Cut") {
+    } else if (value === 'Slit & Cut') {
       setSlitCut(true);
       setSlittingCoil(ins);
       setShowSlittingModal(true);
     }
   };
-  const insList = ["Slitting", "Cutting", "Slit & Cut"];
+  const insList = ['Slitting', 'Cutting', 'Slit & Cut'];
   return (
     <div
       className="gx-full-height"
-      style={{ overflowX: "auto", overflowy: "scroll" }}
+      style={{ overflowX: 'auto', overflowy: 'scroll' }}
     >
       {cuttingCoil && (
         <CuttingModal
@@ -249,7 +249,7 @@ const Unfinish = (props) => {
           coil={props.inward.plan}
           slitCut={slitCut}
           setShowCuttingModal={setShowCuttingModal}
-          setCutting={(cuts) => setCuttingCoil(cuts)}
+          setCutting={cuts => setCuttingCoil(cuts)}
         />
       )}
       <h1>
@@ -261,19 +261,19 @@ const Unfinish = (props) => {
             <div className="gx-flex-row gx-justify-content-between">
               <div className="gx-coil-image-bg gx-flex-row gx-align-items-center gx-justify-content-center">
                 <img
-                  src={require("assets/images/inward/main_coil.svg")}
+                  src={require('assets/images/inward/main_coil.svg')}
                   alt="main coil image"
                   title="main coil image"
                 />
               </div>
               <div>
                 <img
-                  src={require("assets/images/inward/info_icon.svg")}
+                  src={require('assets/images/inward/info_icon.svg')}
                   alt="main coil image"
                   title="main coil image"
                 />
                 <img
-                  src={require("assets/images/inward/burger_menu.svg")}
+                  src={require('assets/images/inward/burger_menu.svg')}
                   alt="main coil image"
                   title="main coil image"
                 />
@@ -282,7 +282,7 @@ const Unfinish = (props) => {
             <h5 className="gx-coil-number">{props.inward.plan.coilNumber}</h5>
             <div className="gx-flex-row">
               <p className="gx-coil-details-label">
-                <IntlMessages id="partywise.plan.availableLength" /> :{" "}
+                <IntlMessages id="partywise.plan.availableLength" /> :{' '}
               </p>
               <span className="gx-coil-details-label">
                 {props.inward.plan.fLength}
@@ -290,7 +290,7 @@ const Unfinish = (props) => {
             </div>
             <div className="gx-flex-row">
               <p className="gx-coil-details-label">
-                <IntlMessages id="partywise.plan.availableWeight" /> :{" "}
+                <IntlMessages id="partywise.plan.availableWeight" /> :{' '}
               </p>
               <span className="gx-coil-details-label">
                 {props.inward.plan.fpresent}
@@ -304,7 +304,7 @@ const Unfinish = (props) => {
                   setChildCoil(false);
                 }}
               >
-                {props.unfinish ? "Unfinish Slitting" : "edit finish slitting"}
+                {props.unfinish ? 'Unfinish Slitting' : 'edit finish slitting'}
               </Button>
               <Button
                 onClick={() => {
@@ -314,7 +314,7 @@ const Unfinish = (props) => {
                   setChildCoil(false);
                 }}
               >
-                {props.unfinish ? "Unfinish Cutting" : "edit finish cutting"}
+                {props.unfinish ? 'Unfinish Cutting' : 'edit finish cutting'}
               </Button>
               <Button
                 onClick={() => {
@@ -325,8 +325,8 @@ const Unfinish = (props) => {
                 }}
               >
                 {props.unfinish
-                  ? "Unfinish Cut & Slit"
-                  : "edit finish Cut & Slit"}
+                  ? 'Unfinish Cut & Slit'
+                  : 'edit finish Cut & Slit'}
               </Button>
             </div>
           </Card>
@@ -341,19 +341,19 @@ const Unfinish = (props) => {
         >
           {instruction &&
             instruction?.length > 0 &&
-            instruction.map((group) => (
+            instruction.map(group => (
               <>
                 {group?.length > 0 &&
-                  group.map((instruction) =>
+                  group.map(instruction =>
                     instruction.groupId == null ? (
                       <Card
                         bordered={false}
                         className={`gx-entry cardLevel2MainDiv`}
                       >
-                        {group.map((instruction) => (
+                        {group.map(instruction => (
                           <>
                             {instruction.groupId == null ? (
-                              <div style={{ display: "flex" }}>
+                              <div style={{ display: 'flex' }}>
                                 <Col
                                   lg={10}
                                   md={10}
@@ -363,11 +363,11 @@ const Unfinish = (props) => {
                                   className={`gx-align-self-center cardLevel2Div ${
                                     instruction.parentGroupId == null
                                       ? group[0].process.processId === 1
-                                        ? "gx-cutting-group"
+                                        ? 'gx-cutting-group'
                                         : instruction.process.processId === 7
-                                        ? "gx-unprocessed-group"
-                                        : "gx-slitting-group"
-                                      : "gx-slit-cut-group"
+                                          ? 'gx-unprocessed-group'
+                                          : 'gx-slitting-group'
+                                      : 'gx-slit-cut-group'
                                   }`}
                                 >
                                   <Card
@@ -375,20 +375,20 @@ const Unfinish = (props) => {
                                     className={`cardLevel2InsideDiv ${
                                       instruction.parentGroupId == null
                                         ? instruction.process.processId === 1
-                                          ? "gx-cutting-single"
+                                          ? 'gx-cutting-single'
                                           : instruction.process.processId === 7
-                                          ? "gx-unprocessed-single"
-                                          : "gx-slitting-single"
-                                        : "gx-slit-cut-single"
+                                            ? 'gx-unprocessed-single'
+                                            : 'gx-slitting-single'
+                                        : 'gx-slit-cut-single'
                                     }`}
                                     size="small"
                                   >
                                     <img
                                       style={{
-                                        position: "absolute",
-                                        right: "10.35px",
+                                        position: 'absolute',
+                                        right: '10.35px',
                                       }}
-                                      src={require("assets/images/inward/info_icon.svg")}
+                                      src={require('assets/images/inward/info_icon.svg')}
                                       alt="main coil image"
                                       title="main coil image"
                                     />
@@ -396,33 +396,33 @@ const Unfinish = (props) => {
                                       {instruction.parentGroupId == null ? (
                                         instruction.process.processId === 1 ? (
                                           <img
-                                            src={require("assets/images/inward/cutting_icon.svg")}
+                                            src={require('assets/images/inward/cutting_icon.svg')}
                                             alt="main coil image"
                                             title="main coil image"
                                           />
                                         ) : (
                                           <img
-                                            src={require("assets/images/inward/slitting_icon.svg")}
+                                            src={require('assets/images/inward/slitting_icon.svg')}
                                             alt="main coil image"
                                             title="main coil image"
                                           />
                                         )
                                       ) : (
                                         <img
-                                          src={require("assets/images/inward/cutting_icon.svg")}
+                                          src={require('assets/images/inward/cutting_icon.svg')}
                                           alt="main coil image"
                                           title="main coil image"
                                         />
                                       )}
                                     </div>
-                                    <div style={{ marginLeft: "8px" }}>
+                                    <div style={{ marginLeft: '8px' }}>
                                       {instruction.parentGroupId == null
                                         ? instruction.process.processId === 1
-                                          ? "Cutting"
+                                          ? 'Cutting'
                                           : instruction.process.processId === 7
-                                          ? "Unprocessed"
-                                          : "Slitting"
-                                        : "Slit & Cut"}
+                                            ? 'Unprocessed'
+                                            : 'Slitting'
+                                        : 'Slit & Cut'}
                                       <div className="gx-flex-row">
                                         <p className="gx-coil-details-label">
                                           Available specs(TXWXL/W) :
@@ -459,11 +459,11 @@ const Unfinish = (props) => {
                                                 .length >= 1
                                             )
                                           }
-                                          onChange={(value) =>
+                                          onChange={value =>
                                             handleSelectChange(
                                               value,
                                               setChildCoil(true),
-                                              instruction
+                                              instruction,
                                             )
                                           }
                                           filterOption={(input, option) =>
@@ -473,7 +473,7 @@ const Unfinish = (props) => {
                                           }
                                         >
                                           {insList?.length > 0 &&
-                                            insList.map((instruction) => (
+                                            insList.map(instruction => (
                                               <Option value={instruction}>
                                                 {instruction}
                                               </Option>
@@ -502,11 +502,11 @@ const Unfinish = (props) => {
                                         className={`gx-align-self-center cardLevel2Div ${
                                           instruction.childInstructions[0]
                                             .process.processId === 1
-                                            ? "gx-cutting-group"
+                                            ? 'gx-cutting-group'
                                             : instruction.process.processId ===
-                                              7
-                                            ? "gx-unprocessed-group"
-                                            : "gx-slitting-group"
+                                                7
+                                              ? 'gx-unprocessed-group'
+                                              : 'gx-slitting-group'
                                         }`}
                                       >
                                         <Card
@@ -514,20 +514,20 @@ const Unfinish = (props) => {
                                           className={`cardLevel2InsideDiv ${
                                             instruction.childInstructions[0]
                                               .process.processId === 1
-                                              ? "gx-cutting-single"
+                                              ? 'gx-cutting-single'
                                               : instruction.process
-                                                  .processId === 7
-                                              ? "gx-unprocessed-single"
-                                              : "gx-slitting-single"
+                                                    .processId === 7
+                                                ? 'gx-unprocessed-single'
+                                                : 'gx-slitting-single'
                                           }`}
                                           size="small"
                                         >
                                           <img
                                             style={{
-                                              position: "absolute",
-                                              right: "10.35px",
+                                              position: 'absolute',
+                                              right: '10.35px',
                                             }}
-                                            src={require("assets/images/inward/info_icon.svg")}
+                                            src={require('assets/images/inward/info_icon.svg')}
                                             alt="main coil image"
                                             title="main coil image"
                                           />
@@ -535,27 +535,27 @@ const Unfinish = (props) => {
                                             {instruction.childInstructions[0]
                                               .process.processId === 1 ? (
                                               <img
-                                                src={require("assets/images/inward/cutting_icon.svg")}
+                                                src={require('assets/images/inward/cutting_icon.svg')}
                                                 alt="main coil image"
                                                 title="main coil image"
                                               />
                                             ) : (
                                               <img
-                                                src={require("assets/images/inward/slitting_icon.svg")}
+                                                src={require('assets/images/inward/slitting_icon.svg')}
                                                 alt="main coil image"
                                                 title="main coil image"
                                               />
                                             )}
                                           </div>
-                                          <div style={{ marginLeft: "8px" }}>
+                                          <div style={{ marginLeft: '8px' }}>
                                             {instruction.childInstructions[0]
                                               .process.processId === 1
-                                              ? "Cutting"
-                                              : "Slitting"}
+                                              ? 'Cutting'
+                                              : 'Slitting'}
                                             <div className="gx-flex-row">
                                               <div className="gx-coil-details-label">
-                                                <IntlMessages id="partywise.plan.availableLength" />{" "}
-                                                :{" "}
+                                                <IntlMessages id="partywise.plan.availableLength" />{' '}
+                                                :{' '}
                                               </div>
                                               <span className="gx-coil-details-label">
                                                 {instruction?.deliveryDetails !==
@@ -565,14 +565,14 @@ const Unfinish = (props) => {
                                                   ? 0
                                                   : getLength(
                                                       instruction.childInstructions,
-                                                      "Non-Delivered"
+                                                      'Non-Delivered',
                                                     )}
                                               </span>
                                             </div>
                                             <div className="gx-flex-row">
                                               <div className="gx-coil-details-label">
-                                                <IntlMessages id="partywise.plan.availableWeight" />{" "}
-                                                :{" "}
+                                                <IntlMessages id="partywise.plan.availableWeight" />{' '}
+                                                :{' '}
                                               </div>
                                               <span className="gx-coil-details-label">
                                                 {instruction?.deliveryDetails !==
@@ -582,7 +582,7 @@ const Unfinish = (props) => {
                                                   ? 0
                                                   : getWeight(
                                                       instruction.childInstructions,
-                                                      "Non-Delivered"
+                                                      'Non-Delivered',
                                                     )}
                                               </span>
                                             </div>
@@ -616,22 +616,22 @@ const Unfinish = (props) => {
                                         >
                                           <img
                                             style={{
-                                              position: "absolute",
-                                              right: "10.35px",
+                                              position: 'absolute',
+                                              right: '10.35px',
                                             }}
-                                            src={require("assets/images/inward/info_icon.svg")}
+                                            src={require('assets/images/inward/info_icon.svg')}
                                             alt="Packaging"
                                             title="Packaging"
                                           />
-                                          <div style={{ marginLeft: "8px" }}>
-                                            {" "}
+                                          <div style={{ marginLeft: '8px' }}>
+                                            {' '}
                                             <span class="inline-packaging-lbl">
                                               <IntlMessages id="partywise.plan.packaging" />
                                             </span>
                                             <div>
                                               <p className="gx-coil-details-label">
-                                                <IntlMessages id="partywise.plan.deliveryId" />{" "}
-                                                :{" "}
+                                                <IntlMessages id="partywise.plan.deliveryId" />{' '}
+                                                :{' '}
                                                 <span className="gx-coil-details-label">
                                                   {
                                                     instruction.deliveryDetails
@@ -640,31 +640,31 @@ const Unfinish = (props) => {
                                                 </span>
                                               </p>
                                               <p className="gx-coil-details-label">
-                                                <IntlMessages id="partywise.plan.date" />{" "}
-                                                :{" "}
+                                                <IntlMessages id="partywise.plan.date" />{' '}
+                                                :{' '}
                                                 <span className="gx-coil-details-label">
                                                   {moment(
-                                                    instruction.updatedOn
-                                                  ).format("DD/MM/YYYY")}
+                                                    instruction.updatedOn,
+                                                  ).format('DD/MM/YYYY')}
                                                 </span>
                                               </p>
                                               <p className="gx-coil-details-label">
-                                                <IntlMessages id="partywise.plan.deliveredWeight" />{" "}
-                                                :{" "}
+                                                <IntlMessages id="partywise.plan.deliveredWeight" />{' '}
+                                                :{' '}
                                                 <span className="gx-coil-details-label">
                                                   {instruction?.actualWeight}
                                                 </span>
                                               </p>
                                               <p className="gx-coil-details-label">
-                                                <IntlMessages id="partywise.plan.remarks" />{" "}
-                                                :{" "}
+                                                <IntlMessages id="partywise.plan.remarks" />{' '}
+                                                :{' '}
                                                 <span className="gx-coil-details-label">
                                                   {instruction.remarks}
                                                 </span>
                                               </p>
                                               <p className="gx-coil-details-label">
-                                                <IntlMessages id="partywise.plan.wastage" />{" "}
-                                                :{" "}
+                                                <IntlMessages id="partywise.plan.wastage" />{' '}
+                                                :{' '}
                                                 <span className="gx-coil-details-label">
                                                   {instruction.wastage}
                                                 </span>
@@ -685,7 +685,7 @@ const Unfinish = (props) => {
                       </Card>
                     ) : (
                       <></>
-                    )
+                    ),
                   )}
               </>
             ))}
@@ -695,7 +695,7 @@ const Unfinish = (props) => {
   );
 };
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   inward: state.inward,
   party: state.party,
 });

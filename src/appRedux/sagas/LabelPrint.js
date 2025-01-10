@@ -27,7 +27,7 @@ function* GenerateInwardLabelPrint(action) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...getHeaders() },
         body: JSON.stringify(action.payloadpdf),
-      }
+      },
     );
 
     if (pdfGenerate.status === 200) {
@@ -36,7 +36,7 @@ function* GenerateInwardLabelPrint(action) {
       pdfWindow.document.write(
         "<iframe width='100%' height='600%' src='" +
           pdfGenerateResponse.inward_label +
-          "'></iframe>"
+          "'></iframe>",
       );
       yield put(labelPrintInwardSuccess(pdfGenerateResponse));
     } else if (pdfGenerate.status === 401) {
@@ -56,7 +56,7 @@ function* GenerateWIPLabelPrint(action) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...getHeaders() },
         body: JSON.stringify(action.payloadpdf),
-      }
+      },
     );
     if (generateLabelPdf.status === 200) {
       const generateLabelPdfResponse = yield generateLabelPdf.json();
@@ -78,7 +78,7 @@ function* GenerateFGLabelPrint(action) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...getHeaders() },
         body: JSON.stringify(action.payloadpdf),
-      }
+      },
     );
     if (generateLabelPdf.status === 200) {
       const generateLabelPdfResponse = yield generateLabelPdf.json();
@@ -91,11 +91,11 @@ function* GenerateFGLabelPrint(action) {
   }
 }
 
-const delay1 = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+const delay1 = ms => new Promise(resolve => setTimeout(resolve, ms));
 function* GenerateEditFinishLabelPrint(action) {
   yield call(delay1, 500);
   const { number, instruction, unfinish, editFinish } = action.payloadpdf;
-  const ins = instruction.map((item) => {
+  const ins = instruction.map(item => {
     let insObj = {
       instructionId: item.instructionId ? item.instructionId : null,
       parentInstructionId: item.parentInstructionId
@@ -128,8 +128,8 @@ function* GenerateEditFinishLabelPrint(action) {
     return insObj;
   });
   const filteredData = ins.filter(
-    (each) =>
-      each.packetClassificationId !== 0 && each.packetClassificationId !== ''
+    each =>
+      each.packetClassificationId !== 0 && each.packetClassificationId !== '',
   );
   var taskType = '';
   if (editFinish) {
@@ -147,7 +147,7 @@ function* GenerateEditFinishLabelPrint(action) {
   }
   const req = {
     taskType,
-    instructionDtos
+    instructionDtos,
   };
   try {
     const pdfGenerate = yield fetch(`${baseUrl}api/pdf/labelprint/fg`, {
@@ -161,7 +161,7 @@ function* GenerateEditFinishLabelPrint(action) {
       pdfWindow.document.write(
         "<iframe width='100%' height='600%' src='data:application/pdf;base64, " +
           encodeURI(pdfGenerateResponse.encodedBase64String) +
-          "'></iframe>"
+          "'></iframe>",
       );
       yield put(actions.labelPrintEditFinishSuccess(pdfGenerateResponse));
     } else if (pdfGenerate.status === 401) {
@@ -175,13 +175,13 @@ function* GenerateEditFinishLabelPrint(action) {
 export function* watchFetchRequests() {
   yield takeLatest(
     GENERATE_INWARD_LABEL_PRINT_PDF_REQUEST,
-    GenerateInwardLabelPrint
+    GenerateInwardLabelPrint,
   );
   yield takeLatest(GENERATE_WIP_LABEL_PRINT_PDF_REQUEST, GenerateWIPLabelPrint);
   yield takeLatest(GENERATE_FG_LABEL_PRINT_PDF_REQUEST, GenerateFGLabelPrint);
   yield takeLatest(
     GENERATE_EDIT_FINISH_LABEL_PRINT_PDF_REQUEST,
-    GenerateEditFinishLabelPrint
+    GenerateEditFinishLabelPrint,
   );
 }
 

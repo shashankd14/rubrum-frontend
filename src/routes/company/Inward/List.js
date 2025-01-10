@@ -1,36 +1,36 @@
-import React, { useEffect, useState } from "react";
-import { connect } from "react-redux";
-import { Button, Card, Divider, Icon, Table, message } from "antd";
-import moment from "moment";
-import SearchBox from "../../../components/SearchBox";
+import React, { useEffect, useState } from 'react';
+import { connect } from 'react-redux';
+import { Button, Card, Divider, Icon, Table, message } from 'antd';
+import moment from 'moment';
+import SearchBox from '../../../components/SearchBox';
 
-import IntlMessages from "../../../util/IntlMessages";
+import IntlMessages from '../../../util/IntlMessages';
 import {
   fetchInwardListOldAPI,
   resetInwardForm,
   deleteInwardEntryById,
   resetDeleteInward,
   fetchPartyListById,
-} from "../../../appRedux/actions/Inward";
-import { onDeleteContact } from "../../../appRedux/actions";
-import {sidebarMenuItems} from "../../../constants";
+} from '../../../appRedux/actions/Inward';
+import { onDeleteContact } from '../../../appRedux/actions';
+import { sidebarMenuItems } from '../../../constants';
 
 const inwardMenuConstants = {
-  'view': "View",
-  'addInward': 'Add Inward',
-  'export': 'Export',
-  'edit': 'Edit',
-  'delete': 'Delete',
-}
-const List = (props) => {
+  view: 'View',
+  addInward: 'Add Inward',
+  export: 'Export',
+  edit: 'Edit',
+  delete: 'Delete',
+};
+const List = props => {
   const [sortedInfo, setSortedInfo] = useState({
-    order: "descend",
-    columnKey: "age",
+    order: 'descend',
+    columnKey: 'age',
   });
   const [filteredInfo, setFilteredInfo] = useState(null);
-  const [searchValue, setSearchValue] = useState("");
+  const [searchValue, setSearchValue] = useState('');
   const [filteredInwardList, setFilteredInwardList] = useState(
-    props.inward.inwardList
+    props.inward.inwardList,
   );
 
   const [pageNo, setPageNo] = React.useState(1);
@@ -41,107 +41,124 @@ const List = (props) => {
 
   const columns = [
     {
-      title: "Coil Number",
-      dataIndex: "coilNumber",
-      key: "coilNumber",
+      title: 'Coil Number',
+      dataIndex: 'coilNumber',
+      key: 'coilNumber',
       filters: [],
       sorter: (a, b) => a.coilNumber.length - b.coilNumber.length,
-      sortOrder: sortedInfo.columnKey === "coilNumber" && sortedInfo.order,
+      sortOrder: sortedInfo.columnKey === 'coilNumber' && sortedInfo.order,
     },
     {
-      title: "Party Name",
-      dataIndex: "party.partyName",
-      key: "party.partyName",
-      filteredValue: filteredInfo ? filteredInfo["party.partyName"] : null,
+      title: 'Party Name',
+      dataIndex: 'party.partyName',
+      key: 'party.partyName',
+      filteredValue: filteredInfo ? filteredInfo['party.partyName'] : null,
       onFilter: (value, record) => record.party.partyName == value,
       filters:
         props.inward.inwardList.length > 0
           ? [
               ...new Set(
-                props.inward.inwardList.map((item) => item.party.partyName)
+                props.inward.inwardList.map(item => item.party.partyName),
               ),
-            ].map((partyName) => ({ text: partyName, value: partyName }))
+            ].map(partyName => ({ text: partyName, value: partyName }))
           : [],
       sorter: (a, b) => a.party.partyName.length - b.party.partyName.length,
-      sortOrder: sortedInfo.columnKey === "party.partyName" && sortedInfo.order,
+      sortOrder: sortedInfo.columnKey === 'party.partyName' && sortedInfo.order,
     },
     {
-      title: "Inward Date",
-      dataIndex: "dReceivedDate",
+      title: 'Inward Date',
+      dataIndex: 'dReceivedDate',
       render(value) {
-        return moment(value).format("Do MMM YYYY");
+        return moment(value).format('Do MMM YYYY');
       },
-      key: "dReceivedDate",
+      key: 'dReceivedDate',
       filters: [],
       sorter: (a, b) => a.dReceivedDate - b.dReceivedDate,
-      sortOrder: sortedInfo.columnKey === "dReceivedDate" && sortedInfo.order,
+      sortOrder: sortedInfo.columnKey === 'dReceivedDate' && sortedInfo.order,
     },
     {
-      title: "Material",
-      dataIndex: "material.description",
-      key: "material.description",
-      filteredValue: filteredInfo ? filteredInfo["material.description"] : null,
+      title: 'Material',
+      dataIndex: 'material.description',
+      key: 'material.description',
+      filteredValue: filteredInfo ? filteredInfo['material.description'] : null,
       onFilter: (value, record) => record.material.description == value,
       filters:
         props.inward.inwardList.length > 0
           ? [
               ...new Set(
-                props.inward.inwardList.map((item) => item.material.description)
+                props.inward.inwardList.map(item => item.material.description),
               ),
-            ].map((material) => ({ text: material, value: material }))
+            ].map(material => ({ text: material, value: material }))
           : [],
       sorter: (a, b) =>
         a.material.description.length - b.material.description.length,
       sortOrder:
-        sortedInfo.columnKey === "material.description" && sortedInfo.order,
+        sortedInfo.columnKey === 'material.description' && sortedInfo.order,
     },
     {
-      title: "Status",
-      dataIndex: "status.statusName",
-      key: "status.statusName",
+      title: 'Status',
+      dataIndex: 'status.statusName',
+      key: 'status.statusName',
       filters: [],
       sorter: (a, b) => a.status.statusName.length - b.status.statusName.length,
       sortOrder:
-        sortedInfo.columnKey === "status.statusName" && sortedInfo.order,
+        sortedInfo.columnKey === 'status.statusName' && sortedInfo.order,
     },
     {
-      title: "Thickness",
-      dataIndex: "fThickness",
-      key: "fThickness",
+      title: 'Thickness',
+      dataIndex: 'fThickness',
+      key: 'fThickness',
       filters: [],
       sorter: (a, b) => a.fThickness - b.fThickness,
-      sortOrder: sortedInfo.columnKey === "fThickness" && sortedInfo.order,
+      sortOrder: sortedInfo.columnKey === 'fThickness' && sortedInfo.order,
     },
     {
-      title: "Weight",
-      dataIndex: "fQuantity",
-      key: "fQuantity",
+      title: 'Weight',
+      dataIndex: 'fQuantity',
+      key: 'fQuantity',
       filters: [],
       sorter: (a, b) => a.fQuantity - b.fQuantity,
-      sortOrder: sortedInfo.columnKey === "fQuantity" && sortedInfo.order,
+      sortOrder: sortedInfo.columnKey === 'fQuantity' && sortedInfo.order,
     },
     {
-      title: "Action",
-      dataIndex: "",
-      key: "x",
+      title: 'Action',
+      dataIndex: '',
+      key: 'x',
       render: (text, record, index) => (
         <span>
-          {menuInwardLabelList.length > 0 && menuInwardLabelList.includes(inwardMenuConstants.view) && <><span
-              className="gx-link"
-              onClick={() => props.history.push(`${record.coilNumber}`)}
-          >
-            View
-          </span>
-            <Divider type="vertical" />
-          </>}
-          {menuInwardLabelList.length > 0 && menuInwardLabelList.includes(inwardMenuConstants.edit) && <><span className="gx-link" onClick={(e) => onEdit(record, index, e)}>
-            Edit
-          </span>
-          <Divider type="vertical" /></>}
-          {menuInwardLabelList.length > 0 && menuInwardLabelList.includes(inwardMenuConstants.delete) && <span className="gx-link" onClick={(e) => onDelete(record, index, e)}>
-            Delete
-          </span>
-          }
+          {menuInwardLabelList.length > 0 &&
+            menuInwardLabelList.includes(inwardMenuConstants.view) && (
+              <>
+                <span
+                  className="gx-link"
+                  onClick={() => props.history.push(`${record.coilNumber}`)}
+                >
+                  View
+                </span>
+                <Divider type="vertical" />
+              </>
+            )}
+          {menuInwardLabelList.length > 0 &&
+            menuInwardLabelList.includes(inwardMenuConstants.edit) && (
+              <>
+                <span
+                  className="gx-link"
+                  onClick={e => onEdit(record, index, e)}
+                >
+                  Edit
+                </span>
+                <Divider type="vertical" />
+              </>
+            )}
+          {menuInwardLabelList.length > 0 &&
+            menuInwardLabelList.includes(inwardMenuConstants.delete) && (
+              <span
+                className="gx-link"
+                onClick={e => onDelete(record, index, e)}
+              >
+                Delete
+              </span>
+            )}
         </span>
       ),
     },
@@ -161,14 +178,14 @@ const List = (props) => {
   };
   useEffect(() => {
     if (props.inward.deleteSuccess) {
-      message.success("Successfully deleted the coil", 2).then(() => {
+      message.success('Successfully deleted the coil', 2).then(() => {
         props.resetDeleteInward();
       });
     }
   }, [props.inward.deleteSuccess]);
   useEffect(() => {
     if (props.inward.deleteFail) {
-      message.success("Unable to delete the coil", 2).then(() => {
+      message.success('Unable to delete the coil', 2).then(() => {
         props.resetDeleteInward();
       });
     }
@@ -209,7 +226,7 @@ const List = (props) => {
   const exportSelectedData = () => {};
 
   const deleteSelectedCoils = () => {
-    console.log("dfd");
+    console.log('dfd');
   };
 
   useEffect(() => {
@@ -219,16 +236,22 @@ const List = (props) => {
   }, [props.inward.loading, props.inward.success]);
 
   useEffect(() => {
-    const menus = localStorage.getItem('Menus') ? JSON.parse(localStorage.getItem('Menus')) : [];
-    if(menus.length > 0) {
-      const menuLabels = menus.filter(menu => menu.menuKey === sidebarMenuItems.inward);
+    const menus = localStorage.getItem('Menus')
+      ? JSON.parse(localStorage.getItem('Menus'))
+      : [];
+    if (menus.length > 0) {
+      const menuLabels = menus.filter(
+        menu => menu.menuKey === sidebarMenuItems.inward,
+      );
       let menuInwardLabels = [];
-      if(menuLabels.length > 0) {
-        menuInwardLabels = menuLabels[0]?.permission ? menuLabels[0]?.permission?.split(',') : [];
+      if (menuLabels.length > 0) {
+        menuInwardLabels = menuLabels[0]?.permission
+          ? menuLabels[0]?.permission?.split(',')
+          : [];
       }
       setMenuInwardLabelList(menuInwardLabels);
     }
-  }, [])
+  }, []);
 
   return (
     <div>
@@ -238,28 +261,36 @@ const List = (props) => {
       <Card>
         <div className="gx-flex-row gx-flex-1">
           <div className="table-operations gx-col">
-            {menuInwardLabelList.length > 0 && menuInwardLabelList.includes(inwardMenuConstants.delete) &&
-                <Button onClick={deleteSelectedCoils}>Delete</Button>}
-            {menuInwardLabelList.length > 0 && menuInwardLabelList.includes(inwardMenuConstants.export) && <Button onClick={exportSelectedData}>Export</Button>}
+            {menuInwardLabelList.length > 0 &&
+              menuInwardLabelList.includes(inwardMenuConstants.delete) && (
+                <Button onClick={deleteSelectedCoils}>Delete</Button>
+              )}
+            {menuInwardLabelList.length > 0 &&
+              menuInwardLabelList.includes(inwardMenuConstants.export) && (
+                <Button onClick={exportSelectedData}>Export</Button>
+              )}
             <Button onClick={clearFilters}>Clear All filters</Button>
           </div>
           <div className="gx-flex-row gx-w-50">
-            {menuInwardLabelList.length > 0 && menuInwardLabelList.includes(inwardMenuConstants.addInward) && <Button
-              type="primary"
-              icon={() => <i className="icon icon-add" />}
-              size="default"
-              onClick={() => {
-                props.resetInwardForm();
-                props.history.push("/company/inward/create");
-              }}
-            >
-              Add Inward
-            </Button>}
+            {menuInwardLabelList.length > 0 &&
+              menuInwardLabelList.includes(inwardMenuConstants.addInward) && (
+                <Button
+                  type="primary"
+                  icon={() => <i className="icon icon-add" />}
+                  size="default"
+                  onClick={() => {
+                    props.resetInwardForm();
+                    props.history.push('/company/inward/create');
+                  }}
+                >
+                  Add Inward
+                </Button>
+              )}
             <SearchBox
               styleName="gx-flex-1"
               placeholder="Search for coil number or party name..."
               value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
+              onChange={e => setSearchValue(e.target.value)}
             />
           </div>
         </div>
@@ -271,7 +302,7 @@ const List = (props) => {
           onChange={handleChange}
           pagination={{
             pageSize: 15,
-            onChange: (page) => {
+            onChange: page => {
               setPageNo(page);
               props.fetchInwardListOldAPI(page, 15, searchValue);
             },
@@ -284,7 +315,7 @@ const List = (props) => {
   );
 };
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   inward: state.inward,
 });
 

@@ -13,15 +13,17 @@ import moment from 'moment';
 import { useIntl } from 'react-intl';
 import SearchBox from '../../../components/SearchBox';
 
-const LabelPrintWIP = (props) => {
+const LabelPrintWIP = props => {
   const [sortedInfo, setSortedInfo] = useState({
     order: 'descend',
     columnKey: 'age',
   });
   const [filteredInfo, setFilteredInfo] = useState(null);
   const [searchValue, setSearchValue] = useState('');
-  const [customerValue, setCustomerValue] = useState("");
-  const [filteredInwardList, setFilteredInwardList] = useState(props.template.data.content);
+  const [customerValue, setCustomerValue] = useState('');
+  const [filteredInwardList, setFilteredInwardList] = useState(
+    props.template.data.content,
+  );
   const [qualityReportList, setQualityReportList] = useState([]);
   const { totalItems } = props.template;
   const [pageNo, setPageNo] = React.useState(1);
@@ -114,7 +116,7 @@ const LabelPrintWIP = (props) => {
       render: (text, record, index) => (
         <span>
           <span
-            className='gx-link'
+            className="gx-link"
             onClick={() => {
               onPdf(record.inwardEntryId);
               setShowPopup(true);
@@ -128,7 +130,13 @@ const LabelPrintWIP = (props) => {
   ];
 
   useEffect(() => {
-    props.fetchQualityReportStageList({ stage: "inward", page: 1, pageSize: 15, searchValue:'', customerValue: '' });
+    props.fetchQualityReportStageList({
+      stage: 'inward',
+      page: 1,
+      pageSize: 15,
+      searchValue: '',
+      customerValue: '',
+    });
     props.fetchPartyList();
   }, []);
 
@@ -136,11 +144,23 @@ const LabelPrintWIP = (props) => {
     if (searchValue) {
       if (searchValue.length >= 3) {
         setPageNo(1);
-        props.fetchQualityReportStageList({ stage: "inward", page: 1, pageSize: 15, searchValue, customerValue});
+        props.fetchQualityReportStageList({
+          stage: 'inward',
+          page: 1,
+          pageSize: 15,
+          searchValue,
+          customerValue,
+        });
       }
     } else {
       setPageNo(1);
-      props.fetchQualityReportStageList({ stage: "inward", page: 1, pageSize: 15, searchValue, customerValue});
+      props.fetchQualityReportStageList({
+        stage: 'inward',
+        page: 1,
+        pageSize: 15,
+        searchValue,
+        customerValue,
+      });
     }
   }, [searchValue]);
 
@@ -169,19 +189,19 @@ const LabelPrintWIP = (props) => {
     }
   }, [props.template.loading, props.template.error, props.template.operation]);
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     console.log(e);
     setTemplateId(e);
   };
 
-  const handleCustomerChange = (value) => {
+  const handleCustomerChange = value => {
     if (value) {
       setCustomerValue(value);
       setPageNo(1);
       props.fetchQualityReportStageList(1, 15, searchValue, value);
     } else {
-      setCustomerValue("");
-       setFilteredInwardList(props.template.data.content);
+      setCustomerValue('');
+      setFilteredInwardList(props.template.data.content);
     }
   };
 
@@ -203,11 +223,11 @@ const LabelPrintWIP = (props) => {
     }
   }, [props.party.loading, props.party.error]);
 
-  const onPdf = (inwardEntryId) => {
+  const onPdf = inwardEntryId => {
     const currentDate = new Date();
     const formattedDate = currentDate.toISOString();
-    setFilteredInwardList((prevList) => {
-      return prevList.map((item) => {
+    setFilteredInwardList(prevList => {
+      return prevList.map(item => {
         if (item.inwardEntryId === inwardEntryId) {
           return { ...item, generatingDate: formattedDate };
         }
@@ -227,7 +247,7 @@ const LabelPrintWIP = (props) => {
             <p>WIP Labels</p>
             {props.labelPrint?.wipLabelPdf?.wip_labels?.map((item, index) => (
               <>
-                <a href={item?.labelUrl} target='_blank'>
+                <a href={item?.labelUrl} target="_blank">
                   {index + 1}. {item.id}
                 </a>
                 <br />
@@ -238,17 +258,17 @@ const LabelPrintWIP = (props) => {
       </>
     );
   };
-  console.log("labelPrint props", props)
+  console.log('labelPrint props', props);
   return (
     <>
-      <div className='gx-flex-row gx-flex-1'>
-        <div className='table-operations gx-col'>
+      <div className="gx-flex-row gx-flex-1">
+        <div className="table-operations gx-col">
           <Select
-            id='select'
+            id="select"
             showSearch
             style={{ width: 200 }}
-            placeholder='Select a customer'
-            optionFilterProp='children'
+            placeholder="Select a customer"
+            optionFilterProp="children"
             onChange={handleCustomerChange}
             value={customerValue}
             // onFocus={handleFocus}
@@ -260,42 +280,48 @@ const LabelPrintWIP = (props) => {
             }
           >
             {partyList.length > 0 &&
-              partyList.map((party) => (
+              partyList.map(party => (
                 <Select.Option key={party.nPartyId} value={party.nPartyId}>
                   {party.partyName}
                 </Select.Option>
               ))}
           </Select>
         </div>
-        <div className='table-operations gx-col'>
+        <div className="table-operations gx-col">
           <SearchBox
-            styleName='gx-flex-1'
-            placeholder='Search by Coil no. or Customer batch no'
+            styleName="gx-flex-1"
+            placeholder="Search by Coil no. or Customer batch no"
             value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
+            onChange={e => setSearchValue(e.target.value)}
           ></SearchBox>
         </div>
       </div>
       <div>
-          <Table
-            className='gx-table-responsive'
-            columns={columns}
-            dataSource={filteredInwardList}
-            onChange={handleChangeTable}
-            pagination={{
-              pageSize: 15,
-              onChange: (page, pageSize) => {
-                setPageNo(page);
-                props.fetchQualityReportStageList({stage: "inward", page, pageSize, searchValue, customerValue});
+        <Table
+          className="gx-table-responsive"
+          columns={columns}
+          dataSource={filteredInwardList}
+          onChange={handleChangeTable}
+          pagination={{
+            pageSize: 15,
+            onChange: (page, pageSize) => {
+              setPageNo(page);
+              props.fetchQualityReportStageList({
+                stage: 'inward',
+                page,
+                pageSize,
+                searchValue,
+                customerValue,
+              });
             },
-              current: pageNo,
-              total: totalPageItems,
-            }}
-          />
+            current: pageNo,
+            total: totalPageItems,
+          }}
+        />
       </div>
       {showPopup && (
         <Modal
-          title='Label Print'
+          title="Label Print"
           visible={showPopup}
           width={600}
           onOk={() => setShowPopup(false)}
@@ -309,7 +335,7 @@ const LabelPrintWIP = (props) => {
   );
 };
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   template: state.quality,
   inward: state.inward,
   party: state.party,

@@ -15,7 +15,7 @@ import {
   Collapse,
   Card,
 } from 'antd';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import SweetAlert from 'react-bootstrap-sweetalert';
 import { connect, useDispatch } from 'react-redux';
 import moment from 'moment';
@@ -29,15 +29,11 @@ import {
   pdfGenerateInward,
   resetIsDeleted,
   QrCodeGeneratePlan,
-} from '../../../appRedux/actions/Inward';
-import {
+  labelPrintEditFinish,
   fetchClassificationList,
   fetchYLRList,
 } from '../../../appRedux/actions';
-import { labelPrintEditFinish } from '../../../appRedux/actions/LabelPrint';
 import IntlMessages from 'util/IntlMessages';
-import { set } from 'nprogress';
-import { values } from 'lodash';
 
 const { Panel } = Collapse;
 const Option = Select.Option;
@@ -99,7 +95,6 @@ const SlittingWidths = (props) => {
   const [twidth, settwidth] = useState(0);
   const [totalPacketsWidth, setTotalPacketsWidth] = useState(0);
   const [totalPacketsWeight, setTotalPacketsWeight] = useState(0);
-  const [oldLength, setOldLength] = useState(0);
   const [equalParts, setEqualParts] = useState(0);
   const [equalPartsDisplay, setEqualPartsDisplay] = useState(0);
   const [unsavedDeleteId, setUnsavedDeleteId] = useState(0);
@@ -125,17 +120,16 @@ const SlittingWidths = (props) => {
   };
   let cutLength = callBackValue('length');
   let cutWidth = callBackValue('width');
-  let noParts = 0;
   useEffect(() => {
     console.log(
       'slitInstruction set to slitInstructionList',
       props.slitInstruction
     );
     props.setSlitInstructionList(props.slitInstruction);
-  }, [props.slitInstruction]);
+  }, [props, props.slitInstruction]);
   useEffect(() => {
     getEditValue();
-  }, [props.length]);
+  }, [getEditValue, props.length]);
 
   useEffect(() => {
     setValue(props.value);
@@ -186,7 +180,7 @@ const SlittingWidths = (props) => {
       setlen(lengthValue1);
       setWeightValue(weightValue);
     }
-  }, [props.coilDetails, props.cuts]);
+  }, [len, props, props.coilDetails, props.cuts, width]);
   useEffect(() => {
     setWeightValue(props.coilDetails.fpresent);
   }, [props.coilDetails.fpresent]);
@@ -232,7 +226,7 @@ const SlittingWidths = (props) => {
           : 0;
       props.totalActualweight(actualTotalWeight);
     }
-  }, [props.cuts]);
+  }, [props, props.cuts]);
 
   useEffect(() => {
     if (props.reset) {
@@ -241,7 +235,7 @@ const SlittingWidths = (props) => {
       props.form.resetFields();
       settwidth(0);
     }
-  }, [props.reset]);
+  }, [props.form, props.reset]);
 
   const getEditValue = () => {
     if (props.cuts.length > 0 && props.length !== undefined) {
@@ -591,7 +585,7 @@ const SlittingWidths = (props) => {
                 <Input
                   id='noParts'
                   onBlur={handleBlurEvent}
-                  disabled={value == 0 || value == 4 ? false : true}
+                  disabled={!(value === 0 || value === 4)}
                 />
               )}
             </Form.Item>
@@ -611,9 +605,7 @@ const SlittingWidths = (props) => {
                   id='radioParts'
                   onChange={radioChange}
                   disabled={
-                    (value == 0 || value == 4) && weightValue !== 0
-                      ? false
-                      : true
+                    !((value === 0 || value === 4) && weightValue !== 0)
                   }
                   value={value}
                 >
@@ -629,7 +621,7 @@ const SlittingWidths = (props) => {
                   <Input
                     width={50}
                     id='targetWeight'
-                    disabled={value === 1 ? true : false}
+                    disabled={value === 1}
                     value={targetWeight}
                     name='targetWeight'
                     onChange={onTargetChange}
@@ -680,7 +672,7 @@ const SlittingWidths = (props) => {
                         })(
                           <Input
                             id='widths'
-                            disabled={props.wip ? true : false}
+                            disabled={!!props.wip}
                             onBlur={(e) => handleBlur(e, index)}
                           />
                         )}
@@ -1212,7 +1204,7 @@ const CreateSlittingDetailsForm = (props) => {
         cuts.length > 0 ? (result.length > 0 ? true : false) : true;
       setreset(resetter);
     }
-  }, [props.coilDetails]);
+  }, [cuts, props.coilDetails, props.inward.isDeleted]);
   useEffect(() => {
     setValue(0);
     setSlitInstruction([]);
@@ -1298,7 +1290,7 @@ const CreateSlittingDetailsForm = (props) => {
       setTableData(newData);
     }
     props.resetIsDeleted(false);
-  }, [props.coilDetails]);
+  }, [props, props.coilDetails]);
 
   const onInputChange =
     (key, index, record, type) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1406,7 +1398,7 @@ const CreateSlittingDetailsForm = (props) => {
     let coilActualYLR = 0;
     coilActualYLR = (sumOfScrapActualWeight / sumOfTotalActualWeight) * 100;
     setActualCoilLevelYLR(coilActualYLR);
-  }, []);
+  }, [props.coilDetails.instruction]);
 
   const handleTagsChange = (value, index, record) => {
     const tableIndex = record.tableIndex;
@@ -1576,7 +1568,7 @@ const CreateSlittingDetailsForm = (props) => {
           props.resetInstruction();
         });
     }
-  }, [props.inward.pdfSuccess]);
+  }, [props, props.inward.pdfSuccess]);
   //Yield loss ratio
   const columnYieldLoss = [
     {
@@ -1616,7 +1608,7 @@ const CreateSlittingDetailsForm = (props) => {
         userId: '',
       });
     }
-  }, []);
+  }, [props]);
 
   const [slittingfilteredData, setSlittingFilteredData] = useState();
   const [slitCutfilteredData, setSlitCutFilteredData] = useState();
@@ -1690,7 +1682,7 @@ const CreateSlittingDetailsForm = (props) => {
         props.resetInstruction();
       });
     }
-  }, [props?.inward?.instructionUpdateSuccess]);
+  }, [props]);
 
   const handleCancel = (e) => {
     e.preventDefault();

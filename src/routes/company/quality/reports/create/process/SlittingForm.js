@@ -1,4 +1,14 @@
-import { Button, Card, Col, DatePicker, Input, Popconfirm, Row, Icon, Upload } from 'antd';
+import {
+  Button,
+  Card,
+  Col,
+  DatePicker,
+  Input,
+  Popconfirm,
+  Row,
+  Icon,
+  Upload,
+} from 'antd';
 import TextArea from 'antd/lib/input/TextArea';
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
@@ -9,19 +19,18 @@ import {
   fetchQualityReportList,
   fetchQualityReportStageList,
   getCoilPlanDetails,
-  getQualityReportById
+  getQualityReportById,
 } from '../../../../../../appRedux/actions';
 import { useLocation } from 'react-router-dom/cjs/react-router-dom.min';
 import EditableTableQR from '../../../../../../util/EditableTableQR';
 
-const SlittingForm = (props) => {
-  
+const SlittingForm = props => {
   const templateData = JSON.parse(
-    props?.templateDetails?.data?.templateDetails
+    props?.templateDetails?.data?.templateDetails,
   );
-  
+
   // Access the 'formData' property
-  const formDataObject = templateData.find((item) => item.id === 'formData');
+  const formDataObject = templateData.find(item => item.id === 'formData');
 
   //Slit tolerance
   var toleranceThicknessFrom = 0;
@@ -30,114 +39,127 @@ const SlittingForm = (props) => {
   var toleranceSlitSizeTo = 0;
   var toleranceBurrHeightFrom = 0;
   var toleranceBurrHeightTo = 0;
-    
-    const templateDataTolerance = JSON.parse(
-      props?.templateDetails?.data?.templateDetails
-    );
-    const formDataObjectTolerance = templateDataTolerance.find((item) => item.id === 'formData');
-    if (formDataObject) {
-      const formData = formDataObjectTolerance.value;
-      const toleranceInspectionDataSlit = formData.toleranceInspectionData;
-      toleranceThicknessFrom = toleranceInspectionDataSlit[0].toleranceThicknessFrom; 
-      toleranceThicknessTo = toleranceInspectionDataSlit[0].toleranceThicknessTo;
-      toleranceSlitSizeFrom = toleranceInspectionDataSlit[0].toleranceSlitSizeFrom;
-      toleranceSlitSizeTo = toleranceInspectionDataSlit[0].toleranceSlitSizeTo;
-      toleranceBurrHeightFrom = toleranceInspectionDataSlit[0].toleranceBurrHeightFrom; 
-      toleranceBurrHeightTo = toleranceInspectionDataSlit[0].toleranceBurrHeightTo;
-    } 
+
+  const templateDataTolerance = JSON.parse(
+    props?.templateDetails?.data?.templateDetails,
+  );
+  const formDataObjectTolerance = templateDataTolerance.find(
+    item => item.id === 'formData',
+  );
+  if (formDataObject) {
+    const formData = formDataObjectTolerance.value;
+    const toleranceInspectionDataSlit = formData.toleranceInspectionData;
+    toleranceThicknessFrom =
+      toleranceInspectionDataSlit[0].toleranceThicknessFrom;
+    toleranceThicknessTo = toleranceInspectionDataSlit[0].toleranceThicknessTo;
+    toleranceSlitSizeFrom =
+      toleranceInspectionDataSlit[0].toleranceSlitSizeFrom;
+    toleranceSlitSizeTo = toleranceInspectionDataSlit[0].toleranceSlitSizeTo;
+    toleranceBurrHeightFrom =
+      toleranceInspectionDataSlit[0].toleranceBurrHeightFrom;
+    toleranceBurrHeightTo =
+      toleranceInspectionDataSlit[0].toleranceBurrHeightTo;
+  }
 
   const [slitDataSource, setSlitDataSource] = useState([]);
   const [finalDataSource, setFinalDataSource] = useState([]);
   const [toleranceDataSource, setToleranceDataSource] = useState([]);
   //save plan details
-  const saveSlitData = () =>{
+  const saveSlitData = () => {
     if (props.templateDetails.packetDetails) {
       const mappedData = props.templateDetails.packetDetails.map((item, i) => ({
         key: i,
         instructionId: item.instructionId,
         plannedWidth: item.plannedWidth,
-        actualThickness:"",
-        actualWidth: "",
-        burrHeight: "",
-        remarks: ""
+        actualThickness: '',
+        actualWidth: '',
+        burrHeight: '',
+        remarks: '',
       }));
-      const toleranceData = [{
-        key: 0,
-        toleranceThicknessFrom: toleranceThicknessFrom,
-        toleranceThicknessTo: toleranceThicknessTo,
-        toleranceSlitSizeFrom: toleranceSlitSizeFrom,
-        toleranceSlitSizeTo: toleranceSlitSizeTo,
-        toleranceBurrHeightFrom: toleranceBurrHeightFrom,
-        toleranceBurrHeightTo: toleranceBurrHeightTo,
-      }];
+      const toleranceData = [
+        {
+          key: 0,
+          toleranceThicknessFrom: toleranceThicknessFrom,
+          toleranceThicknessTo: toleranceThicknessTo,
+          toleranceSlitSizeFrom: toleranceSlitSizeFrom,
+          toleranceSlitSizeTo: toleranceSlitSizeTo,
+          toleranceBurrHeightFrom: toleranceBurrHeightFrom,
+          toleranceBurrHeightTo: toleranceBurrHeightTo,
+        },
+      ];
       setFinalDataSource(mappedData);
       setSlitDataSource(mappedData);
       setToleranceDataSource(toleranceData);
       settoleranceInspectionDataSlit(toleranceData);
     }
-  }
-  useEffect(()=>{
-    if (props.templateDetails.packetDetails && props.templateDetails.operation !== "qualityReportById") {
-        saveSlitData()
+  };
+  useEffect(() => {
+    if (
+      props.templateDetails.packetDetails &&
+      props.templateDetails.operation !== 'qualityReportById'
+    ) {
+      saveSlitData();
     }
-  },[props.templateDetails.packetDetails, props.templateDetails.operation])
+  }, [props.templateDetails.packetDetails, props.templateDetails.operation, saveSlitData]);
 
   //view plan Details
-  const viewSlitData = () =>{
-    if(props.templateDetails.operation == "qualityReportById"){
-      var qirId = props.templateDetails.data.qirId
-      props.getQualityReportById(qirId)
+  const viewSlitData = () => {
+    if (props.templateDetails.operation == 'qualityReportById') {
+      var qirId = props.templateDetails.data.qirId;
+      props.getQualityReportById(qirId);
       const planDetails = JSON.parse(props.templateDetails.data.planDetails);
       const slitData = planDetails[0]?.slitInspectionData;
       if (slitData) {
-      const mappedData = slitData.map((item, i) => ({
-        key: i,
-        instructionId: item.instructionId,
-        plannedWidth: item.plannedWidth,
-        actualThickness: item.actualThickness,
-        actualWidth: item.actualWidth,
-        burrHeight: item.burrHeight,
-        remarks: item.remarks
-      }));
-      const toleranceDataTable = planDetails[0]?.toleranceInspectionDataSlit;
+        const mappedData = slitData.map((item, i) => ({
+          key: i,
+          instructionId: item.instructionId,
+          plannedWidth: item.plannedWidth,
+          actualThickness: item.actualThickness,
+          actualWidth: item.actualWidth,
+          burrHeight: item.burrHeight,
+          remarks: item.remarks,
+        }));
+        const toleranceDataTable = planDetails[0]?.toleranceInspectionDataSlit;
 
-          const toleranceData = toleranceDataTable.map((item, i) => ({
-        toleranceThicknessFrom: item.toleranceThicknessFrom,
-        toleranceThicknessTo: item.toleranceThicknessTo,
-        toleranceSlitSizeFrom: item.toleranceSlitSizeFrom,
-        toleranceSlitSizeTo: item.toleranceSlitSizeTo,
-        toleranceBurrHeightFrom: item.toleranceBurrHeightFrom,
-        toleranceBurrHeightTo: item.toleranceBurrHeightTo,
-      }));
-      setFinalDataSource(mappedData);
-      setSlitDataSource(mappedData);
-      setToleranceDataSource(toleranceData);
-      settoleranceInspectionDataSlit(toleranceData);
-    }}
-  }
-  
-  useEffect(() => {
-    if(props.templateDetails.operation === "qualityReportById"){
-        viewSlitData()
+        const toleranceData = toleranceDataTable.map((item, i) => ({
+          toleranceThicknessFrom: item.toleranceThicknessFrom,
+          toleranceThicknessTo: item.toleranceThicknessTo,
+          toleranceSlitSizeFrom: item.toleranceSlitSizeFrom,
+          toleranceSlitSizeTo: item.toleranceSlitSizeTo,
+          toleranceBurrHeightFrom: item.toleranceBurrHeightFrom,
+          toleranceBurrHeightTo: item.toleranceBurrHeightTo,
+        }));
+        setFinalDataSource(mappedData);
+        setSlitDataSource(mappedData);
+        setToleranceDataSource(toleranceData);
+        settoleranceInspectionDataSlit(toleranceData);
+      }
     }
-  }, [props.templateDetails.operation]);
+  };
 
-  const [isDisabled, setIsDisabled] = useState(props.isDisabled);
-
+  useEffect(() => {
+    if (props.templateDetails.operation === 'qualityReportById') {
+      viewSlitData();
+    }
+  }, [props.templateDetails.operation, viewSlitData]);
+  
   const [slitInspectionData, setSlitInspectionData] = useState([]);
   const [finalInspectionData, setFinalInspectionData] = useState([]);
-  const [toleranceInspectionDataSlit, settoleranceInspectionDataSlit] = useState([])
+  const [toleranceInspectionDataSlit, settoleranceInspectionDataSlit] =
+    useState([]);
   const [thicknessSlit, setThicknessSlit] = useState();
   useEffect(() => {
-    const thicknessSlitE = props.inward?.plan?.fThickness
+    const thicknessSlitE = props.inward?.plan?.fThickness;
     setThicknessSlit(thicknessSlitE);
-  },[props.inward])
-  const instructionDate = props.templateDetails.packetDetails?.map(item=>item.instructionDate)
+  }, [props.inward]);
+  const instructionDate = props.templateDetails.packetDetails?.map(
+    item => item.instructionDate,
+  );
   useEffect(() => {
     // Update customerName in slitFormData when props change
-    setSlitFormData((prevFormData) => ({
+    setSlitFormData(prevFormData => ({
       ...prevFormData,
-      customerName: props.inward?.plan?.party?.partyName || '', 
+      customerName: props.inward?.plan?.party?.partyName || '',
       processDate: props.inward?.plan?.instruction?.instructionDate || '',
       batchNumber: props.inward?.plan?.batchNumber || '',
       motherCoilNumber: props.inward?.plan?.customerCoilId || '',
@@ -147,7 +169,7 @@ const SlittingForm = (props) => {
       width: props.inward?.plan?.fWidth || '',
       weight: props.inward?.plan?.grossWeight || '',
     }));
-  }, [props.inward?.plan?.party]);
+  }, [props.inward.plan.batchNumber, props.inward.plan.coilNumber, props.inward.plan.customerCoilId, props.inward.plan.fThickness, props.inward.plan.fWidth, props.inward.plan.grossWeight, props.inward.plan.instruction.instructionDate, props.inward.plan.materialGrade.gradeName, props.inward.plan.party.partyName]);
   const [slitFormData, setSlitFormData] = useState({
     processType: 'slitting',
     customerName: '',
@@ -248,36 +270,36 @@ const SlittingForm = (props) => {
   ];
   const toleranceColumnsSlit = [
     {
-        title: 'Slit Size From',
-        dataIndex: 'toleranceSlitSizeFrom',
-        editable: false
+      title: 'Slit Size From',
+      dataIndex: 'toleranceSlitSizeFrom',
+      editable: false,
     },
     {
-        title: 'Slit Size To',
-        dataIndex: 'toleranceSlitSizeTo',
-        editable: false
+      title: 'Slit Size To',
+      dataIndex: 'toleranceSlitSizeTo',
+      editable: false,
     },
     {
       title: 'Thickness From',
       dataIndex: 'toleranceThicknessFrom',
-      editable: false
-  },
-  {
-      title: 'Thickness To',
-      dataIndex: 'toleranceThicknessTo',
-      editable: false
-  },
-    {
-        title: 'Burr Height From',
-        dataIndex: 'toleranceBurrHeightFrom',
-        editable: false
+      editable: false,
     },
     {
-        title: 'Burr Height To',
-        dataIndex: 'toleranceBurrHeightTo',
-        editable: false
-    }
-];
+      title: 'Thickness To',
+      dataIndex: 'toleranceThicknessTo',
+      editable: false,
+    },
+    {
+      title: 'Burr Height From',
+      dataIndex: 'toleranceBurrHeightFrom',
+      editable: false,
+    },
+    {
+      title: 'Burr Height To',
+      dataIndex: 'toleranceBurrHeightTo',
+      editable: false,
+    },
+  ];
 
   const emptySlitRecord = {
     key: 0,
@@ -303,66 +325,69 @@ const SlittingForm = (props) => {
 
   const toleranceEmptyRecord = {
     key: 0,
-    toleranceThicknessFrom: "",
-    toleranceThicknessTo: "",
-    toleranceSlitSizeFrom: "",
-    toleranceSlitSizeTo: "",
-    toleranceBurrHeightFrom: "",
-    toleranceBurrHeightTo: "",
-}
-const location = useLocation();
+    toleranceThicknessFrom: '',
+    toleranceThicknessTo: '',
+    toleranceSlitSizeFrom: '',
+    toleranceSlitSizeTo: '',
+    toleranceBurrHeightFrom: '',
+    toleranceBurrHeightTo: '',
+  };
+  const location = useLocation();
   const onOptionChange = (key, changeEvent) => {
     // slitFormData[key] = changeEvent.target.value;
     const target = changeEvent.nativeEvent.target;
     if (changeEvent.target) {
-      setSlitFormData((prevData) => ({
+      setSlitFormData(prevData => ({
         ...prevData,
         [key]: target.value,
       }));
     }
   };
 
-  const saveForm = (event) => {
+  const saveForm = event => {
     event.preventDefault();
     slitFormData['slitInspectionData'] = slitInspectionData;
     slitFormData['finalInspectionData'] = finalInspectionData;
-    slitFormData['toleranceInspectionDataSlit'] = toleranceInspectionDataSlit
+    slitFormData['toleranceInspectionDataSlit'] = toleranceInspectionDataSlit;
     props.onSave(slitFormData);
     props.updateQRFormData({ action: 'slit', formData: slitFormData });
   };
   const onCancel = () => {
-    props.history.push("/company/quality/reports/create/processing");
+    props.history.push('/company/quality/reports/create/processing');
   };
 
-  const handleInspectionTableChange = (tableData) => {
+  const handleInspectionTableChange = tableData => {
     setSlitInspectionData(tableData);
   };
 
-  const handleFinalInspectionTableChange = (tableData) => {
+  const handleFinalInspectionTableChange = tableData => {
     setFinalInspectionData(tableData);
   };
 
-  const handleToleranceTableChangeSlit = (tableData) => {
-    settoleranceInspectionDataSlit(tableData)
-} 
-//move data from slit table to slit inspection table
-const handleTransferToFinalTable = () => {
-  const mappedData = slitInspectionData.map((slitItem) => ({
-    instructionId: slitItem.instructionId,
-    plannedWidth: slitItem.plannedWidth,
-    actualWidth: slitItem.actualWidth,
-    actualThickness: slitItem.actualThickness,
-    burrHeight: slitItem.burrHeight,
-    remarks: slitItem.remarks,
-    key: slitItem.key, 
-  }));
-  setFinalDataSource(mappedData);
-  handleFinalInspectionTableChange(mappedData)
-};
-console.log("location.state.selectedItemForQr.plannedYieldLossRatio", location.state.selectedItemForQr)
+  const handleToleranceTableChangeSlit = tableData => {
+    settoleranceInspectionDataSlit(tableData);
+  };
+  //move data from slit table to slit inspection table
+  const handleTransferToFinalTable = () => {
+    const mappedData = slitInspectionData.map(slitItem => ({
+      instructionId: slitItem.instructionId,
+      plannedWidth: slitItem.plannedWidth,
+      actualWidth: slitItem.actualWidth,
+      actualThickness: slitItem.actualThickness,
+      burrHeight: slitItem.burrHeight,
+      remarks: slitItem.remarks,
+      key: slitItem.key,
+    }));
+    setFinalDataSource(mappedData);
+    handleFinalInspectionTableChange(mappedData);
+  };
+  console.log(
+    'location.state.selectedItemForQr.plannedYieldLossRatio',
+    location.state.selectedItemForQr,
+  );
   return (
-    <div id='slittingform'>
-      <Card title='Slitting Process Form'>
+    <div id="slittingform">
+      <Card title="Slitting Process Form">
         <Card.Grid style={gridCardStyle}>
           <Row>
             <Col span={24}>
@@ -370,25 +395,25 @@ console.log("location.state.selectedItemForQr.plannedYieldLossRatio", location.s
               {/* <Input placeholder='Enter customer name' disabled value={slitFormData.customerName} onChange={(e) => onOptionChange('customerName', e)}></Input> */}
               <Input
                 value={props.inward?.plan?.party?.partyName}
-                onChange={(e) => onOptionChange('customerName', e)}
+                onChange={e => onOptionChange('customerName', e)}
               ></Input>
             </Col>
           </Row>
           <Row>
             <Col span={12}>
               <label>Process Date</label>
-               <DatePicker
+              <DatePicker
                 value={moment(instructionDate, 'YYYY-MM-DD HH:mm:ss')}
-                onChange={(e) => onOptionChange('processDate', e)}
+                onChange={e => onOptionChange('processDate', e)}
               >
                 {' '}
-              </DatePicker> 
+              </DatePicker>
             </Col>
             <Col span={12}>
               <label>Batch Number</label>
               <Input
                 value={props.inward?.plan?.batchNumber}
-                onChange={(e) => onOptionChange('batchNumber', e)}
+                onChange={e => onOptionChange('batchNumber', e)}
               ></Input>
             </Col>
           </Row>
@@ -397,30 +422,33 @@ console.log("location.state.selectedItemForQr.plannedYieldLossRatio", location.s
               <label>Grade</label>
               <Input
                 value={props.inward?.plan?.materialGrade?.gradeName}
-                onChange={(e) => onOptionChange('grade', e)}
+                onChange={e => onOptionChange('grade', e)}
               ></Input>
             </Col>
             <Col span={12}>
               <label>Coil Thickness (IN MM)</label>
               <Input
                 value={props.inward?.plan?.fThickness}
-                onChange={(e) => onOptionChange('thickness', e)}
+                onChange={e => onOptionChange('thickness', e)}
               ></Input>
             </Col>
           </Row>
           <Row>
-                <Col span={24}>
-                  <label>Document ID</label>
-                  <Input  value={location.state.selectedItemForQr.planId} onChange={(e) => onOptionChange('partDetailsId', e)}></Input>
-                </Col>
-         </Row>
+            <Col span={24}>
+              <label>Document ID</label>
+              <Input
+                value={location.state.selectedItemForQr.planId}
+                onChange={e => onOptionChange('partDetailsId', e)}
+              ></Input>
+            </Col>
+          </Row>
           <Row>
             <Col span={24}>
               <label>Physical Appearance</label>
               <Input
-               // disabled
-               // value={slitFormData.physicalAppearance}
-                onChange={(e) => onOptionChange('physicalAppearance', e)}
+                // disabled
+                // value={slitFormData.physicalAppearance}
+                onChange={e => onOptionChange('physicalAppearance', e)}
               ></Input>
             </Col>
           </Row>
@@ -431,8 +459,8 @@ console.log("location.state.selectedItemForQr.plannedYieldLossRatio", location.s
               <label>Operation</label>
               <Input
                 disabled
-                value='Slitting'
-                onChange={(e) => onOptionChange('operation', e)}
+                value="Slitting"
+                onChange={e => onOptionChange('operation', e)}
               ></Input>
             </Col>
           </Row>
@@ -440,8 +468,8 @@ console.log("location.state.selectedItemForQr.plannedYieldLossRatio", location.s
             <Col span={12}>
               <label>Mother Coil No.</label>
               <Input
-               // value={props.inward?.plan?.customerCoilId}
-                onChange={(e) => onOptionChange('motherCoilNumber', e)}
+                // value={props.inward?.plan?.customerCoilId}
+                onChange={e => onOptionChange('motherCoilNumber', e)}
               ></Input>
             </Col>
             <Col span={12}>
@@ -449,7 +477,7 @@ console.log("location.state.selectedItemForQr.plannedYieldLossRatio", location.s
               <Input
                 disabled
                 value={props.inward?.plan?.coilNumber}
-                onChange={(e) => onOptionChange('aspenCoilNumber', e)}
+                onChange={e => onOptionChange('aspenCoilNumber', e)}
               ></Input>
             </Col>
           </Row>
@@ -459,7 +487,7 @@ console.log("location.state.selectedItemForQr.plannedYieldLossRatio", location.s
               <Input
                 disabled
                 value={props.inward?.plan?.fWidth}
-                onChange={(e) => onOptionChange('width', e)}
+                onChange={e => onOptionChange('width', e)}
               ></Input>
             </Col>
             <Col span={12}>
@@ -467,44 +495,59 @@ console.log("location.state.selectedItemForQr.plannedYieldLossRatio", location.s
               <Input
                 disabled
                 value={props.inward?.plan?.grossWeight}
-                onChange={(e) => onOptionChange('weight', e)}
+                onChange={e => onOptionChange('weight', e)}
               ></Input>
             </Col>
           </Row>
           <Row>
-                <Col span={12}>
-                  <label>Target Weight</label>
-                  <Input disabled value={location.state.selectedItemForQr.targetWeight} onChange={(e) => onOptionChange('plannedWeight', e)}></Input>
-                </Col>
-                <Col span={12}>
-                  <label>Planned Yield Loss (%)</label>
-                  <Input disabled value={location.state.selectedItemForQr.plannedYieldLossRatio} onChange={(e) => onOptionChange('plannedYieldLossRatio', e)}></Input>
-                </Col>
-         </Row>
+            <Col span={12}>
+              <label>Target Weight</label>
+              <Input
+                disabled
+                value={location.state.selectedItemForQr.targetWeight}
+                onChange={e => onOptionChange('plannedWeight', e)}
+              ></Input>
+            </Col>
+            <Col span={12}>
+              <label>Planned Yield Loss (%)</label>
+              <Input
+                disabled
+                value={location.state.selectedItemForQr.plannedYieldLossRatio}
+                onChange={e => onOptionChange('plannedYieldLossRatio', e)}
+              ></Input>
+            </Col>
+          </Row>
           <Row>
             <Col span={24}>
               <label>Report Date</label>
               <DatePicker
                 style={{ width: '100%' }}
                 defaultValue={moment()}
-                onChange={(e) => onOptionChange('reportDate', e)}
+                onChange={e => onOptionChange('reportDate', e)}
               ></DatePicker>
             </Col>
           </Row>
         </Card.Grid>
         <Card.Grid style={gridStyle}>
-                    <Row>
-                        <Col span={24} style={{ textAlign: 'center' }}>
-                            <label style={{ fontSize: 20, textAlign: 'center' }}>Template Name - {location.state.templateDetails.templateName}</label>
-                        </Col>
-                    </Row>
-                     <Row>
-                        <Col span={24}>
-                            <label style={{fontSize: 20}}>Tolerance Data</label>
-                        </Col>
-                    </Row>
-                    <EditableTableQR columns={toleranceColumnsSlit} emptyRecord={toleranceEmptyRecord} dataSource={toleranceDataSource} handleChange={handleToleranceTableChangeSlit}/>
-                </Card.Grid>
+          <Row>
+            <Col span={24} style={{ textAlign: 'center' }}>
+              <label style={{ fontSize: 20, textAlign: 'center' }}>
+                Template Name - {location.state.templateDetails.templateName}
+              </label>
+            </Col>
+          </Row>
+          <Row>
+            <Col span={24}>
+              <label style={{ fontSize: 20 }}>Tolerance Data</label>
+            </Col>
+          </Row>
+          <EditableTableQR
+            columns={toleranceColumnsSlit}
+            emptyRecord={toleranceEmptyRecord}
+            dataSource={toleranceDataSource}
+            handleChange={handleToleranceTableChangeSlit}
+          />
+        </Card.Grid>
         <Card.Grid style={gridStyle}>
           <EditableTableQR
             columns={slitColumns}
@@ -521,7 +564,9 @@ console.log("location.state.selectedItemForQr.plannedYieldLossRatio", location.s
               <label style={{ fontSize: 20 }}>
                 Final Quality Inspection Report &emsp;
               </label>
-              <Button type="primary" onClick={handleTransferToFinalTable}>Transfer Data</Button>
+              <Button type="primary" onClick={handleTransferToFinalTable}>
+                Transfer Data
+              </Button>
             </Col>
           </Row>
           <EditableTableQR
@@ -558,20 +603,22 @@ console.log("location.state.selectedItemForQr.plannedYieldLossRatio", location.s
             </Col>
           </Row>
         </Card.Grid> */}
-        <Row style={{marginLeft: 8}}>
-        <div style={{ marginTop: 50 }}>
-          <Button style={{ marginLeft: 8 }} onClick={onCancel}>Cancel</Button>
-          <Button type='primary' htmlType='submit' onClick={saveForm}>
-            Save
-          </Button>
-        </div>
+        <Row style={{ marginLeft: 8 }}>
+          <div style={{ marginTop: 50 }}>
+            <Button style={{ marginLeft: 8 }} onClick={onCancel}>
+              Cancel
+            </Button>
+            <Button type="primary" htmlType="submit" onClick={saveForm}>
+              Save
+            </Button>
+          </div>
         </Row>
       </Card>
     </div>
   );
 };
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   templateDetails: state.quality,
   inward: state.inward,
 });
@@ -582,5 +629,5 @@ export default connect(mapStateToProps, {
   fetchQualityReportList,
   fetchQualityReportStageList,
   getCoilPlanDetails,
-  getQualityReportById
+  getQualityReportById,
 })(SlittingForm);

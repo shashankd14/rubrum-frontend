@@ -1,17 +1,25 @@
-import React, { useEffect } from "react";
-import asyncComponent from "util/asyncComponent";
-import {Redirect, Route, Switch} from "react-router-dom";
+import React, { useEffect } from 'react';
+import asyncComponent from 'util/asyncComponent';
+import { Redirect, Route, Switch } from 'react-router-dom';
 
-const QualityTemplateCreate = ({match}) => {
-    useEffect(() => {
-        console.log(match)
-        // console.log(match.path+(match.params?.hasOwnProperty("id") ? "/" + match.params.id : ""))
-    }, [])
-    return (
+const QualityTemplateCreate = ({ match }) => {
+  useEffect(() => {
+    console.log(match);
+    // console.log(match.path+(match.params?.hasOwnProperty("id") ? "/" + match.params.id : ""))
+  }, []);
+  return (
     <Switch>
-        <Route exact path={`${match.url}`} component={asyncComponent(() => import('./CreateTemplate'))}/>
-        <Route path={`${match.url}/process/:processType`} component={asyncComponent(() => import('./process/ProcessForm'))}/>
+      <Route
+        exact
+        path={`${match.url}`}
+        component={asyncComponent(() => import('./CreateTemplate'))}
+      />
+      <Route
+        path={`${match.url}/process/:processType`}
+        component={asyncComponent(() => import('./process/ProcessForm'))}
+      />
     </Switch>
-)};
+  );
+};
 
 export default QualityTemplateCreate;

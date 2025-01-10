@@ -1,14 +1,11 @@
-import React from "react";
-import {Route, Switch} from "react-router-dom";
+import React from 'react';
+import { Route, Switch } from 'react-router-dom';
+import Company from './company/index';
 
-import Main from "./main/index";
-import Company from "./company/index";
-
-const App = ({match}) => (
+const App = ({ match }) => (
   <div className="gx-main-content-wrapper">
     <Switch>
-      <Route path={`${match.url}main`} component={Main}/>
-      <Route path={`${match.url}company`} component={Company}/>
+      <Route path={`${match.url}company`} component={Company} />
     </Switch>
   </div>
 );

@@ -1,5 +1,5 @@
-import React from "react";
-import ReactDOM from "react-dom";
+import React from 'react';
+import ReactDOM from 'react-dom';
 
 import NextApp from './NextApp';
 import registerServiceWorker from './registerServiceWorker';
@@ -13,7 +13,7 @@ const render = Component => {
     <AppContainer>
       <Component />
     </AppContainer>,
-    document.getElementById('root')
+    document.getElementById('root'),
   );
 };
 

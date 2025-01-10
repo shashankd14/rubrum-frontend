@@ -1,50 +1,48 @@
-import React, { useEffect, useState } from "react";
-import { Table } from "antd";
-import {  useSelector } from "react-redux";
+import React, { useEffect, useState } from 'react';
+import { Table } from 'antd';
+import { useSelector } from 'react-redux';
 
-const ReconcileTable = (props) => {
+const ReconcileTable = props => {
   const { reconcileData } = props;
-  
- 
+
   const columns = [
     {
-      title: "In-Weight",
-      dataIndex: "netweight",
-      key: "netweight",
+      title: 'In-Weight',
+      dataIndex: 'netweight',
+      key: 'netweight',
     },
     {
-      title: "Out-Weight",
-      dataIndex: "dispatchedweight",
-      key: "dispatchedweight",
+      title: 'Out-Weight',
+      dataIndex: 'dispatchedweight',
+      key: 'dispatchedweight',
     },
     {
-      title: "InStock-Weight",
-      dataIndex: "instockweight",
-      key: "instockweight",
+      title: 'InStock-Weight',
+      dataIndex: 'instockweight',
+      key: 'instockweight',
     },
     {
-      title: "FG",
-      dataIndex: "fgqty",
-      key: "fgqty",
+      title: 'FG',
+      dataIndex: 'fgqty',
+      key: 'fgqty',
     },
     {
-      title: "WIP",
-      dataIndex: "wipqty",
-      key: "wipqty",
+      title: 'WIP',
+      dataIndex: 'wipqty',
+      key: 'wipqty',
     },
     {
-      title: "Total Processed Weight",
+      title: 'Total Processed Weight',
       render: (text, record, index) =>
-      (Number(record.fgqty) +
-        Number(record.wipqty)),
+        Number(record.fgqty) + Number(record.wipqty),
     },
     {
-      title: "Unprocessed",
-      dataIndex: "unprocessedweight",
-      key: "unprocessedweight",
+      title: 'Unprocessed',
+      dataIndex: 'unprocessedweight',
+      key: 'unprocessedweight',
     },
     {
-      title: "Balance",
+      title: 'Balance',
       render: (text, record, index) =>
         Number(record?.instockweight) -
         (Number(record.fgqty) +
