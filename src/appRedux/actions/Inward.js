@@ -562,4 +562,7 @@ export const getPacketwisePriceDCFullHandlingError = (error) => ({
     type: actionTypes.GET_PACKET_WISE_PRICE_DC_FULL_HANDLING_ERROR,
     error
 });
-
+export const updateClassificationSlitAndCutBeforeFinish = (payload) => ({
+    type: actionTypes.UPDATE_CLASSIFICATION_SLITANDCUT_BEFORE_FINISH,
+    payload
+});

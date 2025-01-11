@@ -24,7 +24,8 @@ import {
   deleteInstructionById,
   instructionGroupsave,
   pdfGenerateInward,
-  QrCodeGeneratePlan
+  QrCodeGeneratePlan,
+  updateClassificationSlitAndCutBeforeFinish
 } from "../../../appRedux/actions/Inward";
 import { labelPrintEditFinish } from '../../../appRedux/actions/LabelPrint';
 import { APPLICATION_DATE_FORMAT } from "../../../constants";
@@ -119,7 +120,7 @@ const CreateCuttingDetailsForm = (props) => {
         : props.coilDetails.childInstructions
       : cuts
   );
-  const columns = [
+   const columns = [
     {
       title: "Serial No",
       dataIndex: "instructionId",
@@ -231,6 +232,7 @@ const CreateCuttingDetailsForm = (props) => {
       dataIndex: "packetClassification",
       render: (text, record, index) => {
         return (
+          <div> 
           <Select
             disabled={props.unfinish}
             dropdownMatchSelectWidth={false}
@@ -245,12 +247,21 @@ const CreateCuttingDetailsForm = (props) => {
               record,
               "select"
             )}
-          >
-            {packetClassification?.map((item) => {
-              return <Option value={item.tagId}>{item.tagName}</Option>;
-            })}
-          </Select>
+            >
+              {packetClassification?.map((item) => {
+                return <Option value={item.tagId}>{item.tagName}</Option>;
+              })}
+            </Select>
+
+            {record.process.processId === 3 &&
+              < Button className="icon icon-edit" onClick= {() => onUpdateClassificationWIP(index, record)
+            } ><i className="icon icon-edit gx-mr-1"/></Button>}
+            
+          </div>
+
         );
+
+       
       },
     },
     {
@@ -982,10 +993,10 @@ const CreateCuttingDetailsForm = (props) => {
           item.actualWeight = item.plannedWeight;
         if (!item.actualWidth && item.actualWidth !== 0)
           item.actualWidth = item.plannedWidth;
-        if (!item.packetClassification?.tagId)
-          item.packetClassification = {
-            tagId: 0,
-          };
+        // if (!item.packetClassification?.tagId)
+        //   item.packetClassification = {
+        //     tagId: 0,
+        //   };
         return item;
       });
       setTableData(actualUpdate);
@@ -1083,6 +1094,7 @@ const CreateCuttingDetailsForm = (props) => {
     }
     return packetClassification.filter((item)=>item.tagId==value)?.[0].tagName;
   }
+
   const onInputChange =
     (key, index, record, type) => (e: React.ChangeEvent<HTMLInputElement>) => {
       let editedRecord = [];
@@ -1114,6 +1126,18 @@ const CreateCuttingDetailsForm = (props) => {
        }
       setTableData(newData);
     };
+
+   
+  const onUpdateClassificationWIP=
+  (index, record) => {
+    let payload = {
+      instructionId: record.instructionId,
+      inwardId: record.inwardEntryId,
+      packetClassificationId: record.packetClassification.classificationId
+    };
+    //console.log('payload  ==  ',payload);
+    props.updateClassificationSlitAndCutBeforeFinish(payload);
+  };
 
   const handleChange = (e) => {
     if (e.target.value !== "") {
@@ -1442,7 +1466,7 @@ useEffect(() => {
       props.setShowSlittingModal(false);
     } else if (props.wip) {
       const isAllWip = tableData.every(
-        (item) => item.packetClassification.tagId === 0
+        (item) => item?.packetClassification?.tagId === 0
       );
       if (isAllWip) {
         message.error(
@@ -1455,8 +1479,8 @@ useEffect(() => {
       } else {
         const instructionList = tableData.filter(
           (item) =>
-            item.packetClassification.tagId !== 0 &&
-            item.packetClassification.classificationId !== 0 && item?.packetClassification !==""&& item?.packetClassification !==null
+            item?.packetClassification?.tagId !== 0 &&
+            item?.packetClassification?.classificationId !== 0 && item?.packetClassification !==""&& item?.packetClassification !==null
         );
         const coil = {
           number: props.coil.coilNumber,
@@ -2257,5 +2281,6 @@ export default connect(mapStateToProps, {
   pdfGenerateInward,
   QrCodeGeneratePlan,
   labelPrintEditFinish,
-  fetchYLRList
+  fetchYLRList,  
+  updateClassificationSlitAndCutBeforeFinish,
 })(CuttingDetailsForm);

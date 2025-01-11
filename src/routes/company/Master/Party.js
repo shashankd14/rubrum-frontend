@@ -593,7 +593,7 @@ const Party = (props) => {
                                             <Checkbox value="WIPREPORT">WIPREPORT</Checkbox>
                                             <Checkbox value="STOCKSUMMARYREPORT">STOCKSUMMARYREPORT</Checkbox>
                                             <Checkbox value="RMREPORT">RMREPORT</Checkbox>
-                                        </Checkbox.Group>
+                                            <Checkbox value="MONTHWISE_PLAN_TRACKER">MONTHWISE PLAN TRACKER</Checkbox>                                        </Checkbox.Group>
                                     </Form.Item>
                                     <Form.Item label = "Monthly Reports">
                                         <Checkbox.Group id="monthlyReportsList"
