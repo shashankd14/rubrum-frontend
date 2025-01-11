@@ -48,6 +48,7 @@ const CreateCuttingDetailsForm = (props) => {
   const TabPane = Tabs.TabPane;
   const { getFieldDecorator } = props.form;
   let loading = "";
+  let index = 0;
   const [confirmClicks, setConfirmClicks] = useState([]);
   const [showDeleteModal, setshowDeleteModal] = useState(false);
   const [deleteRecord, setDeleteRecord] = useState({});
@@ -726,6 +727,7 @@ const CreateCuttingDetailsForm = (props) => {
   //Add Size > 
   const handleSubmit = (e) => {
     e.preventDefault();
+    let instructionRequestDTOs = [];
     let remainWeight;
     props.form.validateFields((err, values) => {
       if (!err) {
@@ -849,7 +851,7 @@ const CreateCuttingDetailsForm = (props) => {
                 ),
         });
     }
-  }, [WeightValue, balancedValue, cuts, props, props.inward.process.length, props.inward.process.no, tweight, width]);
+  }, [props.inward.process.length, props.inward.process.no]);
 
   useEffect(() => {
     setcurrentWeight(props.coilDetails.fpresent);
@@ -933,7 +935,7 @@ const CreateCuttingDetailsForm = (props) => {
         }
       }
     }
-  }, [bundleTableData.length, props, props.coilDetails]);
+  }, [props.coilDetails]);
   useEffect(() => {
     if (props.inward.instructionSaveCuttingLoading && !props.wip) {
       loading = message.loading("Saving Cut Instruction & Generating pdf..");
@@ -944,7 +946,7 @@ const CreateCuttingDetailsForm = (props) => {
     if (!props.inward.loading && props.inward.groupId.groupId) {
       setbundledListRes(props.inward.groupId.groupId)
     }
-  }, [props.inward.groupId.groupId, props.inward.loading]);
+  }, [props.inward.loading]);
   
   useEffect(() => {
     setCutPayload(cuts);
@@ -997,7 +999,7 @@ const CreateCuttingDetailsForm = (props) => {
           : 0;
       setTotalActualWeight(actualTotalWeight);
     }
-  }, [cuts, props.editFinish, props.unfinish, props.wip]);
+  }, [cuts]);
   useEffect(() => {
     if (props.inward.pdfSuccess && !props.wip) {
       message
@@ -1008,7 +1010,7 @@ const CreateCuttingDetailsForm = (props) => {
           props.resetInstruction();
         });
     }
-  }, [props, props.inward.pdfSuccess]);
+  }, [props.inward.pdfSuccess]);
   useEffect(() => {
     let payload = {};
     if (!props.wip) {
@@ -1051,7 +1053,7 @@ const CreateCuttingDetailsForm = (props) => {
         props.resetInstruction();
       });
     }
-  }, [props]);
+  }, [props?.inward?.instructionUpdateSuccess]);
   useEffect(() => {
     let listItem = bundleItemList.length > 0 ? bundleItemList : [];
     if (listItem.length === 0 && Object.keys(props.inward.groupId).length > 0) {
@@ -1067,19 +1069,19 @@ const CreateCuttingDetailsForm = (props) => {
     setBundleItemList(
       listItem.length > 0 ? [...listItem].flat() : [...listItem]
     );
-  }, [bundleItemList, props.inward.groupId]);
+  }, [props.inward.groupId]);
   useEffect(() => {
     let processTags = [{ tagId: 0, tagName: "Select" }];
     processTags = [...processTags, ...props?.processTags];
     setPacketClassification(processTags);
-  }, [props, props.processTags]);
+  }, [props.processTags]);
 
   const [actualYLR, setactualYLR] = useState(0);
   const  getPackatClassificationName = (value) =>{
     if (value === undefined){
       value = 0;
     }
-    return packetClassification.filter((item)=>item.tagId === value)?.[0].tagName;
+    return packetClassification.filter((item)=>item.tagId==value)?.[0].tagName;
   }
   const onInputChange =
     (key, index, record, type) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1351,7 +1353,7 @@ useEffect(() => {
       userId: ""
     });
   }
-}, [props]); 
+}, []); 
 
 //calculate Coil level yield loss ratio
 const [plannedCoilLevelYLR, setPlannedCoilLevelYLR] = useState(0);
@@ -1397,7 +1399,7 @@ useEffect(() => {
  coilActualYLR = (sumOfScrapActualWeight / sumOfTotalActualWeight) *100;
  setActualCoilLevelYLR(coilActualYLR);
 }
-}, [props.coilDetails.instruction]);
+}, []);
 
 const [cuttingfilteredData, setCuttingFilteredData] = useState();
 useEffect(() => {

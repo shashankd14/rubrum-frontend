@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { connect, useDispatch } from 'react-redux';
+import React, { useEffect, useState } from "react";
+import { connect, useDispatch } from "react-redux";
 import {
   Button,
   Card,
@@ -14,17 +14,13 @@ import {
   Checkbox,
   Tabs,
   message,
-} from 'antd';
-import { CheckboxChangeEvent } from 'antd/es/checkbox';
-import moment from 'moment';
-import SearchBox from '../../../components/SearchBox';
-import EditAdditionalRates from './editAdditionalRates';
-import {
-  LeftOutlined,
-  RightOutlined,
-  EllipsisOutlined,
-} from '@ant-design/icons';
-import IntlMessages from '../../../util/IntlMessages';
+} from "antd";
+import { CheckboxChangeEvent } from "antd/es/checkbox";
+import moment from "moment";
+import SearchBox from "../../../components/SearchBox";
+import EditAdditionalRates from "./editAdditionalRates";
+import { LeftOutlined, RightOutlined, EllipsisOutlined } from '@ant-design/icons';
+import IntlMessages from "../../../util/IntlMessages";
 import {
   fetchRatesList,
   fetchPackingRatesList,
@@ -50,10 +46,10 @@ import {
   addLminationCharges,
   updateLminationCharges,
   deleteLminationCharges,
-  resetLaminationChargesRequest,
-} from '../../../appRedux/actions';
-import { onDeleteContact } from '../../../appRedux/actions';
-import AdditionalRates from './addAdditionalRates';
+  resetLaminationChargesRequest
+} from "../../../appRedux/actions";
+import { onDeleteContact } from "../../../appRedux/actions";
+import AdditionalRates from "./addAdditionalRates";
 
 const Option = Select.Option;
 
@@ -70,55 +66,25 @@ export const formItemLayout = {
   },
 };
 
-const Rates = props => {
+const Rates = (props) => {
   const TabPane = Tabs.TabPane;
   const [sortedInfo, setSortedInfo] = useState({
-    order: 'descend',
-    columnKey: 'age',
+    order: "descend",
+    columnKey: "age",
   });
   const laminationDD = [
-    {
-      laminationDetailsId: 1,
-      laminationDetailsDesc:
-        'Single Side lamination charges per meter (labour)',
-    },
-    {
-      laminationDetailsId: 2,
-      laminationDetailsDesc:
-        'Single Side lamination charges per meter (material)',
-    },
-    {
-      laminationDetailsId: 3,
-      laminationDetailsDesc:
-        'Single Side lamination charges per meter (labour and material)',
-    },
-    {
-      laminationDetailsId: 4,
-      laminationDetailsDesc:
-        'Double Side lamination charges per meter (labour)',
-    },
-    {
-      laminationDetailsId: 5,
-      laminationDetailsDesc:
-        'Double Side lamination charges per meter (material)',
-    },
-    {
-      laminationDetailsId: 6,
-      laminationDetailsDesc:
-        'Double Side lamination charges per meter (labour and material)',
-    },
-  ];
-  const [selectedOption, setSelectedOption] = useState(
-    laminationDD[0].laminationDetailsId,
-  );
+    {laminationDetailsId : 1, laminationDetailsDesc : "Single Side lamination charges per meter (labour)"},
+    {laminationDetailsId : 2, laminationDetailsDesc : "Single Side lamination charges per meter (material)"},
+    {laminationDetailsId : 3, laminationDetailsDesc : "Single Side lamination charges per meter (labour and material)"},
+    {laminationDetailsId : 4, laminationDetailsDesc : "Double Side lamination charges per meter (labour)"},
+    {laminationDetailsId : 5, laminationDetailsDesc : "Double Side lamination charges per meter (material)"},
+    {laminationDetailsId : 6, laminationDetailsDesc : "Double Side lamination charges per meter (labour and material)"},
+  ]
+  const [selectedOption, setSelectedOption] = useState(laminationDD[0].laminationDetailsId);
   const [filteredInfo, setFilteredInfo] = useState(null);
-  const [searchValue, setSearchValue] = useState('');
-  const [searchThickness, setSearchThickness] = useState('');
-  const [pagination, setPagination] = useState({
-    current: 1,
-    pageSize: 10,
-    total: props.rates.totalItems || 0,
-  });
+  const [searchValue, setSearchValue] = useState("");
+  const [searchThickness, setSearchThickness] = useState("");
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: props.rates.totalItems || 0, });
   const [pageNo, setPageNo] = useState(1);
   const [showAddRates, setShowAddRates] = useState(false);
   const [showAddPackingRates, setShowAddPackingRates] = useState(false);
@@ -129,152 +95,136 @@ const Rates = props => {
   const [viewMaterialData, setViewMaterialData] = useState({});
   const [viewPackingRateData, setViewPackingRateData] = useState({});
   const [type, setType] = useState([]);
-  const [filteredInwardList, setFilteredInwardList] = useState([]);
+  const [filteredInwardList, setFilteredInwardList] = useState(
+    []
+  );
   const [filteredPackingRateList, setfilteredPackingRateList] = useState();
   const [gradeList, setGradeList] = useState([]);
   const [checked, setChecked] = useState(false);
   const { getFieldDecorator } = props.form;
-  const [tabKey, setTabKey] = useState('1');
-  const [mode, setMode] = useState('top');
+  const [tabKey, setTabKey] = useState("1");
+  const [mode, setMode] = useState("top");
   const [selectedRows, setSelectedRows] = useState([]);
   const [showAdditionalRates, setShowAdditionalRates] = useState(false);
   const [staticList, setStaticList] = useState([]);
-  const [selectedProcessId, setSelectedProcessId] = useState('');
+  const [selectedProcessId, setSelectedProcessId] = useState("");
   const [additionPriceList, setAdditionalPriceList] = useState([]);
   const [viewAdditionalRates, setViewAdditionalRates] = useState(false);
   const [editPriceModal, setEditPriceModal] = useState(false);
   const [staticSelected, setStaticSelected] = useState();
-  const [selectedParty, setSelectedParty] = useState('');
-  const [totalPageItems, setTotalItems] = useState(0);
+  const [selectedParty, setSelectedParty] = useState("");
+  const [totalPageItems, setTotalItems] = useState(0); 
   const { ratesList, totalItems } = props.rates;
-  const [showAddLaminationCharges, setShowAddLaminationCharges] =
-    useState(false);
+  const [showAddLaminationCharges, setShowAddLaminationCharges] = useState(false);
   const [editLaminationCharges, setEditLaminationCharges] = useState(false);
-  const [viewLaminationChargesData, setViewLaminationChargesData] = useState(
-    {},
-  );
+  const [viewLaminationChargesData, setViewLaminationChargesData] = useState({});
   const [viewLaminationCharges, setViewLaminationCharges] = useState(false);
   const [laminationChargesList, setLaminationChargesList] = useState([]);
   const [laminationStaticSelected, setLaminationStaticSelected] = useState();
   const columns = [
     {
-      title: 'Rate Id',
-      dataIndex: 'id',
-      key: 'id',
+      title: "Rate Id",
+      dataIndex: "id",
+      key: "id",
       filters: [],
       sorter: (a, b) => {
         return a.id - b.id;
       },
-      sortOrder: sortedInfo.columnKey === 'id' && sortedInfo.order,
+      sortOrder: sortedInfo.columnKey === "id" && sortedInfo.order,
     },
     {
-      title: 'Party Name',
-      dataIndex: 'partyName',
-      key: 'partyName',
-      filteredValue: filteredInfo ? filteredInfo['partyName'] : null,
-      filters: [
-        ...new Set(props.rates.ratesList.map(item => item.partyName)),
-      ].map(material => {
-        return { text: material || '', value: material || '' };
-      }),
-      onFilter: (value, record) => record.partyName == value,
-      sorter: (a, b) => a.partyName?.length - b.partyName?.length,
-      sortOrder: sortedInfo.columnKey === 'partyName' && sortedInfo.order,
+      title: "Party Name",
+      dataIndex: "partyName",
+      key: "partyName",
+      filteredValue: filteredInfo ? filteredInfo["partyName"] : null,
+        filters: [...new Set(props.rates.ratesList.map(item => item.partyName))].map(material => {
+            return ({ text: material || '', value: material || '' })}),
+        onFilter: (value, record) => record.partyName == value,
+        sorter: (a, b) => a.partyName?.length - b.partyName?.length,
+        sortOrder: sortedInfo.columnKey === 'partyName' && sortedInfo.order,
     },
     {
-      title: 'Process Name',
-      dataIndex: 'processName',
-      key: 'processName',
-      filteredValue: filteredInfo ? filteredInfo['processName'] : null,
-      filters: [
-        ...new Set(props.rates.ratesList.map(item => item.processName)),
-      ].map(material => {
-        return { text: material || '', value: material || '' };
-      }),
-      onFilter: (value, record) => record.processName == value,
-      sorter: (a, b) => a.processName?.length - b.processName?.length,
-      sortOrder: sortedInfo.columnKey === 'processName' && sortedInfo.order,
+      title: "Process Name",
+      dataIndex: "processName",
+      key: "processName",
+      filteredValue: filteredInfo ? filteredInfo["processName"] : null,
+        filters: [...new Set(props.rates.ratesList.map(item => item.processName))].map(material => {
+            return ({ text: material || '', value: material || '' })}),
+        onFilter: (value, record) => record.processName == value,
+        sorter: (a, b) => a.processName?.length - b.processName?.length,
+        sortOrder: sortedInfo.columnKey === 'processName' && sortedInfo.order,
     },
     {
-      title: 'Material description',
-      dataIndex: 'materialDescription',
-      key: 'materialDescription',
-      filteredValue: filteredInfo ? filteredInfo['materialDescription'] : null,
-      filters: [
-        ...new Set(props.rates.ratesList.map(item => item.materialDescription)),
-      ].map(material => {
-        return { text: material || '', value: material || '' };
-      }),
-      onFilter: (value, record) => record.materialDescription == value,
-      sorter: (a, b) =>
-        a.materialDescription?.length - b.materialDescription?.length,
-      sortOrder:
-        sortedInfo.columnKey === 'materialDescription' && sortedInfo.order,
+      title: "Material description",
+      dataIndex: "materialDescription",
+      key: "materialDescription",
+      filteredValue: filteredInfo ? filteredInfo["materialDescription"] : null,
+        filters: [...new Set(props.rates.ratesList.map(item => item.materialDescription))].map(material => {
+            return ({ text: material || '', value: material || '' })}),
+        onFilter: (value, record) => record.materialDescription == value,
+        sorter: (a, b) => a.materialDescription?.length - b.materialDescription?.length,
+        sortOrder: sortedInfo.columnKey === 'materialDescription' && sortedInfo.order,
     },
     {
-      title: 'Material Grade',
-      dataIndex: 'matGradeName',
-      key: 'matGradeName',
-      filteredValue: filteredInfo ? filteredInfo['matGradeName'] : null,
-      filters: [
-        ...new Set(props.rates.ratesList.map(item => item.matGradeName)),
-      ].map(material => {
-        return { text: material || '', value: material || '' };
-      }),
-      onFilter: (value, record) => record.matGradeName == value,
-      sorter: (a, b) => a.matGradeName?.length - b.matGradeName?.length,
-      sortOrder: sortedInfo.columnKey === 'matGradeName' && sortedInfo.order,
+      title: "Material Grade",
+      dataIndex: "matGradeName",
+      key: "matGradeName",
+      filteredValue: filteredInfo ? filteredInfo["matGradeName"] : null,
+        filters: [...new Set(props.rates.ratesList.map(item => item.matGradeName))].map(material => {
+            return ({ text: material || '', value: material || '' })}),
+        onFilter: (value, record) => record.matGradeName == value,
+        sorter: (a, b) => a.matGradeName?.length - b.matGradeName?.length,
+        sortOrder: sortedInfo.columnKey === 'matGradeName' && sortedInfo.order,
     },
     {
-      title: 'Thickness Range',
-      dataIndex: 'thicknessFrom',
+      title: "Thickness Range",
+      dataIndex: "thicknessFrom",
       render: (text, record) => `${record.thicknessFrom}-${record.thicknessTo}`,
-      filteredValue: filteredInfo ? filteredInfo['thicknessFrom'] : null,
-      filters: [
-        ...new Set(
-          props.rates.ratesList.map(
-            item => `${item.thicknessFrom}-${item.thicknessTo}`,
+      filteredValue: filteredInfo ? filteredInfo["thicknessFrom"] : null,
+       filters: [
+           ...new Set(
+           props.rates.ratesList.map(
+          (item) => `${item.thicknessFrom}-${item.thicknessTo}`
+          )
           ),
-        ),
-      ].map(thicknessRange => {
+         ].map((thicknessRange) => {
         return { text: thicknessRange || '', value: thicknessRange || '' };
-      }),
+        }),
       onFilter: (value, record) => {
-        const [from, to] = value.split('-');
-        const thicknessFrom = parseFloat(from);
-        const thicknessTo = parseFloat(to);
-        return (
-          thicknessFrom <= record.thicknessFrom &&
-          thicknessTo >= record.thicknessTo
-        );
-      },
+       const [from, to] = value.split('-');
+       const thicknessFrom = parseFloat(from);
+       const thicknessTo = parseFloat(to);
+      return (
+      thicknessFrom <= record.thicknessFrom && thicknessTo >= record.thicknessTo
+       );
+     },
       sorter: (a, b) =>
-        a.thicknessFrom - b.thicknessFrom || a.thicknessTo - b.thicknessTo,
+      a.thicknessFrom - b.thicknessFrom || a.thicknessTo - b.thicknessTo,
       sortOrder: sortedInfo.columnKey === 'thicknessFrom' && sortedInfo.order,
     },
     {
-      title: 'Thickness rate',
-      dataIndex: 'price',
-      key: 'price',
+      title: "Thickness rate",
+      dataIndex: "price",
+      key: "price",
       sorter: (a, b) => a.price - b.price,
-      sortOrder: sortedInfo.columnKey === 'price' && sortedInfo.order,
+      sortOrder: sortedInfo.columnKey === "price" && sortedInfo.order,
     },
 
     {
-      title: 'Action',
-      dataIndex: '',
-      key: 'x',
+      title: "Action",
+      dataIndex: "",
+      key: "x",
       render: (text, record, index) => (
         <span>
-          <span className="gx-link" onClick={e => onView(record, e)}>
+          <span className="gx-link" onClick={(e) => onView(record, e)}>
             View
           </span>
           <Divider type="vertical" />
-          <span className="gx-link" onClick={e => onEdit(record, e)}>
+          <span className="gx-link" onClick={(e) => onEdit(record, e)}>
             Edit
           </span>
           <Divider type="vertical" />
-          <span className="gx-link" onClick={e => onDelete(record, e)}>
+          <span className="gx-link" onClick={(e) => onDelete(record, e)}>
             Delete
           </span>
         </span>
@@ -283,48 +233,48 @@ const Rates = props => {
   ];
   const additionalPriceColumns = [
     {
-      title: 'Party Name',
-      dataIndex: 'partyName',
-      key: 'partyName',
+      title: "Party Name",
+      dataIndex: "partyName",
+      key: "partyName",
       filters: [],
       sorter: (a, b) => a.partyName - b.partyName,
-      sortOrder: sortedInfo.columnKey === 'partyName' && sortedInfo.order,
+      sortOrder: sortedInfo.columnKey === "partyName" && sortedInfo.order,
     },
     {
-      title: 'Process Name',
-      dataIndex: 'processName',
-      key: 'processName',
+      title: "Process Name",
+      dataIndex: "processName",
+      key: "processName",
       filters: [],
       sorter: (a, b) => a.processName - b.processName,
-      sortOrder: sortedInfo.columnKey === 'processName' && sortedInfo.order,
+      sortOrder: sortedInfo.columnKey === "processName" && sortedInfo.order,
     },
     {
-      title: 'Range',
-      dataIndex: 'thicknessFrom',
-      render: (text, record, index) => record.rangeFrom + '-' + record.rangeTo,
+      title: "Range",
+      dataIndex: "thicknessFrom",
+      render: (text, record, index) => record.rangeFrom + "-" + record.rangeTo,
     },
     {
-      title: 'Additional Rates',
-      dataIndex: 'price',
-      key: 'price',
+      title: "Additional Rates",
+      dataIndex: "price",
+      key: "price",
       sorter: (a, b) => a.price - b.price,
-      sortOrder: sortedInfo.columnKey === 'price' && sortedInfo.order,
+      sortOrder: sortedInfo.columnKey === "price" && sortedInfo.order,
     },
     {
-      title: 'Action',
-      dataIndex: '',
-      key: 'x',
+      title: "Action",
+      dataIndex: "",
+      key: "x",
       render: (text, record, index) => (
         <span>
-          <span className="gx-link" onClick={e => onView(record, e)}>
+          <span className="gx-link" onClick={(e) => onView(record, e)}>
             View
           </span>
           <Divider type="vertical" />
-          <span className="gx-link" onClick={e => onEdit(record, e)}>
+          <span className="gx-link" onClick={(e) => onEdit(record, e)}>
             Edit
           </span>
           <Divider type="vertical" />
-          <span className="gx-link" onClick={e => onDelete(record, e)}>
+          <span className="gx-link" onClick={(e) => onDelete(record, e)}>
             Delete
           </span>
         </span>
@@ -332,143 +282,127 @@ const Rates = props => {
     },
   ];
 
-  const packingRateColumn = [
-    {
-      title: 'S No',
-      dataIndex: 'packingRateId',
-      key: 'packingRateId',
-      filters: [],
-      sorter: (a, b) => {
-        return a.packingRateId - b.packingRateId;
-      },
-      sortOrder: sortedInfo.columnKey === 'packingRateId' && sortedInfo.order,
+  const packingRateColumn = [{
+    title: 'S No',
+    dataIndex: 'packingRateId',
+    key: 'packingRateId',
+    filters: [],
+    sorter: (a, b) => {
+        return a.packingRateId - b.packingRateId
     },
-    {
-      title: 'Party Name',
-      dataIndex: 'partyName',
-      key: 'partyName',
-      filters: [],
-      sorter: (a, b) => {
-        return a.partyName - b.partyName;
-      },
-      sortOrder: sortedInfo.columnKey === 'partyName' && sortedInfo.order,
+    sortOrder: sortedInfo.columnKey === 'packingRateId' && sortedInfo.order,
+},
+{
+    title: 'Party Name',
+    dataIndex: 'partyName',
+    key: 'partyName',
+    filters: [],
+    sorter: (a, b) => {
+        return a.partyName - b.partyName
     },
-    {
-      title: 'Bucket Name',
-      dataIndex: 'packingBucketName',
-      key: 'packingBucketName',
-      filters: [],
-      sorter: (a, b) => {
-        return a.packingBucketName - b.packingBucketName;
-      },
-      sortOrder:
-        sortedInfo.columnKey === 'packingBucketName' && sortedInfo.order,
+    sortOrder: sortedInfo.columnKey === 'partyName' && sortedInfo.order,
+},
+{
+    title: 'Bucket Name',
+    dataIndex: 'packingBucketName',
+    key: 'packingBucketName',
+    filters: [],
+    sorter: (a, b) => {
+        return a.packingBucketName - b.packingBucketName
     },
-    {
-      title: 'Rate',
-      dataIndex: 'packingRate',
-      key: 'packingRate',
-      filters: [],
-      sorter: (a, b) => {
-        return a.packingRate - b.packingRate;
-      },
-      sortOrder: sortedInfo.columnKey === 'packingRate' && sortedInfo.order,
-    },
-    {
-      title: 'Description',
-      dataIndex: 'packingRateDesc',
-      key: 'packingRateDesc',
-      filteredValue: filteredInfo ? filteredInfo['packingRateDesc'] : null,
-      filters: [],
-      onFilter: (value, record) => record.packingRateDesc == value,
-      sorter: (a, b) => a.packingRateDesc?.length - b.packingRateDesc?.length,
-      sortOrder: sortedInfo.columnKey === 'packingRateDesc' && sortedInfo.order,
-    },
-    {
-      title: 'Action',
-      dataIndex: '',
-      key: 'x',
-      render: (text, record, index) => (
+    sortOrder: sortedInfo.columnKey === 'packingBucketName' && sortedInfo.order,
+},
+{
+  title: 'Rate',
+  dataIndex: 'packingRate',
+  key: 'packingRate',
+  filters: [],
+  sorter: (a, b) => {
+      return a.packingRate - b.packingRate
+  },
+  sortOrder: sortedInfo.columnKey === 'packingRate' && sortedInfo.order,
+},
+{
+  title: 'Description',
+  dataIndex: 'packingRateDesc',
+  key: 'packingRateDesc',
+  filteredValue: filteredInfo ? filteredInfo["packingRateDesc"] : null,
+  filters: [],
+  onFilter: (value, record) => record.packingRateDesc == value,
+  sorter: (a, b) => a.packingRateDesc?.length - b.packingRateDesc?.length,
+  sortOrder: sortedInfo.columnKey === 'packingRateDesc' && sortedInfo.order,
+},
+{
+    title: 'Action',
+    dataIndex: '',
+    key: 'x',
+    render: (text, record, index) => (
         <span>
-          <span className="gx-link" onClick={e => onView(record, e)}>
-            View
-          </span>
-          <Divider type="vertical" />
-          <span className="gx-link" onClick={e => onEdit(record, e)}>
-            Edit
-          </span>
-          <Divider type="vertical" />
-          <span className="gx-link" onClick={() => {}}>
-            Delete
-          </span>
+            <span className="gx-link" onClick={(e) => onView(record, e)}>View</span>
+            <Divider type="vertical"/>
+            <span className="gx-link" onClick={(e) => onEdit(record,e)}>Edit</span>
+            <Divider type="vertical"/>
+            <span className="gx-link"onClick={() => {}}>Delete</span>
         </span>
-      ),
-    },
-  ];
+    ),
+},
+];
 
-  const laminationChargesColumn = [
-    {
-      title: 'Lamination ID',
-      dataIndex: 'laminationId',
-      key: 'laminationId',
-      filters: [],
-      sorter: (a, b) => {
-        return a.laminationId - b.laminationId;
-      },
-      sortOrder: sortedInfo.columnKey === 'laminationId' && sortedInfo.order,
-    },
-    {
-      title: 'Party Name',
-      dataIndex: 'partyName',
-      key: 'partyName',
-      filters: [],
-      sorter: (a, b) => {
-        return a.partyName - b.partyName;
-      },
-      sortOrder: sortedInfo.columnKey === 'partyName' && sortedInfo.order,
-    },
-    {
-      title: 'Charges',
-      dataIndex: 'charges',
-      key: 'charges',
-      filters: [],
-      sorter: (a, b) => {
-        return a.laminationSSmaterial - b.laminationSSmaterial;
-      },
-      sortOrder:
-        sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
-    },
-    {
-      title: 'Action',
-      dataIndex: '',
-      key: 'x',
-      render: (text, record, index) => (
-        <span>
-          <span className="gx-link" onClick={e => onView(record, e)}>
-            View
-          </span>
-          <Divider type="vertical" />
-          <span className="gx-link" onClick={e => onEdit(record, e)}>
-            Edit
-          </span>
-          <Divider type="vertical" />
-          <span className="gx-link" onClick={e => onDelete(record, e)}>
-            Delete
-          </span>
-        </span>
-      ),
-    },
-  ];
+const laminationChargesColumn = [{
+  title: 'Lamination ID',
+  dataIndex: 'laminationId',
+  key: 'laminationId',
+  filters: [],
+  sorter: (a, b) => {
+      return a.laminationId - b.laminationId
+  },
+  sortOrder: sortedInfo.columnKey === 'laminationId' && sortedInfo.order,
+},
+{
+  title: 'Party Name',
+  dataIndex: 'partyName',
+  key: 'partyName',
+  filters: [],
+  sorter: (a, b) => {
+      return a.partyName - b.partyName
+  },
+  sortOrder: sortedInfo.columnKey === 'partyName' && sortedInfo.order,
+},
+{
+title: 'Charges',
+dataIndex: 'charges',
+key: 'charges',
+filters: [],
+sorter: (a, b) => {
+    return a.laminationSSmaterial - b.laminationSSmaterial
+},
+sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
+},
+{
+  title: 'Action',
+  dataIndex: '',
+  key: 'x',
+  render: (text, record, index) => (
+      <span>
+          <span className="gx-link" onClick={(e) => onView(record, e)}>View</span>
+          <Divider type="vertical"/>
+          <span className="gx-link" onClick={(e) => onEdit(record,e)}>Edit</span>
+          <Divider type="vertical"/>
+          <span className="gx-link"onClick={(e) => onDelete(record,e)}>Delete</span>
+      </span>
+  ),
+},
+];
 
   const onView = (record, e) => {
     e.preventDefault();
-    if (tabKey === '1') {
+    if (tabKey === "1") {
       setViewMaterialData(record);
       setViewMaterial(true);
-    } else if (tabKey === '3') {
+    } else if (tabKey === "3") {
       setViewPackingRateData(record);
       setViewPackingRate(true);
-    } else if (tabKey === '4') {
+    } else if (tabKey === "4") {
       setViewLaminationChargesData(record);
       setViewLaminationCharges(true);
     } else {
@@ -479,34 +413,34 @@ const Rates = props => {
 
   const onDelete = (record, e) => {
     e.preventDefault();
-    if (tabKey === '1') {
+    if (tabKey === "1") {
       props.deleteRates(record?.id);
-    } else if (tabKey === '4') {
-      props.deleteLminationCharges(record.laminationId);
+    } else if (tabKey === "4"){
+      props.deleteLminationCharges(record.laminationId)
     } else {
       props.deleteAdditionalRates(record?.id);
     }
   };
-  const onEdit = (record, e) => {
+  const onEdit = (record, e) => {   
     e.preventDefault();
-    if (tabKey === '1') {
-      const list = props.material.materialList.filter(
-        material => material.matId === record.matId,
-      );
-      setGradeList(list.map(item => item.materialGrade)?.flat());
+    if (tabKey === "1") { 
+    const list = props.material.materialList.filter(
+      (material) => material.matId === record.matId
+    );
+    setGradeList(list.map((item) => item.materialGrade)?.flat());
       props.fetchRatesListById(record.id);
       setEditRates(true);
       setTimeout(() => {
         setShowAddRates(true);
       }, 1000);
-    } else if (tabKey === '3') {
+    } else if (tabKey === "3") {
       props.fetchPackingRatesById(record.packingRateId);
       setEditPackingRates(true);
       setTimeout(() => {
         setShowAddPackingRates(true);
       }, 1000);
-    } else if (tabKey === '4') {
-      props.getLaminationChargesById(record.laminationId);
+    } else if (tabKey === "4") {
+     props.getLaminationChargesById(record.laminationId);
       setEditLaminationCharges(true);
       setTimeout(() => {
         setShowAddLaminationCharges(true);
@@ -537,13 +471,13 @@ const Rates = props => {
   }, [showAddLaminationCharges, editLaminationCharges]);
 
   useEffect(() => {
-    // props.fetchPackingRatesList();
-    props.fetchRatesList({
-      pageNo: pagination.current,
-      pageSize: pagination.pageSize,
-      searchText: searchValue,
-      thicknessRange: searchThickness,
-    });
+   // props.fetchPackingRatesList();
+   props.fetchRatesList({
+    pageNo: pagination.current,
+    pageSize: pagination.pageSize,
+    searchText: searchValue,
+    thicknessRange: searchThickness,
+  });
   }, [showAddPackingRates]);
 
   // useEffect(() => {
@@ -554,11 +488,11 @@ const Rates = props => {
 
   useEffect(() => {
     const { packingRateList } = props.rates;
-    setfilteredPackingRateList(packingRateList);
+    setfilteredPackingRateList(packingRateList)
   }, [props.rates.packingRateList]);
-
+  
   useEffect(() => {
-    setLaminationChargesList(props.rates?.laminationChargesList || []);
+      setLaminationChargesList(props.rates?.laminationChargesList || [])
   }, [props.rates.laminationChargesList]);
 
   // useEffect(() => {
@@ -575,7 +509,7 @@ const Rates = props => {
         searchText: searchValue,
         thicknessRange: searchThickness,
       });
-      // props.fetchRatesList();
+     // props.fetchRatesList();
       props.resetRates();
     }
     if (props?.rates?.staticList) {
@@ -600,19 +534,19 @@ const Rates = props => {
 
   useEffect(() => {
     const list = props?.rates?.additionalRatesList.filter(
-      item =>
+      (item) =>
         item?.additionalPriceId === staticSelected &&
         item.processId === selectedProcessId &&
-        item?.partyId === selectedParty,
+        item?.partyId === selectedParty
     );
     setAdditionalPriceList(list);
   }, [props?.rates?.additionalRatesList]);
   useEffect(() => {
     const list = props?.rates?.laminationChargesList.filter(
-      item =>
+      (item) =>
         item?.laminationDetailsId === laminationStaticSelected &&
-        // item.processId === selectedProcessId &&
-        item?.partyId === selectedParty,
+       // item.processId === selectedProcessId &&
+        item?.partyId === selectedParty
     );
     setLaminationChargesList(list);
   }, [props?.rates?.laminationChargesList]);
@@ -620,8 +554,8 @@ const Rates = props => {
   useEffect(() => {
     const { rates } = props;
     if (searchValue) {
-      if (tabKey === '3') {
-        const filteredData = rates?.packingRateList?.filter(rate => {
+      if (tabKey === "3") {
+        const filteredData = rates?.packingRateList?.filter((rate) => {
           if (
             rate?.partyName?.toString().includes(searchValue) ||
             rate?.packingBucketName?.toString().includes(searchValue) ||
@@ -632,14 +566,13 @@ const Rates = props => {
           }
         });
         setfilteredPackingRateList(filteredData);
-      } else {
-        const filteredData = rates?.ratesList?.filter(rate => {
+      }
+      else {
+        const filteredData = rates?.ratesList?.filter((rate) => {
           if (
             rate?.id?.toString() === searchValue ||
             rate?.partyId?.toString() === searchValue ||
-            rate?.partyName
-              ?.toLowerCase()
-              .includes(searchValue.toLowerCase()) ||
+           ( rate?.partyName?.toLowerCase().includes(searchValue.toLowerCase())) ||
             rate?.matGradeId?.toString() === searchValue ||
             rate?.processId?.toString() === searchValue ||
             rate?.price?.toString() === searchValue
@@ -669,16 +602,16 @@ const Rates = props => {
 
   useEffect(() => {
     if (checked) {
-      const list = props.material.materialList.filter(item =>
-        type?.includes(item.matId),
+      const list = props.material.materialList.filter((item) =>
+        type?.includes(item.matId)
       );
-      setGradeList(list.map(item => item.materialGrade)?.flat());
+      setGradeList(list.map((item) => item.materialGrade)?.flat());
     } else {
       const list = props.material.materialList.filter(
-        material => material.matId === type,
+        (material) => material.matId === type
       );
-      setGradeList(list.map(item => item.materialGrade)?.flat());
-    }
+      setGradeList(list.map((item) => item.materialGrade)?.flat());
+    } 
   }, [type, checked]);
 
   useEffect(() => {
@@ -690,19 +623,19 @@ const Rates = props => {
   const handleChange = (pagination, filters, sorter) => {
     setSortedInfo(sorter);
     setFilteredInfo(filters);
-    setPagination(pagination);
+    setPagination(pagination)
   };
 
-  const handleMaterialTypeChange = e => {
-    console.log('material', e);
+  const handleMaterialTypeChange = (e) => {
+    console.log("material", e);
     setType(e);
   };
 
-  const checkboxChange = e => {
+  const checkboxChange = (e) => {
     setChecked(e.target.checked);
     console.log(`checked = ${e.target.checked}`);
   };
-  const callback = key => {
+  const callback = (key) => {
     setTabKey(key);
   };
   const rowSelection = {
@@ -711,36 +644,37 @@ const Rates = props => {
     },
   };
 
-  const handleProcessChange = e => {
-    if (e?.target?.name === 'partyName') {
+  const handleProcessChange = (e) => {
+    if (e?.target?.name === "partyName") {
       setSelectedParty(e.target.value);
     } else {
       props.getStaticList(e);
       setSelectedProcessId(e);
     }
   };
-  const handlePartyChange = e => {
-    setSelectedParty(e);
+  const handlePartyChange = (e) => {
+      setSelectedParty(e);
   };
-  const handleStaticChange = e => {
+  const handleStaticChange = (e) => {
     setStaticSelected(e);
     const list = props?.rates?.additionalRatesList.filter(
-      item =>
+      (item) =>
         item?.additionalPriceId === e &&
         item?.processId === selectedProcessId &&
-        item?.partyId === selectedParty,
+        item?.partyId === selectedParty
     );
     setAdditionalPriceList(list);
   };
-  const handleLaminationChange = e => {
+  const handleLaminationChange = (e) => {
     setLaminationStaticSelected(e);
     const list = props?.rates?.laminationChargesList.filter(
-      item =>
-        item?.laminationDetailsId === e && item?.partyId === selectedParty,
+      (item) =>
+        item?.laminationDetailsId === e &&
+        item?.partyId === selectedParty
     );
     setLaminationChargesList(list);
   };
-  const clearFilters = value => {
+  const clearFilters = (value) => {
     setFilteredInfo(null);
   };
 
@@ -767,34 +701,32 @@ const Rates = props => {
       searchText: searchValue,
       thicknessRange: '',
     });
-    const filteredData = props.rates?.ratesList?.filter(rate => {
+    const filteredData = props.rates?.ratesList?.filter((rate) => {
       if (
-        rate?.partyName?.toLowerCase().includes(searchValue.toLowerCase()) ||
-        rate?.processName?.toLowerCase().includes(searchValue.toLowerCase()) ||
-        rate?.materialDescription
-          ?.toLowerCase()
-          .includes(searchValue.toLowerCase()) ||
-        rate?.matGradeName?.toLowerCase().includes(searchValue.toLowerCase())
+         ( rate?.partyName?.toLowerCase().includes(searchValue.toLowerCase())) ||
+        (rate?.processName?.toLowerCase().includes(searchValue.toLowerCase())) ||
+        (rate?.materialDescription?.toLowerCase().includes(searchValue.toLowerCase())) ||
+        (rate?.matGradeName?.toLowerCase().includes(searchValue.toLowerCase()))
       ) {
         return rate;
       }
     });
     setFilteredInwardList(filteredData);
-  }, [searchValue]);
+  }, [ searchValue]);
   useEffect(() => {
     props.fetchRatesList({
       pageNo: 1,
       pageSize: pagination.pageSize,
       searchText: '',
       thicknessRange: searchThickness,
-    });
-  }, [searchThickness]);
+      })
+  }, [ searchThickness]);
 
-  const handleDropdownChange = value => {
+  const handleDropdownChange = (value) => {
     setSelectedOption(value);
   };
   const filteredLaminations = props.laminationCharges.filter(
-    item => item.partyId === selectedParty,
+    (item) => item.partyId === selectedParty
   );
   return (
     <div>
@@ -809,7 +741,7 @@ const Rates = props => {
             <Button onClick={clearFilters}>Clear All Filters</Button>
           </div>
           <div className="gx-flex-row gx-w-50">
-            {tabKey === '2' && (
+            {tabKey === "2" && (
               <Button
                 type="primary"
                 icon={() => <i className="icon icon-add" />}
@@ -821,7 +753,7 @@ const Rates = props => {
                 Add Additional Rates
               </Button>
             )}
-            {tabKey === '1' && (
+            {tabKey === "1" && (
               <Button
                 type="primary"
                 icon={() => <i className="icon icon-add" />}
@@ -835,7 +767,7 @@ const Rates = props => {
                 Add Rates
               </Button>
             )}
-            {tabKey === '3' && (
+            {tabKey === "3" && (
               <Button
                 type="primary"
                 icon={() => <i className="icon icon-add" />}
@@ -849,13 +781,13 @@ const Rates = props => {
                 Add Packing Rates
               </Button>
             )}
-            {tabKey === '4' && (
+            {tabKey === "4" && (
               <Button
                 type="primary"
                 icon={() => <i className="icon icon-add" />}
                 size="default"
                 onClick={() => {
-                  props.resetLaminationChargesRequest();
+                 props.resetLaminationChargesRequest();
                   props.form.resetFields();
                   setShowAddLaminationCharges(true);
                 }}
@@ -867,16 +799,15 @@ const Rates = props => {
               styleName="gx-flex-1"
               placeholder="Search for party name, process name or material ..."
               value={searchValue}
-              onChange={e => setSearchValue(e.target.value)}
+              onChange={(e) => setSearchValue(e.target.value)}
+            />&nbsp;
+              {tabKey === "1" && (
+            <SearchBox
+              styleName="gx-flex-1"
+              placeholder="Search for thickness range..."
+              value={searchThickness}
+              onChange={(e) => setSearchThickness(e.target.value)}
             />
-            &nbsp;
-            {tabKey === '1' && (
-              <SearchBox
-                styleName="gx-flex-1"
-                placeholder="Search for thickness range..."
-                value={searchThickness}
-                onChange={e => setSearchThickness(e.target.value)}
-              />
             )}
           </div>
         </div>
@@ -890,7 +821,7 @@ const Rates = props => {
               onChange={handleChange}
               pagination={{
                 ...pagination,
-                total: props.rates.totalItems || 0,
+                total: props.rates.totalItems || 0, 
                 itemRender: (current, type, originalElement) => {
                   if (type === 'prev') {
                     return <LeftOutlined />;
@@ -903,7 +834,7 @@ const Rates = props => {
                   }
                   return originalElement;
                 },
-                showLessItems: true,
+                showLessItems: true, 
                 pageSizeOptions: ['10', '20', '50'],
               }}
             />
@@ -916,10 +847,8 @@ const Rates = props => {
               name="partyName"
               onChange={handlePartyChange}
             >
-              {props.party?.partyList?.map(party => (
-                <Option key={party.nPartyId} value={party.nPartyId}>
-                  {party.partyName}
-                </Option>
+              {props.party?.partyList?.map((party) => (
+                <Option key={party.nPartyId} value={party.nPartyId}>{party.partyName}</Option>
               ))}
             </Select>
             <Select
@@ -928,7 +857,7 @@ const Rates = props => {
               placeholder="Select a Process"
               onChange={handleProcessChange}
             >
-              {props.process?.processList?.map(process => (
+              {props.process?.processList?.map((process) => (
                 <Option key={process.processId} value={process.processId}>
                   {process?.processName}
                 </Option>
@@ -942,10 +871,8 @@ const Rates = props => {
                   className="additional_price_select"
                   onChange={handleStaticChange}
                 >
-                  {staticList?.map(item => (
-                    <Option key={item.id} value={item.id}>
-                      {item.priceDesc}
-                    </Option>
+                  {staticList?.map((item) => (
+                    <Option key={item.id} value={item.id}>{item.priceDesc}</Option>
                   ))}
                 </Select>
               </>
@@ -963,25 +890,23 @@ const Rates = props => {
             )}
           </TabPane>
           <TabPane tab="Packing Rate" key="3">
-            <Table
+            <Table 
               className="gx-table-responsive"
               columns={packingRateColumn}
               dataSource={filteredPackingRateList}
               onChange={handleChange}
-            />
+              />
           </TabPane>
           <TabPane tab="Lamination Charges" key="4">
-            <Select
+          <Select
               style={{ width: 300 }}
               className="additional_price_select"
               placeholder="Select Party"
               name="partyName"
               onChange={handlePartyChange}
             >
-              {props.party?.partyList?.map(party => (
-                <Option key={party.nPartyId} value={party.nPartyId}>
-                  {party.partyName}
-                </Option>
+              {props.party?.partyList?.map((party) => (
+                <Option key={party.nPartyId} value={party.nPartyId}>{party.partyName}</Option>
               ))}
             </Select>
             {props.laminationCharges.length > 0 && (
@@ -992,23 +917,18 @@ const Rates = props => {
                   className="additional_price_select"
                   onChange={handleLaminationChange}
                 >
-                  {filteredLaminations?.map(item => (
-                    <Option
-                      key={item.laminationDetailsId}
-                      value={item.laminationDetailsId}
-                    >
-                      {item.laminationDetailsDesc}
-                    </Option>
+                  {filteredLaminations?.map((item) => (
+                    <Option key={item.laminationDetailsId} value={item.laminationDetailsId}>{item.laminationDetailsDesc}</Option>
                   ))}
                 </Select>
               </>
             )}
             {laminationChargesList.length > 0 && (
-              <Table
-                className="gx-table-responsive"
-                columns={laminationChargesColumn}
-                dataSource={laminationChargesList}
-                onChange={handleChange}
+            <Table 
+              className="gx-table-responsive"
+              columns={laminationChargesColumn}
+              dataSource={laminationChargesList}
+              onChange={handleChange}
               />
             )}
           </TabPane>
@@ -1027,19 +947,19 @@ const Rates = props => {
                     <strong>Party Name :</strong> {viewMaterialData?.partyId}
                   </p>
                   <p>
-                    <strong>Material Type :</strong>{' '}
+                    <strong>Material Type :</strong>{" "}
                     {viewMaterialData?.matGradeId}
                   </p>
                   <p>
-                    <strong>Process Name :</strong>{' '}
+                    <strong>Process Name :</strong>{" "}
                     {viewMaterialData?.processId}
                   </p>
                   <p>
-                    <strong>Minimum Thickness :</strong>{' '}
+                    <strong>Minimum Thickness :</strong>{" "}
                     {viewMaterialData?.thicknessFrom}
                   </p>
                   <p>
-                    <strong>Maximum Thickness :</strong>{' '}
+                    <strong>Maximum Thickness :</strong>{" "}
                     {viewMaterialData?.thicknessTo}
                   </p>
                   <p>
@@ -1064,11 +984,11 @@ const Rates = props => {
                     <strong>Party Name :</strong> {viewMaterialData?.partyId}
                   </p>
                   <p>
-                    <strong>Process Name :</strong>{' '}
+                    <strong>Process Name :</strong>{" "}
                     {viewMaterialData?.processId}
                   </p>
                   <p>
-                    <strong>Minimum Range :</strong>{' '}
+                    <strong>Minimum Range :</strong>{" "}
                     {viewMaterialData?.rangeFrom}
                   </p>
                   <p>
@@ -1085,14 +1005,14 @@ const Rates = props => {
         <Modal
           title="Add Rates"
           visible={showAddRates}
-          onOk={e => {
+          onOk={(e) => {
             e.preventDefault();
             if (editRates) {
               props.form.validateFields((err, values) => {
                 values.partyId = [values.partyId];
                 values.matGradeId = [values.matGradeId];
-                const data = { values, id: props.rates?.rates?.id };
-                props.updateRates(data);
+                const data = { values, id: props.rates?.rates?.id  };
+                 props.updateRates(data);
                 props.form.resetFields();
                 setEditRates(false);
                 setShowAddRates(false);
@@ -1141,11 +1061,11 @@ const Rates = props => {
                   {checked && (
                     <>
                       <Form.Item label="Party Name">
-                        {getFieldDecorator('partyId', {
+                        {getFieldDecorator("partyId", {
                           rules: [
                             {
                               required: true,
-                              message: 'Please select party name!',
+                              message: "Please select party name!",
                             },
                           ],
                         })(
@@ -1153,25 +1073,22 @@ const Rates = props => {
                             id="partyId"
                             showSearch
                             mode="multiple"
-                            style={{ width: '100%' }}
+                            style={{ width: "100%" }}
                           >
-                            {props.party?.partyList?.map(party => (
-                              <Option
-                                key={party.nPartyId}
-                                value={party.nPartyId}
-                              >
+                            {props.party?.partyList?.map((party) => (
+                              <Option key={party.nPartyId} value={party.nPartyId}>
                                 {party.partyName}
                               </Option>
                             ))}
-                          </Select>,
+                          </Select>
                         )}
                       </Form.Item>
                       <Form.Item label="Material Type">
-                        {getFieldDecorator('materialType', {
+                        {getFieldDecorator("materialType", {
                           rules: [
                             {
                               required: true,
-                              message: 'Please select material type!',
+                              message: "Please select material type!",
                             },
                           ],
                         })(
@@ -1179,54 +1096,48 @@ const Rates = props => {
                             id="materialType"
                             showSearch
                             mode="multiple"
-                            style={{ width: '100%' }}
+                            style={{ width: "100%" }}
                             onChange={handleMaterialTypeChange}
                           >
-                            {props.material?.materialList?.map(material => (
-                              <Option
-                                key={material.matId}
-                                value={material.matId}
-                              >
+                            {props.material?.materialList?.map((material) => (
+                              <Option key={material.matId} value={material.matId}>
                                 {material.description}
                               </Option>
                             ))}
-                          </Select>,
+                          </Select>
                         )}
                       </Form.Item>
                       <Form.Item label="Material Grade">
-                        {getFieldDecorator('matGradeId', {
+                        {getFieldDecorator("matGradeId", {
                           rules: [
                             {
                               required: true,
-                              message: 'Please select material grade!',
+                              message: "Please select material grade!",
                             },
                           ],
                         })(
                           <Select
                             id="matGradeId"
                             mode="multiple"
-                            style={{ width: '100%' }}
+                            style={{ width: "100%" }}
                           >
-                            {gradeList?.map(material => (
-                              <Option
-                                key={material.gradeId}
-                                value={material.gradeId}
-                              >
+                            {gradeList?.map((material) => (
+                              <Option key={material.gradeId} value={material.gradeId}>
                                 {material.gradeName}
                               </Option>
                             ))}
-                          </Select>,
+                          </Select>
                         )}
                       </Form.Item>
                     </>
                   )}
                   {!checked && (
                     <Form.Item label="Party Name">
-                      {getFieldDecorator('partyId', {
+                      {getFieldDecorator("partyId", {
                         rules: [
                           {
                             required: true,
-                            message: 'Please enter Party name!',
+                            message: "Please enter Party name!",
                           },
                         ],
                       })(
@@ -1235,21 +1146,21 @@ const Rates = props => {
                           style={{ width: 300 }}
                           placeholder="Select a Party"
                         >
-                          {props.party?.partyList?.map(party => (
+                          {props.party?.partyList?.map((party) => (
                             <Option key={party.nPartyId} value={party.nPartyId}>
                               {party.partyName}
                             </Option>
                           ))}
-                        </Select>,
+                        </Select>
                       )}
                     </Form.Item>
                   )}
                   <Form.Item label="Process Name">
-                    {getFieldDecorator('processId', {
+                    {getFieldDecorator("processId", {
                       rules: [
                         {
                           required: true,
-                          message: 'Please enter Process name!',
+                          message: "Please enter Process name!",
                         },
                       ],
                     })(
@@ -1258,24 +1169,21 @@ const Rates = props => {
                         style={{ width: 300 }}
                         placeholder="Select a Process"
                       >
-                        {props.process?.processList?.map(process => (
-                          <Option
-                            key={process.processId}
-                            value={process.processId}
-                          >
+                        {props.process?.processList?.map((process) => (
+                          <Option key={process.processId} value={process.processId}>
                             {process.processName}
                           </Option>
                         ))}
-                      </Select>,
+                      </Select>
                     )}
                   </Form.Item>
                   {!checked && (
                     <Form.Item label="Material Type">
-                      {getFieldDecorator('materialType', {
+                      {getFieldDecorator("materialType", {
                         rules: [
                           {
                             required: true,
-                            message: 'Please enter material Type!',
+                            message: "Please enter material Type!",
                           },
                         ],
                       })(
@@ -1286,66 +1194,63 @@ const Rates = props => {
                           placeholder="Select a Material"
                           onChange={handleMaterialTypeChange}
                         >
-                          {props.material?.materialList?.map(material => (
+                          {props.material?.materialList?.map((material) => (
                             <Option key={material.matId} value={material.matId}>
                               {material.description}
                             </Option>
                           ))}
-                        </Select>,
+                        </Select>
                       )}
                     </Form.Item>
                   )}
                   {!checked && (
                     <Form.Item label="Material Grade">
-                      {getFieldDecorator('matGradeId', {
+                      {getFieldDecorator("matGradeId", {
                         rules: [
-                          { required: true, message: 'Please enter grade!' },
+                          { required: true, message: "Please enter grade!" },
                         ],
                       })(
                         <Select
                           showSearch
-                          mode="multiple"
+                          mode='multiple'
                           style={{ width: 300 }}
                           placeholder="Select a Grade"
                         >
-                          {gradeList?.map(material => (
-                            <Option
-                              key={material.gradeId}
-                              value={material.gradeId}
-                            >
+                          {gradeList?.map((material) => (
+                            <Option key={material.gradeId} value={material.gradeId}>
                               {material.gradeName}
                             </Option>
                           ))}
-                        </Select>,
+                        </Select>
                       )}
                     </Form.Item>
                   )}
                   <Form.Item label="Minimum Thickness">
-                    {getFieldDecorator('thicknessFrom', {
+                    {getFieldDecorator("thicknessFrom", {
                       rules: [
                         {
                           required: true,
-                          message: 'Please input the minimum thickness!',
+                          message: "Please input the minimum thickness!",
                         },
                       ],
                     })(<Input id="thicknessFrom" />)}
                   </Form.Item>
                   <Form.Item label="Maximum Thickness">
-                    {getFieldDecorator('thicknessTo', {
+                    {getFieldDecorator("thicknessTo", {
                       rules: [
                         {
                           required: true,
-                          message: 'Please input the maximum thickness!',
+                          message: "Please input the maximum thickness!",
                         },
                       ],
                     })(<Input id="thicknessTo" />)}
                   </Form.Item>
                   <Form.Item label="Thickness Rate">
-                    {getFieldDecorator('price', {
+                    {getFieldDecorator("price", {
                       rules: [
                         {
                           required: true,
-                          message: 'Please input the thickness rate!',
+                          message: "Please input the thickness rate!",
                         },
                       ],
                     })(<Input id="price" />)}
@@ -1367,20 +1272,18 @@ const Rates = props => {
               <Col span={24}>
                 <Card>
                   <p>
-                    <strong>Bucket Name:</strong>{' '}
-                    {viewPackingRateData?.packingBucketName}
+                    <strong>Bucket Name:</strong> {viewPackingRateData?.packingBucketName}
                   </p>
                   <p>
-                    <strong>Party Name:</strong>{' '}
+                    <strong>Party Name:</strong>{" "}
                     {viewPackingRateData?.partyName}
                   </p>
                   <p>
-                    <strong>Packing Rate:</strong>{' '}
+                    <strong>Packing Rate:</strong>{" "}
                     {viewPackingRateData?.packingRate}
                   </p>
                   <p>
-                    <strong>Description:</strong>{' '}
-                    {viewPackingRateData?.packingRateDesc}
+                    <strong>Description:</strong> {viewPackingRateData?.packingRateDesc}
                   </p>
                 </Card>
               </Col>
@@ -1389,19 +1292,14 @@ const Rates = props => {
         </Modal>
 
         <Modal
-          title={editPackingRates ? 'Edit Packing Rates' : 'Add Packing Rates'}
+          title={editPackingRates ? "Edit Packing Rates" : "Add Packing Rates"}
           visible={showAddPackingRates}
-          onOk={e => {
+          onOk={(e) => {
             e.preventDefault();
             if (editPackingRates) {
               const values = props.form.getFieldsValue();
               console.log('Received values of form: ', values);
-              if (
-                values.packingBucketId !== '' &&
-                values.rPartyId !== '' &&
-                values.packingRate !== '' &&
-                values.packingRateDesc !== ''
-              ) {
+              if (values.packingBucketId !== '' && values.rPartyId !== '' && values.packingRate !== '' && values.packingRateDesc !== '') {
                 const packingRateId = props?.packingRates?.packingRateId;
                 props.updatePackingRates({ ...values, packingRateId });
                 setEditPackingRates(false);
@@ -1410,12 +1308,7 @@ const Rates = props => {
             } else {
               const values = props.form.getFieldsValue();
               console.log('Received values of form: ', values);
-              if (
-                values.packingBucketId !== '' &&
-                values.rPartyId !== '' &&
-                values.packingRate !== '' &&
-                values.packingRateDesc !== ''
-              ) {
+              if (values.packingBucketId !== '' && values.rPartyId !== '' && values.packingRate !== '' && values.packingRateDesc !== '') {
                 props.addPackingRates(values);
                 setShowAddPackingRates(false);
               }
@@ -1439,92 +1332,72 @@ const Rates = props => {
                 className="gx-align-self-center"
               >
                 <Form {...formItemLayout} className="gx-pt-4">
-                  <Form.Item label="Bucket Id">
+                <Form.Item label="Bucket Id">
                     {getFieldDecorator('packingBucketId', {
-                      rules: [
-                        { required: true, message: 'Please select Items' },
-                      ],
+                        rules: [{ required: true, message: 'Please select Items' }],
                     })(
-                      <Select
+                        <Select
                         id="packingItem"
                         showSearch
                         style={{ width: '100%' }}
                         filterOption={(input, option) => {
-                          return option?.props?.children
-                            ?.toLowerCase()
-                            .includes(input.toLowerCase());
+                            return option?.props?.children?.toLowerCase().includes(input.toLowerCase());
                         }}
                         filterSort={(optionA, optionB) =>
-                          optionA?.props?.children
-                            .toLowerCase()
-                            .localeCompare(
-                              optionB?.props?.children.toLowerCase(),
-                            )
+                            optionA?.props?.children.toLowerCase().localeCompare(optionB?.props?.children.toLowerCase())
                         }
-                      >
-                        {props?.packing?.bucketList?.map(item => {
-                          return (
-                            <Option key={item?.bucketId} value={item?.bucketId}>
-                              {item?.packingBucketId}
-                            </Option>
-                          );
-                        })}
-                      </Select>,
+                        >{props?.packing?.bucketList?.map(item => {
+                            return <Option key={item?.bucketId} value={item?.bucketId}>{item?.packingBucketId}</Option>
+                        })}</Select>
                     )}
+                </Form.Item>
+                <Form.Item label="Party Name">
+                  {getFieldDecorator("rPartyId", {
+                    rules: [{
+                        required: true,
+                        message: "Please select party name!",
+                      }],
+                  })(
+                    <Select
+                      id="partyId"
+                      showSearch
+                      style={{ width: "100%" }}
+                      filterOption={(input, option) => {
+                        return option?.props?.children?.toLowerCase().includes(input.toLowerCase());
+                      }}
+                      filterSort={(optionA, optionB) =>
+                        optionA?.props?.children.toLowerCase().localeCompare(optionB?.props?.children.toLowerCase())
+                      }
+                    >
+                      {props.party?.partyList?.map((party) => (
+                        <Option key={party.nPartyId} value={party.nPartyId}>
+                          {party.partyName}
+                        </Option>
+                      ))}
+                    </Select>
+                  )}
+                </Form.Item>
+                <Form.Item label="Packing Rate" >
+                      {getFieldDecorator('packingRate', {
+                          rules: [{ required: true, message: 'Please enter rate' }],
+                          })(
+                          <Input id="packingRate" />
+                      )}
                   </Form.Item>
-                  <Form.Item label="Party Name">
-                    {getFieldDecorator('rPartyId', {
-                      rules: [
-                        {
-                          required: true,
-                          message: 'Please select party name!',
-                        },
-                      ],
-                    })(
-                      <Select
-                        id="partyId"
-                        showSearch
-                        style={{ width: '100%' }}
-                        filterOption={(input, option) => {
-                          return option?.props?.children
-                            ?.toLowerCase()
-                            .includes(input.toLowerCase());
-                        }}
-                        filterSort={(optionA, optionB) =>
-                          optionA?.props?.children
-                            .toLowerCase()
-                            .localeCompare(
-                              optionB?.props?.children.toLowerCase(),
-                            )
-                        }
-                      >
-                        {props.party?.partyList?.map(party => (
-                          <Option key={party.nPartyId} value={party.nPartyId}>
-                            {party.partyName}
-                          </Option>
-                        ))}
-                      </Select>,
-                    )}
-                  </Form.Item>
-                  <Form.Item label="Packing Rate">
-                    {getFieldDecorator('packingRate', {
-                      rules: [{ required: true, message: 'Please enter rate' }],
-                    })(<Input id="packingRate" />)}
-                  </Form.Item>
-                  <Form.Item label="Description">
-                    {getFieldDecorator('packingRateDesc', {
-                      rules: [
-                        { required: true, message: 'Please enter description' },
-                      ],
-                    })(<Input id="packingRateDesc" />)}
+                  <Form.Item label="Description" >
+                      {getFieldDecorator('packingRateDesc', {
+                          rules: [{ required: true, message: 'Please enter description' }],
+                          })(
+                          <Input id="packingRateDesc" />
+                      )}
                   </Form.Item>
                 </Form>
               </Col>
             </Row>
           </Card>
         </Modal>
-        {/* Lamination Charges */}
-        <Modal
+      {/* Lamination Charges */}
+      <Modal
           title="Lamination Charges Details"
           visible={viewLaminationCharges}
           onOk={() => setViewLaminationCharges(false)}
@@ -1535,16 +1408,16 @@ const Rates = props => {
             <Row>
               <Col span={24}>
                 <Card>
-                  <p>
-                    <strong>Party Name:</strong>{' '}
+                <p>
+                    <strong>Party Name:</strong>{" "}
                     {viewLaminationChargesData?.partyName}
                   </p>
                   <p>
-                    <strong>Lamination Details Name:</strong>{' '}
+                    <strong>Lamination Details Name:</strong> {" "} 
                     {viewLaminationChargesData?.laminationDetailsDesc}
                   </p>
                   <p>
-                    <strong>Lamination Charges:</strong>{' '}
+                    <strong>Lamination Charges:</strong> {" "} 
                     {viewLaminationChargesData?.charges}
                   </p>
                 </Card>
@@ -1553,41 +1426,28 @@ const Rates = props => {
           </Card>
         </Modal>
 
-        <Modal
-          title={
-            editLaminationCharges
-              ? 'Edit Lamination Charges'
-              : 'Add Lamination Charges'
-          }
+      <Modal
+          title={editLaminationCharges ? "Edit Lamination Charges" : "Add Lamination Charges"}
           visible={showAddLaminationCharges}
-          onOk={e => {
+          onOk={(e) => {
             e.preventDefault();
             if (editLaminationCharges) {
               const values = props.form.getFieldsValue();
               console.log('Received values of form: ', values);
-              if (
-                values.laminationDetailsId !== '' &&
-                values.lPartyId !== '' &&
-                values.charges !== ''
-              ) {
-                const laminationId =
-                  props?.rates?.laminationCharges?.laminationId;
-                props.updateLminationCharges({ ...values, laminationId });
+               if (values.laminationDetailsId !== '' && values.lPartyId !== '' && values.charges !== '') {
+                 const laminationId = props?.rates?.laminationCharges?.laminationId;
+                 props.updateLminationCharges({...values, laminationId});
                 setEditLaminationCharges(false);
                 setShowAddLaminationCharges(false);
-              }
+               }
             } else {
               const values = props.form.getFieldsValue();
               console.log('Received values of form: ', values);
 
-              if (
-                values.laminationDetailsId !== '' &&
-                values.lPartyId !== '' &&
-                values.charges !== ''
-              ) {
+              if (values.laminationDetailsId !== '' && values.lPartyId !== '' && values.charges !== '') {
                 props.addLminationCharges(values);
                 setShowAddLaminationCharges(false);
-              }
+               }
             }
             props.form.resetFields();
           }}
@@ -1608,88 +1468,69 @@ const Rates = props => {
                 className="gx-align-self-center"
               >
                 <Form {...formItemLayout} className="gx-pt-4">
-                  <Form.Item label="Party Name">
-                    {getFieldDecorator('lPartyId', {
-                      rules: [
-                        {
-                          required: true,
-                          message: 'Please select party name!',
-                        },
-                      ],
-                    })(
-                      <Select
-                        id="lPartyId"
-                        showSearch
-                        // mode='multiple'
-                        style={{ width: '100%' }}
-                        filterOption={(input, option) => {
-                          return option?.props?.children
-                            ?.toLowerCase()
-                            .includes(input.toLowerCase());
-                        }}
-                        filterSort={(optionA, optionB) =>
-                          optionA?.props?.children
-                            .toLowerCase()
-                            .localeCompare(
-                              optionB?.props?.children.toLowerCase(),
-                            )
-                        }
-                      >
-                        {props.party?.partyList?.map(party => (
-                          <Option key={party.nPartyId} value={party.nPartyId}>
-                            {party.partyName}
-                          </Option>
-                        ))}
-                      </Select>,
-                    )}
-                  </Form.Item>
+                <Form.Item label="Party Name">
+                  {getFieldDecorator("lPartyId", {
+                    rules: [{
+                        required: true,
+                        message: "Please select party name!",
+                      }],
+                  })(
+                    <Select
+                      id="lPartyId"
+                      showSearch
+                     // mode='multiple'
+                      style={{ width: "100%" }}
+                      filterOption={(input, option) => {
+                        return option?.props?.children?.toLowerCase().includes(input.toLowerCase());
+                      }}
+                      filterSort={(optionA, optionB) =>
+                        optionA?.props?.children.toLowerCase().localeCompare(optionB?.props?.children.toLowerCase())
+                      }
+                    >
+                      {props.party?.partyList?.map((party) => (
+                        <Option key={party.nPartyId} value={party.nPartyId}>
+                          {party.partyName}
+                        </Option>
+                      ))}
+                    </Select>
+                  )}
+                </Form.Item>
 
-                  <Form.Item label="Select Lamination Details">
-                    {getFieldDecorator('laminationDetailsId', {
-                      rules: [
-                        {
-                          required: true,
-                          message: 'Please select lamination!',
-                        },
-                      ],
-                    })(
-                      <Select
-                        id="laminationDetailsId"
-                        showSearch
-                        // mode='multiple'
-                        style={{ width: '100%' }}
-                        onChange={handleDropdownChange}
-                        value={selectedOption}
-                        filterOption={(input, option) => {
-                          return option?.props?.children
-                            ?.toLowerCase()
-                            .includes(input.toLowerCase());
-                        }}
-                        filterSort={(optionA, optionB) =>
-                          optionA?.props?.children
-                            .toLowerCase()
-                            .localeCompare(
-                              optionB?.props?.children.toLowerCase(),
-                            )
-                        }
-                      >
-                        {laminationDD.map(option => (
-                          <option
-                            key={option.laminationDetailsId}
-                            value={option.laminationDetailsId}
-                          >
+                <Form.Item label="Select Lamination Details">
+                  {getFieldDecorator("laminationDetailsId", {
+                    rules: [{
+                        required: true,
+                        message: "Please select lamination!",
+                      }],
+                  })(
+                    <Select
+                      id="laminationDetailsId"
+                      showSearch
+                     // mode='multiple'
+                      style={{ width: "100%" }}
+                      onChange={handleDropdownChange}
+                      value={selectedOption}
+                      filterOption={(input, option) => {
+                        return option?.props?.children?.toLowerCase().includes(input.toLowerCase());
+                      }}
+                      filterSort={(optionA, optionB) =>
+                        optionA?.props?.children.toLowerCase().localeCompare(optionB?.props?.children.toLowerCase())
+                      }
+                    >
+                       {laminationDD.map((option) => (
+                          <option key={option.laminationDetailsId} value={option.laminationDetailsId}>
                             {option.laminationDetailsDesc}
                           </option>
                         ))}
-                      </Select>,
-                    )}
-                  </Form.Item>
-                  <Form.Item label="Lamination Charges">
-                    {getFieldDecorator('charges', {
-                      rules: [
-                        { required: true, message: 'Please enter charges' },
-                      ],
-                    })(<Input id="charges" />)}
+                    </Select>
+                  )}
+                </Form.Item>
+                <Form.Item label="Lamination Charges" >
+                      {getFieldDecorator('charges', {
+                          rules: [{ required: true, message: 'Please enter charges' }],
+                          })(
+                          <Input id="charges" />
+                      )}
                   </Form.Item>
                 </Form>
               </Col>
@@ -1701,12 +1542,12 @@ const Rates = props => {
           <AdditionalRates
             form={props.form}
             showAdditionalRates={showAdditionalRates}
-            setShowAdditionalRates={w => setShowAdditionalRates(w)}
+            setShowAdditionalRates={(w) => setShowAdditionalRates(w)}
           />
         )}
         <EditAdditionalRates
           editPriceModal={editPriceModal}
-          setEditPriceModal={w => setEditPriceModal(w)}
+          setEditPriceModal={(w) => setEditPriceModal(w)}
           {...props}
         />
       </Card>
@@ -1714,7 +1555,7 @@ const Rates = props => {
   );
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   rates: state.rates,
   material: state.material,
   party: state.party,
@@ -1723,7 +1564,7 @@ const mapStateToProps = state => ({
   packing: state.packing,
   packingRates: state.rates.packingRates,
   laminationCharges: state.rates.laminationChargesList,
-  laminationChargesView: state.rates.laminationChargesById,
+  laminationChargesView: state.rates.laminationChargesById
 });
 
 const addRatesForm = Form.create({
@@ -1751,15 +1592,15 @@ const addRatesForm = Form.create({
       }),
       thicknessFrom: Form.createFormField({
         ...props.rates?.rates?.thicknessFrom,
-        value: props.rates?.rates?.thicknessFrom || '',
+        value: props.rates?.rates?.thicknessFrom || "",
       }),
       thicknessTo: Form.createFormField({
         ...props.rates?.rates?.thicknessTo,
-        value: props.rates?.rates?.thicknessTo || '',
+        value: props.rates?.rates?.thicknessTo || "",
       }),
       price: Form.createFormField({
         ...props.rates?.rates?.price,
-        value: props.rates?.rates?.price || '',
+        value: props.rates?.rates?.price || "",
       }),
       // packagingCharges: Form.createFormField({
       //     ...props.rates?.rates?.packagingCharges,
@@ -1779,51 +1620,51 @@ const addRatesForm = Form.create({
       }),
       rangeFrom: Form.createFormField({
         ...props.aRates?.rangeFrom,
-        value: props.aRates?.rangeFrom || '',
+        value: props.aRates?.rangeFrom || "",
       }),
       rangeTo: Form.createFormField({
         ...props.aRates?.rangeTo,
-        value: props.aRates?.rangeTo || '',
+        value: props.aRates?.rangeTo || "",
       }),
       aPrice: Form.createFormField({
         ...props.aRates?.price,
-        value: props.aRates?.price || '',
+        value: props.aRates?.price || "",
       }),
       packingBucketId: Form.createFormField({
         ...props.packingRates?.packingBucketId,
-        value: props.packingRates?.packingBucketId || '',
+        value: props.packingRates?.packingBucketId || "",
       }),
       rPartyId: Form.createFormField({
         ...props.packingRates?.partyId,
-        value: props.packingRates?.partyId || '',
+        value: props.packingRates?.partyId || "",
       }),
       packingRate: Form.createFormField({
         ...props.packingRates?.packingRate,
-        value: props.packingRates?.packingRate || '',
+        value: props.packingRates?.packingRate || "",
       }),
       packingRateDesc: Form.createFormField({
         ...props.packingRates?.packingRateDesc,
-        value: props.packingRates?.packingRateDesc || '',
+        value: props.packingRates?.packingRateDesc || "",
       }),
       lPartyId: Form.createFormField({
         ...props.laminationChargesView?.partyId,
-        value: props.laminationChargesView?.partyId || '',
+        value: props.laminationChargesView?.partyId || "",
       }),
       laminationDetailsId: Form.createFormField({
         ...props.laminationChargesView?.laminationDetailsId,
-        value: props.laminationChargesView?.laminationDetailsId || '',
+        value: props.laminationChargesView?.laminationDetailsId || "",
       }),
       charges: Form.createFormField({
         ...props.laminationChargesView?.charges,
-        value: props.laminationChargesView?.charges || '',
+        value: props.laminationChargesView?.charges || "",
       }),
       laminationId: Form.createFormField({
         ...props.laminationChargesView?.laminationId,
-        value: props.laminationChargesView?.laminationId || '',
+        value: props.laminationChargesView?.laminationId || "",
       }),
       laminationDetailsDesc: Form.createFormField({
         ...props.laminationChargesView?.laminationDetailsDesc,
-        value: props.laminationChargesView?.laminationDetailsDesc || '',
+        value: props.laminationChargesView?.laminationDetailsDesc || "",
       }),
     };
   },
@@ -1854,5 +1695,5 @@ export default connect(mapStateToProps, {
   addLminationCharges,
   updateLminationCharges,
   deleteLminationCharges,
-  resetLaminationChargesRequest,
+  resetLaminationChargesRequest
 })(addRatesForm);

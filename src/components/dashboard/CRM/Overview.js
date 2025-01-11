@@ -1,9 +1,10 @@
-import React from 'react';
+import React from "react";
 
-import LineIndicator from './LineIndicator';
-import BubbleMap from './BubbleMap/index';
+import LineIndicator from "./LineIndicator";
+import BubbleMap from "./BubbleMap/index";
 
 const Overview = () => {
+
   return (
     <div className="gx-card-overview">
       <div className="gx-overview-row">
@@ -11,36 +12,16 @@ const Overview = () => {
           <h2 className="h4 gx-card-title">Revenu Overview</h2>
           <ul className="gx-line-indicator">
             <li>
-              <LineIndicator
-                width="25%"
-                title="Europe"
-                color="purple"
-                value="25%"
-              />
+              <LineIndicator width="25%" title="Europe" color="purple" value="25%"/>
             </li>
             <li>
-              <LineIndicator
-                width="40%"
-                title="North America"
-                color="green"
-                value="40%"
-              />
+              <LineIndicator width="40%" title="North America" color="green" value="40%"/>
             </li>
             <li>
-              <LineIndicator
-                width="28%"
-                title="Japan, South Koria"
-                color="yellow"
-                value="28%"
-              />
+              <LineIndicator width="28%" title="Japan, South Koria" color="yellow" value="28%"/>
             </li>
             <li>
-              <LineIndicator
-                width="18%"
-                title="Others"
-                color="grey"
-                value="18%"
-              />
+              <LineIndicator width="18%" title="Others" color="grey" value="18%"/>
             </li>
           </ul>
         </div>
@@ -65,10 +46,11 @@ const Overview = () => {
           </div>
         </div>
         <div className="gx-map-col">
-          <BubbleMap />
+          <BubbleMap/>
         </div>
       </div>
     </div>
+
   );
 };
 

@@ -50,99 +50,84 @@ class EditableCell extends React.Component {
     const { children, dataIndex, record, title } = this.props;
     const { editing } = this.state;
     //previous code before validation
-    //   return editing ? (
-    //     <Form.Item style={{ margin: 0 }}>
-    //       {form.getFieldDecorator(dataIndex, {
-    //         rules: [
-    //           {
-    //             required: true,
-    //             message: `${title} is required.`,
-    //           },
-    //         ],
-    //         initialValue: record[dataIndex],
-    //       })(<Input ref={node => (this.input = node)} onPressEnter={this.save} onBlur={this.save} />)}
-    //     </Form.Item>
-    //   ) : (
-    //     <div
-    //       className="editable-cell-value-wrap"
-    //       style={{ paddingRight: 24 }}
-    //       onClick={this.toggleEdit}
-    //     >
-    //       {children}
-    //     </div>
-    //   );
-    // };
-    const rules = [
-      {
-        required: true,
-        message: `${title} is required.`,
-      },
-      {
-        validator: (_, value, callback) => {
-          const actualWidth = parseFloat(value) || 0;
-          const lowerBound = parseFloat(record.plannedWidth) - 0.5;
-          const upperBound = parseFloat(record.plannedWidth) + 0.5;
-          const actualThickness = parseFloat(value) || 0;
-          const lowerBoundThickness = parseFloat(record.thickness) - 0.5;
-          const upperBoundThickness = parseFloat(record.thickness) + 0.5;
-          const actualLength = parseFloat(value) || 0;
-          const lowerBoundLength = parseFloat(record.plannedLength) - 0.5;
-          const upperBoundLength = parseFloat(record.plannedLength) + 0.5;
+  //   return editing ? (
+  //     <Form.Item style={{ margin: 0 }}>
+  //       {form.getFieldDecorator(dataIndex, {
+  //         rules: [
+  //           {
+  //             required: true,
+  //             message: `${title} is required.`,
+  //           },
+  //         ],
+  //         initialValue: record[dataIndex],
+  //       })(<Input ref={node => (this.input = node)} onPressEnter={this.save} onBlur={this.save} />)}
+  //     </Form.Item>
+  //   ) : (
+  //     <div
+  //       className="editable-cell-value-wrap"
+  //       style={{ paddingRight: 24 }}
+  //       onClick={this.toggleEdit}
+  //     >
+  //       {children}
+  //     </div>
+  //   );
+  // };
+  const rules = [
+    {
+      required: true,
+      message: `${title} is required.`,
+    },
+    {
+      validator: (_, value, callback) => {
+        const actualWidth = parseFloat(value) || 0;
+        const lowerBound = parseFloat(record.plannedWidth) - 0.5;
+        const upperBound = parseFloat(record.plannedWidth) + 0.5;
+        const actualThickness = parseFloat(value) || 0;
+        const lowerBoundThickness = parseFloat(record.thickness) - 0.5;
+        const upperBoundThickness = parseFloat(record.thickness) + 0.5;
+        const actualLength = parseFloat(value) || 0;
+        const lowerBoundLength = parseFloat(record.plannedLength) - 0.5;
+        const upperBoundLength = parseFloat(record.plannedLength) + 0.5;
 
-          if (
-            dataIndex === 'actualWidth' &&
-            (actualWidth < lowerBound || actualWidth > upperBound)
-          ) {
-            callback(
-              `Don't enter more than ${upperBound} & less than ${lowerBound}`,
-            );
-          } else if (
-            dataIndex === 'actualThickness' &&
-            (actualThickness < lowerBoundThickness ||
-              actualThickness > upperBoundThickness)
-          ) {
-            callback(
-              `Don't enter less than ${lowerBoundThickness} & more than ${upperBoundThickness}`,
-            );
-          } else if (
-            dataIndex === 'actualLength' &&
-            (actualLength < lowerBoundLength || actualLength > upperBoundLength)
-          ) {
-            callback(
-              `Don't enter less than ${lowerBoundLength} & more than ${upperBoundLength}`,
-            );
-          } else {
-            callback();
-          }
-        },
+        if (dataIndex === 'actualWidth' && (actualWidth < lowerBound || actualWidth > upperBound)) {
+          callback(`Don't enter more than ${upperBound} & less than ${lowerBound}`);
+        } else if (dataIndex === 'actualThickness' && (actualThickness < lowerBoundThickness || actualThickness > upperBoundThickness)) {
+          callback(`Don't enter less than ${lowerBoundThickness} & more than ${upperBoundThickness}`);
+        } else if (dataIndex === 'actualLength' && (actualLength < lowerBoundLength || actualLength > upperBoundLength)) {
+          callback(`Don't enter less than ${lowerBoundLength} & more than ${upperBoundLength}`);
+        } 
+        else {
+          callback();
+        }
       },
-    ];
+    },
+  ];
 
-    return editing ? (
-      <Form.Item style={{ margin: 0 }}>
-        {form.getFieldDecorator(dataIndex, {
-          rules,
-          initialValue: record[dataIndex],
-        })(
-          <Input
-            ref={node => (this.input = node)}
-            onPressEnter={this.save}
-            onBlur={this.save}
-          />,
-        )}
-      </Form.Item>
-    ) : (
-      <div
-        className="editable-cell-value-wrap"
-        style={{ paddingRight: 24 }}
-        onClick={this.toggleEdit}
-        onFocus={this.handleFocus}
-        tabIndex={0}
-      >
-        {children}
-      </div>
-    );
-  };
+  return editing ? (
+    <Form.Item style={{ margin: 0 }}>
+      {form.getFieldDecorator(dataIndex, {
+        rules,
+        initialValue: record[dataIndex],
+      })(
+        <Input
+          ref={node => (this.input = node)}
+          onPressEnter={this.save}
+          onBlur={this.save}
+        />
+      )}
+    </Form.Item>
+  ) : (
+    <div
+      className="editable-cell-value-wrap"
+      style={{ paddingRight: 24 }}
+      onClick={this.toggleEdit}
+      onFocus={this.handleFocus}
+      tabIndex={0}
+    >
+      {children}
+    </div>
+  );
+};
 
   render() {
     const {
@@ -177,19 +162,19 @@ class EditableTable extends React.Component {
     };
 
     this.columns.push({
-      title: 'operation',
-      dataIndex: 'operation',
-      render: (text, record) =>
-        this.state.dataSource.length >= 1 ? (
-          <div>
-            <a onClick={() => this.handleEdit(record.key)}>Edit</a>
-            {/* <Divider type="vertical" />
+        title: 'operation',
+        dataIndex: 'operation',
+        render: (text, record) =>
+            this.state.dataSource.length >= 1 ? (
+              <div>
+                <a onClick={() => this.handleEdit(record.key)}>Edit</a>
+               {/* <Divider type="vertical" />
                  <Popconfirm title="Sure to delete?" onConfirm={() => this.handleDelete(record.key)}>
                     <a>Delete</a>
                 </Popconfirm> */}
-          </div>
-        ) : null,
-    });
+                </div>
+            ) : null,
+    })
   }
 
   componentDidUpdate(prevProps) {
@@ -203,16 +188,16 @@ class EditableTable extends React.Component {
     this.setState({ dataSource: dataSource.filter(item => item.key !== key) });
   };
 
-  handleEdit = key => {
+  handleEdit = (key) => {
     const { history } = this.props;
     //history.push(`/company/quality/templates/edit/${key}`);
-    history.push('/company/quality/templates');
+    history.push("/company/quality/templates");
     console.log(`Editing record with key: ${key}`);
   };
 
   handleAdd = () => {
     const { count, dataSource } = this.state;
-    const newData = { key: count, ...this.props.emptyRow };
+    const newData = {key: count, ...this.props.emptyRow};
     this.setState({
       dataSource: [...dataSource, newData],
       count: count + 1,
@@ -272,4 +257,4 @@ class EditableTable extends React.Component {
   }
 }
 
-export default withRouter(EditableTable);
+export default withRouter(EditableTable)

@@ -26,7 +26,7 @@ import {
   fetchClassificationList,
   fetchPartyList,
   deleteYLR,
-  fetchProcessList,
+  fetchProcessList
 } from '../../../appRedux/actions';
 import { onDeleteContact } from '../../../appRedux/actions';
 
@@ -43,7 +43,7 @@ export const formItemLayout = {
   },
 };
 
-const YieldLoss = props => {
+const YieldLoss = (props) => {
   const [sortedInfo, setSortedInfo] = useState({
     order: 'descend',
     columnKey: 'age',
@@ -57,11 +57,11 @@ const YieldLoss = props => {
   const [filteredInfo, setFilteredInfo] = useState(null);
   const [searchValue, setSearchValue] = useState('');
   const [filteredYLRList, setFilteredYLRList] = useState(
-    props.yieldLossRatio?.YLRList?.content || [],
+    props.yieldLossRatio?.YLRList?.content || []
   );
   const [pageNo, setPageNo] = React.useState(1);
   const [totalPageItems, setTotalItems] = React.useState(0);
-  const [customerValue, setCustomerValue] = useState('');
+  const [customerValue, setCustomerValue] = useState("");
   const [pageSize, setPageSize] = useState(15);
 
   const keys = getFieldValue('keys');
@@ -101,9 +101,8 @@ const YieldLoss = props => {
 
     {
       title: 'Range',
-      dataIndex: 'lossRatioPercentageFrom',
-      render: (text, record, index) =>
-        record.lossRatioPercentageFrom + '-' + record.lossRatioPercentageTo,
+      dataIndex: "lossRatioPercentageFrom",
+      render: (text, record, index) => record.lossRatioPercentageFrom + "-" + record.lossRatioPercentageTo,
       // dataIndex: 'description',
       // key: 'description',
       // filteredValue: filteredInfo ? filteredInfo['description'] : null,
@@ -132,15 +131,15 @@ const YieldLoss = props => {
       key: 'x',
       render: (text, record, index) => (
         <span>
-          <span className="gx-link" onClick={e => onView(record, e)}>
+          <span className='gx-link' onClick={(e) => onView(record, e)}>
             View
           </span>
-          <Divider type="vertical" />
-          <span className="gx-link" onClick={e => onEdit(record, e)}>
+          <Divider type='vertical' />
+          <span className='gx-link' onClick={(e) => onEdit(record, e)}>
             Edit
           </span>
-          <Divider type="vertical" />
-          <span className="gx-link" onClick={e => onDelete(record, e)}>
+          <Divider type='vertical' />
+          <span className='gx-link' onClick={(e) => onDelete(record, e)}>
             Delete
           </span>
         </span>
@@ -157,9 +156,9 @@ const YieldLoss = props => {
   const onDelete = (record, key, e) => {
     props.deleteYLR({
       ids: record.ylrId,
-      ipAddress: '1.1.1.1',
-      requestId: 'YLR_MASTER_DELETE',
-      userId: '',
+        ipAddress: '1.1.1.1',
+        requestId: "YLR_MASTER_DELETE",
+        userId: ''
     });
   };
   const onEdit = (record, e) => {
@@ -169,8 +168,8 @@ const YieldLoss = props => {
       pageNo: 1,
       pageSize: 15,
       ipAddress: '',
-      requestId: 'YLR_MASTER_GET_BY_ID',
-      userId: '',
+      requestId: "YLR_MASTER_GET_BY_ID",
+      userId: ''
     });
     setEditYLR(true);
     setTimeout(() => {
@@ -181,13 +180,13 @@ const YieldLoss = props => {
   useEffect(() => {
     setTimeout(() => {
       props.fetchYLRList({
-        pageNo: '1',
-        pageSize: '25',
-        partyId: '',
-        ipAddress: '',
-        requestId: 'YLR_MASTER_GET',
-        userId: '',
-      });
+        pageNo: "1",
+        pageSize: "25",
+        partyId: "",
+        ipAddress: "",
+        requestId: "YLR_MASTER_GET",
+        userId: ""
+    });
       props.fetchMaterialList();
       props.fetchPartyList();
       props.fetchClassificationList();
@@ -242,7 +241,7 @@ const YieldLoss = props => {
     console.log('dfd');
   };
 
-  const addNewKey = idx => {
+  const addNewKey = (idx) => {
     const { form } = props;
     const keys = form.getFieldValue('keys');
     const nextKeys = keys.concat(idx + 1);
@@ -251,7 +250,7 @@ const YieldLoss = props => {
     });
   };
 
-  const removeKey = k => {
+  const removeKey = (k) => {
     const { form } = props;
     // can use data-binding to get
     const keys = form.getFieldValue('keys');
@@ -265,13 +264,13 @@ const YieldLoss = props => {
     });
   };
 
-  const handleSelectChange = e => {
+  const handleSelectChange = (e) => {
     console.log(e);
   };
 
   const [selectedParty, setSelectedParty] = useState('');
   const [selectedProcessId, setSelectedProcessId] = useState('');
-  const handleProcessChange = e => {
+  const handleProcessChange = (e) => {
     if (e?.target?.name === 'partyName') {
       setSelectedParty(e.target.value);
     } else {
@@ -279,24 +278,24 @@ const YieldLoss = props => {
       setSelectedProcessId(e);
     }
   };
-  const handlePartyChange = e => {
+  const handlePartyChange = (e) => {
     setSelectedParty(e);
   };
 
-  const handleCustomerChange = partyId => {
+  const handleCustomerChange = (partyId) => {
     if (partyId) {
       // setCustomerValue(partyId);
       setPageNo(1);
       props.fetchYLRList({
-        pageNo: '1',
-        pageSize: '25',
+        pageNo: "1",
+        pageSize: "25",
         partyId: partyId,
-        ipAddress: '',
-        requestId: 'YLR_MASTER_GET',
-        userId: '',
-      });
+        ipAddress: "",
+        requestId: "YLR_MASTER_GET",
+        userId: ""
+    });
     } else {
-      setCustomerValue('');
+      setCustomerValue("");
       setFilteredYLRList(filteredYLRList);
     }
   };
@@ -304,12 +303,12 @@ const YieldLoss = props => {
   return (
     <div>
       <h1>
-        <IntlMessages id="sidebar.company.yieldLossList" />
+        <IntlMessages id='sidebar.company.yieldLossList' />
       </h1>
       <Card>
-        <div className="gx-flex-row gx-flex-1">
-          <div className="table-operations gx-col">
-            <Select
+        <div className='gx-flex-row gx-flex-1'>
+          <div className='table-operations gx-col'>
+          <Select
               id="select"
               showSearch
               style={{ width: 250, paddingTop: '-50px' }}
@@ -322,22 +321,21 @@ const YieldLoss = props => {
                   .toLowerCase()
                   .indexOf(input.toLowerCase()) >= 0
               }
-            >
-              {props.party?.partyList?.map(party => (
+              >
+              {props.party?.partyList?.map((party) => (
                 <Option key={party.nPartyId} value={party.nPartyId}>
                   {party.partyName}
                 </Option>
               ))}
-            </Select>
-            &emsp;
+            </Select>&emsp;
             <Button onClick={exportSelectedData}>Export</Button>
             <Button onClick={clearFilters}>Clear All filters</Button>
           </div>
-          <div className="gx-flex-row gx-w-50">
+          <div className='gx-flex-row gx-w-50'>
             <Button
-              type="primary"
-              icon={() => <i className="icon icon-add" />}
-              size="default"
+              type='primary'
+              icon={() => <i className='icon icon-add' />}
+              size='default'
               onClick={() => {
                 props.form.resetFields();
                 props.resetYLR();
@@ -354,10 +352,10 @@ const YieldLoss = props => {
             /> */}
           </div>
         </div>
-
+        
         <Table
           rowSelection={[]}
-          className="gx-table-responsive"
+          className='gx-table-responsive'
           columns={columns}
           dataSource={filteredYLRList}
           onChange={handleChange}
@@ -373,7 +371,7 @@ const YieldLoss = props => {
         />
 
         <Modal
-          title="Yield Loss Ratio Details"
+          title='Yield Loss Ratio Details'
           visible={viewYLR}
           onCancel={() => setViewYLR(false)}
           onOk={() => setViewYLR(false)}
@@ -383,23 +381,11 @@ const YieldLoss = props => {
             <Row>
               <Col span={24}>
                 <Card>
-                  <p>
-                    <strong>Party Name :</strong> {viewYLRData?.partyName}
-                  </p>
-                  <p>
-                    <strong>Process Name :</strong> {viewYLRData?.processName}
-                  </p>
-                  <p>
-                    <strong>Loss Ratio from :</strong>{' '}
-                    {viewYLRData?.lossRatioPercentageFrom}
-                  </p>
-                  <p>
-                    <strong>Loss Ratio to :</strong>{' '}
-                    {viewYLRData?.lossRatioPercentageTo}
-                  </p>
-                  <p>
-                    <strong>Comment :</strong> {viewYLRData?.comments}
-                  </p>
+                <p><strong>Party Name :</strong> {viewYLRData?.partyName}</p>
+                <p><strong>Process Name :</strong> {viewYLRData?.processName}</p>
+                <p><strong>Loss Ratio from :</strong> {viewYLRData?.lossRatioPercentageFrom}</p>
+                <p><strong>Loss Ratio to :</strong> {viewYLRData?.lossRatioPercentageTo}</p>
+                <p><strong>Comment :</strong> {viewYLRData?.comments}</p>
                 </Card>
               </Col>
             </Row>
@@ -409,16 +395,13 @@ const YieldLoss = props => {
         <Modal
           title={editYLR ? 'Edit yield loss ratio' : 'Add yield loss ratio'}
           visible={showAddYLR}
-          onOk={e => {
+          onOk={(e) => {
             e.preventDefault();
             if (editYLR) {
               props.form.validateFields((err, values) => {
                 if (!err) {
                   console.log('Received values of form: ', values);
-                  const data = {
-                    values,
-                    ylrId: props.yieldLossRatio?.YLR?.ylrId,
-                  };
+                  const data = { values, ylrId: props.yieldLossRatio?.YLR?.ylrId };
                   props.updateYLR(data);
                   props.form.resetFields();
                   setEditYLR(false);
@@ -445,17 +428,17 @@ const YieldLoss = props => {
             setEditYLR(false);
           }}
         >
-          <Card className="gx-card">
+          <Card className='gx-card'>
             <Row>
               <Col
                 lg={24}
                 md={24}
                 sm={24}
                 xs={24}
-                className="gx-align-self-center"
+                className='gx-align-self-center'
               >
-                <Form {...formItemLayout} className="gx-pt-4">
-                  <Form.Item label="Party Name">
+                <Form {...formItemLayout} className='gx-pt-4'>
+                  <Form.Item label='Party Name'>
                     {getFieldDecorator('partyIdList', {
                       rules: [
                         {
@@ -465,10 +448,10 @@ const YieldLoss = props => {
                       ],
                     })(
                       <Select
-                        id="partyId"
+                        id='partyId'
                         showSearch
-                        mode="multiple"
-                        placeholder="Select customer"
+                        mode='multiple'
+                        placeholder='Select customer'
                         style={{ width: '100%' }}
                         filterOption={(input, option) => {
                           return option?.props?.children
@@ -479,20 +462,20 @@ const YieldLoss = props => {
                           optionA?.props?.children
                             .toLowerCase()
                             .localeCompare(
-                              optionB?.props?.children.toLowerCase(),
+                              optionB?.props?.children.toLowerCase()
                             )
                         }
                       >
-                        {props.party?.partyList?.map(party => (
+                        {props.party?.partyList?.map((party) => (
                           <Option key={party.nPartyId} value={party.nPartyId}>
                             {party.partyName}
                           </Option>
                         ))}
-                      </Select>,
+                      </Select>
                     )}
                   </Form.Item>
 
-                  <Form.Item label="Process Tags">
+                  <Form.Item label='Process Tags'>
                     {getFieldDecorator('tags', {
                       rules: [
                         { required: true, message: 'Please enter Tags!' },
@@ -503,67 +486,45 @@ const YieldLoss = props => {
                         style={{ width: 300 }}
                         placeholder="Select a Process"
                       >
-                        {props.process?.processList?.map(process => (
-                          <Option
-                            key={process.processId}
-                            value={process.processId}
-                          >
+                        {props.process?.processList?.map((process) => (
+                          <Option key={process.processId} value={process.processId}>
                             {process.processName}
                           </Option>
                         ))}
-                      </Select>,
+                      </Select>
                     )}
                   </Form.Item>
 
                   {keys.map((k, index) => {
                     return (
                       <div key={k}>
-                        <Form.Item label="Range from">
-                          {getFieldDecorator(
-                            `lossRatioPercentageFrom[${index}]`,
-                            {
-                              initialValue:
-                                props.yieldLossRatio.YLR
-                                  ?.lossRatioPercentageFrom,
-                              rules: [
-                                {
-                                  required: true,
-                                  message: 'Please enter range!',
-                                },
-                              ],
-                            },
-                          )(
-                            <Input
-                              id={`lossRatioPercentageFrom${index}`}
-                              {...getFieldProps}
-                            />,
+                        <Form.Item label='Range from'>
+                          {getFieldDecorator(`lossRatioPercentageFrom[${index}]`, {
+                            initialValue: props.yieldLossRatio.YLR?.lossRatioPercentageFrom,
+                            rules: [
+                              {
+                                required: true,
+                                message: 'Please enter range!',
+                              },
+                            ],
+                          })(<Input id={`lossRatioPercentageFrom${index}`} {...getFieldProps} />)}
+                        </Form.Item>
+                        <Form.Item label='Range to'>
+                          {getFieldDecorator(`lossRatioPercentageTo[${index}]`, {
+                            initialValue:props.yieldLossRatio.YLR?.lossRatioPercentageTo || '',
+                            rules: [
+                              {
+                                required: true,
+                                message: 'Please enter range!',
+                              },
+                            ],
+                          })(
+                            <Input id={`lossRatioPercentageTo${index}`} {...getFieldProps} />
                           )}
                         </Form.Item>
-                        <Form.Item label="Range to">
-                          {getFieldDecorator(
-                            `lossRatioPercentageTo[${index}]`,
-                            {
-                              initialValue:
-                                props.yieldLossRatio.YLR
-                                  ?.lossRatioPercentageTo || '',
-                              rules: [
-                                {
-                                  required: true,
-                                  message: 'Please enter range!',
-                                },
-                              ],
-                            },
-                          )(
-                            <Input
-                              id={`lossRatioPercentageTo${index}`}
-                              {...getFieldProps}
-                            />,
-                          )}
-                        </Form.Item>
-                        <Form.Item label="Comment">
+                        <Form.Item label='Comment'>
                           {getFieldDecorator(`comments[${index}]`, {
-                            initialValue:
-                              props.yieldLossRatio.YLR?.comments || '',
+                            initialValue: props.yieldLossRatio.YLR?.comments || '',
                             rules: [
                               {
                                 required: true,
@@ -571,22 +532,19 @@ const YieldLoss = props => {
                               },
                             ],
                           })(
-                            <Input
-                              id={`comments${index}`}
-                              {...getFieldProps}
-                            />,
+                            <Input id={`comments${index}`} {...getFieldProps} />
                           )}
                         </Form.Item>
                         <div style={{ marginLeft: '200px' }}>
                           {keys.length - 1 > 0 && (
                             <i
-                              className="icon icon-trash gx-margin"
+                              className='icon icon-trash gx-margin'
                               onClick={() => removeKey(index)}
                             />
                           )}
                           {index === keys.length - 1 && (
                             <i
-                              className="icon icon-add-circle gx-margin"
+                              className='icon icon-add-circle gx-margin'
                               onClick={() => addNewKey(index)}
                             />
                           )}
@@ -604,22 +562,22 @@ const YieldLoss = props => {
   );
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   yieldLossRatio: state.yieldLossRatio,
   material: state.material,
   party: state.party,
   packetClassification: state.packetClassification,
-  process: state.process,
+  process: state.process
 });
 
 const addYieldLossForm = Form.create({
   mapPropsToFields(props) {
     return {
-      partyIdList: Form.createFormField({
+      partyIdList:Form.createFormField ({
         ...props.yieldLossRatio?.YLR?.partyId,
         value: props.yieldLossRatio.YLR.partyId || [],
-      }),
-      tags: Form.createFormField({
+       }),
+       tags: Form.createFormField({
         ...props.yieldLossRatio?.YLR?.processId,
         value: props.yieldLossRatio?.YLR?.processId || [],
       }),
@@ -649,5 +607,5 @@ export default connect(mapStateToProps, {
   fetchClassificationList,
   fetchPartyList,
   deleteYLR,
-  fetchProcessList,
+  fetchProcessList
 })(addYieldLossForm);

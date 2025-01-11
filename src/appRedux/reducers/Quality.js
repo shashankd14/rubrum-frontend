@@ -46,6 +46,9 @@ import {
   GET_QUALITY_REPORT_BY_ID_REQUEST,
   GET_QUALITY_REPORT_BY_ID_SUCCESS,
   GET_QUALITY_REPORT_BY_ID_ERROR,
+  UPDATE_QUALITY_REPORT_REQUEST,
+  UPDATE_QUALITY_REPORT_SUCCESS,
+  UPDATE_QUALITY_REPORT_ERROR,
   DELETE_QUALITY_REPORT_REQUEST,
   DELETE_QUALITY_REPORT_SUCCESS,
   DELETE_QUALITY_REPORT_ERROR,
@@ -81,25 +84,25 @@ import {
   DELETE_KQP_LINK_ERROR,
   UPDATE_TEMPLATE_PROCESSING_FORM_DATA,
   UPDATE_QR_PROCESSING_FORM_DATA,
-} from 'constants/ActionTypes';
-import * as actionTypes from '../../constants/ActionTypes';
+} from "constants/ActionTypes";
+import * as actionTypes from "../../constants/ActionTypes";
 
 const INIT_STATE = {
   templateName: '',
-  operation: '',
-  thicknessList: [],
-  widthList: [],
-  lengthList: [],
-  packetDetails: [],
+  operation: "",
+  thicknessList:[],
+  widthList:[],
+  lengthList:[],
+  packetDetails:[],
   formFields: {
     inward: [],
     preProcessing: [],
     processing: {
       slitFields: [],
-      cutFields: [],
+      cutFields: []
     },
     preDispatch: [],
-    postDispatch: [],
+    postDispatch: []
   },
   loading: false,
   data: [],
@@ -108,239 +111,239 @@ const INIT_STATE = {
   error: false,
   pdfLoadingInward: false,
   pdfSuccessInward: false,
-  pdfErrorInward: false,
+  pdfErrorInward: false
 };
+
 
 export default (state = INIT_STATE, action) => {
   switch (action.type) {
     case TEMPLATE_NAME: {
       return {
         ...state,
-        templateName: action.name,
-      };
+        templateName: action.name
+      }
     }
     case CREATE_FORM_FIELDS: {
       return {
         ...state,
         formFields: {
           ...state.formFields,
-          [action.formName]:
-            action.formName === 'processing'
-              ? { ...action.payload }
-              : [...action.payload],
-        },
-      };
+          [action.formName]: action.formName === 'processing' ? { ...action.payload } : [
+            ...action.payload
+          ]
+        }
+      }
     }
     case SAVE_TEMPLATE_REQUEST:
       return {
         ...state,
-        loading: true,
-      };
+        loading: true
+      }
     case SAVE_TEMPLATE_SUCCESS:
       return {
         ...state,
-        loading: false,
-      };
+        loading: false
+      }
     case SAVE_TEMPLATE_ERROR:
       return {
         ...state,
         error: true,
-        loading: false,
-      };
+        loading: false
+      }
     case SAVE_QUALITY_TEMPLATE_REQUEST:
       return {
         ...state,
-        loading: true,
-      };
+        loading: true
+      }
     case SAVE_QUALITY_TEMPLATE_SUCCESS:
       return {
         ...state,
-        loading: false,
-      };
+        loading: false
+      }
     case SAVE_QUALITY_TEMPLATE_ERROR:
       return {
         ...state,
         error: true,
-        loading: false,
-      };
+        loading: false
+      }
     case GET_QUALITY_TEMPLATE_BY_ID_REQUEST:
       return {
         ...state,
-        loading: true,
-      };
+        loading: true
+      }
     case GET_QUALITY_TEMPLATE_BY_ID_SUCCESS:
       return {
         ...state,
         loading: false,
         data: action.templateDetails,
-        operation: 'templateById',
-      };
+        operation: "templateById"
+      }
     case GET_QUALITY_TEMPLATE_BY_ID_ERROR:
       return {
         ...state,
         error: true,
-        loading: false,
-      };
+        loading: false
+      }
     case UPDATE_QUALITY_TEMPLATE_REQUEST:
       return {
         ...state,
-        loading: true,
-      };
+        loading: true
+      }
     case UPDATE_QUALITY_TEMPLATE_SUCCESS:
       return {
         ...state,
         loading: false,
         data: action.templateDetails,
-        operation: 'templateById',
-      };
+        operation: "templateById"
+      }
     case UPDATE_QUALITY_TEMPLATE_ERROR:
       return {
         ...state,
         error: true,
-        loading: false,
-      };
+        loading: false
+      }
     case DELETE_QUALITY_TEMPLATE_REQUEST:
       return {
         ...state,
-        loading: true,
-      };
+        loading: true
+      }
     case DELETE_QUALITY_TEMPLATE_SUCCESS:
       return {
         ...state,
         loading: false,
         data: action.templateDetails,
-        operation: 'templateById',
-      };
+        operation: "templateById"
+      }
     case DELETE_QUALITY_TEMPLATE_ERROR:
       return {
         ...state,
         error: true,
-        loading: false,
-      };
+        loading: false
+      }
     case FETCH_TEMPLATE_LIST:
       return {
         ...state,
         error: false,
-        loading: true,
-      };
+        loading: true
+      }
     case FETCH_TEMPLATE_LIST_SUCCESS:
       return {
         ...state,
         error: false,
         loading: false,
         data: action.templateList,
-        operation: 'templateList',
-      };
+        operation: "templateList"
+      }
     case FETCH_TEMPLATE_LIST_ERROR:
       return {
         ...state,
         error: true,
-        loading: false,
-      };
+        loading: false
+      }
     case FETCH_TEMPLATE_LINK_LIST:
       return {
         ...state,
         error: false,
         loading: true,
-        templateLinkList: null,
-      };
+        templateLinkList: null
+      }
     case FETCH_TEMPLATE_LINK_LIST_SUCCESS:
       return {
         ...state,
         error: false,
         loading: false,
         data: action.templateList,
-        operation: 'templateLinkList',
-      };
+        operation: "templateLinkList"
+      }
     case FETCH_TEMPLATE_LINK_LIST_ERROR:
       return {
         ...state,
         error: true,
-        loading: false,
-      };
-    case actionTypes.STORE_LINK_LIST_DATA:
-      return {
-        ...state,
-        linkListData: action.payload,
-      };
+        loading: false
+      }
+      case actionTypes.STORE_LINK_LIST_DATA:
+        return {
+          ...state,
+          linkListData: action.payload,
+        };
     case SAVE_QUALITY_TEMPLATE_LINK_REQUEST:
       return {
         ...state,
-        loading: true,
-      };
+        loading: true
+      }
     case SAVE_QUALITY_TEMPLATE_LINK_SUCCESS:
       return {
         ...state,
         error: false,
         loading: false,
-        operation: 'templateLinkSave',
-      };
+        operation: "templateLinkSave"
+      }
     case SAVE_QUALITY_TEMPLATE_LINK_ERROR:
       return {
         ...state,
         error: true,
         loading: false,
-      };
+      }
     case GET_QUALITY_TEMPLATE_LINK_BY_ID_REQUEST:
       return {
         ...state,
-        loading: true,
-      };
+        loading: true
+      }
     case GET_QUALITY_TEMPLATE_LINK_BY_ID_SUCCESS:
       return {
         ...state,
         loading: false,
         data: action.templateDetails,
-        operation: 'templateLinkById',
-      };
+        operation: "templateLinkById"
+      }
     case GET_QUALITY_TEMPLATE_LINK_BY_ID_ERROR:
       return {
         ...state,
         error: true,
-        loading: false,
-      };
+        loading: false
+      }
     case UPDATE_QUALITY_TEMPLATE_LINK_REQUEST:
       return {
         ...state,
-        loading: true,
-      };
+        loading: true
+      }
     case UPDATE_QUALITY_TEMPLATE_LINK_SUCCESS:
       return {
         ...state,
         loading: false,
         data: action.templateDetails,
-        operation: 'templateLinkById',
-      };
+        operation: "templateLinkById"
+      }
     case UPDATE_QUALITY_TEMPLATE_LINK_ERROR:
       return {
         ...state,
         error: true,
-        loading: false,
-      };
+        loading: false
+      }
     case DELETE_QUALITY_TEMPLATE_LINK_REQUEST:
       return {
         ...state,
-        loading: true,
-      };
+        loading: true
+      }
     case DELETE_QUALITY_TEMPLATE_LINK_SUCCESS:
       return {
         ...state,
         loading: false,
         data: action.templateDetails,
-        operation: 'templateLinkById',
-      };
+        operation: "templateLinkById"
+      }
     case DELETE_QUALITY_TEMPLATE_LINK_ERROR:
       return {
         ...state,
         error: true,
-        loading: false,
-      };
+        loading: false
+      }
     case FETCH_QUALITY_REPORT_STAGE_REQUEST:
       return {
         ...state,
         error: false,
-        loading: true,
-      };
+        loading: true
+      }
     case FETCH_QUALITY_REPORT_STAGE_SUCCESS:
       return {
         ...state,
@@ -348,384 +351,384 @@ export default (state = INIT_STATE, action) => {
         loading: false,
         data: action.templateList.content,
         totalItems: action.templateList.totalItems,
-        operation: 'fetchQualityReportStage',
-      };
+        operation: "fetchQualityReportStage"
+      }
     case FETCH_QUALITY_REPORT_STAGE_ERROR:
       return {
         ...state,
         error: true,
-        loading: false,
-      };
+        loading: false
+      }
     case FETCH_QUALITY_REPORT_REQUEST:
       return {
         ...state,
         error: false,
-        loading: true,
-      };
+        loading: true
+      }
     case FETCH_QUALITY_REPORT_SUCCESS:
       return {
         ...state,
         error: false,
         loading: false,
         data: action.templateList,
-        operation: 'fetchQualityReport',
-      };
+        operation: "fetchQualityReport"
+      }
     case FETCH_QUALITY_REPORT_ERROR:
       return {
         ...state,
         error: true,
-        loading: false,
-      };
+        loading: false
+      }
     case SAVE_QUALITY_REPORT_REQUEST:
       return {
         ...state,
-        loading: true,
-      };
+        loading: true
+      }
     case SAVE_QUALITY_REPORT_SUCCESS:
       return {
         ...state,
         error: false,
         loading: false,
-        operation: 'qualityReportSave',
-      };
+        operation: "qualityReportSave"
+      }
     case SAVE_QUALITY_REPORT_ERROR:
       return {
         ...state,
         error: true,
         loading: false,
-      };
+      }
     case GET_QUALITY_REPORT_BY_ID_REQUEST:
       return {
         ...state,
         loading: true,
-        operation: 'qualityReportById',
-      };
+        operation: "qualityReportById"
+      }
     case GET_QUALITY_REPORT_BY_ID_SUCCESS:
       return {
         ...state,
         error: false,
         loading: false,
         data: action.reportById,
-        operation: 'qualityReportById',
-      };
+        operation: "qualityReportById"
+      }
     case GET_QUALITY_REPORT_BY_ID_ERROR:
       return {
         ...state,
         error: true,
         loading: false,
-      };
+      }
 
     case FETCH_KQP_LIST:
       return {
         ...state,
         error: false,
-        loading: true,
-      };
+        loading: true
+      }
     case FETCH_KQP_LIST_SUCCESS:
       return {
         ...state,
         error: false,
         loading: false,
         data: action.templateList,
-        operation: 'kqpList',
-      };
+        operation: "kqpList"
+      }
     case FETCH_KQP_LIST_ERROR:
       return {
         ...state,
         error: true,
-        loading: false,
-      };
+        loading: false
+      }
     case SAVE_KQP_REQUEST:
       return {
         ...state,
-        loading: true,
-      };
+        loading: true
+      }
     case SAVE_KQP_SUCCESS:
       return {
         ...state,
         error: false,
         loading: false,
-        operation: 'kqpSave',
-      };
+        operation: "kqpSave"
+      }
     case SAVE_KQP_ERROR:
       return {
         ...state,
         error: true,
         loading: false,
-      };
+      }
     case GET_KQP_BY_ID_REQUEST:
       return {
         ...state,
-        loading: true,
-      };
+        loading: true
+      }
     case GET_KQP_BY_ID_SUCCESS:
       return {
         ...state,
         loading: false,
         data: action.templateDetails,
-        operation: 'kqpById',
-      };
+        operation: "kqpById"
+      }
     case GET_KQP_BY_ID_ERROR:
       return {
         ...state,
         error: true,
-        loading: false,
-      };
+        loading: false
+      }
     case UPDATE_KQP_REQUEST:
       return {
         ...state,
-        loading: true,
-      };
+        loading: true
+      }
     case UPDATE_KQP_SUCCESS:
       return {
         ...state,
         loading: false,
         data: action.templateDetails,
-        operation: 'kqpUpdateById',
-      };
+        operation: "kqpUpdateById"
+      }
     case UPDATE_KQP_ERROR:
       return {
         ...state,
         error: true,
-        loading: false,
-      };
+        loading: false
+      }
     case DELETE_KQP_REQUEST:
       return {
         ...state,
-        loading: true,
-      };
+        loading: true
+      }
     case DELETE_KQP_SUCCESS:
       return {
         ...state,
         loading: false,
         data: action.templateDetails,
-        operation: 'kqpDeleteById',
-      };
+        operation: "kqpDeleteById"
+      }
     case DELETE_KQP_ERROR:
       return {
         ...state,
         error: true,
-        loading: false,
-      };
+        loading: false
+      }
 
     case FETCH_KQP_LINK_LIST:
       return {
         ...state,
         error: false,
-        loading: true,
-      };
+        loading: true
+      }
     case FETCH_KQP_LINK_LIST_SUCCESS:
       return {
         ...state,
         error: false,
         loading: false,
         data: action.templateList,
-        operation: 'kqpLinkList',
-      };
+        operation: "kqpLinkList"
+      }
     case FETCH_KQP_LINK_LIST_ERROR:
       return {
         ...state,
         error: true,
-        loading: false,
-      };
+        loading: false
+      }
     case SAVE_KQP_LINK_REQUEST:
       return {
         ...state,
-        loading: true,
-      };
+        loading: true
+      }
     case SAVE_KQP_LINK_SUCCESS:
       return {
         ...state,
         error: false,
         loading: false,
-        operation: 'kqpLinkSave',
-      };
+        operation: "kqpLinkSave"
+      }
     case SAVE_KQP_LINK_ERROR:
       return {
         ...state,
         error: true,
         loading: false,
-      };
+      }
     case GET_KQP_LINK_BY_ID_REQUEST:
       return {
         ...state,
-        loading: true,
-      };
+        loading: true
+      }
     case GET_KQP_LINK_BY_ID_SUCCESS:
       return {
         ...state,
         loading: false,
         data: action.templateDetails,
-        operation: 'kqpLinkById',
-      };
+        operation: "kqpLinkById"
+      }
     case GET_KQP_LINK_BY_ID_ERROR:
       return {
         ...state,
         error: true,
-        loading: false,
-      };
+        loading: false
+      }
     case UPDATE_KQP_LINK_REQUEST:
       return {
         ...state,
-        loading: true,
-      };
+        loading: true
+      }
     case UPDATE_KQP_LINK_SUCCESS:
       return {
         ...state,
         loading: false,
         data: action.templateDetails,
-        operation: 'kqpUpdateLinkById',
-      };
+        operation: "kqpUpdateLinkById"
+      }
     case UPDATE_KQP_LINK_ERROR:
       return {
         ...state,
         error: true,
-        loading: false,
-      };
+        loading: false
+      }
     case DELETE_KQP_LINK_REQUEST:
       return {
         ...state,
-        loading: true,
-      };
+        loading: true
+      }
     case DELETE_KQP_LINK_SUCCESS:
       return {
         ...state,
         loading: false,
         data: action.templateDetails,
-        operation: 'kqpDeleteLinkById',
-      };
+        operation: "kqpDeleteLinkById"
+      }
     case DELETE_KQP_LINK_ERROR:
       return {
         ...state,
         error: true,
-        loading: false,
-      };
+        loading: false
+      }
     case UPDATE_TEMPLATE_PROCESSING_FORM_DATA:
       return {
         ...state,
-      };
+      }
     case UPDATE_QR_PROCESSING_FORM_DATA:
       return {
         ...state,
-      };
-    case DELETE_QUALITY_REPORT_REQUEST:
+      }
+      case DELETE_QUALITY_REPORT_REQUEST:
       return {
         ...state,
-        loading: true,
-      };
+        loading: true
+      }
     case DELETE_QUALITY_REPORT_SUCCESS:
       return {
         ...state,
         loading: false,
         data: action.templateDetails,
         //operation: "templateById"
-      };
+      }
     case DELETE_QUALITY_REPORT_ERROR:
       return {
         ...state,
         error: true,
-        loading: false,
-      };
-    //get List of thickness QM dropdown
-    case actionTypes.GET_THICKNESS_LIST_QM_REQUEST:
-      return {
-        ...state,
-        error: false,
-        loading: true,
-      };
-    case actionTypes.GET_THICKNESS_LIST_QM_SUCCESS:
-      return {
-        ...state,
-        error: false,
-        loading: false,
-        thicknessList: action.thicknessList,
-      };
-    case actionTypes.GET_THICKNESS_LIST_QM_ERROR:
-      return {
-        ...state,
-        error: true,
-        loading: false,
-      };
-    //get List of width QM dropdown
-    case actionTypes.GET_WIDTH_LIST_QM_REQUEST:
-      return {
-        ...state,
-        error: false,
-        loading: true,
-      };
-    case actionTypes.GET_WIDTH_LIST_QM_SUCCESS:
-      return {
-        ...state,
-        error: false,
-        loading: false,
-        widthList: action.widthList,
-      };
-    case actionTypes.GET_WIDTH_LIST_QM_ERROR:
-      return {
-        ...state,
-        error: true,
-        loading: false,
-      };
-    //get List of length QM dropdown
-    case actionTypes.GET_LENGTH_LIST_QM_REQUEST:
-      return {
-        ...state,
-        error: false,
-        loading: true,
-      };
-    case actionTypes.GET_LENGTH_LIST_QM_SUCCESS:
-      return {
-        ...state,
-        error: false,
-        loading: false,
-        lengthList: action.lengthList,
-      };
-    case actionTypes.GET_LENGTH_LIST_QM_ERROR:
-      return {
-        ...state,
-        error: true,
-        loading: false,
-      };
-    //Get packetDetails in quality processStage
-    case actionTypes.GET_PACKET_DETAILS_QUALITY_PROCESS_REQUEST:
-      return {
-        ...state,
-        error: false,
-        loading: true,
-      };
-    case actionTypes.GET_PACKET_DETAILS_QUALITY_PROCESS_SUCCESS:
-      return {
-        ...state,
-        error: false,
-        loading: false,
-        packetDetails: action.packetDetails,
-      };
-    case actionTypes.GET_PACKET_DETAILS_QUALITY_PROCESS_ERROR:
-      return {
-        ...state,
-        error: true,
-        loading: false,
-      };
-    //inward QM report pdf
-    case actionTypes.GENERATE_INWARD_PDF_QUALITY_MODULE_REPORT_REQUEST:
-      return {
-        ...state,
-        pdfLoadingInward: true,
-      };
-    case actionTypes.GENERATE_INWARD_PDF_QUALITY_MODULE_REPORT_SUCCESS:
-      return {
-        ...state,
-        pdfLoadingInward: false,
-        pdfSuccessInward: true,
-      };
-    case actionTypes.GENERATE_INWARD_PDF_QUALITY_MODULE_REPORT_ERROR:
-      return {
-        ...state,
-        pdfLoadingInward: false,
-        pdfSuccessInward: false,
-        pdfErrorInward: true,
-      };
+        loading: false
+      }
+      //get List of thickness QM dropdown
+      case actionTypes.GET_THICKNESS_LIST_QM_REQUEST:
+        return {
+          ...state,
+          error: false,
+          loading: true
+        }
+      case actionTypes.GET_THICKNESS_LIST_QM_SUCCESS:
+        return {
+          ...state,
+          error: false,
+          loading: false,
+          thicknessList: action.thicknessList,
+        }
+      case actionTypes.GET_THICKNESS_LIST_QM_ERROR:
+        return {
+          ...state,
+          error: true,
+          loading: false
+        }
+      //get List of width QM dropdown
+      case actionTypes.GET_WIDTH_LIST_QM_REQUEST:
+        return {
+          ...state,
+          error: false,
+          loading: true
+        }
+      case actionTypes.GET_WIDTH_LIST_QM_SUCCESS:
+        return {
+          ...state,
+          error: false,
+          loading: false,
+          widthList: action.widthList,
+        }
+      case actionTypes.GET_WIDTH_LIST_QM_ERROR:
+        return {
+          ...state,
+          error: true,
+          loading: false
+        }
+      //get List of length QM dropdown
+      case actionTypes.GET_LENGTH_LIST_QM_REQUEST:
+        return {
+          ...state,
+          error: false,
+          loading: true
+        }
+      case actionTypes.GET_LENGTH_LIST_QM_SUCCESS:
+        return {
+          ...state,
+          error: false,
+          loading: false,
+          lengthList: action.lengthList,
+        }
+      case actionTypes.GET_LENGTH_LIST_QM_ERROR:
+        return {
+          ...state,
+          error: true,
+          loading: false
+        }
+      //Get packetDetails in quality processStage
+      case actionTypes.GET_PACKET_DETAILS_QUALITY_PROCESS_REQUEST:
+        return {
+          ...state,
+          error: false,
+          loading: true
+        }
+      case actionTypes.GET_PACKET_DETAILS_QUALITY_PROCESS_SUCCESS:
+        return {
+          ...state,
+          error: false,
+          loading: false,
+          packetDetails: action.packetDetails,
+        }
+      case actionTypes.GET_PACKET_DETAILS_QUALITY_PROCESS_ERROR:
+        return {
+          ...state,
+          error: true,
+          loading: false
+        }
+         //inward QM report pdf
+      case actionTypes.GENERATE_INWARD_PDF_QUALITY_MODULE_REPORT_REQUEST:
+        return{
+          ...state,
+          pdfLoadingInward: true
+        }
+      case actionTypes.GENERATE_INWARD_PDF_QUALITY_MODULE_REPORT_SUCCESS:
+        return{
+          ...state,
+          pdfLoadingInward: false,
+          pdfSuccessInward: true
+        }
+      case actionTypes.GENERATE_INWARD_PDF_QUALITY_MODULE_REPORT_ERROR:
+        return{
+          ...state,
+          pdfLoadingInward: false,
+          pdfSuccessInward: false,
+          pdfErrorInward: true
+        }
     default:
       return state;
   }
-};
+}

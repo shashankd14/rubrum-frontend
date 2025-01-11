@@ -21,108 +21,101 @@ import {
   REFRESH_TOKEN,
   REFRESH_TOKEN_SUCCESS,
   REFRESH_TOKEN_FAILURE,
-} from 'constants/ActionTypes';
-import {
-  GET_IP_ADDRESS_REQUEST,
-  GET_IP_ADDRESS_SUCCESS,
-} from '../../constants/ActionTypes';
-export const userSignUp = user => {
+} from "constants/ActionTypes"; 
+import { GET_IP_ADDRESS_REQUEST, GET_IP_ADDRESS_SUCCESS } from "../../constants/ActionTypes";
+export const userSignUp = (user) => {
   return {
     type: SIGNUP_USER,
-    payload: user,
+    payload: user
   };
 };
-export const userSignIn = user => {
+export const userSignIn = (user) => {
   return {
     type: SIGNIN_USER,
-    payload: user,
+    payload: user
   };
 };
 export const userSignOut = () => {
   return {
-    type: SIGNOUT_USER,
+    type: SIGNOUT_USER
   };
 };
-export const userSignUpSuccess = authUser => {
+export const userSignUpSuccess = (authUser) => {
   return {
     type: SIGNUP_USER_SUCCESS,
-    payload: authUser,
+    payload: authUser
   };
 };
 
-export const userSignInSuccess = (
-  authUser,
-  accessTokenExpiration,
-  lastLoginTime,
-  accessToken,
-) => {
+export const userSignInSuccess = (authUser, accessTokenExpiration, lastLoginTime, accessToken) => {
   return {
     type: SIGNIN_USER_SUCCESS,
     // payload: authUser
     payload: { authUser, accessTokenExpiration, lastLoginTime, accessToken },
-  };
+  }
 };
 export const userSignOutSuccess = () => {
   return {
     type: SIGNOUT_USER_SUCCESS,
+  }
+};
+
+export const showAuthMessage = (message) => {
+  return {
+    type: SHOW_MESSAGE,
+    payload: message
   };
 };
 
-export const showAuthMessage = message => {
-  return {
-    type: SHOW_MESSAGE,
-    payload: message,
-  };
-};
 
 export const userGoogleSignIn = () => {
   return {
-    type: SIGNIN_GOOGLE_USER,
+    type: SIGNIN_GOOGLE_USER
   };
 };
-export const userGoogleSignInSuccess = authUser => {
+export const userGoogleSignInSuccess = (authUser) => {
   return {
     type: SIGNIN_GOOGLE_USER_SUCCESS,
-    payload: authUser,
+    payload: authUser
   };
 };
 export const userFacebookSignIn = () => {
   return {
-    type: SIGNIN_FACEBOOK_USER,
+    type: SIGNIN_FACEBOOK_USER
   };
 };
-export const userFacebookSignInSuccess = authUser => {
+export const userFacebookSignInSuccess = (authUser) => {
   return {
     type: SIGNIN_FACEBOOK_USER_SUCCESS,
-    payload: authUser,
+    payload: authUser
   };
 };
-export const setInitUrl = url => {
+export const setInitUrl = (url) => {
   return {
     type: INIT_URL,
-    payload: url,
+    payload: url
   };
 };
 export const userTwitterSignIn = () => {
   return {
-    type: SIGNIN_TWITTER_USER,
+    type: SIGNIN_TWITTER_USER
   };
 };
-export const userTwitterSignInSuccess = authUser => {
+export const userTwitterSignInSuccess = (authUser) => {
   return {
     type: SIGNIN_TWITTER_USER_SUCCESS,
-    payload: authUser,
+    payload: authUser
   };
 };
 export const userGithubSignIn = () => {
   return {
-    type: SIGNIN_GITHUB_USER,
+    type: SIGNIN_GITHUB_USER
   };
 };
-export const userGithubSignInSuccess = authUser => {
+export const userGithubSignInSuccess = (authUser) => {
   return {
     type: SIGNIN_GITHUB_USER_SUCCESS,
-    payload: authUser,
+    payload: authUser
   };
 };
 export const showAuthLoader = () => {
@@ -146,7 +139,7 @@ export const refreshToken = () => ({
   type: REFRESH_TOKEN,
 });
 
-export const refreshTokenSuccess = accessToken => ({
+export const refreshTokenSuccess = (accessToken) => ({
   type: REFRESH_TOKEN_SUCCESS,
   payload: {
     accessToken,
@@ -164,7 +157,7 @@ export const signoutUser = () => ({
 export const getIPAddress = () => ({
   type: GET_IP_ADDRESS_REQUEST,
 });
-export const getIPAddressSuccess = ipAddress => ({
+export const getIPAddressSuccess = (ipAddress) => ({
   type: GET_IP_ADDRESS_SUCCESS,
-  ipAddress,
+  ipAddress
 });

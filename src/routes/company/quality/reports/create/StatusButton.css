@@ -1,33 +1,31 @@
 .cylinder-buttons {
-  display: flex;
-  justify-content: space-between;
-  width: 300px; /* Adjust the width as needed */
-}
+    display: flex;
+    justify-content: space-between;
+    width: 300px; /* Adjust the width as needed */
+  }
 
-.cylinder-button {
-  flex: 1;
-  padding: 7px 3;
-  text-align: center;
-  border: none;
-  border-radius: 50px; /* Adjust the border-radius to control the shape */
-  cursor: pointer;
-  font-weight: bold;
-  transition:
-    background-color 0.3s,
-    color 0.3s;
-}
+  .cylinder-button {
+    flex: 1;
+    padding: 7px 3;
+    text-align: center;
+    border: none;
+    border-radius: 50px; /* Adjust the border-radius to control the shape */
+    cursor: pointer;
+    font-weight: bold;
+     transition: background-color 0.3s, color 0.3s; 
+  }
 
-.cylinder-button.pink {
-  background-color: pink;
-  color: white;
-}
+  .cylinder-button.pink {
+    background-color: pink;
+    color: white;
+  }
 
-.cylinder-button.grey {
-  background-color: grey;
-  color: white;
-}
+  .cylinder-button.grey {
+    background-color: grey;
+    color: white;
+  }
 
-.cylinder-button:hover {
-  background-color: #f0f0f0; /* Change the hover background color */
-  color: black; /* Change the hover text color */
-}
+  .cylinder-button:hover {
+    background-color: #f0f0f0; /* Change the hover background color */
+    color: black; /* Change the hover text color */
+  } 
