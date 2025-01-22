@@ -253,7 +253,7 @@ const CreateCuttingDetailsForm = (props) => {
               })}
             </Select>
 
-            {record.process.processId === 3 &&
+            {record?.process?.processId === 3 &&
               < Button className="icon icon-edit" onClick= {() => onUpdateClassificationWIP(index, record)
             } ><i className="icon icon-edit gx-mr-1"/></Button>}
             
