@@ -1,8 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { connect, useDispatch, useSelector } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 import { Popover,Input, Card, message, Select, Row, Col } from "antd";
 import { InfoCircleOutlined, CloseSquareTwoTone } from "@ant-design/icons";
-import { fetchPackingListByParty, getPacketwisePriceDCFullHandling, fetchPackingBucketList, getLaminationChargesByPartyId, getPacketwisePriceDC, postDeliveryConfirm, generateDCPdf,resetInstruction,saveUnprocessedDelivery } from "../../../appRedux/actions";
+import {
+  fetchPackingListByParty,
+  getPacketwisePriceDCFullHandling,
+  getLaminationChargesByPartyId,
+  getPacketwisePriceDC,
+  postDeliveryConfirm,
+  generateDCPdf,
+  resetInstruction,
+  saveUnprocessedDelivery,
+} from "../../../appRedux/actions";
 import moment from "moment";
 import { Button, Table, Modal } from "antd";
 
@@ -26,15 +35,14 @@ const DeliveryInfo = (props) => {
     }
   },[props.packetwisePriceDC.validationStatus])
 
-  console.log('props: ', props);
   const dispatch = useDispatch();
   
-  const handlePacketPrice = (e) =>{
+  const handlePacketPrice = (e) => {
     setPriceModal(true);
     const iList= props?.inward.inwardListForDelivery.filter(item =>  (item?.inwardEntryId && item?.status?.statusName ==="RECEIVED") || (item?.instruction?.length && !item.childInstructions && !item.instructionId && item?.status?.statusName ==="READY TO DELIVER"))
 
-    if(iList?.length){
-      const payload={
+    if(iList?.length) {
+      const payload= {
         inwardEntryId: iList.map(item => item.inwardEntryId),
         laminationId,
         vehicleNo,
@@ -75,7 +83,7 @@ const DeliveryInfo = (props) => {
   }
   const priceColumn = [
     {
-      title: "Insruction ID",
+      title: "Instruction ID",
       dataIndex: "instructionId",
       key: "instructionId",
     },
@@ -205,7 +213,7 @@ useEffect(()=>{
 
     const iList= props?.inward.inwardListForDelivery.filter(item =>  (item?.inwardEntryId && item?.status?.statusName ==="RECEIVED") || (item?.instruction?.length && !item.childInstructions && !item.instructionId && item?.status?.statusName ==="READY TO DELIVER"))
 
-    if(iList?.length){
+    if(iList?.length) {
       const payload={
         inwardEntryId: iList.map(item => item.inwardEntryId),
         laminationId,
@@ -217,7 +225,6 @@ useEffect(()=>{
       props.saveUnprocessedDelivery(payload)
     }
     else{
-
         const reqObj = {
           packingRateId,
           vehicleNo,
@@ -417,30 +424,8 @@ useEffect(()=>{
             />
           </div>
           <div>
-            {vehicleNo.length < 1 ?
-              < button
-                type="secondary"
-                style={{
-                  marginBottom: "10px",
-                  padding: "6px 15px",
-                  marginRight: "20px",
-                  color: "white",
-                  border: "none",
-                  cursor: "pointer"
-                }}>Confirm</button>
-              : <button
-                type="primary"
-                style={{
-                  marginBottom: "10px",
-                  padding: "6px 15px",
-                  marginRight: "20px",
-                  backgroundColor: "#26eb5d",
-                  color: "white",
-                  border: "none",
-                  cursor: "pointer"
-                // }} onClick={handleSubmit} >Confirm & Generate</button>
-              }} onClick={handlePacketPrice} >Confirm</button>
-            }
+              <Button
+                type="primary" disabled={vehicleNo.length < 1} onClick={handlePacketPrice}>Confirm</Button>
             <Modal
               title='Packet wise Rate Details'
               visible={priceModal}
@@ -463,9 +448,10 @@ useEffect(()=>{
                 <Button key="ok" type="primary" 
                 onClick={handleSubmit} 
                 disabled={!validationStatus}
+                loading={props.inward.loading || props.inward.dcpdfLoading}
                  >
                   Confirm & Generate
-                </Button>,
+                </Button>
               ]}
             >
               <Table 
