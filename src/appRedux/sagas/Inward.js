@@ -14,7 +14,6 @@ import {
     POST_DELIVERY_CONFIRM_REQUESTED,
     REQUEST_UPDATE_INSTRUCTION_DETAILS,
     REQUEST_UPDATE_INSTRUCTION_DETAILS_SUCCESS,
-
     FETCH_INWARD_INSTRUCTION_DETAILS_REQUESTED,
     FETCH_INWARD_INSTRUCTION_WIP_DETAILS_REQUESTED,
     SAVE_UNPROCESSED_FOR_DELIVERY,
@@ -35,7 +34,8 @@ import {
     GET_PACKET_WISE_PRICE_DC_REQUEST,
     GET_PACKET_WISE_PRICE_DC_FULL_HANDLING_REQUEST,
     COIL_NOT_FOUND,
-    FETCH_INWARD_LIST_WITH_OLD_API_REQUEST
+    FETCH_INWARD_LIST_WITH_OLD_API_REQUEST,
+    UPDATE_CLASSIFICATION_SLITANDCUT_BEFORE_FINISH
 } from "../../constants/ActionTypes";
 
 import {
@@ -663,7 +663,6 @@ function* postDeliveryConfirmRequest(payload) {
             taskType:payload.payload?.taskType?payload.payload?.taskType:"",
             deliveryItemDetails: packetsData
         }
-        console.log("req_obj", req_obj);
     }else{
         requestType= 'PUT';
         req_obj =payload.payload
@@ -995,6 +994,27 @@ function* getPacketwisePriceDCFullHandlingSaga(action) {
     }
 }
 
+function* updateClassificationSlitAndCutBeforeFinish(action) {
+    const requestBody = [];    
+    try {
+        const updateClassification = yield fetch(`${baseUrl}api/instruction/update/classification`, {
+            method: 'POST',
+            headers: { "Content-Type": "application/json", ...getHeaders()},
+            body: JSON.stringify(action.payload)
+        });
+        if (updateClassification.status === 200) {
+            const groupSaveListObj = yield updateClassification.json()
+           // yield put(instructionGroupsaveSuccess(groupSaveListObj));
+        } else if (updateClassification.status === 401) {
+            yield put(userSignOutSuccess());
+        } else
+            yield put(instructionGroupsaveError('error'));
+    } catch (error) {
+        yield put(instructionGroupsaveError(error));
+    }
+}
+
+
 export function* watchFetchRequests() {
     yield takeLatest(FETCH_INWARD_LIST_REQUEST, fetchInwardList);
     yield takeLatest(FETCH_INWARD_LIST_WITH_OLD_API_REQUEST, fetchInwardListWithOldAPI);
@@ -1025,6 +1045,8 @@ export function* watchFetchRequests() {
     // yield takeLatest(QR_GENERATE_INWARD, QrGenerateInward);
     yield takeLatest(GET_PACKET_WISE_PRICE_DC_REQUEST, getPacketwisePriceDCSaga);
     yield takeLatest(GET_PACKET_WISE_PRICE_DC_FULL_HANDLING_REQUEST, getPacketwisePriceDCFullHandlingSaga);
+    yield takeLatest(UPDATE_CLASSIFICATION_SLITANDCUT_BEFORE_FINISH, updateClassificationSlitAndCutBeforeFinish);   
+
 }
 
 export default function* inwardSagas() {

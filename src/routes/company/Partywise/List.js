@@ -553,6 +553,7 @@ const List = (props) => {
           </Modal>
         )}
         <Table
+          scroll={{ y: 540 }}
           className="gx-table-responsive"
           columns={columns}
           dataSource={filteredInwardList}
