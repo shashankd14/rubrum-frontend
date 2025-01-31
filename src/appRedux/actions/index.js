@@ -15,3 +15,4 @@ export * from './Quality';
 export * from './Packing';
 export * from './LabelPrint';
 export * from './YieldLossRatio';
+export * from './SalesOrder';

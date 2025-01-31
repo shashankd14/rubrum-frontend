@@ -331,6 +331,7 @@
   "sidebar.company.deliveryItems": "Delivered Items",
   "sidebar.company.billingInfo": "Billing Info",
   "sidebar.company.userAccess": "User Access",
+  "sidebar.company.salesOrder": "Sales Order",
   "sidebar.company.workinprogress": "Work in progress",
   "sidebar.company.reports": "Reports",
   "inward.list.search": "Search for coil number or party name",
@@ -359,5 +360,7 @@
   "quality.kqp.button.action.create.label": "Create KQP",
   "quality.templates.create.new": "Create New Template",
   "quality.kqp.create.new": "Create New KQP",
-  "quality.reports.create.new": "Create Quality Report"
+  "quality.reports.create.new": "Create Quality Report",
+  "salesOrder.tabs.packets.list": "Packets List",
+  "salesOrder.tabs.sales.orders": "Sales Orders"
 }

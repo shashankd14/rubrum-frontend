@@ -325,6 +325,12 @@ const SidebarContent = () => {
                     <span><IntlMessages id="sidebar.company.userAccess"/></span>
                   </Link>
                 </Menu.Item>}
+                {(menuLabelList.includes(sidebarMenuItems.salesOrder) || true) && <Menu.Item key="company/salesOrder">
+                  <Link to="/company/sales-order">
+                    <i className="icon icon-crypto"/>
+                    <span><IntlMessages id="sidebar.company.salesOrder"/></span>
+                  </Link>
+                </Menu.Item>}
               </MenuItemGroup>
             </MenuItemGroup>
           </Menu>
