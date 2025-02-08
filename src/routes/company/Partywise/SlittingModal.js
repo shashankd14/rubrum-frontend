@@ -257,7 +257,7 @@ const SlittingWidths = (props) => {
       props.form.setFieldsValue({
         length: obj.length,
       });
-      setTagsName(obj.packetClassification.tagId);
+      setTagsName(obj?.packetClassification?.tagId);
     }
   };
   // - function to apply same data for remaining equals parts
@@ -288,133 +288,136 @@ const SlittingWidths = (props) => {
   };
   // - function to add the instruction
   const addNewSize = (e) => {
-    let wValue;
-    let slitInstructionPayload =
-      props.slitInstructionList.length > 0
-        ? [...props.slitInstructionList]
-        : [];
-    props.form.validateFields((err, values) => {
-      if (!err) {
-        props.validate(false);
-        let totalWidth = 0;
-        let totalWeight = props.slitInstructionList.length
-          ? props.slitInstructionList.map((i) =>
+    if(targetWeight && availLength) {
+      let wValue;
+      let slitInstructionPayload =
+        props.slitInstructionList.length > 0
+          ? [...props.slitInstructionList]
+          : [];
+      props.form.validateFields((err, values) => {
+        if (!err) {
+          props.validate(false);
+          let totalWidth = 0;
+          let totalWeight = props.slitInstructionList.length
+            ? props.slitInstructionList.map((i) =>
               Number(i.partDetailsRequest.targetWeight)
             )
-          : 0;
-        totalWeight = totalWeight.length
-          ? totalWeight.reduce((sum, total) => sum + total)
-          : 0;
-        const widthValue = props.coilDetails.fWidth
-          ? props.coilDetails.fWidth
-          : props.plannedWidth(props.coilDetails);
-        const lengthValue = props.coilDetails.availableLength
-          ? props.coilDetails.availableLength
-          : props.plannedLength(props.coilDetails);
-        const weightValue1 =
-          props.coilDetails.fpresent >= 0
-            ? props.coilDetails.fpresent
-            : props.plannedWeight(props.coilDetails);
-        const slits = [];
-        let slitArray = [];
-        let uniqId = '';
-        // if(cutLength === 0){
-        //     setOldLength(Number(availLength));
-        // }
-        let instructionPlanDto = {
-          targetWeight: targetWeight,
-          length: availLength,
-          createdBy: '1',
-          updatedBy: '1',
-        };
-        for (let i = 0; i < values.widths.length; i++) {
-          for (let j = 0; j < values.nos[i]; j++) {
-            let slitValue = {
-              processId: 2,
-              instructionDate: moment().format('YYYY-MM-DD HH:mm:ss'),
-              plannedLength: availLength,
-              plannedWidth: values.widths[i],
-              isSlitAndCut: props.slitCut ? true : false,
-              plannedNoOfPieces: values.nos[i],
-              status: 1,
-              createdBy: '1',
-              updatedBy: '1',
-              groupId: null,
-              plannedWeight: (values.weights[i] / values.nos[i]).toFixed(2),
-              inwardId: props.coilDetails.inwardEntryId
-                ? props.coilDetails.inwardEntryId
-                : '',
-              parentInstructionId: props.coilDetails.instructionId
-                ? props.coilDetails.instructionId
-                : '',
-              isScrapWeightUsed: false,
-              deleteUniqId: unsavedDeleteId,
-              packetClassificationName: null,
-              packetClassificationId: null,
-              endUserTagId: null,
-            };
-            slits.push(slitValue);
-          }
+            : 0;
+          totalWeight = totalWeight.length
+            ? totalWeight.reduce((sum, total) => sum + total)
+            : 0;
+          const widthValue = props.coilDetails.fWidth
+            ? props.coilDetails.fWidth
+            : props.plannedWidth(props.coilDetails);
+          const lengthValue = props.coilDetails.availableLength
+            ? props.coilDetails.availableLength
+            : props.plannedLength(props.coilDetails);
+          const weightValue1 =
+            props.coilDetails.fpresent >= 0
+              ? props.coilDetails.fpresent
+              : props.plannedWeight(props.coilDetails);
+          const slits = [];
+          let slitArray = [];
+          let uniqId = '';
+          // if(cutLength === 0){
+          //     setOldLength(Number(availLength));
+          // }
+          let instructionPlanDto = {
+            targetWeight: targetWeight,
+            length: availLength,
+            createdBy: '1',
+            updatedBy: '1',
+          };
+          for (let i = 0; i < values.widths.length; i++) {
+            for (let j = 0; j < values.nos[i]; j++) {
+              let slitValue = {
+                processId: 2,
+                instructionDate: moment().format('YYYY-MM-DD HH:mm:ss'),
+                plannedLength: availLength,
+                plannedWidth: values.widths[i],
+                isSlitAndCut: props.slitCut ? true : false,
+                plannedNoOfPieces: values.nos[i],
+                status: 1,
+                createdBy: '1',
+                updatedBy: '1',
+                groupId: null,
+                plannedWeight: (values.weights[i] / values.nos[i]).toFixed(2),
+                inwardId: props.coilDetails.inwardEntryId
+                  ? props.coilDetails.inwardEntryId
+                  : '',
+                parentInstructionId: props.coilDetails.instructionId
+                  ? props.coilDetails.instructionId
+                  : '',
+                isScrapWeightUsed: false,
+                deleteUniqId: unsavedDeleteId,
+                packetClassificationName: null,
+                packetClassificationId: null,
+                endUserTagId: null,
+              };
+              slits.push(slitValue);
+            }
 
-          wValue =
-            targetWeight * ((values.widths[i] * values.nos[i]) / widthValue1);
-          totalWidth += values.widths[i] * values.nos[i];
-          totalWeight += Number(values.weights[i]);
-          instructionPlanDto.deleteUniqId = unsavedDeleteId;
-          totalWidth = Math.floor(totalWidth);
-          settwidth(totalWidth);
-        }
-        let lengthList = slits.map((item) => Number(item.plannedLength));
-        lengthList = [...new Set(lengthList)];
-        let sumLength = lengthList.reduce((sum, total) => sum + total);
-        slitArray.push(slits);
-        let instructionPayload = {
-          partDetailsRequest: instructionPlanDto,
-          instructionRequestDTOs: slits,
-        };
-        slitInstructionPayload.push(instructionPayload);
-        setUnsavedDeleteId((prev) => prev + 1);
-        let remainWeight =
-          props.coilDetails.fpresent || props.coilDetails.plannedWeight;
-        const totalWeightRound = Number(totalWeight.toFixed(0));
-        const remainWeightRound = Number(remainWeight.toFixed(0));
-        if (Number(availLength) > lengthValue) {
-          setLengthExceedConfirm(true);
-          message.error('Length greater than available length', 2);
-        } else if (totalWeightRound - remainWeightRound > remainWeightRound) {
-          message.error('Weight greater than available weight', 2);
-        } else if (totalPacketsWidth !== widthValue) {
-          message.error('Sum of slits width is not same as width of coil.', 2);
-        } else if (totalPacketsWidth > widthValue) {
-          message.error('Sum of slits width is greater than width of coil.', 2);
-          // } else if (totalWidth !== widthValue) {
-          //   message.error("Sum of slits width is not same as width of coil.", 2);
-          // } else if (totalWidth > widthValue) {
-          //   message.error("Sum of slits width is greater than width of coil.", 2);
-        } else {
-          setWeightValue(remainWeightRound - totalWeightRound);
-          setlen(lengthValue - sumLength);
-          props.setPanelList(slitArray);
-          props.setSlits(slits);
-          props.setslitpayload(slits);
-          props.setSlitInstruction(slitInstructionPayload);
-          props.setSlitInstructionList(slitInstructionPayload);
-          props.setSlitEqualInstruction(slitInstructionPayload);
-          settargetWeight(value === 1 ? targetWeight : 0);
-          setavailLength(value === 1 ? availLength : 0);
-          setEqualPartsDisplay(
-            value === 1
-              ? equalParts > slitInstructionPayload.length
-                ? equalParts - slitInstructionPayload.length
+            wValue =
+              targetWeight * ((values.widths[i] * values.nos[i]) / widthValue1);
+            totalWidth += values.widths[i] * values.nos[i];
+            totalWeight += Number(values.weights[i]);
+            instructionPlanDto.deleteUniqId = unsavedDeleteId;
+            totalWidth = Math.floor(totalWidth);
+            settwidth(totalWidth);
+          }
+          let lengthList = slits.map((item) => Number(item.plannedLength));
+          lengthList = [...new Set(lengthList)];
+          let sumLength = lengthList.reduce((sum, total) => sum + total);
+          slitArray.push(slits);
+          let instructionPayload = {
+            partDetailsRequest: instructionPlanDto,
+            instructionRequestDTOs: slits,
+          };
+          slitInstructionPayload.push(instructionPayload);
+          setUnsavedDeleteId((prev) => prev + 1);
+          let remainWeight =
+            props.coilDetails.fpresent || props.coilDetails.plannedWeight;
+          const totalWeightRound = Number(totalWeight.toFixed(0));
+          const remainWeightRound = Number(remainWeight.toFixed(0));
+          if (Number(availLength) > lengthValue) {
+            setLengthExceedConfirm(true);
+            message.error('Length greater than available length', 2);
+          } else if (totalWeightRound - remainWeightRound > remainWeightRound) {
+            message.error('Weight greater than available weight', 2);
+          } else if (totalPacketsWidth !== widthValue) {
+            message.error('Sum of slits width is not same as width of coil.', 2);
+          } else if (totalPacketsWidth > widthValue) {
+            message.error('Sum of slits width is greater than width of coil.', 2);
+            // } else if (totalWidth !== widthValue) {
+            //   message.error("Sum of slits width is not same as width of coil.", 2);
+            // } else if (totalWidth > widthValue) {
+            //   message.error("Sum of slits width is greater than width of coil.", 2);
+          } else {
+            setWeightValue(remagiinWeightRound - totalWeightRound);
+            setlen(lengthValue - sumLength);
+            setValue(0)
+            props.setPanelList(slitArray);
+            props.setSlits(slits);
+            props.setslitpayload(slits);
+            props.setSlitInstruction(slitInstructionPayload);
+            props.setSlitInstructionList(slitInstructionPayload);
+            props.setSlitEqualInstruction(slitInstructionPayload);
+            settargetWeight(value === 1 ? targetWeight : 0);
+            setavailLength(value === 1 ? availLength : 0);
+            setEqualPartsDisplay(
+              value === 1
+                ? equalParts > slitInstructionPayload.length
+                  ? equalParts - slitInstructionPayload.length
+                  : 0
                 : 0
-              : 0
-          );
-          props.form.resetFields();
+            );
+            props.form.resetFields();
+          }
+        } else {
+          props.validate(true);
         }
-      } else {
-        props.validate(true);
-      }
-    });
+      });
+    }
   };
 
   const addNewKey = () => {
@@ -572,7 +575,7 @@ const SlittingWidths = (props) => {
                   style={{ width: 200 }}
                   defaultValue={moment(new Date(), APPLICATION_DATE_FORMAT)}
                   format={APPLICATION_DATE_FORMAT}
-                  disabled={props.wip ? true : false}
+                  disabled={!!props.wip}
                 />
               )}
             </Form.Item>
@@ -712,20 +715,17 @@ const SlittingWidths = (props) => {
                         )}
                       </Form.Item>
                     </Col>
-                    <Col lg={1} md={1} sm={12} xs={24}>
-                      <div
-                      // style={{ height: "40px" }}
-                      // className="gx-flex-row gx-align-items-center"
-                      >
+                    <Col lg={1} md={1} sm={12} xs={24} style={{ display: 'flex', justifyContent: 'center', alignItems: 'anchor-center', marginBottom: '15px' }}>
                         {keys.length - 1 > 0 ? (
                           <i
+                            style={{marginRight: '0px'}}
                             className='icon icon-trash gx-margin'
                             onClick={() => removeKey(k)}
                           />
                         ) : (
                           <></>
                         )}
-                        {index == keys.length - 1 ? (
+                        {index === keys.length - 1 ? (
                           <i
                             className='icon icon-add-circle'
                             onClick={() => addNewKey()}
@@ -733,7 +733,6 @@ const SlittingWidths = (props) => {
                         ) : (
                           <></>
                         )}
-                      </div>
                     </Col>
                   </Row>
                 );
@@ -791,7 +790,7 @@ const SlittingWidths = (props) => {
                   : true
               }
             >
-              Apply to remainig {equalPartsDisplay} parts <Icon type='right' />
+              Apply to remaining {equalPartsDisplay} parts <Icon type='right' />
             </Button>
           </>
         )}
