@@ -393,7 +393,7 @@ const SlittingWidths = (props) => {
             // } else if (totalWidth > widthValue) {
             //   message.error("Sum of slits width is greater than width of coil.", 2);
           } else {
-            setWeightValue(remagiinWeightRound - totalWeightRound);
+            setWeightValue(remainWeightRound - totalWeightRound);
             setlen(lengthValue - sumLength);
             setValue(0)
             props.setPanelList(slitArray);
