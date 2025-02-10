@@ -1463,8 +1463,10 @@ const CreateSlittingDetailsForm = (props) => {
   const handleClassificationChange = (value, index, record) => {
     const tableIndex = record.tableIndex;
     const adjustedIndex = calculateAdjustedIndex(record.tableIndex, index);
-    panelList[tableIndex][adjustedIndex].packetClassificationId = value;
-    panelList[tableIndex][adjustedIndex].packetClassificationName =
+
+
+    panelList[tableIndex][index].packetClassificationId = value;
+    panelList[tableIndex][index].packetClassificationName =
       getPackatClassificationName(value);
     // Assuming packetClassification is an object within record to display option name in dropdown
     if (
