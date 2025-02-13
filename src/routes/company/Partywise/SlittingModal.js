@@ -1,43 +1,38 @@
 import {
   Button,
+  Card,
   Col,
+  Collapse,
+  DatePicker,
   Form,
   Icon,
   Input,
   message,
   Modal,
+  Radio,
   Row,
+  Select,
   Table,
   Tabs,
-  DatePicker,
-  Radio,
-  Select,
-  Collapse,
-  Card,
 } from 'antd';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import SweetAlert from 'react-bootstrap-sweetalert';
 import { connect, useDispatch } from 'react-redux';
 import moment from 'moment';
 import { APPLICATION_DATE_FORMAT } from '../../../constants';
 import {
-  setProcessDetails,
-  saveSlittingInstruction,
-  resetInstruction,
-  updateInstruction,
   deleteInstructionById,
   pdfGenerateInward,
-  resetIsDeleted,
   QrCodeGeneratePlan,
+  resetInstruction,
+  resetIsDeleted,
+  saveSlittingInstruction,
+  setProcessDetails,
+  updateInstruction,
 } from '../../../appRedux/actions/Inward';
-import {
-  fetchClassificationList,
-  fetchYLRList,
-} from '../../../appRedux/actions';
+import { fetchClassificationList, fetchYLRList } from '../../../appRedux/actions';
 import { labelPrintEditFinish } from '../../../appRedux/actions/LabelPrint';
 import IntlMessages from 'util/IntlMessages';
-import { set } from 'nprogress';
-import { values } from 'lodash';
 
 const { Panel } = Collapse;
 const Option = Select.Option;
@@ -288,136 +283,135 @@ const SlittingWidths = (props) => {
   };
   // - function to add the instruction
   const addNewSize = (e) => {
-    if(targetWeight && availLength) {
-      let wValue;
-      let slitInstructionPayload =
-        props.slitInstructionList.length > 0
-          ? [...props.slitInstructionList]
-          : [];
-      props.form.validateFields((err, values) => {
-        if (!err) {
-          props.validate(false);
-          let totalWidth = 0;
-          let totalWeight = props.slitInstructionList.length
-            ? props.slitInstructionList.map((i) =>
+    let wValue;
+    let slitInstructionPayload =
+      props.slitInstructionList.length > 0
+        ? [...props.slitInstructionList]
+        : [];
+    props.form.validateFields((err, values) => {
+      if (!err) {
+        props.validate(false);
+        let totalWidth = 0;
+        let totalWeight = props.slitInstructionList.length
+          ? props.slitInstructionList.map((i) =>
               Number(i.partDetailsRequest.targetWeight)
             )
-            : 0;
-          totalWeight = totalWeight.length
-            ? totalWeight.reduce((sum, total) => sum + total)
-            : 0;
-          const widthValue = props.coilDetails.fWidth
-            ? props.coilDetails.fWidth
-            : props.plannedWidth(props.coilDetails);
-          const lengthValue = props.coilDetails.availableLength
-            ? props.coilDetails.availableLength
-            : props.plannedLength(props.coilDetails);
-          const weightValue1 =
-            props.coilDetails.fpresent >= 0
-              ? props.coilDetails.fpresent
-              : props.plannedWeight(props.coilDetails);
-          const slits = [];
-          let slitArray = [];
-          let uniqId = '';
-          // if(cutLength === 0){
-          //     setOldLength(Number(availLength));
-          // }
-          let instructionPlanDto = {
-            targetWeight: targetWeight,
-            length: availLength,
-            createdBy: '1',
-            updatedBy: '1',
-          };
-          for (let i = 0; i < values.widths.length; i++) {
-            for (let j = 0; j < values.nos[i]; j++) {
-              let slitValue = {
-                processId: 2,
-                instructionDate: moment().format('YYYY-MM-DD HH:mm:ss'),
-                plannedLength: availLength,
-                plannedWidth: values.widths[i],
-                isSlitAndCut: props.slitCut ? true : false,
-                plannedNoOfPieces: values.nos[i],
-                status: 1,
-                createdBy: '1',
-                updatedBy: '1',
-                groupId: null,
-                plannedWeight: (values.weights[i] / values.nos[i]).toFixed(2),
-                inwardId: props.coilDetails.inwardEntryId
-                  ? props.coilDetails.inwardEntryId
-                  : '',
-                parentInstructionId: props.coilDetails.instructionId
-                  ? props.coilDetails.instructionId
-                  : '',
-                isScrapWeightUsed: false,
-                deleteUniqId: unsavedDeleteId,
-                packetClassificationName: null,
-                packetClassificationId: null,
-                endUserTagId: null,
-              };
-              slits.push(slitValue);
-            }
+          : 0;
+        totalWeight = totalWeight.length
+          ? totalWeight.reduce((sum, total) => sum + total)
+          : 0;
+        const widthValue = props.coilDetails.fWidth
+          ? props.coilDetails.fWidth
+          : props.plannedWidth(props.coilDetails);
+        const lengthValue = props.coilDetails.availableLength
+          ? props.coilDetails.availableLength
+          : props.plannedLength(props.coilDetails);
+        const weightValue1 =
+          props.coilDetails.fpresent >= 0
+            ? props.coilDetails.fpresent
+            : props.plannedWeight(props.coilDetails);
+        const slits = [];
+        let slitArray = [];
+        let uniqId = '';
+        // if(cutLength === 0){
+        //     setOldLength(Number(availLength));
+        // }
+        let instructionPlanDto = {
+          targetWeight: targetWeight,
+          length: availLength,
+          createdBy: '1',
+          updatedBy: '1',
+        };
+        let index = 1;
+        for (let i = 0; i < values.widths.length; i++) {
+          for (let j = 0; j < values.nos[i]; j++) {
+            let slitValue = {
+              processId: 2,
+              index: index++,
+              instructionDate: moment().format('YYYY-MM-DD HH:mm:ss'),
+              plannedLength: availLength,
+              plannedWidth: values.widths[i],
+              isSlitAndCut: props.slitCut ? true : false,
+              plannedNoOfPieces: values.nos[i],
+              status: 1,
+              createdBy: '1',
+              updatedBy: '1',
+              groupId: null,
+              plannedWeight: (values.weights[i] / values.nos[i]).toFixed(2),
+              inwardId: props.coilDetails.inwardEntryId
+                ? props.coilDetails.inwardEntryId
+                : '',
+              parentInstructionId: props.coilDetails.instructionId
+                ? props.coilDetails.instructionId
+                : '',
+              isScrapWeightUsed: false,
+              deleteUniqId: unsavedDeleteId,
+              packetClassificationName: null,
+              packetClassificationId: null,
+              endUserTagId: null,
+            };
+            slits.push(slitValue);
+          }
 
-            wValue =
-              targetWeight * ((values.widths[i] * values.nos[i]) / widthValue1);
-            totalWidth += values.widths[i] * values.nos[i];
-            totalWeight += Number(values.weights[i]);
-            instructionPlanDto.deleteUniqId = unsavedDeleteId;
-            totalWidth = Math.floor(totalWidth);
-            settwidth(totalWidth);
-          }
-          let lengthList = slits.map((item) => Number(item.plannedLength));
-          lengthList = [...new Set(lengthList)];
-          let sumLength = lengthList.reduce((sum, total) => sum + total);
-          slitArray.push(slits);
-          let instructionPayload = {
-            partDetailsRequest: instructionPlanDto,
-            instructionRequestDTOs: slits,
-          };
-          slitInstructionPayload.push(instructionPayload);
-          setUnsavedDeleteId((prev) => prev + 1);
-          let remainWeight =
-            props.coilDetails.fpresent || props.coilDetails.plannedWeight;
-          const totalWeightRound = Number(totalWeight.toFixed(0));
-          const remainWeightRound = Number(remainWeight.toFixed(0));
-          if (Number(availLength) > lengthValue) {
-            setLengthExceedConfirm(true);
-            message.error('Length greater than available length', 2);
-          } else if (totalWeightRound - remainWeightRound > remainWeightRound) {
-            message.error('Weight greater than available weight', 2);
-          } else if (totalPacketsWidth !== widthValue) {
-            message.error('Sum of slits width is not same as width of coil.', 2);
-          } else if (totalPacketsWidth > widthValue) {
-            message.error('Sum of slits width is greater than width of coil.', 2);
-            // } else if (totalWidth !== widthValue) {
-            //   message.error("Sum of slits width is not same as width of coil.", 2);
-            // } else if (totalWidth > widthValue) {
-            //   message.error("Sum of slits width is greater than width of coil.", 2);
-          } else {
-            setWeightValue(remainWeightRound - totalWeightRound);
-            setlen(lengthValue - sumLength);
-            setValue(0)
-            props.setPanelList(slitArray);
-            props.setSlits(slits);
-            props.setslitpayload(slits);
-            props.setSlitInstruction(slitInstructionPayload);
-            props.setSlitInstructionList(slitInstructionPayload);
-            props.setSlitEqualInstruction(slitInstructionPayload);
-            settargetWeight(value === 1 ? targetWeight : 0);
-            setavailLength(value === 1 ? availLength : 0);
-            setEqualPartsDisplay(
-              value === 1
-                ? equalParts > slitInstructionPayload.length
-                  ? equalParts - slitInstructionPayload.length
-                  : 0
-                : 0
-            );
-            props.form.resetFields();
-          }
-        } else {
-          props.validate(true);
+          wValue =
+            targetWeight * ((values.widths[i] * values.nos[i]) / widthValue1);
+          totalWidth += values.widths[i] * values.nos[i];
+          totalWeight += Number(values.weights[i]);
+          instructionPlanDto.deleteUniqId = unsavedDeleteId;
+          totalWidth = Math.floor(totalWidth);
+          settwidth(totalWidth);
         }
-      });
-    }
+        let lengthList = slits.map((item) => Number(item.plannedLength));
+        lengthList = [...new Set(lengthList)];
+        let sumLength = lengthList.reduce((sum, total) => sum + total);
+        slitArray.push(slits);
+        let instructionPayload = {
+          partDetailsRequest: instructionPlanDto,
+          instructionRequestDTOs: slits,
+        };
+        slitInstructionPayload.push(instructionPayload);
+        setUnsavedDeleteId((prev) => prev + 1);
+        let remainWeight =
+          props.coilDetails.fpresent || props.coilDetails.plannedWeight;
+        const totalWeightRound = Number(totalWeight.toFixed(0));
+        const remainWeightRound = Number(remainWeight.toFixed(0));
+        if (Number(availLength) > lengthValue) {
+          setLengthExceedConfirm(true);
+          message.error('Length greater than available length', 2);
+        } else if (totalWeightRound - remainWeightRound > remainWeightRound) {
+          message.error('Weight greater than available weight', 2);
+        } else if (totalPacketsWidth !== widthValue) {
+          message.error('Sum of slits width is not same as width of coil.', 2);
+        } else if (totalPacketsWidth > widthValue) {
+          message.error('Sum of slits width is greater than width of coil.', 2);
+          // } else if (totalWidth !== widthValue) {
+          //   message.error("Sum of slits width is not same as width of coil.", 2);
+          // } else if (totalWidth > widthValue) {
+          //   message.error("Sum of slits width is greater than width of coil.", 2);
+        } else {
+          setWeightValue(remainWeightRound - totalWeightRound);
+          setlen(lengthValue - sumLength);
+          props.setPanelList(slitArray);
+          props.setSlits(slits);
+          props.setslitpayload(slits);
+          props.setSlitInstruction(slitInstructionPayload);
+          props.setSlitInstructionList(slitInstructionPayload);
+          props.setSlitEqualInstruction(slitInstructionPayload);
+          settargetWeight(value === 1 ? targetWeight : 0);
+          setavailLength(value === 1 ? availLength : 0);
+          setEqualPartsDisplay(
+            value === 1
+              ? equalParts > slitInstructionPayload.length
+                ? equalParts - slitInstructionPayload.length
+                : 0
+              : 0
+          );
+          props.form.resetFields();
+        }
+      } else {
+        props.validate(true);
+      }
+    });
   };
 
   const addNewKey = () => {
@@ -462,9 +456,9 @@ const SlittingWidths = (props) => {
           Number(targetWeight) *
           ((Number(values.widths[i]) * Number(values.nos[i])) / widthCheck);
         wValue = Math.floor(wValue);
-        if (widthEntry === props.coilDetails.fWidth) {
-          wValue += targetWeight - (weightEntry + wValue);
-        }
+        // if (widthEntry === props.coilDetails.fWidth) {
+        //   wValue += targetWeight - (weightEntry + wValue);
+        // }
         props.form.setFieldsValue({
           [array[i]]: wValue,
         });
@@ -1003,7 +997,7 @@ const CreateSlittingDetailsForm = (props) => {
     {
       title: 'Sr. No',
       key: 'index',
-      render: (text, record, index) => (page - 1) * 10 + index + 1,
+      dataIndex: 'index',
     },
     {
       title: 'Length',
@@ -1054,7 +1048,6 @@ const CreateSlittingDetailsForm = (props) => {
         );
       },
     },
-
     {
       title: 'End User Tags',
       dataIndex: 'endUserTags.tagsName',
@@ -1361,6 +1354,8 @@ const CreateSlittingDetailsForm = (props) => {
   //calculate Coil level yield loss ratio
   const [plannedCoilLevelYLR, setPlannedCoilLevelYLR] = useState(0);
   const [actualCoilLevelYLR, setActualCoilLevelYLR] = useState(0);
+
+
   useEffect(() => {
     let response = props.coilDetails.instruction;
     const filteredInstructions = response?.filter((instruction) =>
@@ -1409,15 +1404,8 @@ const CreateSlittingDetailsForm = (props) => {
 
   const handleTagsChange = (value, index, record) => {
     const tableIndex = record.tableIndex;
-    let newIndex = 0;
 
-    if (page !== 1) {
-      newIndex = (page - 1) * 10 + index;
-    } else {
-      newIndex = index;
-    }
-
-    panelList[tableIndex][newIndex].endUserTagId = value;
+    panelList[tableIndex][record.index-1].endUserTagId = value;
     if (record?.endUserTagId === null || record?.endUserTagId !== value) {
       record.endUserTagId = value;
     }
@@ -1450,23 +1438,10 @@ const CreateSlittingDetailsForm = (props) => {
       .tagName;
   };
 
-  const calculateAdjustedIndex = (tableIndex, index) => {
-    // Get the current page and records per page from the state
-    const currentPage = page; // Assuming 'page' is the current page state variable
-    const recordsPerPage = 10;
-
-    // Calculate adjusted index based on current page and records per page
-    const adjustedIndex = (currentPage - 1) * recordsPerPage + index;
-    return adjustedIndex;
-  };
-
   const handleClassificationChange = (value, index, record) => {
     const tableIndex = record.tableIndex;
-    const adjustedIndex = calculateAdjustedIndex(record.tableIndex, index);
-
-
-    panelList[tableIndex][index].packetClassificationId = value;
-    panelList[tableIndex][index].packetClassificationName =
+    panelList[tableIndex][record.index-1].packetClassificationId = value;
+    panelList[tableIndex][record.index-1].packetClassificationName =
       getPackatClassificationName(value);
     // Assuming packetClassification is an object within record to display option name in dropdown
     if (
@@ -1543,8 +1518,10 @@ const CreateSlittingDetailsForm = (props) => {
     const newArray = [...yieldLossRatio];
     newArray[tableIndex] = TDlossRatio !== undefined ? TDlossRatio : 0;
     setYieldLossRatio(newArray);
+    setPanelList([...panelList]);
   };
-  console.log('setTotaltableDatapacketWeight', totaltableDatapacketWeight);
+  
+
   useEffect(() => {
     let processTags = [{ tagId: 0, tagName: 'Select' }];
     processTags = [...processTags, ...props?.processTags];
@@ -1725,6 +1702,7 @@ const CreateSlittingDetailsForm = (props) => {
         const updatedItem = {
           ...item,
           tableIndex: panelIndex,
+          index: rowIndex+1,
           // Add your logic to update another property based on 'tableIndex' and 'rowIndex'
           anotherProperty: `${panelIndex}-${rowIndex}`,
         };
@@ -2192,53 +2170,6 @@ const CreateSlittingDetailsForm = (props) => {
                           </>
                         )}
                       </Form.Item>
-
-                      {/* <Form.Item label='Planned yield loss ratio (%)'>
-                        {getFieldDecorator('plannedYieldLossRatio', {
-                          initialValue: props.coil.party.plannedYieldLossRatio || '',
-                          rules: [{ required: false }],
-                        })(
-                          <>
-                            <Input
-                              id='plannedYieldLossRatio'
-                              disabled={true}
-                              value={sum}
-                              name='plannedYieldLossRatio'
-                            />
-                          </>
-                        )}
-                        </Form.Item>*/}
-
-                      {/* <Form.Item label='SlitCut actual yield loss ratio  (%)'>
-                        {getFieldDecorator('actualYieldLossRatioSlitCut', {
-                          initialValue: props.coil.party.plannedYieldLossRatio || '',
-                          rules: [{ required: false }],
-                        })(
-                          <>
-                            <Input
-                              id='actualYieldLossRatioSlitCut'
-                              disabled={true}
-                              value={actualSlitCutYLR.toFixed(2)}
-                              name='actualYieldLossRatioSlitCut'
-                            />
-                          </>
-                        )}
-                      </Form.Item>
-                      <Form.Item label='Slitting actual yield loss ratio(%)'>
-                        {getFieldDecorator('actualYieldLossRatioSlit', {
-                          initialValue: props.coil.party.plannedYieldLossRatio || '',
-                          rules: [{ required: false }],
-                        })(
-                          <>
-                            <Input
-                              id='actualYieldLossRatioSlit'
-                              disabled={true}
-                              value={actualSlittingYLR.toFixed(2)}
-                              name='actualYieldLossRatioSlit'
-                            />
-                          </>
-                        )}
-                      </Form.Item>  */}
                       <Form.Item label='Actual yield loss ratio (plan level) (%)'>
                         {getFieldDecorator('actualYieldLossRatio', {
                           initialValue:
@@ -2261,10 +2192,6 @@ const CreateSlittingDetailsForm = (props) => {
               ) : (
                 <Row>
                   <Col
-                    // lg={10}
-                    // md={14}
-                    // sm={18}
-                    // xs={18}
                     lg={8}
                     md={16}
                     sm={24}

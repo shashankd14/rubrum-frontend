@@ -1065,6 +1065,7 @@ const CreateCuttingDetailsForm = (props) => {
       });
     }
   }, [props?.inward?.instructionUpdateSuccess]);
+
   useEffect(() => {
     let listItem = bundleItemList.length > 0 ? bundleItemList : [];
     if (listItem.length === 0 && Object.keys(props.inward.groupId).length > 0) {
@@ -1081,6 +1082,7 @@ const CreateCuttingDetailsForm = (props) => {
       listItem.length > 0 ? [...listItem].flat() : [...listItem]
     );
   }, [props.inward.groupId]);
+
   useEffect(() => {
     let processTags = [{ tagId: 0, tagName: "Select" }];
     processTags = [...processTags, ...props?.processTags];
