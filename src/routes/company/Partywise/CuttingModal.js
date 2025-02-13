@@ -495,6 +495,8 @@ const CreateCuttingDetailsForm = (props) => {
       title: "End User Tags",
       dataIndex: "endUserTags.tagName",
       render: (text, record, index) => {
+        const uniqueEndUserTags = [...new Map(endUserTagList.filter(item => item).map(item =>
+          [item['tagName'], item])).values()];
         return (
           <Select
             key={record.groupId}
@@ -520,7 +522,7 @@ const CreateCuttingDetailsForm = (props) => {
             // }
             onChange={(e) => handleTagsChange(record, e, "endUser")}
           >
-            {endUserTagList?.map((item) => {
+            {uniqueEndUserTags?.map((item) => {
               return <Option value={item?.tagId} key={item?.tagId}>{item?.tagName}</Option>;
             })}
           </Select>
@@ -1216,16 +1218,15 @@ const CreateCuttingDetailsForm = (props) => {
     let cutsWidth = selectedRowKeys.reduce((a, c) => c.plannedWidth);
     cutsWidth =
       selectedRowKeys.length === 1 ? cutsWidth.plannedWidth : cutsWidth;
-    setEndUserTagList(selectedRowKeys?.map((item) => item?.endUserTagsentity));
+    setEndUserTagList(selectedRowKeys?.map((item) => item?.endUserTagsentity).filter((value, index, array) => array.indexOf(value) === index));
     setTagsList(selectedRowKeys?.map((item) => item?.packetClassification));
     let cutsValue = [];
     let instructionPlanDto = {
       createdBy: "1",
-
       updatedBy: "1",
     };
     for (let i = 0; i < packetNo; i++) {
-      setEndUserTagList(selectedRowKeys?.map((item) => item?.endUserTagsentity));
+      setEndUserTagList(selectedRowKeys?.map((item) => item?.endUserTagsentity).filter((value, index, array) => array.indexOf(value) === index));
       let cutObj = {
         processId: 3,
         instructionDate: moment().format("YYYY-MM-DD HH:mm:ss"),
