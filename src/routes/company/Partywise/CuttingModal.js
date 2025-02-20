@@ -190,7 +190,7 @@ const CreateCuttingDetailsForm = (props) => {
       dataIndex: "actualNoOfPieces",
       render: (text, record, index) => (
         <Input
-        style={{width:'60px'}}    // Adjust the width value as needed
+          style={{width:'60px'}}    // Adjust the width value as needed
           disabled={props.unfinish}
           value={record.actualNoOfPieces}
           onChange={onInputChange("actualNoOfPieces", index, record)}
@@ -232,7 +232,7 @@ const CreateCuttingDetailsForm = (props) => {
       dataIndex: "packetClassification",
       render: (text, record, index) => {
         return (
-          <div> 
+          <div>
           <Select
             disabled={props.unfinish}
             dropdownMatchSelectWidth={false}
@@ -256,12 +256,12 @@ const CreateCuttingDetailsForm = (props) => {
             {record.process.processId === 3 &&
               < Button className="icon icon-edit" onClick= {() => onUpdateClassificationWIP(index, record)
             } ><i className="icon icon-edit gx-mr-1"/></Button>}
-            
+
           </div>
 
         );
 
-       
+
       },
     },
     {
@@ -310,22 +310,6 @@ const CreateCuttingDetailsForm = (props) => {
         ),
     },
   ];
-  // if (props.slitCut) {
-  //   let widthObj = {
-  //     title: "Width",
-  //     dataIndex: "plannedWidth",
-  //     key: "plannedWidth",
-  //     render: (text, record, index) => (
-  //       <Input
-  //         style={{width:'60px'}}
-  //         disabled={props.unfinish}
-  //         value={record.plannedWidth}
-  //         onChange={onInputChange("plannedWidth", index, record)}
-  //       />
-  //     ),
-  //   };
-  //   columns.splice(4, 0, widthObj);
-  // }
 
   //only cutting table column
   const desiredTags = ['WIP(CUT ENDS)', 'WIP(EDGE TRIM)', 'WIP(FG)'];
@@ -335,7 +319,7 @@ const CreateCuttingDetailsForm = (props) => {
       dataIndex: "instructionId",
       key: "instructionId",
       render: (text, record, index) => {
-        return (page - 1) * 10 + index + 1;
+        return index + 1;
       },
     },
 
@@ -1719,73 +1703,7 @@ useEffect(() => {
                     sm={24}
                     xs={24}
                   >
-                    {bundleItemList.length === 0 ? (
-                      <>
-                        <Table
-                          className="gx-table-responsive"
-                          rowSelection={handleRowSelection}
-                          columns={columnsSlit}
-                          dataSource={selectedRowKeys}
-                          pagination={{
-                            onChange(current) {
-                              setPage(current);
-                            },
-                          }}
-                        />
-                        <div style={{ padding: "20px 0px 0px 25px" }}>
-                          <label for="tLength">Target length(mm):</label>
-                          <input
-                            type="text"
-                            className="bundle-input-class"
-                            id="tLength"
-                            name="tLength"
-                            onChange={(e) => getTargetLength(e, 0)}
-                          ></input>
-                          <label for="tpweight">Total weight(kg):</label>
-                          <input
-                            type="text"
-                            className="bundle-input-class"
-                            id="tpweight"
-                            name="tpweight"
-                            value={tpweight[0]}
-                            disabled
-                          ></input>
-                        </div>
-                        <div style={{ padding: "20px 0px 0px 25px" }}>
-                          <label for="pNo">Number of Packets :</label>
-                          <input
-                            type="text"
-                            className="bundle-input-class"
-                            id="pNo"
-                            name="pNo"
-                            onChange={(e) => getNoOfCuts(e, 0)}
-                          ></input>
-                          <label for="noOfCuts">Number of Cuts :</label>
-                          <input
-                            type="text"
-                            id="noOfCuts"
-                            className="bundle-input-class"
-                            name="noOfCuts"
-                            value={cutsNo.length ? cutsNo[0]?.toFixed(0) : 0}
-                          ></input>
-                        </div>
-                        <div
-                          style={{
-                            "padding-left": "72%",
-                            "margin-top": "10px",
-                          }}
-                        >
-                          <Button
-                            type="primary"
-                            size="default"
-                            onClick={(e) => getCuts(e, 0)}
-                          >
-                            Confirm
-                          </Button>
-                        </div>
-                      </>
-                    ) : (
-                      bundleItemList.length > 0 &&
+                    {bundleItemList.length > 0 &&
                       bundleItemList.map((item, idx) => (
                         <>
                           <Table
@@ -1854,8 +1772,7 @@ useEffect(() => {
                             </Button>
                           </div>
                         </>
-                      ))
-                    )}
+                      ))}
                     <Table
                       rowSelection={handleSelection}
                       className="gx-table-responsive"
