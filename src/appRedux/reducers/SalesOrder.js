@@ -3,7 +3,7 @@ import {
   REQUEST_ALL_PACKETS_LIST_SUCCESS,
   REQUEST_SALES_ORDER_LIST,
   REQUEST_SALES_ORDER_LIST_ERROR,
-  REQUEST_SALES_ORDER_LIST_SUCCESS,
+  REQUEST_SALES_ORDER_LIST_SUCCESS, REQUEST_SAVE_SO_FOR_PACKET, REQUEST_SAVE_SO_FOR_PACKET_SUCCESS,
 } from '../../constants/ActionTypes';
 
 
@@ -19,7 +19,8 @@ export default (state = INIT_STATE, action) => {
     case REQUEST_SALES_ORDER_LIST:
       return {
         ...state,
-        loading: true
+        loading: true,
+        success: false,
       }
     case REQUEST_SALES_ORDER_LIST_SUCCESS:
       return {
@@ -51,6 +52,20 @@ export default (state = INIT_STATE, action) => {
         loading: false,
         packets: [],
         error: true,
+      }
+    case REQUEST_SAVE_SO_FOR_PACKET:
+      return {
+        ...state,
+        loading: true,
+        error: false,
+        success: false,
+      }
+    case REQUEST_SAVE_SO_FOR_PACKET_SUCCESS:
+      return {
+        ...state,
+        loading: true,
+        error: false,
+        success: true,
       }
     default:
       return state;
