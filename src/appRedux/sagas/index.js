@@ -14,6 +14,7 @@ import qualitySagas from "./Quality";
 import labelPrintSaga from './LabelPrint';
 import YLRSagas from './YieldLossRatio';
 import SalesOrderSagas from './SalesOrder';
+import ProductInfoSagas from './ProductInfo';
 
 export default function* rootSaga() {
   yield all([fork(authSagas)]);
@@ -31,4 +32,5 @@ export default function* rootSaga() {
   yield all([fork(labelPrintSaga)]);
   yield all([fork(YLRSagas)]);
   yield all([fork(SalesOrderSagas)]);
+  yield all([fork(ProductInfoSagas)]);
 }

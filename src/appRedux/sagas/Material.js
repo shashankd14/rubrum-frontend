@@ -1,26 +1,38 @@
 import {all, put, fork, takeLatest} from "redux-saga/effects";
 import { getUserToken } from './common';
-import {FETCH_MATERIAL_LIST_REQUEST, 
+import {
+    FETCH_MATERIAL_LIST_REQUEST,
     ADD_MATERIAL_REQUEST,
     FETCH_MATERIAL_LIST_ID_REQUEST,
     UPDATE_MATERIAL_REQUEST,
     FETCH_MATERIAL_GRADES,
     FETCH_WIDTHS,
     FETCH_LENGTHS,
-    FETCH_THICKNESS
+    FETCH_THICKNESS,
+    FETCH_MATERIAL_CATEGORIES,
+    FETCH_MATERIAL_SUB_CATEGORIES,
+    FETCH_MATERIAL_LEAF_CATEGORY
 } from "../../constants/ActionTypes";
-import {fetchMaterialListError, 
-    fetchMaterialListSuccess, 
-    addMaterialSuccess, 
+import {
+    fetchMaterialListError,
+    fetchMaterialListSuccess,
+    addMaterialSuccess,
     addMaterialError,
     fetchMaterialListByIdSuccess,
     fetchMaterialListByIdError,
     updateMaterialSuccess,
-    updateMaterialError
+    updateMaterialError,
+    getMaterialCategoriesSuccess,
+    getMaterialCategoriesError,
+    getMaterialSubCategoriesSuccess,
+    getMaterialSubCategoriesError,
+    getLeafCategorySuccess,
+    getLeafCategoryError
 } from "../actions";
 import { userSignOutSuccess } from "../../appRedux/actions/Auth";
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
+
 const getHeaders = () => ({
     Authorization: getUserToken()
 });
@@ -186,6 +198,78 @@ function* fetchThickness() {
     }
 }
 
+function* fetchMaterialCategories() {
+    const body = {
+        "pageNo": 1,
+        "pageSize": 15
+    };
+
+    try {
+        const fetchPartyList =  yield fetch(`${baseUrl}api/material/category/list`, {
+            method: 'POST',
+            headers: { "Content-Type": "application/json", ...getHeaders()},
+            body: JSON.stringify(body)
+        });
+        if(fetchPartyList.status === 200) {
+            const fetchPartyListResponse = yield fetchPartyList.json();
+            yield put(getMaterialCategoriesSuccess(fetchPartyListResponse));
+        } else if (fetchPartyList.status === 401) {
+            yield put(userSignOutSuccess());
+        } else
+            yield put(getMaterialCategoriesError('error'));
+    } catch (error) {
+        yield put(getMaterialCategoriesError(error));
+    }
+}
+
+function* fetchMaterialSubCategories(action) {
+    const body = {
+        "categoryId": action.categoryId,
+    };
+
+    try {
+        const fetchPartyList =  yield fetch(`${baseUrl}api/material/subcategory/list/categoryId`, {
+            method: 'POST',
+            headers: { "Content-Type": "application/json", ...getHeaders()},
+            body: JSON.stringify(body)
+        });
+        if(fetchPartyList.status === 200) {
+            const fetchPartyListResponse = yield fetchPartyList.json();
+            yield put(getMaterialSubCategoriesSuccess(fetchPartyListResponse));
+        } else if (fetchPartyList.status === 401) {
+            yield put(userSignOutSuccess());
+        } else
+            yield put(getMaterialSubCategoriesError('error'));
+    } catch (error) {
+        yield put(getMaterialCategoriesError(error));
+    }
+}
+
+function* fetchMaterialLeafCategories(action) {
+    const body = {
+        "pageNo": 1,
+        "pageSize": 15,
+        "subcategoryId": action.subCategoryId 
+    }
+
+    try {
+        const fetchPartyList =  yield fetch(`${baseUrl}api/material/leafcategory/list/subcategoryId`, {
+            method: 'POST',
+            headers: { "Content-Type": "application/json", ...getHeaders()},
+            body: JSON.stringify(body)
+        });
+        if(fetchPartyList.status === 200) {
+            const fetchPartyListResponse = yield fetchPartyList.json();
+            yield put(getLeafCategorySuccess(fetchPartyListResponse));
+        } else if (fetchPartyList.status === 401) {
+            yield put(userSignOutSuccess());
+        } else
+            yield put(getLeafCategoryError('error'));
+    } catch (error) {
+        yield put(getLeafCategoryError(error));
+    }
+}
+
 export function* watchFetchRequests() {
     yield takeLatest(FETCH_MATERIAL_LIST_REQUEST, fetchMaterialList);
     yield takeLatest(ADD_MATERIAL_REQUEST, addMaterial);
@@ -195,8 +279,9 @@ export function* watchFetchRequests() {
     yield takeLatest(FETCH_WIDTHS, fetchWidths);
     yield takeLatest(FETCH_LENGTHS, fetchLengths);
     yield takeLatest(FETCH_THICKNESS, fetchThickness);
-
-
+    yield takeLatest(FETCH_MATERIAL_CATEGORIES, fetchMaterialCategories);
+    yield takeLatest(FETCH_MATERIAL_SUB_CATEGORIES, fetchMaterialSubCategories);
+    yield takeLatest(FETCH_MATERIAL_LEAF_CATEGORY, fetchMaterialLeafCategories);
 }
 
 export default function* materialSagas() {

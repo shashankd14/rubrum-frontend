@@ -119,7 +119,7 @@ const getHeaders = () => ({
         // const fetchInwardList = yield fetch(`${baseUrl}api/inwardEntry/partywise/${page}/${pageSize}?searchText=${searchValue}&partyId=${partyId}`, {
             const fetchInwardList = yield fetch(`${baseUrl}api/inwardEntry/partywiselist`, {
             method: 'POST',
-            headers: { "Content-Type": "application/json", ...getHeaders()},
+            headers: { "Content-Type": "application/json", ...getHeaders()},    
             body: JSON.stringify(body)
         });
         if (fetchInwardList.status === 200) {

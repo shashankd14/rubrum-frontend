@@ -21,6 +21,7 @@ const CreatePartyDetailsForm = (props) => {
             setDataSource(options);
         }
     }, [props.party]);
+    
     useEffect(() => {
         if(props.party.partyList.length > 0) {
 
@@ -71,7 +72,7 @@ const CreatePartyDetailsForm = (props) => {
                                 style={{width: 200}}
                                 placeholder="enter customer name"
                                 dataSource={dataSource}
-                                onChange= {props.params !== "" ?(e) =>handleChange(e): ""}
+                                onChange= {props.params !== "" ? (e) =>handleChange(e): ""}
                                 filterOption={(inputValue, option) =>
                                     option.props.children.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
                                 }

@@ -4,7 +4,7 @@ import {connect} from "react-redux";
 import {fetchPartyList, fetchMaterialList, setInwardDetails, submitInwardEntry} from "../../../appRedux/actions";
 
 import PartyDetailsForm from "./InwardSteps/PartyDetailsForm";
-import CoilDetailsForm from "./InwardSteps/CoilDetailsForm";
+import MaterialDetailsForm from "./InwardSteps/MaterialDetailsForm";
 import InvoiceDetailsForm from "./InwardSteps/InvoiceDetailsForm";
 import QualityDetailsForm from "./InwardSteps/QualityDetailsForm";
 import InwardEntrySummary from "./InwardSteps/InwardEntrySummary";
@@ -39,8 +39,8 @@ const CreateForm = (props) => {
                 content: <PartyDetailsForm updateStep={(step) => setCurrentStep(step)} params={props.match.params && props.match.params.inwardEntryId ?props.match.params.inwardEntryId: ''}/>,
             },
             {
-                title: 'Coil',
-                content: <CoilDetailsForm updateStep={(step) => setCurrentStep(step)} params={props.match.params && props.match.params.inwardEntryId ?props.match.params.inwardEntryId: ''}/>,
+                title: 'Material',
+                content: <MaterialDetailsForm updateStep={(step) => setCurrentStep(step)} params={props.match.params && props.match.params.inwardEntryId ?props.match.params.inwardEntryId: ''}/>,
             },
             {
                 title: 'Invoice',
@@ -56,6 +56,7 @@ const CreateForm = (props) => {
         ];
         setSteps(steps);
     }, []);
+
     useEffect(()=>{
         if(props.inward.inwardEntry && (props.match.params.inwardEntryId === "" || props.match.params.inwardEntryId === undefined)){
             let inwardValue = props.inward.inwardEntry;
@@ -69,12 +70,11 @@ const CreateForm = (props) => {
         }
     },[])
     
-    
     return (
         <Card className="gx-card" title="Inward Entry">
             <Steps current={currentStep}>
                 <Step title="Customer" onClick={() => setCurrentStep(0)}/>
-                <Step title="Coil" onClick={() => setCurrentStep(1)} />
+                <Step title="Material" onClick={() => setCurrentStep(1)} />
                 <Step title="Invoice" onClick={() => setCurrentStep(2)} />
                 <Step title="Quality" onClick={() => setCurrentStep(3)} />
                 <Step title="Summary" onClick={() => setCurrentStep(4)} />
@@ -153,5 +153,4 @@ export default connect(mapStateToProps, {
     fetchMaterialList,
     setInwardDetails,
     submitInwardEntry
-    
 })(Create);
