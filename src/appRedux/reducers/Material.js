@@ -33,6 +33,10 @@ import {
     FETCH_MATERIAL_LEAF_CATEGORY,
     FETCH_MATERIAL_LEAF_CATEGORY_SUCCESS,
     FETCH_MATERIAL_LEAF_CATEGORY_ERROR,
+    SAVE_MATERIAL_DISPLAY_INFO,
+    SEARCH_MATERIAL_BY_ID_SUCCESS,
+    SEARCH_MATERIAL_BY_ID_ERROR,
+    SEARCH_MATERIAL_BY_ID
 } from "../../constants/ActionTypes";
 
 const INIT_STATE = {
@@ -280,7 +284,35 @@ export default (state = INIT_STATE, action) => {
                 error: true,
             }
         }
-
+        case SAVE_MATERIAL_DISPLAY_INFO: {
+            return {
+                ...state,
+                displayInfo: {
+                    ...state.displayInfo,
+                    [action.displayKey]: action.displayValue
+                }
+            }
+        }
+        case SEARCH_MATERIAL_BY_ID: {
+            return {
+                ...state,
+                loading: true
+            }
+        }
+        case SEARCH_MATERIAL_BY_ID_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                mmIdData: action.materailData
+            }
+        }
+        case SEARCH_MATERIAL_BY_ID_ERROR: {
+            return {
+                ...state,
+                loading: false,
+                error: true,
+            }
+        }
         default:
             return state;
     }

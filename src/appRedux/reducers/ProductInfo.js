@@ -12,14 +12,34 @@ import {
 
     FETCH_PRODUCT_FORMS,
     FETCH_PRODUCT_FORMS_SUCCESS,
-    FETCH_PRODUCT_FORMS_ERROR
-    ,
+    FETCH_PRODUCT_FORMS_ERROR,
+
+    FETCH_PRODUCT_GRADES, 
+    FETCH_PRODUCT_GRADES_SUCCESS, 
+    FETCH_PRODUCT_GRADES_ERROR,
+    
+    FETCH_PRODUCT_SUB_GRADES, 
+    FETCH_PRODUCT_SUB_GRADES_SUCCESS, 
+    FETCH_PRODUCT_SUB_GRADES_ERROR,
+   
+    FETCH_PRODUCT_SURFACE_LIST, 
+    FETCH_PRODUCT_SURFACE_LIST_SUCCESS, 
+    FETCH_PRODUCT_SURFACE_LIST_ERROR,
+   
+    FETCH_PRODUCT_COATING_LIST, 
+    FETCH_PRODUCT_COATING_LIST_SUCCESS, 
+    FETCH_PRODUCT_COATING_LIST_ERROR,
+
+    FETCH_PRODUCTS_REFINED, 
+    FETCH_PRODUCTS_REFINED_SUCCESS, 
+    FETCH_PRODUCTS_REFINED_ERROR,
 } from "../../constants/ActionTypes";
 
 const INIT_STATE = {
     brandList: [],
     loading: false,
     error: false,
+    refinedProducts: []
 };
 
 export default (state = INIT_STATE, action) => {
@@ -105,6 +125,111 @@ export default (state = INIT_STATE, action) => {
                 error: true,
             }
         }
+
+        case FETCH_PRODUCT_GRADES: {
+            return {
+                ...state,
+                loading: true
+            }
+        }
+        case FETCH_PRODUCT_GRADES_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                productGradesList: action.productGradesList
+            }
+        }
+        case FETCH_PRODUCT_GRADES_ERROR: {
+            return {
+                ...state,
+                loading: false,
+                error: true,
+            }
+        }
+        case FETCH_PRODUCT_SUB_GRADES: {
+            return {
+                ...state,
+                loading: true
+            }
+        }
+        case FETCH_PRODUCT_SUB_GRADES_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                productSubGradesList: action.productSubGradesList
+            }
+        }
+        case FETCH_PRODUCT_SUB_GRADES_ERROR: {
+            return {
+                ...state,
+                loading: false,
+                error: true,
+            }
+        }
+        
+        case FETCH_PRODUCT_SURFACE_LIST: {
+            return {
+                ...state,
+                loading: true
+            }
+        }
+        case FETCH_PRODUCT_SURFACE_LIST_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                productSurfaceList: action.productSurfaceList
+            }
+        }
+        case FETCH_PRODUCT_SURFACE_LIST_ERROR: {
+            return {
+                ...state,
+                loading: false,
+                error: true,
+            }
+        }
+
+        case FETCH_PRODUCT_COATING_LIST: {
+            return {
+                ...state,
+                loading: true
+            }
+        }
+        case FETCH_PRODUCT_COATING_LIST_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                productCoatingList: action.productCoatingList
+            }
+        }
+        case FETCH_PRODUCT_COATING_LIST_ERROR: {
+            return {
+                ...state,
+                loading: false,
+                error: true,
+            }
+        }
+
+        case FETCH_PRODUCTS_REFINED: {
+            return {
+                ...state,
+                loading: true
+            }
+        }
+        case FETCH_PRODUCTS_REFINED_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                refinedProducts: action.productsList?.content
+            }
+        }
+        case FETCH_PRODUCTS_REFINED_ERROR: {
+            return {
+                ...state,
+                loading: false,
+                error: true,
+            }
+        }
+
         default:
             return state;
     }

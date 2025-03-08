@@ -5,6 +5,11 @@ import {
   FETCH_PRODUCTS,
   FETCH_PRODUCT_FORMS,
   FETCH_PRODUCT_UOM,
+  FETCH_PRODUCT_GRADES,
+  FETCH_PRODUCT_SUB_GRADES,
+  FETCH_PRODUCT_SURFACE_LIST,
+  FETCH_PRODUCT_COATING_LIST,
+  FETCH_PRODUCTS_REFINED
 } from "../../constants/ActionTypes";
 import {
   getProductBrandsSuccess,
@@ -15,6 +20,16 @@ import {
   getProductFormError,
   getProductUOMSuccess,
   getProductUOMError,
+  getProductGradesSuccess,
+  getProductGradesError,
+  getProductSubGradesError,
+  getProductSubGradesSuccess,
+  getProductSurfaceListSuccess,
+  getProductSurfaceListError,
+  getProductCoatingListSuccess,
+  getProductCoatingListError,
+  getRefinedProductsSuccess,
+  getRefinedProductsError
 } from "../actions";
 import { userSignOutSuccess } from "../../appRedux/actions/Auth";
 
@@ -92,6 +107,7 @@ function* fetchProductForms(action) {
     yield put(getProductFormError(error));
   }
 }
+
 function* fetchProductUOM(action) {
   const body = {
     pageNo: 1,
@@ -115,11 +131,142 @@ function* fetchProductUOM(action) {
   }
 }
 
+function* fetchProductGrades(action) {
+  const body = {
+    pageNo: 1,
+    pageSize: 15,
+    productId: action.productId,
+  };
+  try {
+    const fetchPartyList = yield fetch(`${baseUrl}api/material/grade/list`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...getHeaders() },
+      body: JSON.stringify(body),
+    });
+    if (fetchPartyList.status === 200) {
+      const fetchPartyListResponse = yield fetchPartyList.json();
+      yield put(getProductGradesSuccess(fetchPartyListResponse));
+    } else if (fetchPartyList.status === 401) {
+      yield put(userSignOutSuccess());
+    } else yield put(getProductGradesError("error"));
+  } catch (error) {
+    yield put(getProductGradesError(error));
+  }
+}
+
+function* fetchProductSubGrades(action) {
+  const body = {
+    pageNo: 1,
+    pageSize: 15,
+    gradeId: action.gradeId,
+  };
+  try {
+    const fetchPartyList = yield fetch(`${baseUrl}api/material/subgrade/list/gradeId`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...getHeaders() },
+      body: JSON.stringify(body),
+    });
+    if (fetchPartyList.status === 200) {
+      const fetchPartyListResponse = yield fetchPartyList.json();
+      yield put(getProductSubGradesSuccess(fetchPartyListResponse));
+    } else if (fetchPartyList.status === 401) {
+      yield put(userSignOutSuccess());
+    } else yield put(getProductSubGradesError("error"));
+  } catch (error) {
+    yield put(getProductSubGradesError(error));
+  }
+}
+
+function* fetchProductSurfaceList(action) {
+  const body = {
+    pageNo: 1,
+    pageSize: 15,
+    productId: action.productId,
+  };
+  try {
+    const fetchPartyList = yield fetch(`${baseUrl}api/material/surface/list`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...getHeaders() },
+      body: JSON.stringify(body),
+    });
+    if (fetchPartyList.status === 200) {
+      const fetchPartyListResponse = yield fetchPartyList.json();
+      yield put(getProductSurfaceListSuccess(fetchPartyListResponse));
+    } else if (fetchPartyList.status === 401) {
+      yield put(userSignOutSuccess());
+    } else yield put(getProductSurfaceListError("error"));
+  } catch (error) {
+    yield put(getProductSurfaceListError(error));
+  }
+}
+
+function* fetchProductCoatingList(action) {
+  const body = {
+    pageNo: 1,
+    pageSize: 15,
+    productId: action.productId,
+  };
+  try {
+    const fetchPartyList = yield fetch(`${baseUrl}api/material/coating/list`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...getHeaders() },
+      body: JSON.stringify(body),
+    });
+    if (fetchPartyList.status === 200) {
+      const fetchPartyListResponse = yield fetchPartyList.json();
+      yield put(getProductCoatingListSuccess(fetchPartyListResponse));
+    } else if (fetchPartyList.status === 401) {
+      yield put(userSignOutSuccess());
+    } else yield put(getProductCoatingListError("error"));
+  } catch (error) {
+    yield put(getProductCoatingListError(error));
+  }
+}
+
+function* getRefinedProducts(action) {
+  const body = {
+    pageNo: 1,
+    pageSize: 15,
+    "categoryId": action.categoryId,
+    "subcategoryId": action.subcategoryId,
+    "leafcategoryId": action.leafcategoryId,
+    "brandId": action.brandId,
+    "producttypeId": action.productTypeId,
+    "gradeId": action.gradeId,
+    "subgradeId": action.subgradeId,
+    "formId": action.productForm,
+    "uomId": action.productUom,
+    "surfacetypeId": action.surfaceType,
+    "coatingtypeId": action.coatingTypeId,
+  };
+  try {
+    const fetchPartyList = yield fetch(`${baseUrl}api/material/list`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...getHeaders() },
+      body: JSON.stringify(body),
+    });
+    if (fetchPartyList.status === 200) {
+      const fetchPartyListResponse = yield fetchPartyList.json();
+      yield put(getRefinedProductsSuccess(fetchPartyListResponse));
+    } else if (fetchPartyList.status === 401) {
+      yield put(userSignOutSuccess());
+    } else yield put(getRefinedProductsError("error"));
+  } catch (error) {
+    yield put(getRefinedProductsError(error));
+  }
+}
+
+
 export function* watchFetchRequests() {
   yield takeLatest(FETCH_PRODUCT_BRANDS, fetchProductBrands);
   yield takeLatest(FETCH_PRODUCTS, fetchProducts);
   yield takeLatest(FETCH_PRODUCT_FORMS, fetchProductForms);
   yield takeLatest(FETCH_PRODUCT_UOM, fetchProductUOM);
+  yield takeLatest(FETCH_PRODUCT_GRADES, fetchProductGrades);
+  yield takeLatest(FETCH_PRODUCT_SUB_GRADES, fetchProductSubGrades);
+  yield takeLatest(FETCH_PRODUCT_SURFACE_LIST, fetchProductSurfaceList);
+  yield takeLatest(FETCH_PRODUCT_COATING_LIST, fetchProductCoatingList);
+  yield takeLatest(FETCH_PRODUCTS_REFINED, getRefinedProducts);
 }
 
 export default function* productInfoSagas() {

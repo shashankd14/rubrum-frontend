@@ -871,7 +871,44 @@ export default (state = INIT_STATE, action) => {
                 error: true
             }
         }
-   
+
+        case actionTypes.SET_MATERIAL_DATA: {
+            return {
+                ...state,
+                inward: {
+                    ...state.inward,
+                    categoryId: action.payload.category,
+                    subcategoryId: action.payload.subcategory,
+                    leafcategoryId: action.payload.leafcategory,
+                    brandId: action.payload.brand,
+                    productTypeId: action.payload.producttype,
+                    productUom: action.payload.uom,
+                    productForm: action.payload.form,
+                    hsn: action.payload.hsn,
+                    gradeId: action.payload.grade,
+                    subgradeId: action.payload.subgrade,
+                    surfaceType: action.payload.surfacetype,
+                    coatingTypeId: action.payload.coatingtype,
+                    thickness: action.payload.thickness,
+                    width: action.payload.width,
+                    length: action.payload.length,
+                    od: action.payload.diameter,
+                    id: action.payload.materaiId,
+                    disableSelection: true,
+                }
+            }
+        }
+
+        case actionTypes.ENABLE_MATERIAL_SELECTION: {
+            return {
+                ...state,
+                inward: {
+                    ...state.inward,
+                    disableSelection: false
+                }
+            }   
+        }
+
         default:
             return state;
     }

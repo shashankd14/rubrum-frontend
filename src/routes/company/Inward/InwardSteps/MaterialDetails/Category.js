@@ -19,10 +19,11 @@ import {
   getProductBrands,
   getProductsList,
   getProductUOM,
-  getProductForm
+  getProductForm,
+  saveMaterialInfo,
+  searchByMaterialId,
 } from "../../../../../appRedux/actions";
 
-const { Text } = Typography;
 const formItemLayout = {
   labelCol: {
     xs: { span: 24 },
@@ -33,10 +34,14 @@ const formItemLayout = {
     sm: { span: 12 },
   },
 };
+
+const { Option } = AutoComplete;
+const { Search } = Input;
+const { Text } = Typography;
+
 const CategoryForm = (props) => {
   const { getFieldDecorator } = props.form;
   const [dataSource, setDataSource] = useState([]);
-  const { Option } = AutoComplete;
 
   useEffect(() => {
     props.getMaterialCategories();
@@ -63,30 +68,50 @@ const CategoryForm = (props) => {
     // });
   };
 
-  useEffect(() => {
-    console.log(props.material?.subCategoriesList);
-  },[props.material])
-
   return (
     <>
-      <h2
-        style={{
-          width: "100%",
-          textAlign: "left",
-          borderBottom: "1px solid #000",
-          lineHeight: "0.1em",
-          margin: "10px 0 20px",
-        }}
-      >
-        <Text style={{ background: "white", padding: "0 10px", size: "20px" }}>
-          Category
-        </Text>
-      </h2>
       <Form
         {...formItemLayout}
         className="ant-material-category-form"
         onSubmit={handleSubmit}
       >
+        <Row>
+          <Col span={12}>
+            <Form.Item label="Material Id">
+              {getFieldDecorator("materialId", {
+                rules: [
+                  { required: false, message: "Please select material !" },
+                ],
+              })(
+                <Search
+                  allowClear
+                  placeholder="enter material Id"
+                  onSearch={(value) => {
+                    if(value)
+                      props.searchByMaterialId(value);
+                    else if(props.inward.disableSelection)
+                      props.enableMaterialSelection()
+                  }}
+                />
+              )}
+            </Form.Item>
+          </Col>
+        </Row>
+        <h2
+          style={{
+            width: "100%",
+            textAlign: "left",
+            borderBottom: "1px solid #000",
+            lineHeight: "0.1em",
+            margin: "10px 0 20px",
+          }}
+        >
+          <Text
+            style={{ background: "white", padding: "0 10px", size: "20px" }}
+          >
+            Category
+          </Text>
+        </h2>
         <Row>
           <Col span={12}>
             <Form.Item label="Material Category">
@@ -99,11 +124,16 @@ const CategoryForm = (props) => {
                 ],
               })(
                 <Select
+                  disabled={props.inward.disableSelection}
                   showSearch
                   placeholder="Select a category"
                   optionFilterProp="children"
-                  onChange={(categoryId) => {
+                  onChange={(categoryId, option) => {
                     props.getMaterialSubCategories(categoryId);
+                    props.saveMaterialInfo(
+                      "categoryName",
+                      option.props.children
+                    );
                   }}
                   filterOption={(input, option) =>
                     option.props.children
@@ -127,11 +157,16 @@ const CategoryForm = (props) => {
                 ],
               })(
                 <Select
+                  disabled={props.inward.disableSelection}
                   showSearch
                   placeholder="Select a sub category"
                   optionFilterProp="children"
-                  onChange={(subCategoryId) => {
+                  onChange={(subCategoryId, option) => {
                     props.getLeafCategory(subCategoryId);
+                    props.saveMaterialInfo(
+                      "subCategoryName",
+                      option.props.children
+                    );
                   }}
                   filterOption={(input, option) =>
                     option.props.children
@@ -164,11 +199,16 @@ const CategoryForm = (props) => {
                 ],
               })(
                 <Select
+                  disabled={props.inward.disableSelection}
                   showSearch
                   placeholder="Select a leaf category"
                   optionFilterProp="children"
-                  onChange={(leafCategoryId) => {
+                  onChange={(leafCategoryId, option) => {
                     props.getProductBrands(leafCategoryId);
+                    props.saveMaterialInfo(
+                      "leafCategoryName",
+                      option.props.children
+                    );
                   }}
                   filterOption={(input, option) =>
                     option.props.children
@@ -188,15 +228,6 @@ const CategoryForm = (props) => {
               )}
             </Form.Item>
           </Col>
-          <Col span={12}>
-            <Form.Item label="Material Id">
-              {getFieldDecorator("materialId", {
-                rules: [
-                  { required: false, message: "Please select material !" },
-                ],
-              })(<Input id="customerId" disabled />)}
-            </Form.Item>
-          </Col>
         </Row>
         <h2
           style={{
@@ -214,7 +245,7 @@ const CategoryForm = (props) => {
           </Text>
         </h2>
         <Row>
-        <Col span={12}>
+          <Col span={12}>
             <Form.Item label="Brand">
               {getFieldDecorator("brandId", {
                 rules: [
@@ -225,11 +256,13 @@ const CategoryForm = (props) => {
                 ],
               })(
                 <Select
+                  disabled={props.inward.disableSelection}
                   showSearch
                   placeholder="Select a brand"
                   optionFilterProp="children"
-                  onChange={(brandId) => {
+                  onChange={(brandId, option) => {
                     props.getProductsList(brandId);
+                    props.saveMaterialInfo("brandName", option.props.children);
                   }}
                   filterOption={(input, option) =>
                     option.props.children
@@ -238,10 +271,7 @@ const CategoryForm = (props) => {
                   }
                 >
                   {props.productInfo?.brandList?.map((brand) => (
-                    <Option
-                      key={brand.brandId}
-                      value={`${brand.brandId}`}
-                    >
+                    <Option key={brand.brandId} value={`${brand.brandId}`}>
                       {brand.brandName}
                     </Option>
                   ))}
@@ -260,13 +290,18 @@ const CategoryForm = (props) => {
                 ],
               })(
                 <Select
+                  disabled={props.inward.disableSelection}
                   showSearch
                   placeholder="Select a product type"
                   optionFilterProp="children"
-                  onChange={(productId) => {
+                  onChange={(productId, option) => {
                     props.getProductUOM(productId);
                     props.getProductForm(productId);
-                  }} 
+                    props.saveMaterialInfo(
+                      "productType",
+                      option.props.children
+                    );
+                  }}
                   filterOption={(input, option) =>
                     option.props.children
                       .toLowerCase()
@@ -289,16 +324,14 @@ const CategoryForm = (props) => {
         <Row>
           <Col span={12}>
             <Form.Item label="HSN">
-              {getFieldDecorator("partyName", {
+              {getFieldDecorator("hsn", {
                 rules: [
                   {
                     required: true,
                     message: "Please input the customer name!",
                   },
                 ],
-              })(
-                <input />
-              )}
+              })(<Input id="customerId" disabled />)}
             </Form.Item>
           </Col>
           <Col span={12}>
@@ -312,11 +345,13 @@ const CategoryForm = (props) => {
                 ],
               })(
                 <Select
+                  disabled={props.inward.disableSelection}
                   showSearch
                   placeholder="Select a unit of measure"
                   optionFilterProp="children"
-                  onChange={(productId) => {
-                  }} 
+                  onChange={(uom, option) => {
+                    props.saveMaterialInfo("uom", option.props.children);
+                  }}
                   filterOption={(input, option) =>
                     option.props.children
                       .toLowerCase()
@@ -324,10 +359,7 @@ const CategoryForm = (props) => {
                   }
                 >
                   {props.productInfo?.productUomList?.map((uom) => (
-                    <Option
-                      key={uom.uomId}
-                      value={`${uom.uomId}`}
-                    >
+                    <Option key={uom.uomId} value={`${uom.uomId}`}>
                       {uom.uomName}
                     </Option>
                   ))}
@@ -348,11 +380,13 @@ const CategoryForm = (props) => {
                 ],
               })(
                 <Select
+                  disabled={props.inward.disableSelection}
                   showSearch
                   placeholder="Select a product form"
                   optionFilterProp="children"
-                  onChange={(productId) => {
-                  }} 
+                  onChange={(productId, option) => {
+                    props.saveMaterialInfo("form", option.props.children);
+                  }}
                   filterOption={(input, option) =>
                     option.props.children
                       .toLowerCase()
@@ -360,10 +394,7 @@ const CategoryForm = (props) => {
                   }
                 >
                   {props.productInfo?.productsFormsList?.map((form) => (
-                    <Option
-                      key={form.formId}
-                      value={`${form.formId}`}
-                    >
+                    <Option key={form.formId} value={`${form.formId}`}>
                       {form.formName}
                     </Option>
                   ))}
@@ -430,6 +461,14 @@ const Category = Form.create({
         ...props.inward.productForm,
         value: props.inward.productForm,
       }),
+      hsn: Form.createFormField({
+        ...props.inward.hsn,
+        value: props.inward.hsn,
+      }),
+      materialId: Form.createFormField({
+        ...props.inward.materialId,
+        value: props.inward.materialId,
+      }),
     };
   },
   onValuesChange(props, values) {
@@ -445,5 +484,7 @@ export default connect(mapStateToProps, {
   getProductBrands,
   getProductsList,
   getProductUOM,
-  getProductForm
+  getProductForm,
+  saveMaterialInfo,
+  searchByMaterialId,
 })(Category);

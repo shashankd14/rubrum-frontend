@@ -32,7 +32,11 @@ import {
     FETCH_MATERIAL_SUB_CATEGORIES_ERROR,
     FETCH_MATERIAL_LEAF_CATEGORY,
     FETCH_MATERIAL_LEAF_CATEGORY_SUCCESS,
-    FETCH_MATERIAL_LEAF_CATEGORY_ERROR
+    FETCH_MATERIAL_LEAF_CATEGORY_ERROR,
+    SAVE_MATERIAL_DISPLAY_INFO,
+    SEARCH_MATERIAL_BY_ID,
+    SEARCH_MATERIAL_BY_ID_SUCCESS,
+    SEARCH_MATERIAL_BY_ID_ERROR
 } from "../../constants/ActionTypes";
 
 export const fetchMaterialList = () => ({
@@ -192,4 +196,25 @@ export const getLeafCategorySuccess = (leafCategories) => ({
 export const getLeafCategoryError = (error) => ({
     type: FETCH_MATERIAL_LEAF_CATEGORY_ERROR,
     error
+});
+
+export const searchByMaterialId = (materialId) => ({
+    type: SEARCH_MATERIAL_BY_ID,
+    materialId
+});
+
+export const searchByMaterialIdSuccess = (materailData) => ({
+    type: SEARCH_MATERIAL_BY_ID_SUCCESS,
+    materailData
+});
+
+export const searchByMaterialIdError = (error) => ({
+    type: SEARCH_MATERIAL_BY_ID_ERROR,
+    error
+});
+
+export const saveMaterialInfo = (displayKey,displayValue) => ({
+    type: SAVE_MATERIAL_DISPLAY_INFO,
+    displayKey,
+    displayValue
 });

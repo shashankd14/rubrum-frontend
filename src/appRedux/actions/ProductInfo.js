@@ -14,7 +14,26 @@ import {
     FETCH_PRODUCT_FORMS, 
     FETCH_PRODUCT_FORMS_SUCCESS, 
     FETCH_PRODUCT_FORMS_ERROR,
+
+    FETCH_PRODUCT_GRADES, 
+    FETCH_PRODUCT_GRADES_SUCCESS, 
+    FETCH_PRODUCT_GRADES_ERROR,
     
+    FETCH_PRODUCT_SUB_GRADES, 
+    FETCH_PRODUCT_SUB_GRADES_SUCCESS, 
+    FETCH_PRODUCT_SUB_GRADES_ERROR,
+
+    FETCH_PRODUCT_SURFACE_LIST,
+    FETCH_PRODUCT_SURFACE_LIST_SUCCESS,
+    FETCH_PRODUCT_SURFACE_LIST_ERROR,
+    
+    FETCH_PRODUCT_COATING_LIST,
+    FETCH_PRODUCT_COATING_LIST_SUCCESS,
+    FETCH_PRODUCT_COATING_LIST_ERROR,
+
+    FETCH_PRODUCTS_REFINED,
+    FETCH_PRODUCTS_REFINED_SUCCESS,
+    FETCH_PRODUCTS_REFINED_ERROR,
 } from "../../constants/ActionTypes";
 
 export const getProductBrands = (leafcategoryId) => ({
@@ -74,5 +93,80 @@ export const getProductUOMSuccess = (productUomList) => ({
 
 export const getProductUOMError = (error) => ({
     type: FETCH_PRODUCT_UOM_ERROR,
+    error
+});
+
+export const getProductGrades = (productId) => ({
+    type: FETCH_PRODUCT_GRADES,
+    productId
+});
+
+export const getProductGradesSuccess = (productGradesList) => ({
+    type: FETCH_PRODUCT_GRADES_SUCCESS,
+    productGradesList
+});
+
+export const getProductGradesError = (error) => ({
+    type: FETCH_PRODUCT_GRADES_ERROR,
+    error
+});
+
+export const getProductSubGrades = (gradeId) => ({
+    type: FETCH_PRODUCT_SUB_GRADES,
+    gradeId
+});
+
+export const getProductSubGradesSuccess = (productSubGradesList) => ({
+    type: FETCH_PRODUCT_SUB_GRADES_SUCCESS,
+    productSubGradesList
+});
+
+export const getProductSubGradesError = (error) => ({
+    type: FETCH_PRODUCT_SUB_GRADES_ERROR,
+    error
+});
+
+export const getProductSurfaceList = (productId) => ({
+    type: FETCH_PRODUCT_SURFACE_LIST,
+    productId
+});
+
+export const getProductSurfaceListSuccess = (productSurfaceList) => ({
+    type: FETCH_PRODUCT_SURFACE_LIST_SUCCESS,
+    productSurfaceList
+});
+
+export const getProductSurfaceListError = (error) => ({
+    type: FETCH_PRODUCT_SURFACE_LIST_ERROR,
+    error
+});
+
+export const getProductCoatingList = (productId) => ({
+    type: FETCH_PRODUCT_COATING_LIST,
+    productId
+});
+
+export const getProductCoatingListSuccess = (productCoatingList) => ({
+    type: FETCH_PRODUCT_COATING_LIST_SUCCESS,
+    productCoatingList
+});
+
+export const getProductCoatingListError = (error) => ({
+    type: FETCH_PRODUCT_COATING_LIST_ERROR,
+    error
+});
+
+export const getRefinedProducts = (allDetails) => ({
+    type: FETCH_PRODUCTS_REFINED,
+    allDetails
+});
+
+export const getRefinedProductsSuccess = (productsList) => ({
+    type: FETCH_PRODUCTS_REFINED_SUCCESS,
+    productsList
+});
+
+export const getRefinedProductsError = (error) => ({
+    type: FETCH_PRODUCTS_REFINED_ERROR,
     error
 });

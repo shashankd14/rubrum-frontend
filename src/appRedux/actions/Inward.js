@@ -566,3 +566,13 @@ export const updateClassificationSlitAndCutBeforeFinish = (payload) => ({
     type: actionTypes.UPDATE_CLASSIFICATION_SLITANDCUT_BEFORE_FINISH,
     payload
 });
+
+export const setMaterialData = (payload) => ({
+    type: actionTypes.SET_MATERIAL_DATA,
+    payload
+});
+
+export const enableMaterialSelection = () => ({
+    type: actionTypes.ENABLE_MATERIAL_SELECTION,
+});
+

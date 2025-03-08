@@ -11,7 +11,8 @@ import {
     FETCH_THICKNESS,
     FETCH_MATERIAL_CATEGORIES,
     FETCH_MATERIAL_SUB_CATEGORIES,
-    FETCH_MATERIAL_LEAF_CATEGORY
+    FETCH_MATERIAL_LEAF_CATEGORY,
+    SEARCH_MATERIAL_BY_ID
 } from "../../constants/ActionTypes";
 import {
     fetchMaterialListError,
@@ -27,7 +28,10 @@ import {
     getMaterialSubCategoriesSuccess,
     getMaterialSubCategoriesError,
     getLeafCategorySuccess,
-    getLeafCategoryError
+    getLeafCategoryError,
+    searchByMaterialIdSuccess,
+    searchByMaterialIdError,
+    setMaterialData
 } from "../actions";
 import { userSignOutSuccess } from "../../appRedux/actions/Auth";
 
@@ -270,6 +274,34 @@ function* fetchMaterialLeafCategories(action) {
     }
 }
 
+function* searchByMaterialId(action) {
+    const body = {
+        "pageNo": 1,
+        "pageSize": 15,
+        "mmid": action.materialId 
+    }
+
+    try {
+        const fetchPartyList =  yield fetch(`${baseUrl}api/material/mmid`, {
+            method: 'POST',
+            headers: { "Content-Type": "application/json", ...getHeaders()},
+            body: JSON.stringify(body)
+        });
+        if(fetchPartyList.status === 200) {
+            const fetchPartyListResponse = yield fetchPartyList.json();
+            if(fetchPartyListResponse?.totalItems > 0) {
+                yield put(setMaterialData(fetchPartyListResponse.content[0]));
+            }
+            yield put(searchByMaterialIdSuccess(fetchPartyListResponse));
+        } else if (fetchPartyList.status === 401) {
+            yield put(userSignOutSuccess());
+        } else
+            yield put(searchByMaterialIdError('error'));
+    } catch (error) {
+        yield put(searchByMaterialIdError(error));
+    }
+}
+
 export function* watchFetchRequests() {
     yield takeLatest(FETCH_MATERIAL_LIST_REQUEST, fetchMaterialList);
     yield takeLatest(ADD_MATERIAL_REQUEST, addMaterial);
@@ -282,6 +314,7 @@ export function* watchFetchRequests() {
     yield takeLatest(FETCH_MATERIAL_CATEGORIES, fetchMaterialCategories);
     yield takeLatest(FETCH_MATERIAL_SUB_CATEGORIES, fetchMaterialSubCategories);
     yield takeLatest(FETCH_MATERIAL_LEAF_CATEGORY, fetchMaterialLeafCategories);
+    yield takeLatest(SEARCH_MATERIAL_BY_ID, searchByMaterialId);
 }
 
 export default function* materialSagas() {

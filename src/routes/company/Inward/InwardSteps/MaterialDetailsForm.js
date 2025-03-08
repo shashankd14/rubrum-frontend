@@ -21,7 +21,7 @@ const MaterialDetails = (props) => {
         },
         {
             title: 'Summary',
-            content: <Summary updateStep={(step) => setCurrentStep(step)} params={props?.match?.params && props?.match?.params?.inwardEntryId ? props.match.params.inwardEntryId: ''}/>,
+            content: <Summary onNextStep={() => props.updateStep(2)} updateStep={(step) => setCurrentStep(step)} params={props?.match?.params && props?.match?.params?.inwardEntryId ? props.match.params.inwardEntryId: ''}/>,
         },
     ];
 

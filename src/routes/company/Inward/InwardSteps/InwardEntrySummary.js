@@ -12,6 +12,7 @@ const InwardEntrySummary = (props) => {
     const [generate, setGenerate]= useState(true);
     const [payload, setPayload]= useState({});
     const [showCreateModal, setShowCreateModal] = useState(false);
+
     useEffect(() => {
         if(props.inwardUpdateSuccess) {
             message.success('Inward entry has been updated successfully', 2);
@@ -28,6 +29,7 @@ const InwardEntrySummary = (props) => {
            // props.resetInwardForm();
         }
     }, [props.inwardUpdateSuccess]);
+
     useEffect(() => {
         if(props.inwardSubmitSuccess) {
             setGenerate(false)
@@ -39,6 +41,7 @@ const InwardEntrySummary = (props) => {
             });
         }
     }, [props.inwardSubmitSuccess]);
+    
     useEffect(() => {
         if(props.inwardObject.pdfSuccess) {
            
