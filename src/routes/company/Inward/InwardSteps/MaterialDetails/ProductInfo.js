@@ -21,10 +21,14 @@ const formItemLayout = {
     sm: { span: 12 },
   },
 };
+const { TextArea } = Input;
+
 const ProductInfoForm = (props) => {
     const { Option } = AutoComplete;
   const { getFieldDecorator } = props.form;
   
+  const { categoryName, subCategoryName, leafCategoryName, brandName, productType, uom, form, grade, surfaceType, subGradeName, coatingType } = props.material.displayInfo;
+
   const handleSubmit = (e) => {
     e.preventDefault();
     props.updateStep(2);
@@ -52,18 +56,11 @@ const ProductInfoForm = (props) => {
         <Row>
           <Col span={12}>
             <Form.Item label="Product Type">
-              {getFieldDecorator("productTypeId", {
-                rules: [
-                  {
-                    required: true,
-                    message: "Please input the customer name!",
-                  },
-                ],
-              })(<Input id="productTypeId" disabled />)}
+              <Input id="productTypeId" disabled value={props.material.displayInfo.productType} />
             </Form.Item>
             <Form.Item label="Grade">
               {getFieldDecorator("gradeId", {
-                rules: [{ required: true, message: "Select a product grade" }],
+                rules: [{ required: false, message: "Select a product grade" }],
               })(
                 <Select
                   showSearch
@@ -90,7 +87,7 @@ const ProductInfoForm = (props) => {
             </Form.Item>
             <Form.Item label="Surface Type">
               {getFieldDecorator("surfaceType", {
-                rules: [{ required: true, message: "Select Surface Type" }],
+                rules: [{ required: false, message: "Select Surface Type" }],
               })(
                 <Select
                   showSearch
@@ -117,7 +114,7 @@ const ProductInfoForm = (props) => {
             </Form.Item>
             <Form.Item label="Thickness (mm)">
               {getFieldDecorator("thickness", {
-                rules: [{ required: true, message: "Enter Thickness" }],
+                rules: [{ required: false, message: "Enter Thickness" }],
               })(
                 <Select
                   showSearch
@@ -134,16 +131,16 @@ const ProductInfoForm = (props) => {
                   }
                 >
                   {props?.productInfo?.refinedProducts?.map((refinedProduct) => (
-                    refinedProduct.thickness ? <Option key={refinedProduct.thickness} value={`${refinedProduct.thickness}`}>
+                    refinedProduct.thickness >= 0 ? <Option key={refinedProduct.thickness} value={`${refinedProduct.thickness}`}>
                       {refinedProduct.thickness}
-                    </Option> : <></>
+                    </Option> : <Option key='' value=''></Option>
                   ))}
                 </Select>
               )}
             </Form.Item>
             <Form.Item label="Width (mm)">
               {getFieldDecorator("width", {
-                rules: [{ required: true, message: "Enter Width" }],
+                rules: [{ required: false, message: "Enter Width" }],
               })(
                 <Select
                   showSearch
@@ -160,16 +157,16 @@ const ProductInfoForm = (props) => {
                   }
                 >
                   {props?.productInfo?.refinedProducts?.map((refinedProduct) => (
-                    refinedProduct.width ? <Option key={refinedProduct.width} value={`${refinedProduct.width}`}>
+                    refinedProduct.width >= 0 ? <Option key={refinedProduct.width} value={`${refinedProduct.width}`}>
                       {refinedProduct.width}
-                    </Option> : <></>
+                    </Option> : <Option key='' value=''></Option>
                   ))}
                 </Select>
               )}
             </Form.Item>
             <Form.Item label="Length (mm)">
               {getFieldDecorator("length", {
-                rules: [{ required: true, message: "Enter Length" }],
+                rules: [{ required: false, message: "Enter Length" }],
               })(
                 <Select
                   showSearch
@@ -186,16 +183,16 @@ const ProductInfoForm = (props) => {
                   }
                 >
                   {props?.productInfo?.refinedProducts?.map((refinedProduct) => (
-                    refinedProduct.length ? <Option key={refinedProduct.length} value={`${refinedProduct.length}`}>
+                    refinedProduct.length >= 0 ? <Option key={refinedProduct.length} value={`${refinedProduct.length}`}>
                       {refinedProduct.length}
-                    </Option> : <></>
+                    </Option> : <Option key='' value=''></Option>
                   ))}
                 </Select>
               )}
             </Form.Item>
             <Form.Item label="Gross Weight">
               {getFieldDecorator("grossWeight", {
-                rules: [{ required: true, message: "Enter Gross Weight" }],
+                rules: [{ required: false, message: "Enter Gross Weight" }],
               })(
                 <AutoComplete
                   placeholder="enter gross weight"
@@ -212,34 +209,17 @@ const ProductInfoForm = (props) => {
               )}
             </Form.Item>
             <Form.Item label="Material Desc">
-              {getFieldDecorator("materialDesc", {
-                rules: [
-                  { required: true, message: "Enter Material Description" },
-                ],
-              })(
-                <AutoComplete
-                  placeholder="enter material description"
-                  dataSource={[]}
-                  onChange={
-                    props.params !== "" ? (e) => console.log("dfd") : ""
-                  }
-                  filterOption={(inputValue, option) =>
-                    option.props.children
-                      .toUpperCase()
-                      .indexOf(inputValue.toUpperCase()) !== -1
-                  }
-                />
-              )}
+              <TextArea rows={3} value={`${categoryName}-${subCategoryName}-${leafCategoryName}-${brandName}-${uom}-${form}-${grade}-${subGradeName}-${surfaceType}-${coatingType}-${props.inward.thickness}-${props.inward.od}-${props.inward.width}-${props.inward.id}-${props.inward.length}-${props.inward.nb}`} disabled />
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Row></Row>
+            <div className="ant-row ant-form-item" style={{height: '40px'}}></div>
             <Form.Item label="Sub Grade">
               {getFieldDecorator("subgradeId", {
                 rules: [
                   {
-                    required: true,
-                    message: "Please select a product sub grade!",
+                    required: false,
+                    message: "Please select a product sub grade!", 
                   },
                 ],
               })(
@@ -269,7 +249,7 @@ const ProductInfoForm = (props) => {
               {getFieldDecorator("coatingTypeId", {
                 rules: [
                   {
-                    required: true,
+                    required: false,
                     message: "Please input the customer name!",
                   },
                 ],
@@ -300,7 +280,7 @@ const ProductInfoForm = (props) => {
               {getFieldDecorator("od", {
                 rules: [
                   {
-                    required: true,
+                    required: false,
                     message: "Please input the customer name!",
                   },
                 ],
@@ -320,9 +300,9 @@ const ProductInfoForm = (props) => {
                   }
                 >
                   {props?.productInfo?.refinedProducts?.map((refinedProduct) => (
-                    refinedProduct.diameter ? <Option key={refinedProduct.diameter} value={`${refinedProduct.diameter}`}>
-                      {refinedProduct.diameter}
-                    </Option> : <></>
+                    refinedProduct.odiameter >= 0 ? <Option key={refinedProduct.odiameter} value={`${refinedProduct.odiameter}`}>
+                      {refinedProduct.odiameter}
+                    </Option> : <Option key='' value=''></Option>
                   ))}
                 </Select>
               )}
@@ -331,7 +311,7 @@ const ProductInfoForm = (props) => {
               {getFieldDecorator("id", {
                 rules: [
                   {
-                    required: true,
+                    required: false,
                     message: "Please input the customer name!",
                   },
                 ],
@@ -351,9 +331,9 @@ const ProductInfoForm = (props) => {
                   }
                 >
                   {props?.productInfo?.refinedProducts?.map((refinedProduct) => (
-                    refinedProduct.materaiId ? <Option key={refinedProduct.materaiId} value={`${refinedProduct.materaiId}`}>
-                      {refinedProduct.materaiId}
-                    </Option> : <></>
+                    refinedProduct.idiameter >= 0 ? <Option key={refinedProduct.idiameter} value={`${refinedProduct.idiameter}`}>
+                      {refinedProduct.idiameter}
+                    </Option> : <Option key='' value=''></Option>
                   ))}
                 </Select>
               )}
@@ -362,30 +342,38 @@ const ProductInfoForm = (props) => {
               {getFieldDecorator("nb", {
                 rules: [
                   {
-                    required: true,
+                    required: false,
                     message: "Please input the customer name!",
                   },
                 ],
               })(
-                <AutoComplete
-                  placeholder="enter NB"
-                  dataSource={[]}
-                  onChange={
-                    props.params !== "" ? (e) => console.log("dfd") : ""
-                  }
-                  filterOption={(inputValue, option) =>
+                <Select
+                  showSearch
+                  placeholder="Select NB"
+                  optionFilterProp="children"
+                  onChange={(gradeId, option) => {
+                    props.saveMaterialInfo('nb', option.props.children);
+                    props.getRefinedProducts(props.inward);
+                  }}
+                  filterOption={(input, option) =>
                     option.props.children
-                      .toUpperCase()
-                      .indexOf(inputValue.toUpperCase()) !== -1
+                      .toLowerCase()
+                      .indexOf(input.toLowerCase()) >= 0
                   }
-                />
+                >
+                  {props?.productInfo?.refinedProducts?.map((refinedProduct) => (
+                    refinedProduct.nb >= 0 ? <Option key={refinedProduct.nb} value={`${refinedProduct.nb}`}>
+                      {refinedProduct.nb}
+                    </Option> : <Option key='' value=''></Option>
+                  ))}
+                </Select>
               )}
             </Form.Item>
             <Form.Item label="Net Weight">
               {getFieldDecorator("netWeight", {
                 rules: [
                   {
-                    required: true,
+                    required: false,
                     message: "Please input the customer name!",
                   },
                 ],
@@ -430,6 +418,7 @@ const mapStateToProps = (state) => ({
   inward: state.inward.inward,
   inwardStatus: state.inward,
   productInfo: state.productInfo,
+    material: state.material,
 });
 
 const ProductInfo = Form.create({
@@ -467,10 +456,6 @@ const ProductInfo = Form.create({
         grossWeight: Form.createFormField({
             ...props.inward.grossWeight,
             value: props.inward.grossWeight,
-        }),
-        materialDesc: Form.createFormField({
-            ...props.inward.materialDesc,
-            value: props.inward.materialDesc,
         }),
         od: Form.createFormField({
             ...props.inward.od,

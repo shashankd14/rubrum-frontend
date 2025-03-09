@@ -93,7 +93,7 @@ const CreatePartyDetailsForm = (props) => {
                     help={props.inwardStatus.loading ? 'We are checking if the Batch Number already exists' : (!props.inwardStatus.loading && props.inwardStatus.success && props.inwardStatus.duplicateBatchNo) ? "The Batch Number already exists" :  ''}>
                             {getFieldDecorator('customerBatchNo', {
                             rules: [{ required: false, message: 'Please input the Batch Number!' },
-                            {validator: props.params ==="" ?checkBatchNoExist: ""}],
+                            {validator: props.params === "" ? checkBatchNoExist: ""}],
                             })(
                                 <Input id="validating" onChange={(e) => props.checkCustomerBatchNumber(e.target.value)} onBlur= {(e) => props.checkCustomerBatchNumber(e.target.value)}/>
                             )}

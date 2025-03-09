@@ -32,7 +32,7 @@ const Summary = (props) => {
         <Descriptions.Item label="NB">{props.inward.nb}</Descriptions.Item>
         <Descriptions.Item label="Gross Weight">{props.inward.grossWeight}</Descriptions.Item>
         <Descriptions.Item label="Net Weight">{props.inward.netWeight}</Descriptions.Item>
-        <Descriptions.Item label="Material Description">{"matrial"}</Descriptions.Item>
+        <Descriptions.Item label="Material Description">{`${categoryName}-${subCategoryName}-${leafCategoryName}-${brandName}-${uom}-${form}-${grade}-${subGradeName}-${surfaceType}-${coatingType}-${props.inward.thickness}-${props.inward.od}-${props.inward.width}-${props.inward.id}-${props.inward.length}-${props.inward.nb}`}</Descriptions.Item>
       </Descriptions>
       </Card>
       <Row className="gx-mt-4">

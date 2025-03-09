@@ -224,20 +224,27 @@ function* fetchProductCoatingList(action) {
 }
 
 function* getRefinedProducts(action) {
+  console.log(action);
   const body = {
     pageNo: 1,
     pageSize: 15,
-    "categoryId": action.categoryId,
-    "subcategoryId": action.subcategoryId,
-    "leafcategoryId": action.leafcategoryId,
-    "brandId": action.brandId,
-    "producttypeId": action.productTypeId,
-    "gradeId": action.gradeId,
-    "subgradeId": action.subgradeId,
-    "formId": action.productForm,
-    "uomId": action.productUom,
-    "surfacetypeId": action.surfaceType,
-    "coatingtypeId": action.coatingTypeId,
+    "categoryId": action.allDetails.categoryId,
+    "subcategoryId": action.allDetails.subcategoryId,
+    "leafcategoryId": action.allDetails.leafcategoryId,
+    "brandId": action.allDetails.brandId,
+    "producttypeId": action.allDetails.productTypeId,
+    "gradeId": action.allDetails.gradeId,
+    "subgradeId": action.allDetails.subgradeId,
+    "formId": action.allDetails.productForm,
+    "uomId": action.allDetails.productUom,
+    "surfacetypeId": action.allDetails.surfaceType,
+    "coatingtypeId": action.allDetails.coatingTypeId,
+    "length": action.allDetails.length,
+    "width": action.allDetails.width,
+    "thickness": action.allDetails.thickness,
+    "nb": action.allDetails.nb,
+    "oDiameter": action.allDetails.od,
+    "iDiameter": action.allDetails.id,
   };
   try {
     const fetchPartyList = yield fetch(`${baseUrl}api/material/list`, {

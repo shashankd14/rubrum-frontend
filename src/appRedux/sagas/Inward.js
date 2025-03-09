@@ -347,6 +347,7 @@ function* submitInward(action) {
         data.append('materialGradeId', action.inward.grade !== undefined ?action.inward.grade: Number(action.inward.materialGrade.gradeId));
         data.append('testCertificateNumber', action.inward.testCertificateNo);
         data.append('remarks', action.inward.remarks);
+        data.append('mmId', action.inward.materialId);
 
         if (action.inward.testFile) {
             data.append('testCertificateFile', action.inward.testFile.fileList[0].originFileObj, action.inward.testFile.fileList[0].name);

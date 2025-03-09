@@ -60,12 +60,11 @@ const CategoryForm = (props) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    props.updateStep(1);
-    // props.form.validateFields((err, values) => {
-    //     if (!err) {
-    //
-    //     }
-    // });
+    props.form.validateFieldsAndScroll((err, values) => {
+      if (!err) {
+        props.updateStep(1);
+      }
+    });
   };
 
   return (
@@ -194,7 +193,7 @@ const CategoryForm = (props) => {
                 rules: [
                   {
                     required: true,
-                    message: "Please input the customer name!",
+                    message: "Please select the leaf category!",
                   },
                 ],
               })(
@@ -285,7 +284,7 @@ const CategoryForm = (props) => {
                 rules: [
                   {
                     required: true,
-                    message: "Please input the customer name!",
+                    message: "Please select the product type!",
                   },
                 ],
               })(
@@ -327,7 +326,7 @@ const CategoryForm = (props) => {
               {getFieldDecorator("hsn", {
                 rules: [
                   {
-                    required: true,
+                    required: false,
                     message: "Please input the customer name!",
                   },
                 ],
@@ -339,7 +338,7 @@ const CategoryForm = (props) => {
               {getFieldDecorator("productUom", {
                 rules: [
                   {
-                    required: true,
+                    required: false,
                     message: "Please select a unit of measure!",
                   },
                 ],
@@ -374,7 +373,7 @@ const CategoryForm = (props) => {
               {getFieldDecorator("productForm", {
                 rules: [
                   {
-                    required: true,
+                    required: false,
                     message: "Please select a product form!",
                   },
                 ],
