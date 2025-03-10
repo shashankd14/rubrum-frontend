@@ -904,7 +904,24 @@ export default (state = INIT_STATE, action) => {
                 ...state,
                 inward: {
                     ...state.inward,
-                    disableSelection: false
+                    categoryId: '',
+                    subcategoryId: '',
+                    leafcategoryId: '',
+                    brandId: '',
+                    productTypeId: '',
+                    productUom: '',
+                    productForm: '',
+                    hsn: '',
+                    gradeId: '',
+                    subgradeId: '',
+                    surfaceType: '',
+                    coatingTypeId: '',
+                    thickness: '',
+                    width: '',
+                    length: '',
+                    od: '',
+                    id: '',
+                    disableSelection: false,
                 }
             }   
         }
