@@ -36,7 +36,8 @@ import {
     SAVE_MATERIAL_DISPLAY_INFO,
     SEARCH_MATERIAL_BY_ID,
     SEARCH_MATERIAL_BY_ID_SUCCESS,
-    SEARCH_MATERIAL_BY_ID_ERROR
+    SEARCH_MATERIAL_BY_ID_ERROR,
+    SAVE_MATERIAL_DISPLAY_INFO_OBJ
 } from "../../constants/ActionTypes";
 
 export const fetchMaterialList = () => ({
@@ -217,4 +218,9 @@ export const saveMaterialInfo = (displayKey,displayValue) => ({
     type: SAVE_MATERIAL_DISPLAY_INFO,
     displayKey,
     displayValue
+});
+
+export const saveMaterialDisplayInfo = (displayInfo) => ({
+    type: SAVE_MATERIAL_DISPLAY_INFO_OBJ,
+    displayInfo
 });

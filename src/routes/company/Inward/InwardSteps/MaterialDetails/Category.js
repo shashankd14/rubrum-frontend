@@ -22,6 +22,7 @@ import {
   getProductForm,
   saveMaterialInfo,
   searchByMaterialId,
+  enableMaterialSelection
 } from "../../../../../appRedux/actions";
 
 const formItemLayout = {
@@ -58,6 +59,13 @@ const CategoryForm = (props) => {
     setDataSource(options);
   }, [props.material.categoriesList]);
 
+  useEffect(() => {
+    if(!props.inward.materialId && props.inward.disableSelection) {
+      props.form.resetFields();
+      props.enableMaterialSelection();
+    }
+  }, [props.inward.materialId]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     props.form.validateFieldsAndScroll((err, values) => {
@@ -88,8 +96,6 @@ const CategoryForm = (props) => {
                   onSearch={(value) => {
                     if(value)
                       props.searchByMaterialId(value);
-                    else if(props.inward.disableSelection)
-                      props.enableMaterialSelection()
                   }}
                 />
               )}
@@ -323,14 +329,7 @@ const CategoryForm = (props) => {
         <Row>
           <Col span={12}>
             <Form.Item label="HSN">
-              {getFieldDecorator("hsn", {
-                rules: [
-                  {
-                    required: false,
-                    message: "Please input the customer name!",
-                  },
-                ],
-              })(<Input id="customerId" disabled />)}
+            <Input id="productTypeId" disabled value={props?.inward?.hsn} />
             </Form.Item>
           </Col>
           <Col span={12}>
@@ -486,4 +485,5 @@ export default connect(mapStateToProps, {
   getProductForm,
   saveMaterialInfo,
   searchByMaterialId,
+  enableMaterialSelection
 })(Category);

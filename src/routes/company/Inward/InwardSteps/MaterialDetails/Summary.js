@@ -1,9 +1,18 @@
 import { Button, Col, Icon, Row, Descriptions, Card } from "antd";
 import { connect } from "react-redux";
-import React from "react";
+import React, { useEffect } from "react";
+import ProductInfo from "./ProductInfo";
+import {
+  setInwardDetails,
+  getRefinedProducts
+} from "../../../../../appRedux/actions";
 
 const Summary = (props) => {
-    const { categoryName, subCategoryName, leafCategoryName, brandName, productType, uom, form, grade, surfaceType, subGradeName, coatingType } = props.material.displayInfo;
+  const { categoryName, subCategoryName, leafCategoryName, brandName, productType, uom, form, grade, surfaceType, subGradeName, coatingType, mmId } = props.material.displayInfo;
+
+  useEffect(() => {
+    props.getRefinedProducts(props.inward);
+  }, []);
 
   return (
     <>
@@ -12,7 +21,7 @@ const Summary = (props) => {
         <Descriptions.Item label="Material Category">{categoryName}</Descriptions.Item>
         <Descriptions.Item label="Sub Category">{subCategoryName}</Descriptions.Item>
         <Descriptions.Item label="Leaf Category">{leafCategoryName}</Descriptions.Item>
-        <Descriptions.Item label="Material ID">{'sds'}</Descriptions.Item>
+        <Descriptions.Item label="Material ID">{props?.productInfo?.refinedProducts[0].mmId || mmId}</Descriptions.Item>
       </Descriptions>
       <Descriptions title="Product Info" column={2}>
         <Descriptions.Item label="Product Type">{productType}</Descriptions.Item>
@@ -54,6 +63,9 @@ const Summary = (props) => {
 const mapStateToProps = (state) => ({
   inward: state.inward.inward,
   material: state.material,
+  ProductInfo: state.ProductInfo
 });
 
-export default connect(mapStateToProps, {})(Summary);
+export default connect(mapStateToProps, {
+  getRefinedProducts
+})(Summary);

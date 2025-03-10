@@ -31,7 +31,8 @@ import {
     getLeafCategoryError,
     searchByMaterialIdSuccess,
     searchByMaterialIdError,
-    setMaterialData
+    setMaterialData,
+    saveMaterialDisplayInfo
 } from "../actions";
 import { userSignOutSuccess } from "../../appRedux/actions/Auth";
 
@@ -291,6 +292,24 @@ function* searchByMaterialId(action) {
             const fetchPartyListResponse = yield fetchPartyList.json();
             if(fetchPartyListResponse?.totalItems > 0) {
                 yield put(setMaterialData(fetchPartyListResponse.content[0]));
+                yield put(saveMaterialDisplayInfo({
+                    categoryName: fetchPartyListResponse.content[0].category, 
+                    subCategoryName: fetchPartyListResponse.content[0].subcategory,
+                    leafCategoryName: fetchPartyListResponse.content[0].leafcategory,
+                    brandName: fetchPartyListResponse.content[0].brand,
+                    productType: fetchPartyListResponse.content[0].producttype,
+                    uom: fetchPartyListResponse.content[0].uom,
+                    form: fetchPartyListResponse.content[0].form,
+                    grade: fetchPartyListResponse.content[0].grade,
+                    surfaceType: fetchPartyListResponse.content[0].surfacetype,
+                    subGradeName: fetchPartyListResponse.content[0].subgrade,
+                    coatingType: fetchPartyListResponse.content[0].coatingtype,
+                    mmId: fetchPartyListResponse.content[0].mmId,
+                    od: fetchPartyListResponse.content[0].odiameter,
+                    id: fetchPartyListResponse.content[0].idiameter,
+                    nb: fetchPartyListResponse.content[0].nb,
+                    hsn: fetchPartyListResponse.content[0].hsn,
+                }));
             }
             yield put(searchByMaterialIdSuccess(fetchPartyListResponse));
         } else if (fetchPartyList.status === 401) {

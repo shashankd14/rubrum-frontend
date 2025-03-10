@@ -36,7 +36,8 @@ import {
     SAVE_MATERIAL_DISPLAY_INFO,
     SEARCH_MATERIAL_BY_ID_SUCCESS,
     SEARCH_MATERIAL_BY_ID_ERROR,
-    SEARCH_MATERIAL_BY_ID
+    SEARCH_MATERIAL_BY_ID,
+    SAVE_MATERIAL_DISPLAY_INFO_OBJ
 } from "../../constants/ActionTypes";
 
 const INIT_STATE = {
@@ -311,6 +312,14 @@ export default (state = INIT_STATE, action) => {
                 ...state,
                 loading: false,
                 error: true,
+            }
+        }
+        case SAVE_MATERIAL_DISPLAY_INFO_OBJ: {
+            return {
+                ...state,
+                displayInfo: {
+                    ...action.displayInfo
+                }
             }
         }
         default:
