@@ -99,7 +99,9 @@ const InvoiceDetailsForm = props => {
                         )}
                     </Form.Item>
                     <Form.Item label="Value of Goods">
-                        {getFieldDecorator('valueOfGoods')(
+                        {getFieldDecorator('valueOfGoods', {
+                            rules: [{ required: true, message: 'Please enter value of goods' }]
+                        })(
                             <Input id="valueOfGoods" />
                         )}
                     </Form.Item>

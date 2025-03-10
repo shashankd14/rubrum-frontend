@@ -326,8 +326,8 @@ function* submitInward(action) {
         data.append('purposeType', action.inward.purposeType);
 
         //coil details
-        data.append('coilNumber', action.inward.coilNumber);
-        data.append('materialId', action.inward.description);
+        data.append('coilNumber', 'test_coil');
+        data.append('materialId', 123);
         data.append('width', action.inward.width !== undefined ? action.inward.width : Number(action.inward.fWidth));
         data.append('thickness', action.inward.thickness !== undefined ? action.inward.thickness: action.inward.fThickness);
         action.inward.length && data.append('length', action.inward.length);
@@ -344,7 +344,7 @@ function* submitInward(action) {
         data.append('valueOfGoods', action.inward.valueOfGoods);
 
         //quality details
-        data.append('materialGradeId', action.inward.grade !== undefined ?action.inward.grade: Number(action.inward.materialGrade.gradeId));
+        data.append('materialGradeId', 12334);
         data.append('testCertificateNumber', action.inward.testCertificateNo);
         data.append('remarks', action.inward.remarks);
         data.append('mmId', action.inward.materialId);

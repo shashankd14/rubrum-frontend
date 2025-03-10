@@ -52,12 +52,11 @@ const ProductInfoForm = (props) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    props.updateStep(2);
-    // props.form.validateFields((err, values) => {
-    //     if (!err) {
-    //
-    //     }
-    // });
+    props.form.validateFieldsAndScroll((err, values) => {
+      if (!err) {
+        props.updateStep(2);
+      }
+    });
   };
 
   useEffect(() => {

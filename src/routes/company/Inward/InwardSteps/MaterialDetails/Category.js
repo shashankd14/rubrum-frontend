@@ -22,7 +22,7 @@ import {
   getProductForm,
   saveMaterialInfo,
   searchByMaterialId,
-  enableMaterialSelection
+  enableMaterialSelection,
 } from "../../../../../appRedux/actions";
 
 const formItemLayout = {
@@ -60,7 +60,7 @@ const CategoryForm = (props) => {
   }, [props.material.categoriesList]);
 
   useEffect(() => {
-    if(!props.inward.materialId && props.inward.disableSelection) {
+    if (!props.inward.materialId && props.inward.disableSelection) {
       props.form.resetFields();
       props.enableMaterialSelection();
     }
@@ -94,11 +94,19 @@ const CategoryForm = (props) => {
                   allowClear
                   placeholder="enter material Id"
                   onSearch={(value) => {
-                    if(value)
-                      props.searchByMaterialId(value);
+                    if (value) props.searchByMaterialId(value);
                   }}
                 />
               )}
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item label="Inward Id">
+              {getFieldDecorator("coilNumber", {
+                rules: [
+                  { required: true, message: "Please enter inward id !" },
+                ],
+              })(<Input placeholder="enter inward Id" />)}
             </Form.Item>
           </Col>
         </Row>
@@ -329,7 +337,7 @@ const CategoryForm = (props) => {
         <Row>
           <Col span={12}>
             <Form.Item label="HSN">
-            <Input id="productTypeId" disabled value={props?.inward?.hsn} />
+              <Input id="productTypeId" disabled value={props?.inward?.hsn} />
             </Form.Item>
           </Col>
           <Col span={12}>
@@ -467,6 +475,10 @@ const Category = Form.create({
         ...props.inward.materialId,
         value: props.inward.materialId,
       }),
+      coilNumber: Form.createFormField({
+        ...props.inward.coilNumber,
+        value: props.inward.coilNumber,
+      }),
     };
   },
   onValuesChange(props, values) {
@@ -485,5 +497,5 @@ export default connect(mapStateToProps, {
   getProductForm,
   saveMaterialInfo,
   searchByMaterialId,
-  enableMaterialSelection
+  enableMaterialSelection,
 })(Category);

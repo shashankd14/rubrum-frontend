@@ -893,7 +893,7 @@ export default (state = INIT_STATE, action) => {
                     width: action.payload.width,
                     length: action.payload.length,
                     od: action.payload.diameter,
-                    id: action.payload.materaiId,
+                    id: action.payload.idiameter,
                     disableSelection: true,
                 }
             }
