@@ -326,7 +326,7 @@ function* submitInward(action) {
         data.append('purposeType', action.inward.purposeType);
 
         //coil details
-        data.append('coilNumber', 'test_coil');
+        data.append('coilNumber', coilNumber);
         data.append('materialId', 123);
         data.append('width', action.inward.width !== undefined ? action.inward.width : Number(action.inward.fWidth));
         data.append('thickness', action.inward.thickness !== undefined ? action.inward.thickness: action.inward.fThickness);
