@@ -21,7 +21,7 @@ const Summary = (props) => {
         <Descriptions.Item label="Material Category">{categoryName}</Descriptions.Item>
         <Descriptions.Item label="Sub Category">{subCategoryName}</Descriptions.Item>
         <Descriptions.Item label="Leaf Category">{leafCategoryName}</Descriptions.Item>
-        <Descriptions.Item label="Material ID">{props?.productInfo?.refinedProducts[0].mmId || mmId}</Descriptions.Item>
+        <Descriptions.Item label="Material ID">{props?.productInfo?.refinedProducts[0]?.mmId ? props?.productInfo?.refinedProducts[0]?.mmId : mmId}</Descriptions.Item>
       </Descriptions>
       <Descriptions title="Product Info" column={2}>
         <Descriptions.Item label="Product Type">{productType}</Descriptions.Item>
@@ -63,7 +63,7 @@ const Summary = (props) => {
 const mapStateToProps = (state) => ({
   inward: state.inward.inward,
   material: state.material,
-  ProductInfo: state.ProductInfo
+  productInfo: state.productInfo
 });
 
 export default connect(mapStateToProps, {

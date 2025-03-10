@@ -76,14 +76,6 @@ function List(props) {
             title: 'Material',
             dataIndex: 'material.description',
             key: 'material.description',
-            filteredValue: filteredInfo ? filteredInfo["material.description"] : null,
-            onFilter: (value, record) => record.material.description == value,
-            filters: props.inward?.wipList?.length > 0 ? [...new Set(props.inward?.wipList.map(item => item?.material?.description))].map(material => ({
-                text: material,
-                value: material
-            })) : [],
-            sorter: (a, b) => a.material.description?.length - b.material.description?.length,
-            sortOrder: sortedInfo.columnKey === 'material.description' && sortedInfo.order,
         },
         {
             title: 'Status',

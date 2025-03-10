@@ -1101,7 +1101,7 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
                           >
                             {props.material?.materialList?.map((material) => (
                               <Option key={material.matId} value={material.matId}>
-                                {material.description}
+                                {material?.description}
                               </Option>
                             ))}
                           </Select>
@@ -1196,7 +1196,7 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
                         >
                           {props.material?.materialList?.map((material) => (
                             <Option key={material.matId} value={material.matId}>
-                              {material.description}
+                              {material?.description}
                             </Option>
                           ))}
                         </Select>

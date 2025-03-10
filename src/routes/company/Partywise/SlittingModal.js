@@ -2122,7 +2122,7 @@ const CreateSlittingDetailsForm = (props) => {
                         : props.coil.availableLength}
                     </p>
                     <p>Inward Weight(kg) : {props.coil.fQuantity}</p>
-                    <p>Grade: {props.coil.materialGrade.gradeName}</p>
+                    <p>Grade: {props.coil?.materialGrade?.gradeName}</p>
                     <p>
                       Coil level Planned YLR (%):{' '}
                       {isNaN(plannedCoilLevelYLR)
@@ -2132,7 +2132,7 @@ const CreateSlittingDetailsForm = (props) => {
                   </Col>
 
                   <Col lg={8} md={12} sm={24} xs={24}>
-                    <p>Material : {props.coil.material.description}</p>
+                    <p>Material : {props.coil?.material?.description}</p>
                     <p>Customer Name : {props.coil.party.partyName}</p>
                     <p>Thickness(mm): {props.coil.fThickness}</p>
                     <p>Width(mm) : {props.coil.fWidth}</p>
@@ -2471,8 +2471,8 @@ const CreateSlittingDetailsForm = (props) => {
                     {props.coil.customerBatchId && (
                       <p>Customer Batch No:{props.coil.customerBatchId}</p>
                     )}
-                    <p>Material Desc: {props.coil.material.description}</p>
-                    <p>Grade: {props.coil.materialGrade.gradeName}</p>
+                    <p>Material Desc: {props.coil?.material?.description}</p>
+                    <p>Grade: {props.coil?.materialGrade?.gradeName}</p>
                   </Col>
                   <Col lg={12} md={12} sm={24} xs={24}>
                     <p>

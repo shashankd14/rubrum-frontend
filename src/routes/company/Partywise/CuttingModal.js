@@ -1921,8 +1921,8 @@ useEffect(() => {
                       {props.coil.customerBatchId && (
                         <p>Customer Batch No:{props.coil.customerBatchId}</p>
                       )}
-                      <p>Material Desc: {props.coil.material.description}</p>
-                      <p>Grade: {props.coil.materialGrade.gradeName}</p>
+                      <p>Material Desc: {props.coil?.material?.description}</p>
+                      <p>Grade: {props.coil?.materialGrade?.gradeName}</p>
                     </Col>
                     <Col lg={12} md={12} sm={24} xs={24}>
                       <p>
@@ -2062,8 +2062,8 @@ useEffect(() => {
                         {props.coil.customerBatchId && (
                           <p>Customer Batch No:{props.coil.customerBatchId}</p>
                         )}
-                        <p>Material Desc: {props.coil.material.description}</p>
-                        <p>Grade: {props.coil.materialGrade.gradeName}</p>
+                        <p>Material Desc: {props.coil?.material?.description}</p>
+                        <p>Grade: {props.coil?.materialGrade?.gradeName}</p>
                     <p>Coil level Planned YLR (%): {plannedCoilLevelYLR.toFixed(2)}</p>
                       </Col>
 

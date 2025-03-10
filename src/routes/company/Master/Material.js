@@ -160,9 +160,9 @@ const Material = (props) => {
         const { material } = props;
         if(searchValue) {
             const filteredData = material?.materialList?.filter((material) => {
-                if(material.matId.toString() === searchValue ||
-                    material.description?.toLowerCase().includes(searchValue.toLowerCase()) ||
-                    material.materialGrade?.includes(searchValue)) {
+                if(material?.matId.toString() === searchValue ||
+                    material?.description?.toLowerCase().includes(searchValue.toLowerCase()) ||
+                    material?.materialGrade?.includes(searchValue)) {
                     return material;
                 }
             });

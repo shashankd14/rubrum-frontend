@@ -99,7 +99,7 @@ const ProductInfoForm = (props) => {
                     props.getRefinedProducts(props.inward);
                   }}
                   filterOption={(input, option) =>
-                    option.props.children
+                    option.props.children.toString()
                       .toLowerCase()
                       .indexOf(input.toLowerCase()) >= 0
                   }
@@ -130,7 +130,7 @@ const ProductInfoForm = (props) => {
                     props.getRefinedProducts(props.inward);
                   }}
                   filterOption={(input, option) =>
-                    option.props.children
+                    option.props.children.toString()
                       .toLowerCase()
                       .indexOf(input.toLowerCase()) >= 0
                   }
@@ -157,15 +157,15 @@ const ProductInfoForm = (props) => {
                     props.getRefinedProducts(props.inward);
                   }}
                   filterOption={(input, option) =>
-                    option.props.children
-                      .toLowerCase()
-                      .indexOf(input.toLowerCase()) >= 0
+                    option.props?.children?.toString()
+                      ?.toLowerCase()
+                      ?.indexOf(input.toLowerCase()) >= 0
                   }
                 >
-                  {props?.productInfo?.refinedProducts?.map((refinedProduct) =>
+                  {props?.productInfo?.refinedProducts?.map((refinedProduct, index) =>
                     refinedProduct.thickness >= 0 ? (
                       <Option
-                        key={refinedProduct.thickness}
+                      key={`${refinedProduct.thickness}${index}`}
                         value={`${refinedProduct.thickness}`}
                       >
                         {refinedProduct.thickness}
@@ -191,16 +191,16 @@ const ProductInfoForm = (props) => {
                     props.getRefinedProducts(props.inward);
                   }}
                   filterOption={(input, option) =>
-                    option.props.children
+                    option.props.children.toString()
                       .toLowerCase()
                       .indexOf(input.toLowerCase()) >= 0
                   }
                 >
-                  {props?.productInfo?.refinedProducts?.map((refinedProduct) =>
+                  {props?.productInfo?.refinedProducts?.map((refinedProduct, index) =>
                     refinedProduct.width >= 0 ? (
                       <Option
-                        key={refinedProduct.width}
-                        value={`${refinedProduct.width}`}
+                      key={`${refinedProduct.width}${index}`}
+                      value={`${refinedProduct.width}`}
                       >
                         {refinedProduct.width}
                       </Option>
@@ -225,15 +225,15 @@ const ProductInfoForm = (props) => {
                     props.getRefinedProducts(props.inward);
                   }}
                   filterOption={(input, option) =>
-                    option.props.children
+                    option.props.children.toString()
                       .toLowerCase()
                       .indexOf(input.toLowerCase()) >= 0
                   }
                 >
-                  {props?.productInfo?.refinedProducts?.map((refinedProduct) =>
+                  {props?.productInfo?.refinedProducts?.map((refinedProduct, index) =>
                     refinedProduct.length >= 0 ? (
                       <Option
-                        key={refinedProduct.length}
+                        key={`${refinedProduct.length}${index}`}
                         value={`${refinedProduct.length}`}
                       >
                         {refinedProduct.length}
@@ -298,7 +298,7 @@ const ProductInfoForm = (props) => {
                     props.getRefinedProducts(props.inward);
                   }}
                   filterOption={(input, option) =>
-                    option.props.children
+                    option.props.children.toString()
                       .toLowerCase()
                       .indexOf(input.toLowerCase()) >= 0
                   }
@@ -336,7 +336,7 @@ const ProductInfoForm = (props) => {
                     props.getRefinedProducts(props.inward);
                   }}
                   filterOption={(input, option) =>
-                    option.props.children
+                    option.props.children.toString()
                       .toLowerCase()
                       .indexOf(input.toLowerCase()) >= 0
                   }
@@ -371,15 +371,15 @@ const ProductInfoForm = (props) => {
                     props.getRefinedProducts(props.inward);
                   }}
                   filterOption={(input, option) =>
-                    option.props.children
+                    option.props.children.toString()
                       .toLowerCase()
                       .indexOf(input.toLowerCase()) >= 0
                   }
                 >
-                  {props?.productInfo?.refinedProducts?.map((refinedProduct) =>
+                  {props?.productInfo?.refinedProducts?.map((refinedProduct, index) =>
                     refinedProduct.odiameter >= 0 ? (
                       <Option
-                        key={refinedProduct.odiameter}
+                        key={`${refinedProduct.odiameter}${index}`}
                         value={`${refinedProduct.odiameter}`}
                       >
                         {refinedProduct.odiameter}
@@ -410,15 +410,15 @@ const ProductInfoForm = (props) => {
                     props.getRefinedProducts(props.inward);
                   }}
                   filterOption={(input, option) =>
-                    option.props.children
+                    option.props.children.toString()
                       .toLowerCase()
                       .indexOf(input.toLowerCase()) >= 0
                   }
                 >
-                  {props?.productInfo?.refinedProducts?.map((refinedProduct) =>
+                  {props?.productInfo?.refinedProducts?.map((refinedProduct, index) =>
                     refinedProduct.idiameter >= 0 ? (
                       <Option
-                        key={refinedProduct.idiameter}
+                        key={`${refinedProduct.idiameter}${index}`}
                         value={`${refinedProduct.idiameter}`}
                       >
                         {refinedProduct.idiameter}
@@ -449,16 +449,16 @@ const ProductInfoForm = (props) => {
                     props.getRefinedProducts(props.inward);
                   }}
                   filterOption={(input, option) =>
-                    option.props.children
+                    option.props.children.toString()
                       .toLowerCase()
                       .indexOf(input.toLowerCase()) >= 0
                   }
                 >
-                  {props?.productInfo?.refinedProducts?.map((refinedProduct) =>
+                  {props?.productInfo?.refinedProducts?.map((refinedProduct, index) =>
                     refinedProduct.nb >= 0 ? (
                       <Option
-                        key={refinedProduct.nb}
-                        value={`${refinedProduct.nb}`}
+                      key={`${refinedProduct.nb}${index}`}
+                      value={`${refinedProduct.nb}`}
                       >
                         {refinedProduct.nb}
                       </Option>

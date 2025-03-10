@@ -162,7 +162,7 @@ export const QUALITY_REPORT_INWARD_COLUMNS = [
         dataIndex: "material.description",
         key: "material.description",
         // filteredValue: filteredInfo ? filteredInfo["material.description"] : null,
-        onFilter: (value, record) => record.material.description == value,
+       // onFilter: (value, record) => record.material.description == value,
         // filters:
             // props.inward.inwardList.length > 0
             //     ? [
@@ -171,8 +171,8 @@ export const QUALITY_REPORT_INWARD_COLUMNS = [
             //         ),
             //     ].map((material) => ({ text: material, value: material }))
             //     : [],
-        sorter: (a, b) =>
-            a.material.description.length - b.material.description.length,
+       // sorter: (a, b) =>
+        //    a.material.description.length - b.material.description.length,
         // sortOrder:
         //     sortedInfo.columnKey === "material.description" && sortedInfo.order,
     },

@@ -224,7 +224,6 @@ function* fetchProductCoatingList(action) {
 }
 
 function* getRefinedProducts(action) {
-  console.log(action);
   const body = {
     pageNo: 1,
     pageSize: 15,

@@ -123,7 +123,7 @@ const Create = Form.create({
             }),
             description: Form.createFormField({
                 ...props.inward.inward.description,
-                value: (props.match.params && props.match.params.inwardEntryId && props.inward.inward.material)  ? props.inward.inward.material.description :(props.inward.inward.description) ? props.inward.inward.description : '',
+                value: (props.match.params && props.match.params.inwardEntryId && props.inward.inward.material)  ? props?.inward?.inward?.material?.description :(props.inward.inward.description) ? props.inward.inward.description : '',
             }),
             width: Form.createFormField({
                 ...props.inward.inward.width,

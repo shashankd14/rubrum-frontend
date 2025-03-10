@@ -96,8 +96,6 @@ const List = (props) => {
       title: "Material",
       dataIndex: "material.description",
       key: "material.description",
-      sortOrder:
-        sortedInfo.columnKey === "material.description" && sortedInfo.order,
     },
     {
       title: "Thickness",

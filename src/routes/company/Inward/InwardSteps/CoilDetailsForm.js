@@ -31,7 +31,7 @@ const CoilDetailsForm = (props) => {
     };
     const handleChange = (e,path) =>{
         if(path === 'material.description'){
-        props.inward.material.description = e.target.value;
+        props.inward?.material?.description = e.target.value;
         } else if (path === 'fWidth'){
             props.inward.fWidth = e.target.value;
         }
@@ -67,12 +67,12 @@ const CoilDetailsForm = (props) => {
 // for the edit flow
     useEffect(() => {
         if (props.params !== ""){
-            props.getGradeByMaterialId(props.inward.material.matId);
+            props.getGradeByMaterialId(props.inward?.material?.matId);
             const { Option } = AutoComplete;
             const options = props.material.materialList.filter(material => {
-            if (material.matId===  props.inward.material.matId)
+            if (material?.matId === props.inward?.material?.matId)
                 return (<Option key={material.matId} value={`${material.matId}`}>
-                        {material.description}
+                        {material?.description}
                     </Option>)
                 });
                 setDataSource(options);
@@ -80,11 +80,11 @@ const CoilDetailsForm = (props) => {
     }, [props.material]);
     // for the create flow
     useEffect(() => {
-        if(props.material.materialList.length > 0) {
+        if(props?.material?.materialList.length > 0) {
             const { Option } = AutoComplete;
-            const options = props.material.materialList.map(material => (
-                <Option key={material.matId} value={`${material.matId}`}>
-                    {material.description}
+            const options = props.material?.materialList.map(material => (
+                <Option key={material?.matId} value={`${material?.matId}`}>
+                    {material?.description}
                 </Option>
             ));
             setDataSource(options);
@@ -218,7 +218,7 @@ const CoilDetails = Form.create({
             }),
             description: Form.createFormField({
                 ...props.inward.description,
-                value: props.params !== "" ?props.inward.material.description :(props.inward.description) ? (props.inward.description):'' ,
+                value: props.params !== "" ? props.inward?.material?.description :(props.inward.description) ? (props.inward.description):'' ,
             }),
             width: Form.createFormField({
                 ...props.inward.width,
