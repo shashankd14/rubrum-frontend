@@ -27,6 +27,7 @@ const { Step } = Steps;
 const CreateForm = (props) => {
     const [currentStep, setCurrentStep] = useState(0);
     const [steps, setSteps] = useState([]);
+    
     useEffect(() => {
         props.fetchMaterialList();
         props.fetchPartyList();

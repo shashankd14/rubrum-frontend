@@ -90,19 +90,22 @@ const CoilDetailsForm = (props) => {
             setDataSource(options);
         }
     }, [props.material]);
+
     useEffect(() => {
         props.fetchPartyList();
     }, []);
+
     useEffect(() => {
-        if(props.inward.width && props.inward.thickness && props.inward.netWeight) {
+        if(props.inward.width && props.inward.thickness && props.inward.netWeight && props.inward.form == 1) {
             setLength((parseFloat(parseFloat(props.inward.netWeight)/(parseFloat(props.inward.thickness)* 7.85 *(props.inward.width/1000))).toFixed(4))*1000);
-            
         }
     }, [props.inward]);
+
     const partyName =(partyList) =>{
-        partyList = partyList.find(item => item.nPartyId===Number(props.inward.partyName))
+        partyList = partyList.find(item => item.nPartyId === Number(props.inward.partyName))
         return partyList?.partyName
     }
+
     return (
         <>
             <Col span={14}>

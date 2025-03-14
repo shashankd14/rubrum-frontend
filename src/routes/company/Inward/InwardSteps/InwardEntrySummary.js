@@ -53,7 +53,7 @@ const InwardEntrySummary = (props) => {
         }
     }, [props.inwardObject.pdfSuccess]);
 
-    const partyName =(partyList) =>{
+    const partyName =(partyList) => {
         
        partyList = partyList.find(item => item.nPartyId===Number(props.inward.partyName))
        return partyList.partyName
@@ -124,7 +124,7 @@ const InwardEntrySummary = (props) => {
                     </Button>
                     <Button type="primary" onClick={(e) => {
                         e.preventDefault();
-                       props.pdfGenerateInward(payload)
+                        props.pdfGenerateInward(payload)
                         props.QrGenerateInward(payload);
                     }}>Generate PDF & QR</Button>
                 </Col>

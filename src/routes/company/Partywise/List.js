@@ -79,6 +79,9 @@ const List = (props) => {
       filters: [],
       sorter: (a, b) => a.customerBatchId?.length - b.customerBatchId?.length,
       sortOrder: sortedInfo.columnKey === "customerBatchId" && sortedInfo.order,
+      render: (text, record) => {
+        return record.customerBatchId == 'undefined' || record.batch == 'undefined' ? "-" : record.customerBatchId || record.batch;
+      }
       // render: (text, record) => {
       //   if (record.customerBatchId) return record.customerBatchId;
       //   else {

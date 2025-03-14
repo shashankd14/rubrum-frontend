@@ -393,7 +393,6 @@ export default (state = INIT_STATE, action) => {
                 QrSuccess:false,
                 QrLoading: false,
                 QrError: false,
-                
             }
         }
         

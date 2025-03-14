@@ -236,7 +236,7 @@ const List = (props) => {
               size="default"
               onClick={() => {
                 props.resetInwardForm();
-                props.history.push("/company/inward/create");
+                window.location.href = '/company/inward/create';
               }}
             >
               Add Inward
