@@ -143,7 +143,7 @@ const CategoryForm = (props) => {
                   placeholder="Select a category"
                   optionFilterProp="children"
                   onChange={(categoryId, option) => {
-                    props.getRefinedProducts(props.inward);
+                    props.getRefinedProducts(props.inward, 'subCategory');
                     props.saveMaterialInfo(
                       "categoryName",
                       option.props.children
@@ -180,7 +180,7 @@ const CategoryForm = (props) => {
                       "subCategoryName",
                       option.props.children
                     );
-                    props.getRefinedProducts(props.inward);
+                    props.getRefinedProducts(props.inward, 'leafCategory');
                   }}
                   filterOption={(input, option) =>
                     option.props.children
@@ -188,16 +188,14 @@ const CategoryForm = (props) => {
                       .indexOf(input.toLowerCase()) >= 0
                   }
                 >
-                  {props?.productInfo?.refinedProducts?.map((refinedProduct, index) =>
-                    (
-                      <Option
-                      key={`${refinedProduct.subcategory}${index}`}
-                      value={`${refinedProduct.subcategory}`}
-                      >
-                        {refinedProduct.subcategory}
-                      </Option>
-                    )
-                  )}
+                  {props.material?.subCategoriesList?.map((subCategory) => (
+                    <Option
+                      key={subCategory.subcategoryId}
+                      value={`${subCategory.subcategoryId}`}
+                    >
+                      {subCategory.subcategoryIdName}
+                    </Option>
+                  ))}
                 </Select>
               )}
             </Form.Item>
@@ -224,7 +222,7 @@ const CategoryForm = (props) => {
                       "leafCategoryName",
                       option.props.children
                     );
-                    props.getRefinedProducts(props.inward);
+                    props.getRefinedProducts(props.inward, 'brand');
                   }}
                   filterOption={(input, option) =>
                     option.props.children
@@ -232,16 +230,14 @@ const CategoryForm = (props) => {
                       .indexOf(input.toLowerCase()) >= 0
                   }
                 >
-                  {props?.productInfo?.refinedProducts?.map((refinedProduct, index) =>
-                    (
-                      <Option
-                      key={`${refinedProduct.leafcategoryId}${index}`}
-                      value={`${refinedProduct.leafcategoryId}`}
-                      >
-                        {refinedProduct.leafcategory}
-                      </Option>
-                    )
-                  )}
+                  {props.material?.leafCategoriesList?.map((leafCategory) => (
+                    <Option
+                      key={leafCategory.leafcategoryId}
+                      value={`${leafCategory.leafcategoryId}`}
+                    >
+                      {leafCategory.leafcategoryName}
+                    </Option>
+                  ))}
                 </Select>
               )}
             </Form.Item>
@@ -280,7 +276,7 @@ const CategoryForm = (props) => {
                   optionFilterProp="children"
                   onChange={(brandId, option) => {
                     props.saveMaterialInfo("brandName", option.props.children);
-                    props.getRefinedProducts(props.inward);
+                    props.getRefinedProducts(props.inward, 'productType');
                   }}
                   filterOption={(input, option) =>
                     option.props.children
@@ -288,16 +284,11 @@ const CategoryForm = (props) => {
                       .indexOf(input.toLowerCase()) >= 0
                   }
                 >
-                  {props?.productInfo?.refinedProducts?.map((refinedProduct, index) =>
-                    (
-                      <Option
-                      key={`${refinedProduct.brandId}${index}`}
-                      value={`${refinedProduct.brandId}`}
-                      >
-                        {refinedProduct.brand}
-                      </Option>
-                    )
-                  )}
+                 {props.productInfo?.brandList?.map((brand) => (
+                    <Option key={brand.brandId} value={`${brand.brandId}`}>
+                      {brand.brandName}
+                    </Option>
+                  ))}
                 </Select>
               )}
             </Form.Item>
@@ -322,7 +313,7 @@ const CategoryForm = (props) => {
                       "productType",
                       option.props.children
                     );
-                    props.getRefinedProducts(props.inward);
+                    props.getRefinedProducts(props.inward, 'uom');
                   }}
                   filterOption={(input, option) =>
                     option.props.children
@@ -330,16 +321,14 @@ const CategoryForm = (props) => {
                       .indexOf(input.toLowerCase()) >= 0
                   }
                 >
-                  {props?.productInfo?.refinedProducts?.map((refinedProduct, index) =>
-                    (
-                      <Option
-                      key={`${refinedProduct.producttypeId}${index}`}
-                      value={`${refinedProduct.producttypeId}`}
-                      >
-                        {refinedProduct.producttype}
-                      </Option>
-                    )
-                  )}
+                  {props.productInfo?.productsList?.map((product) => (
+                    <Option
+                      key={product.productId}
+                      value={`${product.productId}`}
+                    >
+                      {product.productName}
+                    </Option>
+                  ))}
                 </Select>
               )}
             </Form.Item>
@@ -376,16 +365,11 @@ const CategoryForm = (props) => {
                       .indexOf(input.toLowerCase()) >= 0
                   }
                 >
-                  {props?.productInfo?.refinedProducts?.map((refinedProduct, index) =>
-                    (
-                      <Option
-                      key={`${refinedProduct.uomId}${index}`}
-                      value={`${refinedProduct.uomId}`}
-                      >
-                        {refinedProduct.uom}
-                      </Option>
-                    )
-                  )}
+                  {props.productInfo?.productUomList?.map((uom) => (
+                    <Option key={uom.uomId} value={`${uom.uomId}`}>
+                      {uom.uomName}
+                    </Option>
+                  ))}
                 </Select>
               )}
             </Form.Item>
@@ -417,16 +401,11 @@ const CategoryForm = (props) => {
                       .indexOf(input.toLowerCase()) >= 0
                   }
                 >
-                  {props?.productInfo?.refinedProducts?.map((refinedProduct, index) =>
-                    (
-                      <Option
-                      key={`${refinedProduct.formId}${index}`}
-                      value={`${refinedProduct.formId}`}
-                      >
-                        {refinedProduct.form}
-                      </Option>
-                    )
-                  )}
+                  {props.productInfo?.productsFormsList?.map((form) => (
+                    <Option key={form.formId} value={`${form.formId}`}>
+                      {form.formName}
+                    </Option>
+                  ))}
                 </Select>
               )}
             </Form.Item>

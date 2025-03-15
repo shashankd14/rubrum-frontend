@@ -33,6 +33,12 @@ import {
     FETCH_PRODUCTS_REFINED, 
     FETCH_PRODUCTS_REFINED_SUCCESS, 
     FETCH_PRODUCTS_REFINED_ERROR,
+    FETCH_PRODUCTS_WIDTH_SUCCESS,
+    FETCH_PRODUCTS_THICKNESS_SUCCESS,
+    FETCH_PRODUCTS_OD_SUCCESS,
+    FETCH_PRODUCTS_ID_SUCCESS,
+    FETCH_PRODUCTS_NB_SUCCESS,
+    FETCH_PRODUCTS_LENGTH_SUCCESS
 } from "../../constants/ActionTypes";
 
 const INIT_STATE = {
@@ -222,6 +228,55 @@ export default (state = INIT_STATE, action) => {
                 refinedProducts: action.productsList?.content
             }
         }
+
+        case FETCH_PRODUCTS_THICKNESS_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                thickness: action.productThicknesses
+            }
+        }
+
+        case FETCH_PRODUCTS_WIDTH_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                widths: action.productWidths
+            }
+        }
+        
+        case FETCH_PRODUCTS_OD_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                od: action.productOd
+            }
+        }
+
+        case FETCH_PRODUCTS_ID_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                id: action.productID
+            }
+        }
+
+        case FETCH_PRODUCTS_NB_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                nb: action.nb
+            }
+        }
+
+        case FETCH_PRODUCTS_LENGTH_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                lengths: action.productLengths
+            }
+        }
+
         case FETCH_PRODUCTS_REFINED_ERROR: {
             return {
                 ...state,

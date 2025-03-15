@@ -29,7 +29,15 @@ import {
   getProductCoatingListSuccess,
   getProductCoatingListError,
   getRefinedProductsSuccess,
-  getRefinedProductsError
+  getRefinedProductsError,
+  getMaterialSubCategoriesSuccess,
+  getLeafCategorySuccess,
+  getProductThicknessSuccess,
+  getProductWidthSuccess,
+  getProductOdSuccess,
+  getProductIdSuccess,
+  getProductNbSuccess,
+  getProductLengthSuccess
 } from "../actions";
 import { userSignOutSuccess } from "../../appRedux/actions/Auth";
 
@@ -254,6 +262,225 @@ function* getRefinedProducts(action) {
     if (fetchPartyList.status === 200) {
       const fetchPartyListResponse = yield fetchPartyList.json();
       yield put(getRefinedProductsSuccess(fetchPartyListResponse));
+      if(action.fieldType === 'subCategory') {
+        const subCategoryList = [];
+        const subCategoryIds = [];
+        fetchPartyListResponse.content.map((item) => {
+          if(subCategoryIds.indexOf(item.subcategoryId) === -1) {
+            subCategoryIds.push(item.subcategoryId);
+            subCategoryList.push({
+              subcategoryId: item.subcategoryId,
+              subcategoryIdName: item.subcategory
+            });
+          }
+        });
+        yield put(getMaterialSubCategoriesSuccess(subCategoryList));
+      }
+
+      if(action.fieldType === 'leafCategory') {
+        const subCategoryList = [];
+        const subCategoryIds = [];
+        fetchPartyListResponse.content.map((item) => {
+          if(subCategoryIds.indexOf(item.leafcategoryId) === -1) {
+            subCategoryIds.push(item.leafcategoryId);
+            subCategoryList.push({
+              leafcategoryId: item.leafcategoryId,
+              leafcategoryName: item.leafcategory
+            });
+          }
+        });
+        yield put(getLeafCategorySuccess(subCategoryList));
+      }
+
+      if(action.fieldType === 'brand') {
+        const subCategoryList = [];
+        const subCategoryIds = [];
+        fetchPartyListResponse.content.map((item) => {
+          if(subCategoryIds.indexOf(item.brandId) === -1) {
+            subCategoryIds.push(item.brandId);
+            subCategoryList.push({
+              brandId: item.brandId,
+              brandName: item.brand
+            });
+          }
+        });
+        yield put(getProductBrandsSuccess(subCategoryList));
+      }
+
+      if(action.fieldType === 'productType') {
+        const subCategoryList = [];
+        const subCategoryIds = [];
+        fetchPartyListResponse.content.map((item) => {
+          if(subCategoryIds.indexOf(item.producttypeId) === -1) {
+            subCategoryIds.push(item.producttypeId);
+            subCategoryList.push({
+              productId: item.producttypeId,
+              productName: item.producttype
+            });
+          }
+        });
+        yield put(getProductsListSuccess(subCategoryList));
+      }
+
+      if(action.fieldType === 'uom') {
+        const subCategoryList = [];
+        const subCategoryIds = [];
+
+        const formList = [];
+        const formIds = [];
+
+        fetchPartyListResponse.content.map((item) => {
+          if(subCategoryIds.indexOf(item.uomId) === -1) {
+            subCategoryIds.push(item.uomId);
+            subCategoryList.push({
+              uomId: item.uomId,
+              uomName: item.uom
+            });
+          }
+
+          if(formIds.indexOf(item.formId) === -1) {
+            formIds.push(item.formId);
+            formList.push({
+              formId: item.formId,
+              formName: item.form
+            });
+          }
+          
+        });
+        yield put(getProductUOMSuccess(subCategoryList));
+        yield put(getProductFormSuccess(formList));
+      }
+
+      if(action.fieldType === 'grade') {
+        const subCategoryList = [];
+        const subCategoryIds = [];
+        fetchPartyListResponse.content.map((item) => {
+          if(subCategoryIds.indexOf(item.gradeId) === -1) {
+            subCategoryIds.push(item.gradeId);
+            subCategoryList.push({
+              gradeId: item.gradeId,
+              gradeName: item.grade
+            });
+          }
+        });
+        yield put(getProductGradesSuccess(subCategoryList));
+      }
+
+      if(action.fieldType === 'subgrade') {
+        const subCategoryList = [];
+        const subCategoryIds = [];
+        fetchPartyListResponse.content.map((item) => {
+          if(subCategoryIds.indexOf(item.subgradeId) === -1) {
+            subCategoryIds.push(item.subgradeId);
+            subCategoryList.push({
+              subgradeId: item.subgradeId,
+              subgradeName: item.subgrade
+            });
+          }
+        });
+        yield put(getProductSubGradesSuccess(subCategoryList));
+      }
+
+      if(action.fieldType === 'surface') {
+        const subCategoryList = [];
+        const subCategoryIds = [];
+        fetchPartyListResponse.content.map((item) => {
+          if(subCategoryIds.indexOf(item.surfacetypeId) === -1) {
+            subCategoryIds.push(item.surfacetypeId);
+            subCategoryList.push({
+              surfacetypeId: item.surfacetypeId,
+              surfacetype: item.surfacetype
+            });
+          }
+        });
+        yield put(getProductSurfaceListSuccess(subCategoryList));
+      }
+
+      if(action.fieldType === 'coating') {
+        const subCategoryList = [];
+        const subCategoryIds = [];
+        fetchPartyListResponse.content.map((item) => {
+          if(subCategoryIds.indexOf(item.coatingtypeId) === -1) {
+            subCategoryIds.push(item.coatingtypeId);
+            subCategoryList.push({
+              coatingtypeId: item.coatingtypeId,
+              coatingtype: item.coatingtype
+            });
+          }
+        });
+        yield put(getProductCoatingListSuccess(subCategoryList));
+      }
+
+      if(action.fieldType === 'thickness') {
+        const subCategoryIds = [];
+        fetchPartyListResponse.content.map((item) => {
+          if(subCategoryIds.indexOf(item.thickness) === -1) {
+            subCategoryIds.push(item.thickness);
+          }
+        });
+        yield put(getProductThicknessSuccess(subCategoryIds));
+      }
+
+      if(action.fieldType === 'width') {
+        const subCategoryIds = [];
+        fetchPartyListResponse.content.map((item) => {
+          if(subCategoryIds.indexOf(item.width) === -1) {
+            subCategoryIds.push(item.width);
+          }
+        });
+        yield put(getProductWidthSuccess(subCategoryIds));
+      }
+
+      if(action.fieldType === 'od') {
+        const subCategoryIds = [];
+        fetchPartyListResponse.content.map((item) => {
+          if(subCategoryIds.indexOf(item.odiameter) === -1) {
+            subCategoryIds.push(item.odiameter);
+          }
+        });
+        yield put(getProductOdSuccess(subCategoryIds));
+      }
+
+      if(action.fieldType === 'id') {
+        const subCategoryIds = [];
+        fetchPartyListResponse.content.map((item) => {
+          if(subCategoryIds.indexOf(item.idiameter) === -1) {
+            subCategoryIds.push(item.idiameter);
+          }
+        });
+        yield put(getProductIdSuccess(subCategoryIds));
+      }
+      
+      if(action.fieldType === 'width') {
+        const subCategoryIds = [];
+        fetchPartyListResponse.content.map((item) => {
+          if(subCategoryIds.indexOf(item.width) === -1) {
+            subCategoryIds.push(item.width);
+          }
+        });
+        yield put(getProductWidthSuccess(subCategoryIds));
+      }
+
+      if(action.fieldType === 'length') {
+        const subCategoryIds = [];
+        fetchPartyListResponse.content.map((item) => {
+          if(subCategoryIds.indexOf(item.length) === -1) {
+            subCategoryIds.push(item.length);
+          }
+        });
+        yield put(getProductLengthSuccess(subCategoryIds));
+      }
+
+      if(action.fieldType === 'nb') {
+        const subCategoryIds = [];
+        fetchPartyListResponse.content.map((item) => {
+          if(subCategoryIds.indexOf(item.nb) === -1) {
+            subCategoryIds.push(item.nb);
+          }
+        });
+        yield put(getProductNbSuccess(subCategoryIds));
+      }
+
     } else if (fetchPartyList.status === 401) {
       yield put(userSignOutSuccess());
     } else yield put(getRefinedProductsError("error"));

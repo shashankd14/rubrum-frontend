@@ -34,6 +34,13 @@ import {
     FETCH_PRODUCTS_REFINED,
     FETCH_PRODUCTS_REFINED_SUCCESS,
     FETCH_PRODUCTS_REFINED_ERROR,
+
+    FETCH_PRODUCTS_THICKNESS_SUCCESS,
+    FETCH_PRODUCTS_WIDTH_SUCCESS,
+    FETCH_PRODUCTS_OD_SUCCESS,
+    FETCH_PRODUCTS_ID_SUCCESS,
+    FETCH_PRODUCTS_LENGTH_SUCCESS,
+    FETCH_PRODUCTS_NB_SUCCESS
 } from "../../constants/ActionTypes";
 
 export const getProductBrands = (leafcategoryId) => ({
@@ -156,17 +163,49 @@ export const getProductCoatingListError = (error) => ({
     error
 });
 
-export const getRefinedProducts = (allDetails) => ({
+export const getRefinedProducts = (allDetails, fieldType = '') => ({
     type: FETCH_PRODUCTS_REFINED,
-    allDetails
+    allDetails,
+    fieldType
 });
 
-export const getRefinedProductsSuccess = (productsList) => ({
+export const getRefinedProductsSuccess = (productsList, fieldType = '' ) => ({
     type: FETCH_PRODUCTS_REFINED_SUCCESS,
-    productsList
+    productsList,
+    fieldType: ''
 });
 
 export const getRefinedProductsError = (error) => ({
     type: FETCH_PRODUCTS_REFINED_ERROR,
     error
+});
+
+export const getProductThicknessSuccess = (productThicknesses) => ({
+    type: FETCH_PRODUCTS_THICKNESS_SUCCESS,
+    productThicknesses
+});
+
+export const getProductWidthSuccess = (productWidths) => ({
+    type: FETCH_PRODUCTS_WIDTH_SUCCESS,
+    productWidths
+});
+
+export const getProductLengthSuccess = (productLengths) => ({
+    type: FETCH_PRODUCTS_LENGTH_SUCCESS,
+    productLengths
+});
+
+export const getProductNbSuccess = (nb) => ({
+    type: FETCH_PRODUCTS_NB_SUCCESS,
+    nb
+});
+
+export const getProductOdSuccess = (productOd) => ({
+    type: FETCH_PRODUCTS_OD_SUCCESS,
+    productOd
+});
+
+export const getProductIdSuccess = (productID) => ({
+    type: FETCH_PRODUCTS_ID_SUCCESS,
+    productID
 });
