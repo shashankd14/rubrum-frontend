@@ -4,22 +4,34 @@ import {
   fetchPacketList,
   fetchSalesOrderList,
   saveSalesOrderForPacket,
+  fetchEndUserTagsList,
 } from "../../../appRedux/actions";
 import { useDispatch, useSelector } from "react-redux";
-import { Input, Table, Tabs, Icon, message, Button } from "antd";
+import { Input, Table, Tabs, Icon, message, Button, Select, AutoComplete } from "antd";
 
 const { TabPane } = Tabs;
+const { Option } = AutoComplete;
 
 const SalesOrder = () => {
   const dispatch = useDispatch();
   const salesOrder = useSelector((state) => state.salesOrder);
   const [packetsList, setPacketsList] = useState(salesOrder.packets);
   const [salesOrderList, setSalesOrderList] = useState(salesOrder.list);
+  const endUserTags = useSelector(
+    (state) => state.packetClassification.endUserTags
+  );
+
   const [pageNo, setPageNo] = React.useState(1);
   const [salesPageNo, setSalesPageNo] = React.useState(1);
   const onInputChange = (index) => (e: React.ChangeEvent<HTMLInputElement>) => {
     const newData = [...salesOrder.packets];
     newData[index].soNumber = e.target.value;
+    setPacketsList(newData);
+  };
+
+  const onEndUserInputChange = (value, index) => {
+    const newData = [...salesOrder.packets];
+    newData[index].customerCodeId = value;
     setPacketsList(newData);
   };
 
@@ -75,6 +87,32 @@ const SalesOrder = () => {
       render: (text, record, index) => (
         <div style={{ display: "flex", alignItems: "center" }}>
           <Input value={record.soNumber} onChange={onInputChange(index)} />
+        </div>
+      ),
+    },
+    {
+      title: "Customer Id",
+      dataIndex: "endUserTag",
+      width: '20%',
+      render: (text, record, tableIndex) => (
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <Select
+          style={{ width: '100%' }}
+            placeholder="customer id"
+            filterOption={(input, option) =>
+              option.props.children
+                .toString()
+                .toLowerCase()
+                .indexOf(input.toLowerCase()) >= 0
+            }
+            onSelect={(value) => onEndUserInputChange(value, tableIndex)}
+          >
+            {endUserTags.map((tag) => (
+              <Option key={tag.tagId} value={tag.tagId}>
+                {tag.tagName}
+              </Option>
+            ))}
+          </Select>
           <Icon
             onClick={() => dispatch(saveSalesOrderForPacket(record))}
             style={{ marginLeft: "8px" }}
@@ -178,6 +216,7 @@ const SalesOrder = () => {
   useEffect(() => {
     dispatch(fetchPacketList());
     dispatch(fetchSalesOrderList());
+    dispatch(fetchEndUserTagsList());
   }, []);
 
   useEffect(() => {
