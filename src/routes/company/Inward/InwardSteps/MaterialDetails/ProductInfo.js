@@ -66,7 +66,7 @@ const ProductInfoForm = (props) => {
   }, []);
 
   useEffect(() => {
-    if(props.inward.width && props.inward.thickness && props.inward.netWeight && props.inward.productForm === 'Coil') {
+    if(props.inward.width && props.inward.thickness && props.inward.netWeight && (props.inward.productForm === '1' || props.inward.productForm === 'Coil')) {
       props.setInwardDetails({...props.inward,'length':(parseFloat(parseFloat(props.inward.netWeight)/(parseFloat(props.inward.thickness)*7.85*(props.inward.width/1000))).toFixed(4))*1000});   
     }
   }, [props.inward.width, props.inward.thickness, props.inward.netWeight]);
