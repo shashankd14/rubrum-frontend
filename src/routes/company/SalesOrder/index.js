@@ -7,7 +7,18 @@ import {
   fetchEndUserTagsList,
 } from "../../../appRedux/actions";
 import { useDispatch, useSelector } from "react-redux";
-import { Input, Table, Tabs, Icon, message, Button, Select, AutoComplete } from "antd";
+import {
+  Input,
+  Table,
+  Tabs,
+  Icon,
+  message,
+  Button,
+  Select,
+  Card,
+  AutoComplete,
+} from "antd";
+import SearchBox from "../../../components/SearchBox";
 
 const { TabPane } = Tabs;
 const { Option } = AutoComplete;
@@ -17,6 +28,8 @@ const SalesOrder = () => {
   const salesOrder = useSelector((state) => state.salesOrder);
   const [packetsList, setPacketsList] = useState(salesOrder.packets);
   const [salesOrderList, setSalesOrderList] = useState(salesOrder.list);
+  const [searchValue, setSearchValue] = useState("");
+
   const endUserTags = useSelector(
     (state) => state.packetClassification.endUserTags
   );
@@ -28,6 +41,18 @@ const SalesOrder = () => {
     newData[index].soNumber = e.target.value;
     setPacketsList(newData);
   };
+
+  useEffect(() => {
+    if (searchValue) {
+      if (searchValue.length >= 3) {
+        setSalesPageNo(1);
+        dispatch(fetchSalesOrderList(1, 15, searchValue));
+      }
+    } else {
+      setSalesPageNo(1);
+      dispatch(fetchSalesOrderList(1, 15, searchValue));
+    }
+  }, [searchValue]);
 
   const onEndUserInputChange = (value, index) => {
     const newData = [...salesOrder.packets];
@@ -93,11 +118,11 @@ const SalesOrder = () => {
     {
       title: "Customer Id",
       dataIndex: "endUserTag",
-      width: '20%',
+      width: "20%",
       render: (text, record, tableIndex) => (
         <div style={{ display: "flex", alignItems: "center" }}>
           <Select
-          style={{ width: '100%' }}
+            style={{ width: "100%" }}
             placeholder="customer id"
             filterOption={(input, option) =>
               option.props.children
@@ -269,6 +294,7 @@ const SalesOrder = () => {
       <h1>
         <IntlMessages id="sidebar.company.salesOrder" />
       </h1>
+      <Card>
       <Tabs
         defaultActiveKey="1"
         onChange={(key) => {
@@ -293,6 +319,15 @@ const SalesOrder = () => {
           />
         </TabPane>
         <TabPane tab="Sales Orders" key="2">
+        <div className="gx-flex-row gx-justify-content-end">
+          <SearchBox
+            styleName="gx-w-50"
+            placeholder="Search for SO number..."
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+          />
+          </div>
+          <br></br>
           <Table
             className="gx-table-responsive"
             columns={SOColumns}
@@ -311,6 +346,7 @@ const SalesOrder = () => {
           />
         </TabPane>
       </Tabs>
+      </Card>
     </div>
   );
 };
