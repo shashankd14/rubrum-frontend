@@ -66,7 +66,7 @@ const ProductInfoForm = (props) => {
   }, []);
 
   useEffect(() => {
-    if(props.inward.width && props.inward.thickness && props.inward.netWeight && (props.inward.productForm === '1' || props.inward.productForm === 'Coil')) {
+    if(props.inward.width && props.inward.thickness && props.inward.netWeight && (props.inward.productForm === 1 || props.inward.productForm === 'Coil')) {
       props.setInwardDetails({...props.inward,'length':(parseFloat(parseFloat(props.inward.netWeight)/(parseFloat(props.inward.thickness)*7.85*(props.inward.width/1000))).toFixed(4))*1000});   
     }
   }, [props.inward.width, props.inward.thickness, props.inward.netWeight]);
@@ -107,7 +107,7 @@ const ProductInfoForm = (props) => {
                   }
                 >
                   {props.productInfo?.productGradesList?.map((grade) => (
-                    <Option key={grade.gradeId} value={`${grade.gradeId}`}>
+                    <Option key={grade.gradeId} value={grade.gradeId}>
                       {grade.gradeName}
                     </Option>
                   ))}
@@ -119,6 +119,7 @@ const ProductInfoForm = (props) => {
                 rules: [{ required: false, message: "Select Surface Type" }],
               })(
                 <Select
+                  defaultActiveFirstOption={true}
                   disabled={props.inward.disableSelection}
                   showSearch
                   placeholder="Select a surface type"
@@ -150,6 +151,7 @@ const ProductInfoForm = (props) => {
                 rules: [{ required: false, message: "Enter Thickness" }],
               })(
                 <Select
+                  defaultActiveFirstOption={true}
                   disabled={props.inward.disableSelection}
                   showSearch
                   placeholder="Select thickness"
@@ -184,6 +186,7 @@ const ProductInfoForm = (props) => {
                 rules: [{ required: false, message: "Enter Width" }],
               })(
                 <Select
+                  defaultActiveFirstOption={true}
                   disabled={props.inward.disableSelection}
                   showSearch
                   placeholder="Select a width"
@@ -218,6 +221,7 @@ const ProductInfoForm = (props) => {
                 rules: [{ required: false, message: "Enter Length" }],
               })(
                 <Select
+                  defaultActiveFirstOption={true}
                   disabled={props.inward.disableSelection}
                   showSearch
                   placeholder="Select a length"
@@ -268,7 +272,7 @@ const ProductInfoForm = (props) => {
             <Form.Item label="Material Desc">
               <TextArea
                 rows={3}
-                value={`${categoryName}-${subCategoryName}-${leafCategoryName}-${brandName}-${uom}-${form}-${grade}-${subGradeName}-${surfaceType}-${coatingType}-${props.inward.thickness}-${props.inward.od}-${props.inward.width}-${props.inward.id}-${props.inward.length}-${props.inward.nb}`}
+                value={props?.productInfo?.refinedProducts[0]?.mmDescription}
                 disabled
               />
             </Form.Item>
@@ -288,6 +292,7 @@ const ProductInfoForm = (props) => {
                 ],
               })(
                 <Select
+                  defaultActiveFirstOption={true}
                   disabled={props.inward.disableSelection}
                   showSearch
                   placeholder="Select a product sub grade"
@@ -308,7 +313,7 @@ const ProductInfoForm = (props) => {
                   {props?.productInfo?.productSubGradesList?.map((subGrade) => (
                     <Option
                       key={subGrade.subgradeId}
-                      value={`${subGrade.subgradeId}`}
+                      value={subGrade.subgradeId}
                     >
                       {subGrade.subgradeName}
                     </Option>
@@ -326,6 +331,7 @@ const ProductInfoForm = (props) => {
                 ],
               })(
                 <Select
+                  defaultActiveFirstOption={true}
                   disabled={props.inward.disableSelection}
                   showSearch
                   placeholder="Select a product coating"
@@ -364,13 +370,14 @@ const ProductInfoForm = (props) => {
                 ],
               })(
                 <Select
+                  defaultActiveFirstOption={true}
                   disabled={props.inward.disableSelection}
                   showSearch
                   placeholder="Select an OD"
                   optionFilterProp="children"
                   onChange={(gradeId, option) => {
                     props.saveMaterialInfo("diameter", option.props.children);
-                    props.getRefinedProducts(props.inward, 'width');
+                    props.getRefinedProducts(props.inward, 'id');
                   }}
                   filterOption={(input, option) =>
                     option.props.children.toString()
@@ -382,7 +389,7 @@ const ProductInfoForm = (props) => {
                     od >= 0 ? (
                       <Option
                         key={`${od}${index}`}
-                        value={`${od}`}
+                        value={od}
                       >
                         {od}
                       </Option>
@@ -403,6 +410,7 @@ const ProductInfoForm = (props) => {
                 ],
               })(
                 <Select
+                  defaultActiveFirstOption={true}
                   disabled={props.inward.disableSelection}
                   showSearch
                   placeholder="Select an ID"
@@ -442,6 +450,7 @@ const ProductInfoForm = (props) => {
                 ],
               })(
                 <Select
+                  defaultActiveFirstOption={true}
                   disabled={props.inward.disableSelection}
                   showSearch
                   placeholder="Select NB"

@@ -25,6 +25,7 @@ import {
   enableMaterialSelection,
   getRefinedProducts
 } from "../../../../../appRedux/actions";
+import { use } from "react";
 
 const formItemLayout = {
   labelCol: {
@@ -285,7 +286,7 @@ const CategoryForm = (props) => {
                   }
                 >
                  {props.productInfo?.brandList?.map((brand) => (
-                    <Option key={brand.brandId} value={`${brand.brandId}`}>
+                    <Option key={brand.brandId} value={brand.brandId}>
                       {brand.brandName}
                     </Option>
                   ))}
@@ -366,7 +367,7 @@ const CategoryForm = (props) => {
                   }
                 >
                   {props.productInfo?.productUomList?.map((uom) => (
-                    <Option key={uom.uomId} value={`${uom.uomId}`}>
+                    <Option key={uom.uomId} value={uom.uomId}>
                       {uom.uomName}
                     </Option>
                   ))}
@@ -402,7 +403,7 @@ const CategoryForm = (props) => {
                   }
                 >
                   {props.productInfo?.productsFormsList?.map((form) => (
-                    <Option key={form.formId} value={`${form.formId}`}>
+                    <Option key={form.formId} value={form.formId}>
                       {form.formName}
                     </Option>
                   ))}

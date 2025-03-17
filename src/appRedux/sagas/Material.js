@@ -1,4 +1,4 @@
-import {all, put, fork, takeLatest} from "redux-saga/effects";
+import {all, put, fork, takeLatest, select, call} from "redux-saga/effects";
 import { getUserToken } from './common';
 import {
     FETCH_MATERIAL_LIST_REQUEST,
@@ -32,9 +32,13 @@ import {
     searchByMaterialIdSuccess,
     searchByMaterialIdError,
     setMaterialData,
-    saveMaterialDisplayInfo
+    saveMaterialDisplayInfo,
+    setInwardDetails,
+    getRefinedProducts,
+    saveMaterialInfo   
 } from "../actions";
 import { userSignOutSuccess } from "../../appRedux/actions/Auth";
+import { getInwardEntryFields } from "../selectors";
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
 
@@ -218,11 +222,28 @@ function* fetchMaterialCategories() {
         if(fetchPartyList.status === 200) {
             const fetchPartyListResponse = yield fetchPartyList.json();
             yield put(getMaterialCategoriesSuccess(fetchPartyListResponse));
+
+            let inwardFormDetails = yield select(getInwardEntryFields);
+            yield put(setInwardDetails({...inwardFormDetails, categoryId: "1"}));
+            yield put(saveMaterialInfo("categoryName", "Metals and Alloys"));
+            
+            inwardFormDetails = yield select(getInwardEntryFields);
+            yield put(getRefinedProducts(inwardFormDetails, 'subCategory'));
+            yield put(setInwardDetails({...inwardFormDetails, subcategoryId: "1"}));
+            yield put(saveMaterialInfo("subCategoryName", "Mild Steel"));
+
+            inwardFormDetails = yield select(getInwardEntryFields);
+            yield put(getRefinedProducts(inwardFormDetails, 'leafCategory'));
+            yield put(setInwardDetails({...inwardFormDetails, leafcategoryId: "1"}));
+            yield put(saveMaterialInfo("leafCategoryName", "Hot Rolled"));
+
+            yield put(getRefinedProducts(inwardFormDetails, 'brand'));
         } else if (fetchPartyList.status === 401) {
             yield put(userSignOutSuccess());
         } else
             yield put(getMaterialCategoriesError('error'));
     } catch (error) {
+        console.log(error);
         yield put(getMaterialCategoriesError(error));
     }
 }
@@ -241,6 +262,8 @@ function* fetchMaterialSubCategories(action) {
         if(fetchPartyList.status === 200) {
             const fetchPartyListResponse = yield fetchPartyList.json();
             yield put(getMaterialSubCategoriesSuccess(fetchPartyListResponse));
+            const inwardFormDetails = yield select(getInwardEntryFields);
+            yield call(getRefinedProducts(inwardFormDetails, 'subCategory'));
         } else if (fetchPartyList.status === 401) {
             yield put(userSignOutSuccess());
         } else

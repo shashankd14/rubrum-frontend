@@ -8,11 +8,7 @@ import {
 } from "../../../../../appRedux/actions";
 
 const Summary = (props) => {
-  const { categoryName, subCategoryName, leafCategoryName, brandName, productType, uom, form, grade, surfaceType, subGradeName, coatingType, mmId } = props.material.displayInfo;
-
-  useEffect(() => {
-    props.getRefinedProducts(props.inward);
-  }, []);
+  const { categoryName, subCategoryName, leafCategoryName, brandName, productType, uom, form, grade, surfaceType, subGradeName, coatingType, mmId, mmDescription } = props.material.displayInfo;
 
   return (
     <>
@@ -41,7 +37,7 @@ const Summary = (props) => {
         <Descriptions.Item label="NB">{props.inward.nb}</Descriptions.Item>
         <Descriptions.Item label="Gross Weight">{props.inward.grossWeight}</Descriptions.Item>
         <Descriptions.Item label="Net Weight">{props.inward.netWeight}</Descriptions.Item>
-        <Descriptions.Item label="Material Description">{`${categoryName}-${subCategoryName}-${leafCategoryName}-${brandName}-${uom}-${form}-${grade}-${subGradeName}-${surfaceType}-${coatingType}-${props.inward.thickness}-${props.inward.od}-${props.inward.width}-${props.inward.id}-${props.inward.length}-${props.inward.nb}`}</Descriptions.Item>
+        <Descriptions.Item label="Material Description">{props?.productInfo?.refinedProducts[0]?.mmDescription}</Descriptions.Item>
       </Descriptions>
       </Card>
       <Row className="gx-mt-4">
@@ -50,7 +46,10 @@ const Summary = (props) => {
             <Icon type="left" />
             Back
           </Button>
-          <Button type="primary" onClick={() => props.onNextStep()}>
+          <Button type="primary" onClick={() => {
+            props.setInwardDetails({ ...props.inward, mmId: props?.productInfo?.refinedProducts[0]?.mmId})
+            props.onNextStep()
+            }}>
             Forward
             <Icon type="right" />
           </Button>
@@ -67,5 +66,6 @@ const mapStateToProps = (state) => ({
 });
 
 export default connect(mapStateToProps, {
-  getRefinedProducts
+  getRefinedProducts,
+  setInwardDetails
 })(Summary);

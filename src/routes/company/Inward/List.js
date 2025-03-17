@@ -132,6 +132,7 @@ const List = (props) => {
       ),
     },
   ];
+
   const onDelete = (record, key, e) => {
     let id = [];
     id.push(record.inwardEntryId);
@@ -139,12 +140,14 @@ const List = (props) => {
     props.deleteInwardEntryById(id);
     console.log(record, key);
   };
+
   const onEdit = (record, key, e) => {
     props.fetchPartyListById(record.inwardEntryId);
     setTimeout(() => {
       props.history.push(`create/${record.inwardEntryId}`);
     }, 2000);
   };
+  
   useEffect(() => {
     if (props.inward.deleteSuccess) {
       message.success("Successfully deleted the coil", 2).then(() => {
@@ -152,6 +155,7 @@ const List = (props) => {
       });
     }
   }, [props.inward.deleteSuccess]);
+  
   useEffect(() => {
     if (props.inward.deleteFail) {
       message.success("Unable to delete the coil", 2).then(() => {

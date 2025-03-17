@@ -1,4 +1,4 @@
-import { all, put, fork, takeLatest } from "redux-saga/effects";
+import { all, put, fork, takeLatest, select, takeEvery } from "redux-saga/effects";
 import { getUserToken } from "./common";
 import {
   FETCH_PRODUCT_BRANDS,
@@ -37,9 +37,13 @@ import {
   getProductOdSuccess,
   getProductIdSuccess,
   getProductNbSuccess,
-  getProductLengthSuccess
+  getProductLengthSuccess,
+  setInwardDetails,
+  saveMaterialInfo,
+  getRefinedProducts as getRefinedProductsAction
 } from "../actions";
 import { userSignOutSuccess } from "../../appRedux/actions/Auth";
+import { getInwardEntryFields } from "../selectors";
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
 const getHeaders = () => ({
@@ -246,9 +250,9 @@ function* getRefinedProducts(action) {
     "uomId": action.allDetails.productUom,
     "surfacetypeId": action.allDetails.surfaceType,
     "coatingtypeId": action.allDetails.coatingTypeId,
-    "length": action.allDetails.length,
+    "length": (action.allDetails.productForm === 1 || action.allDetails.productForm === 'Coil') ? undefined : action.allDetails.length,
     "width": action.allDetails.width,
-    "thickness": action.allDetails.thickness,
+    "thickness": action.allDetails.thickness ? action.allDetails.thickness : undefined,
     "nb": action.allDetails.nb,
     "oDiameter": action.allDetails.od,
     "iDiameter": action.allDetails.id,
@@ -262,6 +266,7 @@ function* getRefinedProducts(action) {
     if (fetchPartyList.status === 200) {
       const fetchPartyListResponse = yield fetchPartyList.json();
       yield put(getRefinedProductsSuccess(fetchPartyListResponse));
+
       if(action.fieldType === 'subCategory') {
         const subCategoryList = [];
         const subCategoryIds = [];
@@ -277,7 +282,7 @@ function* getRefinedProducts(action) {
         yield put(getMaterialSubCategoriesSuccess(subCategoryList));
       }
 
-      if(action.fieldType === 'leafCategory') {
+      else if(action.fieldType === 'leafCategory') {
         const subCategoryList = [];
         const subCategoryIds = [];
         fetchPartyListResponse.content.map((item) => {
@@ -292,7 +297,7 @@ function* getRefinedProducts(action) {
         yield put(getLeafCategorySuccess(subCategoryList));
       }
 
-      if(action.fieldType === 'brand') {
+      else if(action.fieldType === 'brand') {
         const subCategoryList = [];
         const subCategoryIds = [];
         fetchPartyListResponse.content.map((item) => {
@@ -305,9 +310,16 @@ function* getRefinedProducts(action) {
           }
         });
         yield put(getProductBrandsSuccess(subCategoryList));
+        if(subCategoryList.length === 1) {
+          let inwardFormDetails = yield select(getInwardEntryFields);
+          yield put(setInwardDetails({...inwardFormDetails, brandId: subCategoryList[0].brandId}));
+          inwardFormDetails = yield select(getInwardEntryFields);
+          yield put(saveMaterialInfo("brandName", subCategoryList[0].brand));
+          yield put(getRefinedProductsAction(inwardFormDetails, 'productType'));
+        }
       }
 
-      if(action.fieldType === 'productType') {
+      else if(action.fieldType === 'productType') {
         const subCategoryList = [];
         const subCategoryIds = [];
         fetchPartyListResponse.content.map((item) => {
@@ -320,9 +332,16 @@ function* getRefinedProducts(action) {
           }
         });
         yield put(getProductsListSuccess(subCategoryList));
+        if(subCategoryList.length === 1) {
+          let inwardFormDetails = yield select(getInwardEntryFields);
+          yield put(setInwardDetails({...inwardFormDetails, productTypeId: subCategoryList[0].productId}));
+          inwardFormDetails = yield select(getInwardEntryFields);
+          yield put(saveMaterialInfo("productType", subCategoryList[0].brand));
+          yield put(getRefinedProductsAction(inwardFormDetails, 'uom'));
+        }
       }
 
-      if(action.fieldType === 'uom') {
+      else if(action.fieldType === 'uom') {
         const subCategoryList = [];
         const subCategoryIds = [];
 
@@ -349,9 +368,20 @@ function* getRefinedProducts(action) {
         });
         yield put(getProductUOMSuccess(subCategoryList));
         yield put(getProductFormSuccess(formList));
+
+        if(subCategoryList.length === 1) {
+          let inwardFormDetails = yield select(getInwardEntryFields);
+          yield put(setInwardDetails({...inwardFormDetails, productUom: subCategoryList[0].uomId}));
+          yield put(saveMaterialInfo("uom", subCategoryList[0].uomName));
+        }
+        if(formList.length === 1) {
+          let inwardFormDetails = yield select(getInwardEntryFields);
+          yield put(setInwardDetails({...inwardFormDetails, productForm: formList[0].formId}));
+          yield put(saveMaterialInfo("form", subCategoryList[0].formName));
+        }
       }
 
-      if(action.fieldType === 'grade') {
+      else if(action.fieldType === 'grade') {
         const subCategoryList = [];
         const subCategoryIds = [];
         fetchPartyListResponse.content.map((item) => {
@@ -363,10 +393,17 @@ function* getRefinedProducts(action) {
             });
           }
         });
+
         yield put(getProductGradesSuccess(subCategoryList));
+        if(subCategoryList.length === 1) {
+          let inwardFormDetails = yield select(getInwardEntryFields);
+          yield put(setInwardDetails({...inwardFormDetails, gradeId: subCategoryList[0].gradeId}));
+          inwardFormDetails = yield select(getInwardEntryFields);
+          yield put(getRefinedProductsAction(inwardFormDetails, 'subgrade'));
+        }
       }
 
-      if(action.fieldType === 'subgrade') {
+      else if(action.fieldType === 'subgrade') {
         const subCategoryList = [];
         const subCategoryIds = [];
         fetchPartyListResponse.content.map((item) => {
@@ -379,9 +416,15 @@ function* getRefinedProducts(action) {
           }
         });
         yield put(getProductSubGradesSuccess(subCategoryList));
+        if(subCategoryList.length === 1) {
+          let inwardFormDetails = yield select(getInwardEntryFields);
+          yield put(setInwardDetails({...inwardFormDetails, subgradeId: subCategoryList[0].subgradeId}));
+          inwardFormDetails = yield select(getInwardEntryFields);
+          yield put(getRefinedProductsAction(inwardFormDetails, 'surface'));
+        }
       }
 
-      if(action.fieldType === 'surface') {
+      else if(action.fieldType === 'surface') {
         const subCategoryList = [];
         const subCategoryIds = [];
         fetchPartyListResponse.content.map((item) => {
@@ -394,9 +437,15 @@ function* getRefinedProducts(action) {
           }
         });
         yield put(getProductSurfaceListSuccess(subCategoryList));
+        if(subCategoryList.length === 1) {
+          let inwardFormDetails = yield select(getInwardEntryFields);
+          yield put(setInwardDetails({...inwardFormDetails, surfaceType: subCategoryList[0].surfacetypeId}));
+          inwardFormDetails = yield select(getInwardEntryFields);
+          yield put(getRefinedProductsAction(inwardFormDetails, 'coating'));
+        }
       }
 
-      if(action.fieldType === 'coating') {
+      else if(action.fieldType === 'coating') {
         const subCategoryList = [];
         const subCategoryIds = [];
         fetchPartyListResponse.content.map((item) => {
@@ -409,9 +458,15 @@ function* getRefinedProducts(action) {
           }
         });
         yield put(getProductCoatingListSuccess(subCategoryList));
+        if(subCategoryList.length === 1) {
+          let inwardFormDetails = yield select(getInwardEntryFields);
+          yield put(setInwardDetails({...inwardFormDetails, coatingTypeId: subCategoryList[0].coatingtypeId}));
+          inwardFormDetails = yield select(getInwardEntryFields);
+          yield put(getRefinedProductsAction(inwardFormDetails, 'thickness'));
+        }
       }
 
-      if(action.fieldType === 'thickness') {
+      else if(action.fieldType === 'thickness') {
         const subCategoryIds = [];
         fetchPartyListResponse.content.map((item) => {
           if(subCategoryIds.indexOf(item.thickness) === -1) {
@@ -419,9 +474,15 @@ function* getRefinedProducts(action) {
           }
         });
         yield put(getProductThicknessSuccess(subCategoryIds));
+        if(subCategoryIds.length === 1) {
+          let inwardFormDetails = yield select(getInwardEntryFields);
+          yield put(setInwardDetails({...inwardFormDetails, thickness: subCategoryIds[0]}));
+          inwardFormDetails = yield select(getInwardEntryFields);
+          yield put(getRefinedProductsAction(inwardFormDetails, 'od'));
+        }
       }
 
-      if(action.fieldType === 'width') {
+      else if(action.fieldType === 'width') {
         const subCategoryIds = [];
         fetchPartyListResponse.content.map((item) => {
           if(subCategoryIds.indexOf(item.width) === -1) {
@@ -429,9 +490,15 @@ function* getRefinedProducts(action) {
           }
         });
         yield put(getProductWidthSuccess(subCategoryIds));
+        if(subCategoryIds.length === 1) {
+          let inwardFormDetails = yield select(getInwardEntryFields);
+          yield put(setInwardDetails({...inwardFormDetails, width: subCategoryIds[0]}));
+          inwardFormDetails = yield select(getInwardEntryFields);
+          yield put(getRefinedProductsAction(inwardFormDetails, 'id'));
+        }
       }
 
-      if(action.fieldType === 'od') {
+      else if(action.fieldType === 'od') {
         const subCategoryIds = [];
         fetchPartyListResponse.content.map((item) => {
           if(subCategoryIds.indexOf(item.odiameter) === -1) {
@@ -439,9 +506,15 @@ function* getRefinedProducts(action) {
           }
         });
         yield put(getProductOdSuccess(subCategoryIds));
+        if(subCategoryIds.length === 1) {
+          let inwardFormDetails = yield select(getInwardEntryFields);
+          yield put(setInwardDetails({...inwardFormDetails, od: subCategoryIds[0]}));
+          inwardFormDetails = yield select(getInwardEntryFields);
+          yield put(getRefinedProductsAction(inwardFormDetails, 'width'));
+        }
       }
 
-      if(action.fieldType === 'id') {
+      else if(action.fieldType === 'id') {
         const subCategoryIds = [];
         fetchPartyListResponse.content.map((item) => {
           if(subCategoryIds.indexOf(item.idiameter) === -1) {
@@ -449,6 +522,12 @@ function* getRefinedProducts(action) {
           }
         });
         yield put(getProductIdSuccess(subCategoryIds));
+        if(subCategoryIds.length === 1) {
+          let inwardFormDetails = yield select(getInwardEntryFields);
+          yield put(setInwardDetails({...inwardFormDetails, id: subCategoryIds[0]}));
+          inwardFormDetails = yield select(getInwardEntryFields);
+          yield put(getRefinedProductsAction(inwardFormDetails, 'nb'));
+        }
       }
       
       if(action.fieldType === 'width') {
@@ -461,7 +540,7 @@ function* getRefinedProducts(action) {
         yield put(getProductWidthSuccess(subCategoryIds));
       }
 
-      if(action.fieldType === 'length') {
+      else if(action.fieldType === 'length') {
         const subCategoryIds = [];
         fetchPartyListResponse.content.map((item) => {
           if(subCategoryIds.indexOf(item.length) === -1) {
@@ -471,7 +550,7 @@ function* getRefinedProducts(action) {
         yield put(getProductLengthSuccess(subCategoryIds));
       }
 
-      if(action.fieldType === 'nb') {
+      else if(action.fieldType === 'nb') {
         const subCategoryIds = [];
         fetchPartyListResponse.content.map((item) => {
           if(subCategoryIds.indexOf(item.nb) === -1) {
@@ -479,6 +558,11 @@ function* getRefinedProducts(action) {
           }
         });
         yield put(getProductNbSuccess(subCategoryIds));
+        if(subCategoryIds.length === 1) {
+          let inwardFormDetails = yield select(getInwardEntryFields);
+          yield put(setInwardDetails({...inwardFormDetails, nb: subCategoryIds[0]}));
+          inwardFormDetails = yield select(getInwardEntryFields);
+        }
       }
 
     } else if (fetchPartyList.status === 401) {
@@ -499,7 +583,7 @@ export function* watchFetchRequests() {
   yield takeLatest(FETCH_PRODUCT_SUB_GRADES, fetchProductSubGrades);
   yield takeLatest(FETCH_PRODUCT_SURFACE_LIST, fetchProductSurfaceList);
   yield takeLatest(FETCH_PRODUCT_COATING_LIST, fetchProductCoatingList);
-  yield takeLatest(FETCH_PRODUCTS_REFINED, getRefinedProducts);
+  yield takeEvery(FETCH_PRODUCTS_REFINED, getRefinedProducts);
 }
 
 export default function* productInfoSagas() {

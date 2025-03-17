@@ -169,10 +169,9 @@ export const getRefinedProducts = (allDetails, fieldType = '') => ({
     fieldType
 });
 
-export const getRefinedProductsSuccess = (productsList, fieldType = '' ) => ({
+export const getRefinedProductsSuccess = (productsList) => ({
     type: FETCH_PRODUCTS_REFINED_SUCCESS,
     productsList,
-    fieldType: ''
 });
 
 export const getRefinedProductsError = (error) => ({
