@@ -416,7 +416,7 @@ const ProductInfoForm = (props) => {
                   placeholder="Select an ID"
                   optionFilterProp="children"
                   onChange={(gradeId, option) => {
-                    props.saveMaterialInfo("materaiId", option.props.children);
+                    props.saveMaterialInfo("idiameter", option.props.children);
                     props.getRefinedProducts(props.inward, 'length');
                   }}
                   filterOption={(input, option) =>

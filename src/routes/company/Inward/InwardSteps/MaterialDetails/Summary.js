@@ -8,7 +8,11 @@ import {
 } from "../../../../../appRedux/actions";
 
 const Summary = (props) => {
-  const { categoryName, subCategoryName, leafCategoryName, brandName, productType, uom, form, grade, surfaceType, subGradeName, coatingType, mmId, mmDescription } = props.material.displayInfo;
+  const { categoryName, subCategoryName, leafCategoryName, brandName, productType, uom, form,
+    width,
+    idiameter,
+    nb,
+    grade, surfaceType, subGradeName, coatingType, mmId, mmDescription, diameter, thickness } = props.material.displayInfo;
 
   return (
     <>
@@ -21,7 +25,7 @@ const Summary = (props) => {
       </Descriptions>
       <Descriptions title="Product Info" column={2}>
         <Descriptions.Item label="Product Type">{productType}</Descriptions.Item>
-        <Descriptions.Item label="HSN"></Descriptions.Item>
+        <Descriptions.Item label="HSN">{props?.productInfo?.refinedProducts[0]?.hsn}</Descriptions.Item>
         <Descriptions.Item label="Brand">{brandName}</Descriptions.Item>
         <Descriptions.Item label="Unit of measure">{uom}</Descriptions.Item>
         <Descriptions.Item label="Form">{form}</Descriptions.Item>
@@ -29,12 +33,12 @@ const Summary = (props) => {
         <Descriptions.Item label="Sub grade">{subGradeName}</Descriptions.Item>
         <Descriptions.Item label="Surface Type">{surfaceType}</Descriptions.Item>
         <Descriptions.Item label="Coating gsm">{coatingType}</Descriptions.Item>
-        <Descriptions.Item label="Thickness">{props.inward.thickness}</Descriptions.Item>
-        <Descriptions.Item label="OD">{props.inward.od}</Descriptions.Item>
-        <Descriptions.Item label="Width">{props.inward.width}</Descriptions.Item>
-        <Descriptions.Item label="ID">{props.inward.id}</Descriptions.Item>
+        <Descriptions.Item label="Thickness">{thickness}</Descriptions.Item>
+        <Descriptions.Item label="OD">{diameter}</Descriptions.Item>
+        <Descriptions.Item label="Width">{width}</Descriptions.Item>
+        <Descriptions.Item label="ID">{idiameter}</Descriptions.Item>
         <Descriptions.Item label="Length">{props.inward.length}</Descriptions.Item>
-        <Descriptions.Item label="NB">{props.inward.nb}</Descriptions.Item>
+        <Descriptions.Item label="NB">{nb}</Descriptions.Item>
         <Descriptions.Item label="Gross Weight">{props.inward.grossWeight}</Descriptions.Item>
         <Descriptions.Item label="Net Weight">{props.inward.netWeight}</Descriptions.Item>
         <Descriptions.Item label="Material Description">{props?.productInfo?.refinedProducts[0]?.mmDescription}</Descriptions.Item>

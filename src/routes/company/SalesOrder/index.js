@@ -212,7 +212,7 @@ const SalesOrder = () => {
           .includes(value.toLowerCase()),
     },
     {
-      title: "Status",
+      title: "Process name",
       dataIndex: "soStatus",
       key: "soStatus",
     },

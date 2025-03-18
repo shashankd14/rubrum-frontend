@@ -314,7 +314,7 @@ function* getRefinedProducts(action) {
           let inwardFormDetails = yield select(getInwardEntryFields);
           yield put(setInwardDetails({...inwardFormDetails, brandId: subCategoryList[0].brandId}));
           inwardFormDetails = yield select(getInwardEntryFields);
-          yield put(saveMaterialInfo("brandName", subCategoryList[0].brand));
+          yield put(saveMaterialInfo("brandName", subCategoryList[0].brandName));
           yield put(getRefinedProductsAction(inwardFormDetails, 'productType'));
         }
       }
@@ -336,7 +336,7 @@ function* getRefinedProducts(action) {
           let inwardFormDetails = yield select(getInwardEntryFields);
           yield put(setInwardDetails({...inwardFormDetails, productTypeId: subCategoryList[0].productId}));
           inwardFormDetails = yield select(getInwardEntryFields);
-          yield put(saveMaterialInfo("productType", subCategoryList[0].brand));
+          yield put(saveMaterialInfo("productType", subCategoryList[0].productName));
           yield put(getRefinedProductsAction(inwardFormDetails, 'uom'));
         }
       }
@@ -377,7 +377,7 @@ function* getRefinedProducts(action) {
         if(formList.length === 1) {
           let inwardFormDetails = yield select(getInwardEntryFields);
           yield put(setInwardDetails({...inwardFormDetails, productForm: formList[0].formId}));
-          yield put(saveMaterialInfo("form", subCategoryList[0].formName));
+          yield put(saveMaterialInfo("form", formList[0].formName));
         }
       }
 
@@ -399,6 +399,7 @@ function* getRefinedProducts(action) {
           let inwardFormDetails = yield select(getInwardEntryFields);
           yield put(setInwardDetails({...inwardFormDetails, gradeId: subCategoryList[0].gradeId}));
           inwardFormDetails = yield select(getInwardEntryFields);
+          yield put(saveMaterialInfo("grade", subCategoryList[0].gradeName));
           yield put(getRefinedProductsAction(inwardFormDetails, 'subgrade'));
         }
       }
@@ -420,6 +421,7 @@ function* getRefinedProducts(action) {
           let inwardFormDetails = yield select(getInwardEntryFields);
           yield put(setInwardDetails({...inwardFormDetails, subgradeId: subCategoryList[0].subgradeId}));
           inwardFormDetails = yield select(getInwardEntryFields);
+          yield put(saveMaterialInfo("subGradeName", subCategoryList[0].subgradeName));
           yield put(getRefinedProductsAction(inwardFormDetails, 'surface'));
         }
       }
@@ -441,6 +443,7 @@ function* getRefinedProducts(action) {
           let inwardFormDetails = yield select(getInwardEntryFields);
           yield put(setInwardDetails({...inwardFormDetails, surfaceType: subCategoryList[0].surfacetypeId}));
           inwardFormDetails = yield select(getInwardEntryFields);
+          yield put(saveMaterialInfo("surfaceType", subCategoryList[0].surfacetype));
           yield put(getRefinedProductsAction(inwardFormDetails, 'coating'));
         }
       }
@@ -462,6 +465,7 @@ function* getRefinedProducts(action) {
           let inwardFormDetails = yield select(getInwardEntryFields);
           yield put(setInwardDetails({...inwardFormDetails, coatingTypeId: subCategoryList[0].coatingtypeId}));
           inwardFormDetails = yield select(getInwardEntryFields);
+          yield put(saveMaterialInfo("coatingType", subCategoryList[0].coatingtype));
           yield put(getRefinedProductsAction(inwardFormDetails, 'thickness'));
         }
       }
@@ -478,6 +482,7 @@ function* getRefinedProducts(action) {
           let inwardFormDetails = yield select(getInwardEntryFields);
           yield put(setInwardDetails({...inwardFormDetails, thickness: subCategoryIds[0]}));
           inwardFormDetails = yield select(getInwardEntryFields);
+          yield put(saveMaterialInfo("thickness", subCategoryIds[0]));
           yield put(getRefinedProductsAction(inwardFormDetails, 'od'));
         }
       }
@@ -494,6 +499,7 @@ function* getRefinedProducts(action) {
           let inwardFormDetails = yield select(getInwardEntryFields);
           yield put(setInwardDetails({...inwardFormDetails, width: subCategoryIds[0]}));
           inwardFormDetails = yield select(getInwardEntryFields);
+          yield put(saveMaterialInfo("width", subCategoryIds[0]));
           yield put(getRefinedProductsAction(inwardFormDetails, 'id'));
         }
       }
@@ -510,6 +516,7 @@ function* getRefinedProducts(action) {
           let inwardFormDetails = yield select(getInwardEntryFields);
           yield put(setInwardDetails({...inwardFormDetails, od: subCategoryIds[0]}));
           inwardFormDetails = yield select(getInwardEntryFields);
+          yield put(saveMaterialInfo("diameter", subCategoryIds[0]));
           yield put(getRefinedProductsAction(inwardFormDetails, 'width'));
         }
       }
@@ -526,6 +533,7 @@ function* getRefinedProducts(action) {
           let inwardFormDetails = yield select(getInwardEntryFields);
           yield put(setInwardDetails({...inwardFormDetails, id: subCategoryIds[0]}));
           inwardFormDetails = yield select(getInwardEntryFields);
+          yield put(saveMaterialInfo("idiameter", subCategoryIds[0]));
           yield put(getRefinedProductsAction(inwardFormDetails, 'nb'));
         }
       }
@@ -561,7 +569,7 @@ function* getRefinedProducts(action) {
         if(subCategoryIds.length === 1) {
           let inwardFormDetails = yield select(getInwardEntryFields);
           yield put(setInwardDetails({...inwardFormDetails, nb: subCategoryIds[0]}));
-          inwardFormDetails = yield select(getInwardEntryFields);
+          yield put(saveMaterialInfo("nb", subCategoryIds[0]));
         }
       }
 
