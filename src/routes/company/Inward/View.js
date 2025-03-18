@@ -38,14 +38,14 @@ const View = (props) => {
                             <Card title="Customer Details" style={{ width: 300 }}>
                                 {props.inward.inward.party && <p>Customer Name : {props.inward.inward.party.partyName}</p>}
                                 {props.inward.inward.customerId && <p>Customer Id : {props.inward.inward.customerId}</p>}
-                                {props.inward.inward.customerBatchNo && <p>Customer Batch No : {props.inward.inward.customerBatchNo}</p>}
-                                {props.inward.inward.customerInvoiceNo && <p>Customer Invoice No : {props.inward.inward.customerInvoiceNo}</p>}
+                                {props.inward.inward.customerBatchNo && <p>SC inward id : {props.inward.inward.customerBatchNo}</p>}
+                                {props.inward.inward.customerInvoiceNo && <p>Purchase invoice no : {props.inward.inward.customerInvoiceNo}</p>}
                                 {props.inward.inward.purposeType && <p>Purpose Type : {props.inward.inward.purposeType}</p>}
                             </Card>
                         </Col>
                         <Col span={12}>
                             <Card title="Coil Details" style={{ width: 300 }}>
-                                {props.inward.inward.coilNumber && <p>Coil number : {props.inward.inward.coilNumber}</p>}
+                                {props.inward.inward.coilNumber && <p>Inward Id : {props.inward.inward.coilNumber}</p>}
                                 {props.inward.inward.material && <p>Material Description : {props.inward.inward?.material?.description}</p>}
                                 {props.inward.inward && <p>Dimensions : {props.inward.inward.fWidth}X{props.inward.inward.fThickness}X{props.inward.inward.fLength}mm</p>}
                                 {props.inward.inward.netWeight && <p>Net Weight : {props.inward.inward.netWeight}kg </p>}

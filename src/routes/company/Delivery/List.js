@@ -218,7 +218,7 @@ function List(props) {
           ) : null}
           <SearchBox
             styleName="gx-flex-1"
-            placeholder="Search for coil number or party name or customer batch No..."
+            placeholder="Search for inward id or party name or SC inward id..."
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
           />

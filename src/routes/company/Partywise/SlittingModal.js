@@ -2108,7 +2108,7 @@ const CreateSlittingDetailsForm = (props) => {
                     </Form.Item>
                   </Form>
                   <Col lg={8} md={12} sm={24} xs={24}>
-                    <p>Coil number : {props.coil.coilNumber}</p>
+                    <p>Inward id : {props.coil.coilNumber}</p>
                     <p>
                       Available Weight(kg) :{' '}
                       {props.childCoil
@@ -2466,10 +2466,10 @@ const CreateSlittingDetailsForm = (props) => {
               <TabPane tab='Coil Details' key='2'>
                 <Row>
                   <Col lg={12} md={12} sm={24} xs={24}>
-                    <p>Coil number : {props.coil.coilNumber}</p>
+                    <p>Inward id : {props.coil.coilNumber}</p>
                     <p>Customer Name : {props.coil.party.partyName}</p>
                     {props.coil.customerBatchId && (
-                      <p>Customer Batch No:{props.coil.customerBatchId}</p>
+                      <p>SC inward id:{props.coil.customerBatchId}</p>
                     )}
                     <p>Material Desc: {props.coil?.material?.description}</p>
                     <p>Grade: {props.coil?.materialGrade?.gradeName}</p>

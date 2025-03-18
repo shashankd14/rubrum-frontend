@@ -334,7 +334,7 @@
   "sidebar.company.salesOrder": "Sales Order",
   "sidebar.company.workinprogress": "Work in progress",
   "sidebar.company.reports": "Reports",
-  "inward.list.search": "Search for coil number or party name",
+  "inward.list.search": "Search for inward id or party name",
   "partywise.plan.label": "Coil Plan",
   "partywise.plan.availableLength": "Available Length",
   "partywise.plan.deliveredLength": "Delivered Length",
@@ -362,5 +362,18 @@
   "quality.kqp.create.new": "Create New KQP",
   "quality.reports.create.new": "Create Quality Report",
   "salesOrder.tabs.packets.list": "Packets List",
-  "salesOrder.tabs.sales.orders": "Sales Orders"
+  "salesOrder.tabs.sales.orders": "Sales Orders",
+  "inward.create.label.customerName": "Customer Name",
+  "inward.create.label.customerId": "Customer Id",
+  "inward.create.label.customerNameEmpty": "Please input the customer name!",
+  "inward.create.label.customerBatchNoEmpty": "Please input the SC inward id!",
+  "inward.create.label.customerBatchNoExists": "The SC inward id already exists",
+  "inward.create.label.customerNamePlaceholder": "enter customer name",
+  "inward.create.label.customerBatchNo": "SC inward id",
+  "inward.create.label.customerInvoiceNo": "Purchase invoice no",
+  "inward.create.label.purchaseTypeTrading": "Trading (SELF)",
+  "inward.create.label.purchaseTypeSSC": "Steel Service Centre (SSC)",
+  "inward.create.label.purchaseTypeEPA": "External Process Agent (EPA)",
+  "forward": "Forward",
+  "coilNumber": "Inward id"
 }

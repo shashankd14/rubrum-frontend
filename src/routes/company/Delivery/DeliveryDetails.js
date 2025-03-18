@@ -10,7 +10,7 @@ const DeliveryDetails = (props) => {
   const [coil, setCoil] = useState(props.delivery.deliveryList);
   const columns = [
     {
-        title: 'Coil Number',
+        title: 'Inward id',
         dataIndex: 'coilNumber',
         key: 'x',       
     },

@@ -122,7 +122,7 @@ export const QUALITY_REPORT_CREATE_COLUMNS = [
 
 export const QUALITY_REPORT_INWARD_COLUMNS = [
     {
-        title: "Coil Number",
+        title: "Inward Id",
         dataIndex: "coilNumber",
         key: "coilNumber",
         filters: [],

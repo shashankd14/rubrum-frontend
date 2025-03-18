@@ -365,7 +365,7 @@ const PreProcessingReport = (props) => {
                 <div className="table-operations gx-col">
                     <SearchBox
                         styleName="gx-flex-1"
-                        placeholder="Search by Coil no. or Customer batch no"
+                        placeholder="Search by Coil no. or SC inward id"
                         value={searchValue}
                         onChange={(e) => setSearchValue(e.target.value)}>
                     </SearchBox>

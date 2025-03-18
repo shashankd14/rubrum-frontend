@@ -130,7 +130,7 @@ const PostDispatchReport = (props) => {
             sortOrder: sortedInfo.columnKey === "deliveryRemarks" && sortedInfo.order,
         },
         {
-            title: "Customer Invoice No.",
+            title: "Purchase Invoice No.",
             dataIndex: "customerInvoiceNo",
             key: "customerInvoiceNo",
             filters: [],
@@ -385,7 +385,7 @@ const PostDispatchReport = (props) => {
                     <div className="table-operations gx-col">
                         <SearchBox
                             styleName="gx-flex-1"
-                            placeholder="Search by Coil no. or Customer batch no"
+                            placeholder="Search by Coil no. or SC inward id"
                             value={searchValue}
                             onChange={(e) => setSearchValue(e.target.value)}>
                         </SearchBox>
@@ -454,7 +454,7 @@ const PostDispatchReport = (props) => {
                                     <p>{selectedItemForQr?.customerInvoiceDate}</p>
                                 </Col>
                                 <Col span={12} style={{ right: 0, position: 'absolute' }}>
-                                    <strong>Customer Invoice No.</strong>
+                                    <strong>Purchase Invoice No.</strong>
                                     <p>{selectedItemForQr?.customerInvoiceNo}</p>
                                 </Col>
                             </Row>

@@ -1916,10 +1916,10 @@ useEffect(() => {
                 {!props.wip && (
                   <Row>
                     <Col lg={12} md={12} sm={24} xs={24}>
-                      <p>Coil number : {props.coil.coilNumber}</p>
+                      <p>Inward Id : {props.coil.coilNumber}</p>
                       <p>Customer Name : {props.coil.party.partyName}</p>
                       {props.coil.customerBatchId && (
-                        <p>Customer Batch No:{props.coil.customerBatchId}</p>
+                        <p>SC inward id:{props.coil.customerBatchId}</p>
                       )}
                       <p>Material Desc: {props.coil?.material?.description}</p>
                       <p>Grade: {props.coil?.materialGrade?.gradeName}</p>
@@ -2060,7 +2060,7 @@ useEffect(() => {
                         <p>Coil number : {props.coil.coilNumber}</p>
                         <p>Customer Name : {props.coil.party.partyName}</p>
                         {props.coil.customerBatchId && (
-                          <p>Customer Batch No:{props.coil.customerBatchId}</p>
+                          <p>SC inward id:{props.coil.customerBatchId}</p>
                         )}
                         <p>Material Desc: {props.coil?.material?.description}</p>
                         <p>Grade: {props.coil?.materialGrade?.gradeName}</p>

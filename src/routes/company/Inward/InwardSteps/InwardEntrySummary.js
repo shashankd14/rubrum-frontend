@@ -72,8 +72,8 @@ const InwardEntrySummary = (props) => {
                             <Card title="Customer Details" style={{ width: 300 }}>
                                 <p>Customer Name : {props.inward.party ? props.inward.party.partyName :(props.inward && props.inward.partyName !== undefined)?partyName(props.party.partyList):""}</p>
                                 {props.inward.customerId && <p>Customer Id : {props.inward.customerId}</p>}
-                                {props.inward.customerBatchNo && <p>Customer Batch No : {props.inward.customerBatchNo}</p>}
-                                {props.inward.customerInvoiceNo && <p>Customer Invoice No : {props.inward.customerInvoiceNo}</p>}
+                                {props.inward.customerBatchNo && <p>SC inward id : {props.inward.customerBatchNo}</p>}
+                                {props.inward.customerInvoiceNo && <p>Purchase Invoice No : {props.inward.customerInvoiceNo}</p>}
                                 {props.inward.purposeType && <p>Purpose Type : {props.inward.purposeType}</p>}
                             </Card>
                         </Col>

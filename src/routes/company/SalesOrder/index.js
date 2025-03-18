@@ -72,7 +72,7 @@ const SalesOrder = () => {
       key: "coilNo",
     },
     {
-      title: "Customer Batch No.",
+      title: "SC inward id",
       dataIndex: "customerBatchNo",
       key: "customerBatchNo",
     },
@@ -274,7 +274,7 @@ const SalesOrder = () => {
       { title: "Quantity", dataIndex: "fweight", key: "fweight" },
       { title: "Status", key: "packetStatus", dataIndex: "packetStatus" },
       {
-        title: "Customer Batch No.",
+        title: "SC inward id",
         dataIndex: "customerBatchNo",
         key: "customerBatchNo",
       },

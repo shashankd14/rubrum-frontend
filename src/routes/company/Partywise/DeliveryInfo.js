@@ -29,8 +29,9 @@ const DeliveryInfo = (props) => {
 
   const [priceModal, setPriceModal] = useState(false);
   const [validationStatus, setValidationStatus] = useState(false);
+
   useEffect(() => {
-    if(props.packetwisePriceDC && typeof props.packetwisePriceDC.validationStatus === 'boolean'){
+    if(props.packetwisePriceDC && typeof props.packetwisePriceDC.validationStatus === 'boolean') {
       setValidationStatus(props.packetwisePriceDC.validationStatus);
     }
   },[props.packetwisePriceDC.validationStatus])
@@ -93,7 +94,7 @@ const DeliveryInfo = (props) => {
       key: "coilNo",
     },
     {
-      title: "Customer Batch No.",
+      title: "SC inward id",
       dataIndex: "customerBatchNo",
       key: "customerBatchNo",
     },
@@ -274,7 +275,7 @@ useEffect(()=>{
               </div>
               <div className="flex flex-col">
                 <div style={{ marginTop: "5px" }}>
-                  <p style={{ fontWeight: "bold" }}>Coil Number - {elem.instructionId || elem?.inwardEntryId}</p>
+                  <p style={{ fontWeight: "bold" }}>Inward id - {elem.instructionId || elem?.inwardEntryId}</p>
                 </div>
                 <div
                   style={{ display: "flex", justifyContent: "space-around" }}
@@ -447,7 +448,8 @@ useEffect(()=>{
                 </Button>,
                 <Button key="ok" type="primary" 
                 onClick={handleSubmit} 
-                disabled={!validationStatus}
+                // TODO: Fix with api response 
+                // disabled={!validationStatus}
                 loading={props.inward.loading || props.inward.dcpdfLoading}
                  >
                   Confirm & Generate

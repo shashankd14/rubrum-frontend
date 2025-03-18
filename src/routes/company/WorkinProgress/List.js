@@ -41,7 +41,7 @@ function List(props) {
     }
     const columns = [
         {
-        title: 'Coil Number',
+        title: 'Inward Id',
         dataIndex: 'coilNumber',
         key: 'coilNumber',
         filters: [],
@@ -179,7 +179,7 @@ function List(props) {
             <h1><IntlMessages id="sidebar.company.workinprogress"/></h1>
             <Card>
                 <div style={{width: "50%", "margin-bottom": "10px"}} className="gx-flex-row gx-flex-1 wip-search">
-                    <SearchBox styleName="gx-flex-1" placeholder="Search for coil number or party name..."
+                    <SearchBox styleName="gx-flex-1" placeholder="Search for inward id or party name..."
                                value={searchValue} onChange={(e) => setSearchValue(e.target.value)}/>
 
                 </div>

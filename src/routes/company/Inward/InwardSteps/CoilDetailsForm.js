@@ -48,7 +48,7 @@ const CoilDetailsForm = (props) => {
         if (!props.inwardStatus.loading && props.inwardStatus.success && !props.inwardStatus.duplicateCoil) {
             return callback();
         }
-        callback('The coil number already exists');
+        callback('The inward id already exists');
     };
 
     const checkWidth = (rule, value, callback) => {
@@ -111,13 +111,13 @@ const CoilDetailsForm = (props) => {
             <Col span={14}>
             <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4">
                 <Form.Item
-                    label="Coil number"
+                    label="Inward Id"
                     hasFeedback
                     validateStatus={props.inward.coilNumber ? props.inwardStatus.loading ? 'validating' : !props.inwardStatus.loading && props.inwardStatus.success && !props.inwardStatus.duplicateCoil  ? 'success' : props.inwardStatus.error || props.inwardStatus.duplicateCoil ? 'error' : '' : ''}
-                    help={props.inwardStatus.loading ? 'We are checking if the coil number already exists' : (!props.inwardStatus.loading && props.inwardStatus.success && props.inwardStatus.duplicateCoil) ? "The coil number already exists" :  ''}
+                    help={props.inwardStatus.loading ? 'We are checking if the inward id already exists' : (!props.inwardStatus.loading && props.inwardStatus.success && props.inwardStatus.duplicateCoil) ? "The inward id already exists" :  ''}
                 >
                     {getFieldDecorator('coilNumber', {
-                        rules: [{ required: true, message: 'Please input the coil number!' },
+                        rules: [{ required: true, message: 'Please input the inward id!' },
                             {validator: props.params ==="" ?checkCoilExists: ""}],
                     })(
                         <Input id="validating" onChange={(e) => props.checkIfCoilExists(e.target.value)} onBlur={props.params !== "" ? "" :(e) => props.checkIfCoilExists(e.target.value)} />
@@ -171,7 +171,7 @@ const CoilDetailsForm = (props) => {
                 </Form.Item>
                 <Form.Item label="Coil Length (in mts)">
                     {getFieldDecorator('approxLength', {
-                        rules: [{ required: false, message: 'Please input the coil number!' }],
+                        rules: [{ required: false, message: 'Please input the inward id!' }],
                     })(
                         <>
                             <Input id="coilLength" value={props.params !=="" ?props.inward.fLength :approxLength} name="approxLength" />Approx
@@ -194,8 +194,8 @@ const CoilDetailsForm = (props) => {
                 <Card title="Coil Details" style={{ width: 300 }}>
                     <p>Customer Name : {props.params !== "" && props.inward.party ? props.inward.party?.partyName:partyName(props.party.partyList)}</p>
                     {props.inward.customerId && <p>Customer Id : {props.inward.customerId}</p>}
-                    {props.inward.customerBatchNo && <p>Customer Batch No : {props.inward.customerBatchNo}</p>}
-                    {props.inward.customerInvoiceNo && <p>Customer Invoice No : {props.inward.customerInvoiceNo}</p>}
+                    {props.inward.customerBatchNo && <p>SC inward id : {props.inward.customerBatchNo}</p>}
+                    {props.inward.customerInvoiceNo && <p>Purchase Invoice No : {props.inward.customerInvoiceNo}</p>}
                     {props.inward.purposeType && <p>Purpose Type : {props.inward.purposeType}</p>}
                 </Card>
             </Col>

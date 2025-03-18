@@ -63,7 +63,7 @@ const List = (props) => {
   
   const columns = [
     {
-      title: "Coil Number",
+      title: "Inward Id",
       dataIndex: "coilNumber",
       key: "coilNumber",
       filters: [],
@@ -71,7 +71,7 @@ const List = (props) => {
       sortOrder: sortedInfo.columnKey === "coilNumber" && sortedInfo.order,
     },
     {
-      title: "Customer Batch No",
+      title: "SC inward id",
       dataIndex: "customerBatchId",
       key: "customerBatchId",
       filteredValue: filteredInfo ? filteredInfo["customerBatchId"] : null,
@@ -525,7 +525,7 @@ const List = (props) => {
             </Button>}
             <SearchBox
               styleName="gx-flex-1"
-              placeholder="Search for coil number or party name..."
+              placeholder="Search for inward id or party name..."
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
             />

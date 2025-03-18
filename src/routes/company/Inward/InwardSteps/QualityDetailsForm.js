@@ -178,10 +178,10 @@ const QualityDetailsForm = (props) => {
             <p>Customer Id : {props.inward.customerId}</p>
           )}
           {props.inward.customerBatchNo && (
-            <p>Customer Batch No : {props.inward.customerBatchNo}</p>
+            <p>SC inward id : {props.inward.customerBatchNo}</p>
           )}
           {props.inward.customerInvoiceNo && (
-            <p>Customer Invoice No : {props.inward.customerInvoiceNo}</p>
+            <p>Purchase Invoice No : {props.inward.customerInvoiceNo}</p>
           )}
           {props.inward.purposeType && (
             <p>Purpose Type : {props.inward.purposeType}</p>
