@@ -425,6 +425,27 @@ const CategoryForm = (props) => {
               Forward
               <Icon type="right" />
             </Button>
+            <Button onClick={() => {
+              props.setInwardDetails({
+                ...props.inward,
+                productTypeId: '',
+                productUom: '',
+                productForm: '',
+                hsn: '',
+                gradeId: '',
+                subgradeId: '',
+                surfaceType: '',
+                coatingTypeId: '',
+                thickness: '',
+                width: '',
+                length: '',
+                od: '',
+                id: '',
+              })
+              props.getRefinedProducts(props.inward, 'productType')
+            }}>
+              Clear form
+            </Button>
           </Col>
         </Row>
       </Form>
