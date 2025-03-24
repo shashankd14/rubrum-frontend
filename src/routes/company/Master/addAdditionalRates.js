@@ -304,12 +304,12 @@ const AdditionalRates = (props) => {
               </Form.Item>
               {checked && (
                 <>
-                  <Form.Item label="Party Name">
+                  <Form.Item label="Location">
                     {getFieldDecorator("partyId", {
                       rules: [
                         {
                           required: true,
-                          message: "Please select party name!",
+                          message: "Please select location!",
                         },
                       ],
                     })(
@@ -329,10 +329,10 @@ const AdditionalRates = (props) => {
                 </>
               )}
               {!checked && (
-                <Form.Item label="Party Name">
+                <Form.Item label="Location">
                   {getFieldDecorator("partyId", {
                     rules: [
-                      { required: true, message: "Please enter Party name!" },
+                      { required: true, message: "Please enter location!" },
                     ],
                   })(
                     <Select

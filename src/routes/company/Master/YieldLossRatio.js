@@ -79,7 +79,7 @@ const YieldLoss = (props) => {
       sortOrder: sortedInfo.columnKey === 'ylrId' && sortedInfo.order,
     },
     {
-      title: 'Party Name',
+      title: 'Location',
       dataIndex: 'partyName',
       key: 'partyName',
       filters: [],
@@ -381,7 +381,7 @@ const YieldLoss = (props) => {
             <Row>
               <Col span={24}>
                 <Card>
-                <p><strong>Party Name :</strong> {viewYLRData?.partyName}</p>
+                <p><strong>Location :</strong> {viewYLRData?.partyName}</p>
                 <p><strong>Process Name :</strong> {viewYLRData?.processName}</p>
                 <p><strong>Loss Ratio from :</strong> {viewYLRData?.lossRatioPercentageFrom}</p>
                 <p><strong>Loss Ratio to :</strong> {viewYLRData?.lossRatioPercentageTo}</p>
@@ -438,12 +438,12 @@ const YieldLoss = (props) => {
                 className='gx-align-self-center'
               >
                 <Form {...formItemLayout} className='gx-pt-4'>
-                  <Form.Item label='Party Name'>
+                  <Form.Item label='Location'>
                     {getFieldDecorator('partyIdList', {
                       rules: [
                         {
                           required: true,
-                          message: 'Please select party name!',
+                          message: 'Please select location!',
                         },
                       ],
                     })(

@@ -65,7 +65,7 @@ const Party = (props) => {
         sortOrder: sortedInfo.columnKey === 'nPartyId' && sortedInfo.order,
     },
     {
-        title: 'Party Name',
+        title: 'Location',
         dataIndex: 'partyName',
         key: 'partyName',
         filters: [],
@@ -265,7 +265,7 @@ const Party = (props) => {
                                     setShowAddParty(true)
                                 }}
                         >Add Party</Button>
-                        <SearchBox styleName="gx-flex-1" placeholder="Search for party id or party name..." value={searchValue} onChange={(e) => setSearchValue(e.target.value)}/>
+                        <SearchBox styleName="gx-flex-1" placeholder="Search for party id or location..." value={searchValue} onChange={(e) => setSearchValue(e.target.value)}/>
                     </div>
                 </div>
                 <Table rowSelection={[]}
@@ -286,7 +286,7 @@ const Party = (props) => {
                         <Row>
                             <Col span={24}>
                                 <Card>
-                                    <p><strong>Party Name :</strong> {viewPartyDate?.partyName}</p>
+                                    <p><strong>location :</strong> {viewPartyDate?.partyName}</p>
                                     {viewPartyDate?.partyNickname && <p><strong>Party Nickname :</strong> {viewPartyDate?.partyNickname}</p>}
                                     <p><strong>Phone Number :</strong> {viewPartyDate?.phone1}</p>
                                     {viewPartyDate?.phone2 && <p><strong>Alternate phone number 1 :</strong> {viewPartyDate?.phone2}</p>}
@@ -371,14 +371,14 @@ const Party = (props) => {
                                 <Form {...formItemLayout} className="gx-pt-4">
                                     <Form.Item label="Party/Customer Name">
                                         {getFieldDecorator('partyName', {
-                                            rules: [{ required: true, message: 'Please input Party name!' }],
+                                            rules: [{ required: true, message: 'Please input location!' }],
                                         })(
                                             <Input id="partyName" />
                                         )}
                                     </Form.Item>
                                     <Form.Item label="Party/Customer Nick Name">
                                         {getFieldDecorator('partyNickname', {
-                                            rules: [{ required: false, message: 'Please input Party name!' }],
+                                            rules: [{ required: false, message: 'Please input location!' }],
                                         })(
                                             <Input id="partyNickname" />
                                         )}

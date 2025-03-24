@@ -525,7 +525,7 @@ const List = (props) => {
             </Button>}
             <SearchBox
               styleName="gx-flex-1"
-              placeholder="Search for inward id or party name..."
+              placeholder="Search for inward id or location..."
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
             />

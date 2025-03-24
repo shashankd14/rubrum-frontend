@@ -49,7 +49,7 @@ function List(props) {
         sortOrder: sortedInfo.columnKey === 'coilNumber' && sortedInfo.order,
     },
         {
-            title: 'Party Name',
+            title: 'Location',
             dataIndex: 'party.partyName',
             key: 'party.partyName',
             filteredValue: filteredInfo ? filteredInfo["party.partyName"] : null,
@@ -179,7 +179,7 @@ function List(props) {
             <h1><IntlMessages id="sidebar.company.workinprogress"/></h1>
             <Card>
                 <div style={{width: "50%", "margin-bottom": "10px"}} className="gx-flex-row gx-flex-1 wip-search">
-                    <SearchBox styleName="gx-flex-1" placeholder="Search for inward id or party name..."
+                    <SearchBox styleName="gx-flex-1" placeholder="Search for inward id or location..."
                                value={searchValue} onChange={(e) => setSearchValue(e.target.value)}/>
 
                 </div>

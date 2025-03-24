@@ -334,7 +334,7 @@
   "sidebar.company.salesOrder": "Sales Order",
   "sidebar.company.workinprogress": "Work in progress",
   "sidebar.company.reports": "Reports",
-  "inward.list.search": "Search for inward id or party name",
+  "inward.list.search": "Search for inward id or location",
   "partywise.plan.label": "Coil Plan",
   "partywise.plan.availableLength": "Available Length",
   "partywise.plan.deliveredLength": "Delivered Length",

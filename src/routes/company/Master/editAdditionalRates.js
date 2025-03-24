@@ -64,9 +64,9 @@ return (
                 <Col lg={24} md={24} sm={24} xs={24} className="gx-align-self-center">
                     <Form {...formItemLayout} className="gx-pt-4">
                    
-                   <Form.Item label="Party Name">
+                   <Form.Item label="Location">
                         {getFieldDecorator('aPartyId', {
-                                rules: [{ required: true, message: 'Please select party name!' }],
+                                rules: [{ required: true, message: 'Please select location!' }],
                         })(
                         <Select
                         id="partyId"

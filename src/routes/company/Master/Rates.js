@@ -170,7 +170,7 @@ const Rates = (props) => {
       sortOrder: sortedInfo.columnKey === "id" && sortedInfo.order,
     },
     {
-      title: "Party Name",
+      title: "Location",
       dataIndex: "partyName",
       key: "partyName",
       filteredValue: filteredInfo ? filteredInfo["partyName"] : null,
@@ -287,7 +287,7 @@ const Rates = (props) => {
   ];
   const additionalPriceColumns = [
     {
-      title: "Party Name",
+      title: "Location",
       dataIndex: "partyName",
       key: "partyName",
       filters: [],
@@ -348,7 +348,7 @@ const Rates = (props) => {
       sortOrder: sortedInfo.columnKey === "packingRateId" && sortedInfo.order,
     },
     {
-      title: "Party Name",
+      title: "Location",
       dataIndex: "partyName",
       key: "partyName",
       filters: [],
@@ -422,7 +422,7 @@ const Rates = (props) => {
       sortOrder: sortedInfo.columnKey === "laminationId" && sortedInfo.order,
     },
     {
-      title: "Party Name",
+      title: "Location",
       dataIndex: "partyName",
       key: "partyName",
       filters: [],
@@ -878,7 +878,7 @@ const Rates = (props) => {
             )}
             <SearchBox
               styleName="gx-flex-1"
-              placeholder="Search for party name, process name or material ..."
+              placeholder="Search for location, process name or material ..."
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
             />
@@ -1037,7 +1037,7 @@ const Rates = (props) => {
               <Col span={24}>
                 <Card>
                   <p>
-                    <strong>Party Name :</strong> {viewMaterialData?.partyId}
+                    <strong>Location :</strong> {viewMaterialData?.partyId}
                   </p>
                   <p>
                     <strong>Material Type :</strong>{" "}
@@ -1074,7 +1074,7 @@ const Rates = (props) => {
               <Col span={24}>
                 <Card>
                   <p>
-                    <strong>Party Name :</strong> {viewMaterialData?.partyId}
+                    <strong>Location :</strong> {viewMaterialData?.partyId}
                   </p>
                   <p>
                     <strong>Process Name :</strong>{" "}
@@ -1146,12 +1146,12 @@ const Rates = (props) => {
                 className="gx-align-self-center"
               >
                 <Form {...formItemLayout} className="gx-pt-4">
-                  <Form.Item label="Party Name">
+                  <Form.Item label="Location">
                     {getFieldDecorator("partyId", {
                       rules: [
                         {
                           required: true,
-                          message: "Please select party name!",
+                          message: "Please select location!",
                         },
                       ],
                     })(
@@ -1295,7 +1295,7 @@ const Rates = (props) => {
                     {viewPackingRateData?.packingBucketName}
                   </p>
                   <p>
-                    <strong>Party Name:</strong>{" "}
+                    <strong>Location:</strong>{" "}
                     {viewPackingRateData?.partyName}
                   </p>
                   <p>
@@ -1396,12 +1396,12 @@ const Rates = (props) => {
                       </Select>
                     )}
                   </Form.Item>
-                  <Form.Item label="Party Name">
+                  <Form.Item label="Location">
                     {getFieldDecorator("rPartyId", {
                       rules: [
                         {
                           required: true,
-                          message: "Please select party name!",
+                          message: "Please select location!",
                         },
                       ],
                     })(
@@ -1460,7 +1460,7 @@ const Rates = (props) => {
               <Col span={24}>
                 <Card>
                   <p>
-                    <strong>Party Name:</strong>{" "}
+                    <strong>Location:</strong>{" "}
                     {viewLaminationChargesData?.partyName}
                   </p>
                   <p>
@@ -1532,12 +1532,12 @@ const Rates = (props) => {
                 className="gx-align-self-center"
               >
                 <Form {...formItemLayout} className="gx-pt-4">
-                  <Form.Item label="Party Name">
+                  <Form.Item label="Location">
                     {getFieldDecorator("lPartyId", {
                       rules: [
                         {
                           required: true,
-                          message: "Please select party name!",
+                          message: "Please select location!",
                         },
                       ],
                     })(
