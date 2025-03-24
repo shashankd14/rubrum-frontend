@@ -61,7 +61,6 @@ const LinkedTemplateList = (props) => {
                       return null; 
                     }
                   });
-                  console.log(partyNames)
                   groupedData[key].parties.push(partyNames);
                 }
             });

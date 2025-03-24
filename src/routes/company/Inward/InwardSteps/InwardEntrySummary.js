@@ -69,9 +69,9 @@ const InwardEntrySummary = (props) => {
                 <Col span={24} className="gx-pt-4">
                     <Row>
                         <Col span={12}>
-                            <Card title="Customer Details" style={{ width: 300 }}>
-                                <p>Customer Name : {props.inward.party ? props.inward.party.partyName :(props.inward && props.inward.partyName !== undefined)?partyName(props.party.partyList):""}</p>
-                                {props.inward.customerId && <p>Customer Id : {props.inward.customerId}</p>}
+                            <Card title="Location Details" style={{ width: 300 }}>
+                                <p>Location Name : {props.inward.party ? props.inward.party.partyName :(props.inward && props.inward.partyName !== undefined)?partyName(props.party.partyList):""}</p>
+                                {props.inward.customerId && <p>Location Id : {props.inward.customerId}</p>}
                                 {props.inward.customerBatchNo && <p>SC inward id : {props.inward.customerBatchNo}</p>}
                                 {props.inward.customerInvoiceNo && <p>Purchase Invoice No : {props.inward.customerInvoiceNo}</p>}
                                 {props.inward.purposeType && <p>Purpose Type : {props.inward.purposeType}</p>}

@@ -95,7 +95,7 @@ const TemplateList = (props) => {
                         id="select"
                         showSearch
                         style={{ width: 200 }}
-                        placeholder="Select a customer"
+                        placeholder="Select a location"
                         optionFilterProp="children"
                         onChange={handleChange}
                         value={customerValue}

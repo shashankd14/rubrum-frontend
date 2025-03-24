@@ -81,7 +81,7 @@ const InwardReport = (props) => {
               }),
         },
         {
-            title: "Batch Number",
+            title: "SC inward id",
             dataIndex: "customerBatchNo",
             key: "customerBatchNo",
             filteredValue: filteredInfo ? filteredInfo["customerBatchNo"] : null,
@@ -338,7 +338,7 @@ const InwardReport = (props) => {
                         id="select"
                         showSearch
                         style={{ width: 200 }}
-                        placeholder="Select a customer"
+                        placeholder="Select a location"
                         optionFilterProp="children"
                         onChange={handleCustomerChange}
                         value={customerValue}
@@ -387,7 +387,7 @@ const InwardReport = (props) => {
             </div>
 
             <Modal
-                title={`Batch No: ${selectedItemForQr?.customerBatchNo}`}
+                title={`SC inward id: ${selectedItemForQr?.customerBatchNo}`}
                 visible={showCreateModal}
                 onOk={() => showCreateQr(true)}
                 onCancel={() => setShowCreateModal(false)}
@@ -397,7 +397,7 @@ const InwardReport = (props) => {
                     <Col span={24}>
                         <Row>
                             <Col span={12}>
-                                <strong>Customer Name</strong>
+                                <strong>Location Name</strong>
                                 <p>{selectedItemForQr?.partyName}</p>
                             </Col>
                             <Col span={12} style={{ right: 0, position: 'absolute' }}>
@@ -408,11 +408,11 @@ const InwardReport = (props) => {
 
                         <Row>
                             <Col span={6}>
-                                <strong>Coil No.</strong>
+                                <strong>Inward No.</strong>
                                 <p>{selectedItemForQr?.coilNo}</p>
                             </Col>
                             <Col span={6}>
-                                <strong>Batch No.</strong>
+                                <strong>SC inward id.</strong>
                                 <p>{selectedItemForQr?.customerBatchNo}</p>
                             </Col>
                             <Col span={6}>
@@ -431,7 +431,7 @@ const InwardReport = (props) => {
                                 id="select"
                                 showSearch
                                 style={{ width: "100%" }}
-                                placeholder="Select a customer"
+                                placeholder="Select a location"
                                 optionFilterProp="children"
                                 onChange={handleChange}
                                 value={templateId}

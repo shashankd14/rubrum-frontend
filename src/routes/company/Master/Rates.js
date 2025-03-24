@@ -925,7 +925,7 @@ const Rates = (props) => {
             <Select
               style={{ width: 300 }}
               className="additional_price_select"
-              placeholder="Select Party"
+              placeholder="Select Location"
               name="partyName"
               onChange={handlePartyChange}
             >

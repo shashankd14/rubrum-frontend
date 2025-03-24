@@ -304,7 +304,7 @@ const SlittingForm = (props) => {
                 <Card.Grid style={gridCardStyle}>
                     <Row>
                         <Col span={24}>
-                            <label>Customer Name</label>
+                            <label>Location Name</label>
                             <Input disabled value={slitFormData.customerName} onChange={(e) => onOptionChange('customerName', e)}></Input>
                         </Col>
                     </Row>
@@ -314,7 +314,7 @@ const SlittingForm = (props) => {
                             <DatePicker disabled value={slitFormData.processDate} onChange={(e) => onOptionChange('processDate', e)}> </DatePicker>
                         </Col>
                         <Col span={12}>
-                            <label>Batch Number</label>
+                            <label>SC inward id</label>
                             <Input disabled value={slitFormData.batchNumber} onChange={(e) => onOptionChange('batchNumber', e)}></Input>
                         </Col>
 

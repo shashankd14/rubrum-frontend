@@ -366,7 +366,7 @@ console.log("location.state.selectedItemForQr.plannedYieldLossRatio", location.s
         <Card.Grid style={gridCardStyle}>
           <Row>
             <Col span={24}>
-              <label>Customer Name</label>
+              <label>Location Name</label>
               {/* <Input placeholder='Enter customer name' disabled value={slitFormData.customerName} onChange={(e) => onOptionChange('customerName', e)}></Input> */}
               <Input
                 value={props.inward?.plan?.party?.partyName}

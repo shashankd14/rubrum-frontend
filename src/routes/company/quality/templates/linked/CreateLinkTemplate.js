@@ -147,12 +147,6 @@ const CreateLinkTemplate = (props) => {
     }
 
     useEffect(() => {
-        console.log(partyList.filter((e) => selectedCustomers.includes(e.nPartyId)).map((party) => (
-            party
-        )))
-    }, [selectedCustomers])
-
-    useEffect(() => {
         if (!props.template.loading && !props.template.error && props.template.operation === 'templateLinkSave') {
             console.log(props.template) 
             props.history.push('/company/quality/templates')
@@ -245,7 +239,7 @@ const CreateLinkTemplate = (props) => {
                 <Row>
                     <Col span={12}>
                         <div style={{ marginTop: 30, display: "flex" }}>
-                            <label>Assign Customer</label>&emsp;
+                            <label>Assign Location</label>&emsp;
                             {/* <button onClick={selectAllOptions} style={{marginBottom:'5px'}}>Select All</button> */}
                             &emsp;&emsp;&emsp; <label>Select All</label>&nbsp; 
                                     <Checkbox
@@ -267,7 +261,7 @@ const CreateLinkTemplate = (props) => {
                                 mode="multiple"
                                 showSearch
                                 style={{ width: '100%' }}
-                                placeholder="Select a customer"
+                                placeholder="Select a location"
                                 optionFilterProp="children"
                                 onChange={onCustomerSelection}
                                 value={selectedCustomers}

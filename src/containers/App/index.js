@@ -145,7 +145,7 @@ const App = (props) => {
       if (authUser === null) {
         history.push('/signin');
       } else if (initURL === '' || initURL === '/' || initURL === '/signin') {
-        history.push('/company/partywise-register/list');
+        history.push('/company/locationwise-register/list');
       } else {
         history.push(initURL);
       }

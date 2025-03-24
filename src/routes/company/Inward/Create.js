@@ -36,7 +36,7 @@ const CreateForm = (props) => {
     useEffect(() => {
         const steps = [
             {
-                title: 'Customer',
+                title: 'Location',
                 content: <PartyDetailsForm updateStep={(step) => setCurrentStep(step)} params={props.match.params && props.match.params.inwardEntryId ?props.match.params.inwardEntryId: ''}/>,
             },
             {
@@ -74,7 +74,7 @@ const CreateForm = (props) => {
     return (
         <Card className="gx-card" title="Inward Entry">
             <Steps current={currentStep}>
-                <Step title="Customer" onClick={() => setCurrentStep(0)}/>
+                <Step title="Location" onClick={() => setCurrentStep(0)}/>
                 <Step title="Material" onClick={() => setCurrentStep(1)} />
                 <Step title="Invoice" onClick={() => setCurrentStep(2)} />
                 <Step title="Quality" onClick={() => setCurrentStep(3)} />

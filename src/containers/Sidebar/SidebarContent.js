@@ -283,8 +283,8 @@ const SidebarContent = () => {
                     <span><IntlMessages id="sidebar.company.inward"/></span>
                   </Link>
                 </Menu.Item>}
-                {menuLabelList.includes(sidebarMenuItems.partywiseRegister) && <Menu.Item key="company/partywise-register">
-                  <Link to="/company/partywise-register">
+                {menuLabelList.includes(sidebarMenuItems.partywiseRegister) && <Menu.Item key="company/locationwise-register">
+                  <Link to="/company/locationwise-register">
                     <i className="icon icon-crypto"/>
                     <span><IntlMessages id="sidebar.company.partywiseRegister"/></span>
                   </Link>

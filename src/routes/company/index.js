@@ -7,7 +7,7 @@ const Company = ({match}) => (
     <Switch>
         <Route path={`${match.url}/master`} component={asyncComponent(() => import('./Master'))}/>
         <Route path={`${match.url}/inward`} component={asyncComponent(() => import('./Inward'))}/>
-        <Route path={`${match.url}/partywise-register`} component={asyncComponent(() => import('./Partywise'))}/>
+        <Route path={`${match.url}/locationwise-register`} component={asyncComponent(() => import('./Partywise'))}/>
         <Route path={`${match.url}/workin-progress`} component={asyncComponent(() => import('./WorkinProgress'))}/>
         <Route path={`${match.url}/labelPrint`} component={asyncComponent(() => import('./LabelPrint'))}/>
         <Route path={`${match.url}/deliveredItems`} component={asyncComponent(() => import('./Delivery'))}/>

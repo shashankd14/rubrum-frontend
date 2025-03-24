@@ -167,15 +167,15 @@ const QualityDetailsForm = (props) => {
         </Form>
       </Col>
       <Col span={10} className="gx-pt-4">
-        <Card title="Coil Details" style={{ width: 300 }}>
+        <Card title="Inward Details" style={{ width: 300 }}>
           <p>
-            Customer Name :{" "}
+          Location Name :{" "}
             {props.params !== "" && props.inward.party
               ? props.inward.party?.partyName
               : partyName(props.party?.partyList)}
           </p>
           {props.inward.customerId && (
-            <p>Customer Id : {props.inward.customerId}</p>
+            <p>Location Id : {props.inward.customerId}</p>
           )}
           {props.inward.customerBatchNo && (
             <p>SC inward id : {props.inward.customerBatchNo}</p>

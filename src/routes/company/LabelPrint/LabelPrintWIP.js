@@ -40,7 +40,7 @@ const LabelPrintWIP = (props) => {
       sortOrder: sortedInfo.columnKey === 'coilNo' && sortedInfo.order,
     },
     {
-      title: 'Batch Number',
+      title: 'SC inward id',
       dataIndex: 'customerBatchNo',
       key: 'customerBatchNo',
       filteredValue: filteredInfo ? filteredInfo['customerBatchNo'] : null,
@@ -247,7 +247,7 @@ const LabelPrintWIP = (props) => {
             id='select'
             showSearch
             style={{ width: 200 }}
-            placeholder='Select a customer'
+            placeholder='Select a Location'
             optionFilterProp='children'
             onChange={handleCustomerChange}
             value={customerValue}

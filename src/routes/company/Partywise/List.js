@@ -468,7 +468,7 @@ const List = (props) => {
               id="select"
               showSearch
               style={{ width: 200 }}
-              placeholder="Select a customer"
+              placeholder="Select a location"
               optionFilterProp="children"
               onChange={handleCustomerChange}
               value={customerValue}
@@ -496,7 +496,7 @@ const List = (props) => {
               onClick={() => {
                 console.log("selected rows", selectedRowData, selectedCBKeys, selectedCoil);
                 if (selectedCoil?.length > 1) {
-                  message.error('Please select coils of same party');
+                  message.error('Please select inwards of same location');
                 } else {
                   const newList = selectedRowData.filter((item) => {
                     if (item?.instruction?.length) {
@@ -506,7 +506,7 @@ const List = (props) => {
                     }
                   });
                   props.setInwardSelectedForDelivery(newList);
-                  props.history.push("/company/partywise-register/delivery");
+                  props.history.push("/company/locationwise-register/delivery");
                 }
               }}
               disabled={!!selectedCBKeys?.length < 1}

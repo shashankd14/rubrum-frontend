@@ -338,7 +338,7 @@ const AdditionalRates = (props) => {
                     <Select
                       showSearch
                       style={{ width: 300 }}
-                      placeholder="Select a Party"
+                      placeholder="Select a Location"
                     >
                       {props.party?.partyList?.map((party) => (
                         <Option value={party.nPartyId}>

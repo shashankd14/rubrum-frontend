@@ -14,7 +14,7 @@ export const sidebarMenuItems = {
     billingInfo: "Billing Info",
     userAccess: "User Access",
     material: "Material",
-    party: "Party",
+    party: "Location",
     yieldLoss: "Yield Loss Ratio",
     rates: "Rates",
     tags: "Tags",

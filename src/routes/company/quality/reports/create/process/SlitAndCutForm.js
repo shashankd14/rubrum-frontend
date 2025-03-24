@@ -625,7 +625,7 @@ const SlitAndCutForm = (props) => {
                 <Card.Grid style={gridCardStyle}>
                     <Row>
                         <Col span={24}>
-                            <label>Customer Name</label>
+                            <label>Location Name</label>
                             <Input disabled value={props.inward?.plan?.party?.partyName} onChange={(e) => onOptionChange('customerName', e)}></Input>
                         </Col>
                     </Row>

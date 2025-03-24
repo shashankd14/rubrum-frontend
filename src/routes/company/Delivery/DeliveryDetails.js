@@ -15,7 +15,7 @@ const DeliveryDetails = (props) => {
         key: 'x',       
     },
     {
-        title: 'Batch No',
+        title: 'SC inward id',
         dataIndex: 'customerBatchId',
         key: 'customerBatchId'
     },

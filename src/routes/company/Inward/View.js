@@ -35,9 +35,9 @@ const View = (props) => {
                 <Col span={24} className="gx-pt-4">
                     <Row>
                         <Col span={12}>
-                            <Card title="Customer Details" style={{ width: 300 }}>
-                                {props.inward.inward.party && <p>Customer Name : {props.inward.inward.party.partyName}</p>}
-                                {props.inward.inward.customerId && <p>Customer Id : {props.inward.inward.customerId}</p>}
+                            <Card title="Location Details" style={{ width: 300 }}>
+                                {props.inward.inward.party && <p>Location Name : {props.inward.inward.party.partyName}</p>}
+                                {props.inward.inward.customerId && <p>Location Id : {props.inward.inward.customerId}</p>}
                                 {props.inward.inward.customerBatchNo && <p>SC inward id : {props.inward.inward.customerBatchNo}</p>}
                                 {props.inward.inward.customerInvoiceNo && <p>Purchase invoice no : {props.inward.inward.customerInvoiceNo}</p>}
                                 {props.inward.inward.purposeType && <p>Purpose Type : {props.inward.inward.purposeType}</p>}

@@ -308,14 +308,14 @@ const UserAccess = (props) => {
                         )}
                     </FormItem>
                     <FormItem {...formItemLayout}
-                              label="Company Name">
+                              label="Location Name">
                         {getFieldDecorator('companyName', {
                             initialValue: userEditValues?.userPartyMap?.length > 0 ? userEditValues?.userPartyMap[0].partyId : [],
-                            rules: [{ required: true, message: "Please select company name" }]
+                            rules: [{ required: true, message: "Please select location name" }]
                         })(
                             <Select
                                 mode="multiple"
-                                placeholder="Select a company">
+                                placeholder="Select a location">
                                 {companyData.length > 0 && companyData.map(company => <Option selected={true} value={company.value}>{company.label}</Option>)}
                             </Select>
                         )}

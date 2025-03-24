@@ -75,13 +75,13 @@ const Reports = (props) => {
                 <Row>
                     <Col lg={24} md={24} sm={24} xs={24} className="gx-align-self-center">
                         <Form {...formItemLayout} className="gx-pt-4" onSubmit={handleSubmit}>
-                            <Form.Item label="Customer Name">
+                            <Form.Item label="Location Name">
                                 {getFieldDecorator('partyId', {
-                                    rules: [{ required: true, message: 'Please input the customer name!' }],
+                                    rules: [{ required: true, message: 'Please input the location name!' }],
                                 })(
                                     <AutoComplete
                                         style={{width: 250}}
-                                        placeholder="Enter customer name"
+                                        placeholder="Enter location name"
                                         dataSource={dataSource}
                                         filterOption={(inputValue, option) =>
                                             option.props.children.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1

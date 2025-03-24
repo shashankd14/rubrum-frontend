@@ -174,7 +174,7 @@ const ProcessingTemplate = (props) => {
         <Row>
           <Col span={8}>
             <div style={{ display: 'grid', marginTop: 45 }}>
-              <label>Customer Approval</label>
+              <label>Location Approval</label>
               <Input
                 id="customerApproval"
                 onChange={(e) => onOptionChange(5, e)}

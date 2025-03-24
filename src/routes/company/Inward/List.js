@@ -240,7 +240,7 @@ const List = (props) => {
               size="default"
               onClick={() => {
                 props.resetInwardForm();
-                window.location.href = '/company/inward/create';
+                window.location.href = window.location.origin+'#/company/inward/create';
               }}
             >
               Add Inward

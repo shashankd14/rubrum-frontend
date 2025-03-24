@@ -68,7 +68,7 @@ export const QUALITY_LINKED_TEMPLATE_COLUMNS = [
         sorter: (a, b) => a.coilNumber?.length - b.coilNumber?.length,
     },
     {
-        title: "Customer Name", 
+        title: "Location Name", 
         dataIndex: "parties",
         key: "parties",
         render: (parties) => parties.join(', ')
@@ -89,7 +89,7 @@ export const QUALITY_REPORT_CREATE_COLUMNS = [
         key: "coilNo",
     },
     {
-        title: "Customer Name",
+        title: "Location",
         dataIndex: "partyName",
         key: "party.partyName",
     },
@@ -252,7 +252,7 @@ export const KQP_LINK_COLUMNS = [
         sorter: (a, b) => a.stageName - b.stageName,
     },
     {
-        title: "Customer Name",
+        title: "Location Name",
         dataIndex: "parties",
         key: "parties",
         render: (parties) => parties.join(', '),

@@ -87,7 +87,7 @@ const PostDispatchReport = (props) => {
               }),
         },
         {
-            title: "Batch No",
+            title: "SC inward id",
             dataIndex: "customerBatchNo",
             key: "customerBatchNo",
             filteredValue: filteredInfo ? filteredInfo["customerBatchNo"] : null,
@@ -138,7 +138,7 @@ const PostDispatchReport = (props) => {
             sortOrder: sortedInfo.columnKey === "customerInvoiceNo" && sortedInfo.order,
         },
         {
-            title: "Customer Invoice Date",
+            title: "Purchase Invoice Date",
             dataIndex: "customerInvoiceDate",
             key: "customerInvoiceDate",
             filters: [],
@@ -363,7 +363,7 @@ const PostDispatchReport = (props) => {
                             id="select"
                             showSearch
                             style={{ width: 200 }}
-                            placeholder="Select a customer"
+                            placeholder="Select a location"
                             optionFilterProp="children"
                             onChange={handleCustomerChange}
                             value={customerValue}
@@ -421,7 +421,7 @@ const PostDispatchReport = (props) => {
                         <Col span={24}>
                             <Row>
                                 <Col span={12}>
-                                    <strong>Customer Name</strong>
+                                    <strong>Location Name</strong>
                                     <p>{selectedItemForQr?.partyName}</p>
                                 </Col>
                                 <Col span={12} style={{ right: 0, position: 'absolute' }}>
@@ -432,11 +432,11 @@ const PostDispatchReport = (props) => {
 
                             <Row>
                                 <Col span={6}>
-                                    <strong>Coil No.</strong>
+                                    <strong>Inward No.</strong>
                                     <p>{selectedItemForQr?.coilNo}</p>
                                 </Col>
                                 <Col span={6}>
-                                    <strong>Batch No.</strong>
+                                    <strong>SC inward id</strong>
                                     <p>{selectedItemForQr?.customerBatchNo}</p>
                                 </Col>
                                 <Col span={6}>
@@ -450,7 +450,7 @@ const PostDispatchReport = (props) => {
                             </Row>
                             <Row>
                                 <Col span={12}>
-                                    <strong>Customer Invoice Date</strong>
+                                    <strong>Purchase Invoice Date</strong>
                                     <p>{selectedItemForQr?.customerInvoiceDate}</p>
                                 </Col>
                                 <Col span={12} style={{ right: 0, position: 'absolute' }}>
@@ -465,7 +465,7 @@ const PostDispatchReport = (props) => {
                                     id="select"
                                     showSearch
                                     style={{ width: "100%" }}
-                                    placeholder="Select a customer"
+                                    placeholder="Select a location"
                                     optionFilterProp="children"
                                     onChange={handleChange}
                                     value={templateId}

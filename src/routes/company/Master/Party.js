@@ -55,7 +55,7 @@ const Party = (props) => {
 
 
     const columns = [{
-        title: 'Party Id',
+        title: 'Location Id',
         dataIndex: 'nPartyId',
         key: 'nPartyId',
         filters: [],
@@ -264,7 +264,7 @@ const Party = (props) => {
                                     props.form.resetFields()
                                     setShowAddParty(true)
                                 }}
-                        >Add Party</Button>
+                        >Add Location</Button>
                         <SearchBox styleName="gx-flex-1" placeholder="Search for party id or location..." value={searchValue} onChange={(e) => setSearchValue(e.target.value)}/>
                     </div>
                 </div>
@@ -275,7 +275,7 @@ const Party = (props) => {
                     onChange={handleChange}
                 />
                 <Modal
-                    title='Party Details'
+                    title='Location Details'
                     visible={viewParty}
                     width={600}
                     onOk={() => setViewParty(false)}
@@ -286,8 +286,8 @@ const Party = (props) => {
                         <Row>
                             <Col span={24}>
                                 <Card>
-                                    <p><strong>location :</strong> {viewPartyDate?.partyName}</p>
-                                    {viewPartyDate?.partyNickname && <p><strong>Party Nickname :</strong> {viewPartyDate?.partyNickname}</p>}
+                                    <p><strong>Location :</strong> {viewPartyDate?.partyName}</p>
+                                    {viewPartyDate?.partyNickname && <p><strong>Location Nickname :</strong> {viewPartyDate?.partyNickname}</p>}
                                     <p><strong>Phone Number :</strong> {viewPartyDate?.phone1}</p>
                                     {viewPartyDate?.phone2 && <p><strong>Alternate phone number 1 :</strong> {viewPartyDate?.phone2}</p>}
                                     {viewPartyDate?.phone3 && <p><strong>Alternate phone number 2:</strong> {viewPartyDate?.phone3}</p>}
@@ -369,14 +369,14 @@ const Party = (props) => {
                         <Row>
                             <Col lg={24} md={24} sm={24} xs={24} className="gx-align-self-center">
                                 <Form {...formItemLayout} className="gx-pt-4">
-                                    <Form.Item label="Party/Customer Name">
+                                    <Form.Item label="Location Name">
                                         {getFieldDecorator('partyName', {
                                             rules: [{ required: true, message: 'Please input location!' }],
                                         })(
                                             <Input id="partyName" />
                                         )}
                                     </Form.Item>
-                                    <Form.Item label="Party/Customer Nick Name">
+                                    <Form.Item label="Location Nick Name">
                                         {getFieldDecorator('partyNickname', {
                                             rules: [{ required: false, message: 'Please input location!' }],
                                         })(

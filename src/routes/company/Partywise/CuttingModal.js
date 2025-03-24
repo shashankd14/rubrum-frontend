@@ -1345,7 +1345,7 @@ const columnYieldLoss = [
     render: (text, record, index) => (page - 1) * 10 + index + 1,
   },
   {
-    title: 'Customer Name',
+    title: 'Location Name',
     dataIndex: 'partyName',
     key: 'partyName',
   },
@@ -1917,7 +1917,7 @@ useEffect(() => {
                   <Row>
                     <Col lg={12} md={12} sm={24} xs={24}>
                       <p>Inward Id : {props.coil.coilNumber}</p>
-                      <p>Customer Name : {props.coil.party.partyName}</p>
+                      <p>Location Name : {props.coil.party.partyName}</p>
                       {props.coil.customerBatchId && (
                         <p>SC inward id:{props.coil.customerBatchId}</p>
                       )}
@@ -2057,8 +2057,8 @@ useEffect(() => {
                   {props.wip && (
                     <>
                       <Col lg={8} md={12} sm={24} xs={24}>
-                        <p>Coil number : {props.coil.coilNumber}</p>
-                        <p>Customer Name : {props.coil.party.partyName}</p>
+                        <p>Inward number : {props.coil.coilNumber}</p>
+                        <p>Location Name : {props.coil.party.partyName}</p>
                         {props.coil.customerBatchId && (
                           <p>SC inward id:{props.coil.customerBatchId}</p>
                         )}

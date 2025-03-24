@@ -87,7 +87,7 @@ const PreDispatchReport = (props) => {
               }),
         },
         {
-            title: "Batch No",
+            title: "SC inward id",
             dataIndex: "customerBatchNo",
             key: "customerBatchNo",
             filteredValue: filteredInfo ? filteredInfo["customerBatchNo"] : null,
@@ -138,7 +138,7 @@ const PreDispatchReport = (props) => {
             sortOrder: sortedInfo.columnKey === "customerInvoiceNo" && sortedInfo.order,
         },
         {
-            title: "Customer Invoice Date",
+            title: "Purchase Invoice Date",
             dataIndex: "customerInvoiceDate",
             key: "customerInvoiceDate",
             filters: [],
@@ -369,7 +369,7 @@ const PreDispatchReport = (props) => {
                             id="select"
                             showSearch
                             style={{ width: 200 }}
-                            placeholder="Select a customer"
+                            placeholder="Select a Location"
                             optionFilterProp="children"
                             onChange={handleCustomerChange}
                             value={customerValue}
@@ -391,7 +391,7 @@ const PreDispatchReport = (props) => {
                     <div className="table-operations gx-col">
                         <SearchBox
                             styleName="gx-flex-1"
-                            placeholder="Search by Coil no. or SC inward id"
+                            placeholder="Search by inward no. or SC inward id"
                             value={searchValue}
                             onChange={(e) => setSearchValue(e.target.value)}>
                         </SearchBox>
@@ -417,7 +417,7 @@ const PreDispatchReport = (props) => {
                 </div>
 
                 <Modal
-                    title={`Batch No: ${selectedItemForQr?.customerBatchNo}`}
+                    title={`SC inward id: ${selectedItemForQr?.customerBatchNo}`}
                     visible={showCreateModal}
                     onOk={() => showCreateQr(true)}
                     onCancel={() => setShowCreateModal(false)}
@@ -427,7 +427,7 @@ const PreDispatchReport = (props) => {
                         <Col span={24}>
                             <Row>
                                 <Col span={12}>
-                                    <strong>Customer Name</strong>
+                                    <strong>Location Name</strong>
                                     <p>{selectedItemForQr?.partyName}</p>
                                 </Col>
                                 <Col span={12} style={{ right: 0, position: 'absolute' }}>
@@ -442,7 +442,7 @@ const PreDispatchReport = (props) => {
                                     <p>{selectedItemForQr?.coilNo}</p>
                                 </Col>
                                 <Col span={6}>
-                                    <strong>Batch No.</strong>
+                                    <strong>SC inward id</strong>
                                     <p>{selectedItemForQr?.customerBatchNo}</p>
                                 </Col>
                                 <Col span={6}>
@@ -471,7 +471,7 @@ const PreDispatchReport = (props) => {
                                     id="select"
                                     showSearch
                                     style={{ width: "100%" }}
-                                    placeholder="Select a customer"
+                                    placeholder="Select a location"
                                     optionFilterProp="children"
                                     onChange={handleChange}
                                     value={templateId}

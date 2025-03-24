@@ -326,7 +326,7 @@ const ProductInfoForm = (props) => {
                 rules: [
                   {
                     required: false,
-                    message: "Please input the customer name!",
+                    message: "Please input the location name!",
                   },
                 ],
               })(
@@ -365,7 +365,7 @@ const ProductInfoForm = (props) => {
                 rules: [
                   {
                     required: false,
-                    message: "Please input the customer name!",
+                    message: "Please input the location name!",
                   },
                 ],
               })(
@@ -405,7 +405,7 @@ const ProductInfoForm = (props) => {
                 rules: [
                   {
                     required: false,
-                    message: "Please input the customer name!",
+                    message: "Please input the location name!",
                   },
                 ],
               })(
@@ -445,7 +445,7 @@ const ProductInfoForm = (props) => {
                 rules: [
                   {
                     required: false,
-                    message: "Please input the customer name!",
+                    message: "Please input the location name!",
                   },
                 ],
               })(

@@ -178,7 +178,7 @@ const DeliveryInfo = (props) => {
         message.success('Delivery Challan pdf generated successfully', 2).then(() => { 
           
           props.resetInstruction();
-          props.history.push('/company/partywise-register');
+          props.history.push('/company/locationwise-register');
 });
 }
 },[props.inward.dcpdfSuccess])
@@ -405,7 +405,7 @@ useEffect(()=>{
             <Col span={8}>
             {!!partyRate && (
               <div style={{ marginRight: "270px" }}>
-                <p>Party Rate: {partyRate}</p>
+                <p>Location Rate: {partyRate}</p>
               </div>
             )}
             </Col>
@@ -463,7 +463,7 @@ useEffect(()=>{
             <button
               style={{ marginBottom: "10px", padding: "6px 15px" }}
               onClick={() => {
-                props.history.push("/company/partywise-register");
+                props.history.push("/company/locationwise-register");
               }}
             >Go Back
             </button>
@@ -473,7 +473,7 @@ useEffect(()=>{
         <button
           style={{ marginBottom: "10px", padding: "6px 15px" }}
           onClick={() => {
-            props.history.push("/company/partywise-register");
+            props.history.push("/company/locationwise-register");
           }}
         >
           Go Back

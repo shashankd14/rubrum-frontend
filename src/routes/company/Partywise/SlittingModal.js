@@ -1585,7 +1585,7 @@ const CreateSlittingDetailsForm = (props) => {
       render: (text, record, index) => (page - 1) * 10 + index + 1,
     },
     {
-      title: 'Customer Name',
+      title: 'Location Name',
       dataIndex: 'partyName',
       key: 'partyName',
     },
@@ -1901,7 +1901,7 @@ const CreateSlittingDetailsForm = (props) => {
       if (compareYieldLoss.length > 0) {
         // message.warning('take approval from customer or change the plan');
         confirm({
-          title: 'take approval from customer or change the plan.',
+          title: 'take approval from location manager or change the plan.',
           okText: 'OK',
           onOk() {
             savePlan(e, name, record);
@@ -2133,7 +2133,7 @@ const CreateSlittingDetailsForm = (props) => {
 
                   <Col lg={8} md={12} sm={24} xs={24}>
                     <p>Material : {props.coil?.material?.description}</p>
-                    <p>Customer Name : {props.coil.party.partyName}</p>
+                    <p>Location Name : {props.coil.party.partyName}</p>
                     <p>Thickness(mm): {props.coil.fThickness}</p>
                     <p>Width(mm) : {props.coil.fWidth}</p>
                     <p>
@@ -2467,7 +2467,7 @@ const CreateSlittingDetailsForm = (props) => {
                 <Row>
                   <Col lg={12} md={12} sm={24} xs={24}>
                     <p>Inward id : {props.coil.coilNumber}</p>
-                    <p>Customer Name : {props.coil.party.partyName}</p>
+                    <p>Location Name : {props.coil.party.partyName}</p>
                     {props.coil.customerBatchId && (
                       <p>SC inward id:{props.coil.customerBatchId}</p>
                     )}
@@ -2493,7 +2493,7 @@ const CreateSlittingDetailsForm = (props) => {
               </TabPane>
             )}
             {!props.wip && (
-              <TabPane tab='Customer Yield Loss Reference' key='3'>
+              <TabPane tab='Location Yield Loss Reference' key='3'>
                 <Row>
                   <Col lg={20} md={20} sm={24} xs={24}>
                     <Table

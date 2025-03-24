@@ -51,7 +51,6 @@ const TemplateList = (props) => {
 
     useEffect(() => {
         if (!props.party.loading && !props.party.error) {
-            console.log(props.party)
             setPartyList(props.party.partyList)
         }
     }, [props.party.loading, props.party.error]);
@@ -92,7 +91,7 @@ const TemplateList = (props) => {
                         id="select"
                         showSearch
                         style={{ width: 200 }}
-                        placeholder="Select a customer"
+                        placeholder="Select a location"
                         optionFilterProp="children"
                         onChange={handleChange}
                         value={customerValue}

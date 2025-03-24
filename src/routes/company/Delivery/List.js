@@ -68,7 +68,7 @@ function List(props) {
     },
 
     {
-      title: "Customer Name",
+      title: "Location Name",
       dataIndex: "partyName",
       key: "partyName",
       sorter: (a, b) => a.partyName.length - b.partyName.length,
@@ -92,7 +92,7 @@ function List(props) {
         a.deliveryDetails.vehicleNo.length - b.deliveryDetails.vehicleNo.length,
     },
     {
-      title: "Customer Invoice Number",
+      title: "Purchase Invoice Number",
       dataIndex: "deliveryDetails.customerInvoiceNo",
       render: (text, record, index) => (
         <Input
@@ -102,7 +102,7 @@ function List(props) {
       ),
     },
     {
-      title: "Customer Invoice Date",
+      title: "Purchase Invoice Date",
       dataIndex: "deliveryDetails.customerInvoiceDate",
       render: (text, record, index) => (
         <Input
@@ -226,7 +226,7 @@ function List(props) {
             <Select
               showSearch
               style={{ width: 200 }}
-              placeholder="Select a customer"
+              placeholder="Select a location"
               optionFilterProp="children"
               onChange={handleCustomerChange}
               filterOption={(input, option) =>

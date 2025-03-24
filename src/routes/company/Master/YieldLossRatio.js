@@ -312,7 +312,7 @@ const YieldLoss = (props) => {
               id="select"
               showSearch
               style={{ width: 250, paddingTop: '-50px' }}
-              placeholder="Select a customer"
+              placeholder="Select a location"
               optionFilterProp="children"
               onChange={handleCustomerChange}
               // value={customerValue}
@@ -451,7 +451,7 @@ const YieldLoss = (props) => {
                         id='partyId'
                         showSearch
                         mode='multiple'
-                        placeholder='Select customer'
+                        placeholder='Select location'
                         style={{ width: '100%' }}
                         filterOption={(input, option) => {
                           return option?.props?.children
