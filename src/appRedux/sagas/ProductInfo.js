@@ -9,7 +9,9 @@ import {
   FETCH_PRODUCT_SUB_GRADES,
   FETCH_PRODUCT_SURFACE_LIST,
   FETCH_PRODUCT_COATING_LIST,
-  FETCH_PRODUCTS_REFINED
+  FETCH_PRODUCTS_REFINED,
+  FETCH_PRODUCT_GRADES_LIST,
+  FETCH_PRODUCTS_LIST
 } from "../../constants/ActionTypes";
 import {
   getProductBrandsSuccess,
@@ -40,6 +42,11 @@ import {
   getProductLengthSuccess,
   setInwardDetails,
   saveMaterialInfo,
+  getProductsSuccess,
+  getProductsError,
+  //for rates
+  getProductGradesListSuccess,
+  getProductGradesListError,
   getRefinedProducts as getRefinedProductsAction
 } from "../actions";
 import { userSignOutSuccess } from "../../appRedux/actions/Auth";
@@ -95,6 +102,28 @@ function* fetchProducts(action) {
     } else yield put(getProductsListError("error"));
   } catch (error) {
     yield put(getProductsListError(error));
+  }
+}
+
+function* fetchProductsList(action) {
+  const body = {
+    pageNo: 1,
+    pageSize: 1000,
+  };
+  try {
+    const fetchPartyList = yield fetch(`${baseUrl}api/material/product`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...getHeaders() },
+      body: JSON.stringify(body),
+    });
+    if (fetchPartyList.status === 200) {
+      const fetchPartyListResponse = yield fetchPartyList.json();
+      yield put(getProductsSuccess(fetchPartyListResponse));
+    } else if (fetchPartyList.status === 401) {
+      yield put(userSignOutSuccess());
+    } else yield put(getProductsError("error"));
+  } catch (error) {
+    yield put(getProductsError(error));
   }
 }
 function* fetchProductForms(action) {
@@ -163,6 +192,29 @@ function* fetchProductGrades(action) {
     } else yield put(getProductGradesError("error"));
   } catch (error) {
     yield put(getProductGradesError(error));
+  }
+}
+
+function* fetchProductGradesList(action) {
+  const body = {
+    pageNo: 1,
+    pageSize: 1000,
+    productId: action.productId,
+  };
+  try {
+    const fetchPartyList = yield fetch(`${baseUrl}api/material/grade`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...getHeaders() },
+      body: JSON.stringify(body),
+    });
+    if (fetchPartyList.status === 200) {
+      const fetchPartyListResponse = yield fetchPartyList.json();
+      yield put(getProductGradesListSuccess(fetchPartyListResponse));
+    } else if (fetchPartyList.status === 401) {
+      yield put(userSignOutSuccess());
+    } else yield put(getProductGradesListError("error"));
+  } catch (error) {
+    yield put(getProductGradesListError(error));
   }
 }
 
@@ -586,9 +638,11 @@ function* getRefinedProducts(action) {
 export function* watchFetchRequests() {
   yield takeLatest(FETCH_PRODUCT_BRANDS, fetchProductBrands);
   yield takeLatest(FETCH_PRODUCTS, fetchProducts);
+  yield takeLatest(FETCH_PRODUCTS_LIST, fetchProductsList);
   yield takeLatest(FETCH_PRODUCT_FORMS, fetchProductForms);
   yield takeLatest(FETCH_PRODUCT_UOM, fetchProductUOM);
   yield takeLatest(FETCH_PRODUCT_GRADES, fetchProductGrades);
+  yield takeLatest(FETCH_PRODUCT_GRADES_LIST, fetchProductGradesList);
   yield takeLatest(FETCH_PRODUCT_SUB_GRADES, fetchProductSubGrades);
   yield takeLatest(FETCH_PRODUCT_SURFACE_LIST, fetchProductSurfaceList);
   yield takeLatest(FETCH_PRODUCT_COATING_LIST, fetchProductCoatingList);

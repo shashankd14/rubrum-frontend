@@ -6,6 +6,10 @@ import {
     FETCH_PRODUCTS, 
     FETCH_PRODUCTS_SUCCESS, 
     FETCH_PRODUCTS_ERROR,
+
+    FETCH_PRODUCTS_LIST, 
+    FETCH_PRODUCTS_LIST_SUCCESS, 
+    FETCH_PRODUCTS_LIST_ERROR,
     
     FETCH_PRODUCT_UOM, 
     FETCH_PRODUCT_UOM_SUCCESS, 
@@ -18,7 +22,12 @@ import {
     FETCH_PRODUCT_GRADES, 
     FETCH_PRODUCT_GRADES_SUCCESS, 
     FETCH_PRODUCT_GRADES_ERROR,
-    
+
+    //used in rates
+    FETCH_PRODUCT_GRADES_LIST, 
+    FETCH_PRODUCT_GRADES_LIST_SUCCESS, 
+    FETCH_PRODUCT_GRADES_LIST_ERROR,
+
     FETCH_PRODUCT_SUB_GRADES, 
     FETCH_PRODUCT_SUB_GRADES_SUCCESS, 
     FETCH_PRODUCT_SUB_GRADES_ERROR,
@@ -70,6 +79,20 @@ export const getProductsListSuccess = (productsList) => ({
 
 export const getProductsListError = (error) => ({
     type: FETCH_PRODUCTS_ERROR,
+    error
+});
+
+export const getProducts = () => ({
+    type: FETCH_PRODUCTS_LIST,
+});
+
+export const getProductsSuccess = (productsList) => ({
+    type: FETCH_PRODUCTS_LIST_SUCCESS,
+    productsList
+});
+
+export const getProductsError = (error) => ({
+    type: FETCH_PRODUCTS_LIST_ERROR,
     error
 });
 
@@ -176,6 +199,20 @@ export const getRefinedProductsSuccess = (productsList) => ({
 
 export const getRefinedProductsError = (error) => ({
     type: FETCH_PRODUCTS_REFINED_ERROR,
+    error
+});
+
+export const getProductGradesList = () => ({
+    type: FETCH_PRODUCT_GRADES_LIST,
+});
+
+export const getProductGradesListSuccess = (grades) => ({
+    type: FETCH_PRODUCT_GRADES_LIST_SUCCESS,
+    grades,
+});
+
+export const getProductGradesListError = (error) => ({
+    type: FETCH_PRODUCT_GRADES_LIST_ERROR,
     error
 });
 

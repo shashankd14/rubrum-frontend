@@ -2,9 +2,14 @@ import {
     FETCH_PRODUCT_BRANDS, 
     FETCH_PRODUCT_BRANDS_SUCCESS,
     FETCH_PRODUCT_BRANDS_ERROR,
+
     FETCH_PRODUCTS,
     FETCH_PRODUCTS_SUCCESS,
     FETCH_PRODUCTS_ERROR,
+
+    FETCH_PRODUCTS_LIST,
+    FETCH_PRODUCTS_LIST_SUCCESS,
+    FETCH_PRODUCTS_LIST_ERROR,
     
     FETCH_PRODUCT_UOM,
     FETCH_PRODUCT_UOM_SUCCESS,
@@ -17,6 +22,11 @@ import {
     FETCH_PRODUCT_GRADES, 
     FETCH_PRODUCT_GRADES_SUCCESS, 
     FETCH_PRODUCT_GRADES_ERROR,
+
+    //used in rates
+    FETCH_PRODUCT_GRADES_LIST, 
+    FETCH_PRODUCT_GRADES_LIST_SUCCESS, 
+    FETCH_PRODUCT_GRADES_LIST_ERROR,
     
     FETCH_PRODUCT_SUB_GRADES, 
     FETCH_PRODUCT_SUB_GRADES_SUCCESS, 
@@ -85,6 +95,26 @@ export default (state = INIT_STATE, action) => {
             }
         }
         case FETCH_PRODUCTS_ERROR: {
+            return {
+                ...state,
+                loading: false,
+                error: true,
+            }
+        }
+        case FETCH_PRODUCTS_LIST: {
+            return {
+                ...state,
+                loading: true
+            }
+        }
+        case FETCH_PRODUCTS_LIST_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                products: action.productsList
+            }
+        }
+        case FETCH_PRODUCTS_LIST_ERROR: {
             return {
                 ...state,
                 loading: false,
@@ -278,6 +308,30 @@ export default (state = INIT_STATE, action) => {
         }
 
         case FETCH_PRODUCTS_REFINED_ERROR: {
+            return {
+                ...state,
+                loading: false,
+                error: true,
+            }
+        }
+
+        case FETCH_PRODUCT_GRADES_LIST: {
+            return {
+                ...state,
+                loading: false,
+                nb: action.nb
+            }
+        }
+
+        case FETCH_PRODUCT_GRADES_LIST_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                grades: action.grades
+            }
+        }
+
+        case FETCH_PRODUCT_GRADES_LIST_ERROR: {
             return {
                 ...state,
                 loading: false,
