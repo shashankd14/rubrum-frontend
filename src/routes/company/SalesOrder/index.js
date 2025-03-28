@@ -5,6 +5,7 @@ import {
   fetchSalesOrderList,
   saveSalesOrderForPacket,
   fetchEndUserTagsList,
+  openSoPdf
 } from "../../../appRedux/actions";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -222,7 +223,7 @@ const SalesOrder = () => {
       key: "",
       render: (text, record, index) => (
         <Icon
-          onClick={() => console.log("sds")}
+          onClick={() => dispatch(openSoPdf(record["soId"]))}
           style={{ marginLeft: "8px" }}
           type="file-pdf"
         />

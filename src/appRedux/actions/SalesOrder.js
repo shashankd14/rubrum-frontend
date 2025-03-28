@@ -8,6 +8,9 @@ import {
   REQUEST_SAVE_SO_FOR_PACKET,
   REQUEST_SAVE_SO_FOR_PACKET_ERROR,
   REQUEST_SAVE_SO_FOR_PACKET_SUCCESS,
+  REQUEST_SO_PDF,
+  REQUEST_SO_PDF_SUCCESS,
+  REQUEST_SO_PDF_ERROR
 } from '../../constants/ActionTypes';
 
 export const fetchSalesOrderList = (page, pageSize, searchValue) =>  ({
@@ -55,4 +58,19 @@ export const saveSalesOrderForPacketSuccess = () =>  ({
 export const saveSalesOrderForPacketError = (error) =>  ({
   type: REQUEST_SAVE_SO_FOR_PACKET_ERROR,
   error
+});
+
+export const openSoPdf = (soId) => ({
+  type: REQUEST_SO_PDF,
+  soId
+});
+
+export const openSoPdfSuccess = (soPdf) => ({
+  type: REQUEST_SO_PDF_SUCCESS,
+  soPdf
+});
+
+export const openSoPdfError = (soPdf) => ({
+  type: REQUEST_SO_PDF_ERROR,
+  soPdf
 });

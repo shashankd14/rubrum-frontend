@@ -312,12 +312,14 @@ const InwardReport = (props) => {
     }, [props.party.loading, props.party.error]);
 
     const [payload, setPayload] = useState({});
+
     const onPdf = (inwardEntryId) => {
         setPayload({
             inwardId:{inwardId:inwardEntryId},
             type:'inward'
         })
     }
+    
     useEffect(() => {
         props.pdfGenerateQMreportInward(payload);
       }, [payload]);
