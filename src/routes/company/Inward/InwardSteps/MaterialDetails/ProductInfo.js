@@ -98,7 +98,9 @@ const ProductInfoForm = (props) => {
                   optionFilterProp="children"
                   onChange={(gradeId, option) => {
                     props.saveMaterialInfo("grade", option.props.children);
-                    props.getRefinedProducts(props.inward, 'subgrade');
+                    props.setInwardDetails({
+                      ...props.inward, gradeId: gradeId});
+                    props.getRefinedProducts({...props.inward, gradeId: gradeId}, 'subgrade');
                   }}
                   filterOption={(input, option) =>
                     option.props.children.toString()

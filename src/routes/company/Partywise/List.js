@@ -419,6 +419,7 @@ const List = (props) => {
     },
     selectedRowKeys: selectedCBKeys,
   };
+
   const gets3PDFurl = () => {
     return (
       <>
@@ -426,9 +427,9 @@ const List = (props) => {
           <a href={props?.inward.s3pdfurl?.inward_pdf} target="_blank">
             Inward PDF
           </a> &nbsp;&nbsp;&nbsp;
-          <a href={props?.inward.s3pdfurl?.qrcode_inward_pdf} target="_blank">
+          {/* <a href={props?.inward.s3pdfurl?.qrcode_inward_pdf} target="_blank">
             Inward QR Code
-          </a>
+          </a> */}
         </div>
         {props.inward.s3pdfurl?.plan_pdfs?.length > 0 && (
           <div>

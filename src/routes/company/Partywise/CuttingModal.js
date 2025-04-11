@@ -1906,7 +1906,7 @@ useEffect(() => {
               )
             ) : (
               <>
-                {props?.wip  && !props.unfinish && (
+                {props?.wip && !props.unfinish && (
                   <Row>
                     <Button type="primary" onClick={addRow}>
                       Add Row
@@ -1917,7 +1917,7 @@ useEffect(() => {
                   <Row>
                     <Col lg={12} md={12} sm={24} xs={24}>
                       <p>Inward Id : {props.coil.coilNumber}</p>
-                      <p>Location Name : {props.coil.party.partyName}</p>
+                      <p>Location Name : {props?.coil?.party?.partyName}</p>
                       {props.coil.customerBatchId && (
                         <p>SC inward id:{props.coil.customerBatchId}</p>
                       )}
