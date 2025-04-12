@@ -45,7 +45,7 @@ const CreatePartyDetailsForm = (props) => {
   useEffect(() => {
     props.form.setFieldsValue({
         purposeType: 'TRADING',
-        partyName: '137',
+        partyName: '2',
     })
   }, [])
 
