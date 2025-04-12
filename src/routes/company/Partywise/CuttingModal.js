@@ -328,7 +328,7 @@ const CreateCuttingDetailsForm = (props) => {
   // }
 
   //only cutting table column
-  const desiredTags = ['WIP(CUT ENDS)', 'WIP(EDGE TRIM)', 'WIP(FG)'];
+  const desiredTags = ['WIP(CUT ENDS)', 'WIP(EDGE TRIM)', 'WIP(FG)', 'FG'];
   const columnsPlan = [
     {
       title: "Sr.No",
