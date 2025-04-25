@@ -22,11 +22,7 @@ const QualityReports = (props) => {
   const location = useLocation();
 
   useEffect(() => {
-    console.log(props.history)
-    if (props.match) {
-        console.log(props.match)
-        console.log(location)
-        
+    if (props.match) {        
         const params = new URLSearchParams(location.search);
         console.log(params.get('view'));
         if(params.get('view') === 'links') {

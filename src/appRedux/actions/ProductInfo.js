@@ -44,6 +44,10 @@ import {
     FETCH_PRODUCTS_REFINED_SUCCESS,
     FETCH_PRODUCTS_REFINED_ERROR,
 
+    FETCH_PRODUCTS_REFINED_FINAL,
+    FETCH_PRODUCTS_REFINED_FINAL_SUCCESS,
+    FETCH_PRODUCTS_REFINED_FINAL_ERROR,
+
     FETCH_PRODUCTS_THICKNESS_SUCCESS,
     FETCH_PRODUCTS_WIDTH_SUCCESS,
     FETCH_PRODUCTS_OD_SUCCESS,
@@ -199,6 +203,22 @@ export const getRefinedProductsSuccess = (productsList) => ({
 
 export const getRefinedProductsError = (error) => ({
     type: FETCH_PRODUCTS_REFINED_ERROR,
+    error
+});
+
+export const getRefinedProductsFinal = (allDetails, fieldType = '') => ({
+    type: FETCH_PRODUCTS_REFINED_FINAL,
+    allDetails,
+    fieldType
+});
+
+export const getRefinedProductsFinalSuccess = (productsList) => ({
+    type: FETCH_PRODUCTS_REFINED_FINAL_SUCCESS,
+    productsList,
+});
+
+export const getRefinedProductsFinalError = (error) => ({
+    type: FETCH_PRODUCTS_REFINED_FINAL_ERROR,
     error
 });
 

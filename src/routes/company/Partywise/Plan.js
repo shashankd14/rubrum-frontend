@@ -2,6 +2,7 @@ import { Button, Card, Col, Select, Modal, message } from "antd";
 import moment from 'moment';
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
+import {useLocation} from "react-router-dom";
 import { getCoilPlanDetails, saveUnprocessedDelivery, fetchClassificationList,getReconcileReport } from "../../../appRedux/actions";
 import IntlMessages from "../../../util/IntlMessages";
 import CuttingModal from "../Partywise/CuttingModal";
@@ -12,7 +13,8 @@ import { useDispatch } from "react-redux";
 
 
 const Plan = (props) => {
-    
+    const location = useLocation();
+
     const { instruction } = props.inward.plan;
     const [showCuttingModal, setShowCuttingModal] = useState(false);
     const [showSlittingModal, setShowSlittingModal] = useState(false);
@@ -430,7 +432,6 @@ const Plan = (props) => {
                 </Col>
             </div>
         </div>
-
     )
 }
 

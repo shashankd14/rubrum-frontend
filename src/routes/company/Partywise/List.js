@@ -101,63 +101,7 @@ const List = (props) => {
       key: "material.description",
     },
     {
-      title: "Thickness",
-      dataIndex: "fThickness",
-      key: "fThickness",
-      filters: [],
-      sorter: (a, b) => a.fThickness - b.fThickness,
-      sortOrder: sortedInfo.columnKey === "fThickness" && sortedInfo.order,
-      // render: (text, record) => {
-      //   if (record.fThickness) return record.fThickness;
-      //   else {
-      //     let thickness = "";
-      //     expandedRow.forEach((row) => {
-      //       if (row.child.includes(record.instructionId)) {
-      //         thickness = row.fThickness;
-      //       }
-      //     });
-      //     return thickness;
-      //   }
-      // },
-    },
-    {
-      title: "Width",
-      dataIndex: "fWidth",
-      key: "fWidth",
-      filters: [],
-      sorter: (a, b) => a.fWidth - b.fWidth,
-      sortOrder: sortedInfo.columnKey === "fWidth" && sortedInfo.order,
-      render: (text, record) => {
-        return record.fWidth || record.actualWidth || record.plannedWidth;
-      },
-    },
-    {
-      title: "Length",
-      dataIndex: "fLength",
-      key: "fLength",
-      filters: [],
-      sorter: (a, b) => a.fLength - b.fLength,
-      sortOrder: sortedInfo.columnKey === "fLength" && sortedInfo.order,
-      render: (text, record) => {
-        return record.fLength || record.actualLength || record.plannedLength;
-      },
-    },
-    {
-      title: "No.of Pcs",
-      dataIndex: "actualNoOfPieces",
-      key: "actualNoOfPieces",
-      filters: [],
-      sorter: (a, b) => a.actualNoOfPieces - b.actualNoOfPieces,
-      sortOrder: sortedInfo.columnKey === "actualNoOfPieces" && sortedInfo.order,
-      render: (text, record) => {
-        if (record.status && record.status.statusName === "DISPATCHED") {
-          return 0;
-        }
-        return text;
-      },
-    },
-    {
-      title: "Present Weight",
+      title: "Available Quantity",
       dataIndex: "inStockWeight",
       key: "inStockWeight",
       filters: [],
@@ -168,6 +112,14 @@ const List = (props) => {
           record.inStockWeight || record.actualWeight || record.plannedWeight
         );
       },
+    },
+    {
+      title: "Ageing (Days)",
+      dataIndex: "ageing",
+      key: "ageing",
+      filters: [],
+      sorter: (a, b) => a.ageing - b.ageing,
+      sortOrder: sortedInfo.columnKey === "ageing" && sortedInfo.order,
     },
     {
       title: "Status",
@@ -182,11 +134,6 @@ const List = (props) => {
       title: "Classification",
       dataIndex: "packetClassification.classificationName",
       key: "packetClassification.classificationName",
-    },
-    partywisepermission  === 'ENDUSER_TAG_WISE_PACKETS' ? {} : {
-      title: "End User Tags",
-      dataIndex: "endUserTagsentity.tagName",
-      key: "endUserTagsentity.tagName",
     },
     partywisepermission  === 'ENDUSER_TAG_WISE_PACKETS' ? {} : {
       title: "Action",

@@ -654,6 +654,7 @@ function* postDeliveryConfirmRequest(payload) {
                 tempItem.instructionId = item.instructionId;
                 tempItem.remarks = item.remarks;
                 tempItem.weight = item.actualWeight || item.plannedWeight;
+                tempItem.additionalWeight = parseFloat(payload.payload.additionalWeights[item.instructionId]);
                 packetsData.push(tempItem);
             }
         }
@@ -929,8 +930,6 @@ function* getReconcileReportSaga(action) {
 // }
 
 function* getPacketwisePriceDCSaga(action) {
-
-    console.log('Saga: ', action);
     let req_obj ={};
     if(action.payload?.inwardListForDelivery){
         let packetsData = [];
@@ -940,6 +939,7 @@ function* getPacketwisePriceDCSaga(action) {
                 tempItem.instructionId = item.instructionId;
                 tempItem.remarks = item.remarks;
                 tempItem.weight = item.actualWeight || item.plannedWeight;
+                tempItem.additionalWeight = parseFloat(item.additionalWeight) || 0;
                 packetsData.push(tempItem);
             }
         }

@@ -15,11 +15,6 @@ import {
   getMaterialCategories,
   setInwardDetails,
   getMaterialSubCategories,
-  getLeafCategory,
-  getProductBrands,
-  getProductsList,
-  getProductUOM,
-  getProductForm,
   saveMaterialInfo,
   searchByMaterialId,
   enableMaterialSelection,
@@ -144,7 +139,7 @@ const CategoryForm = (props) => {
                   placeholder="Select a category"
                   optionFilterProp="children"
                   onChange={(categoryId, option) => {
-                    props.getRefinedProducts(props.inward, 'subCategory');
+                    props.getRefinedProducts({...props.inward, categoryId: categoryId}, 'subCategory');
                     props.saveMaterialInfo(
                       "categoryName",
                       option.props.children
@@ -231,7 +226,7 @@ const CategoryForm = (props) => {
                       .indexOf(input.toLowerCase()) >= 0
                   }
                 >
-                  {props.material?.leafCategoriesList?.map((leafCategory) => (
+                  {[{"leafcategoryId": "150", "leafcategoryName": "Hot Rolled"}].map((leafCategory) => (
                     <Option
                       key={leafCategory.leafcategoryId}
                       value={`${leafCategory.leafcategoryId}`}
@@ -402,7 +397,9 @@ const CategoryForm = (props) => {
                       .indexOf(input.toLowerCase()) >= 0
                   }
                 >
-                  {props.productInfo?.productsFormsList?.map((form) => (
+                  {[{"formId": "21", "formName": "Sheet"},
+                    {"formId": "22", "formName": "Coil"}
+                  ].map((form) => (
                     <Option key={form.formId} value={form.formId}>
                       {form.formName}
                     </Option>
@@ -514,11 +511,6 @@ export default connect(mapStateToProps, {
   getMaterialCategories,
   setInwardDetails,
   getMaterialSubCategories,
-  getLeafCategory,
-  getProductBrands,
-  getProductsList,
-  getProductUOM,
-  getProductForm,
   saveMaterialInfo,
   searchByMaterialId,
   enableMaterialSelection,

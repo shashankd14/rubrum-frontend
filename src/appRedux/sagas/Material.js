@@ -27,8 +27,6 @@ import {
     getMaterialCategoriesError,
     getMaterialSubCategoriesSuccess,
     getMaterialSubCategoriesError,
-    getLeafCategorySuccess,
-    getLeafCategoryError,
     searchByMaterialIdSuccess,
     searchByMaterialIdError,
     setMaterialData,
@@ -224,17 +222,17 @@ function* fetchMaterialCategories() {
             yield put(getMaterialCategoriesSuccess(fetchPartyListResponse));
 
             let inwardFormDetails = yield select(getInwardEntryFields);
-            yield put(setInwardDetails({...inwardFormDetails, categoryId: "1"}));
+            yield put(setInwardDetails({...inwardFormDetails, categoryId: "12"}));
             yield put(saveMaterialInfo("categoryName", "Metals and Alloys"));
             
             inwardFormDetails = yield select(getInwardEntryFields);
             yield put(getRefinedProducts(inwardFormDetails, 'subCategory'));
-            yield put(setInwardDetails({...inwardFormDetails, subcategoryId: "1"}));
+            yield put(setInwardDetails({...inwardFormDetails, subcategoryId: "34"}));
             yield put(saveMaterialInfo("subCategoryName", "Mild Steel"));
 
             inwardFormDetails = yield select(getInwardEntryFields);
             yield put(getRefinedProducts(inwardFormDetails, 'leafCategory'));
-            yield put(setInwardDetails({...inwardFormDetails, leafcategoryId: "1"}));
+            yield put(setInwardDetails({...inwardFormDetails, leafcategoryId: "150"}));
             yield put(saveMaterialInfo("leafCategoryName", "Hot Rolled"));
 
             yield put(getRefinedProducts(inwardFormDetails, 'brand'));
@@ -270,31 +268,6 @@ function* fetchMaterialSubCategories(action) {
             yield put(getMaterialSubCategoriesError('error'));
     } catch (error) {
         yield put(getMaterialCategoriesError(error));
-    }
-}
-
-function* fetchMaterialLeafCategories(action) {
-    const body = {
-        "pageNo": 1,
-        "pageSize": 15,
-        "subcategoryId": action.subCategoryId 
-    }
-
-    try {
-        const fetchPartyList =  yield fetch(`${baseUrl}api/material/leafcategory/list/subcategoryId`, {
-            method: 'POST',
-            headers: { "Content-Type": "application/json", ...getHeaders()},
-            body: JSON.stringify(body)
-        });
-        if(fetchPartyList.status === 200) {
-            const fetchPartyListResponse = yield fetchPartyList.json();
-            yield put(getLeafCategorySuccess(fetchPartyListResponse));
-        } else if (fetchPartyList.status === 401) {
-            yield put(userSignOutSuccess());
-        } else
-            yield put(getLeafCategoryError('error'));
-    } catch (error) {
-        yield put(getLeafCategoryError(error));
     }
 }
 
@@ -355,7 +328,6 @@ export function* watchFetchRequests() {
     yield takeLatest(FETCH_THICKNESS, fetchThickness);
     yield takeLatest(FETCH_MATERIAL_CATEGORIES, fetchMaterialCategories);
     yield takeLatest(FETCH_MATERIAL_SUB_CATEGORIES, fetchMaterialSubCategories);
-    yield takeLatest(FETCH_MATERIAL_LEAF_CATEGORY, fetchMaterialLeafCategories);
     yield takeLatest(SEARCH_MATERIAL_BY_ID, searchByMaterialId);
 }
 

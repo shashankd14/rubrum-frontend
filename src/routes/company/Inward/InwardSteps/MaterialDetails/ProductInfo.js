@@ -18,6 +18,7 @@ import {
   getProductCoatingList,
   saveMaterialInfo,
   getRefinedProducts,
+  getRefinedProductsFinal
 } from "../../../../../appRedux/actions";
 
 const formItemLayout = {
@@ -36,21 +37,8 @@ const ProductInfoForm = (props) => {
   const { Option } = AutoComplete;
   const { getFieldDecorator } = props.form;
 
-  const {
-    categoryName,
-    subCategoryName,
-    leafCategoryName,
-    brandName,
-    productType,
-    uom,
-    form,
-    grade,
-    surfaceType,
-    subGradeName,
-    coatingType,
-  } = props.material.displayInfo;
-
   const handleSubmit = (e) => {
+    props.getRefinedProductsFinal({...props.inward, materialForm : props.material.displayInfo.form});
     e.preventDefault();
     props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
@@ -66,7 +54,8 @@ const ProductInfoForm = (props) => {
   }, []);
 
   useEffect(() => {
-    if(props.inward.width && props.inward.thickness && props.inward.netWeight && (props.inward.productForm === 1 || props.inward.productForm === 'Coil')) {
+    if(props.inward.width && props.inward.thickness && props.inward.netWeight && (props.inward.productForm === '22' || props.material.displayInfo.form === 'Coil' || props.inward.productForm === 'Coil')) {
+      props.getRefinedProductsFinal({...props.inward, materialForm : props.material.displayInfo.form});
       props.setInwardDetails({...props.inward,'length':(parseFloat(parseFloat(props.inward.netWeight)/(parseFloat(props.inward.thickness)*7.85*(props.inward.width/1000))).toFixed(4))*1000});   
     }
   }, [props.inward.width, props.inward.thickness, props.inward.netWeight]);
@@ -228,10 +217,6 @@ const ProductInfoForm = (props) => {
                   showSearch
                   placeholder="Select a length"
                   optionFilterProp="children"
-                  onChange={(gradeId, option) => {
-                    props.saveMaterialInfo("length", option.props.children);
-                    props.getRefinedProducts(props.inward, 'nb');
-                  }}
                   filterOption={(input, option) =>
                     option.props.children.toString()
                       .toLowerCase()
@@ -274,7 +259,7 @@ const ProductInfoForm = (props) => {
             <Form.Item label="Material Desc">
               <TextArea
                 rows={3}
-                value={props?.productInfo?.refinedProducts[0]?.mmDescription}
+                value={''}
                 disabled
               />
             </Form.Item>
@@ -601,4 +586,5 @@ export default connect(mapStateToProps, {
   getProductCoatingList,
   saveMaterialInfo,
   getRefinedProducts,
+  getRefinedProductsFinal
 })(ProductInfo);
