@@ -145,7 +145,7 @@ const CategoryForm = (props) => {
                   showSearch
                   placeholder="Select a category"
                   optionFilterProp="children"
-                  onChange={(categoryId, option) => {
+                  onSelect={(categoryId, option) => {
                     onCategoryChange(
                       categoryId,
                       option.props.children
@@ -177,12 +177,12 @@ const CategoryForm = (props) => {
                   showSearch
                   placeholder="Select a sub category"
                   optionFilterProp="children"
-                  onChange={(subCategoryId, option) => {
+                  onSelect={(subCategoryId, option) => {
                     props.saveMaterialInfo(
                       "subCategoryName",
                       option.props.children
                     );
-                    props.getRefinedProducts(props.inward, 'leafCategory');
+                    props.getRefinedProducts({...props.inward, subcategoryId: subCategoryId}, 'leafCategory');
                   }}
                   filterOption={(input, option) =>
                     option.props.children
@@ -219,11 +219,11 @@ const CategoryForm = (props) => {
                   showSearch
                   placeholder="Select a leaf category"
                   optionFilterProp="children"
-                  onChange={(leafCategoryId, option) => {
+                  onSelect={(leafCategoryId, option) => {
                     props.saveMaterialInfo(
                       option.props.children
                     );
-                    props.getRefinedProducts(props.inward, 'brand');
+                    props.getRefinedProducts({...props.inward, leafcategoryId: leafCategoryId}, 'brand');
                   }}
                   filterOption={(input, option) =>
                     option.props.children
@@ -275,9 +275,9 @@ const CategoryForm = (props) => {
                   showSearch
                   placeholder="Select a brand"
                   optionFilterProp="children"
-                  onChange={(brandId, option) => {
+                  onSelect={(brandId, option) => {
                     props.saveMaterialInfo("brandName", option.props.children);
-                    props.getRefinedProducts(props.inward, 'productType');
+                    props.getRefinedProducts({...props.inward, brandId: brandId}, 'productType');
                   }}
                   filterOption={(input, option) =>
                     option.props.children
@@ -309,12 +309,12 @@ const CategoryForm = (props) => {
                   showSearch
                   placeholder="Select a product type"
                   optionFilterProp="children"
-                  onChange={(productId, option) => {
+                  onSelect={(productId, option) => {
                     props.saveMaterialInfo(
                       "productType",
                       option.props.children
                     );
-                    props.getRefinedProducts(props.inward, 'uom');
+                    props.getRefinedProducts({...props.inward, productTypeId: productId}, 'uom');
                   }}
                   filterOption={(input, option) =>
                     option.props.children
@@ -356,9 +356,9 @@ const CategoryForm = (props) => {
                   showSearch
                   placeholder="Select a unit of measure"
                   optionFilterProp="children"
-                  onChange={(uom, option) => {
+                  onSelect={(uom, option) => {
                     props.saveMaterialInfo("uom", option.props.children);
-                    props.getRefinedProducts(props.inward);
+                    props.getRefinedProducts({...props.inward, productUom: uom});
                   }}
                   filterOption={(input, option) =>
                     option.props.children
@@ -392,9 +392,9 @@ const CategoryForm = (props) => {
                   showSearch
                   placeholder="Select a product form"
                   optionFilterProp="children"
-                  onChange={(productId, option) => {
+                  onSelect={(productId, option) => {
                     props.saveMaterialInfo("form", option.props.children);
-                    props.getRefinedProducts(props.inward);
+                    props.getRefinedProducts({...props.inward, productForm: productId});
                   }}
                   filterOption={(input, option) =>
                     option.props.children

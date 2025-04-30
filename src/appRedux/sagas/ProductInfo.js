@@ -284,22 +284,22 @@ function* fetchProductCoatingList(action) {
 
 function* getRefinedProductsByMap(action) {
   const body = {
-    "categoryId": action.allDetails.categoryId ? action.allDetails.categoryId : undefined,
-    "subcategoryId": action.allDetails.subcategoryId ? action.allDetails.subcategoryId : undefined,
-    "leafcategoryId": action.allDetails.leafcategoryId ? action.allDetails.leafcategoryId : undefined,
-    "brandId": action.allDetails.brandId ? action.allDetails.brandId : undefined,
-    "producttypeId": action.allDetails.producttypeId ? action.allDetails.producttypeId : undefined,
-    "gradeId": action.allDetails.gradeId ? action.allDetails.gradeId : undefined,
-    "subgradeId": action.allDetails.subgradeId ? action.allDetails.subgradeId : undefined,
-    "formId": action.allDetails.productForm ? action.allDetails.productForm : undefined,
-    "uomId": action.allDetails.productUom ? action.allDetails.productUom : undefined,
-    "surfacetypeId": action.allDetails.surfaceType ? action.allDetails.surfaceType : undefined,
-    "coatingtypeId": action.allDetails.coatingTypeId ? action.allDetails.coatingTypeId : undefined,
-    "width": action.allDetails.width ? action.allDetails.width : undefined,
-    "thickness": action.allDetails.thickness ? action.allDetails.thickness : undefined,
-    "nb": action.allDetails.nb ? action.allDetails.nb : undefined,
-    "oDiameter": action.allDetails.od ? action.allDetails.od : undefined,
-    "iDiameter": action.allDetails.id ? action.allDetails.id : undefined,
+    "categoryId": action.allDetails.categoryId ? parseInt(action.allDetails.categoryId) : undefined,
+    "subcategoryId": action.allDetails.subcategoryId ? parseInt(action.allDetails.subcategoryId) : undefined,
+    "leafcategoryId": action.allDetails.leafcategoryId ? parseInt(action.allDetails.leafcategoryId) : undefined,
+    "brandId": action.allDetails.brandId ? parseInt(action.allDetails.brandId) : undefined,
+    "producttypeId": action.allDetails.producttypeId ? parseInt(action.allDetails.producttypeId) : undefined,
+    "gradeId": action.allDetails.gradeId ? parseInt(action.allDetails.gradeId) : undefined,
+    "subgradeId": action.allDetails.subgradeId ? parseInt(action.allDetails.subgradeId) : undefined,
+    "formId": action.allDetails.productForm ? parseInt(action.allDetails.productForm) : undefined,
+    "uomId": action.allDetails.productUom ? parseInt(action.allDetails.productUom) : undefined,
+    "surfacetypeId": action.allDetails.surfaceType ? parseInt(action.allDetails.surfaceType) : undefined,
+    "coatingtypeId": action.allDetails.coatingTypeId ? parseInt(action.allDetails.coatingTypeId) : undefined,
+    "width": action.allDetails.width ? parseFloat(action.allDetails.width) : undefined,
+    "thickness": action.allDetails.thickness ? parseFloat(action.allDetails.thickness) : undefined,
+    "nb": action.allDetails.nb ? parseFloat(action.allDetails.nb) : undefined,
+    "oDiameter": action.allDetails.od ? parseFloat(action.allDetails.od) : undefined,
+    "iDiameter": action.allDetails.id ? parseFloat(action.allDetails.id) : undefined,
   };
 
   if(JSON.stringify(body) === '{}') {
