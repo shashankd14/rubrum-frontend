@@ -589,7 +589,7 @@ const DeliveryInfo = (props) => {
                   Cancel
                 </Button>,
                 <Button
-                key="cancel"
+                key="recalculate"
                 type="primary"
                 onClick={() => handlePacketPrice(false)}
               >

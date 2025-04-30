@@ -190,10 +190,11 @@ export const getProductCoatingListError = (error) => ({
     error
 });
 
-export const getRefinedProducts = (allDetails, fieldType = '') => ({
+export const getRefinedProducts = (allDetails, fieldType = '', inwardDetails = undefined) => ({
     type: FETCH_PRODUCTS_REFINED,
     allDetails,
-    fieldType
+    fieldType,
+    inwardDetails
 });
 
 export const getRefinedProductsSuccess = (productsList) => ({

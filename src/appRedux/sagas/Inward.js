@@ -654,7 +654,8 @@ function* postDeliveryConfirmRequest(payload) {
                 tempItem.instructionId = item.instructionId;
                 tempItem.remarks = item.remarks;
                 tempItem.weight = item.actualWeight || item.plannedWeight;
-                tempItem.additionalWeight = parseFloat(payload.payload.additionalWeights[item.instructionId]);
+                if(payload?.payload?.additionalWeights) 
+                    tempItem.additionalWeight = parseFloat(payload?.payload?.additionalWeights[item.instructionId]);
                 packetsData.push(tempItem);
             }
         }

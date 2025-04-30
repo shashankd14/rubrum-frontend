@@ -20,7 +20,6 @@ import {
   enableMaterialSelection,
   getRefinedProducts
 } from "../../../../../appRedux/actions";
-import { use } from "react";
 
 const formItemLayout = {
   labelCol: {
@@ -71,6 +70,14 @@ const CategoryForm = (props) => {
       }
     });
   };
+
+  const onCategoryChange = (categoryId, categoryName) => {
+    props.form.setFieldsValue({
+      subcategoryId: null,
+      leafcategoryId: null,
+    });
+    props.getRefinedProducts({categoryId: categoryId}, 'subCategory', {...props.inward, categoryId: categoryId, subcategoryId: null, leafcategoryId: null, brandId: null, productTypeId: null, productUom: null, productForm: null, hsn: '', materialId: ''});
+  }
 
   return (
     <>
@@ -139,9 +146,8 @@ const CategoryForm = (props) => {
                   placeholder="Select a category"
                   optionFilterProp="children"
                   onChange={(categoryId, option) => {
-                    props.getRefinedProducts({...props.inward, categoryId: categoryId}, 'subCategory');
-                    props.saveMaterialInfo(
-                      "categoryName",
+                    onCategoryChange(
+                      categoryId,
                       option.props.children
                     );
                   }}
@@ -215,7 +221,6 @@ const CategoryForm = (props) => {
                   optionFilterProp="children"
                   onChange={(leafCategoryId, option) => {
                     props.saveMaterialInfo(
-                      "leafCategoryName",
                       option.props.children
                     );
                     props.getRefinedProducts(props.inward, 'brand');
@@ -226,7 +231,7 @@ const CategoryForm = (props) => {
                       .indexOf(input.toLowerCase()) >= 0
                   }
                 >
-                  {[{"leafcategoryId": "150", "leafcategoryName": "Hot Rolled"}].map((leafCategory) => (
+                  {props.material?.leafCategoriesList?.map((leafCategory) => (
                     <Option
                       key={leafCategory.leafcategoryId}
                       value={`${leafCategory.leafcategoryId}`}

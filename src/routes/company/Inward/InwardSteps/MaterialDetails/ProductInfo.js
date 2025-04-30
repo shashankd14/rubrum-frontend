@@ -38,7 +38,9 @@ const ProductInfoForm = (props) => {
   const { getFieldDecorator } = props.form;
 
   const handleSubmit = (e) => {
-    props.getRefinedProductsFinal({...props.inward, materialForm : props.material.displayInfo.form});
+    if(!props.inward.disableSelection) 
+      props.getRefinedProductsFinal({...props.inward, materialForm : props.material.displayInfo.form});
+
     e.preventDefault();
     props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
@@ -55,7 +57,9 @@ const ProductInfoForm = (props) => {
 
   useEffect(() => {
     if(props.inward.width && props.inward.thickness && props.inward.netWeight && (props.inward.productForm === '22' || props.material.displayInfo.form === 'Coil' || props.inward.productForm === 'Coil')) {
-      props.getRefinedProductsFinal({...props.inward, materialForm : props.material.displayInfo.form});
+      if (!props.inward.disableSelection) {
+        props.getRefinedProductsFinal({...props.inward, materialForm : props.material.displayInfo.form});
+      }
       props.setInwardDetails({...props.inward,'length':(parseFloat(parseFloat(props.inward.netWeight)/(parseFloat(props.inward.thickness)*7.85*(props.inward.width/1000))).toFixed(4))*1000});   
     }
   }, [props.inward.width, props.inward.thickness, props.inward.netWeight]);
@@ -259,7 +263,7 @@ const ProductInfoForm = (props) => {
             <Form.Item label="Material Desc">
               <TextArea
                 rows={3}
-                value={''}
+                value={props.material.displayInfo.mmDescription}
                 disabled
               />
             </Form.Item>

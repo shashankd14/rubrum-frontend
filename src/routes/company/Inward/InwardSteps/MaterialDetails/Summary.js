@@ -12,8 +12,9 @@ const Summary = (props) => {
     width,
     idiameter,
     nb,
+    hsn,
     grade, surfaceType, subGradeName, coatingType, mmId, mmDescription, diameter, thickness } = props.material.displayInfo;
-console.log("props.material.displayInfo", props.productInfo.refinedProducts);
+
   return (
     <>
     <Card>
@@ -21,11 +22,11 @@ console.log("props.material.displayInfo", props.productInfo.refinedProducts);
         <Descriptions.Item label="Material Category">{categoryName}</Descriptions.Item>
         <Descriptions.Item label="Sub Category">{subCategoryName}</Descriptions.Item>
         <Descriptions.Item label="Leaf Category">{leafCategoryName}</Descriptions.Item>
-        <Descriptions.Item label="Material ID">{props?.productInfo?.refinedProducts?.length > 0 ? props?.productInfo?.refinedProducts[0]?.mmId ? props?.productInfo?.refinedProducts[0]?.mmId : mmId : ''}</Descriptions.Item>
+        <Descriptions.Item label="Material ID">{props?.productInfo?.refinedProducts?.length > 0 && !mmId ? props?.productInfo?.refinedProducts[0]?.mmId ? props?.productInfo?.refinedProducts[0]?.mmId : '' : mmId}</Descriptions.Item>
       </Descriptions>
       <Descriptions title="Product Info" column={2}>
         <Descriptions.Item label="Product Type">{productType}</Descriptions.Item>
-        <Descriptions.Item label="HSN">{props.productInfo?.refinedProducts?.length > 0 ? props?.productInfo?.refinedProducts[0]?.hsn : ''}</Descriptions.Item>
+        <Descriptions.Item label="HSN">{props.productInfo?.refinedProducts?.length > 0 && !hsn ? props?.productInfo?.refinedProducts[0]?.hsn : hsn}</Descriptions.Item>
         <Descriptions.Item label="Brand">{brandName}</Descriptions.Item>
         <Descriptions.Item label="Unit of measure">{uom}</Descriptions.Item>
         <Descriptions.Item label="Form">{form}</Descriptions.Item>
@@ -41,7 +42,7 @@ console.log("props.material.displayInfo", props.productInfo.refinedProducts);
         <Descriptions.Item label="NB">{nb}</Descriptions.Item>
         <Descriptions.Item label="Gross Weight">{props.inward.grossWeight}</Descriptions.Item>
         <Descriptions.Item label="Net Weight">{props.inward.netWeight}</Descriptions.Item>
-        <Descriptions.Item label="Material Description">{props?.productInfo?.refinedProducts?.length > 0 ? props?.productInfo?.refinedProducts[0]?.mmDescription : ''}</Descriptions.Item>
+        <Descriptions.Item label="Material Description">{props?.productInfo?.refinedProducts?.length && !mmDescription > 0 ? props?.productInfo?.refinedProducts[0]?.mmDescription : mmDescription}</Descriptions.Item>
       </Descriptions>
       </Card>
       <Row className="gx-mt-4">
@@ -51,7 +52,8 @@ console.log("props.material.displayInfo", props.productInfo.refinedProducts);
             Back
           </Button>
           <Button type="primary" onClick={() => {
-            props.setInwardDetails({ ...props.inward, mmId: props?.productInfo?.refinedProducts[0]?.mmId})
+            if(!mmId)
+              props.setInwardDetails({ ...props.inward, mmId: props?.productInfo?.refinedProducts[0]?.mmId})
             props.onNextStep()
             }}>
             Forward

@@ -293,6 +293,8 @@ function* searchByMaterialId(action) {
                     subCategoryName: fetchPartyListResponse.content[0].subcategory,
                     leafCategoryName: fetchPartyListResponse.content[0].leafcategory,
                     brandName: fetchPartyListResponse.content[0].brand,
+                    width: fetchPartyListResponse.content[0].width,
+                    thickness: fetchPartyListResponse.content[0].thickness,
                     productType: fetchPartyListResponse.content[0].producttype,
                     uom: fetchPartyListResponse.content[0].uom,
                     form: fetchPartyListResponse.content[0].form,
@@ -305,6 +307,7 @@ function* searchByMaterialId(action) {
                     id: fetchPartyListResponse.content[0].idiameter,
                     nb: fetchPartyListResponse.content[0].nb,
                     hsn: fetchPartyListResponse.content[0].hsn,
+                    mmDescription: fetchPartyListResponse.content[0].mmDescription,
                 }));
             }
             yield put(searchByMaterialIdSuccess(fetchPartyListResponse));

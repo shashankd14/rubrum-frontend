@@ -295,7 +295,6 @@ function* getRefinedProductsByMap(action) {
     "uomId": action.allDetails.productUom ? action.allDetails.productUom : undefined,
     "surfacetypeId": action.allDetails.surfaceType ? action.allDetails.surfaceType : undefined,
     "coatingtypeId": action.allDetails.coatingTypeId ? action.allDetails.coatingTypeId : undefined,
-    "length": (action.allDetails.productForm === 1 || action.allDetails.productForm === 'Coil') ? undefined : action.allDetails.length,
     "width": action.allDetails.width ? action.allDetails.width : undefined,
     "thickness": action.allDetails.thickness ? action.allDetails.thickness : undefined,
     "nb": action.allDetails.nb ? action.allDetails.nb : undefined,
@@ -316,6 +315,11 @@ function* getRefinedProductsByMap(action) {
     if (fetchPartyList.status === 200) {
       const fetchPartyListResponse = yield fetchPartyList.json();
       yield put(getRefinedProductsSuccess(fetchPartyListResponse));
+
+      if(action.inwardDetails) {
+        let inwardFormDetails = yield select(getInwardEntryFields);
+        yield put(setInwardDetails({...inwardFormDetails, ...action.inwardDetails}));
+      };
 
       if(action.fieldType === 'subCategory') {
         const subCategoryList = [];
@@ -630,7 +634,6 @@ function* getRefinedProducts(action) {
     "uomId": action.allDetails.productUom ? action.allDetails.productUom : undefined,
     "surfacetypeId": action.allDetails.surfaceType ? action.allDetails.surfaceType : undefined,
     "coatingtypeId": action.allDetails.coatingTypeId ? action.allDetails.coatingTypeId : undefined,
-    "length": (action.allDetails.productForm === '22' || action.allDetails.materialForm === 'Coil' || action.allDetails.productForm === 'Coil') ? undefined : action.allDetails.length,
     "width": action.allDetails.width ? action.allDetails.width : undefined,
     "thickness": action.allDetails.thickness ? action.allDetails.thickness : undefined,
     "nb": action.allDetails.nb ? action.allDetails.nb : undefined,

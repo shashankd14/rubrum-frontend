@@ -1371,7 +1371,7 @@ useEffect(() => {
     props.fetchYLRList({
       pageNo: "1",
       pageSize: "500",
-      partyId: props.coil.party.nPartyId,
+      partyId: props?.coil?.party?.nPartyId,
       ipAddress: "",
       requestId: "YLR_PLAN_GET",
       userId: ""
