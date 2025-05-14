@@ -121,6 +121,24 @@ const List = (props) => {
       sorter: (a, b) => a.ageing - b.ageing,
       sortOrder: sortedInfo.columnKey === "ageing" && sortedInfo.order,
     },
+
+    {
+      title: "Thickness (mm)",
+      dataIndex: "fThickness",
+      key: "fThickness",
+      filters: [],
+      sorter: (a, b) => a.fThickness - b.fThickness,
+      sortOrder: sortedInfo.columnKey === "fThickness" && sortedInfo.order,
+    },
+
+    {
+      title: "Width (mm)",
+      dataIndex: "fWidth",
+      key: "fWidth",
+      filters: [],
+      sorter: (a, b) => a.fWidth - b.fWidth,
+      sortOrder: sortedInfo.columnKey === "fWidth" && sortedInfo.order,
+    },
     {
       title: "Status",
       dataIndex: "status.statusName",
