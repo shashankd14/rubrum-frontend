@@ -242,7 +242,7 @@ const ProductInfoForm = (props) => {
                 </Select>
               )}
             </Form.Item>
-            <Form.Item label="Gross Weight">
+            <Form.Item label="Gross Weight (in kgs)">
               {getFieldDecorator("grossWeight", {
                 rules: [{ required: true, message: "Enter Gross Weight" }],
               })(
@@ -471,7 +471,7 @@ const ProductInfoForm = (props) => {
                 </Select>
               )}
             </Form.Item>
-            <Form.Item label="Net Weight">
+            <Form.Item label="Net Weight (in kgs)">
               {getFieldDecorator("netWeight", {
                 rules: [
                   {

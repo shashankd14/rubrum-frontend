@@ -341,40 +341,6 @@ const CategoryForm = (props) => {
               <Input id="productTypeId" disabled value={props?.inward?.hsn} />
             </Form.Item>
           </Col>
-          <Col span={12}>
-            <Form.Item label="Unit of measure">
-              {getFieldDecorator("productUom", {
-                rules: [
-                  {
-                    required: false,
-                    message: "Please select a unit of measure!",
-                  },
-                ],
-              })(
-                <Select
-                  disabled={props.inward.disableSelection}
-                  showSearch
-                  placeholder="Select a unit of measure"
-                  optionFilterProp="children"
-                  onSelect={(uom, option) => {
-                    props.saveMaterialInfo("uom", option.props.children);
-                    props.getRefinedProducts({...props.inward, productUom: uom});
-                  }}
-                  filterOption={(input, option) =>
-                    option.props.children
-                      .toLowerCase()
-                      .indexOf(input.toLowerCase()) >= 0
-                  }
-                >
-                  {props.productInfo?.productUomList?.map((uom) => (
-                    <Option key={uom.uomId} value={uom.uomId}>
-                      {uom.uomName}
-                    </Option>
-                  ))}
-                </Select>
-              )}
-            </Form.Item>
-          </Col>
         </Row>
         <Row>
           <Col span={12}>

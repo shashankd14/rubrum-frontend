@@ -97,8 +97,8 @@ const List = (props) => {
     },
     {
       title: "Material",
-      dataIndex: "material.description",
-      key: "material.description",
+      dataIndex: "material.mmDescConcatenated",
+      key: "material.mmDescConcatenated",
     },
     {
       title: "Available Quantity",
