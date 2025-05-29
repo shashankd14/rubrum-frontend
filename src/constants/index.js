@@ -4,6 +4,8 @@ export const SLIT_CUT_INSTRUCTION_PROCESS_ID = 3;
 
 export const APPLICATION_DATE_FORMAT = 'DD/MM/YYYY';
 
+export const METAL_DENSITY = 8.1;
+
 export const sidebarMenuItems = {
     inward: 'Inward',
     partywiseRegister: "Partywise Register",

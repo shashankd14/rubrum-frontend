@@ -28,7 +28,7 @@ import {
   updateClassificationSlitAndCutBeforeFinish
 } from "../../../appRedux/actions/Inward";
 import { labelPrintEditFinish } from '../../../appRedux/actions/LabelPrint';
-import { APPLICATION_DATE_FORMAT } from "../../../constants";
+import { APPLICATION_DATE_FORMAT, METAL_DENSITY } from "../../../constants";
 import { fetchYLRList } from '../../../appRedux/actions';
 
 const Option = Select.Option;
@@ -1199,7 +1199,7 @@ const CreateCuttingDetailsForm = (props) => {
       (props.coil.fThickness *
         (cutsWidth / 1000) *
         (Number(cutsLength) / 1000) *
-        7.85);
+        METAL_DENSITY);
     let cutsNumber = [];
     if (cutsNumerator !== Infinity) {
       cutsNumber[idx] = cutsNumerator;
@@ -1282,7 +1282,7 @@ const CreateCuttingDetailsForm = (props) => {
       (props.coil.fThickness *
         (cutsWidth / 1000) *
         (Number(e.target.value) / 1000) *
-        7.85);
+        METAL_DENSITY);
     let cutsNumber = [];
     if (cutsNumerator !== Infinity) {
       cutsNumber[idx] = cutsNumerator;

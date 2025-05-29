@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import { Card, Form, Steps, Row} from "antd";
 import {connect} from "react-redux";
-import {fetchPartyList, fetchMaterialList, setInwardDetails, submitInwardEntry} from "../../../appRedux/actions";
+import {fetchPartyList, fetchMaterialList, setInwardDetails, submitInwardEntry, searchByMaterialId} from "../../../appRedux/actions";
 
 import PartyDetailsForm from "./InwardSteps/PartyDetailsForm";
 import MaterialDetailsForm from "./InwardSteps/MaterialDetailsForm";
@@ -57,6 +57,13 @@ const CreateForm = (props) => {
         ];
         setSteps(steps);
     }, []);
+
+    useEffect(() => {   
+        if(props.match.params.inwardEntryId) {
+            console.log(props.inward.inward.mmId);
+            props.searchByMaterialId(props.inward.inward.mmId);
+        }
+    }, [props.match.params.inwardEntryId]);
 
     useEffect(()=>{
         if(props.inward.inwardEntry && (props.match.params.inwardEntryId === "" || props.match.params.inwardEntryId === undefined)){
@@ -116,7 +123,7 @@ const Create = Form.create({
             }),
             invoiceNumber: Form.createFormField({
                 ...props.inward.inward.invoiceNumber,
-                value: (props.inward.inward.invoiceNumber) ? props.inward.inward.invoiceNumber : '',
+                value: (props.inward.inward.invoiceNumber) ? props.inward?.inward?.invoiceNumber : '',
             }),
             invoiceDate: Form.createFormField({
                 ...props.inward.inward.invoiceDate,
@@ -153,5 +160,6 @@ export default connect(mapStateToProps, {
     fetchPartyList,
     fetchMaterialList,
     setInwardDetails,
-    submitInwardEntry
+    submitInwardEntry,
+    searchByMaterialId
 })(Create);

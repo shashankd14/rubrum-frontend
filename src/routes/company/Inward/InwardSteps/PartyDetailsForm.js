@@ -237,15 +237,15 @@ const PartyDetailsForm = Form.create({
         ...props.inward.customerBatchNo,
         value:
           props.params !== ""
-            ? props.inward.customerBatchId
-            : props.inward.customerBatchNo
-            ? props.inward.customerBatchNo
+            ? props.inward?.customerBatchId !== 'undefined' ? props.inward?.customerBatchId : ''
+            : props.inward?.customerBatchNo !== 'undefined'
+            ? props.inward?.customerBatchNo
             : "",
       }),
       customerInvoiceNo: Form.createFormField({
-        ...props.inward.customerInvoiceNo,
-        value: props.inward.customerInvoiceNo
-          ? props.inward.customerInvoiceNo
+        ...props?.inward?.customerInvoiceNo,
+        value: props?.inward?.customerInvoiceNo !== 'undefined'
+          ? props?.inward?.customerInvoiceNo
           : "",
       }),
       purposeType: Form.createFormField({

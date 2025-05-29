@@ -20,6 +20,7 @@ import {
   getRefinedProducts,
   getRefinedProductsFinal
 } from "../../../../../appRedux/actions";
+import { METAL_DENSITY } from "../../../../../constants";
 
 const formItemLayout = {
   labelCol: {
@@ -60,7 +61,7 @@ const ProductInfoForm = (props) => {
       if (!props.inward.disableSelection) {
         props.getRefinedProductsFinal({...props.inward, materialForm : props.material.displayInfo.form});
       }
-      props.setInwardDetails({...props.inward,'length':(parseFloat(parseFloat(props.inward.netWeight)/(parseFloat(props.inward.thickness)*7.85*(props.inward.width/1000))).toFixed(4))*1000});   
+      props.setInwardDetails({...props.inward,'length':(parseFloat(parseFloat(props.inward.netWeight)/(parseFloat(props.inward.thickness)*METAL_DENSITY*(props.inward.width/1000))).toFixed(4))*1000});   
     }
   }, [props.inward.width, props.inward.thickness, props.inward.netWeight]);
 

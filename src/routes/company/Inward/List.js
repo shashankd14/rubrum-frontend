@@ -78,8 +78,8 @@ const List = (props) => {
     },
     {
       title: "Material",
-      dataIndex: "material.description",
-      key: "material.description",
+      dataIndex: "material.mmDescConcatenated",
+      key: "material.mmDescConcatenated",
     },
     {
       title: "Status",
@@ -190,12 +190,7 @@ const List = (props) => {
   const clearFilters = () => {
     setFilteredInfo(null);
   };
-
-  const clearAll = () => {
-    setSortedInfo(null);
-    setFilteredInfo(null);
-  };
-
+  
   const exportSelectedData = () => {};
 
   const deleteSelectedCoils = () => {

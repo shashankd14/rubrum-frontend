@@ -19,7 +19,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import SweetAlert from 'react-bootstrap-sweetalert';
 import { connect, useDispatch } from 'react-redux';
 import moment from 'moment';
-import { APPLICATION_DATE_FORMAT } from '../../../constants';
+import { APPLICATION_DATE_FORMAT, METAL_DENSITY } from '../../../constants';
 import {
   setProcessDetails,
   saveSlittingInstruction,
@@ -1318,7 +1318,7 @@ const CreateSlittingDetailsForm = (props) => {
         const data =
           (e.target.value /
             ((newData[newIndex]['actualWidth'] / 1000) *
-              7.85 *
+            METAL_DENSITY *
               props.coil.fThickness)) *
           1000;
         newData[newIndex]['actualLength'] = Number.isInteger(data)

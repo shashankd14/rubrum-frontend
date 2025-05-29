@@ -4,6 +4,7 @@ import {connect} from "react-redux";
 
 import {formItemLayout} from '../Create';
 import {setInwardDetails, checkIfCoilExists, getGradeByMaterialId, fetchPartyList} from "../../../../appRedux/actions";
+import {METAL_DENSITY} from "../../../../constants";
 
 const CoilDetailsForm = (props) => {
     const {getFieldDecorator} = props.form;
@@ -16,7 +17,7 @@ const CoilDetailsForm = (props) => {
 
         props.form.validateFields((err, values) => {
             if (!err) {
-                let length = props.params!== "" ?(parseFloat(parseFloat(props.inward.fpresent)/(parseFloat(props.inward.fThickness)* 7.85 *(props.inward.fWidth/1000))).toFixed(4))*1000:(parseFloat(parseFloat(props.inward.netWeight)/(parseFloat(props.inward.thickness)* 7.85 *(props.inward.width/1000))).toFixed(4))*1000;
+                let length = props.params!== "" ?(parseFloat(parseFloat(props.inward.fpresent)/(parseFloat(props.inward.fThickness)* METAL_DENSITY *(props.inward.fWidth/1000))).toFixed(4))*1000:(parseFloat(parseFloat(props.inward.netWeight)/(parseFloat(props.inward.thickness)* METAL_DENSITY *(props.inward.width/1000))).toFixed(4))*1000;
                 let inward = props.inward;
                 if(props.params!== ""){
                     inward.fLength = length;
@@ -97,7 +98,7 @@ const CoilDetailsForm = (props) => {
 
     useEffect(() => {
         if(props.inward.width && props.inward.thickness && props.inward.netWeight && props.inward.form == 1) {
-            setLength((parseFloat(parseFloat(props.inward.netWeight)/(parseFloat(props.inward.thickness)* 7.85 *(props.inward.width/1000))).toFixed(4))*1000);
+            setLength((parseFloat(parseFloat(props.inward.netWeight)/(parseFloat(props.inward.thickness)* METAL_DENSITY *(props.inward.width/1000))).toFixed(4))*1000);
         }
     }, [props.inward]);
 
