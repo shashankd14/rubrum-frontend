@@ -840,7 +840,7 @@ const CreateCuttingDetailsForm = (props) => {
             Number(tweight) >= 0 && balancedValue
               ? WeightValue - Number(weight)
               : Math.round(
-                  0.00000785 *
+                  0.0000081 *
                     parseFloat(width) *
                     parseFloat(props.inward.plan.fThickness) *
                     parseFloat(props.inward.process.length) *
@@ -854,7 +854,7 @@ const CreateCuttingDetailsForm = (props) => {
             Number(tweight) >= 0 && balancedValue
               ? WeightValue - Number(weight)
               : Math.round(
-                  0.00000785 *
+                  0.0000081 *
                     parseFloat(props.inward.plan.fWidth) *
                     parseFloat(props.inward.plan.fThickness) *
                     parseFloat(props.inward.process.length) *
@@ -1159,7 +1159,7 @@ const CreateCuttingDetailsForm = (props) => {
     setNo(
       Math.floor(
         numerator /
-        (0.00000785 * width * props.coil.fThickness * Number(length))
+        (0.0000081 * width * props.coil.fThickness * Number(length))
       ).toFixed(0)
     );
   };
