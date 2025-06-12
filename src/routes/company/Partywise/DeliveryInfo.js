@@ -205,13 +205,11 @@ const DeliveryInfo = (props) => {
       dataIndex: "totalPrice",
       key: "totalPrice",
       render: (text, record) => {
-        console.log(record);
-        console.log(props.inward.inwardListForDelivery);
         return (
           <Button
             type="primary"
             onClick={() => {
-               window.location.href = window.location.origin+'#/company/workin-progress/plan/'+record.coilNo;
+               window.location.href = window.location.origin+'#/company/locationwise-register/editFinish/'+record.coilNo;
             }}
           >
             Edit finish

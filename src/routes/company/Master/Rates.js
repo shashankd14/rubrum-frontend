@@ -524,8 +524,8 @@ const Rates = (props) => {
   };
   useEffect(() => {
     props.fetchPartyList();
-    props.getProductGradesList();
     props.getProducts();
+    props.getProductGradesList();
     props.fetchProcessList();
     props.fetchAdditionalPriceList();
     props.fetchPackingRatesList();

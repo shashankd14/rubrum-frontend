@@ -131,6 +131,7 @@ const SalesOrder = () => {
                 .toLowerCase()
                 .indexOf(input.toLowerCase()) >= 0
             }
+            value={record.customerCodeId}
             onSelect={(value) => onEndUserInputChange(value, tableIndex)}
           >
             {endUserTags.map((tag) => (
