@@ -57,7 +57,12 @@ const DeliveryInfo = (props) => {
 
     if (iList?.length) {
       const payload = {
-        inwardEntryId: iList.map((item) => item.inwardEntryId),
+        inwardEntryId: iList.map(
+          (item) => ({
+            inwardId: item.inwardEntryId,
+            additionalWeight: additionalWeights[item.inwardEntryId] || 0,
+          })
+        ),
         laminationId,
         vehicleNo,
         packingRateId,

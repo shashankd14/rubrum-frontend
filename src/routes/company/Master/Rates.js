@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { connect, useDispatch } from "react-redux";
+import { connect } from "react-redux";
 import {
   Button,
   Card,
@@ -11,12 +11,8 @@ import {
   Form,
   Input,
   Select,
-  Checkbox,
   Tabs,
-  message,
 } from "antd";
-import { CheckboxChangeEvent } from "antd/es/checkbox";
-import moment from "moment";
 import SearchBox from "../../../components/SearchBox";
 import EditAdditionalRates from "./editAdditionalRates";
 import {
@@ -54,7 +50,6 @@ import {
   getProducts,
   getProductGradesList
 } from "../../../appRedux/actions";
-import { onDeleteContact } from "../../../appRedux/actions";
 import AdditionalRates from "./addAdditionalRates";
 
 const Option = Select.Option;
@@ -142,7 +137,7 @@ const Rates = (props) => {
   const [showAdditionalRates, setShowAdditionalRates] = useState(false);
   const [staticList, setStaticList] = useState([]);
   const [selectedProcessId, setSelectedProcessId] = useState("");
-  const [additionPriceList, setAdditionalPriceList] = useState([]);
+  const [additionPriceList, setAdditionalPriceList] = useState(props.rates.additionalRatesList || []);
   const [viewAdditionalRates, setViewAdditionalRates] = useState(false);
   const [editPriceModal, setEditPriceModal] = useState(false);
   const [staticSelected, setStaticSelected] = useState();
@@ -156,7 +151,7 @@ const Rates = (props) => {
     {}
   );
   const [viewLaminationCharges, setViewLaminationCharges] = useState(false);
-  const [laminationChargesList, setLaminationChargesList] = useState([]);
+  const [laminationChargesList, setLaminationChargesList] = useState(props.laminationCharges || []);
   const [laminationStaticSelected, setLaminationStaticSelected] = useState();
   const columns = [
     {
@@ -534,10 +529,6 @@ const Rates = (props) => {
   }, []);
 
   useEffect(() => {
-    props.fetchRatesList();
-  }, [showAddRates]);
-
-  useEffect(() => {
     props.getLaminationChargesList();
   }, [showAddLaminationCharges, editLaminationCharges]);
 
@@ -610,7 +601,7 @@ const Rates = (props) => {
         item.processId === selectedProcessId &&
         item?.partyId === selectedParty
     );
-    setAdditionalPriceList(list);
+    setAdditionalPriceList(list.length > 0 ? list : props.rates.additionalRatesList);
   }, [props?.rates?.additionalRatesList]);
 
   useEffect(() => {
@@ -621,7 +612,7 @@ const Rates = (props) => {
         item?.partyId === selectedParty
     );
     setLaminationChargesList(list);
-  }, [props?.rates?.laminationChargesList]);
+  }, [props?.laminationChargesList]);
 
   useEffect(() => {
     const { rates } = props;
@@ -840,7 +831,7 @@ const Rates = (props) => {
                 icon={() => <i className="icon icon-add" />}
                 size="default"
                 onClick={() => {
-                  props.resetRates();
+                  // props.resetRates();
                   props.form.resetFields();
                   setShowAddRates(true);
                 }}
@@ -963,6 +954,10 @@ const Rates = (props) => {
                 </Select>
               </>
             )}
+            <Row className="gx-mt-3">
+              <Col span={24}>
+              </Col>
+            </Row>
             {additionPriceList.length > 0 && (
               <>
                 <Table
@@ -983,6 +978,7 @@ const Rates = (props) => {
               onChange={handleChange}
             />
           </TabPane>
+
           <TabPane tab="Lamination Charges" key="4">
             <Select
               style={{ width: 300 }}
@@ -1016,6 +1012,10 @@ const Rates = (props) => {
                 </Select>
               </>
             )}
+            <Row className="gx-mt-3">
+              <Col span={24}>
+              </Col>
+            </Row>
             {laminationChargesList.length > 0 && (
               <Table
                 className="gx-table-responsive"

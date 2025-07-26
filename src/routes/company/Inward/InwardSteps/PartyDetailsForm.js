@@ -44,8 +44,8 @@ const CreatePartyDetailsForm = (props) => {
 
   useEffect(() => {
     props.form.setFieldsValue({
-        purposeType: 'TRADING',
-    })
+      purposeType: "STEEL SERVICE CENTRE",
+    });
   }, [])
 
   useEffect(() => {
@@ -66,9 +66,11 @@ const CreatePartyDetailsForm = (props) => {
       props.inward.customerBatchNo = props.inward.customerBatchId;
     }
   }, [props.params]);
+  
   const handleChange = (e) => {
     props.inward.party.partyName = e;
   };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -122,19 +124,27 @@ const CreatePartyDetailsForm = (props) => {
                 },
               ],
             })(
-              <AutoComplete
+              <Select
+                showSearch
                 style={{ width: 200 }}
-                placeholder={intl.formatMessage({
-                  id: "inward.create.label.customerNamePlaceholder",
-                })}
-                dataSource={dataSource}
-                onChange={props.params !== "" ? (e) => handleChange(e) : ""}
-                filterOption={(inputValue, option) =>
+                placeholder="Select a location"
+                optionFilterProp="children"
+                // onChange={onChange}
+                // onFocus={onFocus}
+                // onBlur={onBlur}
+                // onSearch={onSearch}
+                filterOption={(input, option) =>
                   option.props.children
-                    .toUpperCase()
-                    .indexOf(inputValue.toUpperCase()) !== -1
+                    .toLowerCase()
+                    .indexOf(input.toLowerCase()) >= 0
                 }
-              />
+              >
+                {props.party.partyList.map((party) => (
+                  <Option key={party.nPartyId} value={`${party.nPartyId}`}>
+                    {party.partyName}
+                  </Option>
+                ))}
+              </Select>
             )}
           </Form.Item>
           <Form.Item
@@ -151,6 +161,12 @@ const CreatePartyDetailsForm = (props) => {
           >
             {getFieldDecorator("customerBatchNo", {
               rules: [
+                {
+                  required: true,
+                  message: intl.formatMessage({
+                    id: "inward.create.label.scInwardId",
+                  }),
+                },
                 { validator: props.params === "" ? checkBatchNoExist : "" },
               ],
             })(
@@ -167,16 +183,23 @@ const CreatePartyDetailsForm = (props) => {
               id: "inward.create.label.customerInvoiceNo",
             })}
           >
-            {getFieldDecorator("customerInvoiceNo")(
-              <Input id="customerInvoiceNo" />
-            )}
+            {getFieldDecorator("customerInvoiceNo", {
+              rules: [
+                {
+                  required: true,
+                  message: intl.formatMessage({
+                    id: "inward.create.label.purchaseInvoiceNo",
+                  }),
+                },
+              ],
+            })(<Input id="customerInvoiceNo" />)}
           </Form.Item>
 
           <Form.Item label="Purpose Type">
             {getFieldDecorator("purposeType", {
               rules: [
                 { required: true, message: "Please select a purpose type!" },
-              ]
+              ],
             })(
               <Select placeholder="Select an option">
                 <Option value="TRADING">

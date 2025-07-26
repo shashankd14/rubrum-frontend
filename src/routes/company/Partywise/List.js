@@ -460,7 +460,6 @@ const List = (props) => {
               icon={() => <i className="icon icon-add" />}
               size="default"
               onClick={() => {
-                console.log("selected rows", selectedRowData, selectedCBKeys, selectedCoil);
                 if (selectedCoil?.length > 1) {
                   message.error('Please select inwards of same location');
                 } else {

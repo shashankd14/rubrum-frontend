@@ -49,12 +49,12 @@ function* fetchAllPackets({ page = 1, pageSize = 15, searchValue = "" }) {
   }
 }
 
-function* fetchSalesOrders({ page = 1, pageSize = 15, searchValue = "" }) {
+function* fetchSalesOrders({ page = 1, pageSize = 15, searchValue = "", partyId = "" }) {
   const body = {
     pageNo: page,
     pageSize: pageSize,
     searchText: searchValue,
-    partyId: "",
+    partyId: partyId,
   };
 
   try {

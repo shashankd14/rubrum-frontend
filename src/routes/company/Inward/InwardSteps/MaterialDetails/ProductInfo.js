@@ -8,6 +8,7 @@ import {
   Row,
   Input,
   Select,
+  message
 } from "antd";
 import { connect } from "react-redux";
 import {
@@ -39,13 +40,20 @@ const ProductInfoForm = (props) => {
   const { getFieldDecorator } = props.form;
 
   const handleSubmit = (e) => {
-    if(!props.inward.disableSelection) 
-      props.getRefinedProductsFinal({...props.inward, materialForm : props.material.displayInfo.form});
+    if (!props.inward.disableSelection) 
+      props.getRefinedProductsFinal({
+        ...props.inward,
+        materialForm: props.material.displayInfo.form,
+      });
 
     e.preventDefault();
     props.form.validateFieldsAndScroll((err, values) => {
-      if (!err) {
-        props.updateStep(2);
+      if (!err && props?.productInfo?.refinedProducts.length === 1) {
+        props.updateStep(2); 
+      } else {
+        message.error(
+          "Material Id not found, please try again after entering all the data"
+        );
       }
     });
   };
@@ -93,8 +101,24 @@ const ProductInfoForm = (props) => {
                   onChange={(gradeId, option) => {
                     props.saveMaterialInfo("grade", option.props.children);
                     props.setInwardDetails({
-                      ...props.inward, gradeId: gradeId});
-                    props.getRefinedProducts({...props.inward, gradeId: gradeId}, 'subgrade');
+                      ...props.inward,
+                      gradeId: gradeId,
+                    });
+                    props.getRefinedProducts(
+                      {
+                        ...props.inward,
+                        gradeId: gradeId,
+                        subgradeId: "",
+                        surfaceType: "",
+                        coatingTypeId: "",
+                        thickness: "",
+                        width: "",
+                        od: "",
+                        id: "",
+                        nb: "",
+                      },
+                      "subgrade"
+                    );
                   }}
                   filterOption={(input, option) =>
                     option.props.children.toString()
@@ -126,7 +150,18 @@ const ProductInfoForm = (props) => {
                       "surfaceType",
                       option.props.children
                     );
-                    props.getRefinedProducts(props.inward, 'coating');
+                    props.getRefinedProducts(
+                      {
+                        ...props.inward,
+                        coatingTypeId: "",
+                        thickness: "",
+                        width: "",
+                        od: "",
+                        id: "",
+                        nb: "",
+                      },
+                      "coating"
+                    );
                   }}
                   filterOption={(input, option) =>
                     option.props.children.toString()
@@ -154,7 +189,16 @@ const ProductInfoForm = (props) => {
                   optionFilterProp="children"
                   onChange={(gradeId, option) => {
                     props.saveMaterialInfo("thickness", option.props.children);
-                    props.getRefinedProducts(props.inward, 'od');
+                    props.getRefinedProducts(
+                      {
+                        ...props.inward,
+                        width: "",
+                        od: "",
+                        id: "",
+                        nb: "",
+                      },
+                      "od"
+                    );
                   }}
                   filterOption={(input, option) =>
                     option.props?.children?.toString()
@@ -189,7 +233,14 @@ const ProductInfoForm = (props) => {
                   optionFilterProp="children"
                   onChange={(gradeId, option) => {
                     props.saveMaterialInfo("width", option.props.children);
-                    props.getRefinedProducts(props.inward, 'id');
+                    props.getRefinedProducts(
+                      {
+                        ...props.inward,
+                        id: "",
+                        nb: "",
+                      },
+                      "id"
+                    );
                   }}
                   filterOption={(input, option) =>
                     option.props.children.toString()
@@ -294,7 +345,19 @@ const ProductInfoForm = (props) => {
                       "subGradeName",
                       option.props.children
                     );
-                    props.getRefinedProducts(props.inward, 'surface');
+                    props.getRefinedProducts(
+                      {
+                        ...props.inward,
+                        surfaceType: "",
+                        coatingTypeId: "",
+                        thickness: "",
+                        width: "",
+                        od: "",
+                        id: "",
+                        nb: "",
+                      },
+                      "surface"
+                    );
                   }}
                   filterOption={(input, option) =>
                     option.props.children.toString()
@@ -333,7 +396,17 @@ const ProductInfoForm = (props) => {
                       "coatingType",
                       option.props.children
                     );
-                    props.getRefinedProducts(props.inward, 'thickness');
+                    props.getRefinedProducts(
+                      {
+                        ...props.inward,
+                        thickness: "",
+                        width: "",
+                        od: "",
+                        id: "",
+                        nb: "",
+                      },
+                      "thickness"
+                    );
                   }}
                   filterOption={(input, option) =>
                     option.props.children.toString()
@@ -369,7 +442,15 @@ const ProductInfoForm = (props) => {
                   optionFilterProp="children"
                   onChange={(gradeId, option) => {
                     props.saveMaterialInfo("diameter", option.props.children);
-                    props.getRefinedProducts(props.inward, 'id');
+                    props.getRefinedProducts(
+                      {
+                        ...props.inward,
+                        width: "",
+                        id: "",
+                        nb: "",
+                      },
+                      "id"
+                    );
                   }}
                   filterOption={(input, option) =>
                     option.props.children.toString()
@@ -409,7 +490,13 @@ const ProductInfoForm = (props) => {
                   optionFilterProp="children"
                   onChange={(gradeId, option) => {
                     props.saveMaterialInfo("idiameter", option.props.children);
-                    props.getRefinedProducts(props.inward, 'length');
+                    props.getRefinedProducts(
+                      {
+                        ...props.inward,
+                        nb: "",
+                      },
+                      "length"
+                    );
                   }}
                   filterOption={(input, option) =>
                     option.props.children.toString()

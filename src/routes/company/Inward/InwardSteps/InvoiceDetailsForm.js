@@ -77,13 +77,6 @@ const InvoiceDetailsForm = props => {
                             <Input id="batchNo" />
                         )}
                     </Form.Item>
-                    <Form.Item label="TDC No">
-                        {getFieldDecorator('tdcNo', {
-                            rules: [{ required: false, message: 'Please select a TDC No' }],
-                        })(
-                            <Input id="tdcNo" />
-                        )}
-                    </Form.Item>
                     <Form.Item label="Vehicle number">
                         {getFieldDecorator('vehicleNumber', {
                             rules: [{ required: true, message: 'Please enter Vehicle Number' }]
@@ -108,7 +101,7 @@ const InvoiceDetailsForm = props => {
                     <Form.Item label="Invoice date">
                         {getFieldDecorator('invoiceDate', {
                             initialValue:  moment(props.inward.invoiceDate || new Date(), APPLICATION_DATE_FORMAT),
-                            rules: [{ required: false, message: 'Please select a received date' }],
+                            rules: [{ required: true, message: 'Please select a received date' }],
                         })(
                             <DatePicker
                                 style={{width: 200}}
@@ -137,7 +130,7 @@ const InvoiceDetailsForm = props => {
                     {props.inward.customerBatchNo && <p>SC inward id : {props.inward.customerBatchNo}</p>}
                     {props.inward.customerInvoiceNo && <p>Purchase Invoice No : {props.inward.customerInvoiceNo}</p>}
                     {props.inward.purposeType && <p>Purpose Type : {props.inward.purposeType}</p>}
-                    <p>Coil number : {props.inward.coilNumber}</p>
+                    <p>Inward id : {props.inward.coilNumber}</p>
                     <p>Material Description : {props.params !== ""? props.inward?.material?.description : props.inward.description}</p>
                     <p>Dimensions : {props.params !== "" ? dimensionEdit:dimension}</p>
                     <p>Net Weight : {props.params !== "" ? props.inward.fpresent: props.inward.netWeight}</p>

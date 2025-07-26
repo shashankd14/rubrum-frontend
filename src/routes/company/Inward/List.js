@@ -19,9 +19,8 @@ const inwardMenuConstants = {
   'view': "View",
   'addInward': 'Add Inward',
   'export': 'Export',
-  'edit': 'Edit',
-  'delete': 'Delete',
 }
+
 const List = (props) => {
   const [sortedInfo, setSortedInfo] = useState({
     order: "descend",
@@ -49,19 +48,23 @@ const List = (props) => {
       sortOrder: sortedInfo.columnKey === "coilNumber" && sortedInfo.order,
     },
     {
+      title: "SC Inward id",
+      dataIndex: "customerBatchId",
+      key: "customerBatchId",
+      filters: [],
+      sorter: (a, b) => a.customerBatchId.length - b.customerBatchId.length,
+      sortOrder: sortedInfo.columnKey === "customerBatchId" && sortedInfo.order,
+      render: (text, record) => {
+        return record.customerBatchId == "undefined" ||
+          record.batch == "undefined"
+          ? "-"
+          : record.customerBatchId || record.batch;
+      },
+    },
+    {
       title: "Location",
       dataIndex: "party.partyName",
       key: "party.partyName",
-      filteredValue: filteredInfo ? filteredInfo["party.partyName"] : null,
-      onFilter: (value, record) => record.party.partyName == value,
-      filters:
-        props.inward.inwardList.length > 0
-          ? [
-              ...new Set(
-                props.inward.inwardList.map((item) => item.party.partyName)
-              ),
-            ].map((partyName) => ({ text: partyName, value: partyName }))
-          : [],
       sorter: (a, b) => a.party.partyName.length - b.party.partyName.length,
       sortOrder: sortedInfo.columnKey === "party.partyName" && sortedInfo.order,
     },
@@ -112,22 +115,17 @@ const List = (props) => {
       key: "x",
       render: (text, record, index) => (
         <span>
-          {menuInwardLabelList.length > 0 && menuInwardLabelList.includes(inwardMenuConstants.view) && <><span
-              className="gx-link"
-              onClick={() => props.history.push(`${record.coilNumber}`)}
-          >
-            View
-          </span>
-            <Divider type="vertical" />
-          </>}
-          {menuInwardLabelList.length > 0 && menuInwardLabelList.includes(inwardMenuConstants.edit) && <><span className="gx-link" onClick={(e) => onEdit(record, index, e)}>
-            Edit
-          </span>
-          <Divider type="vertical" /></>}
-          {menuInwardLabelList.length > 0 && menuInwardLabelList.includes(inwardMenuConstants.delete) && <span className="gx-link" onClick={(e) => onDelete(record, index, e)}>
-            Delete
-          </span>
-          }
+          {menuInwardLabelList.length > 0 &&
+            menuInwardLabelList.includes(inwardMenuConstants.view) && (
+              <>
+                <span
+                  className="gx-link"
+                  onClick={() => props.history.push(`${record.coilNumber}`)}
+                >
+                  View
+                </span>
+              </>
+            )}
         </span>
       ),
     },

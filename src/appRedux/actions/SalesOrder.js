@@ -13,11 +13,12 @@ import {
   REQUEST_SO_PDF_ERROR
 } from '../../constants/ActionTypes';
 
-export const fetchSalesOrderList = (page, pageSize, searchValue) =>  ({
+export const fetchSalesOrderList = (page, pageSize, searchValue, partyId) =>  ({
   type: REQUEST_SALES_ORDER_LIST,
   page,
   pageSize,
   searchValue,
+  partyId
 });
 
 export const fetchSalesOrderError = (error) =>  ({

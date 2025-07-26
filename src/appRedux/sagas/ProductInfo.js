@@ -1,11 +1,19 @@
-import { all, put, fork, takeLatest, select, takeEvery } from "redux-saga/effects";
+import {
+  all,
+  put,
+  fork,
+  takeLatest,
+  select,
+  takeEvery,
+} from "redux-saga/effects";
 import { getUserToken } from "./common";
 import {
   FETCH_PRODUCTS,
   FETCH_PRODUCT_FORMS,
   FETCH_PRODUCTS_REFINED,
   FETCH_PRODUCTS_LIST,
-  FETCH_PRODUCTS_REFINED_FINAL
+  FETCH_PRODUCT_GRADES_LIST,
+  FETCH_PRODUCTS_REFINED_FINAL,
 } from "../../constants/ActionTypes";
 import {
   getProductBrandsSuccess,
@@ -41,7 +49,7 @@ import {
   //for rates
   getProductGradesListSuccess,
   getProductGradesListError,
-  getRefinedProducts as getRefinedProductsAction
+  getRefinedProducts as getRefinedProductsAction,
 } from "../actions";
 import { userSignOutSuccess } from "../../appRedux/actions/Auth";
 import { getInwardEntryFields } from "../selectors";
@@ -220,11 +228,14 @@ function* fetchProductSubGrades(action) {
     gradeId: action.gradeId,
   };
   try {
-    const fetchPartyList = yield fetch(`${baseUrl}api/material/subgrade/list/gradeId`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", ...getHeaders() },
-      body: JSON.stringify(body),
-    });
+    const fetchPartyList = yield fetch(
+      `${baseUrl}api/material/subgrade/list/gradeId`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...getHeaders() },
+        body: JSON.stringify(body),
+      }
+    );
     if (fetchPartyList.status === 200) {
       const fetchPartyListResponse = yield fetchPartyList.json();
       yield put(getProductSubGradesSuccess(fetchPartyListResponse));
@@ -284,159 +295,208 @@ function* fetchProductCoatingList(action) {
 
 function* getRefinedProductsByMap(action) {
   const body = {
-    "categoryId": action.allDetails.categoryId ? parseInt(action.allDetails.categoryId) : undefined,
-    "subcategoryId": action.allDetails.subcategoryId ? parseInt(action.allDetails.subcategoryId) : undefined,
-    "leafcategoryId": action.allDetails.leafcategoryId ? parseInt(action.allDetails.leafcategoryId) : undefined,
-    "brandId": action.allDetails.brandId ? parseInt(action.allDetails.brandId) : undefined,
-    "producttypeId": action.allDetails.producttypeId ? parseInt(action.allDetails.producttypeId) : undefined,
-    "gradeId": action.allDetails.gradeId ? parseInt(action.allDetails.gradeId) : undefined,
-    "subgradeId": action.allDetails.subgradeId ? parseInt(action.allDetails.subgradeId) : undefined,
-    "formId": action.allDetails.productForm ? parseInt(action.allDetails.productForm) : undefined,
-    "uomId": action.allDetails.productUom ? parseInt(action.allDetails.productUom) : undefined,
-    "surfacetypeId": action.allDetails.surfaceType ? parseInt(action.allDetails.surfaceType) : undefined,
-    "coatingtypeId": action.allDetails.coatingTypeId ? parseInt(action.allDetails.coatingTypeId) : undefined,
-    "width": action.allDetails.width ? parseFloat(action.allDetails.width) : undefined,
-    "thickness": action.allDetails.thickness ? parseFloat(action.allDetails.thickness) : undefined,
-    "nb": action.allDetails.nb ? parseFloat(action.allDetails.nb) : undefined,
-    "oDiameter": action.allDetails.od ? parseFloat(action.allDetails.od) : undefined,
-    "iDiameter": action.allDetails.id ? parseFloat(action.allDetails.id) : undefined,
+    categoryId: action.allDetails.categoryId
+      ? parseInt(action.allDetails.categoryId)
+      : undefined,
+    subcategoryId: action.allDetails.subcategoryId
+      ? parseInt(action.allDetails.subcategoryId)
+      : undefined,
+    leafcategoryId: action.allDetails.leafcategoryId
+      ? parseInt(action.allDetails.leafcategoryId)
+      : undefined,
+    brandId: action.allDetails.brandId
+      ? parseInt(action.allDetails.brandId)
+      : undefined,
+    producttypeId: action.allDetails.producttypeId
+      ? parseInt(action.allDetails.producttypeId)
+      : undefined,
+    gradeId: action.allDetails.gradeId
+      ? parseInt(action.allDetails.gradeId)
+      : undefined,
+    subgradeId: action.allDetails.subgradeId
+      ? parseInt(action.allDetails.subgradeId)
+      : undefined,
+    formId: action.allDetails.productForm
+      ? parseInt(action.allDetails.productForm)
+      : undefined,
+    uomId: action.allDetails.productUom
+      ? parseInt(action.allDetails.productUom)
+      : undefined,
+    surfacetypeId: action.allDetails.surfaceType
+      ? parseInt(action.allDetails.surfaceType)
+      : undefined,
+    coatingtypeId: action.allDetails.coatingTypeId
+      ? parseInt(action.allDetails.coatingTypeId)
+      : undefined,
+    width: action.allDetails.width
+      ? parseFloat(action.allDetails.width)
+      : undefined,
+    thickness: action.allDetails.thickness
+      ? parseFloat(action.allDetails.thickness)
+      : undefined,
+    nb: action.allDetails.nb ? parseFloat(action.allDetails.nb) : undefined,
+    oDiameter: action.allDetails.od
+      ? parseFloat(action.allDetails.od)
+      : undefined,
+    iDiameter: action.allDetails.id
+      ? parseFloat(action.allDetails.id)
+      : undefined,
   };
 
-  if(JSON.stringify(body) === '{}') {
-    yield put(getRefinedProductsError('no data'));
+  if (JSON.stringify(body) === "{}") {
+    yield put(getRefinedProductsError("no data"));
     return;
   }
   try {
-    const fetchPartyList = yield fetch(`${baseUrl}api/material/listwithuniquedata`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", ...getHeaders() },
-      body: JSON.stringify(body),
-    });
+    const fetchPartyList = yield fetch(
+      `${baseUrl}api/material/listwithuniquedata`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...getHeaders() },
+        body: JSON.stringify(body),
+      }
+    );
     if (fetchPartyList.status === 200) {
       const fetchPartyListResponse = yield fetchPartyList.json();
       yield put(getRefinedProductsSuccess(fetchPartyListResponse));
 
-      if(action.inwardDetails) {
+      if (action.inwardDetails) {
         let inwardFormDetails = yield select(getInwardEntryFields);
-        yield put(setInwardDetails({...inwardFormDetails, ...action.inwardDetails}));
-      };
+        yield put(
+          setInwardDetails({ ...inwardFormDetails, ...action.inwardDetails })
+        );
+      }
 
-      if(action.fieldType === 'subCategory') {
+      if (action.fieldType === "subCategory") {
         const subCategoryList = [];
         const subCategoryIds = [];
         Object.keys(fetchPartyListResponse.subCategoryMap).map((key) => {
-          if(subCategoryIds.indexOf(key) === -1) {
+          if (subCategoryIds.indexOf(key) === -1) {
             subCategoryIds.push(key);
             subCategoryList.push({
               subcategoryId: key,
-              subcategoryIdName: fetchPartyListResponse.subCategoryMap[key]
+              subcategoryIdName: fetchPartyListResponse.subCategoryMap[key],
             });
           }
         });
         yield put(getMaterialSubCategoriesSuccess(subCategoryList));
-      }
-
-      else if(action.fieldType === 'leafCategory') {
+      } else if (action.fieldType === "leafCategory") {
         const subCategoryList = [];
         const subCategoryIds = [];
         Object.keys(fetchPartyListResponse.leafCategoryMap).map((key) => {
-          if(subCategoryIds.indexOf(key) === -1) {
+          if (subCategoryIds.indexOf(key) === -1) {
             subCategoryIds.push(key);
             subCategoryList.push({
               leafcategoryId: key,
-              leafcategoryName: fetchPartyListResponse.leafCategoryMap[key]
+              leafcategoryName: fetchPartyListResponse.leafCategoryMap[key],
             });
           }
         });
         yield put(getLeafCategorySuccess(subCategoryList));
-      }
-
-      else if(action.fieldType === 'brand') {
+      } else if (action.fieldType === "brand") {
         const subCategoryList = [];
         const subCategoryIds = [];
         Object.keys(fetchPartyListResponse.brandMap).map((key) => {
-          if(subCategoryIds.indexOf(key) === -1) {
+          if (subCategoryIds.indexOf(key) === -1) {
             subCategoryIds.push(key);
             subCategoryList.push({
               brandId: key,
-              brandName: fetchPartyListResponse.brandMap[key]
+              brandName: fetchPartyListResponse.brandMap[key],
             });
           }
         });
         yield put(getProductBrandsSuccess(subCategoryList));
-        if(subCategoryList.length === 1) {
+        if (subCategoryList.length === 1) {
           let inwardFormDetails = yield select(getInwardEntryFields);
-          yield put(setInwardDetails({...inwardFormDetails, brandId: subCategoryList[0].brandId}));
+          yield put(
+            setInwardDetails({
+              ...inwardFormDetails,
+              brandId: subCategoryList[0].brandId,
+            })
+          );
           inwardFormDetails = yield select(getInwardEntryFields);
-          yield put(saveMaterialInfo("brandName", subCategoryList[0].brandName));
-          yield put(getRefinedProductsAction(inwardFormDetails, 'productType'));
+          yield put(
+            saveMaterialInfo("brandName", subCategoryList[0].brandName)
+          );
+          yield put(getRefinedProductsAction(inwardFormDetails, "productType"));
         }
-      }
-
-      else if(action.fieldType === 'productType') {
+      } else if (action.fieldType === "productType") {
         const subCategoryList = [];
         const subCategoryIds = [];
         Object.keys(fetchPartyListResponse.productMap).map((key) => {
-          if(subCategoryIds.indexOf(key) === -1) {
+          if (subCategoryIds.indexOf(key) === -1) {
             subCategoryIds.push(key);
             subCategoryList.push({
               productId: key,
-              productName: fetchPartyListResponse.productMap[key]
+              productName: fetchPartyListResponse.productMap[key],
             });
           }
         });
         yield put(getProductsListSuccess(subCategoryList));
-        if(subCategoryList.length === 1) {
+        if (subCategoryList.length === 1) {
           let inwardFormDetails = yield select(getInwardEntryFields);
-          yield put(setInwardDetails({...inwardFormDetails, productTypeId: subCategoryList[0].productId}));
+          yield put(
+            setInwardDetails({
+              ...inwardFormDetails,
+              productTypeId: subCategoryList[0].productId,
+            })
+          );
           inwardFormDetails = yield select(getInwardEntryFields);
-          yield put(saveMaterialInfo("productType", subCategoryList[0].productName));
-          yield put(getRefinedProductsAction(inwardFormDetails, 'uom'));
+          yield put(
+            saveMaterialInfo("productType", subCategoryList[0].productName)
+          );
+          yield put(getRefinedProductsAction(inwardFormDetails, "uom"));
         }
-      }
-
-      else if(action.fieldType === 'uom') {
+      } else if (action.fieldType === "uom") {
         const subCategoryList = [];
         const subCategoryIds = [];
 
         const formList = [];
         const formIds = [];
         Object.keys(fetchPartyListResponse.uomMap).map((key) => {
-          if(subCategoryIds.indexOf(key) === -1) {
+          if (subCategoryIds.indexOf(key) === -1) {
             subCategoryIds.push(key);
             subCategoryList.push({
               uomId: key,
-              uomName: fetchPartyListResponse.uomMap[key]
+              uomName: fetchPartyListResponse.uomMap[key],
             });
           }
         });
 
         Object.keys(fetchPartyListResponse.formMap).map((key) => {
-          if(formIds.indexOf(key) === -1) {
+          if (formIds.indexOf(key) === -1) {
             formIds.push(key);
             formList.push({
               formId: key,
-              formName: fetchPartyListResponse.formMap[key]
+              formName: fetchPartyListResponse.formMap[key],
             });
           }
         });
-        
+
         yield put(getProductUOMSuccess(subCategoryList));
         yield put(getProductFormSuccess(formList));
 
-        if(subCategoryList.length === 1) {
+        if (subCategoryList.length === 1) {
           let inwardFormDetails = yield select(getInwardEntryFields);
-          yield put(setInwardDetails({...inwardFormDetails, productUom: subCategoryList[0].uomId}));
+          yield put(
+            setInwardDetails({
+              ...inwardFormDetails,
+              productUom: subCategoryList[0].uomId,
+            })
+          );
           yield put(saveMaterialInfo("uom", subCategoryList[0].uomName));
         }
-        if(formList.length === 1) {
+        if (formList.length === 1) {
           let inwardFormDetails = yield select(getInwardEntryFields);
-          yield put(setInwardDetails({...inwardFormDetails, productForm: formList[0].formId}));
+          yield put(
+            setInwardDetails({
+              ...inwardFormDetails,
+              productForm: formList[0].formId,
+            })
+          );
           yield put(saveMaterialInfo("form", formList[0].formName));
         }
-      }
-
-      else if(action.fieldType === 'grade') {
+      } else if (action.fieldType === "grade") {
         const subCategoryList = [];
         const subCategoryIds = [];
 
@@ -459,158 +519,281 @@ function* getRefinedProductsByMap(action) {
           yield put(getRefinedProductsAction(inwardFormDetails, 'subgrade'));
         }
       }
-
       else if(action.fieldType === 'subgrade') {
         const subCategoryList = [];
         const subCategoryIds = [];
         Object.keys(fetchPartyListResponse.subGradeMap).map((key) => {
-          if(subCategoryIds.indexOf(key) === -1) {
+          if (subCategoryIds.indexOf(key) === -1) {
             subCategoryIds.push(key);
             subCategoryList.push({
               subgradeId: key,
-              subgradeName: fetchPartyListResponse.subGradeMap[key]
+              subgradeName: fetchPartyListResponse.subGradeMap[key],
             });
           }
         });
         yield put(getProductSubGradesSuccess(subCategoryList));
-        if(subCategoryList.length === 1) {
-          let inwardFormDetails = yield select(getInwardEntryFields);
-          yield put(setInwardDetails({...inwardFormDetails, subgradeId: subCategoryList[0].subgradeId}));
-          inwardFormDetails = yield select(getInwardEntryFields);
-          yield put(saveMaterialInfo("subGradeName", subCategoryList[0].subgradeName));
-          yield put(getRefinedProductsAction(inwardFormDetails, 'surface'));
-        }
-      }
+        let inwardFormDetails = yield select(getInwardEntryFields);
+        yield put(
+          setInwardDetails({
+            ...inwardFormDetails,
+            subgradeId: "",
+            surfaceType: "",
+            coatingTypeId: "",
+            thickness: "",
+            width: "",
+            od: "",
+            id: "",
+            nb: "",
+          })
+        );
 
-      else if(action.fieldType === 'surface') {
+        if (subCategoryList.length === 1) {
+          inwardFormDetails = yield select(getInwardEntryFields);
+          yield put(
+            setInwardDetails({
+              ...inwardFormDetails,
+              subgradeId: subCategoryList[0].subgradeId,
+            })
+          );
+          yield put(
+            saveMaterialInfo("subGradeName", subCategoryList[0].subgradeName)
+          );
+          yield put(getRefinedProductsAction(inwardFormDetails, "surface"));
+        }
+      } else if (action.fieldType === "surface") {
         const subCategoryList = [];
         const subCategoryIds = [];
         Object.keys(fetchPartyListResponse.surfaceMap).map((key) => {
-          if(subCategoryIds.indexOf(key) === -1) {
+          if (subCategoryIds.indexOf(key) === -1) {
             subCategoryIds.push(key);
             subCategoryList.push({
               surfacetypeId: key,
-              surfacetype: fetchPartyListResponse.surfaceMap[key]
+              surfacetype: fetchPartyListResponse.surfaceMap[key],
             });
           }
         });
         yield put(getProductSurfaceListSuccess(subCategoryList));
-        if(subCategoryList.length === 1) {
-          let inwardFormDetails = yield select(getInwardEntryFields);
-          yield put(setInwardDetails({...inwardFormDetails, surfaceType: subCategoryList[0].surfacetypeId}));
-          inwardFormDetails = yield select(getInwardEntryFields);
-          yield put(saveMaterialInfo("surfaceType", subCategoryList[0].surfacetype));
-          yield put(getRefinedProductsAction(inwardFormDetails, 'coating'));
-        }
-      }
+        let inwardFormDetails = yield select(getInwardEntryFields);
+        yield put(
+          setInwardDetails({
+            ...inwardFormDetails,
+            surfaceType: "",
+            coatingTypeId: "",
+            thickness: "",
+            width: "",
+            od: "",
+            id: "",
+            nb: "",
+          })
+        );
 
-      else if(action.fieldType === 'coating') {
+        if (subCategoryList.length === 1) {
+          let inwardFormDetails = yield select(getInwardEntryFields);
+          yield put(
+            setInwardDetails({
+              ...inwardFormDetails,
+              surfaceType: subCategoryList[0].surfacetypeId,
+            })
+          );
+          inwardFormDetails = yield select(getInwardEntryFields);
+          yield put(
+            saveMaterialInfo("surfaceType", subCategoryList[0].surfacetype)
+          );
+          yield put(getRefinedProductsAction(inwardFormDetails, "coating"));
+        }
+      } else if (action.fieldType === "coating") {
         const subCategoryList = [];
         const subCategoryIds = [];
 
         Object.keys(fetchPartyListResponse.coatingMap).map((key) => {
-          if(subCategoryIds.indexOf(key) === -1) {
+          if (subCategoryIds.indexOf(key) === -1) {
             subCategoryIds.push(key);
             subCategoryList.push({
               coatingtypeId: key,
-              coatingtype: fetchPartyListResponse.coatingMap[key]
+              coatingtype: fetchPartyListResponse.coatingMap[key],
             });
           }
         });
         yield put(getProductCoatingListSuccess(subCategoryList));
-        if(subCategoryList.length === 1) {
-          let inwardFormDetails = yield select(getInwardEntryFields);
-          yield put(setInwardDetails({...inwardFormDetails, coatingTypeId: subCategoryList[0].coatingtypeId}));
-          inwardFormDetails = yield select(getInwardEntryFields);
-          yield put(saveMaterialInfo("coatingType", subCategoryList[0].coatingtype));
-          yield put(getRefinedProductsAction(inwardFormDetails, 'thickness'));
-        }
-      }
+                let inwardFormDetails = yield select(getInwardEntryFields);
+        yield put(
+          setInwardDetails({
+            ...inwardFormDetails,
+            coatingTypeId: "",
+            thickness: "",
+            width: "",
+            od: "",
+            id: "",
+            nb: "",
+          })
+        );
 
-      else if(action.fieldType === 'thickness') {
+        if (subCategoryList.length === 1) {
+          let inwardFormDetails = yield select(getInwardEntryFields);
+          yield put(
+            setInwardDetails({
+              ...inwardFormDetails,
+              coatingTypeId: subCategoryList[0].coatingtypeId,
+            })
+          );
+          inwardFormDetails = yield select(getInwardEntryFields);
+          yield put(
+            saveMaterialInfo("coatingType", subCategoryList[0].coatingtype)
+          );
+          yield put(getRefinedProductsAction(inwardFormDetails, "thickness"));
+        }
+      } else if (action.fieldType === "thickness") {
         const subCategoryIds = [];
-        
+
         Object.keys(fetchPartyListResponse.thicknessMap).map((key) => {
-          if(subCategoryIds.indexOf(fetchPartyListResponse.thicknessMap[key]) === -1) {
+          if (
+            subCategoryIds.indexOf(fetchPartyListResponse.thicknessMap[key]) ===
+            -1
+          ) {
             subCategoryIds.push(fetchPartyListResponse.thicknessMap[key]);
           }
         });
 
         yield put(getProductThicknessSuccess(subCategoryIds));
-        if(subCategoryIds.length === 1) {
+                let inwardFormDetails = yield select(getInwardEntryFields);
+        yield put(
+          setInwardDetails({
+            ...inwardFormDetails,
+            thickness: "",
+            width: "",
+            od: "",
+            id: "",
+            nb: "",
+          })
+        );
+
+        if (subCategoryIds.length === 1) {
           let inwardFormDetails = yield select(getInwardEntryFields);
-          yield put(setInwardDetails({...inwardFormDetails, thickness: subCategoryIds[0]}));
+          yield put(
+            setInwardDetails({
+              ...inwardFormDetails,
+              thickness: subCategoryIds[0],
+            })
+          );
           inwardFormDetails = yield select(getInwardEntryFields);
           yield put(saveMaterialInfo("thickness", subCategoryIds[0]));
-          yield put(getRefinedProductsAction(inwardFormDetails, 'od'));
+          yield put(getRefinedProductsAction(inwardFormDetails, "od"));
         }
-      }
-
-      else if(action.fieldType === 'width') {
+      } else if (action.fieldType === "width") {
         const subCategoryIds = [];
         Object.keys(fetchPartyListResponse.widthMap).map((key) => {
-          if(subCategoryIds.indexOf(fetchPartyListResponse.widthMap[key]) === -1) {
+          if (
+            subCategoryIds.indexOf(fetchPartyListResponse.widthMap[key]) === -1
+          ) {
             subCategoryIds.push(fetchPartyListResponse.widthMap[key]);
           }
         });
         yield put(getProductWidthSuccess(subCategoryIds));
-        if(subCategoryIds.length === 1) {
+                let inwardFormDetails = yield select(getInwardEntryFields);
+        yield put(
+          setInwardDetails({
+            ...inwardFormDetails,
+            width: "",
+            id: "",
+            nb: "",
+          })
+        );
+
+        if (subCategoryIds.length === 1) {
           let inwardFormDetails = yield select(getInwardEntryFields);
-          yield put(setInwardDetails({...inwardFormDetails, width: subCategoryIds[0]}));
+          yield put(
+            setInwardDetails({ ...inwardFormDetails, width: subCategoryIds[0] })
+          );
           inwardFormDetails = yield select(getInwardEntryFields);
           yield put(saveMaterialInfo("width", subCategoryIds[0]));
-          yield put(getRefinedProductsAction(inwardFormDetails, 'id'));
+          yield put(getRefinedProductsAction(inwardFormDetails, "id"));
         }
-      }
-
-      else if(action.fieldType === 'od') {
+      } else if (action.fieldType === "od") {
         const subCategoryIds = [];
         Object.keys(fetchPartyListResponse.odiameterMap).map((key) => {
-          if(subCategoryIds.indexOf(fetchPartyListResponse.odiameterMap[key]) === -1) {
+          if (
+            subCategoryIds.indexOf(fetchPartyListResponse.odiameterMap[key]) ===
+            -1
+          ) {
             subCategoryIds.push(fetchPartyListResponse.odiameterMap[key]);
           }
         });
         yield put(getProductOdSuccess(subCategoryIds));
-        if(subCategoryIds.length === 1) {
+                let inwardFormDetails = yield select(getInwardEntryFields);
+        yield put(
+          setInwardDetails({
+            ...inwardFormDetails,
+            width: "",
+            od: "",
+            id: "",
+            nb: "",
+          })
+        );
+
+        if (subCategoryIds.length === 1) {
           let inwardFormDetails = yield select(getInwardEntryFields);
-          yield put(setInwardDetails({...inwardFormDetails, od: subCategoryIds[0]}));
+          yield put(
+            setInwardDetails({ ...inwardFormDetails, od: subCategoryIds[0] })
+          );
           inwardFormDetails = yield select(getInwardEntryFields);
           yield put(saveMaterialInfo("diameter", subCategoryIds[0]));
-          yield put(getRefinedProductsAction(inwardFormDetails, 'width'));
+          yield put(getRefinedProductsAction(inwardFormDetails, "width"));
         }
-      }
-
-      else if(action.fieldType === 'id') {
+      } else if (action.fieldType === "id") {
         const subCategoryIds = [];
         Object.keys(fetchPartyListResponse.idiameterMap).map((key) => {
-          if(subCategoryIds.indexOf(fetchPartyListResponse.idiameterMap[key]) === -1) {
+          if (
+            subCategoryIds.indexOf(fetchPartyListResponse.idiameterMap[key]) ===
+            -1
+          ) {
             subCategoryIds.push(fetchPartyListResponse.idiameterMap[key]);
           }
         });
         yield put(getProductIdSuccess(subCategoryIds));
-        if(subCategoryIds.length === 1) {
+                let inwardFormDetails = yield select(getInwardEntryFields);
+        yield put(
+          setInwardDetails({
+            ...inwardFormDetails,
+            id: "",
+            nb: "",
+          })
+        );
+
+        if (subCategoryIds.length === 1) {
           let inwardFormDetails = yield select(getInwardEntryFields);
-          yield put(setInwardDetails({...inwardFormDetails, id: subCategoryIds[0]}));
+          yield put(
+            setInwardDetails({ ...inwardFormDetails, id: subCategoryIds[0] })
+          );
           inwardFormDetails = yield select(getInwardEntryFields);
           yield put(saveMaterialInfo("idiameter", subCategoryIds[0]));
-          yield put(getRefinedProductsAction(inwardFormDetails, 'nb'));
+          yield put(getRefinedProductsAction(inwardFormDetails, "nb"));
         }
-      }
-      else if(action.fieldType === 'nb') {
+      } else if (action.fieldType === "nb") {
         const subCategoryIds = [];
         Object.keys(fetchPartyListResponse.nbMap).map((key) => {
-          if(subCategoryIds.indexOf(fetchPartyListResponse.nbMap[key]) === -1) {
+          if (
+            subCategoryIds.indexOf(fetchPartyListResponse.nbMap[key]) === -1
+          ) {
             subCategoryIds.push(fetchPartyListResponse.nbMap[key]);
           }
         });
         yield put(getProductNbSuccess(subCategoryIds));
-        if(subCategoryIds.length === 1) {
+                let inwardFormDetails = yield select(getInwardEntryFields);
+        yield put(
+          setInwardDetails({
+            ...inwardFormDetails,
+            nb: "",
+          })
+        );
+
+        if (subCategoryIds.length === 1) {
           let inwardFormDetails = yield select(getInwardEntryFields);
-          yield put(setInwardDetails({...inwardFormDetails, nb: subCategoryIds[0]}));
+          yield put(
+            setInwardDetails({ ...inwardFormDetails, nb: subCategoryIds[0] })
+          );
           yield put(saveMaterialInfo("nb", subCategoryIds[0]));
         }
       }
-
     } else if (fetchPartyList.status === 401) {
       yield put(userSignOutSuccess());
     } else yield put(getRefinedProductsError("error"));
@@ -621,28 +804,48 @@ function* getRefinedProductsByMap(action) {
 
 function* getRefinedProducts(action) {
   const body = {
-    "pageNo":1,
-    "pageSize":1,
-    "categoryId": action.allDetails.categoryId ? action.allDetails.categoryId : undefined,
-    "subcategoryId": action.allDetails.subcategoryId ? action.allDetails.subcategoryId : undefined,
-    "leafcategoryId": action.allDetails.leafcategoryId ? action.allDetails.leafcategoryId : undefined,
-    "brandId": action.allDetails.brandId ? action.allDetails.brandId : undefined,
-    "producttypeId": action.allDetails.producttypeId ? action.allDetails.producttypeId : undefined,
-    "gradeId": action.allDetails.gradeId ? action.allDetails.gradeId : undefined,
-    "subgradeId": action.allDetails.subgradeId ? action.allDetails.subgradeId : undefined,
-    "formId": action.allDetails.productForm ? action.allDetails.productForm : undefined,
-    "uomId": action.allDetails.productUom ? action.allDetails.productUom : undefined,
-    "surfacetypeId": action.allDetails.surfaceType ? action.allDetails.surfaceType : undefined,
-    "coatingtypeId": action.allDetails.coatingTypeId ? action.allDetails.coatingTypeId : undefined,
-    "width": action.allDetails.width ? action.allDetails.width : undefined,
-    "thickness": action.allDetails.thickness ? action.allDetails.thickness : undefined,
-    "nb": action.allDetails.nb ? action.allDetails.nb : undefined,
-    "oDiameter": action.allDetails.od ? action.allDetails.od : undefined,
-    "iDiameter": action.allDetails.id ? action.allDetails.id : undefined,
+    pageNo: 1,
+    pageSize: 1,
+    categoryId: action.allDetails.categoryId
+      ? action.allDetails.categoryId
+      : undefined,
+    subcategoryId: action.allDetails.subcategoryId
+      ? action.allDetails.subcategoryId
+      : undefined,
+    leafcategoryId: action.allDetails.leafcategoryId
+      ? action.allDetails.leafcategoryId
+      : undefined,
+    brandId: action.allDetails.brandId ? action.allDetails.brandId : undefined,
+    producttypeId: action.allDetails.producttypeId
+      ? action.allDetails.producttypeId
+      : undefined,
+    gradeId: action.allDetails.gradeId ? action.allDetails.gradeId : undefined,
+    subgradeId: action.allDetails.subgradeId
+      ? action.allDetails.subgradeId
+      : undefined,
+    formId: action.allDetails.productForm
+      ? action.allDetails.productForm
+      : undefined,
+    uomId: action.allDetails.productUom
+      ? action.allDetails.productUom
+      : undefined,
+    surfacetypeId: action.allDetails.surfaceType
+      ? action.allDetails.surfaceType
+      : undefined,
+    coatingtypeId: action.allDetails.coatingTypeId
+      ? action.allDetails.coatingTypeId
+      : undefined,
+    width: action.allDetails.width ? action.allDetails.width : undefined,
+    thickness: action.allDetails.thickness
+      ? action.allDetails.thickness
+      : undefined,
+    nb: action.allDetails.nb ? action.allDetails.nb : undefined,
+    oDiameter: action.allDetails.od ? action.allDetails.od : undefined,
+    iDiameter: action.allDetails.id ? action.allDetails.id : undefined,
   };
 
-  if(JSON.stringify(body) === '{}') {
-    yield put(getRefinedProductsError('no data'));
+  if (JSON.stringify(body) === "{}") {
+    yield put(getRefinedProductsError("no data"));
     return;
   }
   try {
@@ -666,6 +869,7 @@ export function* watchFetchRequests() {
   yield takeLatest(FETCH_PRODUCTS, fetchProducts);
   yield takeLatest(FETCH_PRODUCTS_LIST, fetchProductsList);
   yield takeLatest(FETCH_PRODUCT_FORMS, fetchProductForms);
+  yield takeEvery(FETCH_PRODUCT_GRADES_LIST, fetchProductGradesList);
   yield takeEvery(FETCH_PRODUCTS_REFINED, getRefinedProductsByMap);
   yield takeEvery(FETCH_PRODUCTS_REFINED_FINAL, getRefinedProducts);
 }

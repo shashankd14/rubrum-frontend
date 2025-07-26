@@ -82,7 +82,7 @@ const QualityDetailsForm = (props) => {
           <Form.Item label="Test Certificate No">
             {getFieldDecorator("testCertificateNo", {
               rules: [
-                { required: false, message: "Please select a received date" },
+                { required: true, message: "Please enter the test certificate number" },
               ],
             })(
               <Input
@@ -95,6 +95,31 @@ const QualityDetailsForm = (props) => {
           </Form.Item>
           <Form.Item label="Test File">
             {getFieldDecorator("testFile", {
+              rules: [
+                { required: true, message: "Please select a test file" },
+              ],
+            })(
+              <Dragger
+                name="testFile"
+                defaultFileList={
+                  props.inward.testFile && props.inward.testFile.fileList
+                }
+                multiple={true}
+                beforeUpload={() => false}
+                action=""
+                onChange={(info) => console.log(info)}
+              >
+                <p className="ant-upload-drag-icon">
+                  <Icon type="inbox" />
+                </p>
+                <p className="ant-upload-text">
+                  Click or drag file to this area to upload
+                </p>
+              </Dragger>
+            )}
+          </Form.Item>
+          <Form.Item label="Invoice Copy">
+            {getFieldDecorator("invoiceCopy", {
               rules: [
                 { required: false, message: "Please select a received date" },
               ],
@@ -169,7 +194,7 @@ const QualityDetailsForm = (props) => {
       <Col span={10} className="gx-pt-4">
         <Card title="Inward Details" style={{ width: 300 }}>
           <p>
-          Location Name :{" "}
+            Location Name :{" "}
             {props.params !== "" && props.inward.party
               ? props.inward.party?.partyName
               : partyName(props.party?.partyList)}
@@ -186,7 +211,7 @@ const QualityDetailsForm = (props) => {
           {props.inward.purposeType && (
             <p>Purpose Type : {props.inward.purposeType}</p>
           )}
-          <p>Coil number : {props.inward.coilNumber}</p>
+          <p>Inward id : {props.inward.coilNumber}</p>
           <p>
             Material Description :{" "}
             {props.params !== ""

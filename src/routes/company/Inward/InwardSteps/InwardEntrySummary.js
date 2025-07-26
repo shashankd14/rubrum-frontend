@@ -79,7 +79,7 @@ const InwardEntrySummary = (props) => {
                         </Col>
                         <Col span={12}>
                             <Card title="Inward Details" style={{ width: 300 }}>
-                                <p>Inward number : {props.inward.coilNumber}</p>
+                                <p>Inward id : {props.inward.coilNumber}</p>
                                 {(props.inward.material || props.inward.description) && <p>Material Description : {props.params !== "" ? props.inward?.material?.description : props.inward.description}</p>}
                                 <p>Dimensions : {props.params !== "" ? dimensionEdit: dimension}</p>
                                 <p>Net Weight : {props.params !== "" ? props.inward.fpresent: props.inward.netWeight}</p>
@@ -100,7 +100,7 @@ const InwardEntrySummary = (props) => {
                         </Col>
                         <Col span={12}>
                             <Card title="Quality Details" style={{ width: 300 }}>
-                                {(props.inward.materialGrade || props.inward.grade) && <p>Grade : {props.params !== ""? props.inward.materialGrade.gradeName:props.inward.grade}</p>}
+                                {(props.inward.materialGrade || props.inward.grade) && <p>Grade : {props.params !== "" ? props.inward.materialGrade.gradeName : props.inward.grade}</p>}
                                 {props.inward.testCertificateNo && <p>Test Certificate No : {props.inward.testCertificateNo}</p>}
                                 {props.inward.testFile && <p>Test File : {props.inward.testFile.fileList[0].name}</p>}
                                 {props.inward.moreFiles && <p>More attachments :</p>}

@@ -5,7 +5,8 @@ import {
   fetchSalesOrderList,
   saveSalesOrderForPacket,
   fetchEndUserTagsList,
-  openSoPdf
+  openSoPdf,
+  fetchPartyList
 } from "../../../appRedux/actions";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -27,6 +28,7 @@ const { Option } = AutoComplete;
 const SalesOrder = () => {
   const dispatch = useDispatch();
   const salesOrder = useSelector((state) => state.salesOrder);
+  const partyList = useSelector((state) => state.party.partyList);
   const [packetsList, setPacketsList] = useState(salesOrder.packets);
   const [salesOrderList, setSalesOrderList] = useState(salesOrder.list);
   const [searchValue, setSearchValue] = useState("");
@@ -37,6 +39,8 @@ const SalesOrder = () => {
 
   const [pageNo, setPageNo] = React.useState(1);
   const [salesPageNo, setSalesPageNo] = React.useState(1);
+  const [customerValue, setCustomerValue] = useState("");
+
   const onInputChange = (index) => (e: React.ChangeEvent<HTMLInputElement>) => {
     const newData = [...salesOrder.packets];
     newData[index].soNumber = e.target.value;
@@ -76,6 +80,11 @@ const SalesOrder = () => {
       title: "SC inward id",
       dataIndex: "customerBatchNo",
       key: "customerBatchNo",
+      render: (text, record, index) => (
+        <div style={{ display: "flex", alignItems: "center" }}>
+          {record.customerBatchNo === 'undefined' ? "-" : record.customerBatchNo}
+        </div>
+      )
     },
     // {
     //   title: "Party Name",
@@ -241,6 +250,7 @@ const SalesOrder = () => {
   };
 
   useEffect(() => {
+    dispatch(fetchPartyList());
     dispatch(fetchPacketList());
     dispatch(fetchSalesOrderList());
     dispatch(fetchEndUserTagsList());
@@ -291,6 +301,17 @@ const SalesOrder = () => {
     );
   };
 
+  const handleCustomerChange = (value) => {
+    if (value) {
+      setCustomerValue(value);
+      setSalesPageNo(1);
+      dispatch(fetchSalesOrderList(1, 15, '', value));
+    } else {
+      setCustomerValue("");
+      setSalesOrderList(salesOrderList);
+    }
+  };
+
   return (
     <div>
       <h1>
@@ -321,9 +342,31 @@ const SalesOrder = () => {
           />
         </TabPane>
         <TabPane tab="Sales Orders" key="2">
-        <div className="gx-flex-row gx-justify-content-end">
-          <SearchBox
-            styleName="gx-w-50"
+          <div style={{display: 'flex'}} className="table-operations gx-justify-content-between">
+            <div>
+              <Select
+                id="select"
+                showSearch
+                style={{ width: 200 }}
+                placeholder="Select a location"
+                optionFilterProp="children"
+                onChange={handleCustomerChange}
+                value={customerValue}
+                filterOption={(input, option) =>
+                  option.props.children
+                    .toLowerCase()
+                    .indexOf(input.toLowerCase()) >= 0
+                }
+              >
+                {partyList.length > 0 &&
+                  partyList.map((party) => (
+                    <Option key={party.nPartyId} value={party.nPartyId}>{party.partyName}</Option>
+                  ))}
+              </Select>&emsp;
+              <Button onClick={() => {dispatch(fetchSalesOrderList(1, 15, '', ''))}} style={{marginBottom: "1px"}}>Clear All filters</Button>
+            </div>
+            <SearchBox
+            styleName="gx-w-50 gx-justify-content-end"
             placeholder="Search for SO number..."
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
