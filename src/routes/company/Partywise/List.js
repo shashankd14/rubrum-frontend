@@ -63,7 +63,7 @@ const List = (props) => {
   
   const columns = [
     {
-      title: "Inward Id",
+      title: "Batch no.",
       dataIndex: "coilNumber",
       key: "coilNumber",
       filters: [],
@@ -80,8 +80,11 @@ const List = (props) => {
       sorter: (a, b) => a.customerBatchId?.length - b.customerBatchId?.length,
       sortOrder: sortedInfo.columnKey === "customerBatchId" && sortedInfo.order,
       render: (text, record) => {
-        return record.customerBatchId == 'undefined' || record.batch == 'undefined' ? "-" : record.customerBatchId || record.batch;
-      }
+        return record.customerBatchId == "undefined" ||
+          record.batch == "undefined"
+          ? "-"
+          : record.customerBatchId || record.batch;
+      },
       // render: (text, record) => {
       //   if (record.customerBatchId) return record.customerBatchId;
       //   else {
@@ -130,7 +133,6 @@ const List = (props) => {
       sorter: (a, b) => a.fThickness - b.fThickness,
       sortOrder: sortedInfo.columnKey === "fThickness" && sortedInfo.order,
     },
-
     {
       title: "Width (mm)",
       dataIndex: "fWidth",
@@ -138,6 +140,14 @@ const List = (props) => {
       filters: [],
       sorter: (a, b) => a.fWidth - b.fWidth,
       sortOrder: sortedInfo.columnKey === "fWidth" && sortedInfo.order,
+    },
+    {
+      title: "Length (mm)",
+      dataIndex: "fLength",
+      key: "fLength",
+      filters: [],
+      sorter: (a, b) => a.fLength - b.fLength,
+      sortOrder: sortedInfo.columnKey === "fLength" && sortedInfo.order,
     },
     {
       title: "Status",
@@ -153,55 +163,85 @@ const List = (props) => {
       dataIndex: "packetClassification.classificationName",
       key: "packetClassification.classificationName",
     },
-    partywisepermission  === 'ENDUSER_TAG_WISE_PACKETS' ? {} : {
-      title: "Action",
-      dataIndex: "",
-      key: "x",
-      render: (text, record) => (
-        <span>
-          {record.instructionId ? (
-            <span className="gx-link"></span>
-          ) : (
+    partywisepermission === "ENDUSER_TAG_WISE_PACKETS"
+      ? {}
+      : {
+          title: "Action",
+          dataIndex: "",
+          key: "x",
+          render: (text, record) => (
             <span>
-              {menuPartyWiseLabelList.length > 0 && menuPartyWiseLabelList.includes(partyWiseMenuConstants.plan) && <><span
-                className="gx-link"
-                onClick={() => props.history.push(`plan/${record.coilNumber}`)}
-              >
-                Plan
-              </span>
-              <Divider type="vertical" /></>}
-              {menuPartyWiseLabelList.length > 0 && menuPartyWiseLabelList.includes(partyWiseMenuConstants.retrieve) && <><span
-                className="gx-link"
-                onClick={() => {
-                  props.getS3PDFUrl(record.inwardEntryId);
-                  setShowRetrieve(true);
-                }}
-              >
-                Retrieve
-              </span>
-              <Divider type="vertical" /></>}
-              {menuPartyWiseLabelList.length > 0 && menuPartyWiseLabelList.includes(partyWiseMenuConstants.cancelFinish) && <><span
-                className="gx-link"
-                onClick={() =>
-                  props.history.push(`unfinish/${record.coilNumber}`)
-                }
-              >
-                Cancel finish
-              </span>
-              <Divider type="vertical" /></>}
-              {menuPartyWiseLabelList.length > 0 && menuPartyWiseLabelList.includes(partyWiseMenuConstants.editFinish) && <span
-                className="gx-link"
-                onClick={() =>
-                  props.history.push(`editFinish/${record.coilNumber}`)
-                }
-              >
-                Edit finish
-              </span>}
+              {record.instructionId ? (
+                <span className="gx-link"></span>
+              ) : (
+                <span>
+                  {menuPartyWiseLabelList.length > 0 &&
+                    menuPartyWiseLabelList.includes(
+                      partyWiseMenuConstants.plan
+                    ) && (
+                      <>
+                        <span
+                          className="gx-link"
+                          onClick={() =>
+                            props.history.push(`plan/${record.coilNumber}`)
+                          }
+                        >
+                          Plan
+                        </span>
+                        <Divider type="vertical" />
+                      </>
+                    )}
+                  {menuPartyWiseLabelList.length > 0 &&
+                    menuPartyWiseLabelList.includes(
+                      partyWiseMenuConstants.retrieve
+                    ) && (
+                      <>
+                        <span
+                          className="gx-link"
+                          onClick={() => {
+                            props.getS3PDFUrl(record.inwardEntryId);
+                            setShowRetrieve(true);
+                          }}
+                        >
+                          Retrieve
+                        </span>
+                        <Divider type="vertical" />
+                      </>
+                    )}
+                  {menuPartyWiseLabelList.length > 0 &&
+                    menuPartyWiseLabelList.includes(
+                      partyWiseMenuConstants.cancelFinish
+                    ) && (
+                      <>
+                        <span
+                          className="gx-link"
+                          onClick={() =>
+                            props.history.push(`unfinish/${record.coilNumber}`)
+                          }
+                        >
+                          Cancel finish
+                        </span>
+                        <Divider type="vertical" />
+                      </>
+                    )}
+                  {menuPartyWiseLabelList.length > 0 &&
+                    menuPartyWiseLabelList.includes(
+                      partyWiseMenuConstants.editFinish
+                    ) && (
+                      <span
+                        className="gx-link"
+                        onClick={() =>
+                          props.history.push(`editFinish/${record.coilNumber}`)
+                        }
+                      >
+                        Edit finish
+                      </span>
+                    )}
+                </span>
+              )}
             </span>
-          )}
-        </span>
-      ),
-    },
+          ),
+        },
   ];
   //filter data which is dispatched
   // const filteredInwardListWithoutDispatched = filteredInwardList.filter(item => !(item.status && item.status.statusId === 4 && item.status.statusName === "DISPATCHED"));

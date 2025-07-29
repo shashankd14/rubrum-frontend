@@ -45,7 +45,7 @@ const View = (props) => {
                         </Col>
                         <Col span={12}>
                             <Card title="Coil Details" style={{ width: 300 }}>
-                                {props.inward.inward.coilNumber && <p>Inward Id : {props.inward.inward.coilNumber}</p>}
+                                {props.inward.inward.coilNumber && <p>Batch no. : {props.inward.inward.coilNumber}</p>}
                                 {props.inward.inward.material && <p>Material Description : {props.inward.inward?.material?.description}</p>}
                                 {props.inward.inward && <p>Dimensions : {props.inward.inward.fWidth}X{props.inward.inward.fThickness}X{props.inward.inward.fLength}mm</p>}
                                 {props.inward.inward.netWeight && <p>Net Weight : {props.inward.inward.netWeight}kg </p>}

@@ -82,7 +82,10 @@ const QualityDetailsForm = (props) => {
           <Form.Item label="Test Certificate No">
             {getFieldDecorator("testCertificateNo", {
               rules: [
-                { required: true, message: "Please enter the test certificate number" },
+                {
+                  required: true,
+                  message: "Please enter the test certificate number",
+                },
               ],
             })(
               <Input
@@ -95,9 +98,7 @@ const QualityDetailsForm = (props) => {
           </Form.Item>
           <Form.Item label="Test File">
             {getFieldDecorator("testFile", {
-              rules: [
-                { required: true, message: "Please select a test file" },
-              ],
+              rules: [{ required: true, message: "Please select a test file" }],
             })(
               <Dragger
                 name="testFile"
@@ -125,9 +126,9 @@ const QualityDetailsForm = (props) => {
               ],
             })(
               <Dragger
-                name="testFile"
+                name="invoiceCopy"
                 defaultFileList={
-                  props.inward.testFile && props.inward.testFile.fileList
+                  props.inward.invoiceCopy && props.inward.invoiceCopy.fileList
                 }
                 multiple={true}
                 beforeUpload={() => false}
@@ -166,6 +167,21 @@ const QualityDetailsForm = (props) => {
                 </p>
               </Dragger>
             )}
+          </Form.Item>
+          <Form.Item label="YS (MPA)">
+            {getFieldDecorator("ys", {
+              rules: [{ required: true, message: "Please enter YS" }],
+            })(<Input />)}
+          </Form.Item>
+          <Form.Item label="TA (MPA)">
+            {getFieldDecorator("ta", {
+              rules: [{ required: true, message: "Please enter TA" }],
+            })(<Input />)}
+          </Form.Item>
+          <Form.Item label="EL (%)">
+            {getFieldDecorator("el", {
+              rules: [{ required: true, message: "Please enter EL" }],
+            })(<Input />)}
           </Form.Item>
           <Form.Item label="Remarks">
             {getFieldDecorator("remarks", {
@@ -211,7 +227,7 @@ const QualityDetailsForm = (props) => {
           {props.inward.purposeType && (
             <p>Purpose Type : {props.inward.purposeType}</p>
           )}
-          <p>Inward id : {props.inward.coilNumber}</p>
+          <p>Batch no. : {props.inward.coilNumber}</p>
           <p>
             Material Description :{" "}
             {props.params !== ""
@@ -263,9 +279,25 @@ const QualityDetails = Form.create({
         ...props.inward.testFile,
         value: props.inward.testFile ? props.inward.testFile : "",
       }),
+      invoiceCopy: Form.createFormField({
+        ...props.inward.invoiceCopy,
+        value: props.inward.invoiceCopy ? props.inward.invoiceCopy : "",
+      }),
       moreFiles: Form.createFormField({
         ...props.inward.moreFiles,
         value: props.inward.moreFiles ? props.inward.moreFiles : "",
+      }),
+      ys: Form.createFormField({
+        ...props.inward.ys,
+        value: props.inward.ys ? props.inward.ys : "",
+      }),
+      ta: Form.createFormField({
+        ...props.inward.ta,
+        value: props.inward.ta ? props.inward.ta : "",
+      }),
+      el: Form.createFormField({
+        ...props.inward.el,
+        value: props.inward.el ? props.inward.el : "",
       }),
     };
   },

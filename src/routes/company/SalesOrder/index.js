@@ -67,7 +67,7 @@ const SalesOrder = () => {
 
   const columns = [
     {
-      title: "Inward Id",
+      title: "Batch no.",
       dataIndex: "inwardEntryId",
       key: "inwardEntryId",
     },
@@ -82,9 +82,11 @@ const SalesOrder = () => {
       key: "customerBatchNo",
       render: (text, record, index) => (
         <div style={{ display: "flex", alignItems: "center" }}>
-          {record.customerBatchNo === 'undefined' ? "-" : record.customerBatchNo}
+          {record.customerBatchNo === "undefined"
+            ? "-"
+            : record.customerBatchNo}
         </div>
-      )
+      ),
     },
     // {
     //   title: "Party Name",

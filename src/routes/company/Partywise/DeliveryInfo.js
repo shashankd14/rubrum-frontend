@@ -379,7 +379,7 @@ const DeliveryInfo = (props) => {
                   <div className="flex flex-col">
                     <div style={{ marginTop: "5px" }}>
                       <p style={{ fontWeight: "bold" }}>
-                        Inward id - {elem.instructionId || elem?.inwardEntryId}
+                        Batch no. - {elem.instructionId || elem?.inwardEntryId}
                       </p>
                     </div>
                     <div
@@ -592,12 +592,12 @@ const DeliveryInfo = (props) => {
                   Cancel
                 </Button>,
                 <Button
-                key="recalculate"
-                type="primary"
-                onClick={() => handlePacketPrice(false)}
-              >
-                Recalculate rates
-              </Button>,
+                  key="recalculate"
+                  type="primary"
+                  onClick={() => handlePacketPrice(false)}
+                >
+                  Recalculate rates
+                </Button>,
                 <Button
                   key="goToRate"
                   type="primary"

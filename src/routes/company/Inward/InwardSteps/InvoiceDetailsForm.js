@@ -44,7 +44,6 @@ const InvoiceDetailsForm = props => {
             props.inward.vehicleNumber = props.inward.vLorryNo;
             props.inward.invoiceNumber = props.inward.vInvoiceNo;
         }
-        console.log(props.inward);
     }, [props.params])
 
     const partyName =(partyList) =>{
@@ -64,19 +63,19 @@ const InvoiceDetailsForm = props => {
                         })(
                             <DatePicker
                                 style={{width: 200}}
-                                className="gx-mb-3 gx-w-100"
+                                className="gx-w-100"
                                 format={APPLICATION_DATE_FORMAT}
                                 onChange={handleChangeDate}
                             />
                         )}
                     </Form.Item>
-                    <Form.Item label="Batch No.">
+                    {/* <Form.Item label="Batch No.">
                         {getFieldDecorator('batchNo', {
                             rules: [{ required: false, message: 'Please select a Batch No' }],
                         })(
                             <Input id="batchNo" />
                         )}
-                    </Form.Item>
+                    </Form.Item> */}
                     <Form.Item label="Vehicle number">
                         {getFieldDecorator('vehicleNumber', {
                             rules: [{ required: true, message: 'Please enter Vehicle Number' }]
@@ -84,7 +83,7 @@ const InvoiceDetailsForm = props => {
                             <Input id="vehicleNumber" onChange={(e) => handleChange(e, 'vehicleNumber')} />
                         )}
                     </Form.Item>
-                    <Form.Item label="Invoice number">
+                    <Form.Item label="PO number">
                         {getFieldDecorator('invoiceNumber', {
                             rules: [{ required: true, message: 'Please enter invoice Number' }]
                         })(
@@ -130,7 +129,7 @@ const InvoiceDetailsForm = props => {
                     {props.inward.customerBatchNo && <p>SC inward id : {props.inward.customerBatchNo}</p>}
                     {props.inward.customerInvoiceNo && <p>Purchase Invoice No : {props.inward.customerInvoiceNo}</p>}
                     {props.inward.purposeType && <p>Purpose Type : {props.inward.purposeType}</p>}
-                    <p>Inward id : {props.inward.coilNumber}</p>
+                    <p>Batch no. : {props.inward.coilNumber}</p>
                     <p>Material Description : {props.params !== ""? props.inward?.material?.description : props.inward.description}</p>
                     <p>Dimensions : {props.params !== "" ? dimensionEdit:dimension}</p>
                     <p>Net Weight : {props.params !== "" ? props.inward.fpresent: props.inward.netWeight}</p>

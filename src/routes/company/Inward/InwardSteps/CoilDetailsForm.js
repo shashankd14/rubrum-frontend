@@ -45,8 +45,9 @@ const CoilDetailsForm = (props) => {
             props.inward.fQuantity = e.target.value;
         }
     }
+    
     const checkCoilExists = (rule, value, callback) => {
-        if (!props.inwardStatus.loading && props.inwardStatus.success && !props.inwardStatus.duplicateCoil) {
+        if (value == "" || (!props.inwardStatus.loading && props.inwardStatus.success && !props.inwardStatus.duplicateCoil)) {
             return callback();
         }
         callback('The inward id already exists');
@@ -112,16 +113,22 @@ const CoilDetailsForm = (props) => {
             <Col span={14}>
             <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4">
                 <Form.Item
-                    label="Inward Id"
+                    label="Batch no"
                     hasFeedback
-                    validateStatus={props.inward.coilNumber ? props.inwardStatus.loading ? 'validating' : !props.inwardStatus.loading && props.inwardStatus.success && !props.inwardStatus.duplicateCoil  ? 'success' : props.inwardStatus.error || props.inwardStatus.duplicateCoil ? 'error' : '' : ''}
-                    help={props.inwardStatus.loading ? 'We are checking if the inward id already exists' : (!props.inwardStatus.loading && props.inwardStatus.success && props.inwardStatus.duplicateCoil) ? "The inward id already exists" :  ''}
                 >
-                    {getFieldDecorator('coilNumber', {
-                        rules: [{ required: true, message: 'Please input the inward id!' },
-                            {validator: props.params ==="" ?checkCoilExists: ""}],
-                    })(
-                        <Input id="validating" onChange={(e) => props.checkIfCoilExists(e.target.value)} onBlur={props.params !== "" ? "" :(e) => props.checkIfCoilExists(e.target.value)} />
+                    {getFieldDecorator('coilNumber', 
+                     {
+              rules: [
+                {
+                  required: true,
+                  message: intl.formatMessage({
+                    id: "inward.create.label.scInwardId",
+                  }),
+                },
+                { validator: props.params === "" ? checkCoilExists : "" },
+              ],
+            }                )(
+                        <Input id="validating" onChange={(e) => props.checkIfCoilExists(e.target.value)} onBlur={(e) => { props.params !== "" ? "" : props.checkIfCoilExists(e.target.value)}} />
                     )}
                 </Form.Item>
                 <Form.Item label="Material Description">
@@ -172,7 +179,7 @@ const CoilDetailsForm = (props) => {
                 </Form.Item>
                 <Form.Item label="Coil Length (in mts)">
                     {getFieldDecorator('approxLength', {
-                        rules: [{ required: false, message: 'Please input the inward id!' }],
+                        rules: [{ required: false, message: 'Please input the coil length!' }],
                     })(
                         <>
                             <Input id="coilLength" value={props.params !=="" ?props.inward.fLength :approxLength} name="approxLength" />Approx

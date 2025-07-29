@@ -68,126 +68,144 @@ const InwardReport = (props) => {
       };
 
     const columns = [
-        {
-            title: "Inward Id",
-            dataIndex: "coilNo",
-            key: "coilNo",
-            filters: [],
-            sorter: (a, b) => a.coilNo.length - b.coilNo.length,
-            sortOrder: sortedInfo.columnKey === "coilNo" && sortedInfo.order,
-            onCell: (record) => ({
-                className: "gx-link",
-                onClick: () => onPdf(record.inwardEntryId),
-              }),
+      {
+        title: "Batch no.",
+        dataIndex: "coilNo",
+        key: "coilNo",
+        filters: [],
+        sorter: (a, b) => a.coilNo.length - b.coilNo.length,
+        sortOrder: sortedInfo.columnKey === "coilNo" && sortedInfo.order,
+        onCell: (record) => ({
+          className: "gx-link",
+          onClick: () => onPdf(record.inwardEntryId),
+        }),
+      },
+      {
+        title: "SC inward id",
+        dataIndex: "customerBatchNo",
+        key: "customerBatchNo",
+        filteredValue: filteredInfo ? filteredInfo["customerBatchNo"] : null,
+        onFilter: (value, record) => record.customerBatchNo == value,
+        filters: [],
+        sorter: (a, b) => a.customerBatchNo.length - b.customerBatchNo.length,
+        sortOrder:
+          sortedInfo.columnKey === "customerBatchNo" && sortedInfo.order,
+      },
+      {
+        title: "Inward Date",
+        dataIndex: "planDate",
+        render(value) {
+          // return moment(value).format("Do MMM YYYY");
+          const formattedDate = moment(value, "DD/MM/YYYY").format(
+            "Do MMM YYYY"
+          );
+          return <span>{formattedDate}</span>;
         },
-        {
-            title: "SC inward id",
-            dataIndex: "customerBatchNo",
-            key: "customerBatchNo",
-            filteredValue: filteredInfo ? filteredInfo["customerBatchNo"] : null,
-            onFilter: (value, record) => record.customerBatchNo == value,
-            filters: [],
-            sorter: (a, b) => a.customerBatchNo.length - b.customerBatchNo.length,
-            sortOrder: sortedInfo.columnKey === "customerBatchNo" && sortedInfo.order,
-        },
-        {
-            title: "Inward Date",
-            dataIndex: "planDate",
-            render(value) {
-               // return moment(value).format("Do MMM YYYY");
-               const formattedDate = moment(value, "DD/MM/YYYY").format("Do MMM YYYY");
-                return <span>{formattedDate}</span>;
-            },
-            key: "planDate",
-            filters: [],
-            //sorter: (a, b) => a.planDate - b.planDate,
-            sorter: (a, b) => moment(a.planDate, "DD/MM/YYYY").valueOf() - moment(b.planDate, "DD/MM/YYYY").valueOf(),
-            sortOrder: sortedInfo.columnKey === "planDate" && sortedInfo.order,
-        },
-        {
-            title: "Material",
-            dataIndex: "materialGrade",
-            key: "materialGrade",
-            filteredValue: filteredInfo ? filteredInfo["materialGrade"] : null,
-            onFilter: (value, record) => record.materialGrade == value,
-            filters: [],
-            sorter: (a, b) =>
-                a.materialGrade.length - b.materialGrade.length,
-            sortOrder:
-                sortedInfo.columnKey === "materialGrade" && sortedInfo.order,
-        },
-        {
-            title: "Thickness",
-            dataIndex: "fthickness",
-            key: "fthickness",
-            filters: [],
-            sorter: (a, b) => a.fthickness - b.fthickness,
-            sortOrder: sortedInfo.columnKey === "fthickness" && sortedInfo.order,
-        },
-        {
-            title: "Weight",
-            dataIndex: "targetWeight",
-            key: "targetWeight",
-            filters: [],
-            sorter: (a, b) => a.targetWeight - b.targetWeight,
-            sortOrder: sortedInfo.columnKey === "targetWeight" && sortedInfo.order,
-        },
-        {
-            title: "Status",
-            dataIndex: "status",
-            key: "status",
-            filters: [],
-            sorter: (a, b) => a.status.length - b.status.length,
-            sortOrder:
-                sortedInfo.columnKey === "status" && sortedInfo.order,
-                render: (text, record) => renderStatusColumn(record),
-        },
-        {
-            title: "Action",
-            dataIndex: "",
-            key: "x",
-            render: (text, record, index) => (
-                <span>
-                    <span
-                        className="gx-link"
-                        onClick={!record.qirId ? (e) => showTemplateList(record, index, e) : null}
-                        style={!record.qirId ? {} : { opacity: 0.5, pointerEvents: 'none' }}
-                    >
-                        Create QR
-                    </span>
-                    <Divider type="vertical" />
-                    <span
-                       className="gx-link"
-                       onClick={record.qirId ? (e) => showReportView(record, index, e) : null}
-                       style={record.qirId ? {} : { opacity: 0.5, pointerEvents: 'none' }}
-                    >
-                        View
-                    </span>
-                        <Divider type="vertical" />
-                        <span 
-                        className="gx-link"
-                        onClick={record.qirId ? (e) => onEdit(record, index, e) : null}
-                        style={record.qirId ? {} : { opacity: 0.5, pointerEvents: 'none' }}>
-                        Edit
-                        </span>
-                    <Divider type="vertical" />
-                    <span 
-                    className="gx-link"
-                    onClick={record.qirId ? (e) => onDelete(record, index, e) : null}
-                    style={record.qirId ? {} : { opacity: 0.5, pointerEvents: 'none' }}>
-                        Delete
-                    </span>
-                    <Divider type="vertical" />
-                    <span
-                        className="gx-link"
-                        onClick={() => onQRPdf(record.qirId)}
-                        style={record.qirId ? {} : { opacity: 0.5, pointerEvents: 'none' }}
-                    >
-                       PDF
-                    </span>
-                </span>
-            ),
-        },
+        key: "planDate",
+        filters: [],
+        //sorter: (a, b) => a.planDate - b.planDate,
+        sorter: (a, b) =>
+          moment(a.planDate, "DD/MM/YYYY").valueOf() -
+          moment(b.planDate, "DD/MM/YYYY").valueOf(),
+        sortOrder: sortedInfo.columnKey === "planDate" && sortedInfo.order,
+      },
+      {
+        title: "Material",
+        dataIndex: "materialGrade",
+        key: "materialGrade",
+        filteredValue: filteredInfo ? filteredInfo["materialGrade"] : null,
+        onFilter: (value, record) => record.materialGrade == value,
+        filters: [],
+        sorter: (a, b) => a.materialGrade.length - b.materialGrade.length,
+        sortOrder: sortedInfo.columnKey === "materialGrade" && sortedInfo.order,
+      },
+      {
+        title: "Thickness",
+        dataIndex: "fthickness",
+        key: "fthickness",
+        filters: [],
+        sorter: (a, b) => a.fthickness - b.fthickness,
+        sortOrder: sortedInfo.columnKey === "fthickness" && sortedInfo.order,
+      },
+      {
+        title: "Weight",
+        dataIndex: "targetWeight",
+        key: "targetWeight",
+        filters: [],
+        sorter: (a, b) => a.targetWeight - b.targetWeight,
+        sortOrder: sortedInfo.columnKey === "targetWeight" && sortedInfo.order,
+      },
+      {
+        title: "Status",
+        dataIndex: "status",
+        key: "status",
+        filters: [],
+        sorter: (a, b) => a.status.length - b.status.length,
+        sortOrder: sortedInfo.columnKey === "status" && sortedInfo.order,
+        render: (text, record) => renderStatusColumn(record),
+      },
+      {
+        title: "Action",
+        dataIndex: "",
+        key: "x",
+        render: (text, record, index) => (
+          <span>
+            <span
+              className="gx-link"
+              onClick={
+                !record.qirId ? (e) => showTemplateList(record, index, e) : null
+              }
+              style={
+                !record.qirId ? {} : { opacity: 0.5, pointerEvents: "none" }
+              }
+            >
+              Create QR
+            </span>
+            <Divider type="vertical" />
+            <span
+              className="gx-link"
+              onClick={
+                record.qirId ? (e) => showReportView(record, index, e) : null
+              }
+              style={
+                record.qirId ? {} : { opacity: 0.5, pointerEvents: "none" }
+              }
+            >
+              View
+            </span>
+            <Divider type="vertical" />
+            <span
+              className="gx-link"
+              onClick={record.qirId ? (e) => onEdit(record, index, e) : null}
+              style={
+                record.qirId ? {} : { opacity: 0.5, pointerEvents: "none" }
+              }
+            >
+              Edit
+            </span>
+            <Divider type="vertical" />
+            <span
+              className="gx-link"
+              onClick={record.qirId ? (e) => onDelete(record, index, e) : null}
+              style={
+                record.qirId ? {} : { opacity: 0.5, pointerEvents: "none" }
+              }
+            >
+              Delete
+            </span>
+            <Divider type="vertical" />
+            <span
+              className="gx-link"
+              onClick={() => onQRPdf(record.qirId)}
+              style={
+                record.qirId ? {} : { opacity: 0.5, pointerEvents: "none" }
+              }
+            >
+              PDF
+            </span>
+          </span>
+        ),
+      },
     ];
 
     useEffect(() => {

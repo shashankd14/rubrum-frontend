@@ -32,89 +32,89 @@ const LabelPrintFG = (props) => {
 
   const columns = [
     {
-      title: 'Inward Id',
-      dataIndex: 'coilNo',
-      key: 'coilNo',
+      title: "Batch no.",
+      dataIndex: "coilNo",
+      key: "coilNo",
       filters: [],
       sorter: (a, b) => a.coilNo.length - b.coilNo.length,
-      sortOrder: sortedInfo.columnKey === 'coilNo' && sortedInfo.order,
+      sortOrder: sortedInfo.columnKey === "coilNo" && sortedInfo.order,
     },
     {
-      title: 'SC inward id',
-      dataIndex: 'customerBatchNo',
-      key: 'customerBatchNo',
-      filteredValue: filteredInfo ? filteredInfo['customerBatchNo'] : null,
+      title: "SC inward id",
+      dataIndex: "customerBatchNo",
+      key: "customerBatchNo",
+      filteredValue: filteredInfo ? filteredInfo["customerBatchNo"] : null,
       onFilter: (value, record) => record.customerBatchNo == value,
       filters: [],
       sorter: (a, b) => a.customerBatchNo.length - b.customerBatchNo.length,
-      sortOrder: sortedInfo.columnKey === 'customerBatchNo' && sortedInfo.order,
+      sortOrder: sortedInfo.columnKey === "customerBatchNo" && sortedInfo.order,
     },
     {
-      title: 'Inward Date',
-      dataIndex: 'planDate',
+      title: "Inward Date",
+      dataIndex: "planDate",
       render(value) {
-        const formattedDate = moment(value, 'DD/MM/YYYY').format('Do MMM YYYY');
+        const formattedDate = moment(value, "DD/MM/YYYY").format("Do MMM YYYY");
         return <span>{formattedDate}</span>;
       },
-      key: 'planDate',
+      key: "planDate",
       filters: [],
       sorter: (a, b) =>
-        moment(a.planDate, 'DD/MM/YYYY').valueOf() -
-        moment(b.planDate, 'DD/MM/YYYY').valueOf(),
-      sortOrder: sortedInfo.columnKey === 'planDate' && sortedInfo.order,
+        moment(a.planDate, "DD/MM/YYYY").valueOf() -
+        moment(b.planDate, "DD/MM/YYYY").valueOf(),
+      sortOrder: sortedInfo.columnKey === "planDate" && sortedInfo.order,
     },
     {
-      title: 'Material',
-      dataIndex: 'materialDesc',
-      key: 'materialDesc',
-      filteredValue: filteredInfo ? filteredInfo['materialDesc'] : null,
+      title: "Material",
+      dataIndex: "materialDesc",
+      key: "materialDesc",
+      filteredValue: filteredInfo ? filteredInfo["materialDesc"] : null,
       onFilter: (value, record) => record.materialDesc == value,
       filters: [],
       sorter: (a, b) => a.materialDesc.length - b.materialDesc.length,
-      sortOrder: sortedInfo.columnKey === 'materialDesc' && sortedInfo.order,
+      sortOrder: sortedInfo.columnKey === "materialDesc" && sortedInfo.order,
     },
     {
-      title: 'Grade',
-      dataIndex: 'materialGrade',
-      key: 'materialGrade',
-      filteredValue: filteredInfo ? filteredInfo['materialGrade'] : null,
+      title: "Grade",
+      dataIndex: "materialGrade",
+      key: "materialGrade",
+      filteredValue: filteredInfo ? filteredInfo["materialGrade"] : null,
       onFilter: (value, record) => record.materialGrade == value,
       filters: [],
       sorter: (a, b) => a.materialGrade.length - b.materialGrade.length,
-      sortOrder: sortedInfo.columnKey === 'materialGrade' && sortedInfo.order,
+      sortOrder: sortedInfo.columnKey === "materialGrade" && sortedInfo.order,
     },
     {
-      title: 'Thickness',
-      dataIndex: 'fthickness',
-      key: 'fthickness',
+      title: "Thickness",
+      dataIndex: "fthickness",
+      key: "fthickness",
       filters: [],
       sorter: (a, b) => a.fthickness - b.fthickness,
-      sortOrder: sortedInfo.columnKey === 'fthickness' && sortedInfo.order,
+      sortOrder: sortedInfo.columnKey === "fthickness" && sortedInfo.order,
     },
     {
-      title: 'Width',
-      dataIndex: 'fwidth',
-      key: 'fwidth',
+      title: "Width",
+      dataIndex: "fwidth",
+      key: "fwidth",
       filters: [],
       sorter: (a, b) => a.fwidth - b.fwidth,
-      sortOrder: sortedInfo.columnKey === 'fwidth' && sortedInfo.order,
+      sortOrder: sortedInfo.columnKey === "fwidth" && sortedInfo.order,
     },
     {
-      title: 'Weight',
-      dataIndex: 'targetWeight',
-      key: 'targetWeight',
+      title: "Weight",
+      dataIndex: "targetWeight",
+      key: "targetWeight",
       filters: [],
       sorter: (a, b) => a.targetWeight - b.targetWeight,
-      sortOrder: sortedInfo.columnKey === 'targetWeight' && sortedInfo.order,
+      sortOrder: sortedInfo.columnKey === "targetWeight" && sortedInfo.order,
     },
     {
-      title: 'Action',
-      dataIndex: '',
-      key: 'x',
+      title: "Action",
+      dataIndex: "",
+      key: "x",
       render: (text, record, index) => (
         <span>
           <span
-            className='gx-link'
+            className="gx-link"
             onClick={() => {
               onPdf(record.inwardEntryId);
               setShowPopup(true);

@@ -40,90 +40,97 @@ function List(props) {
         return filter;
     }
     const columns = [
-        {
-        title: 'Inward Id',
-        dataIndex: 'coilNumber',
-        key: 'coilNumber',
+      {
+        title: "Batch no.",
+        dataIndex: "coilNumber",
+        key: "coilNumber",
         filters: [],
         sorter: (a, b) => a.coilNumber?.length - b.coilNumber?.length,
-        sortOrder: sortedInfo.columnKey === 'coilNumber' && sortedInfo.order,
-    },
-        {
-            title: 'Location',
-            dataIndex: 'party.partyName',
-            key: 'party.partyName',
-            filteredValue: filteredInfo ? filteredInfo["party.partyName"] : null,
-            onFilter: (value, record) => record.party.partyName == value,
-            filters: props.inward?.wipList?.length > 0 ? [...new Set(props.inward?.wipList?.map(item => item.party.partyName))].map(partyName => ({
+        sortOrder: sortedInfo.columnKey === "coilNumber" && sortedInfo.order,
+      },
+      {
+        title: "Location",
+        dataIndex: "party.partyName",
+        key: "party.partyName",
+        filteredValue: filteredInfo ? filteredInfo["party.partyName"] : null,
+        onFilter: (value, record) => record.party.partyName == value,
+        filters:
+          props.inward?.wipList?.length > 0
+            ? [
+                ...new Set(
+                  props.inward?.wipList?.map((item) => item.party.partyName)
+                ),
+              ].map((partyName) => ({
                 text: partyName,
-                value: partyName
-            })) : [],
-            sorter: (a, b) => a.party.partyName?.length - b.party.partyName?.length,
-            sortOrder: sortedInfo.columnKey === 'party.partyName' && sortedInfo.order,
-        },
-        {
-            title: 'Inward Date',
-            dataIndex: 'dReceivedDate',
-            render(value) {
-                return moment(value).format('Do MMM YYYY');
-            },
-            key: 'dReceivedDate',
-            filters: [],
-            sorter: (a, b) => a.dReceivedDate - b.dReceivedDate,
-            sortOrder: sortedInfo.columnKey === 'dReceivedDate' && sortedInfo.order,
-        },
-        {
-            title: 'Material',
-            dataIndex: 'material.description',
-            key: 'material.description',
-        },
-        {
-            title: 'Status',
-            dataIndex: 'status.statusName',
-            key: 'status.statusName',
-            filters: [],
-            sorter: (a, b) => a.status.statusName?.length - b.status.statusName?.length,
-            sortOrder: sortedInfo.columnKey === 'status.statusName' && sortedInfo.order,
-        },
-        {
-            title: 'Thickness',
-            dataIndex: 'fThickness',
-            key: 'fThickness',
-            filters: [],
-            sorter: (a, b) => a.fThickness - b.fThickness,
-            sortOrder: sortedInfo.columnKey === 'fThickness' && sortedInfo.order,
-        },
-        {
-            title: 'Weight',
-            dataIndex: 'fQuantity',
-            key: 'fQuantity',
-            filters: [],
-            sorter: (a, b) => a.fQuantity - b.fQuantity,
-            sortOrder: sortedInfo.columnKey === 'fQuantity' && sortedInfo.order,
-        },
-        {
-            title: "Classification",
-            dataIndex: "packetClassification.classificationName",
-            key: "packetClassification.classificationName"
-        },
-        {
-            title: "End User Tags",
-            dataIndex: "endUserTagsentity.tagName",
-            key: "endUserTagsentity.tagName"
-        },
-        {
-            title: 'Action',
-            dataIndex: '',
-            key: 'x',
-            render: (text, record) => (
-                <span>{record.instructionId ? <span className="gx-link"></span> :
-                    menuWorkInProgressLabelList.length > 0 && menuWorkInProgressLabelList.includes(workInProgressMenuConstants.finish) && <span className="gx-link"
-                          onClick={() => props.history.push(`plan/${record.coilNumber}`)}>Finish</span>
-                }
-                
-            </span>
-            ),
-        },
+                value: partyName,
+              }))
+            : [],
+        sorter: (a, b) => a.party.partyName?.length - b.party.partyName?.length,
+        sortOrder:
+          sortedInfo.columnKey === "party.partyName" && sortedInfo.order,
+      },
+      {
+        title: "Material",
+        dataIndex: "material.description",
+        key: "material.description",
+      },
+      {
+        title: "Status",
+        dataIndex: "status.statusName",
+        key: "status.statusName",
+        filters: [],
+        sorter: (a, b) =>
+          a.status.statusName?.length - b.status.statusName?.length,
+        sortOrder:
+          sortedInfo.columnKey === "status.statusName" && sortedInfo.order,
+      },
+      {
+        title: "Thickness",
+        dataIndex: "fThickness",
+        key: "fThickness",
+        filters: [],
+        sorter: (a, b) => a.fThickness - b.fThickness,
+        sortOrder: sortedInfo.columnKey === "fThickness" && sortedInfo.order,
+      },
+      {
+        title: "Weight",
+        dataIndex: "fQuantity",
+        key: "fQuantity",
+        filters: [],
+        sorter: (a, b) => a.fQuantity - b.fQuantity,
+        sortOrder: sortedInfo.columnKey === "fQuantity" && sortedInfo.order,
+      },
+      {
+        title: "Classification",
+        dataIndex: "packetClassification.classificationName",
+        key: "packetClassification.classificationName",
+      },
+      {
+        title: "Action",
+        dataIndex: "",
+        key: "x",
+        render: (text, record) => (
+          <span>
+            {record.instructionId ? (
+              <span className="gx-link"></span>
+            ) : (
+              menuWorkInProgressLabelList.length > 0 &&
+              menuWorkInProgressLabelList.includes(
+                workInProgressMenuConstants.finish
+              ) && (
+                <span
+                  className="gx-link"
+                  onClick={() =>
+                    props.history.push(`plan/${record.coilNumber}`)
+                  }
+                >
+                  Finish
+                </span>
+              )
+            )}
+          </span>
+        ),
+      },
     ];
 
     useEffect(() => {
@@ -175,38 +182,47 @@ function List(props) {
     };
 
     return (
-        <div>
-            <h1><IntlMessages id="sidebar.company.workinprogress"/></h1>
-            <Card>
-                <div style={{width: "50%", "margin-bottom": "10px"}} className="gx-flex-row gx-flex-1 wip-search">
-                    <SearchBox styleName="gx-flex-1" placeholder="Search for inward id or location..."
-                               value={searchValue} onChange={(e) => setSearchValue(e.target.value)}/>
-
-                </div>
-                <Table rowSelection={[]}
-                       className="gx-table-responsive"
-                       columns={columns}
-                       dataSource={filteredInwardList}
-                       onChange={handleChange}
-                       onRow={(record, index) => {
-                           return {
-                               onClick: (record) => {
-                                   handleRow(record)
-                               }
-                           };
-                       }}
-                       pagination={{
-                           pageSize: 15,
-                           onChange: page => {
-                               setPageNo(page);
-                               props.fetchWIPInwardList(page, 15, searchValue);
-                           },
-                           current: pageNo,
-                           total: totalPageItems
-                       }}
-                />
-            </Card>
-        </div>
+      <div>
+        <h1>
+          <IntlMessages id="sidebar.company.workinprogress" />
+        </h1>
+        <Card>
+          <div
+            style={{ width: "50%", "margin-bottom": "10px" }}
+            className="gx-flex-row gx-flex-1 wip-search"
+          >
+            <SearchBox
+              styleName="gx-flex-1"
+              placeholder="Search for Batch no. or location..."
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+            />
+          </div>
+          <Table
+            rowSelection={[]}
+            className="gx-table-responsive"
+            columns={columns}
+            dataSource={filteredInwardList}
+            onChange={handleChange}
+            onRow={(record, index) => {
+              return {
+                onClick: (record) => {
+                  handleRow(record);
+                },
+              };
+            }}
+            pagination={{
+              pageSize: 15,
+              onChange: (page) => {
+                setPageNo(page);
+                props.fetchWIPInwardList(page, 15, searchValue);
+              },
+              current: pageNo,
+              total: totalPageItems,
+            }}
+          />
+        </Card>
+      </div>
     );
 }
 

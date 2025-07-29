@@ -105,12 +105,12 @@ const CategoryForm = (props) => {
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label="Inward Id">
+            <Form.Item label="Batch number">
               {getFieldDecorator("coilNumber", {
                 rules: [
-                  { required: true, message: "Please enter inward id !" },
+                  { required: true, message: "Please enter batch number !" },
                 ],
-              })(<Input placeholder="enter inward Id" />)}
+              })(<Input placeholder="enter batch number" />)}
             </Form.Item>
           </Col>
         </Row>

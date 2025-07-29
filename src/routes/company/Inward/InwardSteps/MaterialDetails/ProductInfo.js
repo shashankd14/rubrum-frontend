@@ -8,7 +8,7 @@ import {
   Row,
   Input,
   Select,
-  message
+  message,
 } from "antd";
 import { connect } from "react-redux";
 import {
@@ -19,7 +19,7 @@ import {
   getProductCoatingList,
   saveMaterialInfo,
   getRefinedProducts,
-  getRefinedProductsFinal
+  getRefinedProductsFinal,
 } from "../../../../../appRedux/actions";
 import { METAL_DENSITY } from "../../../../../constants";
 
@@ -40,7 +40,7 @@ const ProductInfoForm = (props) => {
   const { getFieldDecorator } = props.form;
 
   const handleSubmit = (e) => {
-    if (!props.inward.disableSelection) 
+    if (!props.inward.disableSelection)
       props.getRefinedProductsFinal({
         ...props.inward,
         materialForm: props.material.displayInfo.form,
@@ -48,28 +48,52 @@ const ProductInfoForm = (props) => {
 
     e.preventDefault();
     props.form.validateFieldsAndScroll((err, values) => {
-      if (!err && props?.productInfo?.refinedProducts.length === 1) {
-        props.updateStep(2); 
-      } else {
-        message.error(
-          "Material Id not found, please try again after entering all the data"
-        );
+      if (!err) {
+        if (
+          props.inward.disableSelection ||
+          props?.productInfo?.refinedProducts.length === 1
+        ) {
+          props.updateStep(2);
+        } else {
+          message.error(
+            "Material Id not found, please try again after entering all the data"
+          );
+        }
       }
     });
   };
 
   useEffect(() => {
     if (!props.inward.disableSelection) {
-      props.getRefinedProducts(props.inward, 'grade');
+      props.getRefinedProducts(props.inward, "grade");
     }
   }, []);
 
   useEffect(() => {
-    if(props.inward.width && props.inward.thickness && props.inward.netWeight && (props.inward.productForm === '22' || props.material.displayInfo.form === 'Coil' || props.inward.productForm === 'Coil')) {
+    if (
+      props.inward.width &&
+      props.inward.thickness &&
+      props.inward.netWeight &&
+      (props.inward.productForm === "22" ||
+        props.material.displayInfo.form === "Coil" ||
+        props.inward.productForm === "Coil")
+    ) {
       if (!props.inward.disableSelection) {
-        props.getRefinedProductsFinal({...props.inward, materialForm : props.material.displayInfo.form});
+        props.getRefinedProductsFinal({
+          ...props.inward,
+          materialForm: props.material.displayInfo.form,
+        });
       }
-      props.setInwardDetails({...props.inward,'length':(parseFloat(parseFloat(props.inward.netWeight)/(parseFloat(props.inward.thickness)*METAL_DENSITY*(props.inward.width/1000))).toFixed(4))*1000});   
+      props.setInwardDetails({
+        ...props.inward,
+        length:
+          parseFloat(
+            parseFloat(props.inward.netWeight) /
+              (parseFloat(props.inward.thickness) *
+                METAL_DENSITY *
+                (props.inward.width / 1000))
+          ).toFixed(4) * 1000,
+      });
     }
   }, [props.inward.width, props.inward.thickness, props.inward.netWeight]);
 
@@ -121,7 +145,8 @@ const ProductInfoForm = (props) => {
                     );
                   }}
                   filterOption={(input, option) =>
-                    option.props.children.toString()
+                    option.props.children
+                      .toString()
                       .toLowerCase()
                       .indexOf(input.toLowerCase()) >= 0
                   }
@@ -164,13 +189,17 @@ const ProductInfoForm = (props) => {
                     );
                   }}
                   filterOption={(input, option) =>
-                    option.props.children.toString()
+                    option.props.children
+                      .toString()
                       .toLowerCase()
                       .indexOf(input.toLowerCase()) >= 0
                   }
                 >
                   {props.productInfo?.productSurfaceList?.map((surface) => (
-                    <Option key={surface.surfacetypeId} value={`${surface.surfacetypeId}`}>
+                    <Option
+                      key={surface.surfacetypeId}
+                      value={`${surface.surfacetypeId}`}
+                    >
                       {surface.surfacetype}
                     </Option>
                   ))}
@@ -201,7 +230,8 @@ const ProductInfoForm = (props) => {
                     );
                   }}
                   filterOption={(input, option) =>
-                    option.props?.children?.toString()
+                    option.props?.children
+                      ?.toString()
                       ?.toLowerCase()
                       ?.indexOf(input.toLowerCase()) >= 0
                   }
@@ -209,7 +239,7 @@ const ProductInfoForm = (props) => {
                   {props?.productInfo?.thickness?.map((thickness, index) =>
                     thickness >= 0 ? (
                       <Option
-                      key={`${thickness}${index}`}
+                        key={`${thickness}${index}`}
                         value={`${thickness}`}
                       >
                         {thickness}
@@ -243,17 +273,15 @@ const ProductInfoForm = (props) => {
                     );
                   }}
                   filterOption={(input, option) =>
-                    option.props.children.toString()
+                    option.props.children
+                      .toString()
                       .toLowerCase()
                       .indexOf(input.toLowerCase()) >= 0
                   }
                 >
                   {props?.productInfo?.widths?.map((width) =>
                     width >= 0 ? (
-                      <Option
-                      key={width}
-                      value={width}
-                      >
+                      <Option key={width} value={width}>
                         {width}
                       </Option>
                     ) : (
@@ -274,17 +302,15 @@ const ProductInfoForm = (props) => {
                   placeholder="Select a length"
                   optionFilterProp="children"
                   filterOption={(input, option) =>
-                    option.props.children.toString()
+                    option.props.children
+                      .toString()
                       .toLowerCase()
                       .indexOf(input.toLowerCase()) >= 0
                   }
                 >
                   {props?.productInfo?.lengths?.map((length, index) =>
                     length >= 0 ? (
-                      <Option
-                        key={`${length}${index}`}
-                        value={`${length}`}
-                      >
+                      <Option key={`${length}${index}`} value={`${length}`}>
                         {length}
                       </Option>
                     ) : (
@@ -296,7 +322,13 @@ const ProductInfoForm = (props) => {
             </Form.Item>
             <Form.Item label="Gross Weight (in kgs)">
               {getFieldDecorator("grossWeight", {
-                rules: [{ required: true, message: "Enter Gross Weight" }],
+                rules: [
+                  { required: true, message: "Enter Gross Weight" },
+                  {
+                    validator: (rule, value) => (value > 0 ? true : false),
+                    message: "Net weight should be greater than 0",
+                  },
+                ],
               })(
                 <AutoComplete
                   placeholder="enter gross weight"
@@ -360,7 +392,8 @@ const ProductInfoForm = (props) => {
                     );
                   }}
                   filterOption={(input, option) =>
-                    option.props.children.toString()
+                    option.props.children
+                      .toString()
                       .toLowerCase()
                       .indexOf(input.toLowerCase()) >= 0
                   }
@@ -409,7 +442,8 @@ const ProductInfoForm = (props) => {
                     );
                   }}
                   filterOption={(input, option) =>
-                    option.props.children.toString()
+                    option.props.children
+                      .toString()
                       .toLowerCase()
                       .indexOf(input.toLowerCase()) >= 0
                   }
@@ -453,17 +487,15 @@ const ProductInfoForm = (props) => {
                     );
                   }}
                   filterOption={(input, option) =>
-                    option.props.children.toString()
+                    option.props.children
+                      .toString()
                       .toLowerCase()
                       .indexOf(input.toLowerCase()) >= 0
                   }
                 >
                   {props?.productInfo?.od?.map((od, index) =>
                     od >= 0 ? (
-                      <Option
-                        key={`${od}${index}`}
-                        value={od}
-                      >
+                      <Option key={`${od}${index}`} value={od}>
                         {od}
                       </Option>
                     ) : (
@@ -499,7 +531,8 @@ const ProductInfoForm = (props) => {
                     );
                   }}
                   filterOption={(input, option) =>
-                    option.props.children.toString()
+                    option.props.children
+                      .toString()
                       .toLowerCase()
                       .indexOf(input.toLowerCase()) >= 0
                   }
@@ -539,17 +572,15 @@ const ProductInfoForm = (props) => {
                     props.getRefinedProducts(props.inward);
                   }}
                   filterOption={(input, option) =>
-                    option.props.children.toString()
+                    option.props.children
+                      .toString()
                       .toLowerCase()
                       .indexOf(input.toLowerCase()) >= 0
                   }
                 >
                   {props?.productInfo?.nb?.map((nb, index) =>
                     nb >= 0 ? (
-                      <Option
-                      key={`${nb}${index}`}
-                      value={`${nb}`}
-                      >
+                      <Option key={`${nb}${index}`} value={`${nb}`}>
                         {nb}
                       </Option>
                     ) : (
@@ -565,6 +596,10 @@ const ProductInfoForm = (props) => {
                   {
                     required: true,
                     message: "Please enter net weight !",
+                  },
+                  {
+                    validator: (rule, value) => (value > 0 ? true : false),
+                    message: "Net weight should be greater than 0",
                   },
                 ],
               })(
@@ -678,5 +713,5 @@ export default connect(mapStateToProps, {
   getProductCoatingList,
   saveMaterialInfo,
   getRefinedProducts,
-  getRefinedProductsFinal
+  getRefinedProductsFinal,
 })(ProductInfo);

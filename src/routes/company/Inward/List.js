@@ -40,7 +40,7 @@ const List = (props) => {
 
   const columns = [
     {
-      title: "Inward id",
+      title: "Batch no.",
       dataIndex: "coilNumber",
       key: "coilNumber",
       filters: [],
@@ -240,7 +240,7 @@ const List = (props) => {
             </Button>}
             <SearchBox
               styleName="gx-flex-1"
-              placeholder="Search for inward id or location..."
+              placeholder="Search for batch no. or location..."
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
             />

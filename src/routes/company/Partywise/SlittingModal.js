@@ -2042,12 +2042,12 @@ const CreateSlittingDetailsForm = (props) => {
       <Modal
         title={
           props?.unfinish
-            ? 'UnFinish Slitting Instruction'
+            ? "UnFinish Slitting Instruction"
             : props?.editFinish
-            ? 'Edit Finish Slitting Instruction'
+            ? "Edit Finish Slitting Instruction"
             : props.wip
-            ? 'Finish Slitting Instruction'
-            : 'Slitting Instruction'
+            ? "Finish Slitting Instruction"
+            : "Slitting Instruction"
         }
         visible={props.showSlittingModal}
         onOk={handleOk}
@@ -2056,28 +2056,28 @@ const CreateSlittingDetailsForm = (props) => {
         footer={
           props.slitCut
             ? slittingDetail.length === cuts.length && !props.wip
-              ? getFooterButtons('slittingDetail')
-              : getFooterButtons('SlitCut')
+              ? getFooterButtons("slittingDetail")
+              : getFooterButtons("SlitCut")
             : cuts.length > 0
-            ? getFooterButtons('Slitting')
-            : getFooterButtons('Slitting')
+            ? getFooterButtons("Slitting")
+            : getFooterButtons("Slitting")
         }
       >
-        <Card className='gx-card'>
-          <Tabs defaultActiveKey='1' tabPosition={mode}>
-            <TabPane tab='Slitting Instruction' key='1'>
+        <Card className="gx-card">
+          <Tabs defaultActiveKey="1" tabPosition={mode}>
+            <TabPane tab="Slitting Instruction" key="1">
               {props.wip ? (
                 <Row>
                   {!props.unfinish && (
                     <>
                       <Col lg={24} md={24} sm={24} xs={24}>
-                        <Button type='primary' onClick={addRow}>
+                        <Button type="primary" onClick={addRow}>
                           Add Row
                         </Button>
                       </Col>
                     </>
                   )}
-                  <Form {...formItemLayout} className='login-form gx-pt-4'>
+                  <Form {...formItemLayout} className="login-form gx-pt-4">
                     <Form.Item>
                       <SlittingWidthsForm
                         setSlitEqualInstruction={setSlitEqualInstruction}
@@ -2108,15 +2108,15 @@ const CreateSlittingDetailsForm = (props) => {
                     </Form.Item>
                   </Form>
                   <Col lg={8} md={12} sm={24} xs={24}>
-                    <p>Inward id : {props.coil.coilNumber}</p>
+                    <p>Batch no. : {props.coil.coilNumber}</p>
                     <p>
-                      Available Weight(kg) :{' '}
+                      Available Weight(kg) :{" "}
                       {props.childCoil
                         ? insData.actualWeight
                         : props.coil.fpresent}
                     </p>
                     <p>
-                      Available length(mm) :{' '}
+                      Available length(mm) :{" "}
                       {props.childCoil
                         ? insData.actualLength
                         : props.coil.availableLength}
@@ -2124,7 +2124,7 @@ const CreateSlittingDetailsForm = (props) => {
                     <p>Inward Weight(kg) : {props.coil.fQuantity}</p>
                     <p>Grade: {props.coil?.materialGrade?.gradeName}</p>
                     <p>
-                      Coil level Planned YLR (%):{' '}
+                      Coil level Planned YLR (%):{" "}
                       {isNaN(plannedCoilLevelYLR)
                         ? 0
                         : plannedCoilLevelYLR.toFixed(2)}
@@ -2137,11 +2137,11 @@ const CreateSlittingDetailsForm = (props) => {
                     <p>Thickness(mm): {props.coil.fThickness}</p>
                     <p>Width(mm) : {props.coil.fWidth}</p>
                     <p>
-                      Available Width(mm):{' '}
+                      Available Width(mm):{" "}
                       {props.childCoil ? insData.actualWidth : widthValue}
                     </p>
                     <p>
-                      Coil level Actual YLR (%) :{' '}
+                      Coil level Actual YLR (%) :{" "}
                       {isNaN(actualCoilLevelYLR)
                         ? 0
                         : actualCoilLevelYLR.toFixed(2)}
@@ -2150,7 +2150,7 @@ const CreateSlittingDetailsForm = (props) => {
 
                   <Col lg={24} md={24} sm={24} xs={24}>
                     <Table
-                      className='gx-table-responsive'
+                      className="gx-table-responsive"
                       columns={props.wip ? columns : columnsPlan}
                       dataSource={
                         props.wip ? tableData : reset ? cuts : cutArray
@@ -2161,32 +2161,32 @@ const CreateSlittingDetailsForm = (props) => {
                         },
                       }}
                     />
-                    <div className='form-wrapper'>
-                      <Form.Item className='form-item' label='Total weight(kg)'>
-                        {getFieldDecorator('tweight', {
+                    <div className="form-wrapper">
+                      <Form.Item className="form-item" label="Total weight(kg)">
+                        {getFieldDecorator("tweight", {
                           rules: [{ required: false }],
                         })(
                           <>
                             <Input
-                              id='tweight'
+                              id="tweight"
                               disabled={true}
                               value={tweight}
-                              name='tweight'
+                              name="tweight"
                             />
                           </>
                         )}
                       </Form.Item>
 
-                      <Form.Item label='Actual weight(kg)'>
-                        {getFieldDecorator('totalActualweight', {
+                      <Form.Item label="Actual weight(kg)">
+                        {getFieldDecorator("totalActualweight", {
                           rules: [{ required: false }],
                         })(
                           <>
                             <Input
-                              id='totalActualweight'
+                              id="totalActualweight"
                               disabled={true}
                               value={totalActualweight}
-                              name='totalActualweight'
+                              name="totalActualweight"
                             />
                           </>
                         )}
@@ -2238,18 +2238,18 @@ const CreateSlittingDetailsForm = (props) => {
                           </>
                         )}
                       </Form.Item>  */}
-                      <Form.Item label='Actual yield loss ratio (plan level) (%)'>
-                        {getFieldDecorator('actualYieldLossRatio', {
+                      <Form.Item label="Actual yield loss ratio (plan level) (%)">
+                        {getFieldDecorator("actualYieldLossRatio", {
                           initialValue:
-                            props.coil.party.actualYieldLossRatio || '',
+                            props.coil.party.actualYieldLossRatio || "",
                           rules: [{ required: false }],
                         })(
                           <>
                             <Input
-                              id='actualYieldLossRatio'
+                              id="actualYieldLossRatio"
                               disabled={true}
                               value={actualYLR.toFixed(2)}
-                              name='actualYieldLossRatio'
+                              name="actualYieldLossRatio"
                             />
                           </>
                         )}
@@ -2269,9 +2269,9 @@ const CreateSlittingDetailsForm = (props) => {
                     sm={24}
                     xs={24}
                     span={16}
-                    className='gx-align-self-center'
+                    className="gx-align-self-center"
                   >
-                    <Form {...formItemLayout} className='login-form gx-pt-4'>
+                    <Form {...formItemLayout} className="login-form gx-pt-4">
                       <Form.Item>
                         <SlittingWidthsForm
                           setSlitEqualInstruction={setSlitEqualInstruction}
@@ -2327,12 +2327,12 @@ const CreateSlittingDetailsForm = (props) => {
                                 ? parseFloat(
                                     yieldLossRatio[tableIndex]
                                   ).toFixed(2)
-                                : '0.00'
+                                : "0.00"
                             } `}
                             key={date}
                           >
                             <Table
-                              className='gx-table-responsive'
+                              className="gx-table-responsive"
                               columns={props.wip ? columns : columnsPlan}
                               dataSource={
                                 props.wip
@@ -2353,32 +2353,32 @@ const CreateSlittingDetailsForm = (props) => {
                     )}
                     <Row style={{ paddingLeft: 16 }}>
                       <Col lg={11} md={12} sm={24} xs={24}>
-                        <Form.Item label='Total weight(kg)'>
-                          {getFieldDecorator('tweight', {
+                        <Form.Item label="Total weight(kg)">
+                          {getFieldDecorator("tweight", {
                             rules: [{ required: false }],
                           })(
                             <>
                               <Input
-                                id='tweight'
+                                id="tweight"
                                 disabled={true}
                                 value={tweight}
-                                name='tweight'
+                                name="tweight"
                               />
                             </>
                           )}
                         </Form.Item>
                       </Col>
                       <Col lg={12} md={12} sm={24} xs={24}>
-                        <Form.Item label='Planned yield loss (%)'>
-                          {getFieldDecorator('plannedYieldLossRatio', {
+                        <Form.Item label="Planned yield loss (%)">
+                          {getFieldDecorator("plannedYieldLossRatio", {
                             rules: [{ required: false }],
                           })(
                             <>
                               <Input
-                                id='plannedYieldLossRatio'
+                                id="plannedYieldLossRatio"
                                 disabled={true}
                                 value={sum.toFixed(2)}
-                                name='plannedYieldLossRatio'
+                                name="plannedYieldLossRatio"
                               />
                             </>
                           )}
@@ -2386,41 +2386,41 @@ const CreateSlittingDetailsForm = (props) => {
                       </Col>
                       {/* <Row style={{ paddingLeft: 16 }}> */}
                       <Col lg={24} md={24} sm={24} xs={24}>
-                        <Form.Item label='Coil level planned yield loss (%)'>
-                          {getFieldDecorator('plannedCoilLevelYLR', {
+                        <Form.Item label="Coil level planned yield loss (%)">
+                          {getFieldDecorator("plannedCoilLevelYLR", {
                             rules: [{ required: false }],
                           })(
                             <>
                               <Input
-                                id='plannedCoilLevelYLR'
+                                id="plannedCoilLevelYLR"
                                 disabled={true}
                                 value={
                                   isNaN(plannedCoilLevelYLR)
                                     ? 0
                                     : plannedCoilLevelYLR.toFixed(2)
                                 }
-                                name='plannedCoilLevelYLR'
+                                name="plannedCoilLevelYLR"
                               />
                             </>
                           )}
                         </Form.Item>
                         <Form.Item
-                          label='Coil level actual yield loss (%)'
+                          label="Coil level actual yield loss (%)"
                           style={{ marginLeft: 1 }}
                         >
-                          {getFieldDecorator('actualCoilLevelYLR', {
+                          {getFieldDecorator("actualCoilLevelYLR", {
                             rules: [{ required: false }],
                           })(
                             <>
                               <Input
-                                id='actualCoilLevelYLR'
+                                id="actualCoilLevelYLR"
                                 disabled={true}
                                 value={
                                   isNaN(actualCoilLevelYLR)
                                     ? 0
                                     : actualCoilLevelYLR.toFixed(2)
                                 }
-                                name='actualCoilLevelYLR'
+                                name="actualCoilLevelYLR"
                               />
                             </>
                           )}
@@ -2449,7 +2449,7 @@ const CreateSlittingDetailsForm = (props) => {
               )}
 
               <Modal
-                title='Confirmation'
+                title="Confirmation"
                 visible={showDeleteModal}
                 width={400}
                 onOk={() => {
@@ -2463,10 +2463,10 @@ const CreateSlittingDetailsForm = (props) => {
             </TabPane>
 
             {!props.wip && (
-              <TabPane tab='Coil Details' key='2'>
+              <TabPane tab="Coil Details" key="2">
                 <Row>
                   <Col lg={12} md={12} sm={24} xs={24}>
-                    <p>Inward id : {props.coil.coilNumber}</p>
+                    <p>Batch no. : {props.coil.coilNumber}</p>
                     <p>Location Name : {props.coil.party.partyName}</p>
                     {props.coil.customerBatchId && (
                       <p>SC inward id:{props.coil.customerBatchId}</p>
@@ -2482,7 +2482,7 @@ const CreateSlittingDetailsForm = (props) => {
                     <p>Available Length(mm): {props.coil.availableLength}</p>
                     <p>Available Weight(kg) : {props.coil.fpresent}</p>
                     <p>
-                      Available Width (mm) :{' '}
+                      Available Width (mm) :{" "}
                       {props.coil.fpresent > 0
                         ? props.coilDetails.fWidth ||
                           props.coilDetails.plannedWidth
@@ -2493,11 +2493,11 @@ const CreateSlittingDetailsForm = (props) => {
               </TabPane>
             )}
             {!props.wip && (
-              <TabPane tab='Location Yield Loss Reference' key='3'>
+              <TabPane tab="Location Yield Loss Reference" key="3">
                 <Row>
                   <Col lg={20} md={20} sm={24} xs={24}>
                     <Table
-                      className='gx-table-responsive'
+                      className="gx-table-responsive"
                       columns={columnYieldLoss}
                       dataSource={
                         props.slitCut
