@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useIntl } from "react-intl";
 import {
   AutoComplete,
   Form,
@@ -18,8 +19,10 @@ import {
   saveMaterialInfo,
   searchByMaterialId,
   enableMaterialSelection,
-  getRefinedProducts
+  getRefinedProducts,
+  checkIfCoilExists,
 } from "../../../../../appRedux/actions";
+import IntlMessages from "util/IntlMessages";
 
 const formItemLayout = {
   labelCol: {
@@ -39,6 +42,7 @@ const { Text } = Typography;
 const CategoryForm = (props) => {
   const { getFieldDecorator } = props.form;
   const [dataSource, setDataSource] = useState([]);
+  const intl = useIntl();
 
   useEffect(() => {
     props.getMaterialCategories();
@@ -79,6 +83,21 @@ const CategoryForm = (props) => {
     props.getRefinedProducts({categoryId: categoryId}, 'subCategory', {...props.inward, categoryId: categoryId, subcategoryId: null, leafcategoryId: null, brandId: null, productTypeId: null, productUom: null, productForm: null, hsn: '', materialId: ''});
   }
 
+  const checkIfCoilExists = (rule, value, callback) => {
+    console.log(props.inwardStatus);
+    if (
+      value == "" ||
+      (!props.inwardStatus.loading &&
+        props.inwardStatus.success &&
+        !props.inwardStatus.duplicateCoil)
+    ) {
+      return callback();
+    }
+    callback(
+      intl.formatMessage({ id: "inward.create.label.inwardAlreadyExists" })
+    );
+  };
+
   return (
     <>
       <Form
@@ -109,8 +128,16 @@ const CategoryForm = (props) => {
               {getFieldDecorator("coilNumber", {
                 rules: [
                   { required: true, message: "Please enter batch number !" },
+                  { validator: props.params === "" ? checkIfCoilExists : "" },
                 ],
-              })(<Input placeholder="enter batch number" />)}
+              })(
+                <Input
+                  placeholder="enter batch number"
+                  id="validating"
+                  onChange={(e) => props.checkIfCoilExists(e.target.value)}
+                  onBlur={(e) => props.checkIfCoilExists(e.target.value)}
+                />
+              )}
             </Form.Item>
           </Col>
         </Row>
@@ -146,10 +173,7 @@ const CategoryForm = (props) => {
                   placeholder="Select a category"
                   optionFilterProp="children"
                   onSelect={(categoryId, option) => {
-                    onCategoryChange(
-                      categoryId,
-                      option.props.children
-                    );
+                    onCategoryChange(categoryId, option.props.children);
                   }}
                   filterOption={(input, option) =>
                     option.props.children
@@ -182,7 +206,10 @@ const CategoryForm = (props) => {
                       "subCategoryName",
                       option.props.children
                     );
-                    props.getRefinedProducts({...props.inward, subcategoryId: subCategoryId}, 'leafCategory');
+                    props.getRefinedProducts(
+                      { ...props.inward, subcategoryId: subCategoryId },
+                      "leafCategory"
+                    );
                   }}
                   filterOption={(input, option) =>
                     option.props.children
@@ -220,10 +247,11 @@ const CategoryForm = (props) => {
                   placeholder="Select a leaf category"
                   optionFilterProp="children"
                   onSelect={(leafCategoryId, option) => {
-                    props.saveMaterialInfo(
-                      option.props.children
+                    props.saveMaterialInfo(option.props.children);
+                    props.getRefinedProducts(
+                      { ...props.inward, leafcategoryId: leafCategoryId },
+                      "brand"
                     );
-                    props.getRefinedProducts({...props.inward, leafcategoryId: leafCategoryId}, 'brand');
                   }}
                   filterOption={(input, option) =>
                     option.props.children
@@ -277,7 +305,10 @@ const CategoryForm = (props) => {
                   optionFilterProp="children"
                   onSelect={(brandId, option) => {
                     props.saveMaterialInfo("brandName", option.props.children);
-                    props.getRefinedProducts({...props.inward, brandId: brandId}, 'productType');
+                    props.getRefinedProducts(
+                      { ...props.inward, brandId: brandId },
+                      "productType"
+                    );
                   }}
                   filterOption={(input, option) =>
                     option.props.children
@@ -285,7 +316,7 @@ const CategoryForm = (props) => {
                       .indexOf(input.toLowerCase()) >= 0
                   }
                 >
-                 {props.productInfo?.brandList?.map((brand) => (
+                  {props.productInfo?.brandList?.map((brand) => (
                     <Option key={brand.brandId} value={brand.brandId}>
                       {brand.brandName}
                     </Option>
@@ -314,7 +345,10 @@ const CategoryForm = (props) => {
                       "productType",
                       option.props.children
                     );
-                    props.getRefinedProducts({...props.inward, productTypeId: productId}, 'uom');
+                    props.getRefinedProducts(
+                      { ...props.inward, productTypeId: productId },
+                      "uom"
+                    );
                   }}
                   filterOption={(input, option) =>
                     option.props.children
@@ -360,7 +394,10 @@ const CategoryForm = (props) => {
                   optionFilterProp="children"
                   onSelect={(productId, option) => {
                     props.saveMaterialInfo("form", option.props.children);
-                    props.getRefinedProducts({...props.inward, productForm: productId});
+                    props.getRefinedProducts({
+                      ...props.inward,
+                      productForm: productId,
+                    });
                   }}
                   filterOption={(input, option) =>
                     option.props.children
@@ -368,8 +405,9 @@ const CategoryForm = (props) => {
                       .indexOf(input.toLowerCase()) >= 0
                   }
                 >
-                  {[{"formId": "21", "formName": "Sheet"},
-                    {"formId": "22", "formName": "Coil"}
+                  {[
+                    { formId: "21", formName: "Sheet" },
+                    { formId: "22", formName: "Coil" },
                   ].map((form) => (
                     <Option key={form.formId} value={form.formId}>
                       {form.formName}
@@ -393,25 +431,27 @@ const CategoryForm = (props) => {
               Forward
               <Icon type="right" />
             </Button>
-            <Button onClick={() => {
-              props.setInwardDetails({
-                ...props.inward,
-                productTypeId: '',
-                productUom: '',
-                productForm: '',
-                hsn: '',
-                gradeId: '',
-                subgradeId: '',
-                surfaceType: '',
-                coatingTypeId: '',
-                thickness: '',
-                width: '',
-                length: '',
-                od: '',
-                id: '',
-              })
-              props.getRefinedProducts(props.inward, 'productType')
-            }}>
+            <Button
+              onClick={() => {
+                props.setInwardDetails({
+                  ...props.inward,
+                  productTypeId: "",
+                  productUom: "",
+                  productForm: "",
+                  hsn: "",
+                  gradeId: "",
+                  subgradeId: "",
+                  surfaceType: "",
+                  coatingTypeId: "",
+                  thickness: "",
+                  width: "",
+                  length: "",
+                  od: "",
+                  id: "",
+                });
+                props.getRefinedProducts(props.inward, "productType");
+              }}
+            >
               Clear form
             </Button>
           </Col>
@@ -425,6 +465,7 @@ const mapStateToProps = (state) => ({
   productInfo: state.productInfo,
   material: state.material,
   inward: state.inward.inward,
+  inwardStatus: state.inward,
 });
 
 const Category = Form.create({
@@ -485,5 +526,6 @@ export default connect(mapStateToProps, {
   saveMaterialInfo,
   searchByMaterialId,
   enableMaterialSelection,
-  getRefinedProducts
+  getRefinedProducts,
+  checkIfCoilExists
 })(Category);

@@ -372,6 +372,7 @@
   "inward.create.label.purchaseInvoiceNo": "Please input the purchase invoice number!",
   "inward.create.label.customerBatchNoEmpty": "Please input the SC inward id!",
   "inward.create.label.customerBatchNoExists": "The SC inward id already exists",
+  "inward.create.label.inwardAlreadyExists": "The batch number already exists",
   "inward.create.label.customerNamePlaceholder": "enter location name",
   "inward.create.label.customerBatchNo": "SC inward id",
   "inward.create.label.customerInvoiceNo": "Purchase invoice no",

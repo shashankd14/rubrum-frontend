@@ -8,6 +8,7 @@ import {
     fetchWIPInwardList
 } from "../../../appRedux/actions/Inward";
 import {sidebarMenuItems} from "../../../constants";
+import { render } from "less";
 
 const workInProgressMenuConstants = {
     'finish': "Finish",
@@ -101,11 +102,6 @@ function List(props) {
         sortOrder: sortedInfo.columnKey === "fQuantity" && sortedInfo.order,
       },
       {
-        title: "Classification",
-        dataIndex: "packetClassification.classificationName",
-        key: "packetClassification.classificationName",
-      },
-      {
         title: "Action",
         dataIndex: "",
         key: "x",
@@ -181,6 +177,47 @@ function List(props) {
         console.log(record);
     };
 
+      const expandedRowRendered = (record) => {
+        const columns = [
+          {
+            title: "Plan Id",
+            dataIndex: "instructionId",
+            key: "instructionId",
+          },
+          {
+            title: "Count of sheets",
+            dataIndex: "plannedNoOfPieces",
+            key: "plannedNoOfPieces",
+          },
+          {
+            title: "Classification",
+            dataIndex: "packetClassification",
+            key: "packetClassification",
+            render: (text, record) => {
+              return record.packetClassification === null ||
+                record.packetClassification === ""
+                ? "-"
+                : record.packetClassification;
+            },
+          },
+          {
+            title: "Length",
+            dataIndex: "plannedLength",
+            key: "plannedLength",
+          },
+          { title: "Width", dataIndex: "plannedWidth", key: "plannedWidth" },
+          { title: "SO no", key: "packetStatus", dataIndex: "packetStatus" },
+        ];
+    
+        return (
+          <Table
+            columns={columns}
+            dataSource={record.instruction}
+            pagination={false}
+          />
+        );
+      };
+
     return (
       <div>
         <h1>
@@ -203,14 +240,15 @@ function List(props) {
             className="gx-table-responsive"
             columns={columns}
             dataSource={filteredInwardList}
+            expandedRowRender={(record) => expandedRowRendered(record)}
             onChange={handleChange}
-            onRow={(record, index) => {
-              return {
-                onClick: (record) => {
-                  handleRow(record);
-                },
-              };
-            }}
+            // onRow={(record, index) => {
+            //   return {
+            //     onClick: (record) => {
+            //       handleRow(record);
+            //     },
+            //   };
+            // }}
             pagination={{
               pageSize: 15,
               onChange: (page) => {

@@ -67,9 +67,9 @@ const SalesOrder = () => {
 
   const columns = [
     {
-      title: "Batch no.",
-      dataIndex: "inwardEntryId",
-      key: "inwardEntryId",
+      title: "Plan Id",
+      dataIndex: "instructionId",
+      key: "instructionId",
     },
     {
       title: "Coil no",
@@ -124,33 +124,6 @@ const SalesOrder = () => {
       render: (text, record, index) => (
         <div style={{ display: "flex", alignItems: "center" }}>
           <Input value={record.soNumber} onChange={onInputChange(index)} />
-        </div>
-      ),
-    },
-    {
-      title: "Customer Id",
-      dataIndex: "endUserTag",
-      width: "20%",
-      render: (text, record, tableIndex) => (
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <Select
-            style={{ width: "100%" }}
-            placeholder="customer id"
-            filterOption={(input, option) =>
-              option.props.children
-                .toString()
-                .toLowerCase()
-                .indexOf(input.toLowerCase()) >= 0
-            }
-            value={record.customerCodeId}
-            onSelect={(value) => onEndUserInputChange(value, tableIndex)}
-          >
-            {endUserTags.map((tag) => (
-              <Option key={tag.tagId} value={tag.tagId}>
-                {tag.tagName}
-              </Option>
-            ))}
-          </Select>
           <Icon
             onClick={() => dispatch(saveSalesOrderForPacket(record))}
             style={{ marginLeft: "8px" }}
@@ -255,7 +228,7 @@ const SalesOrder = () => {
     dispatch(fetchPartyList());
     dispatch(fetchPacketList());
     dispatch(fetchSalesOrderList());
-    dispatch(fetchEndUserTagsList());
+    // dispatch(fetchEndUserTagsList());
   }, []);
 
   useEffect(() => {
@@ -271,7 +244,7 @@ const SalesOrder = () => {
   const expandedRowRendered = (record) => {
     const columns = [
       {
-        title: "Instruction Id",
+        title: "Plan Id",
         dataIndex: "instructionId",
         key: "instructionId",
       },
@@ -285,13 +258,21 @@ const SalesOrder = () => {
         dataIndex: "materialDesc",
         key: "materialDesc",
       },
+      { title: "Length", dataIndex: "flenghth", key: "flenghth" },
+      { title: "Width", dataIndex: "fwidth", key: "fwidth" },
+      { title: "Thickness", dataIndex: "fthickness", key: "fthickness" },
       { title: "Quantity", dataIndex: "fweight", key: "fweight" },
-      { title: "Status", key: "packetStatus", dataIndex: "packetStatus" },
+      {
+        title: "No. of cuts",
+        dataIndex: "plannedNoofPieces",
+        key: "plannedNoofPieces",
+      },
       {
         title: "SC inward id",
         dataIndex: "customerBatchNo",
         key: "customerBatchNo",
       },
+      { title: "Status", key: "packetStatus", dataIndex: "packetStatus" },
     ];
 
     return (
@@ -323,7 +304,7 @@ const SalesOrder = () => {
       <Tabs
         defaultActiveKey="1"
         onChange={(key) => {
-          if (key === 1) dispatch(fetchSalesOrderList());
+          if (key == 2) dispatch(fetchSalesOrderList());
         }}
       >
         <TabPane tab="Packets List" key="1">

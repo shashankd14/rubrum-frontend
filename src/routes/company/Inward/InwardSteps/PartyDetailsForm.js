@@ -154,6 +154,13 @@ const CreatePartyDetailsForm = (props) => {
               <Input id="customerId" disabled />
             )}
           </Form.Item>
+           <Form.Item label="PO number">
+              {getFieldDecorator('invoiceNumber', {
+                  rules: [{ required: true, message: 'Please enter invoice Number' }]
+              })(
+                  <Input id="invoiceNumber" />
+              )}
+          </Form.Item>
           <Form.Item
             label={intl.formatMessage({
               id: "inward.create.label.customerBatchNo",
@@ -167,14 +174,9 @@ const CreatePartyDetailsForm = (props) => {
                     id: "inward.create.label.scInwardId",
                   }),
                 },
-                { validator: props.params === "" ? checkBatchNoExist : "" },
               ],
             })(
-              <Input
-                id="validating"
-                onChange={(e) => props.checkCustomerBatchNumber(e.target.value)}
-                onBlur={(e) => props.checkCustomerBatchNumber(e.target.value)}
-              />
+              <Input />
             )}
           </Form.Item>
 
@@ -260,20 +262,27 @@ const PartyDetailsForm = Form.create({
         ...props.inward.customerBatchNo,
         value:
           props.params !== ""
-            ? props.inward?.customerBatchId !== 'undefined' ? props.inward?.customerBatchId : ''
-            : props.inward?.customerBatchNo !== 'undefined'
+            ? props.inward?.customerBatchId !== "undefined"
+              ? props.inward?.customerBatchId
+              : ""
+            : props.inward?.customerBatchNo !== "undefined"
             ? props.inward?.customerBatchNo
             : "",
       }),
       customerInvoiceNo: Form.createFormField({
         ...props?.inward?.customerInvoiceNo,
-        value: props?.inward?.customerInvoiceNo !== 'undefined'
-          ? props?.inward?.customerInvoiceNo
-          : "",
+        value:
+          props?.inward?.customerInvoiceNo !== "undefined"
+            ? props?.inward?.customerInvoiceNo
+            : "",
       }),
       purposeType: Form.createFormField({
         ...props.inward.purposeType,
         value: props.inward.purposeType ? props.inward.purposeType : "",
+      }),
+      invoiceNumber: Form.createFormField({
+        ...props.inward.invoiceNumber,
+        value: props.inward.invoiceNumber || "",
       }),
     };
   },

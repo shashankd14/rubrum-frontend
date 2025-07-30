@@ -85,13 +85,9 @@ const List = (props) => {
       key: "material.mmDescConcatenated",
     },
     {
-      title: "Status",
-      dataIndex: "status.statusName",
-      key: "status.statusName",
-      filters: [],
-      sorter: (a, b) => a.status.statusName.length - b.status.statusName.length,
-      sortOrder:
-        sortedInfo.columnKey === "status.statusName" && sortedInfo.order,
+      title: "Material Grade",
+      dataIndex: "material.materialGrade",
+      key: "material.materialGrade",
     },
     {
       title: "Thickness",
@@ -102,12 +98,29 @@ const List = (props) => {
       sortOrder: sortedInfo.columnKey === "fThickness" && sortedInfo.order,
     },
     {
+      title: "Width",
+      dataIndex: "fWidth",
+      key: "fWidth",
+      filters: [],
+      sorter: (a, b) => a.fWidth - b.fWidth,
+      sortOrder: sortedInfo.columnKey === "fWidth" && sortedInfo.order,
+    },
+    {
       title: "Weight",
       dataIndex: "fQuantity",
       key: "fQuantity",
       filters: [],
       sorter: (a, b) => a.fQuantity - b.fQuantity,
       sortOrder: sortedInfo.columnKey === "fQuantity" && sortedInfo.order,
+    },
+    {
+      title: "Status",
+      dataIndex: "status.statusName",
+      key: "status.statusName",
+      filters: [],
+      sorter: (a, b) => a.status.statusName.length - b.status.statusName.length,
+      sortOrder:
+        sortedInfo.columnKey === "status.statusName" && sortedInfo.order,
     },
     {
       title: "Action",

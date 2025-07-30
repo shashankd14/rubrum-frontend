@@ -83,13 +83,6 @@ const InvoiceDetailsForm = props => {
                             <Input id="vehicleNumber" onChange={(e) => handleChange(e, 'vehicleNumber')} />
                         )}
                     </Form.Item>
-                    <Form.Item label="PO number">
-                        {getFieldDecorator('invoiceNumber', {
-                            rules: [{ required: true, message: 'Please enter invoice Number' }]
-                        })(
-                            <Input id="invoiceNumber" onChange={(e) => handleChange(e, 'invoiceNumber')}/>
-                        )}
-                    </Form.Item>
                     <Form.Item label="Value of Goods">
                         {getFieldDecorator('valueOfGoods', {
                             rules: [{ required: true, message: 'Please enter value of goods' }]
@@ -167,10 +160,6 @@ const InvoiceDetails = Form.create({
             vehicleNumber: Form.createFormField({
                 ...props.inward.vehicleNumber,
                 value: props.inward.vehicleNumber || '',
-            }),
-            invoiceNumber: Form.createFormField({
-                ...props.inward.invoiceNumber,
-                value: props.inward.invoiceNumber || '',
             }),
             valueOfGoods: Form.createFormField({
                 ...props.inward.valueOfGoods,

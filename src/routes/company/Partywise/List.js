@@ -132,6 +132,11 @@ const List = (props) => {
       filters: [],
       sorter: (a, b) => a.fThickness - b.fThickness,
       sortOrder: sortedInfo.columnKey === "fThickness" && sortedInfo.order,
+      render: (text, record) => {
+        return record.fThickness == "undefined" || record.fThickness == ""
+          ? "-"
+          : record.fThickness;
+      },
     },
     {
       title: "Width (mm)",
@@ -140,6 +145,11 @@ const List = (props) => {
       filters: [],
       sorter: (a, b) => a.fWidth - b.fWidth,
       sortOrder: sortedInfo.columnKey === "fWidth" && sortedInfo.order,
+      render: (text, record) => {
+        return record.fWidth == "undefined" || record.fWidth == ""
+          ? "-"
+          : record.fWidth;
+      },
     },
     {
       title: "Length (mm)",
