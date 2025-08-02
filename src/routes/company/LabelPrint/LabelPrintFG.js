@@ -320,7 +320,7 @@ const LabelPrintFG = (props) => {
           onOk={() => setShowPopup(false)}
           onCancel={() => setShowPopup(false)}
         >
-          <p>Please click on the Instructions to generate the label print</p>
+          <p>Please click on the plans to generate the label print</p>
           {getsPlanLabel()}
         </Modal>
       )}

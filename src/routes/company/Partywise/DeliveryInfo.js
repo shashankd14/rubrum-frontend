@@ -105,12 +105,12 @@ const DeliveryInfo = (props) => {
   };
   const priceColumn = [
     {
-      title: "Instruction ID",
+      title: "Plan Id",
       dataIndex: "instructionId",
       key: "instructionId",
     },
     {
-      title: "Coil No.",
+      title: "Batch No.",
       dataIndex: "coilNo",
       key: "coilNo",
     },

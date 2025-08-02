@@ -218,6 +218,9 @@ const QualityDetailsForm = (props) => {
           {props.inward.customerId && (
             <p>Location Id : {props.inward.customerId}</p>
           )}
+          {props.inward.invoiceNumber && (
+            <p>PO number : {props.inward.invoiceNumber}</p>
+          )}
           {props.inward.customerBatchNo && (
             <p>SC inward id : {props.inward.customerBatchNo}</p>
           )}
@@ -245,9 +248,6 @@ const QualityDetailsForm = (props) => {
           {props.inward.batchNo && <p>Batch No : {props.inward.batchNo}</p>}
           {props.inward.vehicleNumber && (
             <p>Vehicle number : {props.inward.vehicleNumber}</p>
-          )}
-          {props.inward.invoiceNumber && (
-            <p>Invoice number : {props.inward.invoiceNumber}</p>
           )}
         </Card>
       </Col>

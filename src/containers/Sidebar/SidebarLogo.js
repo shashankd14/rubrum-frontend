@@ -47,11 +47,12 @@ const SidebarLogo = () => {
         {navStyle === NAV_STYLE_NO_HEADER_MINI_SIDEBAR && width >= TAB_SIZE ? (
           <></>
         ) : themeType === THEME_TYPE_LITE ? (
-          <div style={{ display: "flex", alignItems: "center" }}>
+          <div style={{ display: "flex" }}>
             <img
               alt="logo"
               src={require("assets/images/Workeazy1.png")}
               width="40px"
+              height="20px"
             />
             <span
               style={{
@@ -65,11 +66,12 @@ const SidebarLogo = () => {
             </span>
           </div>
         ) : (
-          <div style={{ display: "flex", alignItems: "center" }}>
+          <div style={{ display: "flex" }}>
             <img
               alt="logo"
               src={require("assets/images/Workeazy1.png")}
               width="40px"
+              height="20px"
             />
             <span
               style={{

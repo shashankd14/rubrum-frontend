@@ -156,7 +156,7 @@ const CreatePartyDetailsForm = (props) => {
           </Form.Item>
            <Form.Item label="PO number">
               {getFieldDecorator('invoiceNumber', {
-                  rules: [{ required: true, message: 'Please enter invoice Number' }]
+                  rules: [{ required: true, message: 'Please enter PO number' }]
               })(
                   <Input id="invoiceNumber" />
               )}

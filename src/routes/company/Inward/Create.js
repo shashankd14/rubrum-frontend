@@ -1,7 +1,14 @@
 import React, {useEffect, useState} from "react";
 import { Card, Form, Steps, Row} from "antd";
 import {connect} from "react-redux";
-import {fetchPartyList, fetchMaterialList, setInwardDetails, submitInwardEntry, searchByMaterialId} from "../../../appRedux/actions";
+import {
+  resetInwardForm, 
+  fetchPartyList,
+  fetchMaterialList,
+  setInwardDetails,
+  submitInwardEntry,
+  searchByMaterialId,
+} from "../../../appRedux/actions";
 
 import PartyDetailsForm from "./InwardSteps/PartyDetailsForm";
 import MaterialDetailsForm from "./InwardSteps/MaterialDetailsForm";
@@ -76,6 +83,7 @@ const CreateForm = (props) => {
             inwardValue.netWeight = "";
             props.setInwardDetails({...props.inward.inward, ...inwardValue})
         }
+        props.resetInwardForm();
     },[])
     
     return (
@@ -157,9 +165,10 @@ const Create = Form.create({
 })(CreateForm);
 
 export default connect(mapStateToProps, {
-    fetchPartyList,
-    fetchMaterialList,
-    setInwardDetails,
-    submitInwardEntry,
-    searchByMaterialId
+  fetchPartyList,
+  fetchMaterialList,
+  setInwardDetails,
+  submitInwardEntry,
+  searchByMaterialId,
+  resetInwardForm,
 })(Create);

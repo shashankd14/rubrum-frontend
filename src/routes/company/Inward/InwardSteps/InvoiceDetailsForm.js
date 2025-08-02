@@ -53,84 +53,136 @@ const InvoiceDetailsForm = props => {
     let dimensionEdit = `${props.inward.fWidth} X ${props.inward.fThickness} X ${props.inward.fLength}`;
     let dimension = `${props.inward.width} X ${props.inward.thickness} X ${props.inward.length}`;
     return (
-        <>
-            <Col span={14}>
-                <Form {...formItemLayout} onSubmit={handleSubmit} className="login-form gx-pt-4">
-                    <Form.Item label="Received Date">
-                        {getFieldDecorator('receivedDate', {
-                            initialValue: moment(props.inward.receivedDate || new Date(), APPLICATION_DATE_FORMAT),
-                            rules: [{ required: true, message: 'Please select a received date' }],
-                        })(
-                            <DatePicker
-                                style={{width: 200}}
-                                className="gx-w-100"
-                                format={APPLICATION_DATE_FORMAT}
-                                onChange={handleChangeDate}
-                            />
-                        )}
-                    </Form.Item>
-                    {/* <Form.Item label="Batch No.">
+      <>
+        <Col span={14}>
+          <Form
+            {...formItemLayout}
+            onSubmit={handleSubmit}
+            className="login-form gx-pt-4"
+          >
+            <Form.Item label="Received Date">
+              {getFieldDecorator("receivedDate", {
+                initialValue: moment(
+                  props.inward.receivedDate || new Date(),
+                  APPLICATION_DATE_FORMAT
+                ),
+                rules: [
+                  { required: true, message: "Please select a received date" },
+                ],
+              })(
+                <DatePicker
+                  style={{ width: 200 }}
+                  className="gx-w-100"
+                  format={APPLICATION_DATE_FORMAT}
+                  onChange={handleChangeDate}
+                />
+              )}
+            </Form.Item>
+            {/* <Form.Item label="Batch No.">
                         {getFieldDecorator('batchNo', {
                             rules: [{ required: false, message: 'Please select a Batch No' }],
                         })(
                             <Input id="batchNo" />
                         )}
                     </Form.Item> */}
-                    <Form.Item label="Vehicle number">
-                        {getFieldDecorator('vehicleNumber', {
-                            rules: [{ required: true, message: 'Please enter Vehicle Number' }]
-                        })(
-                            <Input id="vehicleNumber" onChange={(e) => handleChange(e, 'vehicleNumber')} />
-                        )}
-                    </Form.Item>
-                    <Form.Item label="Value of Goods">
-                        {getFieldDecorator('valueOfGoods', {
-                            rules: [{ required: true, message: 'Please enter value of goods' }]
-                        })(
-                            <Input id="valueOfGoods" />
-                        )}
-                    </Form.Item>
-                    <Form.Item label="Invoice date">
-                        {getFieldDecorator('invoiceDate', {
-                            initialValue:  moment(props.inward.invoiceDate || new Date(), APPLICATION_DATE_FORMAT),
-                            rules: [{ required: true, message: 'Please select a received date' }],
-                        })(
-                            <DatePicker
-                                style={{width: 200}}
-                                className="gx-mb-3 gx-w-100"
-                                format={APPLICATION_DATE_FORMAT}
-                                onChange={handleChangeDateInvoice}
-                            />
-                        )}
-                    </Form.Item>
-                    <Row className="gx-mt-4">
-                        <Col span={24} offset={4} style={{ textAlign: "center"}}>
-                            <Button style={{ marginLeft: 8 }} onClick={() => props.updateStep(1)}>
-                                <Icon type="left"/>Back
-                            </Button>
-                            <Button type="primary" htmlType="submit">
-                                Forward<Icon type="right"/>
-                            </Button>
-                        </Col>
-                    </Row>
-                </Form>
-            </Col>
-            <Col span={10} className="gx-pt-4">
-                <Card title="Coil Details" style={{ width: 300 }}>
-                    <p>Location Name : {props.params !== "" && props.inward.party? props.inward.party?.partyName :partyName(props.party.partyList)}</p>
-                    {props.inward.customerId && <p>Location Id : {props.inward.customerId}</p>}
-                    {props.inward.customerBatchNo && <p>SC inward id : {props.inward.customerBatchNo}</p>}
-                    {props.inward.customerInvoiceNo && <p>Purchase Invoice No : {props.inward.customerInvoiceNo}</p>}
-                    {props.inward.purposeType && <p>Purpose Type : {props.inward.purposeType}</p>}
-                    <p>Batch no. : {props.inward.coilNumber}</p>
-                    <p>Material Description : {props.params !== ""? props.inward?.material?.description : props.inward.description}</p>
-                    <p>Dimensions : {props.params !== "" ? dimensionEdit:dimension}</p>
-                    <p>Net Weight : {props.params !== "" ? props.inward.fpresent: props.inward.netWeight}</p>
-                    <p>Gross Weight : {props.inward.grossWeight}</p>
-                </Card>
-            </Col>
-        </>
-    )
+            <Form.Item label="Vehicle number">
+              {getFieldDecorator("vehicleNumber", {
+                rules: [
+                  { required: true, message: "Please enter Vehicle Number" },
+                ],
+              })(
+                <Input
+                  id="vehicleNumber"
+                  onChange={(e) => handleChange(e, "vehicleNumber")}
+                />
+              )}
+            </Form.Item>
+            <Form.Item label="Value of Goods">
+              {getFieldDecorator("valueOfGoods", {
+                rules: [
+                  { required: true, message: "Please enter value of goods" },
+                ],
+              })(<Input id="valueOfGoods" />)}
+            </Form.Item>
+            <Form.Item label="Invoice date">
+              {getFieldDecorator("invoiceDate", {
+                initialValue: moment(
+                  props.inward.invoiceDate || new Date(),
+                  APPLICATION_DATE_FORMAT
+                ),
+                rules: [
+                  { required: true, message: "Please select a received date" },
+                ],
+              })(
+                <DatePicker
+                  style={{ width: 200 }}
+                  className="gx-mb-3 gx-w-100"
+                  format={APPLICATION_DATE_FORMAT}
+                  onChange={handleChangeDateInvoice}
+                />
+              )}
+            </Form.Item>
+            <Row className="gx-mt-4">
+              <Col span={24} offset={4} style={{ textAlign: "center" }}>
+                <Button
+                  style={{ marginLeft: 8 }}
+                  onClick={() => props.updateStep(1)}
+                >
+                  <Icon type="left" />
+                  Back
+                </Button>
+                <Button type="primary" htmlType="submit">
+                  Forward
+                  <Icon type="right" />
+                </Button>
+              </Col>
+            </Row>
+          </Form>
+        </Col>
+        <Col span={10} className="gx-pt-4">
+          <Card title="Coil Details" style={{ width: 300 }}>
+            <p>
+              Location Name :{" "}
+              {props.params !== "" && props.inward.party
+                ? props.inward.party?.partyName
+                : partyName(props.party.partyList)}
+            </p>
+            {props.inward.customerId && (
+              <p>Location Id : {props.inward.customerId}</p>
+            )}
+            {props.inward.invoiceNumber && (
+              <p>PO number : {props.inward.invoiceNumber}</p>
+            )}
+            {props.inward.customerBatchNo && (
+              <p>SC inward id : {props.inward.customerBatchNo}</p>
+            )}
+            {props.inward.customerInvoiceNo && (
+              <p>Purchase Invoice No : {props.inward.customerInvoiceNo}</p>
+            )}
+            {props.inward.purposeType && (
+              <p>Purpose Type : {props.inward.purposeType}</p>
+            )}
+            <p>Batch no. : {props.inward.coilNumber}</p>
+            <p>
+              Material Description :{" "}
+              {props.params !== ""
+                ? props.inward?.material?.description
+                : props.inward.description}
+            </p>
+            <p>
+              Dimensions : {props.params !== "" ? dimensionEdit : dimension}
+            </p>
+            <p>
+              Net Weight :{" "}
+              {props.params !== ""
+                ? props.inward.fpresent
+                : props.inward.netWeight}
+            </p>
+            <p>Gross Weight : {props.inward.grossWeight}</p>
+          </Card>
+        </Col>
+      </>
+    );
 }
 
 const mapStateToProps = state => ({

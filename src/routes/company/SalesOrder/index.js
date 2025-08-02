@@ -21,6 +21,7 @@ import {
   AutoComplete,
 } from "antd";
 import SearchBox from "../../../components/SearchBox";
+import moment from "moment";
 
 const { TabPane } = Tabs;
 const { Option } = AutoComplete;
@@ -72,7 +73,14 @@ const SalesOrder = () => {
       key: "instructionId",
     },
     {
-      title: "Coil no",
+      title: "Plan date",
+      dataIndex: "instructionDate",
+      render(value) {
+        return moment(value).format("Do MMM YYYY");
+      },
+    },
+    {
+      title: "Batch no",
       dataIndex: "coilNo",
       key: "coilNo",
     },
@@ -102,6 +110,37 @@ const SalesOrder = () => {
       title: "Material grade",
       dataIndex: "materialGrade",
       key: "materialGrade",
+      render: (text, record, index) => (
+        <div style={{ display: "flex", alignItems: "center" }}>
+          {record.materialGrade === "undefined" || record.materialGrade === null
+            ? "-"
+            : record.materialGrade}
+        </div>
+      ),
+    },
+    {
+      title: "Material subgrade",
+      dataIndex: "subGrade",
+      key: "subGrade",
+      render: (text, record, index) => (
+        <div style={{ display: "flex", alignItems: "center" }}>
+          {record.subGrade === "undefined" || record.subGrade === null
+            ? "-"
+            : record.subGrade}
+        </div>
+      ),
+    },
+    {
+      title: "Brand",
+      dataIndex: "brand",
+      key: "brand",
+      render: (text, record, index) => (
+        <div style={{ display: "flex", alignItems: "center" }}>
+          {record.brand === "undefined" || record.brand === null
+            ? "-"
+            : record.brand}
+        </div>
+      ),
     },
     {
       title: "Thickness",
@@ -249,28 +288,28 @@ const SalesOrder = () => {
         key: "instructionId",
       },
       {
-        title: "Material Grade",
-        dataIndex: "materialGrade",
-        key: "materialGrade",
+        title: "Location",
+        dataIndex: "partyName",
+        key: "partyName",
       },
       {
         title: "Material Desc",
         dataIndex: "materialDesc",
         key: "materialDesc",
       },
+      {
+        title: "Material Grade",
+        dataIndex: "materialGrade",
+        key: "materialGrade",
+      },
       { title: "Length", dataIndex: "flenghth", key: "flenghth" },
       { title: "Width", dataIndex: "fwidth", key: "fwidth" },
       { title: "Thickness", dataIndex: "fthickness", key: "fthickness" },
-      { title: "Quantity", dataIndex: "fweight", key: "fweight" },
+      { title: "Weight", dataIndex: "fweight", key: "fweight" },
       {
         title: "No. of cuts",
         dataIndex: "plannedNoofPieces",
         key: "plannedNoofPieces",
-      },
-      {
-        title: "SC inward id",
-        dataIndex: "customerBatchNo",
-        key: "customerBatchNo",
       },
       { title: "Status", key: "packetStatus", dataIndex: "packetStatus" },
     ];

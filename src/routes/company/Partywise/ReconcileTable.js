@@ -23,7 +23,7 @@ const ReconcileTable = (props) => {
       key: "instockweight",
     },
     {
-      title: "FG",
+      title: "Ready to deliver",
       dataIndex: "fgqty",
       key: "fgqty",
     },

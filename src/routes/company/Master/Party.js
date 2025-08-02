@@ -588,21 +588,21 @@ const Party = (props) => {
                                             value={dailyReportsList}
                                             onChange={(checkedValues) => {setDailyReportsList(checkedValues)}}
                                         >
-                                            <Checkbox value="STOCKREPORT">STOCKREPORT</Checkbox>
-                                            <Checkbox value="FGREPORT">FGREPORT</Checkbox>
-                                            <Checkbox value="WIPREPORT">WIPREPORT</Checkbox>
-                                            <Checkbox value="STOCKSUMMARYREPORT">STOCKSUMMARYREPORT</Checkbox>
-                                            <Checkbox value="RMREPORT">RMREPORT</Checkbox>
-                                            <Checkbox value="MONTHWISE_PLAN_TRACKER">MONTHWISE PLAN TRACKER</Checkbox>                                        </Checkbox.Group>
+                                            <Checkbox value="STOCKREPORT">Stock report</Checkbox>
+                                            <Checkbox value="FGREPORT">Ready to deliver report</Checkbox>
+                                            <Checkbox value="WIPREPORT">Wip report</Checkbox>
+                                            <Checkbox value="STOCKSUMMARYREPORT">Stock summary report</Checkbox>
+                                            <Checkbox value="RMREPORT">RM report</Checkbox>
+                                            <Checkbox value="MONTHWISE_PLAN_TRACKER">Monthwise plan tracker</Checkbox>                                        </Checkbox.Group>
                                     </Form.Item>
                                     <Form.Item label = "Monthly Reports">
                                         <Checkbox.Group id="monthlyReportsList"
                                             value={monthlyReportsList}
                                             onChange={(checkedValues) => {setMonthlyReportsList(checkedValues)}}>
-                                            <Checkbox value="INWARDREPORT">INWARDREPORT</Checkbox>
-                                            <Checkbox value="STOCKREPORT">STOCKREPORT</Checkbox>
-                                            <Checkbox value="OUTWARDREPORT">OUTWARDREPORT</Checkbox>
-                                            <Checkbox value="PROCESSINGREPORT ">PROCESSINGREPORT </Checkbox>
+                                            <Checkbox value="INWARDREPORT">Inward report</Checkbox>
+                                            <Checkbox value="STOCKREPORT">Stock report</Checkbox>
+                                            <Checkbox value="OUTWARDREPORT">Outward report</Checkbox>
+                                            <Checkbox value="PROCESSINGREPORT">Processing report</Checkbox>
                                         </Checkbox.Group>
                                     </Form.Item>
                                 </Form>

@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { Button, Card, Divider, Icon, Table, message } from "antd";
 import moment from "moment";
 import SearchBox from "../../../components/SearchBox";
+import { useHistory } from "react-router-dom";
 
 import IntlMessages from "../../../util/IntlMessages";
 import {
@@ -26,6 +27,8 @@ const List = (props) => {
     order: "descend",
     columnKey: "age",
   });
+    const history = useHistory();
+
   const [filteredInfo, setFilteredInfo] = useState(null);
   const [searchValue, setSearchValue] = useState("");
   const [filteredInwardList, setFilteredInwardList] = useState(
@@ -245,8 +248,9 @@ const List = (props) => {
               icon={() => <i className="icon icon-add" />}
               size="default"
               onClick={() => {
-                props.resetInwardForm();
-                window.location.href = window.location.origin+'#/company/inward/create';
+                history.push("/company/inward/create");
+                // window.location.reload("/company/inward/create");
+                // window.location.href = window.location.origin+'#/company/inward/create';
               }}
             >
               Add Inward

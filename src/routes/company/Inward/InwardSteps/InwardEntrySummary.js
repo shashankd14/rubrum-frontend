@@ -86,6 +86,9 @@ const InwardEntrySummary = (props) => {
                     {props.inward.customerId && (
                       <p>Location Id : {props.inward.customerId}</p>
                     )}
+                    {props.inward.invoiceNumber && (
+                      <p>PO number : {props.inward.invoiceNumber}</p>
+                    )}
                     {props.inward.customerBatchNo && (
                       <p>SC inward id : {props.inward.customerBatchNo}</p>
                     )}
@@ -135,9 +138,6 @@ const InwardEntrySummary = (props) => {
                     </p>
                     {props.inward.vehicleNumber && (
                       <p>Vehicle number : {props.inward.vehicleNumber}</p>
-                    )}
-                    {props.inward.invoiceNumber && (
-                      <p>PO number : {props.inward.invoiceNumber}</p>
                     )}
                     {props.inward.valueOfGoods && (
                       <p>Value of goods : {props.inward.valueOfGoods}</p>

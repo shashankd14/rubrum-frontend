@@ -839,7 +839,7 @@ const CreateSlittingDetailsForm = (props) => {
       key: 'instructionId',
     },
     {
-      title: 'Process Date',
+      title: 'Plan Date',
       dataIndex: 'instructionDate',
       render(value) {
         return moment(value).format('DD/MM/YYYY');

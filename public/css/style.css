@@ -37217,3 +37217,65 @@ textarea.gx-chat-textarea {
 .gx-margin {
   margin-right: 10px;
 }
+
+.login-container {
+  display: flex;
+  height: 100vh;
+}
+
+.login-backdrop {
+  background: radial-gradient(96.74% 82.81% at 50.77% 0%, rgba(245, 250, 254, 0.2) 37%, rgba(207, 230, 252, 0.2) 67.5%, rgba(168, 209, 250, 0.2) 99.98%, rgba(207, 230, 252, 0.2) 99.99%, rgba(245, 250, 254, 0.2) 100%);
+  padding-left: 62px;
+  padding-bottom: 30px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: space-between;
+}
+
+.login-form-container {
+  flex: 1;
+}
+
+.login-logo {
+  height: 30px;
+  align-self: flex-start;
+  margin-top: 70px;
+}
+
+.slider-container {
+  gap: 8px;
+  display: flex;
+  flex-direction: column;
+}
+
+.login-heading {
+  color: rgba(12, 122, 233, 1);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 24px;
+}
+
+.login-widget1 {
+  width: 497px;
+  height: 363px;
+}
+
+.copy-right {
+  font-weight: 400;
+  color: rgba(89, 97, 105, 1);
+  font-size: 14px;
+  font-style: normal;
+  font-family:'Inter', sans-serif;
+}
+
+.logo-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: center;
+}
+
+.description {
+  
+}

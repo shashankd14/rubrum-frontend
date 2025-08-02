@@ -119,7 +119,7 @@ const Reports = (props) => {
                                     })(
                                     <Select style={{width: 250}} placeholder="Select report type" onChange={() => {}}>
                                         <Option value="stock-report">Stock report</Option>
-                                        <Option value="fg-report">FG report</Option>
+                                        <Option value="fg-report">Ready to deliver report</Option>
                                         <Option value="wip-report">WIP report</Option>
                                     </Select>
                                 )}
