@@ -28,7 +28,7 @@ import {
   updateClassificationSlitAndCutBeforeFinish
 } from "../../../appRedux/actions/Inward";
 import { labelPrintEditFinish } from '../../../appRedux/actions/LabelPrint';
-import { APPLICATION_DATE_FORMAT } from "../../../constants";
+import { APPLICATION_DATE_FORMAT, METAL_DENSITY } from "../../../constants";
 import { fetchYLRList } from '../../../appRedux/actions';
 
 const Option = Select.Option;
@@ -122,12 +122,12 @@ const CreateCuttingDetailsForm = (props) => {
   );
    const columns = [
     {
-      title: "Serial No",
+      title: "Plan No",
       dataIndex: "instructionId",
       key: "instructionId",
     },
     {
-      title: "Process Date",
+      title: "Plan date",
       dataIndex: "instructionDate",
       render(value) {
         return moment(value).format("DD/MM/YYYY");
@@ -207,7 +207,7 @@ const CreateCuttingDetailsForm = (props) => {
       dataIndex: "actualWeight",
       render: (text, record, index) => (
         <Input
-          style={{width:'60px'}}    // Adjust the width value as needed
+          style={{width:'120px'}}    // Adjust the width value as needed
           disabled={props.unfinish}
           value={record.actualWeight}
           onChange={onInputChange("actualWeight", index, record)}
@@ -249,7 +249,9 @@ const CreateCuttingDetailsForm = (props) => {
             )}
             >
               {packetClassification?.map((item) => {
-                return <Option value={item.tagId}>{item.tagName}</Option>;
+                return (
+                  <Option value={item.tagId}>{item.tagName === 'FG' ? 'Ready to deliver' : item.tagName}</Option>
+                );
               })}
             </Select>
 
@@ -328,7 +330,7 @@ const CreateCuttingDetailsForm = (props) => {
   // }
 
   //only cutting table column
-  const desiredTags = ['WIP(CUT ENDS)', 'WIP(EDGE TRIM)', 'WIP(FG)'];
+  const desiredTags = ['WIP(CUT ENDS)', 'WIP(EDGE TRIM)', 'WIP(FG)', 'FG'];
   const columnsPlan = [
     {
       title: "Sr.No",
@@ -840,7 +842,7 @@ const CreateCuttingDetailsForm = (props) => {
             Number(tweight) >= 0 && balancedValue
               ? WeightValue - Number(weight)
               : Math.round(
-                  0.00000785 *
+                  0.0000081 *
                     parseFloat(width) *
                     parseFloat(props.inward.plan.fThickness) *
                     parseFloat(props.inward.process.length) *
@@ -854,7 +856,7 @@ const CreateCuttingDetailsForm = (props) => {
             Number(tweight) >= 0 && balancedValue
               ? WeightValue - Number(weight)
               : Math.round(
-                  0.00000785 *
+                  0.0000081 *
                     parseFloat(props.inward.plan.fWidth) *
                     parseFloat(props.inward.plan.fThickness) *
                     parseFloat(props.inward.process.length) *
@@ -1159,7 +1161,7 @@ const CreateCuttingDetailsForm = (props) => {
     setNo(
       Math.floor(
         numerator /
-        (0.00000785 * width * props.coil.fThickness * Number(length))
+        (0.0000081 * width * props.coil.fThickness * Number(length))
       ).toFixed(0)
     );
   };
@@ -1199,7 +1201,7 @@ const CreateCuttingDetailsForm = (props) => {
       (props.coil.fThickness *
         (cutsWidth / 1000) *
         (Number(cutsLength) / 1000) *
-        7.85);
+        METAL_DENSITY);
     let cutsNumber = [];
     if (cutsNumerator !== Infinity) {
       cutsNumber[idx] = cutsNumerator;
@@ -1282,7 +1284,7 @@ const CreateCuttingDetailsForm = (props) => {
       (props.coil.fThickness *
         (cutsWidth / 1000) *
         (Number(e.target.value) / 1000) *
-        7.85);
+        METAL_DENSITY);
     let cutsNumber = [];
     if (cutsNumerator !== Infinity) {
       cutsNumber[idx] = cutsNumerator;
@@ -1345,7 +1347,7 @@ const columnYieldLoss = [
     render: (text, record, index) => (page - 1) * 10 + index + 1,
   },
   {
-    title: 'Customer Name',
+    title: 'Location Name',
     dataIndex: 'partyName',
     key: 'partyName',
   },
@@ -1371,7 +1373,7 @@ useEffect(() => {
     props.fetchYLRList({
       pageNo: "1",
       pageSize: "500",
-      partyId: props.coil.party.nPartyId,
+      partyId: props?.coil?.party?.nPartyId,
       ipAddress: "",
       requestId: "YLR_PLAN_GET",
       userId: ""
@@ -1669,132 +1671,65 @@ useEffect(() => {
   };
   return (
     <>
-    <Modal
-      title={
-        props.wip
-          ? props.slitCut
-            ? props.editFinish
-              ? "Edit Finish slit & cut Instruction"
+      <Modal
+        title={
+          props.wip
+            ? props.slitCut
+              ? props.editFinish
+                ? "Edit Finish slit & cut Instruction"
+                : props.unfinish
+                ? "UnFinish slit & cut Instruction"
+                : "Finish slit & cut Instruction"
+              : props.editFinish
+              ? "Edit Finish Cutting Instruction"
               : props.unfinish
-              ? "UnFinish slit & cut Instruction"
-              : "Finish slit & cut Instruction"
-            : props.editFinish
-            ? "Edit Finish Cutting Instruction"
-            : props.unfinish
-            ? "UnFinish Cutting Instruction"
-            : "Finish Cutting Instruction"
-          : "Cutting Instruction"
-      }
-      visible={props.showCuttingModal}
-      onOk={handleOk}
-      width={1300}
-      onCancel={handleCancel}
-      footer={getFooterButtons()}
-    >
-      <Card className="gx-card">
-        {!props.wip && props.slitCut && (
-          <div>
-            <Button
-              type="primary"
-              onClick={bundleListClick}
-              icon={() => <i className="icon icon-add" />}
-              size="default"
-              disabled={selectedRowKeys.length < 1 ? true : false}
-            >
-              Bundle
-            </Button>
-          </div>
-        )}
-        <Tabs defaultActiveKey="1" tabPosition={mode}>
-          <TabPane tab="Cutting Details" key="1">
-            {props.slitCut && !props.wip ? (
-              selectedRowKeys.length > 0 && bundledList ? (
-                <Row>
-                  <Col
-                    lg={cutValue.length > 0 ? 14 : 24}
-                    md={16}
-                    sm={24}
-                    xs={24}
-                  >
-                    {bundleItemList.length === 0 ? (
-                      <>
-                        <Table
-                          className="gx-table-responsive"
-                          rowSelection={handleRowSelection}
-                          columns={columnsSlit}
-                          dataSource={selectedRowKeys}
-                          pagination={{
-                            onChange(current) {
-                              setPage(current);
-                            },
-                          }}
-                        />
-                        <div style={{ padding: "20px 0px 0px 25px" }}>
-                          <label for="tLength">Target length(mm):</label>
-                          <input
-                            type="text"
-                            className="bundle-input-class"
-                            id="tLength"
-                            name="tLength"
-                            onChange={(e) => getTargetLength(e, 0)}
-                          ></input>
-                          <label for="tpweight">Total weight(kg):</label>
-                          <input
-                            type="text"
-                            className="bundle-input-class"
-                            id="tpweight"
-                            name="tpweight"
-                            value={tpweight[0]}
-                            disabled
-                          ></input>
-                        </div>
-                        <div style={{ padding: "20px 0px 0px 25px" }}>
-                          <label for="pNo">Number of Packets :</label>
-                          <input
-                            type="text"
-                            className="bundle-input-class"
-                            id="pNo"
-                            name="pNo"
-                            onChange={(e) => getNoOfCuts(e, 0)}
-                          ></input>
-                          <label for="noOfCuts">Number of Cuts :</label>
-                          <input
-                            type="text"
-                            id="noOfCuts"
-                            className="bundle-input-class"
-                            name="noOfCuts"
-                            value={cutsNo.length ? cutsNo[0]?.toFixed(0) : 0}
-                          ></input>
-                        </div>
-                        <div
-                          style={{
-                            "padding-left": "72%",
-                            "margin-top": "10px",
-                          }}
-                        >
-                          <Button
-                            type="primary"
-                            size="default"
-                            onClick={(e) => getCuts(e, 0)}
-                          >
-                            Confirm
-                          </Button>
-                        </div>
-                      </>
-                    ) : (
-                      bundleItemList.length > 0 &&
-                      bundleItemList.map((item, idx) => (
+              ? "UnFinish Cutting Instruction"
+              : "Finish Cutting Instruction"
+            : "Cutting Instruction"
+        }
+        visible={props.showCuttingModal}
+        onOk={handleOk}
+        width={1300}
+        onCancel={handleCancel}
+        footer={getFooterButtons()}
+      >
+        <Card className="gx-card">
+          {!props.wip && props.slitCut && (
+            <div>
+              <Button
+                type="primary"
+                onClick={bundleListClick}
+                icon={() => <i className="icon icon-add" />}
+                size="default"
+                disabled={selectedRowKeys.length < 1 ? true : false}
+              >
+                Bundle
+              </Button>
+            </div>
+          )}
+          <Tabs defaultActiveKey="1" tabPosition={mode}>
+            <TabPane tab="Cutting Details" key="1">
+              {props.slitCut && !props.wip ? (
+                selectedRowKeys.length > 0 && bundledList ? (
+                  <Row>
+                    <Col
+                      lg={cutValue.length > 0 ? 14 : 24}
+                      md={16}
+                      sm={24}
+                      xs={24}
+                    >
+                      {bundleItemList.length === 0 ? (
                         <>
                           <Table
-                            rowSelection={handleRowSelection}
                             className="gx-table-responsive"
+                            rowSelection={handleRowSelection}
                             columns={columnsSlit}
-                            dataSource={
-                              selectedPast.length > 0
-                                ? selectedPast[idx]
-                                : selectedRowKeys
-                            }
-                            pagination={false}
+                            dataSource={selectedRowKeys}
+                            pagination={{
+                              onChange(current) {
+                                setPage(current);
+                              },
+                            }}
                           />
                           <div style={{ padding: "20px 0px 0px 25px" }}>
                             <label for="tLength">Target length(mm):</label>
@@ -1803,7 +1738,7 @@ useEffect(() => {
                               className="bundle-input-class"
                               id="tLength"
                               name="tLength"
-                              onChange={(e) => getTargetLength(e, idx)}
+                              onChange={(e) => getTargetLength(e, 0)}
                             ></input>
                             <label for="tpweight">Total weight(kg):</label>
                             <input
@@ -1811,7 +1746,7 @@ useEffect(() => {
                               className="bundle-input-class"
                               id="tpweight"
                               name="tpweight"
-                              value={tpweight[idx]}
+                              value={tpweight[0]}
                               disabled
                             ></input>
                           </div>
@@ -1822,7 +1757,7 @@ useEffect(() => {
                               className="bundle-input-class"
                               id="pNo"
                               name="pNo"
-                              onChange={(e) => getNoOfCuts(e, idx)}
+                              onChange={(e) => getNoOfCuts(e, 0)}
                             ></input>
                             <label for="noOfCuts">Number of Cuts :</label>
                             <input
@@ -1830,9 +1765,7 @@ useEffect(() => {
                               id="noOfCuts"
                               className="bundle-input-class"
                               name="noOfCuts"
-                              value={
-                                cutsNo.length ? cutsNo[idx]?.toFixed(0) : 0
-                              }
+                              value={cutsNo.length ? cutsNo[0]?.toFixed(0) : 0}
                             ></input>
                           </div>
                           <div
@@ -1844,334 +1777,426 @@ useEffect(() => {
                             <Button
                               type="primary"
                               size="default"
-                              disabled={getConfirmDisabled(idx)}
-                              onClick={(e) => getCuts(e, idx)}
+                              onClick={(e) => getCuts(e, 0)}
                             >
                               Confirm
                             </Button>
                           </div>
                         </>
-                      ))
+                      ) : (
+                        bundleItemList.length > 0 &&
+                        bundleItemList.map((item, idx) => (
+                          <>
+                            <Table
+                              rowSelection={handleRowSelection}
+                              className="gx-table-responsive"
+                              columns={columnsSlit}
+                              dataSource={
+                                selectedPast.length > 0
+                                  ? selectedPast[idx]
+                                  : selectedRowKeys
+                              }
+                              pagination={false}
+                            />
+                            <div style={{ padding: "20px 0px 0px 25px" }}>
+                              <label for="tLength">Target length(mm):</label>
+                              <input
+                                type="text"
+                                className="bundle-input-class"
+                                id="tLength"
+                                name="tLength"
+                                onChange={(e) => getTargetLength(e, idx)}
+                              ></input>
+                              <label for="tpweight">Total weight(kg):</label>
+                              <input
+                                type="text"
+                                className="bundle-input-class"
+                                id="tpweight"
+                                name="tpweight"
+                                value={tpweight[idx]}
+                                disabled
+                              ></input>
+                            </div>
+                            <div style={{ padding: "20px 0px 0px 25px" }}>
+                              <label for="pNo">Number of Packets :</label>
+                              <input
+                                type="text"
+                                className="bundle-input-class"
+                                id="pNo"
+                                name="pNo"
+                                onChange={(e) => getNoOfCuts(e, idx)}
+                              ></input>
+                              <label for="noOfCuts">Number of Cuts :</label>
+                              <input
+                                type="text"
+                                id="noOfCuts"
+                                className="bundle-input-class"
+                                name="noOfCuts"
+                                value={
+                                  cutsNo.length ? cutsNo[idx]?.toFixed(0) : 0
+                                }
+                              ></input>
+                            </div>
+                            <div
+                              style={{
+                                "padding-left": "72%",
+                                "margin-top": "10px",
+                              }}
+                            >
+                              <Button
+                                type="primary"
+                                size="default"
+                                disabled={getConfirmDisabled(idx)}
+                                onClick={(e) => getCuts(e, idx)}
+                              >
+                                Confirm
+                              </Button>
+                            </div>
+                          </>
+                        ))
+                      )}
+                      <Table
+                        rowSelection={handleSelection}
+                        className="gx-table-responsive"
+                        showHeader={false}
+                        columns={columnsSlit}
+                        dataSource={bundleTableData}
+                        pagination={{
+                          onChange(current) {
+                            setPage(current);
+                          },
+                        }}
+                      />
+                    </Col>
+                    {cutValue.length > 0 && (
+                      <Col lg={10} md={16} sm={24} xs={24}>
+                        <Table
+                          className="gx-table-responsive"
+                          columns={columnsSlitCut}
+                          dataSource={
+                            restTableData.length ? restTableData : cutValue
+                          }
+                        />
+                      </Col>
                     )}
+                  </Row>
+                ) : (
+                  <>
                     <Table
                       rowSelection={handleSelection}
                       className="gx-table-responsive"
-                      showHeader={false}
                       columns={columnsSlit}
-                      dataSource={bundleTableData}
+                      dataSource={cuts}
                       pagination={{
                         onChange(current) {
                           setPage(current);
                         },
                       }}
                     />
-                  </Col>
-                  {cutValue.length > 0 && (
-                    <Col lg={10} md={16} sm={24} xs={24}>
-                      <Table
-                        className="gx-table-responsive"
-                        columns={columnsSlitCut}
-                        dataSource={
-                          restTableData.length ? restTableData : cutValue
-                        }
-                      />
-                    </Col>
-                  )}
-                </Row>
+                    {cutValue.length > 0 && (
+                      <Col lg={10} md={16} sm={24} xs={24}>
+                        <Table
+                          className="gx-table-responsive"
+                          columns={columnsSlitCut}
+                          dataSource={
+                            restTableData.length ? restTableData : cutValue
+                          }
+                        />
+                      </Col>
+                    )}{" "}
+                  </>
+                )
               ) : (
                 <>
-                  <Table
-                    rowSelection={handleSelection}
-                    className="gx-table-responsive"
-                    columns={columnsSlit}
-                    dataSource={cuts}
-                    pagination={{
-                      onChange(current) {
-                        setPage(current);
-                      },
-                    }}
-                  />
-                  {cutValue.length > 0 && (
-                    <Col lg={10} md={16} sm={24} xs={24}>
-                      <Table
-                        className="gx-table-responsive"
-                        columns={columnsSlitCut}
-                        dataSource={
-                          restTableData.length ? restTableData : cutValue
-                        }
-                      />
-                    </Col>
-                  )}{" "}
-                </>
-              )
-            ) : (
-              <>
-                {props?.wip  && !props.unfinish && (
-                  <Row>
-                    <Button type="primary" onClick={addRow}>
-                      Add Row
-                    </Button>
-                  </Row>
-                )}
-                {!props.wip && (
-                  <Row>
-                    <Col lg={12} md={12} sm={24} xs={24}>
-                      <p>Coil number : {props.coil.coilNumber}</p>
-                      <p>Customer Name : {props.coil.party.partyName}</p>
-                      {props.coil.customerBatchId && (
-                        <p>Customer Batch No:{props.coil.customerBatchId}</p>
-                      )}
-                      <p>Material Desc: {props.coil.material.description}</p>
-                      <p>Grade: {props.coil.materialGrade.gradeName}</p>
-                    </Col>
-                    <Col lg={12} md={12} sm={24} xs={24}>
-                      <p>
-                        Inward specs: {props.coil.fThickness}X
-                        {props.coil.fWidth}X{props.coil.fLength}/
-                        {props.coil.fQuantity}
-                      </p>
-                      <p>Available Length(mm): {length}</p>
-                      <p>Available Weight(kg) : {currentWeight}</p>
-                      <p>Available Width(mm) : {widthValue}</p>
-                    </Col>
-                  </Row>
-                )}
-
-                <Row>
-                  {!props.wip && (
-                    <Col
-                      // lg={10}
-                      // md={12}
-                      // sm={24}
-                      // xs={24}
-                      lg={8}
-                      md={12}
-                      sm={24}
-                      xs={24}
-                      className="gx-align-self-center"
-                    >
-                      <Form
-                        {...formItemLayout}
-                        onSubmit={handleSubmit}
-                        className="login-form gx-pt-4"
-                      >
-                        <Form.Item label="Process Date">
-                          {getFieldDecorator("processDate", {
-                            initialValue: moment(
-                              new Date(),
-                              APPLICATION_DATE_FORMAT
-                            ),
-                            rules: [
-                              {
-                                required: true,
-                                message: "Please select a Process date",
-                              },
-                            ],
-                          })(
-                            <DatePicker
-                              placeholder="dd/mm/yy"
-                              style={{ width: 200 }}
-                              format={APPLICATION_DATE_FORMAT}
-                              disabled={props.wip ? true : false}
-                            />
-                          )}
-                        </Form.Item>
-                        <Form.Item label="Length">
-                          {getFieldDecorator("length", {
-                            rules: [
-                              {
-                                required: true,
-                                message: "Please enter Length",
-                              },
-                              {
-                                pattern: "^[0-9]*$",
-                                message: "Length should be a number",
-                              },
-                            ],
-                          })(
-                            <Input
-                              id="length"
-                              disabled={props.wip ? true : false}
-                              onChange={(e) => handleChange(e)}
-                            />
-                          )}
-                        </Form.Item>
-                        <Form.Item label="No of cuts">
-                          {getFieldDecorator("no", {
-                            rules: [
-                              {
-                                required: true,
-                                message: "Please enter number of cuts required",
-                              },
-                            ],
-                          })(
-                            <Input
-                              id="noOfCuts"
-                              disabled={props.wip ? true : false}
-                            />
-                          )}
-                        </Form.Item>
-
-                        <Form.Item>
-                          <Button
-                            type="primary"
-                            onClick={onChange}
-                            disabled={
-                              props.wip ? true : balanced ? true : false
-                            }
-                          >
-                            Balance
-                          </Button>
-                        </Form.Item>
-                        <Form.Item label="Weight">
-                          {getFieldDecorator("weight", {
-                            rules: [
-                              {
-                                required: true,
-                                message:
-                                  "Please fill other details to calculate weight",
-                              },
-                            ],
-                          })(<Input id="weight" disabled={true} />)}
-                        </Form.Item>
-                        <Row className="gx-mt-4">
-                          <Col span={24} style={{ textAlign: "center" }}>
-                            <Button
-                              id="button"
-                              type="primary"
-                              htmlType="submit"
-                              disabled={props.wip ? true : false}
-                              value="text"
-                            >
-                              {props.inward.process.index
-                                ? "Update size"
-                                : "Add size"}{" "}
-                              <Icon type="right" />
-                            </Button>
-                          </Col>
-                        </Row>
-                      </Form>
-                    </Col>
+                  {props?.wip && !props.unfinish && (
+                    <Row>
+                      <Button type="primary" onClick={addRow}>
+                        Add Row
+                      </Button>
+                    </Row>
                   )}
-
-                  {props.wip && (
-                    <>
-                      <Col lg={8} md={12} sm={24} xs={24}>
-                        <p>Coil number : {props.coil.coilNumber}</p>
-                        <p>Customer Name : {props.coil.party.partyName}</p>
+                  {!props.wip && (
+                    <Row>
+                      <Col lg={12} md={12} sm={24} xs={24}>
+                        <p>Batch no. : {props.coil.coilNumber}</p>
+                        <p>Location Name : {props?.coil?.party?.partyName}</p>
                         {props.coil.customerBatchId && (
-                          <p>Customer Batch No:{props.coil.customerBatchId}</p>
+                          <p>
+                            SC inward id:
+                            {props.coil.customerBatchId == undefined ||
+                            props.coil.customerBatchId == null
+                              ? props.coil.customerBatchId
+                              : "-"}
+                          </p>
                         )}
-                        <p>Material Desc: {props.coil.material.description}</p>
-                        <p>Grade: {props.coil.materialGrade.gradeName}</p>
-                    <p>Coil level Planned YLR (%): {plannedCoilLevelYLR.toFixed(2)}</p>
+                        <p>
+                          Material Desc: {props.coil?.material?.description}
+                        </p>
+                        <p>Grade: {props.coil?.materialGrade?.gradeName}</p>
                       </Col>
-
-                      <Col lg={8} md={12} sm={24} xs={24}>
+                      <Col lg={12} md={12} sm={24} xs={24}>
                         <p>
                           Inward specs: {props.coil.fThickness}X
                           {props.coil.fWidth}X{props.coil.fLength}/
                           {props.coil.fQuantity}
                         </p>
-                        <p>
-                          Available Length(mm):{" "}
-                          {props.childCoil ? insData.actualLength : length}
-                        </p>
-                        <p>
-                          Available Weight(kg) :{" "}
-                          {props.childCoil
-                            ? insData.actualWeight
-                            : currentWeight}
-                        </p>
-                        <p>
-                          Available Width(mm) :{" "}
-                          {props.childCoil ? insData.actualWidth : width}
-                        </p>
-                       <p>Coil level Actual YLR (%) : {actualCoilLevelYLR.toFixed(2)}</p>
+                        <p>Available Length(mm): {length}</p>
+                        <p>Available Weight(kg) : {currentWeight}</p>
+                        <p>Available Width(mm) : {widthValue}</p>
                       </Col>
-                    </>
+                    </Row>
                   )}
 
-                  <Col
-                    lg={props.wip ? 24 : 16}
-                    md={props.wip ? 24 : 12}
-                    sm={24}
-                    xs={24}
-                  >
-                    <Table
-                      className="gx-table-responsive"
-                      columns={props.wip ? columns : columnsPlan}
-                      dataSource={props.wip ? tableData : cuts}
-                      pagination={{
-                        onChange(current) {
-                          setPage(current);
-                        },
-                      }}
-                    />
-                    {props.wip ? (
-                      <div className="form-wrapper">
-                        <Form.Item label="Total weight(kg)">
-                          {getFieldDecorator("tweight", {
-                            rules: [{ required: false }],
-                          })(
-                            <>
-                              <Input
-                                id="tweight"
-                                disabled={true}
-                                value={tweight}
-                                name="tweight"
+                  <Row>
+                    {!props.wip && (
+                      <Col
+                        // lg={10}
+                        // md={12}
+                        // sm={24}
+                        // xs={24}
+                        lg={8}
+                        md={12}
+                        sm={24}
+                        xs={24}
+                        className="gx-align-self-center"
+                      >
+                        <Form
+                          {...formItemLayout}
+                          onSubmit={handleSubmit}
+                          className="login-form gx-pt-4"
+                        >
+                          <Form.Item label="Process Date">
+                            {getFieldDecorator("processDate", {
+                              initialValue: moment(
+                                new Date(),
+                                APPLICATION_DATE_FORMAT
+                              ),
+                              rules: [
+                                {
+                                  required: true,
+                                  message: "Please select a Process date",
+                                },
+                              ],
+                            })(
+                              <DatePicker
+                                placeholder="dd/mm/yy"
+                                style={{ width: 200 }}
+                                format={APPLICATION_DATE_FORMAT}
+                                disabled={props.wip ? true : false}
                               />
-                            </>
-                          )}
-                        </Form.Item>
-                        <Form.Item label="Actual weight(kg)">
-                          {getFieldDecorator("totalActualweight", {
-                            rules: [{ required: false }],
-                          })(
-                            <>
+                            )}
+                          </Form.Item>
+                          <Form.Item label="Length">
+                            {getFieldDecorator("length", {
+                              rules: [
+                                {
+                                  required: true,
+                                  message: "Please enter Length",
+                                },
+                                {
+                                  pattern: "^[0-9]*$",
+                                  message: "Length should be a number",
+                                },
+                              ],
+                            })(
                               <Input
-                                id="totalActualweight"
-                                disabled={true}
-                                value={totalActualweight}
-                                name="totalActualweight"
+                                id="length"
+                                disabled={props.wip ? true : false}
+                                onChange={(e) => handleChange(e)}
                               />
-                            </>
-                          )}
-                        </Form.Item>
-                      <Form.Item label="Actual yield loss ratio (plan level) %">
-                        {getFieldDecorator("ratio", {
-                          rules: [{ required: false }],
-                        })(
-                          <>
-                            <Input
-                              id="ratio"
-                              disabled={true}
-                              value={actualYLR.toFixed(2)}
-                              name="ratio"
-                            />
-                          </>
-                        )}
-                       </Form.Item>
-                      </div>
-                    ) : (
-                      <Row gutter={16}>
-                      <Col span={12}> 
-                      <Form.Item label="Total weight(kg)">
-                        {getFieldDecorator("tweight", {
-                          rules: [{ required: false }],
-                        })(
-                          <>
-                            <Input
-                              id="tweight"
-                              disabled={true}
-                              value={tweight}
-                              name="tweight"
-                            />
-                          </>
-                        )}
-                      </Form.Item>
+                            )}
+                          </Form.Item>
+                          <Form.Item label="No of cuts">
+                            {getFieldDecorator("no", {
+                              rules: [
+                                {
+                                  required: true,
+                                  message:
+                                    "Please enter number of cuts required",
+                                },
+                              ],
+                            })(
+                              <Input
+                                id="noOfCuts"
+                                disabled={props.wip ? true : false}
+                              />
+                            )}
+                          </Form.Item>
+
+                          <Form.Item>
+                            <Button
+                              type="primary"
+                              onClick={onChange}
+                              disabled={
+                                props.wip ? true : balanced ? true : false
+                              }
+                            >
+                              Balance
+                            </Button>
+                          </Form.Item>
+                          <Form.Item label="Weight">
+                            {getFieldDecorator("weight", {
+                              rules: [
+                                {
+                                  required: true,
+                                  message:
+                                    "Please fill other details to calculate weight",
+                                },
+                              ],
+                            })(<Input id="weight" disabled={true} />)}
+                          </Form.Item>
+                          <Row className="gx-mt-4">
+                            <Col span={24} style={{ textAlign: "center" }}>
+                              <Button
+                                id="button"
+                                type="primary"
+                                htmlType="submit"
+                                disabled={props.wip ? true : false}
+                                value="text"
+                              >
+                                {props.inward.process.index
+                                  ? "Update size"
+                                  : "Add size"}{" "}
+                                <Icon type="right" />
+                              </Button>
+                            </Col>
+                          </Row>
+                        </Form>
                       </Col>
-                       {/* <Col span={12}>
+                    )}
+
+                    {props.wip && (
+                      <>
+                        <Col lg={8} md={12} sm={24} xs={24}>
+                          <p>Inward number : {props.coil.coilNumber}</p>
+                          <p>Location Name : {props.coil.party.partyName}</p>
+                          {props.coil.customerBatchId && (
+                            <p>
+                              SC inward id:
+                              {props.coil.customerBatchId === undefined ||
+                              props.coil.customerBatchId == null
+                                ? props.coil.customerBatchId
+                                : "-"}
+                            </p>
+                          )}
+                          <p>
+                            Material Desc: {props.coil?.material?.description}
+                          </p>
+                          <p>Grade: {props.coil?.materialGrade?.gradeName}</p>
+                          <p>
+                            Coil level Planned YLR (%):{" "}
+                            {plannedCoilLevelYLR.toFixed(2)}
+                          </p>
+                        </Col>
+
+                        <Col lg={8} md={12} sm={24} xs={24}>
+                          <p>
+                            Inward specs: {props.coil.fThickness}X
+                            {props.coil.fWidth}X{props.coil.fLength}/
+                            {props.coil.fQuantity}
+                          </p>
+                          <p>
+                            Available Length(mm):{" "}
+                            {props.childCoil ? insData.actualLength : length}
+                          </p>
+                          <p>
+                            Available Weight(kg) :{" "}
+                            {props.childCoil
+                              ? insData.actualWeight
+                              : currentWeight}
+                          </p>
+                          <p>
+                            Available Width(mm) :{" "}
+                            {props.childCoil ? insData.actualWidth : width}
+                          </p>
+                          <p>
+                            Coil level Actual YLR (%) :{" "}
+                            {actualCoilLevelYLR.toFixed(2)}
+                          </p>
+                        </Col>
+                      </>
+                    )}
+
+                    <Col
+                      lg={props.wip ? 24 : 16}
+                      md={props.wip ? 24 : 12}
+                      sm={24}
+                      xs={24}
+                    >
+                      <Table
+                        className="gx-table-responsive"
+                        columns={props.wip ? columns : columnsPlan}
+                        dataSource={props.wip ? tableData : cuts}
+                        pagination={{
+                          onChange(current) {
+                            setPage(current);
+                          },
+                        }}
+                      />
+                      {props.wip ? (
+                        <div className="form-wrapper">
+                          <Form.Item label="Total weight(kg)">
+                            {getFieldDecorator("tweight", {
+                              rules: [{ required: false }],
+                            })(
+                              <>
+                                <Input
+                                  id="tweight"
+                                  disabled={true}
+                                  value={tweight}
+                                  name="tweight"
+                                />
+                              </>
+                            )}
+                          </Form.Item>
+                          <Form.Item label="Actual weight(kg)">
+                            {getFieldDecorator("totalActualweight", {
+                              rules: [{ required: false }],
+                            })(
+                              <>
+                                <Input
+                                  id="totalActualweight"
+                                  disabled={true}
+                                  value={totalActualweight}
+                                  name="totalActualweight"
+                                />
+                              </>
+                            )}
+                          </Form.Item>
+                          <Form.Item label="Actual yield loss ratio (plan level) %">
+                            {getFieldDecorator("ratio", {
+                              rules: [{ required: false }],
+                            })(
+                              <>
+                                <Input
+                                  id="ratio"
+                                  disabled={true}
+                                  value={actualYLR.toFixed(2)}
+                                  name="ratio"
+                                />
+                              </>
+                            )}
+                          </Form.Item>
+                        </div>
+                      ) : (
+                        <Row gutter={16}>
+                          <Col span={12}>
+                            <Form.Item label="Total weight(kg)">
+                              {getFieldDecorator("tweight", {
+                                rules: [{ required: false }],
+                              })(
+                                <>
+                                  <Input
+                                    id="tweight"
+                                    disabled={true}
+                                    value={tweight}
+                                    name="tweight"
+                                  />
+                                </>
+                              )}
+                            </Form.Item>
+                          </Col>
+                          {/* <Col span={12}>
                       <Form.Item label="Total yield loss ratio">
                         {getFieldDecorator("ratio", {
                           rules: [{ required: false }],
@@ -2187,40 +2212,40 @@ useEffect(() => {
                         )}
                        </Form.Item>
                       </Col>  */}
-                      </Row>
-                    )}
-                  </Col>
-                </Row>
-              </>
-            )}
+                        </Row>
+                      )}
+                    </Col>
+                  </Row>
+                </>
+              )}
 
-            <Modal
-              title="Confirmation"
-              visible={showDeleteModal}
-              width={1300}
-              onOk={() => {
-                onDelete(deleteRecord);
-              }}
-              onCancel={() => setshowDeleteModal(false)}
-            >
-              <p>Are you sure to proceed for delete ? </p>
-              <p>Please click OK to confirm</p>
-            </Modal>
-          </TabPane>
-          <TabPane tab='Customer Yield Loss Reference' key='3'>
-                <Row>
-                  <Col lg={20} md={20} sm={24} xs={24}>
-                    <Table
-                      className='gx-table-responsive'
-                       columns={columnYieldLoss}
-                       dataSource={cuttingfilteredData}
-                    />
-                  </Col>
-                </Row>
-              </TabPane>
-        </Tabs>
-      </Card>
-    </Modal>
+              <Modal
+                title="Confirmation"
+                visible={showDeleteModal}
+                width={1300}
+                onOk={() => {
+                  onDelete(deleteRecord);
+                }}
+                onCancel={() => setshowDeleteModal(false)}
+              >
+                <p>Are you sure to proceed for delete ? </p>
+                <p>Please click OK to confirm</p>
+              </Modal>
+            </TabPane>
+            <TabPane tab="Customer Yield Loss Reference" key="3">
+              <Row>
+                <Col lg={20} md={20} sm={24} xs={24}>
+                  <Table
+                    className="gx-table-responsive"
+                    columns={columnYieldLoss}
+                    dataSource={cuttingfilteredData}
+                  />
+                </Col>
+              </Row>
+            </TabPane>
+          </Tabs>
+        </Card>
+      </Modal>
     </>
   );
 };
