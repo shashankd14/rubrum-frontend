@@ -162,7 +162,7 @@ export default (state = INIT_STATE, action) => {
             return {
                 ...state,
                 loading: false,
-                inwardList: action.inwardList,
+                inwardList: [...action.inwardList],
                 totalItems: action.totalItems,
                 success: true
             }
@@ -671,7 +671,7 @@ export default (state = INIT_STATE, action) => {
         case DELETE_INSTRUCTION_BY_ID: {
             return {
                 ...state,
-                loading: true,
+                deleteLoading: true,
             }
         }
         case REST_ISDELETED: {
@@ -683,14 +683,15 @@ export default (state = INIT_STATE, action) => {
         case DELETE_INSTRUCTION_BY_ID_SUCCESS_SLIT: {
             return {
                 ...state,
-                loading: false,
+                deleteLoading: false,
                 isDeleted: true
             }
         }
         case DELETE_INSTRUCTION_BY_ID_SUCCESS: {
             return {
                 ...state,
-                loading: false
+                deleteLoading: false,
+                isDeleted: true
             }
         }
         case DELETE_INSTRUCTION_BY_ID_ERROR: {

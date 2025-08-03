@@ -106,15 +106,63 @@ const getHeaders = () => ({
     Authorization: getUserToken()
 });
 
- function* fetchInwardList({ page = '', pageSize = 15, searchValue = '', partyId = '', sortColumn='', sortOrder='' }) {
+ function* fetchInwardList({ page = '', pageSize = 15, searchValue = '', partyId = '', sortColumn='', sortOrder='', filterInfo}) {
     const body = {
-        pageNo: page,
-        pageSize: pageSize,
-        searchText: searchValue,
-        partyId: partyId,
-        sortColumn: sortColumn,
-        sortOrder: sortOrder
-    }
+      pageNo: page,
+      pageSize: pageSize,
+      searchText: searchValue,
+      partyId: partyId,
+      sortColumn: sortColumn,
+      sortOrder: sortOrder,
+      ...(filterInfo !== undefined &&
+      filterInfo["ageing"] !== null &&
+      filterInfo["ageing"]?.length > 0
+        ? {
+            ageingMinValue: filterInfo["ageing"][0]
+              ? filterInfo["ageing"][0]
+              : filterInfo["ageing"][1],
+            ageingMaxValue: filterInfo["ageing"][1]
+              ? filterInfo["ageing"][1]
+              : filterInfo["ageing"][0],
+          }
+        : ""),
+      ...(filterInfo !== undefined &&
+      filterInfo["fThickness"] !== null &&
+      filterInfo["fThickness"]?.length > 0
+        ? {
+            thicknessMinValue: filterInfo["fThickness"][0]
+              ? filterInfo["fThickness"][0]
+              : filterInfo["fThickness"][1],
+            thicknessMaxValue: filterInfo["fThickness"][1]
+              ? filterInfo["fThickness"][1]
+              : filterInfo["fThickness"][0],
+          }
+        : ""),
+      ...(filterInfo !== undefined &&
+      filterInfo["fWidth"] !== null &&
+      filterInfo["fWidth"]?.length > 0
+        ? {
+            widthMinValue: filterInfo["fWidth"][0]
+              ? filterInfo["fWidth"][0]
+              : filterInfo["fWidth"][1],
+            widthMaxValue: filterInfo["fWidth"][1]
+              ? filterInfo["fWidth"][1]
+              : filterInfo["fWidth"][0],
+          }
+        : ""),
+      ...(filterInfo !== undefined &&
+      filterInfo["fLength"] !== null &&
+      filterInfo["fLength"]?.length > 0
+        ? {
+            lengthMinValue: filterInfo["fLength"][0]
+              ? filterInfo["fLength"][0]
+              : filterInfo["fLength"][1],
+            lengthMaxValue: filterInfo["fLength"][1]
+              ? filterInfo["fLength"][1]
+              : filterInfo["fLength"][0],
+          }
+        : ""),
+    };
     try {
         // const fetchInwardList = yield fetch(`${baseUrl}api/inwardEntry/partywise/${page}/${pageSize}?searchText=${searchValue}&partyId=${partyId}`, {
             const fetchInwardList = yield fetch(`${baseUrl}api/inwardEntry/partywiselist`, {
@@ -152,10 +200,10 @@ const getHeaders = () => ({
                     }
                     inwardResponse.push(eachInward);
                 });
-                yield put(fetchInwardListSuccess(inwardResponse, totalItems));
+                yield put(fetchInwardListSuccess([...inwardResponse], totalItems));
             } 
             else if (content.length === 0) {
-                 yield put(coilNotFound(totalItems));
+                yield put(fetchInwardListSuccess([...inwardResponse], totalItems));
             }
         } else if (fetchInwardList.status === 401) {
             yield put(userSignOutSuccess());

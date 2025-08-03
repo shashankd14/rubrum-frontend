@@ -1,7 +1,7 @@
 //src-routes-company-Partywise-List.js
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { connect } from "react-redux";
-import { Button, Card, Divider, Select, Table, Modal, message } from "antd";
+import { Button, Card, Divider, Select, Table, Modal, message, Input, Icon } from "antd";
 import SearchBox from "../../../components/SearchBox";
 
 import IntlMessages from "../../../util/IntlMessages";
@@ -28,6 +28,9 @@ const partyWiseMenuConstants = {
   'addInward': 'Add Inward',
   'deliver': 'Deliver',
 }
+
+const filterLabels = { 'ageing' : 'Age', 'fThickness': 'Thickness', 'fWidth' : 'Width', 'fLength': 'Length'};
+
 const List = (props) => {
   const [sortedInfo, setSortedInfo] = useState({
     // order: "descend",
@@ -35,17 +38,20 @@ const List = (props) => {
     order: "ASC",
     columnKey: "fThickness",
   });
-  const [filteredInfo, setFilteredInfo] = useState(null);
+  const [filteredInfo, setFilteredInfo] = useState({});
   const [searchValue, setSearchValue] = useState("");
+  const [searchValueChanged, setSearchValueChanged] = useState(false);
+
   const [customerValue, setCustomerValue] = useState("");
   const { inwardList, totalItems } = props.inward;
-  let filter = inwardList.map((item) => {
-    if (item.instruction.length > 0) {
-      item.children = item.instruction.filter((ins) => ins.groupId === null);
-    }
-    return item;
-  });
-  const [filteredInwardList, setFilteredInwardList] = useState(filter);
+  
+  let searchInput = useRef(true);
+
+  const handleSearch = (selectedKeys, confirm, dataIndex) => {
+   confirm();
+  };
+
+  // const [filteredInwardList, setFilteredInwardList] = useState(inwardList);
   const [expandedRow, setExpandedRecord] = useState([]);
   const [menuPartyWiseLabelList, setMenuPartyWiseLabelList] = useState([]);
   const [partywisepermission, setPartywisePermission] = useState([]);
@@ -61,6 +67,105 @@ const List = (props) => {
   const [sortColumn, setSortColumn] = useState(null);
   const [sortOrder, setSortOrder] = useState(null);
   
+  const getColumnSearchProps = (dataIndex) => ({
+    filterDropdown: ({
+      confirm,
+      clearFilters,
+    }) => {
+      let filterVariable = '';
+      return (
+        <div style={{ padding: 8 }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              gap: "4px",
+            }}
+          >
+            <Input
+              ref={(node) => {
+                searchInput = node;
+              }}
+              placeholder={`Min ${filterLabels[dataIndex]}`}
+              value={filteredInfo[dataIndex] ? filteredInfo[dataIndex][0] : ""}
+              onChange={(e) => {
+                const newArray = filteredInfo[dataIndex]
+                  ? filteredInfo[dataIndex]
+                  : [];
+                newArray[0] = e.target.value ? e.target.value : "";
+                setFilteredInfo({
+                  ...filteredInfo,
+                  [dataIndex]: [...newArray],
+                });
+              }}
+              onPressEnter={() =>
+                handleSearch(filteredInfo, confirm, dataIndex)
+              }
+              style={{ width: 80, marginBottom: 8, display: "flex", flex: 1 }}
+            />
+            <Input
+              ref={(node) => {
+                searchInput = node;
+              }}
+              placeholder={`Max ${filterLabels[dataIndex]}`}
+              value={filteredInfo[dataIndex] ? filteredInfo[dataIndex][1] : ""}
+              onChange={(e) => {
+                const newArray = filteredInfo[dataIndex]
+                  ? filteredInfo[dataIndex]
+                  : [];
+                newArray[1] = e.target.value ? e.target.value : "";
+                setFilteredInfo({
+                  ...filteredInfo,
+                  [dataIndex]: [...newArray],
+                });
+              }}
+              onPressEnter={() =>
+                handleSearch(filteredInfo, confirm, dataIndex)
+              }
+              style={{ width: 80, marginBottom: 8, display: "flex", flex: 1 }}
+            />
+          </div>
+          <div>
+            <Button
+              type="primary"
+              onClick={() => {
+                props.fetchInwardList(
+                  1,
+                  20,
+                  searchValue,
+                  customerValue,
+                  sortOrder,
+                  sortColumn,
+                  filteredInfo
+                );
+              }}
+              icon="search"
+              size="small"
+              style={{ width: 90, marginRight: 8 }}
+            >
+              Search
+            </Button>
+            <Button
+              onClick={() => clearFilters(clearFilters)}
+              size="small"
+              style={{ width: 90 }}
+            >
+              Reset
+            </Button>
+          </div>
+        </div>
+      );},
+    filterIcon: (filtered) => (
+      <Icon type="search" style={{ color: filtered ? "#1890ff" : undefined }} />
+    ),
+    onFilterDropdownVisibleChange: (visible) => {
+      if (visible) {
+        setTimeout(() => searchInput.select());
+      }
+    },
+    // render: (text) => ("age" === dataIndex ? <></> : text),
+  });
+
   const columns = [
     {
       title: "Batch no.",
@@ -120,16 +225,22 @@ const List = (props) => {
       title: "Ageing (Days)",
       dataIndex: "ageing",
       key: "ageing",
-      filters: [],
       sorter: (a, b) => a.ageing - b.ageing,
       sortOrder: sortedInfo.columnKey === "ageing" && sortedInfo.order,
+      render: (text, record) => {
+        return record.ageing == "undefined" || record.ageing == ""
+          ? "-"
+          : record.ageing;
+      },
+      filteredValue:
+        filteredInfo && filteredInfo["ageing"] ? filteredInfo["ageing"] : null,
+      // onFilter: (value, record) => record?.ageinging == value,
+      ...getColumnSearchProps("ageing"),
     },
-
     {
       title: "Thickness (mm)",
       dataIndex: "fThickness",
       key: "fThickness",
-      filters: [],
       sorter: (a, b) => a.fThickness - b.fThickness,
       sortOrder: sortedInfo.columnKey === "fThickness" && sortedInfo.order,
       render: (text, record) => {
@@ -137,12 +248,17 @@ const List = (props) => {
           ? "-"
           : record.fThickness;
       },
+      filteredValue:
+        filteredInfo && filteredInfo?.["fThickness"]
+          ? filteredInfo["fThickness"]
+          : null,
+      // onFilter: (value, record) => record.fThickness == value,
+      ...getColumnSearchProps("fThickness"),
     },
     {
       title: "Width (mm)",
       dataIndex: "fWidth",
       key: "fWidth",
-      filters: [],
       sorter: (a, b) => a.fWidth - b.fWidth,
       sortOrder: sortedInfo.columnKey === "fWidth" && sortedInfo.order,
       render: (text, record) => {
@@ -150,20 +266,28 @@ const List = (props) => {
           ? "-"
           : record.fWidth;
       },
+      filteredValue:
+        filteredInfo && filteredInfo?.["fWidth"]
+          ? filteredInfo["fWidth"]
+          : null,
+      ...getColumnSearchProps("fWidth"),
     },
     {
       title: "Length (mm)",
       dataIndex: "fLength",
       key: "fLength",
-      filters: [],
       sorter: (a, b) => a.fLength - b.fLength,
       sortOrder: sortedInfo.columnKey === "fLength" && sortedInfo.order,
+      filteredValue:
+        filteredInfo && filteredInfo?.["fLength"]
+          ? filteredInfo["fLength"]
+          : null,
+      ...getColumnSearchProps("fLength"),
     },
     {
       title: "Status",
       dataIndex: "status.statusName",
       key: "status.statusName",
-      filters: [],
       sorter: (a, b) => a.status.statusName.length - b.status.statusName.length,
       sortOrder:
         sortedInfo.columnKey === "status.statusName" && sortedInfo.order,
@@ -260,7 +384,6 @@ const List = (props) => {
     props.fetchPartyList();
   }, []);
 
-
   useEffect(() => {
     const menus = localStorage.getItem('Menus') ? JSON.parse(localStorage.getItem('Menus')) : [];
     if(menus.length > 0) {
@@ -281,63 +404,89 @@ const List = (props) => {
     }
   }, [totalItems]);
 
-  const getFilterData = (list) => {
-    let filter = list.map((item) => {
-      if (item.instruction.length > 0) {
-        item.children = item.instruction.filter((ins) => ins.groupId === null);
-      }
-      return item;
-    });
-    return filter;
-  };
-  useEffect(() => {
-    if (!props.inward.loading && props.inward.success) {
-      // setFilteredInwardList(getFilterData(inwardList));
-      // console.log(inwardList)
-      if(inwardList.length !==0){
-        inwardList[0].children = inwardList[0].instruction
-      }
-        setFilteredInwardList(inwardList);
-    }
-  }, [props.inward.loading, props.inward.success]);
+  // useEffect(() => {
+  //   console.log(inwardList);
+  //   if (!props.inward.loading && props.inward.success) {
+  //     // setFilteredInwardList(getFilterData(inwardList));
+  //     // console.log(inwardList)
+  //     if (inwardList.length !== 0) {
+  //       inwardList[0].children = inwardList[0].instruction;
+  //     }
+  //     setFilteredInwardList(inwardList);
+  //   }
+  // }, [inwardList]);
+
+  // useEffect(() => {
+  //   if (searchValue && searchValueChanged) {
+  //     if (searchValue.length >= 3) {
+  //       setPageNo(1);
+  //       props.fetchInwardList(
+  //         1,
+  //         20,
+  //         searchValue,
+  //         customerValue,
+  //         sortOrder,
+  //         sortColumn,
+  //         filteredInfo
+  //       );
+  //     }
+  //   } else {
+  //     setPageNo(1);
+  //     props.fetchInwardList(
+  //       1,
+  //       20,
+  //       searchValue,
+  //       customerValue,
+  //       sortOrder,
+  //       sortColumn,
+  //       filteredInfo
+  //     );
+  //   }
+  // }, [searchValue]);
 
   useEffect(() => {
-    if (searchValue) {
-      if (searchValue.length >= 3) {
-        setPageNo(1);
-        props.fetchInwardList(1, 20, searchValue, customerValue);
-      }
-    } else {
-      setPageNo(1);
-      props.fetchInwardList(1, 20, searchValue, customerValue);
-    }
-  }, [searchValue]);
+props.fetchInwardList(
+  1,
+  20,
+  searchValue,
+  customerValue,
+  sortOrder,
+  sortColumn,
+  filteredInfo
+);
+  }, [])
 
   const handleChange = (pagination, filters, sorter, partyId) => {
-    setSortedInfo(sorter);
+    // setSortedInfo(sorter);
     setFilteredInfo(filters);
-    setSortColumn(sorter.columnKey);
-    setSortOrder(sorter.order==='descend'?'DESC':'ASC');
+    // setSortColumn(sorter.columnKey);
+    // setSortOrder(sorter.order === 'descend' ? 'DESC' : 'ASC');
+    setPageNo(pagination.current);
+    props.fetchInwardList(
+      pagination.current,
+      pagination.pageSize,
+      searchValue,
+      customerValue,
+      sortOrder,
+      sortColumn,
+      filters
+    );
   };
-  useEffect(() => {
-    if (sortColumn && sortOrder) {
-        setPageNo(1);
-        props.fetchInwardList(1, 20, searchValue, customerValue,  sortOrder, sortColumn);
-    }
-  }, [sortColumn, sortOrder]);
+
+  // useEffect(() => {
+  //   if (sortColumn && sortOrder) {
+  //       // setPageNo(1);
+  //       props.fetchInwardList(pageNo, 20, searchValue, customerValue,  sortOrder, sortColumn, filteredInfo);
+  //   }
+  // }, [sortColumn, sortOrder]);
 
 
   const clearFilters = (value) => {
     setCustomerValue("");
-    setFilteredInfo(null);
+    setFilteredInfo({});
     setSearchValue("");
     setPageNo(1);
     props.fetchInwardList(1, 15);
-  };
-
-  const clearAll = () => {
-    setSortedInfo(null);
-    setFilteredInfo(null);
   };
 
   const exportSelectedData = () => {};
@@ -346,10 +495,19 @@ const List = (props) => {
     if (value) {
       setCustomerValue(value);
       setPageNo(1);
-      props.fetchInwardList(1, pageSize, searchValue, value, '', '', partywisepermission  === 'ENDUSER_TAG_WISE_PACKETS' ? 'ENDUSER' : '');
+      props.fetchInwardList(1, pageSize, searchValue, value, sortOrder, sortColumn, filteredInfo);
     } else {
       setCustomerValue("");
-      setFilteredInwardList(inwardList);
+      props.fetchInwardList(
+        1,
+        pageSize,
+        searchValue,
+        '',
+        sortOrder,
+        sortColumn,
+        filteredInfo
+      );
+      // setFilteredInwardList(filteredInwardList);
     }
   };
 
@@ -428,7 +586,6 @@ const List = (props) => {
           }
         });
       }
-      console.log(selectedRows);
       const selectedCoil = selectedRows.map(row => row?.party?.nPartyId) || []
       setSelectedCoil(Array.from(new Set(selectedCoil)))
     },
@@ -472,6 +629,8 @@ const List = (props) => {
       </>
     );
   };
+const setInwardList = [...props.inward.inwardList]; // force new reference
+
   return (
     <div>
       <h1>
@@ -498,51 +657,105 @@ const List = (props) => {
             >
               {props.party.partyList.length > 0 &&
                 props.party.partyList.map((party) => (
-                  <Option key={party.nPartyId} value={party.nPartyId}>{party.partyName}</Option>
+                  <Option key={party.nPartyId} value={party.nPartyId}>
+                    {party.partyName}
+                  </Option>
                 ))}
-            </Select>&emsp;
-            {menuPartyWiseLabelList.length > 0 && menuPartyWiseLabelList.includes(partyWiseMenuConstants.export) && <Button onClick={exportSelectedData} style={{marginBottom: "1px"}}>Export</Button>}
-            <Button onClick={clearFilters} style={{marginBottom: "1px"}}>Clear All filters</Button>
+            </Select>
+            &emsp;
+            {menuPartyWiseLabelList.length > 0 &&
+              menuPartyWiseLabelList.includes(
+                partyWiseMenuConstants.export
+              ) && (
+                <Button
+                  onClick={exportSelectedData}
+                  style={{ marginBottom: "1px" }}
+                >
+                  Export
+                </Button>
+              )}
+            <Button onClick={clearFilters} style={{ marginBottom: "1px" }}>
+              Clear All filters
+            </Button>
           </div>
           <div className="gx-flex-row gx-w-50">
-            {menuPartyWiseLabelList.length > 0 && menuPartyWiseLabelList.includes(partyWiseMenuConstants.deliver) && <Button
-              type="primary"
-              icon={() => <i className="icon icon-add" />}
-              size="default"
-              onClick={() => {
-                if (selectedCoil?.length > 1) {
-                  message.error('Please select inwards of same location');
-                } else {
-                  const newList = selectedRowData.filter((item) => {
-                    if (item?.instruction?.length) {
-                      return !item.childInstructions && item.inwardEntryId && selectedRowData.length === 1;
+            {menuPartyWiseLabelList.length > 0 &&
+              menuPartyWiseLabelList.includes(
+                partyWiseMenuConstants.deliver
+              ) && (
+                <Button
+                  type="primary"
+                  icon={() => <i className="icon icon-add" />}
+                  size="default"
+                  onClick={() => {
+                    if (selectedCoil?.length > 1) {
+                      message.error("Please select inwards of same location");
                     } else {
-                      return true;
+                      const newList = selectedRowData.filter((item) => {
+                        if (item?.instruction?.length) {
+                          return (
+                            !item.childInstructions &&
+                            item.inwardEntryId &&
+                            selectedRowData.length === 1
+                          );
+                        } else {
+                          return true;
+                        }
+                      });
+                      props.setInwardSelectedForDelivery(newList);
+                      props.history.push(
+                        "/company/locationwise-register/delivery"
+                      );
                     }
-                  });
-                  props.setInwardSelectedForDelivery(newList);
-                  props.history.push("/company/locationwise-register/delivery");
-                }
-              }}
-              disabled={!!selectedCBKeys?.length < 1}
-            >
-              Deliver
-            </Button>}
-            {menuPartyWiseLabelList.length > 0 && menuPartyWiseLabelList.includes(partyWiseMenuConstants.addInward) && <Button
-              type="primary"
-              icon={() => <i className="icon icon-add" />}
-              size="default"
-              onClick={() => {
-                props.history.push("/company/inward/create");
-              }}
-            >
-              Add Inward
-            </Button>}
+                  }}
+                  disabled={!!selectedCBKeys?.length < 1}
+                >
+                  Deliver
+                </Button>
+              )}
+            {menuPartyWiseLabelList.length > 0 &&
+              menuPartyWiseLabelList.includes(
+                partyWiseMenuConstants.addInward
+              ) && (
+                <Button
+                  type="primary"
+                  icon={() => <i className="icon icon-add" />}
+                  size="default"
+                  onClick={() => {
+                    props.history.push("/company/inward/create");
+                  }}
+                >
+                  Add Inward
+                </Button>
+              )}
             <SearchBox
               styleName="gx-flex-1"
               placeholder="Search for inward id or location..."
               value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
+              onChange={(e) => {
+                setSearchValue(e.target.value);
+                if (e.target.value.length > 3) {
+                  props.fetchInwardList(
+                    1,
+                    20,
+                    e.target.value,
+                    customerValue,
+                    sortOrder,
+                    sortColumn,
+                    filteredInfo
+                  );
+                } else {
+                  props.fetchInwardList(
+                    1,
+                    20,
+                    e.target.value,
+                    customerValue,
+                    sortOrder,
+                    sortColumn,
+                    filteredInfo
+                  );
+                }
+              }}
             />
           </div>
         </div>
@@ -558,35 +771,23 @@ const List = (props) => {
             {gets3PDFurl()}
           </Modal>
         )}
+
         <Table
+          key={props.inward?.inwardList[0]?.inwardEntryId || pageNo}
           scroll={{ y: 540 }}
           className="gx-table-responsive"
           columns={columns}
-          dataSource={filteredInwardList}
-          // dataSource={filteredInwardListWithoutDispatched}
+          rowKey={(record) => record.inwardEntryId}
+          loading={props.inward.loading}
+          dataSource={[...props.inward.inwardList]}
           onChange={handleChange}
-          rowSelection={partywisepermission  === 'ENDUSER_TAG_WISE_PACKETS' ? false : rowSelection}
-          // onExpand={(expanded, record, data) => {
-          //   const motherRecord = {
-          //     key: record.key,
-          //     child: record.instruction
-          //       ? record.instruction?.map((r) => r.instructionId)
-          //       : record.childInstructions?.map((r) => r.instructionId),
-          //     batch: record.customerBatchId,
-          //     fThickness: record.fThickness,
-          //   };
-          //   const result = expanded
-          //     ? expandedRow
-          //     : expandedRow.filter((row) => row.key !== record.key);
-          //   setExpandedRecord([...result, motherRecord]);
-          // }}
-          
+          rowSelection={
+            partywisepermission === "ENDUSER_TAG_WISE_PACKETS"
+              ? false
+              : rowSelection
+          }
           pagination={{
             pageSize: 15,
-            onChange: (page) => {
-              setPageNo(page);
-              props.fetchInwardList(page, pageSize, searchValue, customerValue, sortOrder, sortColumn, partywisepermission  === 'ENDUSER_TAG_WISE_PACKETS' ? 'ENDUSER' : '');
-            },
             current: pageNo,
             total: totalPageItems,
           }}
