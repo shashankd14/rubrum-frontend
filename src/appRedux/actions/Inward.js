@@ -132,12 +132,23 @@ export const coilNotFound = (totalItems) => ({
     totalItems: 'Coil not found.'
 });
 //inward with old api
-export const fetchInwardListOldAPI = (page, pageSize, searchValue, partyId) => ({
-    type: actionTypes.FETCH_INWARD_LIST_WITH_OLD_API_REQUEST,
-    page,
-    pageSize,
-    searchValue,
-    partyId
+export const fetchInwardListOldAPI = (
+  page,
+  pageSize,
+  searchValue,
+  partyId,
+  sortKey,
+  sortOrder,
+  filterInfo = {}
+) => ({
+  type: actionTypes.FETCH_INWARD_LIST_WITH_OLD_API_REQUEST,
+  page,
+  pageSize,
+  searchValue,
+  partyId,
+  sortKey,
+  sortOrder,
+  filterInfo,
 });
 
 export const fetchInwardListOldAPISuccess = (inwardList, totalItems) => ({

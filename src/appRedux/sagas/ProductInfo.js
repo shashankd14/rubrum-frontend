@@ -805,7 +805,7 @@ function* getRefinedProductsByMap(action) {
 function* getRefinedProducts(action) {
   const body = {
     pageNo: 1,
-    pageSize: 1,
+    pageSize: 10,
     categoryId: action.allDetails.categoryId
       ? action.allDetails.categoryId
       : undefined,

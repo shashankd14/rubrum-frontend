@@ -206,7 +206,8 @@ function List(props) {
             key: "plannedLength",
           },
           { title: "Width", dataIndex: "plannedWidth", key: "plannedWidth" },
-          { title: "SO no", key: "packetStatus", dataIndex: "packetStatus" },
+          { title: "Weight", dataIndex: "plannedWeight", key: "plannedWeight" },
+          { title: "SO no", key: "soNo", dataIndex: "soNo" },
         ];
     
         return (

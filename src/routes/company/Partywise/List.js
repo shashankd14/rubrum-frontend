@@ -1,7 +1,17 @@
 //src-routes-company-Partywise-List.js
 import React, { useEffect, useState, useRef } from "react";
 import { connect } from "react-redux";
-import { Button, Card, Divider, Select, Table, Modal, message, Input, Icon } from "antd";
+import {
+  Button,
+  Card,
+  Divider,
+  Select,
+  Table,
+  Modal,
+  message,
+  Input,
+  Icon,
+} from "antd";
 import SearchBox from "../../../components/SearchBox";
 
 import IntlMessages from "../../../util/IntlMessages";
@@ -14,27 +24,31 @@ import {
   fetchPartyList,
   setInwardSelectedForDelivery,
 } from "../../../appRedux/actions";
-import {sidebarMenuItems} from "../../../constants";
+import { sidebarMenuItems } from "../../../constants";
+import { use } from "react";
 
 const Option = Select.Option;
 
 const partyWiseMenuConstants = {
-  'plan': "Plan",
-  'retrieve': 'Retrieve',
-  'view': 'View',
-  'export': 'Export',
-  'cancelFinish': 'Cancel Finish',
-  'editFinish': 'Edit Finish',
-  'addInward': 'Add Inward',
-  'deliver': 'Deliver',
-}
+  plan: "Plan",
+  retrieve: "Retrieve",
+  view: "View",
+  export: "Export",
+  cancelFinish: "Cancel Finish",
+  editFinish: "Edit Finish",
+  addInward: "Add Inward",
+  deliver: "Deliver",
+};
 
-const filterLabels = { 'ageing' : 'Age', 'fThickness': 'Thickness', 'fWidth' : 'Width', 'fLength': 'Length'};
+const filterLabels = {
+  ageing: "Age",
+  fThickness: "Thickness",
+  fWidth: "Width",
+  fLength: "Length",
+};
 
 const List = (props) => {
   const [sortedInfo, setSortedInfo] = useState({
-    // order: "descend",
-    // columnKey: "age",
     order: "ASC",
     columnKey: "fThickness",
   });
@@ -44,11 +58,11 @@ const List = (props) => {
 
   const [customerValue, setCustomerValue] = useState("");
   const { inwardList, totalItems } = props.inward;
-  
+
   let searchInput = useRef(true);
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
-   confirm();
+    confirm();
   };
 
   // const [filteredInwardList, setFilteredInwardList] = useState(inwardList);
@@ -64,15 +78,12 @@ const List = (props) => {
   const [showRetrieve, setShowRetrieve] = React.useState(false);
   const [selectedCoil, setSelectedCoil] = React.useState([]);
   const [pageSize, setPageSize] = useState(15);
-  const [sortColumn, setSortColumn] = useState(null);
-  const [sortOrder, setSortOrder] = useState(null);
-  
+  const [sortColumn, setSortColumn] = useState('coilnumber');
+  const [sortOrder, setSortOrder] = useState('ASC');
+
   const getColumnSearchProps = (dataIndex) => ({
-    filterDropdown: ({
-      confirm,
-      clearFilters,
-    }) => {
-      let filterVariable = '';
+    filterDropdown: ({ confirm, clearFilters }) => {
+      let filterVariable = "";
       return (
         <div style={{ padding: 8 }}>
           <div
@@ -154,7 +165,8 @@ const List = (props) => {
             </Button>
           </div>
         </div>
-      );},
+      );
+    },
     filterIcon: (filtered) => (
       <Icon type="search" style={{ color: filtered ? "#1890ff" : undefined }} />
     ),
@@ -170,51 +182,40 @@ const List = (props) => {
     {
       title: "Batch no.",
       dataIndex: "coilNumber",
-      key: "coilNumber",
+      key: "coilnumber",
       filters: [],
-      sorter: (a, b) => a.coilNumber?.length - b.coilNumber?.length,
-      sortOrder: sortedInfo.columnKey === "coilNumber" && sortedInfo.order,
+      sorter: true,
+      sortOrder:
+        sortedInfo.columnKey === "coilnumber" ? sortedInfo.order : null,
     },
     {
       title: "SC inward id",
       dataIndex: "customerBatchId",
       key: "customerBatchId",
+      sorter: false,
       filteredValue: filteredInfo ? filteredInfo["customerBatchId"] : null,
       onFilter: (value, record) => record.customerBatchId == value,
       filters: [],
-      sorter: (a, b) => a.customerBatchId?.length - b.customerBatchId?.length,
-      sortOrder: sortedInfo.columnKey === "customerBatchId" && sortedInfo.order,
+      // sorter: true,
       render: (text, record) => {
         return record.customerBatchId == "undefined" ||
           record.batch == "undefined"
           ? "-"
           : record.customerBatchId || record.batch;
       },
-      // render: (text, record) => {
-      //   if (record.customerBatchId) return record.customerBatchId;
-      //   else {
-      //     let batchId = "";
-      //     expandedRow.forEach((row) => {
-      //       if (row.child.includes(record.instructionId)) {
-      //         batchId = row.batch;
-      //       }
-      //     });
-      //     return batchId;
-      //   }
-      // },
     },
     {
       title: "Material",
       dataIndex: "material.mmDescConcatenated",
       key: "material.mmDescConcatenated",
+      sorter: false,
     },
     {
       title: "Available Quantity",
       dataIndex: "inStockWeight",
       key: "inStockWeight",
       filters: [],
-      sorter: (a, b) => a.inStockWeight - b.inStockWeight,
-      sortOrder: sortedInfo.columnKey === "inStockWeight" && sortedInfo.order,
+      sorter: false,
       render: (text, record) => {
         return (
           record.inStockWeight || record.actualWeight || record.plannedWeight
@@ -224,9 +225,9 @@ const List = (props) => {
     {
       title: "Ageing (Days)",
       dataIndex: "ageing",
-      key: "ageing",
-      sorter: (a, b) => a.ageing - b.ageing,
-      sortOrder: sortedInfo.columnKey === "ageing" && sortedInfo.order,
+      key: "coilage",
+      sorter: true,
+      sortOrder: sortedInfo.columnKey === "coilage" ? sortedInfo.order : null,
       render: (text, record) => {
         return record.ageing == "undefined" || record.ageing == ""
           ? "-"
@@ -240,9 +241,10 @@ const List = (props) => {
     {
       title: "Thickness (mm)",
       dataIndex: "fThickness",
-      key: "fThickness",
-      sorter: (a, b) => a.fThickness - b.fThickness,
-      sortOrder: sortedInfo.columnKey === "fThickness" && sortedInfo.order,
+      key: "fthickness",
+      sorter: true,
+      sortOrder:
+        sortedInfo.columnKey === "fthickness" ? sortedInfo.order : null,
       render: (text, record) => {
         return record.fThickness == "undefined" || record.fThickness == ""
           ? "-"
@@ -258,9 +260,9 @@ const List = (props) => {
     {
       title: "Width (mm)",
       dataIndex: "fWidth",
-      key: "fWidth",
-      sorter: (a, b) => a.fWidth - b.fWidth,
-      sortOrder: sortedInfo.columnKey === "fWidth" && sortedInfo.order,
+      key: "fwidth",
+      sorter: true,
+      sortOrder: sortedInfo.columnKey === "fwidth" ? sortedInfo.order : null,
       render: (text, record) => {
         return record.fWidth == "undefined" || record.fWidth == ""
           ? "-"
@@ -275,9 +277,9 @@ const List = (props) => {
     {
       title: "Length (mm)",
       dataIndex: "fLength",
-      key: "fLength",
-      sorter: (a, b) => a.fLength - b.fLength,
-      sortOrder: sortedInfo.columnKey === "fLength" && sortedInfo.order,
+      key: "flength",
+      sorter: true,
+      sortOrder: sortedInfo.columnKey === "flength" ? sortedInfo.order : null,
       filteredValue:
         filteredInfo && filteredInfo?.["fLength"]
           ? filteredInfo["fLength"]
@@ -288,14 +290,13 @@ const List = (props) => {
       title: "Status",
       dataIndex: "status.statusName",
       key: "status.statusName",
-      sorter: (a, b) => a.status.statusName.length - b.status.statusName.length,
-      sortOrder:
-        sortedInfo.columnKey === "status.statusName" && sortedInfo.order,
+      sorter: false,
     },
     {
       title: "Classification",
       dataIndex: "packetClassification.classificationName",
       key: "packetClassification.classificationName",
+      sorter: false,
     },
     partywisepermission === "ENDUSER_TAG_WISE_PACKETS"
       ? {}
@@ -382,21 +383,33 @@ const List = (props) => {
 
   useEffect(() => {
     props.fetchPartyList();
-  }, []);
-
-  useEffect(() => {
-    const menus = localStorage.getItem('Menus') ? JSON.parse(localStorage.getItem('Menus')) : [];
-    if(menus.length > 0) {
-      const menuLabels = menus.filter(menu => menu.menuKey === sidebarMenuItems.partywiseRegister);
+    props.fetchInwardList(
+      1,
+      20,
+      searchValue,
+      customerValue,
+      sortOrder,
+      sortColumn,
+      filteredInfo
+    );
+    const menus = localStorage.getItem("Menus")
+      ? JSON.parse(localStorage.getItem("Menus"))
+      : [];
+    if (menus.length > 0) {
+      const menuLabels = menus.filter(
+        (menu) => menu.menuKey === sidebarMenuItems.partywiseRegister
+      );
       let menuPartyWiseLabels = [];
-      if(menuLabels.length > 0) {
-        menuPartyWiseLabels = menuLabels[0]?.permission ? menuLabels[0]?.permission?.split(',') : [];
-        if(menuLabels.length === 1)
+      if (menuLabels.length > 0) {
+        menuPartyWiseLabels = menuLabels[0]?.permission
+          ? menuLabels[0]?.permission?.split(",")
+          : [];
+        if (menuLabels.length === 1)
           setPartywisePermission(menuLabels[0].permission);
       }
       setMenuPartyWiseLabelList(menuPartyWiseLabels);
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
     if (totalItems) {
@@ -444,31 +457,20 @@ const List = (props) => {
   //   }
   // }, [searchValue]);
 
-  useEffect(() => {
-props.fetchInwardList(
-  1,
-  20,
-  searchValue,
-  customerValue,
-  sortOrder,
-  sortColumn,
-  filteredInfo
-);
-  }, [])
-
   const handleChange = (pagination, filters, sorter, partyId) => {
-    // setSortedInfo(sorter);
+    setSortedInfo(sorter);
     setFilteredInfo(filters);
-    // setSortColumn(sorter.columnKey);
-    // setSortOrder(sorter.order === 'descend' ? 'DESC' : 'ASC');
+    setSortColumn(sorter.columnKey);
+    setSortOrder(sorter.order);
     setPageNo(pagination.current);
+
     props.fetchInwardList(
       pagination.current,
       pagination.pageSize,
       searchValue,
       customerValue,
-      sortOrder,
-      sortColumn,
+      sorter.order === "descend" ? "DESC" : "ASC",
+      sorter.columnKey,
       filters
     );
   };
@@ -479,7 +481,6 @@ props.fetchInwardList(
   //       props.fetchInwardList(pageNo, 20, searchValue, customerValue,  sortOrder, sortColumn, filteredInfo);
   //   }
   // }, [sortColumn, sortOrder]);
-
 
   const clearFilters = (value) => {
     setCustomerValue("");
@@ -495,14 +496,22 @@ props.fetchInwardList(
     if (value) {
       setCustomerValue(value);
       setPageNo(1);
-      props.fetchInwardList(1, pageSize, searchValue, value, sortOrder, sortColumn, filteredInfo);
+      props.fetchInwardList(
+        1,
+        pageSize,
+        searchValue,
+        value,
+        sortOrder,
+        sortColumn,
+        filteredInfo
+      );
     } else {
       setCustomerValue("");
       props.fetchInwardList(
         1,
         pageSize,
         searchValue,
-        '',
+        "",
         sortOrder,
         sortColumn,
         filteredInfo
@@ -564,8 +573,9 @@ props.fetchInwardList(
           });
         } else getKey(record, selected);
       }
-      const selectedCoil = selectedRows.map(row => row?.party?.nPartyId) || []
-      setSelectedCoil(Array.from(new Set(selectedCoil)))
+      const selectedCoil =
+        selectedRows.map((row) => row?.party?.nPartyId) || [];
+      setSelectedCoil(Array.from(new Set(selectedCoil)));
     },
     getCheckboxProps: (record) => ({
       disabled:
@@ -586,8 +596,9 @@ props.fetchInwardList(
           }
         });
       }
-      const selectedCoil = selectedRows.map(row => row?.party?.nPartyId) || []
-      setSelectedCoil(Array.from(new Set(selectedCoil)))
+      const selectedCoil =
+        selectedRows.map((row) => row?.party?.nPartyId) || [];
+      setSelectedCoil(Array.from(new Set(selectedCoil)));
     },
     selectedRowKeys: selectedCBKeys,
   };
@@ -598,7 +609,8 @@ props.fetchInwardList(
         <div>
           <a href={props?.inward.s3pdfurl?.inward_pdf} target="_blank">
             Inward PDF
-          </a> &nbsp;&nbsp;&nbsp;
+          </a>{" "}
+          &nbsp;&nbsp;&nbsp;
           {/* <a href={props?.inward.s3pdfurl?.qrcode_inward_pdf} target="_blank">
             Inward QR Code
           </a> */}
@@ -629,7 +641,6 @@ props.fetchInwardList(
       </>
     );
   };
-const setInwardList = [...props.inward.inwardList]; // force new reference
 
   return (
     <div>
@@ -771,7 +782,6 @@ const setInwardList = [...props.inward.inwardList]; // force new reference
             {gets3PDFurl()}
           </Modal>
         )}
-
         <Table
           key={props.inward?.inwardList[0]?.inwardEntryId || pageNo}
           scroll={{ y: 540 }}

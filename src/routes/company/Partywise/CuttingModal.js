@@ -1941,7 +1941,7 @@ useEffect(() => {
                           {props.coil.fQuantity}
                         </p>
                         <p>Available Length(mm): {length}</p>
-                        <p>Available Weight(kg) : {currentWeight}</p>
+                        <p>Available Weight (As per plan)(in kg) : {currentWeight}</p>
                         <p>Available Width(mm) : {widthValue}</p>
                       </Col>
                     </Row>

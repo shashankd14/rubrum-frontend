@@ -32,7 +32,6 @@ const QualityDetailsForm = (props) => {
 
   const handleChange = (e) => {
     props.inward.materialGrade.gradeName = e;
-    console.log(e);
   };
 
   useEffect(() => {
@@ -173,8 +172,8 @@ const QualityDetailsForm = (props) => {
               rules: [{ required: true, message: "Please enter YS" }],
             })(<Input />)}
           </Form.Item>
-          <Form.Item label="TA (MPA)">
-            {getFieldDecorator("ta", {
+          <Form.Item label="UTS (MPA)">
+            {getFieldDecorator("uts", {
               rules: [{ required: true, message: "Please enter TA" }],
             })(<Input />)}
           </Form.Item>

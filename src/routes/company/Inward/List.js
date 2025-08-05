@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { connect } from "react-redux";
-import { Button, Card, Divider, Icon, Table, message } from "antd";
+import { Button, Card, Divider, Icon, Table, message, Input } from "antd";
 import moment from "moment";
 import SearchBox from "../../../components/SearchBox";
 import { useHistory } from "react-router-dom";
@@ -12,24 +12,32 @@ import {
   deleteInwardEntryById,
   resetDeleteInward,
   fetchPartyListById,
+
 } from "../../../appRedux/actions/Inward";
-import { onDeleteContact } from "../../../appRedux/actions";
-import {sidebarMenuItems} from "../../../constants";
+import { getProductGradesList } from "../../../appRedux/actions";
+import { sidebarMenuItems } from "../../../constants";
 
 const inwardMenuConstants = {
-  'view': "View",
-  'addInward': 'Add Inward',
-  'export': 'Export',
-}
+  view: "View",
+  addInward: "Add Inward",
+  export: "Export",
+};
+
+const filterLabels = {
+  ageing: "Age",
+  fThickness: "Thickness",
+  fWidth: "Width",
+  fLength: "Length",
+};
 
 const List = (props) => {
   const [sortedInfo, setSortedInfo] = useState({
-    order: "descend",
-    columnKey: "age",
+    order: "ascend",
+    columnKey: "fwidth",
   });
-    const history = useHistory();
+  const history = useHistory();
 
-  const [filteredInfo, setFilteredInfo] = useState(null);
+  const [filteredInfo, setFilteredInfo] = useState({});
   const [searchValue, setSearchValue] = useState("");
   const [filteredInwardList, setFilteredInwardList] = useState(
     props.inward.inwardList
@@ -40,23 +48,126 @@ const List = (props) => {
   const [menuInwardLabelList, setMenuInwardLabelList] = useState([]);
 
   const { totalItems } = props.inward;
+  let searchInput = useRef(true);
+
+  const handleSearch = (selectedKeys, confirm, dataIndex) => {
+    confirm();
+  };
+
+  const getColumnSearchProps = (dataIndex) => ({
+    filterDropdown: ({ confirm, clearFilters }) => {
+      let filterVariable = "";
+      return (
+        <div style={{ padding: 8 }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              gap: "4px",
+            }}
+          >
+            <Input
+              ref={(node) => {
+                searchInput = node;
+              }}
+              placeholder={`Min ${filterLabels[dataIndex]}`}
+              value={filteredInfo[dataIndex] ? filteredInfo[dataIndex][0] : ""}
+              onChange={(e) => {
+                const newArray = filteredInfo[dataIndex]
+                  ? filteredInfo[dataIndex]
+                  : [];
+                newArray[0] = e.target.value ? e.target.value : "";
+                setFilteredInfo({
+                  ...filteredInfo,
+                  [dataIndex]: [...newArray],
+                });
+              }}
+              onPressEnter={() =>
+                handleSearch(filteredInfo, confirm, dataIndex)
+              }
+              style={{ width: 80, marginBottom: 8, display: "flex", flex: 1 }}
+            />
+            <Input
+              ref={(node) => {
+                searchInput = node;
+              }}
+              placeholder={`Max ${filterLabels[dataIndex]}`}
+              value={filteredInfo[dataIndex] ? filteredInfo[dataIndex][1] : ""}
+              onChange={(e) => {
+                const newArray = filteredInfo[dataIndex]
+                  ? filteredInfo[dataIndex]
+                  : [];
+                newArray[1] = e.target.value ? e.target.value : "";
+                setFilteredInfo({
+                  ...filteredInfo,
+                  [dataIndex]: [...newArray],
+                });
+              }}
+              onPressEnter={() =>
+                handleSearch(filteredInfo, confirm, dataIndex)
+              }
+              style={{ width: 80, marginBottom: 8, display: "flex", flex: 1 }}
+            />
+          </div>
+          <div>
+            <Button
+              type="primary"
+              onClick={() => {
+                props.fetchInwardListOldAPI(
+                  1,
+                  20,
+                  searchValue,
+                  "",
+                  sortedInfo.order === "descend" ? "DESC" : "ASC",
+                  sortedInfo.columnKey,
+                  filteredInfo
+                );
+              }}
+              icon="search"
+              size="small"
+              style={{ width: 90, marginRight: 8 }}
+            >
+              Search
+            </Button>
+            <Button
+              onClick={() => {
+                clearFilters(clearFilters);
+                }}
+              size="small"
+              style={{ width: 90 }}
+            >
+              Reset
+            </Button>
+          </div>
+        </div>
+      );
+    },
+    filterIcon: (filtered) => (
+      <Icon type="search" style={{ color: filtered ? "#1890ff" : undefined }} />
+    ),
+    onFilterDropdownVisibleChange: (visible) => {
+      if (visible) {
+        setTimeout(() => searchInput.select());
+      }
+    },
+    // render: (text) => ("age" === dataIndex ? <></> : text),
+  });
 
   const columns = [
     {
       title: "Batch no.",
       dataIndex: "coilNumber",
-      key: "coilNumber",
+      key: "coilnumber",
       filters: [],
-      sorter: (a, b) => a.coilNumber.length - b.coilNumber.length,
-      sortOrder: sortedInfo.columnKey === "coilNumber" && sortedInfo.order,
+      sorter: true,
+      sortOrder: sortedInfo.columnKey === "coilnumber" && sortedInfo.order,
     },
     {
       title: "SC Inward id",
       dataIndex: "customerBatchId",
       key: "customerBatchId",
       filters: [],
-      sorter: (a, b) => a.customerBatchId.length - b.customerBatchId.length,
-      sortOrder: sortedInfo.columnKey === "customerBatchId" && sortedInfo.order,
+      sorter: false,
       render: (text, record) => {
         return record.customerBatchId == "undefined" ||
           record.batch == "undefined"
@@ -68,8 +179,6 @@ const List = (props) => {
       title: "Location",
       dataIndex: "party.partyName",
       key: "party.partyName",
-      sorter: (a, b) => a.party.partyName.length - b.party.partyName.length,
-      sortOrder: sortedInfo.columnKey === "party.partyName" && sortedInfo.order,
     },
     {
       title: "Inward Date",
@@ -79,8 +188,6 @@ const List = (props) => {
       },
       key: "dReceivedDate",
       filters: [],
-      sorter: (a, b) => a.dReceivedDate - b.dReceivedDate,
-      sortOrder: sortedInfo.columnKey === "dReceivedDate" && sortedInfo.order,
     },
     {
       title: "Material",
@@ -89,41 +196,39 @@ const List = (props) => {
     },
     {
       title: "Material Grade",
-      dataIndex: "material.materialGrade",
-      key: "material.materialGrade",
+      dataIndex: "materialGrade.gradeName",
+      key: "gradename",
+      sorter: true,
+      sortOrder: sortedInfo.columnKey === "gradename" && sortedInfo.order,
     },
     {
       title: "Thickness",
       dataIndex: "fThickness",
       key: "fThickness",
       filters: [],
-      sorter: (a, b) => a.fThickness - b.fThickness,
-      sortOrder: sortedInfo.columnKey === "fThickness" && sortedInfo.order,
     },
     {
       title: "Width",
       dataIndex: "fWidth",
-      key: "fWidth",
+      key: "fwidth",
       filters: [],
-      sorter: (a, b) => a.fWidth - b.fWidth,
-      sortOrder: sortedInfo.columnKey === "fWidth" && sortedInfo.order,
+      sorter: true,
+      sortOrder: sortedInfo.columnKey === "fwidth" && sortedInfo.order,
+      filteredValue:
+        filteredInfo && filteredInfo["fWidth"] ? filteredInfo["fWidth"] : null,
+      ...getColumnSearchProps("fWidth"),
     },
     {
       title: "Weight",
       dataIndex: "fQuantity",
       key: "fQuantity",
       filters: [],
-      sorter: (a, b) => a.fQuantity - b.fQuantity,
-      sortOrder: sortedInfo.columnKey === "fQuantity" && sortedInfo.order,
     },
     {
       title: "Status",
       dataIndex: "status.statusName",
       key: "status.statusName",
       filters: [],
-      sorter: (a, b) => a.status.statusName.length - b.status.statusName.length,
-      sortOrder:
-        sortedInfo.columnKey === "status.statusName" && sortedInfo.order,
     },
     {
       title: "Action",
@@ -152,7 +257,6 @@ const List = (props) => {
     id.push(record.inwardEntryId);
     e.preventDefault();
     props.deleteInwardEntryById(id);
-    console.log(record, key);
   };
 
   const onEdit = (record, key, e) => {
@@ -161,7 +265,11 @@ const List = (props) => {
       props.history.push(`create/${record.inwardEntryId}`);
     }, 2000);
   };
-  
+
+  useEffect(() => {
+    props.fetchInwardListOldAPI(1, 15, "");
+  }, []);
+
   useEffect(() => {
     if (props.inward.deleteSuccess) {
       message.success("Successfully deleted the coil", 2).then(() => {
@@ -169,7 +277,7 @@ const List = (props) => {
       });
     }
   }, [props.inward.deleteSuccess]);
-  
+
   useEffect(() => {
     if (props.inward.deleteFail) {
       message.success("Unable to delete the coil", 2).then(() => {
@@ -184,50 +292,71 @@ const List = (props) => {
     }
   }, [totalItems]);
 
-  useEffect(() => {
-    if (searchValue) {
-      if (searchValue.length >= 3) {
-        setPageNo(1);
-        props.fetchInwardListOldAPI(1, 15, searchValue);
-      }
-    } else {
-      setPageNo(1);
-      props.fetchInwardListOldAPI(1, 15, searchValue);
-    }
-  }, [searchValue]);
+  // useEffect(() => {
+  //   if (searchValue) {
+  //     if (searchValue.length >= 3) {
+  //       setPageNo(1);
+  //       props.fetchInwardListOldAPI(1, 15, searchValue);
+  //     }
+  //   } else {
+  //     setPageNo(1);
+  //     props.fetchInwardListOldAPI(1, 15, searchValue);
+  //   }
+  // }, [searchValue]);
 
   const handleChange = (pagination, filters, sorter) => {
     setSortedInfo(sorter);
     setFilteredInfo(filters);
+    setPageNo(pagination.current);
+
+    props.fetchInwardListOldAPI(
+      pagination.current,
+      pagination.pageSize,
+      searchValue,
+      "",
+      sorter.order === "descend" ? "DESC" : "ASC",
+      sorter.columnKey,
+      filters
+    );
   };
 
-  const clearFilters = () => {
-    setFilteredInfo(null);
+  const clearFilters = (value) => {
+    // setCustomerValue("");
+    setFilteredInfo({});
+    setSearchValue("");
+    setPageNo(1);
+    props.fetchInwardListOldAPI(1, 15);
   };
-  
+
   const exportSelectedData = () => {};
 
   const deleteSelectedCoils = () => {
     console.log("dfd");
   };
 
-  useEffect(() => {
-    if (!props.inward.loading && props.inward.success) {
-      setFilteredInwardList(props.inward.inwardList);
-    }
-  }, [props.inward.loading, props.inward.success]);
+  // useEffect(() => {
+  //   if (!props.inward.loading && props.inward.success) {
+  //     setFilteredInwardList(props.inward.inwardList);
+  //   }
+  // }, [props.inward.loading, props.inward.success]);
 
   useEffect(() => {
-    const menus = localStorage.getItem('Menus') ? JSON.parse(localStorage.getItem('Menus')) : [];
-    if(menus.length > 0) {
-      const menuLabels = menus.filter(menu => menu.menuKey === sidebarMenuItems.inward);
+    const menus = localStorage.getItem("Menus")
+      ? JSON.parse(localStorage.getItem("Menus"))
+      : [];
+    if (menus.length > 0) {
+      const menuLabels = menus.filter(
+        (menu) => menu.menuKey === sidebarMenuItems.inward
+      );
       let menuInwardLabels = [];
-      if(menuLabels.length > 0) {
-        menuInwardLabels = menuLabels[0]?.permission ? menuLabels[0]?.permission?.split(',') : [];
+      if (menuLabels.length > 0) {
+        menuInwardLabels = menuLabels[0]?.permission
+          ? menuLabels[0]?.permission?.split(",")
+          : [];
       }
       setMenuInwardLabelList(menuInwardLabels);
     }
-  }, [])
+  }, []);
 
   return (
     <div>
@@ -237,44 +366,73 @@ const List = (props) => {
       <Card>
         <div className="gx-flex-row gx-flex-1">
           <div className="table-operations gx-col">
-            {menuInwardLabelList.length > 0 && menuInwardLabelList.includes(inwardMenuConstants.delete) &&
-                <Button onClick={deleteSelectedCoils}>Delete</Button>}
-            {menuInwardLabelList.length > 0 && menuInwardLabelList.includes(inwardMenuConstants.export) && <Button onClick={exportSelectedData}>Export</Button>}
+            {menuInwardLabelList.length > 0 &&
+              menuInwardLabelList.includes(inwardMenuConstants.delete) && (
+                <Button onClick={deleteSelectedCoils}>Delete</Button>
+              )}
+            {menuInwardLabelList.length > 0 &&
+              menuInwardLabelList.includes(inwardMenuConstants.export) && (
+                <Button onClick={exportSelectedData}>Export</Button>
+              )}
             <Button onClick={clearFilters}>Clear All filters</Button>
           </div>
           <div className="gx-flex-row gx-w-50">
-            {menuInwardLabelList.length > 0 && menuInwardLabelList.includes(inwardMenuConstants.addInward) && <Button
-              type="primary"
-              icon={() => <i className="icon icon-add" />}
-              size="default"
-              onClick={() => {
-                history.push("/company/inward/create");
-                // window.location.reload("/company/inward/create");
-                // window.location.href = window.location.origin+'#/company/inward/create';
-              }}
-            >
-              Add Inward
-            </Button>}
+            {menuInwardLabelList.length > 0 &&
+              menuInwardLabelList.includes(inwardMenuConstants.addInward) && (
+                <Button
+                  type="primary"
+                  icon={() => <i className="icon icon-add" />}
+                  size="default"
+                  onClick={() => {
+                    history.push("/company/inward/create");
+                    // window.location.reload("/company/inward/create");
+                    // window.location.href = window.location.origin+'#/company/inward/create';
+                  }}
+                >
+                  Add Inward
+                </Button>
+              )}
             <SearchBox
               styleName="gx-flex-1"
               placeholder="Search for batch no. or location..."
               value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
+              onChange={(e) => {
+                setSearchValue(e.target.value);
+                if (e.target.value.length > 3) {
+                  props.fetchInwardListOldAPI(
+                    1,
+                    20,
+                    e.target.value,
+                    "",
+                    sortedInfo.order === "descend" ? "DESC" : "ASC",
+                    sortedInfo.columnKey,
+                    filteredInfo
+                  );
+                } else {
+                  props.fetchInwardList(
+                    1,
+                    20,
+                    e.target.value,
+                    "",
+                    sortedInfo.order === "descend" ? "DESC" : "ASC",
+                    sortedInfo.columnKey,
+                    filteredInfo
+                  );
+                }
+              }}
             />
           </div>
         </div>
         <Table
+          key={props.inward?.inwardList[0]?.inwardEntryId || pageNo}
           rowSelection={[]}
           className="gx-table-responsive"
           columns={columns}
-          dataSource={filteredInwardList}
+          rowKey={(record) => record.inwardEntryId}
+          dataSource={[...props.inward.inwardList]}
           onChange={handleChange}
           pagination={{
             pageSize: 15,
-            onChange: (page) => {
-              setPageNo(page);
-              props.fetchInwardListOldAPI(page, 15, searchValue);
-            },
             current: pageNo,
             total: totalPageItems,
           }}
@@ -294,4 +452,5 @@ export default connect(mapStateToProps, {
   deleteInwardEntryById,
   fetchPartyListById,
   resetDeleteInward,
+  getProductGradesList,
 })(List);

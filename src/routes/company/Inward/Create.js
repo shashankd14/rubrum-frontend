@@ -67,7 +67,6 @@ const CreateForm = (props) => {
 
     useEffect(() => {   
         if(props.match.params.inwardEntryId) {
-            console.log(props.inward.inward.mmId);
             props.searchByMaterialId(props.inward.inward.mmId);
         }
     }, [props.match.params.inwardEntryId]);
