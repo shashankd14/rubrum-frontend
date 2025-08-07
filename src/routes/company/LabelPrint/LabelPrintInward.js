@@ -37,19 +37,19 @@ const LabelPrintInward = (props) => {
         dataIndex: "coilNo",
         key: "coilNo",
         filters: [],
-        sorter: (a, b) => a.coilNo.length - b.coilNo.length,
-        sortOrder: sortedInfo.columnKey === "coilNo" && sortedInfo.order,
+        sorter: false,
       },
       {
         title: "SC inward id",
         dataIndex: "customerBatchNo",
         key: "customerBatchNo",
-        filteredValue: filteredInfo ? filteredInfo["customerBatchNo"] : null,
-        onFilter: (value, record) => record.customerBatchNo == value,
-        filters: [],
-        sorter: (a, b) => a.customerBatchNo.length - b.customerBatchNo.length,
-        sortOrder:
-          sortedInfo.columnKey === "customerBatchNo" && sortedInfo.order,
+        sorter: false,
+        render: (text, record) => {
+          return record.customerBatchNo == "undefined" ||
+            record.batch == "undefined"
+            ? "-"
+            : record.customerBatchId || record.batch;
+        },
       },
       {
         title: "Inward Date",
@@ -62,54 +62,37 @@ const LabelPrintInward = (props) => {
         },
         key: "planDate",
         filters: [],
-        sorter: (a, b) =>
-          moment(a.planDate, "DD/MM/YYYY").valueOf() -
-          moment(b.planDate, "DD/MM/YYYY").valueOf(),
-        sortOrder: sortedInfo.columnKey === "planDate" && sortedInfo.order,
+        sorter: false,
       },
       {
         title: "Material",
         dataIndex: "materialDesc",
         key: "materialDesc",
-        filteredValue: filteredInfo ? filteredInfo["materialDesc"] : null,
-        onFilter: (value, record) => record.materialDesc == value,
-        filters: [],
-        sorter: (a, b) => a.materialDesc.length - b.materialDesc.length,
-        sortOrder: sortedInfo.columnKey === "materialDesc" && sortedInfo.order,
+        sorter: false,
       },
       {
         title: "Grade",
         dataIndex: "materialGrade",
         key: "materialGrade",
-        filteredValue: filteredInfo ? filteredInfo["materialGrade"] : null,
-        onFilter: (value, record) => record.materialGrade == value,
-        filters: [],
-        sorter: (a, b) => a.materialGrade.length - b.materialGrade.length,
-        sortOrder: sortedInfo.columnKey === "materialGrade" && sortedInfo.order,
+        sorter: false,
       },
       {
         title: "Thickness",
         dataIndex: "fthickness",
         key: "fthickness",
-        filters: [],
-        sorter: (a, b) => a.fthickness - b.fthickness,
-        sortOrder: sortedInfo.columnKey === "fthickness" && sortedInfo.order,
+        sorter: false,
       },
       {
         title: "Width",
         dataIndex: "fwidth",
         key: "fwidth",
-        filters: [],
-        sorter: (a, b) => a.fwidth - b.fwidth,
-        sortOrder: sortedInfo.columnKey === "fwidth" && sortedInfo.order,
+        sorter: false,
       },
       {
         title: "Weight",
         dataIndex: "targetWeight",
         key: "targetWeight",
-        filters: [],
-        sorter: (a, b) => a.targetWeight - b.targetWeight,
-        sortOrder: sortedInfo.columnKey === "targetWeight" && sortedInfo.order,
+        sorter: false,
       },
       {
         title: "Action",
@@ -250,6 +233,7 @@ const LabelPrintInward = (props) => {
 
                 </div>
             </div>
+            <br></br>
             {/* <div className="gx-flex-row gx-flex-1"> */}
             <div>
                 <Table

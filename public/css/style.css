@@ -37330,3 +37330,7 @@ textarea.gx-chat-textarea {
   line-height: 20px;
   letter-spacing: -0.14;
 }
+
+.table-row-dark {
+  background-color: #fbfbfb;
+}

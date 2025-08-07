@@ -24,11 +24,11 @@ const getHeaders = () => ({
   Authorization: getUserToken(),
 });
 
-function* fetchAllPackets({ page = 1, pageSize = 15, searchValue = "" }) {
+function* fetchAllPackets(action) {
   const body = {
-    pageNo: page,
-    pageSize: pageSize,
-    searchText: searchValue,
+    pageNo: action.page,
+    pageSize: action.pageSize,
+    searchText: "",
     partyId: "",
   };
 

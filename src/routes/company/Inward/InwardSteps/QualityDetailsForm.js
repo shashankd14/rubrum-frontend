@@ -290,9 +290,9 @@ const QualityDetails = Form.create({
         ...props.inward.ys,
         value: props.inward.ys ? props.inward.ys : "",
       }),
-      ta: Form.createFormField({
-        ...props.inward.ta,
-        value: props.inward.ta ? props.inward.ta : "",
+      uts: Form.createFormField({
+        ...props.inward.uts,
+        value: props.inward.uts ? props.inward.uts : "",
       }),
       el: Form.createFormField({
         ...props.inward.el,

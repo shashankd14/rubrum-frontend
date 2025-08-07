@@ -13,6 +13,7 @@ import {
   Icon,
 } from "antd";
 import SearchBox from "../../../components/SearchBox";
+import moment from "moment";
 
 import IntlMessages from "../../../util/IntlMessages";
 import {
@@ -97,34 +98,13 @@ const List = (props) => {
               ref={(node) => {
                 searchInput = node;
               }}
-              placeholder={`Min ${filterLabels[dataIndex]}`}
+              placeholder={`Search ${filterLabels[dataIndex]}`}
               value={filteredInfo[dataIndex] ? filteredInfo[dataIndex][0] : ""}
               onChange={(e) => {
                 const newArray = filteredInfo[dataIndex]
                   ? filteredInfo[dataIndex]
                   : [];
                 newArray[0] = e.target.value ? e.target.value : "";
-                setFilteredInfo({
-                  ...filteredInfo,
-                  [dataIndex]: [...newArray],
-                });
-              }}
-              onPressEnter={() =>
-                handleSearch(filteredInfo, confirm, dataIndex)
-              }
-              style={{ width: 80, marginBottom: 8, display: "flex", flex: 1 }}
-            />
-            <Input
-              ref={(node) => {
-                searchInput = node;
-              }}
-              placeholder={`Max ${filterLabels[dataIndex]}`}
-              value={filteredInfo[dataIndex] ? filteredInfo[dataIndex][1] : ""}
-              onChange={(e) => {
-                const newArray = filteredInfo[dataIndex]
-                  ? filteredInfo[dataIndex]
-                  : [];
-                newArray[1] = e.target.value ? e.target.value : "";
                 setFilteredInfo({
                   ...filteredInfo,
                   [dataIndex]: [...newArray],
@@ -229,7 +209,9 @@ const List = (props) => {
       sorter: true,
       sortOrder: sortedInfo.columnKey === "coilage" ? sortedInfo.order : null,
       render: (text, record) => {
-        return record.ageing == "undefined" || record.ageing == ""
+        return record.instructionId
+          ? moment().diff(record.instructionDate, "days")
+          : record.ageing == "undefined" || record.ageing == ""
           ? "-"
           : record.ageing;
       },
@@ -246,7 +228,9 @@ const List = (props) => {
       sortOrder:
         sortedInfo.columnKey === "fthickness" ? sortedInfo.order : null,
       render: (text, record) => {
-        return record.fThickness == "undefined" || record.fThickness == ""
+        return record.instructionId
+          ? record.fThickness
+          : record.fThickness == "undefined" || record.fThickness == ""
           ? "-"
           : record.fThickness;
       },
@@ -264,7 +248,9 @@ const List = (props) => {
       sorter: true,
       sortOrder: sortedInfo.columnKey === "fwidth" ? sortedInfo.order : null,
       render: (text, record) => {
-        return record.fWidth == "undefined" || record.fWidth == ""
+        return record.instructionId
+          ? record?.plannedWidth
+          : record.fWidth == "undefined" || record.fWidth == ""
           ? "-"
           : record.fWidth;
       },
@@ -284,6 +270,9 @@ const List = (props) => {
         filteredInfo && filteredInfo?.["fLength"]
           ? filteredInfo["fLength"]
           : null,
+      render: (text, record) => {
+        return record.fLength || record.plannedLength;
+      },
       ...getColumnSearchProps("fLength"),
     },
     {
@@ -783,6 +772,9 @@ const List = (props) => {
           </Modal>
         )}
         <Table
+          rowClassName={(record, index) =>
+            record.instructionId ? "table-row-dark" : "table-row-light"
+          }
           key={props.inward?.inwardList[0]?.inwardEntryId || pageNo}
           scroll={{ y: 540 }}
           className="gx-table-responsive"

@@ -341,18 +341,31 @@ function* fetchInwardListWithOldAPI(action) {
   }
 }
 
-function* fetchWIPInwardList({
-  page = 1,
-  pageSize = 15,
-  searchValue = "",
-  partyId = "",
-}) {
+function* fetchWIPInwardList(action) {
+  const body = {
+    pageNo: action.page,
+    pageSize: action.pageSize,
+    searchText: action.searchValue,
+    partyId: action.partyId,
+    sortColumn: action.sortOrder,
+    sortOrder: action.sortKey,
+    ...(action.filterInfo !== undefined &&
+    action.filterInfo["materialDesc"] !== null
+      ? {
+          materialFilterValue: action.filterInfo["materialDesc"]
+            ? action.filterInfo["materialDesc"][0]
+            : "",
+        }
+      : ""),
+  };
   try {
+    // const fetchInwardList = yield fetch(`${baseUrl}api/inwardEntry/partywise/${page}/${pageSize}?searchText=${searchValue}&partyId=${partyId}`, {
     const fetchWIPInwardList = yield fetch(
-      `${baseUrl}api/inwardEntry/wiplist/${page}/${pageSize}?searchText=${searchValue}&partyId=${partyId}`,
+      `${baseUrl}api/inwardEntry/wiplist`,
       {
-        method: "GET",
-        headers: getHeaders(),
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...getHeaders() },
+        body: JSON.stringify(body),
       }
     );
     if (fetchWIPInwardList.status === 200) {

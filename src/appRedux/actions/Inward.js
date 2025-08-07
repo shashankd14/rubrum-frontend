@@ -162,12 +162,23 @@ export const fetchInwardListOldAPIError = (error) => ({
     error
 });
 
-export const fetchWIPInwardList = (page, pageSize, searchValue, partyId) => ({
-    type: FETCH_WIP_INWARD_LIST_REQUEST,
-    page,
-    pageSize,
-    searchValue,
-    partyId
+export const fetchWIPInwardList = (
+  page,
+  pageSize,
+  searchValue,
+  partyId,
+  sortOrder,
+  sortColumn,
+  filterInfo
+) => ({
+  type: FETCH_WIP_INWARD_LIST_REQUEST,
+  page,
+  pageSize,
+  searchValue,
+  partyId,
+  sortOrder,
+  sortColumn,
+  filterInfo,
 });
 
 export const fetchWIPInwardListSuccess = (wipList, totalItems) => ({
