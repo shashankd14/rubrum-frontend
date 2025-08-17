@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {Menu} from "antd";
 import {Link} from "react-router-dom";
+import { Icon } from "antd";
 
 import CustomScrollbars from "util/CustomScrollbars";
 import SidebarLogo from "./SidebarLogo";
@@ -137,7 +138,7 @@ useEffect(() => setOpenKeys(getOpenKeys(pathname)), [pathname]);
                   title={
                     <span>
                       {" "}
-                      <i className="icon icon-dasbhoard" />
+                      <i className="icon icon-company" />
                       <span>
                         <IntlMessages id="sidebar.master" />
                       </span>
@@ -147,7 +148,7 @@ useEffect(() => setOpenKeys(getOpenKeys(pathname)), [pathname]);
                   {menuLabelList.includes(sidebarMenuItems.material) && (
                     <Menu.Item key="/company/master/material">
                       <Link to="/company/master/material">
-                        <i className="icon icon-crypto" />
+                        <i className="icon icon-diamond" style={{"min-width" : '14px'}} />
                         <span>
                           <IntlMessages id="sidebar.master.material" />
                         </span>
@@ -158,7 +159,7 @@ useEffect(() => setOpenKeys(getOpenKeys(pathname)), [pathname]);
                   {menuLabelList.includes(sidebarMenuItems.party) && (
                     <Menu.Item key="/company/master/party">
                       <Link to="/company/master/party">
-                        <i className="icon icon-crypto" />
+                        <i className="icon icon-location" />
                         <span>
                           <IntlMessages id="sidebar.master.party" />
                         </span>
@@ -169,7 +170,7 @@ useEffect(() => setOpenKeys(getOpenKeys(pathname)), [pathname]);
                   {menuLabelList.includes(sidebarMenuItems.party) && (
                     <Menu.Item key="/company/master/yieldLoss">
                       <Link to="/company/master/yieldLoss">
-                        <i className="icon icon-crypto" />
+                        <i className="icon icon-default-timeline" />
                         <span>
                           <IntlMessages id="sidebar.master.yieldLoss" />
                         </span>
@@ -180,7 +181,7 @@ useEffect(() => setOpenKeys(getOpenKeys(pathname)), [pathname]);
                   {menuLabelList.includes(sidebarMenuItems.rates) && (
                     <Menu.Item key="/company/master/rates">
                       <Link to="/company/master/rates">
-                        <i className="icon icon-crypto" />
+                        <Icon type="dollar" />
                         <span>
                           <IntlMessages id="sidebar.master.rates" />
                         </span>
@@ -191,7 +192,7 @@ useEffect(() => setOpenKeys(getOpenKeys(pathname)), [pathname]);
                   {menuLabelList.includes(sidebarMenuItems.packing) && (
                     <Menu.Item key="/company/master/packing">
                       <Link to="/company/master/packing">
-                        <i className="icon icon-crypto" />
+                        <Icon type="gift" />
                         <span>
                           <IntlMessages id="sidebar.master.packing" />
                         </span>
@@ -243,7 +244,7 @@ useEffect(() => setOpenKeys(getOpenKeys(pathname)), [pathname]);
                   {menuLabelList.includes(sidebarMenuItems.tags) && (
                     <Menu.Item key="/company/master/tags">
                       <Link to="/company/master/tags">
-                        <i className="icon icon-crypto" />
+                        <i className="icon icon-tag-o" />
                         <span>
                           <IntlMessages id="sidebar.master.tags" />
                         </span>
@@ -254,7 +255,7 @@ useEffect(() => setOpenKeys(getOpenKeys(pathname)), [pathname]);
                 {menuLabelList.includes(sidebarMenuItems.inward) && (
                   <Menu.Item key="/company/inward">
                     <Link to="/company/inward">
-                      <i className="icon icon-crypto" />
+                      <i className="icon icon-apps-new" />
                       <span>
                         <IntlMessages id="sidebar.company.inward" />
                       </span>
@@ -264,7 +265,7 @@ useEffect(() => setOpenKeys(getOpenKeys(pathname)), [pathname]);
                 {menuLabelList.includes(sidebarMenuItems.partywiseRegister) && (
                   <Menu.Item key="/company/locationwise-register">
                     <Link to="/company/locationwise-register">
-                      <i className="icon icon-crypto" />
+                      <i className="icon icon-location" />
                       <span>
                         <IntlMessages id="sidebar.company.partywiseRegister" />
                       </span>
@@ -274,7 +275,7 @@ useEffect(() => setOpenKeys(getOpenKeys(pathname)), [pathname]);
                 {menuLabelList.includes(sidebarMenuItems.labelPrint) && (
                   <Menu.Item key="/company/labelPrint">
                     <Link to="/company/labelPrint">
-                      <i className="icon icon-crypto" />
+                      <i className="icon icon-editor" />
                       <span>
                         <IntlMessages id="sidebar.company.labelPrint" />
                       </span>
@@ -284,7 +285,7 @@ useEffect(() => setOpenKeys(getOpenKeys(pathname)), [pathname]);
                 {menuLabelList.includes(sidebarMenuItems.deilveredItems) && (
                   <Menu.Item key="/company/deliveredItems">
                     <Link to="/company/deliveredItems">
-                      <i className="icon icon-crypto" />
+                      <i className="icon icon-tasks" />
                       <span>
                         <IntlMessages id="sidebar.company.deliveryItems" />
                       </span>
@@ -294,7 +295,7 @@ useEffect(() => setOpenKeys(getOpenKeys(pathname)), [pathname]);
                 {menuLabelList.includes(sidebarMenuItems.workInProgress) && (
                   <Menu.Item key="/company/workin-progress">
                     <Link to="/company/workin-progress">
-                      <i className="icon icon-crypto" />
+                      <i className="icon icon-progress" />
                       <span>
                         <IntlMessages id="sidebar.company.workinprogress" />
                       </span>
@@ -304,7 +305,7 @@ useEffect(() => setOpenKeys(getOpenKeys(pathname)), [pathname]);
                 {menuLabelList.includes(sidebarMenuItems.reports) && (
                   <Menu.Item key="/company/reports">
                     <Link to="/company/reports">
-                      <i className="icon icon-crypto" />
+                      <i className="icon icon-stats" />
                       <span>
                         <IntlMessages id="sidebar.company.reports" />
                       </span>
@@ -324,7 +325,7 @@ useEffect(() => setOpenKeys(getOpenKeys(pathname)), [pathname]);
                 {menuLabelList.includes(sidebarMenuItems.userAccess) && (
                   <Menu.Item key="/company/userAccess">
                     <Link to="/company/userAccess">
-                      <i className="icon icon-crypto" />
+                      <i className="icon icon-user" />
                       <span>
                         <IntlMessages id="sidebar.company.userAccess" />
                       </span>
@@ -335,7 +336,7 @@ useEffect(() => setOpenKeys(getOpenKeys(pathname)), [pathname]);
                   true) && (
                   <Menu.Item key="/company/sales-order">
                     <Link to="/company/sales-order">
-                      <i className="icon icon-crypto" />
+                      <i className="icon icon-orders" />
                       <span>
                         <IntlMessages id="sidebar.company.salesOrder" />
                       </span>
