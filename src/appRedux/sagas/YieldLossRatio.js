@@ -1,5 +1,5 @@
 import {all, put, fork, takeLatest} from "redux-saga/effects";
-import {  getIPAddress, getUserId, getUserToken } from './common';
+import { getUserId, getUserToken } from './common';
 import {FETCH_YLR_LIST_REQUEST, ADD_YLR_REQUEST, FETCH_YLR_BY_ID_REQUEST, UPDATE_YLR_REQUEST, DELETE_YLR_REQUEST } from "../../constants/ActionTypes";
 import {
     fetchYLRbyIdSuccess,
@@ -79,7 +79,6 @@ function* fetchYLRById(action) {
 function* addYLRsaga(action) {
     try {
         const { comments,
-            keys,
             partyIdList,
             lossRatioPercentageFrom,
             lossRatioPercentageTo,
@@ -193,7 +192,6 @@ function* updateYLRsaga(action) {
         } else
             yield put(updateYLRError('error'));
     } catch (error) {
-        console.log(error);
         yield put(updateYLRError(error));
     }
 }

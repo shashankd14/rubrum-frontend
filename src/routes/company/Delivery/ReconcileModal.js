@@ -1,5 +1,5 @@
 import { Col, Modal, Form, DatePicker, Input, Row, Icon, Tabs, Button, Upload} from "antd";
-import React, {useEffect, useState}from "react";
+import React, {useState}from "react";
 import moment from "moment";
 import {APPLICATION_DATE_FORMAT} from '../../../constants';
 
@@ -70,7 +70,7 @@ const ReconcileModal=(props)=>{
                     <Dragger
                         name= 'files'
                         beforeUpload={() => false}
-                        onChange = {(info) => console.log(info)}>
+                        >
                         <p className="ant-upload-drag-icon">
                             <Icon type="inbox" />
                         </p>

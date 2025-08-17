@@ -1,32 +1,30 @@
 import React, { useEffect, useState, useRef } from "react";
 import { connect } from "react-redux";
 import { Card, Table, Input, Button, Icon } from "antd";
-import moment from "moment";
 import SearchBox from "../../../components/SearchBox";
 import IntlMessages from "../../../util/IntlMessages";
-import { fetchWIPInwardList } from "../../../appRedux/actions/Inward";
+import {
+  fetchWIPInwardList,
+  getProducts,
+  fetchPartyList,
+  getInwardMaterialDetails,
+} from "../../../appRedux/actions";
 import { sidebarMenuItems } from "../../../constants";
-import { render } from "less";
+import {toPascalCase} from "util/Common";
 
 const workInProgressMenuConstants = {
   finish: "Finish",
-};
-const filterLabels = {
-  materialDesc: "Material desc",
 };
 
 function List(props) {
   const [sortedInfo, setSortedInfo] = useState({
     order: "descend",
-    columnKey: "coilnumber",
+    columnKey: "coilNumber",
   });
   const [filteredInfo, setFilteredInfo] = useState({});
   const [searchValue, setSearchValue] = useState("");
-  // const [filteredInwardList, setFilteredInwardList] = useState(props.inward?.wipList);
 
   const [pageNo, setPageNo] = React.useState(1);
-  const [totalPageItems, setTotalItems] = React.useState(0);
-
   const [menuWorkInProgressLabelList, setMenuWorkInProgressLabelList] =
     useState([]);
   let searchInput = useRef(true);
@@ -37,127 +35,218 @@ function List(props) {
     confirm();
   };
 
-  const getFilterData = (list) => {
-    let filter = list.map((item) => {
-      if (item.instruction?.length > 0) {
-        item.children = item.instruction.filter(
-          (filteredInfo) => filteredInfo.status.statusName === "IN PROGRESS"
-        );
-      }
-      return item;
-    });
-    return filter;
-  };
-
-  const getColumnSearchProps = (dataIndex) => ({
-    filterDropdown: ({ confirm, clearFilters }) => {
-      let filterVariable = "";
-      return (
-        <div style={{ padding: 8 }}>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              gap: "4px",
-            }}
-          >
-            <Input
-              ref={(node) => {
-                searchInput = node;
-              }}
-              placeholder={`Search ${filterLabels[dataIndex]}`}
-              value={filteredInfo[dataIndex] ? filteredInfo[dataIndex][0] : ""}
-              onChange={(e) => {
-                const newArray = filteredInfo[dataIndex]
-                  ? filteredInfo[dataIndex]
-                  : [];
-                newArray[0] = e.target.value ? e.target.value : "";
-                setFilteredInfo({
-                  ...filteredInfo,
-                  [dataIndex]: [...newArray],
-                });
-              }}
-              onPressEnter={() =>
-                handleSearch(filteredInfo, confirm, dataIndex)
-              }
-              style={{ width: 80, marginBottom: 8, display: "flex", flex: 1 }}
-            />
-          </div>
-          <div>
-            <Button
-              type="primary"
-              onClick={() => {
-                console.log(filteredInfo);
-                props.fetchWIPInwardList(
-                  1,
-                  20,
-                  searchValue,
-                  "",
-                  sortedInfo.order,
-                  sortedInfo.columnKey,
-                  filteredInfo
-                );
-              }}
-              icon="search"
-              size="small"
-              style={{ width: 90, marginRight: 8 }}
-            >
-              Search
-            </Button>
-            <Button
-              onClick={() => clearFilters(clearFilters)}
-              size="small"
-              style={{ width: 90 }}
-            >
-              Reset
-            </Button>
-          </div>
-        </div>
-      );
-    },
-    filterIcon: (filtered) => (
-      <Icon type="search" style={{ color: filtered ? "#1890ff" : undefined }} />
-    ),
-    onFilterDropdownVisibleChange: (visible) => {
-      if (visible) {
-        setTimeout(() => searchInput.select());
-      }
-    },
-    // render: (text) => ("age" === dataIndex ? <></> : text),
-  });
-
   const columns = [
     {
       title: "Batch no.",
       dataIndex: "coilNumber",
       key: "coilNumber",
-      filters: [],
+      sorter: true,
+      sortOrder: sortedInfo.columnKey === "coilNumber" && sortedInfo.order,
+      filteredValue: filteredInfo ? filteredInfo["coilNumber"] : null,
+      filterDropdown: ({ setSelectedKeys, confirm, clearFilters }) => {
+        return (
+          <div style={{ padding: 8 }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                gap: "4px",
+              }}
+            >
+              <Input
+                ref={(node) => {
+                  searchInput = node;
+                }}
+                placeholder={`Search Batch no.`}
+                value={
+                  filteredInfo["coilNumber"] ? filteredInfo["coilNumber"] : ""
+                }
+                onChange={(e) => {
+                  setFilteredInfo({
+                    ...filteredInfo,
+                    coilNumber: e.target.value,
+                  });
+                }}
+                onPressEnter={() =>
+                  handleSearch(filteredInfo, confirm, "coilNumber")
+                }
+                style={{
+                  width: 80,
+                  marginBottom: 8,
+                  display: "flex",
+                  flex: 1,
+                }}
+              />
+            </div>
+            <div>
+              <Button
+                type="primary"
+                onClick={() => {
+                  setSelectedKeys([filteredInfo["coilNumber"]]);
+                  confirm();
+                }}
+                icon="search"
+                size="small"
+                style={{ width: 90, marginRight: 8 }}
+              >
+                Search
+              </Button>
+              <Button
+                onClick={() => clearFilters(clearFilters)}
+                size="small"
+                style={{ width: 90 }}
+              >
+                Reset
+              </Button>
+            </div>
+          </div>
+        );
+      },
+      filterIcon: (filtered) => (
+        <Icon
+          type="search"
+          style={{ color: filtered ? "#1890ff" : undefined }}
+        />
+      ),
+      onFilterDropdownVisibleChange: (visible) => {
+        if (visible) {
+          setTimeout(() => searchInput.select());
+        }
+      },
     },
     {
       title: "Location",
       dataIndex: "partyName",
-      key: "partyName",
+      key: "partyId",
+      filteredValue: filteredInfo ? filteredInfo["partyId"] : null,
+      filterDropdown: ({
+        setSelectedKeys,
+        selectedKeys,
+        confirm,
+        clearFilters,
+      }) => (
+        <div style={{ padding: 8, minWidth: 120 }}>
+          {props.partyList.map((party) => (
+            <div
+              key={party.nPartyId}
+              style={{
+                padding: "6px 10px",
+                cursor: "pointer",
+                borderRadius: 4,
+                background:
+                  selectedKeys[0] === party.nPartyId
+                    ? "rgba(24,144,255,0.1)"
+                    : "transparent",
+                marginBottom: 4,
+                transition: "background 0.2s",
+              }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.background =
+                  selectedKeys[0] === party.nPartyId
+                    ? "rgba(24,144,255,0.15)"
+                    : "rgba(0,0,0,0.04)")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.background =
+                  selectedKeys[0] === party.nPartyId
+                    ? "rgba(24,144,255,0.1)"
+                    : "transparent")
+              }
+              onClick={() => {
+                setSelectedKeys([party.nPartyId]);
+                confirm();
+              }}
+            >
+              {party.partyName}
+            </div>
+          ))}
+          <div style={{ marginTop: 8, textAlign: "right" }}>
+            <Button
+              style={{ width: "100%" }}
+              size="small"
+              onClick={() => clearFilters(clearFilters)}
+            >
+              Reset
+            </Button>
+          </div>
+        </div>
+      ),
     },
     {
       title: "Material",
       dataIndex: "materialDesc",
       key: "materialDesc",
+      // filters: [...],
       render: (text, record) => {
         return record.materialDesc == "undefined" || record.materialDesc == null
           ? "-"
           : record.materialDesc;
       },
-      filteredValue:
-        filteredInfo && filteredInfo["materialDesc"]
-          ? filteredInfo["materialDesc"]
-          : null,
-      ...getColumnSearchProps("materialDesc"),
+      filteredValue: filteredInfo ? filteredInfo["materialDesc"] : null,
+      filterDropdown: ({
+        setSelectedKeys,
+        selectedKeys,
+        confirm,
+        clearFilters,
+      }) => (
+        <div style={{ padding: 8, minWidth: 120 }}>
+          {props?.inward?.inwardMaterialDetails?.productMap.map((product) => (
+            <div
+              key={product.productId}
+              style={{
+                padding: "6px 10px",
+                cursor: "pointer",
+                borderRadius: 4,
+                background:
+                  selectedKeys[0] === product.productId
+                    ? "rgba(24,144,255,0.1)"
+                    : "transparent",
+                marginBottom: 4,
+                transition: "background 0.2s",
+              }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.background =
+                  selectedKeys[0] === product.productId
+                    ? "rgba(24,144,255,0.15)"
+                    : "rgba(0,0,0,0.04)")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.background =
+                  selectedKeys[0] === product.productId
+                    ? "rgba(24,144,255,0.1)"
+                    : "transparent")
+              }
+              onClick={() => {
+                setSelectedKeys([product.productId]);
+                confirm();
+              }}
+            >
+              {product.productName}
+            </div>
+          ))}
+          <div style={{ marginTop: 8, textAlign: "right" }}>
+            <Button
+              style={{ width: "100%" }}
+              size="small"
+              onClick={() => {
+                clearFilters();
+                confirm();
+              }}
+            >
+              Reset
+            </Button>
+          </div>
+        </div>
+      ),
     },
     {
       title: "Status",
       dataIndex: "inwardStatus",
       key: "inwardStatus",
       filters: [],
+      render: (text, record) => {
+        return record.inwardStatus ? toPascalCase(record.inwardStatus) : "-";
+      },
     },
     {
       title: "Thickness",
@@ -198,6 +287,7 @@ function List(props) {
   ];
 
   useEffect(() => {
+    props.getProducts();
     const menus = localStorage.getItem("Menus")
       ? JSON.parse(localStorage.getItem("Menus"))
       : [];
@@ -213,6 +303,8 @@ function List(props) {
       }
       setMenuWorkInProgressLabelList(menuWorkInProgressLabels);
     }
+    props.getInwardMaterialDetails("WIP");
+    if (props.partyList.length === 0) props.fetchPartyList();
   }, []);
 
   useEffect(() => {
@@ -227,32 +319,7 @@ function List(props) {
     );
   }, []);
 
-  // useEffect(() => {
-  //     if (props.inward.wipSuccess) {
-  //         setFilteredInwardList(props.inward?.wipList);
-  //     }
-  // }, [props.inward.wipSuccess])
-
-  useEffect(() => {
-    if (totalItems) {
-      setTotalItems(totalItems);
-    }
-  }, [totalItems]);
-
-  // useEffect(() => {
-  //   if (searchValue) {
-  //     if (searchValue?.length >= 3) {
-  //       setPageNo(1);
-  //       props.fetchWIPInwardList(1, 15, searchValue);
-  //     }
-  //   } else {
-  //     setPageNo(1);
-  //     props.fetchWIPInwardList(1, 15, searchValue);
-  //   }
-  // }, [searchValue]);
-
   const handleChange = (pagination, filters, sorter) => {
-    console.log(filters);
     setSortedInfo(sorter);
     setFilteredInfo(filters);
 
@@ -260,14 +327,11 @@ function List(props) {
       pagination.current,
       pagination.pageSize,
       searchValue,
-      "",
+      filters?.partyId ? filters?.partyId[0] : "",
       sorter.order,
       sorter.columnKey,
       filters
     );
-  };
-  const handleRow = (record) => {
-    console.log(record);
   };
 
   const expandedRowRendered = (record) => {
@@ -287,8 +351,8 @@ function List(props) {
         dataIndex: "packetClassification",
         key: "packetClassification",
         render: (text, record) => {
-          return record.packetClassification === null ||
-            record.packetClassification === undefined ||
+          return record.classificationName === null ||
+            record.classificationName === undefined ||
             record?.classificationName === ""
             ? "-"
             : record.classificationName === "FG"
@@ -319,6 +383,24 @@ function List(props) {
     );
   };
 
+  const clearFilters = () => {
+    setFilteredInfo({});
+    setSortedInfo({
+      order: "descend",
+      columnKey: "coilNumber",
+    });
+    setSearchValue("");
+     props.fetchWIPInwardList(
+       1,
+       15,
+       searchValue,
+       "",
+       sortedInfo.order,
+       sortedInfo.columnKey,
+       filteredInfo
+     );
+  }
+
   return (
     <div>
       <h1>
@@ -331,7 +413,7 @@ function List(props) {
         >
           <SearchBox
             styleName="gx-flex-1"
-            placeholder="Search for Batch no. or location..."
+            placeholder="Search for plan id"
             value={searchValue}
             onChange={(e) => {
               setSearchValue(e.target.value);
@@ -340,7 +422,7 @@ function List(props) {
                   1,
                   20,
                   e.target.value,
-                  '',
+                  filteredInfo?.partyId ? filteredInfo?.partyId[0] : "",
                   sortedInfo.order,
                   sortedInfo.columnKey,
                   filteredInfo
@@ -349,8 +431,8 @@ function List(props) {
                 props.fetchWIPInwardList(
                   1,
                   20,
-                  e.target.value,
                   "",
+                  filteredInfo?.partyId ? filteredInfo?.partyId[0] : "",
                   sortedInfo.order,
                   sortedInfo.columnKey,
                   filteredInfo
@@ -358,26 +440,23 @@ function List(props) {
               }
             }}
           />
+          &nbsp; &nbsp;
+          <Button onClick={clearFilters}>Clear All filters</Button>
         </div>
         <Table
           key={props.inward?.wipList[0]?.inwardEntryId || pageNo}
-          rowSelection={[]}
           className="gx-table-responsive"
           columns={columns}
+          rowKey={(record) => record.inwardEntryId}
           dataSource={[...props.inward?.wipList]}
           expandedRowRender={(record) => expandedRowRendered(record)}
           onChange={handleChange}
-          // onRow={(record, index) => {
-          //   return {
-          //     onClick: (record) => {
-          //       handleRow(record);
-          //     },
-          //   };
-          // }}
           pagination={{
+            showTotal: (total, range) =>
+              `Showing ${range[0]}-${range[1]} of ${total} items`,
             pageSize: 15,
             current: pageNo,
-            total: totalPageItems,
+            total: totalItems,
           }}
         />
       </Card>
@@ -387,8 +466,13 @@ function List(props) {
 
 const mapStateToProps = (state) => ({
   inward: state.inward,
+  productInfo: state.productInfo,
+  partyList: state.party.partyList,
 });
 
 export default connect(mapStateToProps, {
   fetchWIPInwardList,
+  getProducts,
+  fetchPartyList,
+  getInwardMaterialDetails,
 })(List);

@@ -1,16 +1,12 @@
 import React, {useEffect} from "react";
-import {Button, Checkbox, Form, Icon, Input} from "antd";
+import {Button, Checkbox, Form, Input} from "antd";
 import {Link, useHistory} from "react-router-dom";
 
 import {useDispatch, useSelector} from "react-redux";
 import {
   hideMessage,
   showAuthLoader,
-  userFacebookSignIn,
-  userGithubSignIn,
-  userGoogleSignIn,
   userSignUp,
-  userTwitterSignIn
 } from "appRedux/actions/Auth";
 
 import IntlMessages from "util/IntlMessages";
@@ -40,7 +36,6 @@ const SignUp = (props) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     props.form.validateFields((err, values) => {
-      console.log("values", values);
       if (!err) {
         dispatch(showAuthLoader());
         dispatch(userSignUp(values));

@@ -6,7 +6,6 @@ import SearchBox from "../../../components/SearchBox";
 
 import IntlMessages from "../../../util/IntlMessages";
 import { fetchMaterialList, addMaterial, fetchMaterialListById, updateMaterial, resetMaterial } from "../../../appRedux/actions";
-import { onDeleteContact } from "../../../appRedux/actions";
 
 export const formItemLayout = {
     labelCol: {
@@ -87,7 +86,7 @@ const Material = (props) => {
         filteredValue: filteredInfo ? filteredInfo["description"] : null,
         filters: [...new Set(props.material.materialList.map(item => item.description))].map(material => {
             return ({ text: material || '', value: material || '' })}),
-        onFilter: (value, record) => record.description == value,
+        onFilter: (value, record) => record.description === value,
         sorter: (a, b) => a.description?.length - b.description?.length,
         sortOrder: sortedInfo.columnKey === 'description' && sortedInfo.order,
     },
@@ -131,7 +130,6 @@ const Material = (props) => {
         id.push(record.inwardEntryId);
         e.preventDefault();
         props.deleteInwardEntryById(id)
-        console.log(record,key)
       }
     const onEdit = (record,e)=>{
         e.preventDefault();
@@ -191,7 +189,6 @@ const Material = (props) => {
     }
 
     const deleteSelectedCoils = () => {
-        console.log('dfd');
     };
 
     const addNewKey = (idx) => {
@@ -274,7 +271,6 @@ const Material = (props) => {
                         if (editMaterial) {
                             props.form.validateFields((err, values) => {
                                 if (!err) {
-                                    console.log('Received values of form: ', values);
                                     const data = { values, id: props.material?.material?.matId };
                                     props.updateMaterial(data);
                                     setEditMaterial(false);
@@ -285,7 +281,6 @@ const Material = (props) => {
                         } else {
                             props.form.validateFields((err, values) => {
                                 if (!err) {
-                                    console.log('Received values of form: ', values);
                                     props.addMaterial(values);
                                     setShowAddMaterial(false);
                                 }
@@ -326,7 +321,7 @@ const Material = (props) => {
                                                     <Input id="grade" {...getFieldProps}/>
                                                 )}
                                                 {keys.length-1 > 0 && <i className="icon icon-trash gx-margin" onClick={() => removeKey(index)}/> }
-                                                {index == keys.length-1 && <i className="icon icon-add-circle" onClick={() => addNewKey(index)}/> }
+                                                {index === keys.length-1 && <i className="icon icon-add-circle" onClick={() => addNewKey(index)}/> }
                                             </Form.Item>
                                         )})}
 

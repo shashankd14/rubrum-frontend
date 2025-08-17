@@ -22,7 +22,6 @@ import {
   getRefinedProducts,
   checkIfCoilExists,
 } from "../../../../../appRedux/actions";
-import IntlMessages from "util/IntlMessages";
 
 const formItemLayout = {
   labelCol: {
@@ -84,7 +83,6 @@ const CategoryForm = (props) => {
   }
 
   const checkIfCoilExists = (rule, value, callback) => {
-    console.log(props.inwardStatus);
     if (
       value == "" ||
       (!props.inwardStatus.loading &&

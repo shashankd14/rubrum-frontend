@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import IntlMessages from "../../../util/IntlMessages";
 import {
   fetchPacketList,
@@ -13,12 +13,11 @@ import {
   Tabs,
   Icon,
   message,
-  Button,
-  Select,
   Card,
   AutoComplete,
+  Select,
+  Button,
 } from "antd";
-import SearchBox from "../../../components/SearchBox";
 import moment from "moment";
 import SoList from "./soList";
 
@@ -29,33 +28,127 @@ const SalesOrder = () => {
   const dispatch = useDispatch();
   const salesOrder = useSelector((state) => state.salesOrder);
   const partyList = useSelector((state) => state.party.partyList);
-  const [packetsList, setPacketsList] = useState(salesOrder.packets);
-  const [salesOrderList, setSalesOrderList] = useState(salesOrder.list);
-  const [searchValue, setSearchValue] = useState("");
+  const [packetsList, setPacketsList] = useState(salesOrder.packets.data);
+  const [customerValue, setCustomerValue] = useState("");
+  const [filteredInfo, setFilteredInfo] = useState({});
 
-  const endUserTags = useSelector(
-    (state) => state.packetClassification.endUserTags
-  );
-
+  const [pageSize, setPageSize] = useState(10);
   const [pageNo, setPageNo] = React.useState(1);
+  let searchInput = useRef(true);
+
+  const handleSearch = (selectedKeys, confirm, dataIndex) => {
+    confirm();
+  };
 
   const onInputChange = (index) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newData = [...salesOrder.packets];
+    const newData = [...packetsList];
     newData[index].soNumber = e.target.value;
     setPacketsList(newData);
   };
 
-  const onEndUserInputChange = (value, index) => {
-    const newData = [...salesOrder.packets];
-    newData[index].customerCodeId = value;
-    setPacketsList(newData);
+  const clearFilters = (value) => {
+    setCustomerValue("");
+    setFilteredInfo({});
+    setPageNo(1);
+    dispatch(fetchPacketList(1, 15, "", ""));
   };
+
+  useEffect(() => {
+    if (salesOrder.packets.data) {
+      setPacketsList(salesOrder.packets.data);
+    }
+  }, [salesOrder.packets.data]);
 
   const columns = [
     {
       title: "Plan Id",
       dataIndex: "instructionId",
       key: "instructionId",
+      filteredValue: filteredInfo ? filteredInfo["instructionId"] : null,
+      filterDropdown: ({ confirm, clearFilters }) => {
+        let filterVariable = "";
+        return (
+          <div style={{ padding: 8 }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                gap: "4px",
+              }}
+            >
+              <Input
+                ref={(node) => {
+                  searchInput = node;
+                }}
+                placeholder={`Search Plan Id`}
+                value={
+                  filteredInfo["instructionId"]
+                    ? filteredInfo["instructionId"][0]
+                    : ""
+                }
+                onChange={(e) => {
+                  const newArray = filteredInfo["instructionId"]
+                    ? filteredInfo["instructionId"]
+                    : [];
+                  newArray[0] = e.target.value ? e.target.value : "";
+                  setFilteredInfo({
+                    ...filteredInfo,
+                    ["instructionId"]: [...newArray],
+                  });
+                }}
+                onPressEnter={() =>
+                  handleSearch(filteredInfo, confirm, "instructionId")
+                }
+                style={{
+                  width: 80,
+                  marginBottom: 8,
+                  display: "flex",
+                  flex: 1,
+                }}
+              />
+            </div>
+            <div>
+              <Button
+                type="primary"
+                onClick={() => {
+                  dispatch(
+                    fetchPacketList(
+                      1,
+                      15,
+                      customerValue,
+                      "",
+                      filteredInfo["instructionId"][0]
+                    )
+                  );
+                }}
+                icon="search"
+                size="small"
+                style={{ width: 90, marginRight: 8 }}
+              >
+                Search
+              </Button>
+              <Button
+                onClick={() => clearFilters(clearFilters)}
+                size="small"
+                style={{ width: 90 }}
+              >
+                Reset
+              </Button>
+            </div>
+          </div>
+        );
+      },
+      filterIcon: (filtered) => (
+        <Icon
+          type="search"
+          style={{ color: filtered ? "#1890ff" : undefined }}
+        />
+      ),
+      onFilterDropdownVisibleChange: (visible) => {
+        if (visible) {
+          setTimeout(() => searchInput.select());
+        }
+      },
     },
     {
       title: "Plan date",
@@ -159,12 +252,13 @@ const SalesOrder = () => {
   ];
 
   const handleChange = (pagination, filters, sorter) => {
-    console.log("params", pagination, filters, sorter);
+    setPageNo(pagination.current);
+    dispatch(fetchPacketList(pagination.current, pagination.pageSize, ""));
   };
 
   useEffect(() => {
     dispatch(fetchPartyList());
-    dispatch(fetchPacketList(1, 15, "", ""));
+    dispatch(fetchPacketList(1, pageSize, "", ""));
     dispatch(fetchSalesOrderList());
     // dispatch(fetchEndUserTagsList());
   }, []);
@@ -174,6 +268,19 @@ const SalesOrder = () => {
       message.success("Sales order saved successfully");
     }
   }, [salesOrder.success]);
+
+
+  const handleCustomerChange = (value) => {
+    if (value) {
+      setCustomerValue(value);
+      setPageNo(1);
+      dispatch(fetchPacketList(1, 15, value, ""));
+    } else {
+      setCustomerValue("");
+      // setSalesOrderList(salesOrderList);
+    }
+};
+
 
   return (
     <div>
@@ -188,17 +295,46 @@ const SalesOrder = () => {
           }}
         >
           <TabPane tab="Packets List" key="1">
+            <div>
+              <Select
+                id="select"
+                showSearch
+                style={{ width: 200 }}
+                placeholder="Select a location"
+                optionFilterProp="children"
+                onChange={handleCustomerChange}
+                value={customerValue}
+                filterOption={(input, option) =>
+                  option.props.children
+                    .toLowerCase()
+                    .indexOf(input.toLowerCase()) >= 0
+                }
+              >
+                {partyList.length > 0 &&
+                  partyList.map((party) => (
+                    <Option key={party.nPartyId} value={party.nPartyId}>
+                      {party.partyName}
+                    </Option>
+                  ))}
+              </Select>
+              &emsp;
+              <Button
+                onClick={() => clearFilters()}
+                style={{ marginBottom: "1px" }}
+              >
+                Clear All filters
+              </Button>
+            </div>
+            <br />
             <Table
               className="gx-table-responsive"
               columns={columns}
-              dataSource={salesOrder.packets}
+              dataSource={packetsList}
               onChange={handleChange}
               pagination={{
+                showTotal: (total, range) =>
+                  `Showing ${range[0]}-${range[1]} of ${total} items`,
                 pageSize: 15,
-                onChange: (page) => {
-                  setPageNo(page);
-                  dispatch(fetchPacketList(page, 15, ""));
-                },
                 current: pageNo,
                 total: salesOrder.packets.totalItems,
               }}

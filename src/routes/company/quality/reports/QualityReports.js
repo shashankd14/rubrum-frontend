@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { connect } from 'react-redux';
 import { Card, Tabs } from 'antd'
-import { useIntl } from "react-intl";
 import { useLocation } from 'react-router-dom';
 import IntlMessages from '../../../../util/IntlMessages'
-import { QUALITY_REPORT_ACTIONS } from "../../../../constants/quality/ComponentConstants";
 import InwardReport from "./InwardReport";
 import { 
   deleteQualityTemplate
@@ -15,16 +13,14 @@ import PreDispatchReport from "./PreDispatchReport";
 import PostDispatchReport from "./PostDispatchReport";
 
 const QualityReports = (props) => {
-  const [mode, setMode] = useState("top");
+  const mode = "top";
   const [tabKey, setTabKey] = useState("1");
-  const intl = useIntl();
   const TabPane = Tabs.TabPane;
   const location = useLocation();
 
   useEffect(() => {
     if (props.match) {        
         const params = new URLSearchParams(location.search);
-        console.log(params.get('view'));
         if(params.get('view') === 'links') {
           setTabKey("2");
         } else {

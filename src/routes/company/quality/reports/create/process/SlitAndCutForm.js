@@ -1,6 +1,5 @@
 import { Button, Card, Col, DatePicker, Input, Row } from 'antd'
-import TextArea from 'antd/lib/input/TextArea';
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import EditableTableQR from '../../../../../../util/EditableTableQR';
 import moment from 'moment';
 import { connect } from 'react-redux';
@@ -40,7 +39,6 @@ const SlitAndCutForm = (props) => {
       const thicknessSlitE = props.inward?.plan?.fThickness
       setThicknessSlit(thicknessSlitE);
     },[props.inward])
-    console.log("1111111111", thicknessSlit)
     //fetch tolerance data from QT-cut
     var toleranceThicknessFromCut = 0;
     var toleranceThicknessToCut = 0;
@@ -586,7 +584,6 @@ const SlitAndCutForm = (props) => {
     }
 
     const handleSlitInspectionTableChange = (tableData) => {
-        console.log('handleSlitInspectionTableChange', tableData)
         setSlitInspectionData(tableData)
     } 
 

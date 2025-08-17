@@ -132,12 +132,9 @@ const LabelPrintInward = (props) => {
     useEffect(() => {
         if (!isInitialMount.current){
         if (!props.template.loading && !props.template.error && props.template.operation == "fetchQualityReport") {
-            console.log(props.template)
             setQualityReportList(props.template.data)
         } else if (!props.template.loading && !props.template.error && props.template.operation == "fetchQualityReportStage") {
-            console.log(props.template)
             setFilteredInwardList(props.template.data)
-            console.log(props.template.data)
         }}
         else {
             // This block will be executed only on the first render
@@ -146,7 +143,6 @@ const LabelPrintInward = (props) => {
     }, [props.template.loading, props.template.error, props.template.operation]);
 
     const handleChange = (e) => {
-        console.log(e)
         setTemplateId(e)
     };
 
@@ -174,7 +170,6 @@ const LabelPrintInward = (props) => {
 
     useEffect(() => {
         if (!props.party.loading && !props.party.error) {
-            console.log(props.party)
             setPartyList(props.party.partyList)
         }
     }, [props.party.loading, props.party.error]);

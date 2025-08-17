@@ -4,9 +4,9 @@ import SearchBox from "../../../components/SearchBox";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchSalesOrderList,
-  fetchEndUserTagsList,
   openSoPdf,
 } from "../../../appRedux/actions";
+import { toPascalCase } from "util/Common";
 
 const { Option } = AutoComplete;
 
@@ -79,7 +79,7 @@ const SoList = (props) => {
   };
 
   const handleChange = (pagination, filters, sorter) => {
-    console.log("params", pagination, filters, sorter);
+    // console.log("params", pagination, filters, sorter);
   };
 
   const SOColumns = [
@@ -142,6 +142,9 @@ const SoList = (props) => {
       title: "Process name",
       dataIndex: "soStatus",
       key: "soStatus",
+      render: (text, record) => {
+        return record.soStatus ? toPascalCase(record.soStatus) : "-";
+      },
     },
     {
       title: "Pdf",
@@ -236,6 +239,8 @@ const SoList = (props) => {
         onChange={handleChange}
         pagination={{
           pageSize: 15,
+          showTotal: (total, range) =>
+            `Showing ${range[0]}-${range[1]} of ${total} items`,
           onChange: (page) => {
             setSalesPageNo(page);
             dispatch(fetchSalesOrderList(page, 15, ""));

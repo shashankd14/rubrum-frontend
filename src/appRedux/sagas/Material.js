@@ -241,7 +241,6 @@ function* fetchMaterialCategories() {
         } else
             yield put(getMaterialCategoriesError('error'));
     } catch (error) {
-        console.log(error);
         yield put(getMaterialCategoriesError(error));
     }
 }

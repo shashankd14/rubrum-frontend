@@ -86,7 +86,6 @@ useEffect(() => {
     templateDetailsData.forEach((td) => {
       val[td.id] = td;
     });
-    console.log(val)
     setTemplateData(val)
   }
 }, [props.templateDetails]);
@@ -105,10 +104,8 @@ useEffect(() => {
   // }, [props.templateDetails]);
 
   const onFilesChange = (type, file) => {
-    console.log(type, file)
     templateData[type].fileList = file.fileList.slice(-1)
     templateData[type].fileName = templateData[type].fileList[0].name;
-    console.log(templateData)
     setTemplateData({ ...templateData })
   }
 
@@ -122,9 +119,7 @@ useEffect(() => {
       }, [props.templateDetails.comments]);
 
   const onOptionChange = (type, value) => {
-    console.log(type, value)
     templateData[type].value = value.target.value
-    console.log(templateData)
     setTemplateData({ ...templateData })
   }
 

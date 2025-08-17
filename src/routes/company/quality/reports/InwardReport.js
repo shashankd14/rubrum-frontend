@@ -236,14 +236,10 @@ const InwardReport = (props) => {
     useEffect(() => {
         if (!isInitialMount.current){
         if (!props.template.loading && !props.template.error && props.template.operation == "fetchQualityReport") {
-            console.log(props.template);
             setQualityReportList(props.template.data);
         } else if (!props.template.loading && !props.template.error && props.template.operation == "fetchQualityReportStage") {
-            console.log(props.template);
             setFilteredInwardList(props.template.data);
-            console.log(props.template.data);
         } else if (!props.template.loading && !props.template.error && props.template.operation === 'templateById') {
-            console.log(props);
             setShowCreateQrScreen(true);
             props.history.push({ pathname: '/company/quality/reports/create/inward', state: { selectedItemForQr: selectedItemForQr, templateDetails: props.template.data, action: 'create' } })
         } else if (!props.template.loading && !props.template.error && props.template.operation == "templateLinkList") {
@@ -251,10 +247,8 @@ const InwardReport = (props) => {
             setTemplateLinkList(tempData.filter(x=> x.stageName==="INWARD"));
             setShowCreateModal(true);
         } else if (!props.template.loading && !props.template.error && props.template.operation === 'templateList') {
-            console.log(props.template);
             setTemplateList(props.template.data);
         } else if (!props.template.loading && !props.template.error && props.template.operation == "qualityReportById") {
-            console.log("qualityReportById", props.template);
             props.history.push({ pathname: '/company/quality/reports/create/inward', state: { selectedItemForQr: selectedItemForQr, templateDetails: props.template.data, action: action } });
         }}
         else {
@@ -272,14 +266,12 @@ const InwardReport = (props) => {
     }
 
     const showTemplateList = (record, key) => {
-        console.log(record, key)
         setSelectedItemForQr(record)
         setShowCreateModal(true);
         props.fetchTemplatesLinkList({ partyId: record.npartyId});
     }
 
     const showReportView = (record, key) => {
-        console.log("record, key", record, key)
         setSelectedItemForQr(record)
         // const templateDetails = qualityReportList.find(qr => qr.coilNumber === record.coilNumber && qr.inwardId === record.inwardEntryId)
         // props.history.push({pathname: '/company/quality/reports/create/postdispatch', state: {selectedItemForQr: record, templateDetails: templateDetails, action: 'view'}})
@@ -289,20 +281,16 @@ const InwardReport = (props) => {
     }
 
     const onDelete = (record, key, e) => {
-        console.log(record, key);
-        console.log("record.qirId", record.qirId);
         props.deleteQualityReport(record.qirId);
     };
 
     const onEdit = (record, key, e) => {
-        console.log(record, key)
         setSelectedItemForQr(record)
         setAction('edit');
         props.getQualityReportById(record.qirId);
     };
 
     const handleChange = (e) => {
-        console.log(e)
         setTemplateId(e)
     };
 
@@ -324,7 +312,6 @@ const InwardReport = (props) => {
     
     useEffect(() => {
         if (!props.party.loading && !props.party.error) {
-            console.log(props.party)
             setPartyList(props.party.partyList)
         }
     }, [props.party.loading, props.party.error]);

@@ -31,11 +31,13 @@ export const fetchSalesOrderSuccess = (list) =>  ({
   list
 });
 
-export const fetchPacketList = (page, pageSize, searchValue) =>  ({
+export const fetchPacketList = (page, pageSize, partyId, searchValue, planId) => ({
   type: REQUEST_ALL_PACKETS_LIST,
   page,
   pageSize,
+  partyId,
   searchValue,
+  planId,
 });
 
 export const fetchPacketListSuccess = (list) =>  ({

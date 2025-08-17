@@ -1,7 +1,6 @@
 import React, {useState, useEffect} from "react";
 import IntlMessages from "../../../util/IntlMessages";
 import {Button, Divider, Input, Table, Card, Modal, Form, Select, message} from "antd";
-import moment from "moment/moment";
 import axios from "axios";
 import { getUserToken } from '../../../appRedux/sagas/common';
 

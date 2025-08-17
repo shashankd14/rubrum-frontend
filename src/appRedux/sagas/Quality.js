@@ -165,7 +165,6 @@ function* saveQualityTemplate(data) {
         } else
             yield put(saveQualityTemplateError('error'));
     } catch (error) {
-        console.log(error)
         yield put(saveQualityTemplateError(error));
     }
 }
@@ -185,7 +184,6 @@ function* getQualityTemplateById(data) {
         } else
             yield put(getQualityTemplateByIdError('error'));
     } catch (error) {
-        console.log(error)
         yield put(getQualityTemplateByIdError(error));
     }
 }
@@ -226,7 +224,6 @@ function* updateQualityTemplateById(data) {
         } else
             yield put(updateQualityTemplateError('error'));
     } catch (error) {
-        console.log(error)
         yield put(updateQualityTemplateError(error));
     }
 }
@@ -247,7 +244,6 @@ function* deleteQualityTemplateById(data) {
         } else
             yield put(deleteQualityTemplateError('error'));
     } catch (error) {
-        console.log(error)
         yield put(deleteQualityTemplateError(error));
     }
 }
@@ -255,7 +251,6 @@ function* deleteQualityTemplateById(data) {
 function* saveQualityTemplateLink(data) {
     try {
         // let data = new FormData();
-        console.log(data.payload)
         const qualityTemplate = yield fetch(`${baseUrl}api/quality/templatemap/save`, {
             method: 'POST',
             body: data.payload,
@@ -269,7 +264,6 @@ function* saveQualityTemplateLink(data) {
         } else
             yield put(saveQualityTemplateLinkError('error'));
     } catch (error) {
-        console.log(error)
         yield put(saveQualityTemplateLinkError(error));
     }
 }
@@ -289,7 +283,6 @@ function* getQualityTemplateLinkById(data) {
         } else
             yield put(getQualityTemplateLinkByIdError('error'));
     } catch (error) {
-        console.log(error)
         yield put(getQualityTemplateLinkByIdError(error));
     }
 }
@@ -334,7 +327,6 @@ function* updateQualityTemplateLinkById(data) {
         } else
             yield put(updateQualityTemplateLinkError('error'));
     } catch (error) {
-        console.log(error)
         yield put(updateQualityTemplateLinkError(error));
     }
 }
@@ -351,7 +343,6 @@ function* fetchQualityReportStageList(req) {
     try {
         const endP = (req.payload.stage.includes('processing') || req.payload.stage.includes('inward') )? 'listpage' : 'listpage'
         const url = `${baseUrl}api/quality/qir/${req.payload.stage}/${endP}`
-        console.log('url', url)
         const fetchQRList =  yield fetch( url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', ...getHeaders() },
@@ -359,7 +350,6 @@ function* fetchQualityReportStageList(req) {
         });
         if(fetchQRList.status === 200) {
             const fetchQRListResponse = yield fetchQRList.json();
-            console.log('fetchQRListResponse', fetchQRListResponse)
             yield put(fetchQualityReportStageListSuccess(fetchQRListResponse));
         } else if (fetchQRList.status === 401) {
             yield put(userSignOutSuccess());
@@ -371,7 +361,6 @@ function* fetchQualityReportStageList(req) {
 }
 
 function* fetchQualityReportStageList1(req) {
-    console.log(req.payload)
     try {
         // const fetchQRList =  yield fetch(`${baseUrl}api/quality/reports/${req.payload.stage}/${req.payload.page}/${req.payload.pageSize}?searchText=&partyId=`, {
         const endPoint = req.payload.stage === "inwardlist" ? "/api/quality/reports/inwardlist/1/1" : req.payload.stage === "preprocessing" ? "/api/quality/qir/fetchpacketdtls" : req.payload.stage === "processing" ? "/api/quality/qir/fetchpacketdtls" : req.payload.stage === "predispatch" ? "/api/quality/qir/dispatchlist" : "/api/quality/qir/dispatchlist"
@@ -422,7 +411,6 @@ const delay1 = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 function* saveQualityReport(data) {
      yield call(delay1, 500);
     try {
-        console.log(data.payload)
         const qualityTemplate = yield fetch(`${baseUrl}api/quality/qir/save`, {
             method: 'POST',
             body: data.payload,
@@ -438,7 +426,6 @@ function* saveQualityReport(data) {
         } else
             yield put(saveQualityReportError('error'));
     } catch (error) {
-        console.log(error)
         yield put(saveQualityReportError(error));
     }
 }
@@ -458,7 +445,6 @@ function* getQualityReportById(data) {
         } else
             yield put(getQualityReportByIdError('error'));
     } catch (error) {
-        console.log(error)
         yield put(getQualityReportByIdError(error));
     }
 }
@@ -501,7 +487,6 @@ function* deleteQualityReportById(data) {
         } else
             yield put(deleteQualityReportError('error'));
     } catch (error) {
-        console.log(error)
         yield put(deleteQualityReportError(error));
     }
 }
@@ -529,7 +514,6 @@ function* fetchKqpList(action) {
 function* saveKqp(data) {
     try {
         // let data = new FormData();
-        console.log(data.payload)
         const qualityTemplate = yield fetch(`${baseUrl}api/quality/kqp/save`, {
             method: 'POST',
             body: data.payload,
@@ -544,7 +528,6 @@ function* saveKqp(data) {
         } else
             yield put(saveKqpError('error'));
     } catch (error) {
-        console.log(error)
         yield put(saveKqpError(error));
     }
 }
@@ -564,7 +547,6 @@ function* getKqpById(data) {
         } else
             yield put(getKqpByIdError('error'));
     } catch (error) {
-        console.log(error)
         yield put(getKqpByIdError(error));
     }
 }
@@ -585,7 +567,6 @@ function* updateKqpById(data) {
         } else
             yield put(updateKqpError('error'));
     } catch (error) {
-        console.log(error)
         yield put(updateKqpError(error));
     }
 }
@@ -606,7 +587,6 @@ function* deleteKqpById(data) {
         } else
             yield put(deleteKqpError('error'));
     } catch (error) {
-        console.log(error)
         yield put(deleteKqpError(error));
     }
 }
@@ -634,7 +614,6 @@ function* fetchKqpLinkList(action) {
 function* saveKqpLink(data) {
     try {
         // let data = new FormData();
-        console.log("data.payload", data.payload);
         const qualityTemplate = yield fetch(`${baseUrl}api/quality/kqppartymap/save`, {
             method: 'POST',
             body: data.payload,
@@ -650,7 +629,6 @@ function* saveKqpLink(data) {
         } else
             yield put(saveKqpLinkError('error'));
     } catch (error) {
-        console.log(error)
         yield put(saveKqpLinkError(error));
     }
 }
@@ -670,7 +648,6 @@ function* getKqpLinkById(data) {
         } else
             yield put(getKqpLinkByIdError('error'));
     } catch (error) {
-        console.log(error)
         yield put(getKqpLinkByIdError(error));
     }
 }
@@ -691,7 +668,6 @@ function* updateKqpLinkById(data) {
         } else
             yield put(updateKqpLinkError('error'));
     } catch (error) {
-        console.log(error)
         yield put(updateKqpLinkError(error));
     }
 }
@@ -712,7 +688,6 @@ function* deleteKqpLinkById(data) {
         } else
             yield put(deleteKqpLinkError('error'));
     } catch (error) {
-        console.log(error)
         yield put(deleteKqpLinkError(error));
     }
 }
@@ -733,7 +708,6 @@ function* deleteQualityTemplateLinkById(data) {
         } else
             yield put(deleteQualityTemplateLinkError('error'));
     } catch (error) {
-        console.log(error)
         yield put(deleteQualityTemplateLinkError(error));
     }
 }
@@ -808,7 +782,6 @@ function* getPacketDetailsQuality(data) {
         } else
             yield put(getQualityPacketDetailsError('error'));
     } catch (error) {
-        console.log(error)
         yield put(getQualityPacketDetailsError(error));
     }
 }

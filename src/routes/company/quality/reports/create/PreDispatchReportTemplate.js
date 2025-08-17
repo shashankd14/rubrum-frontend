@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Card, Col, Icon, Input, Radio, Row } from 'antd'
+import { Button, Col, Icon, Input, Radio, Row } from 'antd'
 import Dragger from 'antd/lib/upload/Dragger'
 import { useHistory } from 'react-router';
 
@@ -88,16 +88,13 @@ const PreDispatchReportTemplate = (props) => {
       templateDetailsData.forEach((td) => {
         val[td.id] = td;
       });
-      console.log(val)
       setTemplateData(val)
     }
   }, [props.templateDetails]);
 
   const onFilesChange = (type, file) => {
-    console.log(type, file)
     templateData[type].fileList = file.fileList.slice(-1)
     templateData[type].fileName = templateData[type].fileList[0].name;
-    console.log(templateData)
     setTemplateData({ ...templateData })
   }
 
@@ -111,9 +108,7 @@ const PreDispatchReportTemplate = (props) => {
       }, [props.templateDetails.comments]);
 
   const onOptionChange = (type, value) => {
-    console.log(type, value)
     templateData[type].value = value.target.value
-    console.log(templateData)
     setTemplateData({ ...templateData })
   }
 

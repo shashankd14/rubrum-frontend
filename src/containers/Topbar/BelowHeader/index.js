@@ -1,13 +1,11 @@
 import React, {useState} from "react";
 import {Button, Dropdown, Icon, Layout, Menu, message, Popover, Select} from 'antd';
 import {useDispatch, useSelector} from "react-redux";
-import CustomScrollbars from "util/CustomScrollbars";
-import languageData from "../languageData";
 import SearchBox from "components/SearchBox";
 import UserInfo from "components/UserInfo";
 import AppNotification from "components/AppNotification";
 import MailNotification from "components/MailNotification";
-import {switchLanguage, toggleCollapsedSideNav} from "../../../appRedux/actions/Setting";
+import { toggleCollapsedSideNav} from "../../../appRedux/actions/Setting";
 import HorizontalNav from "../HorizontalNav";
 import {Link} from "react-router-dom";
 import IntlMessages from "util/IntlMessages";
@@ -28,7 +26,6 @@ function handleMenuClick(e) {
 }
 
 function handleChange(value) {
-  console.log(`selected ${value}`);
 }
 
 const BelowHeader = () => {

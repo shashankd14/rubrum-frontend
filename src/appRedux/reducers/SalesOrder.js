@@ -44,8 +44,8 @@ export default (state = INIT_STATE, action) => {
       return {
         ...state,
         loading: false,
-        packets: action.list,
-      }
+        packets: {data: action.list.content,totalItems: action.list.totalItems},
+      };
     case REQUEST_ALL_PACKETS_LIST_ERROR:
       return {
         ...state,

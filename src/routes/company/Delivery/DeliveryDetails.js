@@ -2,8 +2,6 @@ import React, {useEffect, useState}from "react";
 import {connect} from "react-redux";
 import { Table } from 'antd';
 import {fetchDeliveryListById} from "../../../appRedux/actions";
-import moment from "moment";
-
 
 const DeliveryDetails = (props) => {
   const [deliveryById, setDeliveryById]=useState(props.delivery.deliveryById);

@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {connect} from 'react-redux';
 import {Button, Card, Divider, Table, Modal, Row, Col, Form, Input, Tabs, Select} from "antd";
-import moment from 'moment';
 import SearchBox from "../../../components/SearchBox";
 
 import IntlMessages from "../../../util/IntlMessages";
@@ -86,7 +85,7 @@ const Packing = (props) => {
         key: 'description',
         filteredValue: filteredInfo ? filteredInfo["description"] : null,
         filters: [],
-        onFilter: (value, record) => record.description == value,
+        onFilter: (value, record) => record.description === value,
         sorter: (a, b) => a.description?.length - b.description?.length,
         sortOrder: sortedInfo.columnKey === 'description' && sortedInfo.order,
     },
@@ -174,7 +173,7 @@ const Packing = (props) => {
         key: 'packingBucketDesc',
         filteredValue: filteredInfo ? filteredInfo["packingBucketDesc"] : null,
         filters: [],
-        onFilter: (value, record) => record.packingBucketDesc == value,
+        onFilter: (value, record) => record.packingBucketDesc === value,
         sorter: (a, b) => a.packingBucketDesc?.length - b.packingBucketDesc?.length,
         sortOrder: sortedInfo.columnKey === 'packingBucketDesc' && sortedInfo.order,
     },
@@ -254,17 +253,11 @@ const Packing = (props) => {
         setFilteredInfo(null);
     };
 
-    const clearAll = () => {
-        setSortedInfo(null);
-        setFilteredInfo(null);
-    };
-
     const exportSelectedData = () => {
 
     }
 
     const deleteSelectedCoils = () => {
-        console.log('dfd');
     };
 
     const onView = (record, e) => {
@@ -389,7 +382,6 @@ const Packing = (props) => {
                         if (editPacking) {
                             const values = props.form.getFieldsValue();
                             if (values.packingId !== '' && values.unit !== '' && values.description !== '') {
-                                console.log('Received values of form: ', values);
                                 const data = { values, id: props.packing?.packing?.itemId };
                                 props.updatePacking(data);
                                 setEditPacking(false);
@@ -399,7 +391,6 @@ const Packing = (props) => {
                         } else {
                             const values = props.form.getFieldsValue();
                             if (values.packingId !== '' && values.unit !== '' && values.description !== '') {
-                                console.log('Received values of form: ', values);
                                 props.addPacking(values);
                                 setShowAddPacking(false);
                             }
@@ -455,7 +446,6 @@ const Packing = (props) => {
                             const values = props.form.getFieldsValue();
                             const { bucketDesc, bucketId, packingItem, qty} = values;
                             if (bucketDesc && bucketId && packingItem && qty) {
-                                console.log('Received values of form: ', values);
                                 const data = { values, id: props.packing?.bucket?.bucketId };
                                 props.updatePackingBucket(data);
                                 setEditBucket(false);

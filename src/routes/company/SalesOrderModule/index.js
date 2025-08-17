@@ -1,5 +1,4 @@
-import { refresh } from 'less';
-import React, {useEffect, useCallback} from 'react';
+import React, { useCallback} from 'react';
 
 const SalesOrderModule = () => {
 
@@ -19,8 +18,7 @@ const SalesOrderModule = () => {
  
 const iframeRef = useCallback((node) => {
     if (node !== null) {
-console.log('iframeRef', node);
-        node.onload = () => node?.contentWindow?.postMessage({
+      node.onload = () => node?.contentWindow?.postMessage({
       type: 'SET_DATA',
       payload: {
         token: localStorage.getItem('userToken') || '',

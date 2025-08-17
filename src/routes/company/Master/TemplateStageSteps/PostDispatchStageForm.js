@@ -1,15 +1,13 @@
-import React, {useEffect, useState} from "react";
+import React from "react";
 import {connect} from 'react-redux';
 import { camelCase } from 'lodash';
 import moment from 'moment';
-import {useDispatch, useSelector} from "react-redux";
-import {Button, Card, Divider, Table, Modal, Row, Col, Form, Input, Icon, Tabs, Radio, DatePicker} from "antd";
+import {useDispatch} from "react-redux";
+import {Button, Card, Row, Col, Form, Input, Icon, Radio, DatePicker} from "antd";
 import CreateForm from './../CreateField';
 import { createFormFields, saveTemplate } from '../../../../appRedux/actions';
 
 const FormItem = Form.Item;
-const TabPane = Tabs.TabPane;
-let uuid = 0;
 export const formItemLayout = {
     labelCol: {
         xs: {span: 24},

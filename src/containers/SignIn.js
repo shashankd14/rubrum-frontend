@@ -1,20 +1,15 @@
 import React, {useEffect} from "react";
 import { Button, Form, Icon, Input, Alert } from "antd";
 import {useDispatch, useSelector} from "react-redux";
-import {Link, useHistory} from "react-router-dom";
+import {useHistory} from "react-router-dom";
 
 import {
   hideMessage,
   showAuthLoader,
-  userFacebookSignIn,
-  userGithubSignIn,
-  userGoogleSignIn,
   userSignIn,
-  userTwitterSignIn
 } from "appRedux/actions/Auth";
 
 import IntlMessages from "util/IntlMessages";
-import CircularProgress from "components/CircularProgress/index";
 import { useState } from "react";
 
 const FormItem = Form.Item;
@@ -22,7 +17,7 @@ const FormItem = Form.Item;
 const SignIn =(props)=> {
 
   const dispatch = useDispatch();
-  const {loader, alertMessage, showMessage,authUser}= useSelector(({auth}) => auth);
+  const {showMessage,authUser}= useSelector(({auth}) => auth);
   const history = useHistory();
   const [showPassword, setShowPassword] = useState(false)
 
@@ -49,6 +44,7 @@ const SignIn =(props)=> {
         <div className="login-backdrop">
           <div className="logo-container">
             <img
+              alt="logo"
               className="login-logo"
               src={require("assets/images/Logo.svg")}
             />
@@ -64,6 +60,7 @@ const SignIn =(props)=> {
               </div>
               <div style={{alignSelf: 'center'}}>
                 <img
+                  alt="login-widget"
                   className="login-widget1"
                   src={require("assets/images/Widget.svg")}
                 />

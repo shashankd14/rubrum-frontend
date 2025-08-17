@@ -22,7 +22,7 @@ function* sendReport(action) {
                 headers: { "Content-Type": "application/json", ...getHeaders() },
                 body: JSON.stringify(action.data) 
         });
-        if (sendReport.status == 200) {
+        if (sendReport.status === 200) {
             yield put(sendReportSuccess());
         } else if (sendReport.status === 401) {
             yield put(userSignOutSuccess());

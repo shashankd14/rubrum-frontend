@@ -1,5 +1,4 @@
-import { Button, Card, Col, DatePicker, Input, Popconfirm, Row, Icon, Upload } from 'antd';
-import TextArea from 'antd/lib/input/TextArea';
+import { Button, Card, Col, DatePicker, Input, Row } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import moment from 'moment';
@@ -122,17 +121,19 @@ const SlittingForm = (props) => {
     }
   }, [props.templateDetails.operation]);
 
-  const [isDisabled, setIsDisabled] = useState(props.isDisabled);
-
   const [slitInspectionData, setSlitInspectionData] = useState([]);
   const [finalInspectionData, setFinalInspectionData] = useState([]);
   const [toleranceInspectionDataSlit, settoleranceInspectionDataSlit] = useState([])
   const [thicknessSlit, setThicknessSlit] = useState();
+  const instructionDate = props.templateDetails.packetDetails?.map(
+    (item) => item.instructionDate
+  );
+  
   useEffect(() => {
     const thicknessSlitE = props.inward?.plan?.fThickness
     setThicknessSlit(thicknessSlitE);
   },[props.inward])
-  const instructionDate = props.templateDetails.packetDetails?.map(item=>item.instructionDate)
+  
   useEffect(() => {
     // Update customerName in slitFormData when props change
     setSlitFormData((prevFormData) => ({
@@ -359,7 +360,6 @@ const handleTransferToFinalTable = () => {
   setFinalDataSource(mappedData);
   handleFinalInspectionTableChange(mappedData)
 };
-console.log("location.state.selectedItemForQr.plannedYieldLossRatio", location.state.selectedItemForQr)
   return (
     <div id='slittingform'>
       <Card title='Slitting Process Form'>

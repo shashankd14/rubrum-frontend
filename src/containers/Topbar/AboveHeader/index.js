@@ -31,7 +31,6 @@ function handleMenuClick() {
 }
 
 function handleChange(value) {
-  console.log(`selected ${value}`);
 }
 
 

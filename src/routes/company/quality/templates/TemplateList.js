@@ -1,12 +1,10 @@
 //src-routes-company-quality-templates-TemplateList.js
-
 import React, { useEffect, useState } from 'react'
 import { useHistory } from "react-router";
 import { connect } from "react-redux";
-import { Button, Card, Divider, Select, Table, Modal, message } from "antd";
+import { Button, Select, Table } from "antd";
 import { useIntl } from "react-intl";
 import SearchBox from '../../../../components/SearchBox';
-import IntlMessages from '../../../../util/IntlMessages';
 
 import {
     fetchPartyList,
@@ -26,7 +24,6 @@ const TemplateList = (props) => {
    const [templateList, setTemplateList] = useState([])
     const [partyList, setPartyList] = useState(props.template?.data || []);
     const [customerValue, setCustomerValue] = useState("");
-    const [filteredInwardList, setFilteredInwardList] = useState(props.template?.data || []);
 
     useEffect(() => {
         props.fetchPartyList();
@@ -36,7 +33,6 @@ const TemplateList = (props) => {
     }, []);
 
     useEffect(() => {
-        console.log("init")
         setTemplateList([]);
        // setSearchValue([]);
        // setPageNo([]);
@@ -44,7 +40,6 @@ const TemplateList = (props) => {
 
     useEffect(() => {
         if (!props.template.loading && !props.template.error && props.template.operation === 'templateList') {
-            console.log(props.template)
             setTemplateList(props.template.data)
         }
     }, [props.template.loading, props.template.error]);
@@ -58,7 +53,6 @@ const TemplateList = (props) => {
     useEffect(() => {
         const { template } = props;
         if(searchValue) {
-            console.log("searchValue", searchValue);
             const filteredData = template?.data?.filter(template => {
                 if(template.templateId?.toString() === searchValue ||
                 template.templateName?.toLowerCase().includes(searchValue.toLowerCase()) )  {
@@ -66,7 +60,6 @@ const TemplateList = (props) => {
                 }
             });
             setTemplateList(filteredData);
-            console.log("filteredData", filteredData);
         } else {
             setTemplateList(template.data);
         }

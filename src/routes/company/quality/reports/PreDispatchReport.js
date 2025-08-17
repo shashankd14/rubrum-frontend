@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { connect } from "react-redux";
-import {Link, useHistory, useLocation, withRouter} from "react-router-dom";
-import { Button, Card, Col, Divider, Icon, Modal, Radio, Row, Select, Table } from 'antd'
+import { withRouter} from "react-router-dom";
+import { Col, Divider, Modal, Row, Select, Table } from 'antd'
 import {
     fetchPartyList,
     fetchTemplatesList,
@@ -13,18 +13,9 @@ import {
     fetchQualityReportStageList,
     pdfGenerateQMreportInward
 } from "../../../../appRedux/actions";
-import moment from "moment";
-import { useIntl } from "react-intl";
 import SearchBox from "../../../../components/SearchBox";
 
-import IntlMessages from "../../../../util/IntlMessages";
-import { compose } from 'redux';
-
 const PreDispatchReport = (props) => {
-
-    const intl = useIntl();
-    const history = useHistory();
-    const location = useLocation();
     const [sortedInfo, setSortedInfo] = useState({
         order: "descend",
         columnKey: "age",
@@ -46,7 +37,7 @@ const PreDispatchReport = (props) => {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showCreateQrScreen, setShowCreateQrScreen] = useState(false);
     const [action, setAction] = useState(undefined);
-    const disabledEle = 'disabled-ele';
+
     const renderStatusColumn = (record) => {
         const qirId = record.qirId;
 
@@ -224,13 +215,10 @@ const PreDispatchReport = (props) => {
     useEffect(() => {
         if (!isInitialMount.current){
         if (!props.template.loading && !props.template.error && props.template.operation == "fetchQualityReport") {
-            console.log(props.template)
             setQualityReportList(props.template.data)
         } else if (!props.template.loading && !props.template.error && props.template.operation == "fetchQualityReportStage") {
-            console.log(props.template)
              setFilteredPreDispatchList(props.template.data)
         } else if (!props.template.loading && !props.template.error && props.template.operation === 'templateById') {
-            console.log(props)
             setShowCreateQrScreen(true)
             // history.push('/company/quality/reports/create/predispatch')
             props.history.push({ pathname: '/company/quality/reports/create/predispatch', state: { selectedItemForQr: selectedItemForQr, templateDetails: props.template.data, action: 'create' } })
@@ -239,10 +227,8 @@ const PreDispatchReport = (props) => {
             setTemplateLinkList(tempData.filter(x=> x.stageName==="PRE_DISPATCH"))
             setShowCreateModal(true)
         } else if (!props.template.loading && !props.template.error && props.template.operation === 'templateList') {
-            console.log(props.template)
             setTemplateList(props.template.data)
         } else if (!props.template.loading && !props.template.error && props.template.operation == "qualityReportById") {
-            console.log("qualityReportById", props.template)
             props.history.push({ pathname: '/company/quality/reports/create/predispatch', state: { selectedItemForQr: selectedItemForQr, templateDetails: props.template.data, action: action } })
         }}
         else {
@@ -264,7 +250,6 @@ const PreDispatchReport = (props) => {
     }
 
     const showReportView = (record, key) => {
-        console.log(record, key)
         // const templateDetails = qualityReportList.find(qr => qr.coilNumber === record.coilNumber && qr.inwardId === record.inwardEntryId)
         // props.history.push({pathname: '/company/quality/reports/create/predispatch', state: {selectedItemForQr: record, templateDetails: templateDetails, action: 'view'}})
         setSelectedItemForQr(record)
@@ -273,12 +258,10 @@ const PreDispatchReport = (props) => {
     }
 
     const onDelete = (record, key, e) => {
-        console.log(record, key);
         props.deleteQualityReport(record.qirId);
     };
 
     const onEdit = (record, key, e) => {
-        console.log(record, key)
         setSelectedItemForQr(record);
         // const templateDetails = qualityReportList.find(qr => qr.coilNumber === record.coilNumber && qr.inwardId === record.inwardEntryId)
         // props.history.push({pathname: '/company/quality/reports/create/predispatch', state: {selectedItemForQr: record, templateDetails: templateDetails, action: 'edit'}})
@@ -287,7 +270,6 @@ const PreDispatchReport = (props) => {
     };
 
     const handleChange = (e) => {
-        console.log(e)
         setTemplateId(e)
     };
 
@@ -322,7 +304,6 @@ const PreDispatchReport = (props) => {
 
     useEffect(() => {
         if (!props.party.loading && !props.party.error) {
-            console.log(props.party)
             setPartyList(props.party.partyList)
         }
     }, [props.party.loading, props.party.error]);
@@ -335,7 +316,6 @@ const PreDispatchReport = (props) => {
                 (item.customerBatchNo.toLowerCase().includes(searchValue.toLowerCase())));
 
             setFilteredPreDispatchList(filteredData);
-            console.log("filteredData", filteredData);
         } else {
             setFilteredPreDispatchList(template.data);
         }

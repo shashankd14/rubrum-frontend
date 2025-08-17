@@ -205,7 +205,7 @@ const CreateLinkTemplate = (props) => {
         if (typeof length === 'string') {
             lengthValues = length.split(',').map(value => parseFloat(value.trim()));
         } else {lengthValues = [...length]}
-        console.log("thickness before create", thicknessValues)
+
         let payload = JSON.stringify({
             kqpId: selectedTemplateId,
             endUserTagIdList: selectedEndUserTags,

@@ -1,4 +1,4 @@
-import { all, put, fork, takeLatest, take, call } from "redux-saga/effects";
+import { all, put, fork, takeLatest, call } from "redux-saga/effects";
 import { getUserToken } from "./common";
 import toNumber from "lodash";
 import moment from "moment";
@@ -14,7 +14,6 @@ import {
   FETCH_MATERIAL_GRADE_LIST_REQUEST,
   POST_DELIVERY_CONFIRM_REQUESTED,
   REQUEST_UPDATE_INSTRUCTION_DETAILS,
-  REQUEST_UPDATE_INSTRUCTION_DETAILS_SUCCESS,
   FETCH_INWARD_INSTRUCTION_DETAILS_REQUESTED,
   FETCH_INWARD_INSTRUCTION_WIP_DETAILS_REQUESTED,
   SAVE_UNPROCESSED_FOR_DELIVERY,
@@ -27,16 +26,12 @@ import {
   PDF_GENERATE_INWARD,
   PDF_GENERATE_DELIVERY,
   PDF_S3_URL,
-  GET_RECONCILE_REPORT_SUCCESS,
   GET_RECONCILE_REPORT,
-  GET_RECONCILE_REPORT_ERROR,
-  QR_Code_GENERATE_PLAN,
-  QR_GENERATE_INWARD,
   GET_PACKET_WISE_PRICE_DC_REQUEST,
   GET_PACKET_WISE_PRICE_DC_FULL_HANDLING_REQUEST,
-  COIL_NOT_FOUND,
   FETCH_INWARD_LIST_WITH_OLD_API_REQUEST,
   UPDATE_CLASSIFICATION_SLITANDCUT_BEFORE_FINISH,
+  FETCH_INWARD_MATERIAL_LIST,
 } from "../../constants/ActionTypes";
 
 import {
@@ -86,24 +81,16 @@ import {
   generateDCPdfError,
   getS3PDFUrlError,
   getS3PDFUrlSuccess,
-  getReconcileReport,
   getReconcileReportError,
   getReconcileReportSuccess,
   getPacketwisePriceDCSuccess,
   getPacketwisePriceDCError,
-  QrGenerateInwardSuccess,
   getPacketwisePriceDCFullHandlingSuccess,
   getPacketwisePriceDCFullHandlingError,
-  coilNotFound,
+  saveInwardMaterialDetails,
+  errorInwardMaterialDetails,
 } from "../actions";
-import {
-  CUTTING_INSTRUCTION_PROCESS_ID,
-  SLITTING_INSTRUCTION_PROCESS_ID,
-  SLIT_CUT_INSTRUCTION_PROCESS_ID,
-} from "../../constants";
-import { formItemLayout } from "../../routes/company/Partywise/CuttingModal";
 import { userSignOutSuccess } from "../../appRedux/actions/Auth";
-import * as actions from "../actions";
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
 
@@ -128,51 +115,51 @@ function* fetchInwardList({
     sortColumn: sortColumn,
     sortOrder: sortOrder,
     ...(filterInfo !== undefined &&
-    filterInfo["ageing"] !== null &&
-    filterInfo["ageing"]?.length > 0
+    filterInfo["coilage"] !== null &&
+    filterInfo["coilage"]?.length > 0
       ? {
-          ageingMinValue: filterInfo["ageing"][0]
-            ? filterInfo["ageing"][0]
-            : filterInfo["ageing"][1],
-          ageingMaxValue: filterInfo["ageing"][1]
-            ? filterInfo["ageing"][1]
-            : filterInfo["ageing"][0],
+          ageingMinValue: filterInfo["coilage"][0]
+            ? filterInfo["coilage"][0]
+            : filterInfo["coilage"][1],
+          ageingMaxValue: filterInfo["coilage"][1]
+            ? filterInfo["coilage"][1]
+            : filterInfo["coilage"][0],
         }
       : ""),
     ...(filterInfo !== undefined &&
-    filterInfo["fThickness"] !== null &&
-    filterInfo["fThickness"]?.length > 0
+    filterInfo["fthickness"] !== null &&
+    filterInfo["fthickness"]?.length > 0
       ? {
-          thicknessMinValue: filterInfo["fThickness"][0]
-            ? filterInfo["fThickness"][0]
-            : filterInfo["fThickness"][1],
-          thicknessMaxValue: filterInfo["fThickness"][1]
-            ? filterInfo["fThickness"][1]
-            : filterInfo["fThickness"][0],
+          thicknessMinValue: filterInfo["fthickness"][0]
+            ? filterInfo["fthickness"][0]
+            : filterInfo["fthickness"][1],
+          thicknessMaxValue: filterInfo["fthickness"][1]
+            ? filterInfo["fthickness"][1]
+            : filterInfo["fthickness"][0],
         }
       : ""),
     ...(filterInfo !== undefined &&
-    filterInfo["fWidth"] !== null &&
-    filterInfo["fWidth"]?.length > 0
+    filterInfo["fwidth"] !== null &&
+    filterInfo["fwidth"]?.length > 0
       ? {
-          widthMinValue: filterInfo["fWidth"][0]
-            ? filterInfo["fWidth"][0]
-            : filterInfo["fWidth"][1],
-          widthMaxValue: filterInfo["fWidth"][1]
-            ? filterInfo["fWidth"][1]
-            : filterInfo["fWidth"][0],
+          widthMinValue: filterInfo["fwidth"][0]
+            ? filterInfo["fwidth"][0]
+            : filterInfo["fwidth"][1],
+          widthMaxValue: filterInfo["fwidth"][1]
+            ? filterInfo["fwidth"][1]
+            : filterInfo["fwidth"][0],
         }
       : ""),
     ...(filterInfo !== undefined &&
-    filterInfo["fLength"] !== null &&
-    filterInfo["fLength"]?.length > 0
+    filterInfo["flength"] !== null &&
+    filterInfo["flength"]?.length > 0
       ? {
-          lengthMinValue: filterInfo["fLength"][0]
-            ? filterInfo["fLength"][0]
-            : filterInfo["fLength"][1],
-          lengthMaxValue: filterInfo["fLength"][1]
-            ? filterInfo["fLength"][1]
-            : filterInfo["fLength"][0],
+          lengthMinValue: filterInfo["flength"][0]
+            ? filterInfo["flength"][0]
+            : filterInfo["flength"][1],
+          lengthMaxValue: filterInfo["flength"][1]
+            ? filterInfo["flength"][1]
+            : filterInfo["flength"][0],
         }
       : ""),
   };
@@ -202,7 +189,7 @@ function* fetchInwardList({
               ].key = `${inward.coilNumber}-${instruction.instructionId}`;
               eachInward.children[index].coilNumber = instruction.instructionId;
               eachInward.children[index].party = inward.party;
-              eachInward.children[index].material = inward.material;
+              // eachInward.children[index].material = inward.material;
               if (
                 instruction.childInstructions &&
                 instruction.childInstructions.length > 0
@@ -253,22 +240,17 @@ function* fetchInwardListWithOldAPI(action) {
     sortColumn: action.sortOrder,
     sortOrder: action.sortKey,
     ...(action.filterInfo !== undefined &&
-    action.filterInfo["fWidth"] !== null &&
-    action.filterInfo["fWidth"]?.length > 0
+    action.filterInfo["fwidth"] !== null &&
+    action.filterInfo["fwidth"]?.length > 0
       ? {
-          widthMinValue: action.filterInfo["fWidth"][0]
-            ? action.filterInfo["fWidth"][0]
-            : action.filterInfo["fWidth"][1],
-          widthMaxValue: action.filterInfo["fWidth"][1]
-            ? action.filterInfo["fWidth"][1]
-            : action.filterInfo["fWidth"][0],
+          widthMinValue: action.filterInfo["fwidth"][0],
+          widthMaxValue: action.filterInfo["fwidth"][0],
         }
       : ""),
-    ...(action.filterInfo !== undefined &&
-    action.filterInfo["gradename"] !== null
+    ...(action.filterInfo !== undefined && action.filterInfo["gradeId"] !== null
       ? {
-          gradeFilterValue: action.filterInfo["gradename"]
-            ? action.filterInfo["gradename"][0]
+          gradeFilterValue: action.filterInfo["gradeId"]
+            ? action.filterInfo["gradeId"][0]
             : "",
         }
       : ""),
@@ -285,54 +267,8 @@ function* fetchInwardListWithOldAPI(action) {
     );
     if (fetchInwardList.status === 200) {
       const fetchInwardListResponse = yield fetchInwardList.json();
-      const inwardResponse = [];
       const { content, totalItems } = fetchInwardListResponse;
-      if (content.length > 0) {
-        content.map((inward) => {
-          let eachInward = { ...inward };
-          eachInward.key = inward.coilNumber;
-          if (inward.instruction.length > 0) {
-            eachInward.children = inward.instruction;
-            inward.instruction.map((instruction, index) => {
-              eachInward.children[
-                index
-              ].key = `${inward.coilNumber}-${instruction.instructionId}`;
-              eachInward.children[index].coilNumber = instruction.instructionId;
-              eachInward.children[index].party = inward.party;
-              eachInward.children[index].material = inward.material;
-              if (
-                instruction.childInstructions &&
-                instruction.childInstructions.length > 0
-              ) {
-                eachInward.children[index].children =
-                  instruction.childInstructions;
-                eachInward.children[index].children.map(
-                  (childInstruction, childIndex) => {
-                    eachInward.children[index].children[
-                      childIndex
-                    ].key = `${inward.coilNumber}-${instruction.instructionId}-${childInstruction.instructionId}`;
-                    eachInward.children[index].children[childIndex].coilNumber =
-                      childInstruction.instructionId;
-                    eachInward.children[index].children[childIndex].party =
-                      inward.party;
-                    eachInward.children[index].children[childIndex].material =
-                      inward.material;
-                    eachInward.children[index].children[
-                      childIndex
-                    ].customerBatchId = inward.customerBatchId;
-                    eachInward.children[index].children[childIndex].fThickness =
-                      inward.fThickness;
-                  }
-                );
-              }
-            });
-          }
-          inwardResponse.push(eachInward);
-        });
-        yield put(fetchInwardListSuccess(inwardResponse, totalItems));
-      } else if (content.length === 0) {
-        yield put(coilNotFound(totalItems));
-      }
+      yield put(fetchInwardListSuccess(content, totalItems));
     } else if (fetchInwardList.status === 401) {
       yield put(userSignOutSuccess());
     } else yield put(fetchInwardListError("error"));
@@ -357,6 +293,14 @@ function* fetchWIPInwardList(action) {
             : "",
         }
       : ""),
+    ...(action.filterInfo !== undefined &&
+    action.filterInfo["coilNumber"] !== null
+      ? {
+          batchNoFilter: action.filterInfo["coilNumber"] && action.filterInfo["coilNumber"].length > 0
+            ? action.filterInfo["coilNumber"][0]
+            : "",
+        }
+      : ""),
   };
   try {
     // const fetchInwardList = yield fetch(`${baseUrl}api/inwardEntry/partywise/${page}/${pageSize}?searchText=${searchValue}&partyId=${partyId}`, {
@@ -370,52 +314,8 @@ function* fetchWIPInwardList(action) {
     );
     if (fetchWIPInwardList.status === 200) {
       const fetchWIPInwardListResponse = yield fetchWIPInwardList.json();
-      const inwardResponse = [];
       const { content, totalItems } = fetchWIPInwardListResponse;
-      if (content.length > 0) {
-        content.map((inward) => {
-          let eachInward = { ...inward };
-          eachInward.key = inward.coilNumber;
-          if (inward.instruction.length > 0) {
-            eachInward.children = inward.instruction;
-            inward.instruction.map((instruction, index) => {
-              eachInward.children[
-                index
-              ].key = `${inward.coilNumber}-${instruction.instructionId}`;
-              eachInward.children[index].coilNumber = instruction.instructionId;
-              eachInward.children[index].party = inward.party;
-              eachInward.children[index].material = inward.material;
-              if (
-                instruction.childInstructions &&
-                instruction.childInstructions.length > 0
-              ) {
-                eachInward.children[index].children =
-                  instruction.childInstructions;
-                eachInward.children[index].children.map(
-                  (childInstruction, childIndex) => {
-                    eachInward.children[index].children[
-                      childIndex
-                    ].key = `${inward.coilNumber}-${instruction.instructionId}-${childInstruction.instructionId}`;
-                    eachInward.children[index].children[childIndex].coilNumber =
-                      childInstruction.instructionId;
-                    eachInward.children[index].children[childIndex].party =
-                      inward.party;
-                    eachInward.children[index].children[childIndex].material =
-                      inward.material;
-                    eachInward.children[index].children[
-                      childIndex
-                    ].customerBatchId = inward.customerBatchId;
-                    eachInward.children[index].children[childIndex].fThickness =
-                      inward.fThickness;
-                  }
-                );
-              }
-            });
-          }
-          inwardResponse.push(eachInward);
-        });
-      }
-      yield put(fetchWIPInwardListSuccess(inwardResponse, totalItems));
+      yield put(fetchWIPInwardListSuccess(content, totalItems));
     } else if (fetchWIPInwardList.status === 401) {
       yield put(userSignOutSuccess());
     } else yield put(fetchWIPInwardListError("error"));
@@ -573,7 +473,7 @@ function* submitInward(action) {
       body: data,
       headers: getHeaders(),
     });
-    if (newInwardEntry.status == 200) {
+    if (newInwardEntry.status === 200) {
       let submitInwardResponse = yield newInwardEntry.json();
       yield put(submitInwardSuccess(submitInwardResponse.inwardEntryId));
     } else if (newInwardEntry.status === 401) {
@@ -781,14 +681,6 @@ function* requestSaveCuttingInstruction(action) {
 }
 
 function* instructionGroupsave(action) {
-  const requestBody = [];
-  // action.groupDetails.map((groupCut) => {
-  //     const req = {
-  //             count : groupCut.no,
-  //             instructionId:groupCut.instructionId
-  //     }
-  //     requestBody.push(req);
-  // })
   try {
     const groupSaveList = yield fetch(`${baseUrl}api/instructionGroup/save`, {
       method: "POST",
@@ -1236,7 +1128,6 @@ function* getPacketwisePriceDCSaga(action) {
     };
   }
   try {
-    console.log("request: ", req_obj);
     const response = yield call(
       fetch,
       `${baseUrl}api/delivery/validatePriceMapping`,
@@ -1310,6 +1201,44 @@ function* updateClassificationSlitAndCutBeforeFinish(action) {
   }
 }
 
+function* getInwardMaterialList(action) {
+  const req_obj = {
+    pageNo: 1,
+    pageSize: 1115,
+    param: action.param
+  };
+  try {
+    const updateClassification = yield fetch(
+      `${baseUrl}api/material/mmidmasterusedinward`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...getHeaders() },
+        body: JSON.stringify(req_obj),
+      }
+    );
+    if (updateClassification.status === 200) {
+      const arrayedData = {gradeMap: [], productMap: []};
+      const inwardMaterialList = yield updateClassification.json();
+
+      Object.keys(inwardMaterialList.gradeMap).forEach((key) => { 
+          arrayedData.gradeMap.push({gradeId: key, gradeName: inwardMaterialList.gradeMap[key]});
+      });
+
+      Object.keys(inwardMaterialList.productMap).forEach((key) => {
+        arrayedData.productMap.push({
+          productId: key,
+          productName: inwardMaterialList.productMap[key],
+        });
+      });
+      yield put(saveInwardMaterialDetails(arrayedData));
+    } else if (updateClassification.status === 401) {
+      yield put(userSignOutSuccess());
+    } else yield put(errorInwardMaterialDetails("error"));
+  } catch (error) {
+    yield put(errorInwardMaterialDetails(error));
+  }
+}
+
 export function* watchFetchRequests() {
   yield takeLatest(FETCH_INWARD_LIST_REQUEST, fetchInwardList);
   yield takeLatest(
@@ -1357,6 +1286,7 @@ export function* watchFetchRequests() {
   // yield takeLatest(QR_Code_GENERATE_PLAN, QrGeneratePlan);
   // yield takeLatest(QR_GENERATE_INWARD, QrGenerateInward);
   yield takeLatest(GET_PACKET_WISE_PRICE_DC_REQUEST, getPacketwisePriceDCSaga);
+  yield takeLatest(FETCH_INWARD_MATERIAL_LIST, getInwardMaterialList);
   yield takeLatest(
     GET_PACKET_WISE_PRICE_DC_FULL_HANDLING_REQUEST,
     getPacketwisePriceDCFullHandlingSaga

@@ -2,9 +2,8 @@ import React, {memo, useEffect} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import URLSearchParams from 'url-search-params'
 import {Redirect, Route, Switch, useHistory, useLocation, useRouteMatch} from "react-router-dom";
-import {LocaleProvider, Modal} from "antd";
+import {LocaleProvider} from "antd";
 import {IntlProvider} from "react-intl";
-import List from "../../routes/company/Partywise/List";
 import AppLocale from "lngProvider";
 import MainApp from "./MainApp";
 import SignIn from "../SignIn";
@@ -22,7 +21,7 @@ import {
   NAV_STYLE_DEFAULT_HORIZONTAL,
   NAV_STYLE_INSIDE_HEADER_HORIZONTAL
 } from "../../constants/ThemeSetting";
-import { getIPAddress, refreshToken, userSignOutSuccess } from '../../appRedux/actions';
+import { getIPAddress, refreshToken } from '../../appRedux/actions';
 
 const RestrictedRoute = ({component: Component, location, authUser, ...rest}) =>
   <Route
@@ -39,7 +38,7 @@ const RestrictedRoute = ({component: Component, location, authUser, ...rest}) =>
   />;
 
 
-const App = (props) => {
+const App = () => {
 
   const dispatch = useDispatch();
   const {locale, navStyle, layoutType} = useSelector(({settings}) => settings);
@@ -50,7 +49,6 @@ const App = (props) => {
   const match = useRouteMatch();
 
   //refresh token api call
-  const { confirm } = Modal;
   useEffect(() => {
       const refreshTokenIfNeeded = async () => {
       const accessToken = localStorage.getItem('userToken');
@@ -59,9 +57,7 @@ const App = (props) => {
       if (accessToken && expiresIn) {
         const currentTime = Date.now();
         if (currentTime > expiresIn) {
-          console.log("Token is expired, refreshing...");
-          await dispatch(refreshToken());
-                  
+          await dispatch(refreshToken());          
         } else {
           console.log("Token is not expired");
         }

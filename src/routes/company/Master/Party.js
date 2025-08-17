@@ -1,14 +1,11 @@
 import React, {useEffect, useState} from "react";
 import {connect} from 'react-redux';
 import {Button, Card, Divider, Table, Modal, Row, Col, Form, Input, Select,Checkbox} from "antd";
-import moment from 'moment';
 import SearchBox from "../../../components/SearchBox";
 
 import IntlMessages from "../../../util/IntlMessages";
 import { fetchPartyList, addParty, fetchPartyListId, updateParty, resetParty, fetchClassificationList,fetchEndUserTagsList, fetchTemplatesList } from "../../../appRedux/actions";
-import { onDeleteContact } from "../../../appRedux/actions";
 
-const FormItem = Form.Item;
 export const formItemLayout = {
     labelCol: {
         xs: {span: 24},
@@ -194,6 +191,7 @@ const Party = (props) => {
             setFilteredInwardList(party.partyList);
         }
     }, [searchValue])
+
     const handleChange = (pagination, filters, sorter) => {
         setSortedInfo(sorter);
         setFilteredInfo(filters)
@@ -209,7 +207,6 @@ const Party = (props) => {
     }
 
     const deleteSelectedCoils = () => {
-        console.log('dfd');
     };
 
     const addNewKey = (idx, key) => {
@@ -237,7 +234,6 @@ const Party = (props) => {
         });
     }
     const handleSelectChange=(e)=>{
-        console.log(e)
     }
 
     useEffect(() => {
@@ -246,7 +242,8 @@ const Party = (props) => {
         setDailyReportsList(party.dailyReportsList || []);
         setMonthlyReportsList(party.monthlyReportsList || []);
       }, [party]);
-      const { dailyReportsList: initialDailyReportsList, monthlyReportsList: initialMonthlyReportsList, ...otherProps } = props.party.party;
+
+    const { dailyReportsList: initialDailyReportsList, monthlyReportsList: initialMonthlyReportsList, ...otherProps } = props.party.party;
 
     return (
         <div>

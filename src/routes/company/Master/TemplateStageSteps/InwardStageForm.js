@@ -1,9 +1,9 @@
-import React, {useEffect, useRef, useState} from "react";
+import React from "react";
 import {connect} from 'react-redux';
 import { camelCase } from 'lodash';
-import {useDispatch, useSelector} from "react-redux";
+import {useDispatch} from "react-redux";
 import moment from 'moment';
-import {Button, Card, Divider, Table, Modal, Row, Col, Form, Input, Icon, Tabs, Radio, DatePicker} from "antd";
+import {Button, Card, Row, Col, Form, Input, Icon, Tabs, Radio, DatePicker} from "antd";
 import CreateForm from './../CreateField';
 import { createFormFields, setTemplateName } from '../../../../appRedux/actions';
 

@@ -49,7 +49,6 @@ const CreateCuttingDetailsForm = (props) => {
   const TabPane = Tabs.TabPane;
   const { getFieldDecorator } = props.form;
   let loading = "";
-  let index = 0;
   const [confirmClicks, setConfirmClicks] = useState([]);
   const [showDeleteModal, setshowDeleteModal] = useState(false);
   const [deleteRecord, setDeleteRecord] = useState({});

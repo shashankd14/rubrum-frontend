@@ -235,11 +235,9 @@ const CuttingForm = (props) => {
     }
 
     const handleInspectionTableChange = (tableData) => {
-        console.log('handleInspectionTableChange', tableData)
         setCutInspectionData(tableData)
     } 
     const handleToleranceTableChange = (tableData) => {
-        console.log('handleInspectionTableChange', tableData)
         setToleranceInspectionData(tableData)
     } 
 

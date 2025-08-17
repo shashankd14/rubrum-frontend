@@ -286,16 +286,13 @@ const SlittingForm = (props) => {
     }
 
     const handleInspectionTableChange = (tableData) => {
-        console.log('handleInspectionTableChange', tableData)
         setSlitInspectionData(tableData)
     } 
 
     const handleFinalInspectionTableChange = (tableData) => {
-        console.log('handleFinalInspectionTableChange', tableData)
         setFinalInspectionData(tableData)
     } 
     const handleToleranceTableChangeSlit = (tableData) => {
-        console.log('handleInspectionTableChange', tableData)
         setToleranceInspectionData(tableData)
     } 
     return (

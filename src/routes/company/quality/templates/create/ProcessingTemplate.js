@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { Link, useHistory, useLocation, withRouter } from "react-router-dom";
-import { Button, Card, Col, Icon, Input, Modal, Radio, Row, Select } from 'antd'
+import { withRouter } from "react-router-dom";
+import { Button, Col, Icon, Input, Modal, Radio, Row, Select } from 'antd'
 import Dragger from 'antd/lib/upload/Dragger'
 import { PROCESSES } from "../../../../../constants/quality/ComponentConstants";
 import SlittingForm from './process/SlittingForm';
@@ -11,7 +11,6 @@ import SlitAndCutForm from './process/SlitAndCutForm';
 const ProcessingTemplate = (props) => {
 
   const Option = Select.Option;
-  const history = useHistory();
 
   const [templateData, setTemplateData] = useState({
     1: {
@@ -71,22 +70,18 @@ const ProcessingTemplate = (props) => {
       templateDetailsData.forEach((td) => {
         val[td.id] = td;
       });
-      console.log(val)
       setTemplateData(val)
     }
   }, [props.templateDetails]);
+
   const onFilesChange = (type, file) => {
-    console.log(type, file)
     templateData[type].fileList = file.fileList.slice(-1)
     templateData[type].fileName = templateData[type].fileList[0].name;
-    console.log(templateData)
     setTemplateData({ ...templateData })
   }
 
   const onOptionChange = (type, value) => {
-    console.log(type, value)
     templateData[type].value = value.target ? value.target.value : value
-    console.log(templateData)
     setTemplateData({ ...templateData })
   }
 
@@ -95,7 +90,6 @@ const ProcessingTemplate = (props) => {
   }
 
   const updateFormData = (formData) => {
-    console.log(formData)
     templateData['formData']['value'] = formData;
     setShowCreateModal(false);
   }

@@ -1,4 +1,4 @@
 module.exports = {
-  footerText: 'Copyright Company Name © 2020',
-  dateFormat: 'DD/MM/YYYY'
-}
+  footerText: "Copyright Workeazy Pvt. Ltd © 2025",
+  dateFormat: "DD/MM/YYYY",
+};

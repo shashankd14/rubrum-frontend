@@ -247,7 +247,6 @@ function* updateParty(action) {
         } else
             yield put(updatePartyError('error'));
     } catch (error) {
-        console.log(error);
         yield put(updatePartyError(error));
     }
 }

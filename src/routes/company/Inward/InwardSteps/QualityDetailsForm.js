@@ -107,7 +107,6 @@ const QualityDetailsForm = (props) => {
                 multiple={true}
                 beforeUpload={() => false}
                 action=""
-                onChange={(info) => console.log(info)}
               >
                 <p className="ant-upload-drag-icon">
                   <Icon type="inbox" />
@@ -132,7 +131,6 @@ const QualityDetailsForm = (props) => {
                 multiple={true}
                 beforeUpload={() => false}
                 action=""
-                onChange={(info) => console.log(info)}
               >
                 <p className="ant-upload-drag-icon">
                   <Icon type="inbox" />
@@ -156,7 +154,6 @@ const QualityDetailsForm = (props) => {
                 }
                 multiple={true}
                 beforeUpload={() => false}
-                onChange={(info) => console.log(info)}
               >
                 <p className="ant-upload-drag-icon">
                   <Icon type="inbox" />

@@ -221,13 +221,10 @@ const ProcessingReport = (props) => {
     useEffect(() => {
         if (!isInitialMount.current){
         if (!props.template.loading && !props.template.error && props.template.operation == "fetchQualityReport") {
-            console.log(props.template)
             setQualityReportList(props.template.data)
         } else if (!props.template.loading && !props.template.error && props.template.operation == "fetchQualityReportStage") {
-            console.log(props.template)
              setFilteredProcessingList(props.template.data)
         } else if (!props.template.loading && !props.template.error && props.template.operation === 'templateById') {
-            console.log(selectedItemForQr)
             setShowCreateQrScreen(true)
             props.history.push({ pathname: '/company/quality/reports/create/processing', state: { selectedItemForQr: selectedItemForQr, templateDetails: props.template.data, action: 'create' } })
         } else if (!props.template.loading && !props.template.error && props.template.operation == "templateLinkList") {
@@ -235,10 +232,8 @@ const ProcessingReport = (props) => {
             setTemplateLinkList(tempData.filter(x=> x.stageName==="PROCESSING"))
             setShowCreateModal(true)
         } else if (!props.template.loading && !props.template.error && props.template.operation === 'templateList') {
-            console.log(props.template)
             setTemplateList(props.template.data)
         } else if (!props.template.loading && !props.template.error && props.template.operation == "qualityReportById") {
-            console.log("qualityReportById", props.template)
             props.history.push({ pathname: '/company/quality/reports/create/processing', state: { selectedItemForQr: selectedItemForQr, templateDetails: props.template.data, action: action } })
         }}
         else {
@@ -249,19 +244,16 @@ const ProcessingReport = (props) => {
 
     const showCreateQr = () => {
         // props.history.push()
-        console.log(selectedItemForQr?.coilNo);
         props.getQualityTemplateById(templateId)
     }
 
     const showTemplateList = (record, key) => {
-        console.log(record, key)
         setSelectedItemForQr(record)
         setShowCreateModal(true);
         props.fetchTemplatesLinkList({ partyId: record.npartyId});
     }
 
     const showReportView = (record, key) => {
-        console.log(record, key)
         // const templateDetails = qualityReportList.find(qr => qr.coilNumber === record.coilNumber && qr.inwardId === record.inwardEntryId)
         // props.history.push({ pathname: '/company/quality/reports/create/processing', state: { selectedItemForQr: record, templateDetails: templateDetails, action: 'view' } })
          setSelectedItemForQr(record)
@@ -271,12 +263,10 @@ const ProcessingReport = (props) => {
     }
 
     const onDelete = (record, key, e) => {
-        console.log(record, key);
         props.deleteQualityReport(record.qirId);
     };
 
     const onEdit = (record, key, e) => {
-        console.log(record, key)
         // const templateDetails = qualityReportList.find(qr => qr.coilNumber === record.coilNumber && qr.inwardId === record.inwardEntryId)
         // props.history.push({ pathname: '/company/quality/reports/create/processing', state: { selectedItemForQr: record, templateDetails: templateDetails, action: 'edit' } })
         setSelectedItemForQr(record)
@@ -296,7 +286,6 @@ const ProcessingReport = (props) => {
       };
 
     const handleChange = (e) => {
-        console.log(e)
         setTemplateId(e)
     };
 
@@ -308,14 +297,12 @@ const ProcessingReport = (props) => {
 
     useEffect(() => {
         if (!props.template.loading && !props.template.error && props.template.operation === 'templateList') {
-            console.log(props.template)
             setTemplateList(props.template.data)
         }
     }, [props.template.loading, props.template.error]);
 
     useEffect(() => {
         if (!props.party.loading && !props.party.error) {
-            console.log(props.party)
             setPartyList(props.party.partyList)
         }
     }, [props.party.loading, props.party.error]);

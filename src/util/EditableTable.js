@@ -1,8 +1,7 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import 'antd/dist/antd.css';
-import { Table, Input, Button, Form, Popconfirm, Divider } from 'antd';
-import { useHistory, withRouter } from 'react-router-dom';
+import { Table, Input, Form } from 'antd';
+import { withRouter } from 'react-router-dom';
 
 const EditableContext = React.createContext();
 
@@ -192,7 +191,6 @@ class EditableTable extends React.Component {
     const { history } = this.props;
     //history.push(`/company/quality/templates/edit/${key}`);
     history.push("/company/quality/templates");
-    console.log(`Editing record with key: ${key}`);
   };
 
   handleAdd = () => {

@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { connect } from 'react-redux';
-import { Card, Form, Input, Select, Tabs } from 'antd'
-import { useIntl } from "react-intl";
+import { Card, Input, Select } from 'antd'
 import IntlMessages from '../../../../../util/IntlMessages'
-import { QUALITY_TEMPLATE_ACTIONS, QUALITY_TEMPLATE_COLUMNS, QUALITY_LINKED_TEMPLATE_ACTIONS, STAGES } from "../../../../../constants/quality/ComponentConstants";
-import { Label } from "recharts";
+import { STAGES } from "../../../../../constants/quality/ComponentConstants";
 import InwardTemplate from "./InwardTemplate";
 import PreProcessingTemplate from "./PreProcessingTemplate";
 import ProcessingTemplate from "./ProcessingTemplate";
@@ -14,13 +12,10 @@ import {
     saveQualityTemplate, 
     getQualityTemplateById,
     updateQualityTemplate,
-    deleteQualityTemplate
  } from "../../../../../appRedux/actions"
 
 
 const CreateTemplate = (props) => {
-
-    const intl = useIntl();
 
     const [templateName, setTemplateName] = useState("");
     const [templateNameErr, setTemplateNameErr] = useState(false);
@@ -28,13 +23,12 @@ const CreateTemplate = (props) => {
     const [action, setAction] = useState("create");
     const [templateDetails, setTemplateDetails] = useState("");
 
-
     const Option = Select.Option;
 
     useEffect(() => {
         if (props.match) {
             const urlPaths = props.match.url.split('/')
-            if (urlPaths[urlPaths.length - 2] == 'view' || urlPaths[urlPaths.length - 2] == 'edit') {
+            if (urlPaths[urlPaths.length - 2] === 'view' || urlPaths[urlPaths.length - 2] === 'edit') {
                 setAction(urlPaths[urlPaths.length - 2])
                 props.getQualityTemplateById(urlPaths[urlPaths.length - 1])
             }
@@ -42,9 +36,7 @@ const CreateTemplate = (props) => {
     }, [props.match])
 
     useEffect(() => {
-        console.log(props)
         if (!props.templateDetails.loading && !props.templateDetails.error && props.templateDetails.operation === 'templateById') {
-            console.log(props.templateDetails)
             setTemplateName(props.templateDetails.data.templateName);
             setStageName(props.templateDetails.data.stageName?.toUpperCase())
             setTemplateDetails(props.templateDetails.data)
@@ -87,9 +79,9 @@ const CreateTemplate = (props) => {
         request.append("stageName", stageName);
         request.append("userId", localStorage.getItem("userId").toString());
         request.append("templateDetails", JSON.stringify(templateDetails));
-        if(action == 'create')
+        if(action === 'create')
             props.saveQualityTemplate(request);
-        else if(action == 'edit')
+        else if(action === 'edit')
             props.updateQualityTemplate(request);
         props.history.push('/company/quality/templates')
     }

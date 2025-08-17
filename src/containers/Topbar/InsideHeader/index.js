@@ -1,8 +1,6 @@
 import React, {useState} from "react";
 import {Button, Dropdown, Icon, Layout, Menu, message, Popover} from 'antd';
 import {connect, useDispatch, useSelector} from "react-redux";
-import CustomScrollbars from "util/CustomScrollbars";
-import languageData from "../languageData";
 import SearchBox from "components/SearchBox";
 import UserInfo from "components/UserInfo";
 import AppNotification from "components/AppNotification";
@@ -31,7 +29,6 @@ const InsideHeader = () => {
   const dispatch = useDispatch();
 
   const [searchText, setSearchText] = useState('');
-  const locale = useSelector(({settings}) => settings.locale);
   const navCollapsed = useSelector(({settings}) => settings.navCollapsed);
 
   const updateSearchChatUser = (evt) => {

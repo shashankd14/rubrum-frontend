@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux';
-import { Button, Card, Col, Form, Input, Row, Select, Tabs, Tag, Checkbox } from 'antd'
+import { Button, Card, Col, Row, Select, Tag, Checkbox } from 'antd'
 import {
     fetchPartyList,
     fetchTemplatesList,
@@ -36,7 +36,6 @@ const CreateLinkTemplate = (props) => {
     useEffect(() => {
         if (props.match) {
             const urlPaths = props.match.url.split('/')
-            console.log(urlPaths)
             setSelectedTemplateId(urlPaths[urlPaths.length - 1])
             if (urlPaths[urlPaths.length - 2] === 'view' || urlPaths[urlPaths.length - 2] === 'edit') {
                 setAction(urlPaths[urlPaths.length - 2])
@@ -113,7 +112,6 @@ const CreateLinkTemplate = (props) => {
     }
 
     const handeTemplateChange = (e) => {
-        console.log(e)
         setSelectedTemplateId(e)
         setSelectedTemplateDetails(e);
     }
@@ -148,7 +146,6 @@ const CreateLinkTemplate = (props) => {
 
     useEffect(() => {
         if (!props.template.loading && !props.template.error && props.template.operation === 'templateLinkSave') {
-            console.log(props.template) 
             props.history.push('/company/quality/templates')
         }
     }, [props.template.loading, props.template.error]);
@@ -195,7 +192,6 @@ const CreateLinkTemplate = (props) => {
       };
       const selectAllMaterialGrades = () => {
         const allOptionValues = props.material?.materialList.flatMap(item => item.materialGrade.map(grade => grade.gradeId));
-        console.log("mat.materialGrade?.gradeId", props.material?.materialList.gradeId)
         setMaterialGrades(allOptionValues);
       };
       const selectAllThickness = () => {

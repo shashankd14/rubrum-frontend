@@ -1,9 +1,7 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import 'antd/dist/antd.css';
-import { Table, Input, Button, Form, Popconfirm, Divider } from 'antd';
-import { useHistory, withRouter } from 'react-router-dom';
-import { useLocation } from 'react-router-dom/cjs/react-router-dom.min';
+import { Table, Input, Form } from 'antd';
+import {  withRouter } from 'react-router-dom';
 const EditableContext = React.createContext();
 
 const EditableRow = ({ form, index, ...props }) => (
@@ -47,7 +45,7 @@ class EditableCell extends React.Component {
 
   renderCell = (form) => {
     this.form = form;
-    const { children, dataIndex, record, title, toleranceData, thicknessSlit } = this.props;
+    const { children, dataIndex, record, toleranceData, thicknessSlit } = this.props;
     const { editing } = this.state;
     const rules = [
       // {
@@ -56,9 +54,7 @@ class EditableCell extends React.Component {
       // },
       {
         validator: (_, value, callback) => {
-          const toleranceItem = toleranceData.find(
-            (item) => item.key === record.key
-          );
+
           const widthCol = parseFloat(record.plannedWidth);
           const thicknessCol = parseFloat(record.thickness);
           const lengthCol = parseFloat(record.plannedLength);
@@ -73,8 +69,6 @@ class EditableCell extends React.Component {
           const upperBoundThicknessSlit = parseFloat(( (thicknessSlit) + (parseFloat(toleranceData?.[0]?.toleranceThicknessTo))).toFixed(3)); 
           const lowerBoundLength = ( lengthCol - Math.abs(parseFloat(toleranceData?.[0]?.toleranceLengthFrom))); 
           const upperBoundLength = ( lengthCol + (parseFloat(toleranceData?.[0]?.toleranceLengthTo))); 
-
-          const actualburrHeight = parseFloat(value) || 0;
   
           const lowerBoundburrHeight = parseFloat(toleranceData?.[0]?.toleranceBurrHeightFrom) ?? 1;
           const upperBoundburrHeight = parseFloat(toleranceData?.[0]?.toleranceBurrHeightTo) ?? 1;
@@ -92,7 +86,6 @@ class EditableCell extends React.Component {
             toleranceData?.[0]?.toleranceDiagonalDifferenceTo ?? 0;
 
             //slit slitsize validation
-            const slitSize = parseFloat(value) || 0;
             const lowerBoundtoleranceSlitSizeFrom =  (widthCol - Math.abs(parseFloat(toleranceData?.[0]?.toleranceSlitSizeFrom))) ?? 0;
             const upperBoundtoleranceSlitSizeTo =  (widthCol + Math.abs(parseFloat(toleranceData?.[0]?.toleranceSlitSizeTo))) ?? 0;
 
@@ -217,7 +210,6 @@ class EditableTableQR extends React.Component {
       toleranceData: this.props.toleranceData,
       thicknessSlit: this.props.thicknessSlit
     };
-    console.log('properties :', this.props);
     this.columns.push({
       title: 'operation',
       dataIndex: 'operation',
@@ -246,7 +238,6 @@ class EditableTableQR extends React.Component {
   handleEdit = (key) => {
     const { history } = this.props;
     history.push('/company/quality/templates');
-    console.log(`Editing record with key: ${key}`);
   };
 
   handleAdd = () => {

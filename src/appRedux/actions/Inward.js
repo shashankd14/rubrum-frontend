@@ -48,9 +48,6 @@ import {
     POST_DELIVERY_CONFIRM_REQUESTED,
     POST_DELIVERY_CONFIRM_SUCCESS,
     POST_DELIVERY_CONFIRM_ERROR,
-    FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST,
-    FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST_SUCCESS,
-    FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST_ERROR,
     FETCH_INWARD_INSTRUCTION_DETAILS_REQUESTED,
     FETCH_INWARD_INSTRUCTION_DETAILS_SUCCESS,
     FETCH_INWARD_INSTRUCTION_DETAILS_ERROR,
@@ -604,5 +601,20 @@ export const setMaterialData = (payload) => ({
 
 export const enableMaterialSelection = () => ({
     type: actionTypes.ENABLE_MATERIAL_SELECTION,
+});
+
+export const getInwardMaterialDetails = (param) => ({
+  type: actionTypes.FETCH_INWARD_MATERIAL_LIST,
+  param,
+});
+
+export const saveInwardMaterialDetails = (payload) => ({
+  type: actionTypes.FETCH_INWARD_MATERIAL_LIST_SUCCESS,
+  payload
+});
+
+export const errorInwardMaterialDetails = (error) => ({
+  type: actionTypes.FETCH_INWARD_MATERIAL_LIST_ERROR,
+  error
 });
 

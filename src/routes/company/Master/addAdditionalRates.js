@@ -58,7 +58,6 @@ const AdditionalRates = (props) => {
 
   const checkboxChange = (e: CheckboxChangeEvent) => {
     setChecked(e.target.checked);
-    console.log(`checked = ${e.target.checked}`);
   };
   const processSelectChange = (e) => {
     setProcessId(e);
@@ -83,7 +82,6 @@ const AdditionalRates = (props) => {
     form.setFieldsValue({
       [type]: nextKeys,
     });
-    console.log("keys", form.getFieldValue(`${type}`));
   };
   const removeKey = (k, type) => {
     const { form } = props;

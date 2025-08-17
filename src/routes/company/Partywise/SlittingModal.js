@@ -126,13 +126,11 @@ const SlittingWidths = (props) => {
   let cutLength = callBackValue('length');
   let cutWidth = callBackValue('width');
   let noParts = 0;
-  useEffect(() => {
-    console.log(
-      'slitInstruction set to slitInstructionList',
-      props.slitInstruction
-    );
+
+  useEffect(() => {  
     props.setSlitInstructionList(props.slitInstruction);
   }, [props.slitInstruction]);
+
   useEffect(() => {
     getEditValue();
   }, [props.length]);
@@ -1502,7 +1500,6 @@ const CreateSlittingDetailsForm = (props) => {
     //addition of tableDatapacketWeight for total yield loss ratio
     var totaltableDatapacketWeight = 0;
     totaltableDatapacketWeight += tableDatapacketWeight;
-    console.log('totaltableDatapacketWeight', totaltableDatapacketWeight);
     // Update storedTableDatapacketWeights with the cumulative tableDatapacketWeight for the specific table index
     const updatedStoredTableDatapacketWeights = [
       ...storedTableDatapacketWeights,
@@ -1543,7 +1540,7 @@ const CreateSlittingDetailsForm = (props) => {
     newArray[tableIndex] = TDlossRatio !== undefined ? TDlossRatio : 0;
     setYieldLossRatio(newArray);
   };
-  console.log('setTotaltableDatapacketWeight', totaltableDatapacketWeight);
+
   useEffect(() => {
     let processTags = [{ tagId: 0, tagName: 'Select' }];
     processTags = [...processTags, ...props?.processTags];
@@ -1896,8 +1893,6 @@ const CreateSlittingDetailsForm = (props) => {
         (value) => sum > value
       );
 
-      console.log('compareYieldLoss:', compareYieldLoss);
-
       if (compareYieldLoss.length > 0) {
         // message.warning('take approval from customer or change the plan');
         confirm({
@@ -1916,7 +1911,6 @@ const CreateSlittingDetailsForm = (props) => {
   };
 
   const handleWeight = (e, record) => {
-    console.log('record', record);
     e.preventDefault();
     // if (
     //   Number(record.plannedWeight) + totalActualweight > tweight ||
@@ -2011,7 +2005,6 @@ const CreateSlittingDetailsForm = (props) => {
     };
     setTableData([...tableData, newData]);
   };
-  console.log('tableData Add row', tableData);
   const getFooterButtons = (type) => {
     return [
       <Button key='back' onClick={handleCancel}>

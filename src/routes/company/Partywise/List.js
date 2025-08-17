@@ -12,7 +12,6 @@ import {
   Input,
   Icon,
 } from "antd";
-import SearchBox from "../../../components/SearchBox";
 import moment from "moment";
 
 import IntlMessages from "../../../util/IntlMessages";
@@ -26,7 +25,7 @@ import {
   setInwardSelectedForDelivery,
 } from "../../../appRedux/actions";
 import { sidebarMenuItems } from "../../../constants";
-import { use } from "react";
+import { toPascalCase } from "util/Common";
 
 const Option = Select.Option;
 
@@ -42,32 +41,25 @@ const partyWiseMenuConstants = {
 };
 
 const filterLabels = {
-  ageing: "Age",
-  fThickness: "Thickness",
-  fWidth: "Width",
+  coilage: "Age",
+  fthickness: "Thickness",
+  fwidth: "Width",
   fLength: "Length",
 };
 
 const List = (props) => {
   const [sortedInfo, setSortedInfo] = useState({
-    order: "ASC",
+    order: "ascend",
     columnKey: "fThickness",
   });
   const [filteredInfo, setFilteredInfo] = useState({});
   const [searchValue, setSearchValue] = useState("");
-  const [searchValueChanged, setSearchValueChanged] = useState(false);
 
   const [customerValue, setCustomerValue] = useState("");
-  const { inwardList, totalItems } = props.inward;
+  const { totalItems } = props.inward;
 
   let searchInput = useRef(true);
 
-  const handleSearch = (selectedKeys, confirm, dataIndex) => {
-    confirm();
-  };
-
-  // const [filteredInwardList, setFilteredInwardList] = useState(inwardList);
-  const [expandedRow, setExpandedRecord] = useState([]);
   const [menuPartyWiseLabelList, setMenuPartyWiseLabelList] = useState([]);
   const [partywisepermission, setPartywisePermission] = useState([]);
 
@@ -75,16 +67,19 @@ const List = (props) => {
   const [selectedRowData, setSelectedRowData] = React.useState([]);
 
   const [pageNo, setPageNo] = React.useState(1);
-  const [totalPageItems, setTotalItems] = React.useState(0);
   const [showRetrieve, setShowRetrieve] = React.useState(false);
   const [selectedCoil, setSelectedCoil] = React.useState([]);
   const [pageSize, setPageSize] = useState(15);
-  const [sortColumn, setSortColumn] = useState('coilnumber');
-  const [sortOrder, setSortOrder] = useState('ASC');
+  const [sortColumn, setSortColumn] = useState("coilnumber");
+  const [sortOrder, setSortOrder] = useState("ASC");
 
   const getColumnSearchProps = (dataIndex) => ({
-    filterDropdown: ({ confirm, clearFilters }) => {
-      let filterVariable = "";
+    filterDropdown: ({
+      setSelectedKeys,
+      selectedKeys,
+      confirm,
+      clearFilters,
+    }) => {
       return (
         <div style={{ padding: 8 }}>
           <div
@@ -99,20 +94,13 @@ const List = (props) => {
                 searchInput = node;
               }}
               placeholder={`Search ${filterLabels[dataIndex]}`}
-              value={filteredInfo[dataIndex] ? filteredInfo[dataIndex][0] : ""}
+              value={selectedKeys ? selectedKeys[0] : ""}
               onChange={(e) => {
-                const newArray = filteredInfo[dataIndex]
-                  ? filteredInfo[dataIndex]
-                  : [];
-                newArray[0] = e.target.value ? e.target.value : "";
-                setFilteredInfo({
-                  ...filteredInfo,
-                  [dataIndex]: [...newArray],
-                });
+                setSelectedKeys(e.target.value ? [e.target.value] : []);
               }}
-              onPressEnter={() =>
-                handleSearch(filteredInfo, confirm, dataIndex)
-              }
+              onPressEnter={() => {
+                confirm();
+              }}
               style={{ width: 80, marginBottom: 8, display: "flex", flex: 1 }}
             />
           </div>
@@ -120,15 +108,8 @@ const List = (props) => {
             <Button
               type="primary"
               onClick={() => {
-                props.fetchInwardList(
-                  1,
-                  20,
-                  searchValue,
-                  customerValue,
-                  sortOrder,
-                  sortColumn,
-                  filteredInfo
-                );
+                setSelectedKeys([filteredInfo[dataIndex]]);
+                confirm();
               }}
               icon="search"
               size="small"
@@ -137,7 +118,7 @@ const List = (props) => {
               Search
             </Button>
             <Button
-              onClick={() => clearFilters(clearFilters)}
+              onClick={() => clearFilters()}
               size="small"
               style={{ width: 90 }}
             >
@@ -155,6 +136,7 @@ const List = (props) => {
         setTimeout(() => searchInput.select());
       }
     },
+    onFilter: (value, record) => true,
     // render: (text) => ("age" === dataIndex ? <></> : text),
   });
 
@@ -167,6 +149,81 @@ const List = (props) => {
       sorter: true,
       sortOrder:
         sortedInfo.columnKey === "coilnumber" ? sortedInfo.order : null,
+      filteredValue: filteredInfo ? filteredInfo["coilnumber"] : null,
+      filterDropdown: ({ setSelectedKeys, confirm, clearFilters }) => {
+        return (
+          <div style={{ padding: 8 }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                gap: "4px",
+              }}
+            >
+              <Input
+                ref={(node) => {
+                  searchInput = node;
+                }}
+                placeholder={`Search Batch no.`}
+                value={
+                  filteredInfo["coilnumber"] ? filteredInfo["coilnumber"] : ""
+                }
+                onChange={(e) => {
+                  setFilteredInfo({
+                    ...filteredInfo,
+                    coilnumber: e.target.value,
+                  });
+                }}
+                onPressEnter={() => {
+                  setSelectedKeys([filteredInfo["coilnumber"]]);
+                  confirm();
+                }}
+                style={{
+                  width: 80,
+                  marginBottom: 8,
+                  display: "flex",
+                  flex: 1,
+                }}
+              />
+            </div>
+            <div>
+              <Button
+                type="primary"
+                onClick={() => {
+                  setSelectedKeys([filteredInfo["coilnumber"]]);
+                  confirm();
+                }}
+                icon="search"
+                size="small"
+                style={{ width: 90, marginRight: 8 }}
+              >
+                Search
+              </Button>
+              <Button
+                onClick={() => clearFilters()}
+                size="small"
+                style={{ width: 90 }}
+              >
+                Reset
+              </Button>
+            </div>
+          </div>
+        );
+      },
+      filterIcon: (filtered) => (
+        <Icon
+          type="search"
+          style={{ color: filtered ? "#1890ff" : undefined }}
+        />
+      ),
+      onFilterDropdownVisibleChange: (visible) => {
+        if (visible) {
+          setTimeout(() => searchInput.select());
+        }
+      },
+      render: (text, record) => {
+        return record.coilNumber === "undefined" ? "-" : record.coilNumber;
+      },
     },
     {
       title: "SC inward id",
@@ -174,12 +231,12 @@ const List = (props) => {
       key: "customerBatchId",
       sorter: false,
       filteredValue: filteredInfo ? filteredInfo["customerBatchId"] : null,
-      onFilter: (value, record) => record.customerBatchId == value,
+      onFilter: (value, record) => record.customerBatchId === value,
       filters: [],
       // sorter: true,
       render: (text, record) => {
-        return record.customerBatchId == "undefined" ||
-          record.batch == "undefined"
+        return record.customerBatchId === "undefined" ||
+          record.batch === "undefined"
           ? "-"
           : record.customerBatchId || record.batch;
       },
@@ -211,14 +268,16 @@ const List = (props) => {
       render: (text, record) => {
         return record.instructionId
           ? moment().diff(record.instructionDate, "days")
-          : record.ageing == "undefined" || record.ageing == ""
+          : record.ageing === "undefined" || record.ageing === ""
           ? "-"
           : record.ageing;
       },
       filteredValue:
-        filteredInfo && filteredInfo["ageing"] ? filteredInfo["ageing"] : null,
+        filteredInfo && filteredInfo["coilage"]
+          ? filteredInfo["coilage"]
+          : null,
       // onFilter: (value, record) => record?.ageinging == value,
-      ...getColumnSearchProps("ageing"),
+      ...getColumnSearchProps("coilage"),
     },
     {
       title: "Thickness (mm)",
@@ -230,16 +289,16 @@ const List = (props) => {
       render: (text, record) => {
         return record.instructionId
           ? record.fThickness
-          : record.fThickness == "undefined" || record.fThickness == ""
+          : record.fThickness === "undefined" || record.fThickness === ""
           ? "-"
           : record.fThickness;
       },
       filteredValue:
-        filteredInfo && filteredInfo?.["fThickness"]
-          ? filteredInfo["fThickness"]
+        filteredInfo && filteredInfo?.["fthickness"]
+          ? filteredInfo["fthickness"]
           : null,
       // onFilter: (value, record) => record.fThickness == value,
-      ...getColumnSearchProps("fThickness"),
+      ...getColumnSearchProps("fthickness"),
     },
     {
       title: "Width (mm)",
@@ -250,15 +309,15 @@ const List = (props) => {
       render: (text, record) => {
         return record.instructionId
           ? record?.plannedWidth
-          : record.fWidth == "undefined" || record.fWidth == ""
+          : record.fWidth === "undefined" || record.fWidth === ""
           ? "-"
           : record.fWidth;
       },
       filteredValue:
-        filteredInfo && filteredInfo?.["fWidth"]
-          ? filteredInfo["fWidth"]
+        filteredInfo && filteredInfo?.["fwidth"]
+          ? filteredInfo["fwidth"]
           : null,
-      ...getColumnSearchProps("fWidth"),
+      ...getColumnSearchProps("fwidth"),
     },
     {
       title: "Length (mm)",
@@ -267,19 +326,22 @@ const List = (props) => {
       sorter: true,
       sortOrder: sortedInfo.columnKey === "flength" ? sortedInfo.order : null,
       filteredValue:
-        filteredInfo && filteredInfo?.["fLength"]
-          ? filteredInfo["fLength"]
+        filteredInfo && filteredInfo?.["flength"]
+          ? filteredInfo["flength"]
           : null,
       render: (text, record) => {
         return record.fLength || record.plannedLength;
       },
-      ...getColumnSearchProps("fLength"),
+      ...getColumnSearchProps("flength"),
     },
     {
       title: "Status",
       dataIndex: "status.statusName",
       key: "status.statusName",
       sorter: false,
+      render: (text, record) => {
+        return record.status ? toPascalCase(record.status.statusName) : "-";
+      },
     },
     {
       title: "Classification",
@@ -400,52 +462,6 @@ const List = (props) => {
     }
   }, []);
 
-  useEffect(() => {
-    if (totalItems) {
-      setTotalItems(totalItems);
-    }
-  }, [totalItems]);
-
-  // useEffect(() => {
-  //   console.log(inwardList);
-  //   if (!props.inward.loading && props.inward.success) {
-  //     // setFilteredInwardList(getFilterData(inwardList));
-  //     // console.log(inwardList)
-  //     if (inwardList.length !== 0) {
-  //       inwardList[0].children = inwardList[0].instruction;
-  //     }
-  //     setFilteredInwardList(inwardList);
-  //   }
-  // }, [inwardList]);
-
-  // useEffect(() => {
-  //   if (searchValue && searchValueChanged) {
-  //     if (searchValue.length >= 3) {
-  //       setPageNo(1);
-  //       props.fetchInwardList(
-  //         1,
-  //         20,
-  //         searchValue,
-  //         customerValue,
-  //         sortOrder,
-  //         sortColumn,
-  //         filteredInfo
-  //       );
-  //     }
-  //   } else {
-  //     setPageNo(1);
-  //     props.fetchInwardList(
-  //       1,
-  //       20,
-  //       searchValue,
-  //       customerValue,
-  //       sortOrder,
-  //       sortColumn,
-  //       filteredInfo
-  //     );
-  //   }
-  // }, [searchValue]);
-
   const handleChange = (pagination, filters, sorter, partyId) => {
     setSortedInfo(sorter);
     setFilteredInfo(filters);
@@ -456,20 +472,15 @@ const List = (props) => {
     props.fetchInwardList(
       pagination.current,
       pagination.pageSize,
-      searchValue,
+      filters?.coilnumber && filters?.coilnumber[0]
+        ? filters?.coilnumber[0]
+        : "",
       customerValue,
       sorter.order === "descend" ? "DESC" : "ASC",
       sorter.columnKey,
       filters
     );
   };
-
-  // useEffect(() => {
-  //   if (sortColumn && sortOrder) {
-  //       // setPageNo(1);
-  //       props.fetchInwardList(pageNo, 20, searchValue, customerValue,  sortOrder, sortColumn, filteredInfo);
-  //   }
-  // }, [sortColumn, sortOrder]);
 
   const clearFilters = (value) => {
     setCustomerValue("");
@@ -488,7 +499,9 @@ const List = (props) => {
       props.fetchInwardList(
         1,
         pageSize,
-        searchValue,
+        filteredInfo?.coilnumber && filteredInfo?.coilnumber[0]
+          ? filteredInfo?.coilnumber[0]
+          : "",
         value,
         sortOrder,
         sortColumn,
@@ -499,7 +512,9 @@ const List = (props) => {
       props.fetchInwardList(
         1,
         pageSize,
-        searchValue,
+        filteredInfo?.coilnumber && filteredInfo?.coilnumber[0]
+          ? filteredInfo?.coilnumber[0]
+          : "",
         "",
         sortOrder,
         sortColumn,
@@ -638,12 +653,15 @@ const List = (props) => {
       </h1>
       <Card>
         <div className="gx-flex-row gx-flex-1">
-          <div className="table-operations gx-col">
+          <div
+            className="table-operations gx-col"
+            style={{ paddingLeft: "0px" }}
+          >
             <Select
               id="select"
               showSearch
               style={{ width: 200 }}
-              placeholder="Select a location"
+              label="Select a location"
               optionFilterProp="children"
               onChange={handleCustomerChange}
               value={customerValue}
@@ -678,7 +696,7 @@ const List = (props) => {
               Clear All filters
             </Button>
           </div>
-          <div className="gx-flex-row gx-w-50">
+          <div className="gx-flex-row">
             {menuPartyWiseLabelList.length > 0 &&
               menuPartyWiseLabelList.includes(
                 partyWiseMenuConstants.deliver
@@ -728,35 +746,6 @@ const List = (props) => {
                   Add Inward
                 </Button>
               )}
-            <SearchBox
-              styleName="gx-flex-1"
-              placeholder="Search for inward id or location..."
-              value={searchValue}
-              onChange={(e) => {
-                setSearchValue(e.target.value);
-                if (e.target.value.length > 3) {
-                  props.fetchInwardList(
-                    1,
-                    20,
-                    e.target.value,
-                    customerValue,
-                    sortOrder,
-                    sortColumn,
-                    filteredInfo
-                  );
-                } else {
-                  props.fetchInwardList(
-                    1,
-                    20,
-                    e.target.value,
-                    customerValue,
-                    sortOrder,
-                    sortColumn,
-                    filteredInfo
-                  );
-                }
-              }}
-            />
           </div>
         </div>
         {showRetrieve && (
@@ -781,7 +770,7 @@ const List = (props) => {
           columns={columns}
           rowKey={(record) => record.inwardEntryId}
           loading={props.inward.loading}
-          dataSource={[...props.inward.inwardList]}
+          dataSource={[...props.inward.inwardList] || []}
           onChange={handleChange}
           rowSelection={
             partywisepermission === "ENDUSER_TAG_WISE_PACKETS"
@@ -791,7 +780,9 @@ const List = (props) => {
           pagination={{
             pageSize: 15,
             current: pageNo,
-            total: totalPageItems,
+            total: totalItems, // force it to render
+            showTotal: (total, range) =>
+              `Showing ${range[0]}-${range[1]} of ${total} items`,
           }}
         />
       </Card>

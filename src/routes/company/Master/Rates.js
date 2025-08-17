@@ -691,13 +691,11 @@ const Rates = (props) => {
   };
 
   const handleMaterialTypeChange = (e) => {
-    console.log("material", e);
     setType(e);
   };
 
   const checkboxChange = (e) => {
     setChecked(e.target.checked);
-    console.log(`checked = ${e.target.checked}`);
   };
   const callback = (key) => {
     setTabKey(key);
@@ -1319,7 +1317,6 @@ const Rates = (props) => {
             e.preventDefault();
             if (editPackingRates) {
               const values = props.form.getFieldsValue();
-              console.log("Received values of form: ", values);
               if (
                 values.packingBucketId !== "" &&
                 values.rPartyId !== "" &&
@@ -1333,7 +1330,6 @@ const Rates = (props) => {
               }
             } else {
               const values = props.form.getFieldsValue();
-              console.log("Received values of form: ", values);
               if (
                 values.packingBucketId !== "" &&
                 values.rPartyId !== "" &&
@@ -1488,7 +1484,6 @@ const Rates = (props) => {
             e.preventDefault();
             if (editLaminationCharges) {
               const values = props.form.getFieldsValue();
-              console.log("Received values of form: ", values);
               if (
                 values.laminationDetailsId !== "" &&
                 values.lPartyId !== "" &&
@@ -1502,8 +1497,7 @@ const Rates = (props) => {
               }
             } else {
               const values = props.form.getFieldsValue();
-              console.log("Received values of form: ", values);
-
+              
               if (
                 values.laminationDetailsId !== "" &&
                 values.lPartyId !== "" &&

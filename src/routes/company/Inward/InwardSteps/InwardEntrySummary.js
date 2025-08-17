@@ -3,7 +3,7 @@ import {connect} from "react-redux";
 import moment from "moment";
 
 import {submitInwardEntry, resetInwardForm,updateInward, pdfGenerateInward, QrGenerateInward} from "../../../../appRedux/actions";
-import {Button, Card, Col, Icon, message, Row, Spin, Modal} from "antd";
+import {Button, Card, Col, Icon, message, Row, Spin} from "antd";
 import { withRouter } from 'react-router-dom';
 
 import {APPLICATION_DATE_FORMAT} from '../../../../constants/index';

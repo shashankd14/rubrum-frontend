@@ -29,7 +29,8 @@ function* fetchAllPackets(action) {
     pageNo: action.page,
     pageSize: action.pageSize,
     searchText: "",
-    partyId: "",
+    partyId: action.partyId,
+    planId: action.planId,
   };
 
   try {
@@ -40,7 +41,7 @@ function* fetchAllPackets(action) {
     });
     if (fetchSOList.status === 200) {
       const fetchSOListResponse = yield fetchSOList.json();
-      yield put(fetchPacketListSuccess(fetchSOListResponse?.content));
+      yield put(fetchPacketListSuccess(fetchSOListResponse));
     } else if (fetchSOList.status === 401) {
       yield put(userSignOutSuccess());
     } else yield put(fetchPacketListError("error"));

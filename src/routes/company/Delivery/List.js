@@ -186,7 +186,6 @@ function List(props) {
   }, [searchValue]);
 
   const handleChange = (pagination, filters, sorter) => {
-    console.log("params", pagination, filters, sorter);
   };
 
   const handleCustomerChange = (value) => {

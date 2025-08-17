@@ -1,5 +1,4 @@
 import { Button, Card, Col, DatePicker, Input, Row } from 'antd'
-import TextArea from 'antd/lib/input/TextArea';
 import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux';
 import moment from 'moment';
@@ -318,10 +317,7 @@ const CuttingForm = (props) => {
     }
 
     const onOptionChange = (key, changeEvent) => {
-        console.log("changeEvent", changeEvent)
-        console.log("key", key)
         cutFormData[key] = changeEvent.target.value;
-        console.log("changeEvent.target.value", changeEvent.target.value)
     }
 
     useEffect(() => {
@@ -340,11 +336,9 @@ const CuttingForm = (props) => {
     }
 
     const handleInspectionTableChange = (tableData) => {
-        console.log('handleInspectionTableChange', tableData)
         setCutInspectionData(tableData)
     } 
     const handleToleranceTableChange = (tableData) => {
-        console.log('handleInspectionTableChange', tableData)
         settoleranceInspectionDataCut(tableData)
     } 
 

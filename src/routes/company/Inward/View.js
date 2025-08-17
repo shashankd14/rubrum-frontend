@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {connect} from "react-redux";
 import moment from "moment";
-import {Button, Card, Col, Icon, message, Row, Spin} from "antd";
-import { withRouter } from 'react-router-dom';
+import {Button, Card, Col, Icon, Row, Spin} from "antd";
 import {setInwardDetails, fetchInwardList} from "../../../appRedux/actions";
 import {APPLICATION_DATE_FORMAT} from '../../../constants/index';
 

@@ -5,23 +5,12 @@ import {
   Card,
   Divider,
   Table,
-  Modal,
-  Row,
-  Col,
   Form,
-  Input,
-  Icon,
-  Tabs,
 } from "antd";
-import moment from "moment";
 import SearchBox from "../../../components/SearchBox";
 
 import IntlMessages from "../../../util/IntlMessages";
 import { fetchTemplatesList } from "../../../appRedux/actions";
-import { onDeleteContact } from "../../../appRedux/actions";
-
-const FormItem = Form.Item;
-const TabPane = Tabs.TabPane;
 
 export const formItemLayout = {
   labelCol: {
@@ -33,13 +22,6 @@ export const formItemLayout = {
     xs: { span: 24 },
     sm: { span: 24 },
     md: { span: 16 },
-  },
-};
-
-const formItemLayoutWithOutLabel = {
-  wrapperCol: {
-    xs: { span: 24, offset: 0 },
-    sm: { span: 20, offset: 4 },
   },
 };
 
@@ -99,14 +81,9 @@ const Quality = (props) => {
 
   const onView = (record, e) => {};
 
-  const onDelete = (record, key, e) => {};
   const onEdit = (record, e) => {};
 
   const handleChange = (pagination, filters, sorter) => {};
-
-  const clearFilters = () => {};
-
-  const exportSelectedData = () => {};
 
   useEffect(() => {
     const { loading, error, data } = props.quality;
@@ -133,7 +110,6 @@ const Quality = (props) => {
   }, [searchValue]);
 
   const getRadioFields = () => {
-    console.log("dfd");
   };
 
   useEffect(() => {

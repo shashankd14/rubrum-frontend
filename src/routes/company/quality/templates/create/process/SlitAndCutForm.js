@@ -420,26 +420,21 @@ const SlitAndCutForm = (props) => {
     }
 
     const handleSlitInspectionTableChange = (tableData) => {
-        console.log('handleSlitInspectionTableChange', tableData)
         setSlitInspectionData(tableData)
     } 
 
     const handleCutInspectionTableChange = (tableData) => {
-        console.log('handleCutInspectionTableChange', tableData)
         setCutInspectionData(tableData)
     } 
 
     const handleFinalInspectionTableChange = (tableData) => {
-        console.log('handleFinalInspectionTableChange', tableData)
         setFinalInspectionData(tableData)
     } 
 
     const handleToleranceTableChange = (tableData) => {
-        console.log('handleInspectionTableChange', tableData)
         setToleranceInspectionData(tableData)
     } 
     const handleToleranceTableChangeSlit = (tableData) => {
-        console.log('handleInspectionTableChange', tableData)
         setToleranceInspectionDataSlit(tableData)
     } 
     return (
