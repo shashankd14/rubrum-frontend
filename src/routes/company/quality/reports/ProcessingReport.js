@@ -1,8 +1,8 @@
 //src-routes-company-quality-reports-ProcessingReport.js
 import React, { useEffect, useRef, useState } from 'react'
 import { connect } from "react-redux";
-import { Link, useHistory, useLocation, withRouter } from "react-router-dom";
-import { Button, Card, Col, Divider, Icon, Modal, Radio, Row, Select, Table } from 'antd'
+import { useHistory, useLocation, withRouter } from "react-router-dom";
+import { Col, Divider, Modal, Row, Select, Table } from 'antd'
 import {
     fetchPartyList,
     fetchTemplatesList,
@@ -18,14 +18,8 @@ import moment from "moment";
 import { useIntl } from "react-intl";
 import SearchBox from "../../../../components/SearchBox";
 
-import IntlMessages from "../../../../util/IntlMessages";
-import { compose } from 'redux';
-
 const ProcessingReport = (props) => {
 
-    const intl = useIntl();
-    const history = useHistory();
-    const location = useLocation();
     const [sortedInfo, setSortedInfo] = useState({
         order: "descend",
         columnKey: "age",
@@ -112,14 +106,14 @@ const ProcessingReport = (props) => {
         },
         {
             title: "Material",
-            dataIndex: "materialGrade",
-            key: "materialGrade",
-            filteredValue: filteredInfo ? filteredInfo["materialGrade"] : null,
-            onFilter: (value, record) => record.materialGrade == value,
+            dataIndex: "materialDesc",
+            key: "materialDesc",
+            filteredValue: filteredInfo ? filteredInfo["materialDesc"] : null,
+            onFilter: (value, record) => record.materialDesc == value,
             sorter: (a, b) =>
-                a.materialGrade.length - b.materialGrade.length,
+                a.materialDesc.length - b.materialDesc.length,
             sortOrder:
-                sortedInfo.columnKey === "materialGrade" && sortedInfo.order,
+                sortedInfo.columnKey === "materialDesc" && sortedInfo.order,
         },
         {
             title: "Thickness",

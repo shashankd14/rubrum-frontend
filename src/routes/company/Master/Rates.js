@@ -153,110 +153,42 @@ const Rates = (props) => {
   const [viewLaminationCharges, setViewLaminationCharges] = useState(false);
   const [laminationChargesList, setLaminationChargesList] = useState(props.laminationCharges || []);
   const [laminationStaticSelected, setLaminationStaticSelected] = useState();
+
   const columns = [
     {
       title: "Rate Id",
       dataIndex: "id",
       key: "id",
-      filters: [],
-      sorter: (a, b) => {
-        return a.id - b.id;
-      },
-      sortOrder: sortedInfo.columnKey === "id" && sortedInfo.order,
     },
     {
       title: "Location",
       dataIndex: "partyName",
       key: "partyName",
-      filteredValue: filteredInfo ? filteredInfo["partyName"] : null,
-      filters: [
-        ...new Set(props.rates.ratesList.map((item) => item.partyName)),
-      ].map((material) => {
-        return { text: material || "", value: material || "" };
-      }),
-      onFilter: (value, record) => record.partyName == value,
-      sorter: (a, b) => a.partyName?.length - b.partyName?.length,
-      sortOrder: sortedInfo.columnKey === "partyName" && sortedInfo.order,
     },
     {
       title: "Process Name",
       dataIndex: "processName",
       key: "processName",
-      filteredValue: filteredInfo ? filteredInfo["processName"] : null,
-      filters: [
-        ...new Set(props.rates.ratesList.map((item) => item.processName)),
-      ].map((material) => {
-        return { text: material || "", value: material || "" };
-      }),
-      onFilter: (value, record) => record.processName == value,
-      sorter: (a, b) => a.processName?.length - b.processName?.length,
-      sortOrder: sortedInfo.columnKey === "processName" && sortedInfo.order,
     },
     {
       title: "Material description",
       dataIndex: "materialDescription",
       key: "materialDescription",
-      filteredValue: filteredInfo ? filteredInfo["materialDescription"] : null,
-      filters: [
-        ...new Set(
-          props.rates.ratesList.map((item) => item.materialDescription)
-        ),
-      ].map((material) => {
-        return { text: material || "", value: material || "" };
-      }),
-      onFilter: (value, record) => record.materialDescription == value,
-      sorter: (a, b) =>
-        a.materialDescription?.length - b.materialDescription?.length,
-      sortOrder:
-        sortedInfo.columnKey === "materialDescription" && sortedInfo.order,
     },
     {
       title: "Material Grade",
       dataIndex: "matGradeName",
-      key: "matGradeName",
-      filteredValue: filteredInfo ? filteredInfo["matGradeName"] : null,
-      filters: [
-        ...new Set(props.rates.ratesList.map((item) => item.matGradeName)),
-      ].map((material) => {
-        return { text: material || "", value: material || "" };
-      }),
-      onFilter: (value, record) => record.matGradeName == value,
-      sorter: (a, b) => a.matGradeName?.length - b.matGradeName?.length,
-      sortOrder: sortedInfo.columnKey === "matGradeName" && sortedInfo.order,
+      key: "gradeName",
     },
     {
       title: "Thickness Range",
       dataIndex: "thicknessFrom",
       render: (text, record) => `${record.thicknessFrom}-${record.thicknessTo}`,
-      filteredValue: filteredInfo ? filteredInfo["thicknessFrom"] : null,
-      filters: [
-        ...new Set(
-          props.rates.ratesList.map(
-            (item) => `${item.thicknessFrom}-${item.thicknessTo}`
-          )
-        ),
-      ].map((thicknessRange) => {
-        return { text: thicknessRange || "", value: thicknessRange || "" };
-      }),
-      onFilter: (value, record) => {
-        const [from, to] = value.split("-");
-        const thicknessFrom = parseFloat(from);
-        const thicknessTo = parseFloat(to);
-        return (
-          thicknessFrom <= record.thicknessFrom &&
-          thicknessTo >= record.thicknessTo
-        );
-      },
-      sorter: (a, b) =>
-        a.thicknessFrom - b.thicknessFrom || a.thicknessTo - b.thicknessTo,
-      sortOrder: sortedInfo.columnKey === "thicknessFrom" && sortedInfo.order,
     },
     {
       title: "Thickness rate",
       dataIndex: "price",
       key: "price",
-      sorter: (a, b) => a.price - b.price,
-      sortOrder: sortedInfo.columnKey === "price" && sortedInfo.order,
     },
 
     {
@@ -285,17 +217,11 @@ const Rates = (props) => {
       title: "Location",
       dataIndex: "partyName",
       key: "partyName",
-      filters: [],
-      sorter: (a, b) => a.partyName - b.partyName,
-      sortOrder: sortedInfo.columnKey === "partyName" && sortedInfo.order,
     },
     {
       title: "Process Name",
       dataIndex: "processName",
       key: "processName",
-      filters: [],
-      sorter: (a, b) => a.processName - b.processName,
-      sortOrder: sortedInfo.columnKey === "processName" && sortedInfo.order,
     },
     {
       title: "Range",
@@ -306,8 +232,6 @@ const Rates = (props) => {
       title: "Additional Rates",
       dataIndex: "price",
       key: "price",
-      sorter: (a, b) => a.price - b.price,
-      sortOrder: sortedInfo.columnKey === "price" && sortedInfo.order,
     },
     {
       title: "Action",
@@ -336,52 +260,26 @@ const Rates = (props) => {
       title: "S No",
       dataIndex: "packingRateId",
       key: "packingRateId",
-      filters: [],
-      sorter: (a, b) => {
-        return a.packingRateId - b.packingRateId;
-      },
-      sortOrder: sortedInfo.columnKey === "packingRateId" && sortedInfo.order,
     },
     {
       title: "Location",
       dataIndex: "partyName",
       key: "partyName",
-      filters: [],
-      sorter: (a, b) => {
-        return a.partyName - b.partyName;
-      },
-      sortOrder: sortedInfo.columnKey === "partyName" && sortedInfo.order,
     },
     {
       title: "Bucket Name",
       dataIndex: "packingBucketName",
       key: "packingBucketName",
-      filters: [],
-      sorter: (a, b) => {
-        return a.packingBucketName - b.packingBucketName;
-      },
-      sortOrder:
-        sortedInfo.columnKey === "packingBucketName" && sortedInfo.order,
     },
     {
       title: "Rate",
       dataIndex: "packingRate",
       key: "packingRate",
-      filters: [],
-      sorter: (a, b) => {
-        return a.packingRate - b.packingRate;
-      },
-      sortOrder: sortedInfo.columnKey === "packingRate" && sortedInfo.order,
     },
     {
       title: "Description",
       dataIndex: "packingRateDesc",
       key: "packingRateDesc",
-      filteredValue: filteredInfo ? filteredInfo["packingRateDesc"] : null,
-      filters: [],
-      onFilter: (value, record) => record.packingRateDesc == value,
-      sorter: (a, b) => a.packingRateDesc?.length - b.packingRateDesc?.length,
-      sortOrder: sortedInfo.columnKey === "packingRateDesc" && sortedInfo.order,
     },
     {
       title: "Action",
@@ -410,32 +308,16 @@ const Rates = (props) => {
       title: "Lamination ID",
       dataIndex: "laminationId",
       key: "laminationId",
-      filters: [],
-      sorter: (a, b) => {
-        return a.laminationId - b.laminationId;
-      },
-      sortOrder: sortedInfo.columnKey === "laminationId" && sortedInfo.order,
     },
     {
       title: "Location",
       dataIndex: "partyName",
       key: "partyName",
-      filters: [],
-      sorter: (a, b) => {
-        return a.partyName - b.partyName;
-      },
-      sortOrder: sortedInfo.columnKey === "partyName" && sortedInfo.order,
     },
     {
       title: "Charges",
       dataIndex: "charges",
       key: "charges",
-      filters: [],
-      sorter: (a, b) => {
-        return a.laminationSSmaterial - b.laminationSSmaterial;
-      },
-      sortOrder:
-        sortedInfo.columnKey === "laminationSSmaterial" && sortedInfo.order,
     },
     {
       title: "Action",

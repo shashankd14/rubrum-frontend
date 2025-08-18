@@ -105,14 +105,14 @@ const PreProcessingReport = (props) => {
         },
         {
             title: "Material",
-            dataIndex: "materialGrade",
-            key: "materialGrade",
-            filteredValue: filteredInfo ? filteredInfo["materialGrade"] : null,
-            onFilter: (value, record) => record.materialGrade == value,
+            dataIndex: "materialDesc",
+            key: "materialDesc",
+            filteredValue: filteredInfo ? filteredInfo["materialDesc"] : null,
+            onFilter: (value, record) => record.materialDesc == value,
             sorter: (a, b) =>
-                a.materialGrade.length - b.materialGrade.length,
+                a.materialDesc.length - b.materialDesc.length,
             sortOrder:
-                sortedInfo.columnKey === "materialGrade" && sortedInfo.order,
+                sortedInfo.columnKey === "materialDesc" && sortedInfo.order,
         },
         {
             title: "Thickness",

@@ -42,31 +42,16 @@ const Material = (props) => {
         title: 'S No',
         dataIndex: 'matId',
         key: 'matId',
-        filters: [],
-        sorter: (a, b) => {
-            return a.matId - b.matId
-        },
-        sortOrder: sortedInfo.columnKey === 'matId' && sortedInfo.order,
     },
     {
         title: 'Material Code',
         dataIndex: 'materialCode',
         key: 'materialCode',
-        filters: [],
-        sorter: (a, b) => {
-            return a.materialCode - b.materialCode
-        },
-        sortOrder: sortedInfo.columnKey === 'materialCode' && sortedInfo.order,
     },
     {
         title: 'HSN Code',
         dataIndex: 'hsnCode',
         key: 'hsnCode',
-        filters: [],
-        sorter: (a, b) => {
-            return a.hsnCode - b.hsnCode
-        },
-        sortOrder: sortedInfo.columnKey === 'hsnCode' && sortedInfo.order,
     },
     {
         title: 'Material Date',
@@ -75,9 +60,6 @@ const Material = (props) => {
             return moment(value).format('Do MMM YYYY');
         },
         key: 'createdOn',
-        filters: [],
-        sorter: (a, b) => a.createdOn.length - b.createdOn.length,
-        sortOrder: sortedInfo.columnKey === 'createdOn' && sortedInfo.order,
     },
     {
         title: 'Material',
