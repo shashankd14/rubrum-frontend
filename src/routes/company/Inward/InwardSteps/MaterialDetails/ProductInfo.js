@@ -38,7 +38,7 @@ const { TextArea } = Input;
 const ProductInfoForm = (props) => {
   const { Option } = AutoComplete;
   const { getFieldDecorator } = props.form;
-
+  
   const handleSubmit = (e) => {
     if (!props.inward.disableSelection)
       props.getRefinedProductsFinal({
@@ -64,7 +64,7 @@ const ProductInfoForm = (props) => {
   };
 
   useEffect(() => {
-    if (!props.inward.disableSelection) {
+    if (!props.inward.disableSelection && !props.isBack) {
       props.getRefinedProducts(props.inward, "grade");
     }
   }, []);

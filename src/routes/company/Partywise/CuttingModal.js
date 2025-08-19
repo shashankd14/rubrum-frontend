@@ -367,7 +367,7 @@ const CreateCuttingDetailsForm = (props) => {
           <Select
             disabled={props.unfinish}
             dropdownMatchSelectWidth={false}
-            style={{ width: '100%' }}
+            style={{ width: "100%" }}
             value={
               record?.packetClassification?.packetClassificationId ||
               record?.packetClassification?.classificationId ||
@@ -379,7 +379,7 @@ const CreateCuttingDetailsForm = (props) => {
           >
             {filteredTags.map((item) => (
               <Option key={item.tagId} value={item.tagId}>
-                {item.tagName}
+                {item.tagName === 'FG' ? 'Ready to deliver' : item.tagName}
               </Option>
             ))}
           </Select>

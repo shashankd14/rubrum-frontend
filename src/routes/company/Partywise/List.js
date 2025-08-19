@@ -348,6 +348,13 @@ const List = (props) => {
       dataIndex: "packetClassification.classificationName",
       key: "packetClassification.classificationName",
       sorter: false,
+      render: (text, record) => {
+        return record.packetClassification
+          ? record.packetClassification.classificationName  === 'FG' ? 'Ready to deliver' : toPascalCase(
+              record.packetClassification.classificationName
+            )
+          : "-";
+      }
     },
     partywisepermission === "ENDUSER_TAG_WISE_PACKETS"
       ? {}

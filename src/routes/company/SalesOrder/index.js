@@ -66,7 +66,6 @@ const SalesOrder = () => {
       key: "instructionId",
       filteredValue: filteredInfo ? filteredInfo["instructionId"] : null,
       filterDropdown: ({ confirm, clearFilters }) => {
-        let filterVariable = "";
         return (
           <div style={{ padding: 8 }}>
             <div

@@ -2,6 +2,7 @@ import React, {useEffect, useState}from "react";
 import {connect} from "react-redux";
 import { Table } from 'antd';
 import {fetchDeliveryListById} from "../../../appRedux/actions";
+import { toPascalCase } from "util/Common";
 
 const DeliveryDetails = (props) => {
   const [deliveryById, setDeliveryById]=useState(props.delivery.deliveryById);
@@ -55,7 +56,14 @@ const DeliveryDetails = (props) => {
     {
       title: 'Packaging Classification',
       dataIndex: 'packetClassification.classificationName',
-      key: 'packetClassification.classificationName'
+      key: 'packetClassification.classificationName',
+      render: (text, record) => {
+            return record.packetClassification
+              ? record.packetClassification.classificationName  === 'FG' ? 'Ready to deliver' : toPascalCase(
+                  record.packetClassification.classificationName
+                )
+              : "-";
+      }
     },
     {
       title: 'Remarks',
