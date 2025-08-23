@@ -237,6 +237,11 @@ const SalesOrder = () => {
     {
       title: "Sales Order Number",
       dataIndex: "deliveryDetails.customerInvoiceNo",
+      key: "soNumber",
+      filters: [
+        { text: "Panned", value: 1 },
+        { text: "Unplanned", value: 2 },
+      ],
       render: (text, record, index) => (
         <div style={{ display: "flex", alignItems: "center" }}>
           <Input value={record.soNumber} onChange={onInputChange(index)} />
@@ -252,7 +257,16 @@ const SalesOrder = () => {
 
   const handleChange = (pagination, filters, sorter) => {
     setPageNo(pagination.current);
-    dispatch(fetchPacketList(pagination.current, pagination.pageSize, ""));
+    dispatch(
+      fetchPacketList(
+        pagination.current,
+        pagination.pageSize,
+        customerValue,
+        "",
+        "",
+        filters
+      )
+    );
   };
 
   useEffect(() => {

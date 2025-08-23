@@ -25,12 +25,18 @@ const getHeaders = () => ({
 });
 
 function* fetchAllPackets(action) {
+  console.log("Action in saga", action);
   const body = {
     pageNo: action.page,
     pageSize: action.pageSize,
     searchText: "",
     partyId: action.partyId,
     planId: action.planId,
+    mappingFlag: action?.filters?.soNumber
+      ? action?.filters?.soNumber?.length === 1
+        ? action.filters.soNumber[0]
+        : 0
+      : "",
   };
 
   try {

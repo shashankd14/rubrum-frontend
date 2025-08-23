@@ -535,83 +535,26 @@ const List = (props) => {
 
   function handleFocus() {}
 
-  const storeKey = (data, selected) => {
-    if (selectedCBKeys.includes(data.key) && !selected) {
-      const newSet = selectedCBKeys;
-      const index = selectedCBKeys.indexOf(data.key);
-      newSet.splice(index, 1);
-      setSelectedCBKeys(newSet);
-      setSelectedRowData((oldData) =>
-        oldData.filter((row) => row.key !== data.key)
-      );
-      return;
-    } else if (selected && !selectedCBKeys.includes(data.key)) {
-      setSelectedCBKeys((oldArr) => [...oldArr, data.key]);
-      setSelectedRowData((oldData) => [...oldData, data]);
-    }
-  };
-
-  const getKey = (data, selected) => {
-    if (
-      data.status.statusName === "READY TO DELIVER" ||
-      data.status.statusName === "RECEIVED"
-    ) {
-      storeKey(data, selected);
-      if (data.children) {
-        data.children.map((item) => getKey(item, selected));
-      }
-    }
-  };
-
   const rowSelection = {
+    columnTitle: <span />,
     onSelect: (record, selected, selectedRows) => {
-      if (
-        record.status.statusName === "READY TO DELIVER" ||
-        record.status.statusName === "RECEIVED"
-      ) {
-        if (record.key.includes("-") && !selected) {
-          const eKeys = record.key.split("-");
-          let removeKeys = [record.key];
-          eKeys.forEach((key) => {
-            selectedRows.forEach((row) => {
-              if (`${row.coilNumber}` === key) {
-                removeKeys.push(row.key);
-              }
-            });
-          });
-          removeKeys.forEach((key) => {
-            storeKey({ key }, selected);
-          });
-        } else getKey(record, selected);
+      setSelectedRowData(selectedRows);
+      setSelectedCoil(
+        Array.from(new Set(selectedRows.map((item) => item.party.nPartyId)))
+      );
+      if (selected) {
+        setSelectedCBKeys([...selectedCBKeys, record.inwardEntryId]);
+      } else {
+        setSelectedCBKeys(
+          selectedCBKeys.filter((key) => key !== record.inwardEntryId)
+        );
       }
-      const selectedCoil =
-        selectedRows.map((row) => row?.party?.nPartyId) || [];
-      setSelectedCoil(Array.from(new Set(selectedCoil)));
     },
     getCheckboxProps: (record) => ({
       disabled:
         record.status.statusName !== "READY TO DELIVER" &&
         record.status.statusName !== "RECEIVED",
     }),
-    onSelectAll: (selected, selectedRows, changeRows) => {
-      if (changeRows.length === selectedCBKeys.length) {
-        setSelectedCBKeys([]);
-        setSelectedRowData([]);
-      } else {
-        changeRows.map((item) => {
-          if (
-            item.status.statusName === "READY TO DELIVER" ||
-            item.status.statusName === "RECEIVED"
-          ) {
-            getKey(item);
-          }
-        });
-      }
-      const selectedCoil =
-        selectedRows.map((row) => row?.party?.nPartyId) || [];
-      setSelectedCoil(Array.from(new Set(selectedCoil)));
-    },
-    selectedRowKeys: selectedCBKeys,
   };
 
   const gets3PDFurl = () => {
@@ -622,7 +565,7 @@ const List = (props) => {
             Inward PDF
           </a>{" "}
           &nbsp;&nbsp;&nbsp;
-          {/* <a href={props?.inward.s3pdfurl?.qrcode_inward_pdf} target="_blank">
+          {/* <a href={props?.inward.s3pdfurl?.qrcode_inward_pdf} target="_blank"> 
             Inward QR Code
           </a> */}
         </div>
@@ -733,7 +676,7 @@ const List = (props) => {
                       );
                     }
                   }}
-                  disabled={!!selectedCBKeys?.length < 1}
+                  disabled={!!selectedRowData?.length < 1}
                 >
                   Deliver
                 </Button>

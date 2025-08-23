@@ -1,3 +1,4 @@
+import { filter } from 'lodash';
 import {
   REQUEST_ALL_PACKETS_LIST,
   REQUEST_ALL_PACKETS_LIST_ERROR,
@@ -31,13 +32,21 @@ export const fetchSalesOrderSuccess = (list) =>  ({
   list
 });
 
-export const fetchPacketList = (page, pageSize, partyId, searchValue, planId) => ({
+export const fetchPacketList = (
+  page,
+  pageSize,
+  partyId,
+  searchValue,
+  planId,
+  filterInfo = {}
+) => ({
   type: REQUEST_ALL_PACKETS_LIST,
   page,
   pageSize,
   partyId,
   searchValue,
   planId,
+  filters: filterInfo,
 });
 
 export const fetchPacketListSuccess = (list) =>  ({
