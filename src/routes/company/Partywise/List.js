@@ -350,11 +350,11 @@ const List = (props) => {
       sorter: false,
       render: (text, record) => {
         return record.packetClassification
-          ? record.packetClassification.classificationName  === 'FG' ? 'Ready to deliver' : toPascalCase(
-              record.packetClassification.classificationName
-            )
+          ? record.packetClassification.classificationName === "FG"
+            ? "Ready to deliver"
+            : toPascalCase(record.packetClassification.classificationName)
           : "-";
-      }
+      },
     },
     partywisepermission === "ENDUSER_TAG_WISE_PACKETS"
       ? {}
@@ -535,26 +535,84 @@ const List = (props) => {
 
   function handleFocus() {}
 
-  const rowSelection = {
-    columnTitle: <span />,
-    onSelect: (record, selected, selectedRows) => {
-      setSelectedRowData(selectedRows);
-      setSelectedCoil(
-        Array.from(new Set(selectedRows.map((item) => item.party.nPartyId)))
+  const storeKey = (data, selected) => {
+    if (selectedCBKeys.includes(data.key) && !selected) {
+      const newSet = selectedCBKeys;
+      const index = selectedCBKeys.indexOf(data.key);
+      newSet.splice(index, 1);
+      setSelectedCBKeys(newSet);
+      setSelectedRowData((oldData) =>
+        oldData.filter((row) => row.key !== data.key)
       );
-      if (selected) {
-        setSelectedCBKeys([...selectedCBKeys, record.inwardEntryId]);
-      } else {
-        setSelectedCBKeys(
-          selectedCBKeys.filter((key) => key !== record.inwardEntryId)
-        );
+      return;
+    } else if (selected && !selectedCBKeys.includes(data.key)) {
+      setSelectedCBKeys((oldArr) => [...oldArr, data.key]);
+      setSelectedRowData((oldData) => [...oldData, data]);
+    }
+  };
+
+  const getKey = (data, selected) => {
+    if (
+      data.status.statusName === "READY TO DELIVER" ||
+      data.status.statusName === "RECEIVED"
+    ) {
+      storeKey(data, selected);
+      if (data.children) {
+        data.children.map((item) => getKey(item, selected));
       }
+    }
+  };
+
+  const rowSelection = {
+    onSelect: (record, selected, selectedRows) => {
+      console.log(record.status.statusName)
+      if (
+        record.status.statusName === "READY TO DELIVER" ||
+        record.status.statusName === "RECEIVED"
+      ) {
+        if (record.key.includes("-") && !selected) {
+          const eKeys = record.key.split("-");
+          let removeKeys = [record.key];
+          eKeys.forEach((key) => {
+            selectedRows.forEach((row) => {
+              if (`${row.coilNumber}` === key) {
+                removeKeys.push(row.key);
+              }
+            });
+          });
+          removeKeys.forEach((key) => {
+            storeKey({ key }, selected);
+          });
+        } else getKey(record, selected);
+      }
+      const selectedCoil =
+        selectedRows.map((row) => row?.party?.nPartyId) || [];
+      setSelectedCoil(Array.from(new Set(selectedCoil)));
     },
     getCheckboxProps: (record) => ({
       disabled:
         record.status.statusName !== "READY TO DELIVER" &&
         record.status.statusName !== "RECEIVED",
     }),
+    onSelectAll: (selected, selectedRows, changeRows) => {
+      if (changeRows.length === selectedCBKeys.length) {
+        setSelectedCBKeys([]);
+        setSelectedRowData([]);
+      } else {
+        changeRows.map((item) => {
+          if (
+            item.status.statusName === "READY TO DELIVER" ||
+            item.status.statusName === "RECEIVED"
+          ) {
+            getKey(item);
+          }
+        });
+      }
+      const selectedCoil =
+        selectedRows.map((row) => row?.party?.nPartyId) || [];
+      setSelectedCoil(Array.from(new Set(selectedCoil)));
+    },
+    selectedRowKeys: selectedCBKeys,
   };
 
   const gets3PDFurl = () => {
@@ -565,7 +623,7 @@ const List = (props) => {
             Inward PDF
           </a>{" "}
           &nbsp;&nbsp;&nbsp;
-          {/* <a href={props?.inward.s3pdfurl?.qrcode_inward_pdf} target="_blank"> 
+          {/* <a href={props?.inward.s3pdfurl?.qrcode_inward_pdf} target="_blank">
             Inward QR Code
           </a> */}
         </div>
@@ -676,7 +734,7 @@ const List = (props) => {
                       );
                     }
                   }}
-                  disabled={!!selectedRowData?.length < 1}
+                  disabled={!!selectedCBKeys?.length < 1}
                 >
                   Deliver
                 </Button>
@@ -718,7 +776,7 @@ const List = (props) => {
           scroll={{ y: 540 }}
           className="gx-table-responsive"
           columns={columns}
-          rowKey={(record) => record.inwardEntryId}
+          rowKey={(record) => record.key}
           loading={props.inward.loading}
           dataSource={[...props.inward.inwardList] || []}
           onChange={handleChange}
