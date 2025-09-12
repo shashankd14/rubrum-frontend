@@ -36,10 +36,10 @@ const Topbar = () => {
       <Link to="/" className="gx-d-block gx-d-lg-none gx-pointer">
         <img alt="" src={require("assets/images/w-logo.png")}/></Link>
 
-      <SearchBox styleName="gx-d-none gx-d-lg-block gx-lt-icon-search-bar-lg"
+      {/* <SearchBox styleName="gx-d-none gx-d-lg-block gx-lt-icon-search-bar-lg"
                  placeholder="Search in app..."
                  onChange={updateSearchChatUser}
-                 value={searchText}/>
+                 value={searchText}/> */}
       <ul className="gx-header-notifications gx-ml-auto">
         <li className="gx-notify gx-notify-search gx-d-inline-block gx-d-lg-none">
           <Popover overlayClassName="gx-popover-horizantal" placement="bottomRight" content={

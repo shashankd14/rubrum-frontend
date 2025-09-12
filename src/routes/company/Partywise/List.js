@@ -70,8 +70,8 @@ const List = (props) => {
   const [showRetrieve, setShowRetrieve] = React.useState(false);
   const [selectedCoil, setSelectedCoil] = React.useState([]);
   const [pageSize, setPageSize] = useState(15);
-  const [sortColumn, setSortColumn] = useState("coilnumber");
-  const [sortOrder, setSortOrder] = useState("ASC");
+  const [sortColumn, setSortColumn] = useState("inwardEntryId");
+  const [sortOrder, setSortOrder] = useState("DESC");
 
   const getColumnSearchProps = (dataIndex) => ({
     filterDropdown: ({
@@ -387,7 +387,8 @@ const List = (props) => {
                   {menuPartyWiseLabelList.length > 0 &&
                     menuPartyWiseLabelList.includes(
                       partyWiseMenuConstants.retrieve
-                    ) && (
+                    ) &&
+                    record.status.statusName !== "RECEIVED" && (
                       <>
                         <span
                           className="gx-link"

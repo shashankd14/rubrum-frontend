@@ -15,14 +15,7 @@ import moment from "moment";
 import IntlMessages from "../../../util/IntlMessages";
 const Option = Select.Option;
 function List(props) {
-  const [sortedInfo, setSortedInfo] = useState({
-    order: "descend",
-    columnKey: "age",
-  });
-
   const { totalItems } = props.delivery;
-
-  const [filteredInfo, setFilteredInfo] = useState(null);
   const [searchValue, setSearchValue] = useState("");
   const [deliveryList, setDeliveryList] = useState(props.delivery.deliveryList);
   const [reconcileModal, setreconcileModal] = useState(false);

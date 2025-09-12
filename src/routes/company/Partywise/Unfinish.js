@@ -165,6 +165,10 @@ const Unfinish = (props) => {
     }
   }, [cuttingCoil]);
 
+  useEffect(() => {
+    setShowCuttingModal(false)
+  }, [props.inward?.instructionUpdateSuccess]);
+
   const getLength = (value, type) => {
     let tempDelValue = 0;
     let tempAvailValue = 0;
@@ -266,18 +270,6 @@ const Unfinish = (props) => {
                   title="main coil image"
                 />
               </div>
-              <div>
-                <img
-                  src={require("assets/images/inward/info_icon.svg")}
-                  alt="main coil image"
-                  title="main coil image"
-                />
-                <img
-                  src={require("assets/images/inward/burger_menu.svg")}
-                  alt="main coil image"
-                  title="main coil image"
-                />
-              </div>
             </div>
             <h5 className="gx-coil-number">{props.inward.plan.coilNumber}</h5>
             <div className="gx-flex-row">
@@ -304,7 +296,7 @@ const Unfinish = (props) => {
                   setChildCoil(false);
                 }}
               >
-                {props.unfinish ? "Unfinish Slitting" : "edit finish slitting"}
+                {props.unfinish ? "Unfinish Slitting" : "Edit finish slitting"}
               </Button>
               <Button
                 onClick={() => {
@@ -314,7 +306,7 @@ const Unfinish = (props) => {
                   setChildCoil(false);
                 }}
               >
-                {props.unfinish ? "Unfinish Cutting" : "edit finish cutting"}
+                {props.unfinish ? "Unfinish Cutting" : "Edit finish cutting"}
               </Button>
               <Button
                 onClick={() => {
@@ -326,7 +318,7 @@ const Unfinish = (props) => {
               >
                 {props.unfinish
                   ? "Unfinish Cut & Slit"
-                  : "edit finish Cut & Slit"}
+                  : "Edit finish Cut & Slit"}
               </Button>
             </div>
           </Card>
@@ -383,15 +375,6 @@ const Unfinish = (props) => {
                                     }`}
                                     size="small"
                                   >
-                                    <img
-                                      style={{
-                                        position: "absolute",
-                                        right: "10.35px",
-                                      }}
-                                      src={require("assets/images/inward/info_icon.svg")}
-                                      alt="main coil image"
-                                      title="main coil image"
-                                    />
                                     <div className="gx-coil-image-bg gx-flex-row gx-align-items-center gx-justify-content-center">
                                       {instruction.parentGroupId == null ? (
                                         instruction.process.processId === 1 ? (
@@ -522,15 +505,6 @@ const Unfinish = (props) => {
                                           }`}
                                           size="small"
                                         >
-                                          <img
-                                            style={{
-                                              position: "absolute",
-                                              right: "10.35px",
-                                            }}
-                                            src={require("assets/images/inward/info_icon.svg")}
-                                            alt="main coil image"
-                                            title="main coil image"
-                                          />
                                           <div className="gx-coil-image-bg gx-flex-row gx-align-items-center gx-justify-content-center">
                                             {instruction.childInstructions[0]
                                               .process.processId === 1 ? (

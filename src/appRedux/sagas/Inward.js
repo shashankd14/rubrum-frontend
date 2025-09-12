@@ -89,6 +89,8 @@ import {
   getPacketwisePriceDCFullHandlingError,
   saveInwardMaterialDetails,
   errorInwardMaterialDetails,
+  updateInstructionPT,
+  labelPrintEditFinish
 } from "../actions";
 import { userSignOutSuccess } from "../../appRedux/actions/Auth";
 
@@ -716,7 +718,8 @@ function* requestSaveSlittingInstruction(action) {
   }
 }
 function* requestUpdateInstruction(action) {
-  const { number, instruction, unfinish, editFinish } = action.coil;
+  const { number, instruction, unfinish, editFinish, positiveToleranceFlag } =
+    action.coil;
   const ins = instruction.map((item) => {
     let insObj = {
       instructionId: item.instructionId ? item.instructionId : null,
@@ -759,6 +762,7 @@ function* requestUpdateInstruction(action) {
     actualYieldLossRatio: action.coil.actualYieldLossRatio,
     plannedCoilLevelYLR: action.coil.plannedCoilLevelYLR,
     actualCoilLevelYLR: action.coil.actualCoilLevelYLR,
+    positiveToleranceFlag: positiveToleranceFlag,
   };
   try {
     const updateInstruction = yield fetch(`${baseUrl}api/instruction/update`, {
@@ -768,6 +772,10 @@ function* requestUpdateInstruction(action) {
     });
     if (updateInstruction.status === 200) {
       yield put(updateInstructionSuccess(updateInstruction));
+      yield put(labelPrintEditFinish(action.coil));
+    } else if(updateInstruction.status === 400) {
+      const errorResponse = yield updateInstruction.json();
+      yield put(updateInstructionPT(errorResponse));
     } else if (updateInstruction.status === 401) {
       yield put(userSignOutSuccess());
     } else yield put(updateInstructionError("error"));

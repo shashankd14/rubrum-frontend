@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { connect, useDispatch } from "react-redux";
-import { Popover, Input, Card, message, Select, Row, Col } from "antd";
-import { InfoCircleOutlined, CloseSquareTwoTone } from "@ant-design/icons";
+import { Input, Card, message, Select, Row, Col } from "antd";
 import {
   fetchPackingListByParty,
   getPacketwisePriceDCFullHandling,
@@ -14,8 +13,6 @@ import {
 } from "../../../appRedux/actions";
 import moment from "moment";
 import { Button, Table, Modal } from "antd";
-import { add } from "lodash";
-import { render } from "less";
 
 const DeliveryInfo = (props) => {
   const Option = Select.Option;
@@ -28,7 +25,6 @@ const DeliveryInfo = (props) => {
   const [packingRateId, setPackingRateId] = useState("");
   const [laminationCharges, setLaminationCharges] = useState(0);
   const [laminationId, setLaminationId] = useState("");
-  const [additionalWeights, setAdditionalWeights] = useState([]);
 
   const [priceModal, setPriceModal] = useState(false);
   const [validationStatus, setValidationStatus] = useState(false);
@@ -57,12 +53,9 @@ const DeliveryInfo = (props) => {
 
     if (iList?.length) {
       const payload = {
-        inwardEntryId: iList.map(
-          (item) => ({
-            inwardId: item.inwardEntryId,
-            additionalWeight: additionalWeights[item.inwardEntryId] || 0,
-          })
-        ),
+        inwardEntryId: iList.map((item) => ({
+          inwardId: item.inwardEntryId,
+        })),
         laminationId,
         vehicleNo,
         packingRateId,
@@ -80,7 +73,6 @@ const DeliveryInfo = (props) => {
             instructionId: item.instructionId,
             remarks: item.remarks || null,
             actualWeight: item.plannedWeight || item.actualWeight,
-            additionalWeight: additionalWeights[item.instructionId] || 0,
           })
         ),
       };
@@ -95,7 +87,6 @@ const DeliveryInfo = (props) => {
             instructionId: item.instructionId,
             remarks: item.remarks || null,
             actualWeight: item.plannedWeight || item.actualWeight,
-            additionalWeight: additionalWeights[item.instructionId] || 0,
           })
         ),
       };
@@ -148,32 +139,16 @@ const DeliveryInfo = (props) => {
       dataIndex: "totalPrice",
       key: "totalPrice",
       render: (text, record) => {
-        return (
-          <Input
-            value={additionalWeights[record.instructionId] !== undefined ? additionalWeights[record.instructionId] : ''}
-            onChange={(e) => {
-              setAdditionalWeights({
-                ...additionalWeights,
-                [record.instructionId]: e.target.value, 
-              });
-            }}
-            style={{ width: 70, marginBottom: 8, display: "block" }}
-          />
-        );
+        return record.additionalWeight;
       },
     },
     {
       title: "Total Weight\n(in KG)",
       dataIndex: "totalWeight",
       render: (text, record) => {
-        const additionalWeight = additionalWeights[record.instructionId] || 0;
-        const totalWeight = record.actualWeight + parseFloat(additionalWeight);
-        return (
-          <div>
-            {totalWeight}
-          </div>
-        );
-      }
+        const totalWeight = record.actualWeight + record.additionalWeight;
+        return <div>{totalWeight}</div>;
+      },
     },
     {
       title: "Base Rate\n(per ton)",
@@ -214,7 +189,10 @@ const DeliveryInfo = (props) => {
           <Button
             type="primary"
             onClick={() => {
-               window.location.href = window.location.origin+'#/company/locationwise-register/editFinish/'+record.coilNo;
+              window.location.href =
+                window.location.origin +
+                "#/company/locationwise-register/editFinish/" +
+                record.coilNo;
             }}
           >
             Edit finish
@@ -262,6 +240,7 @@ const DeliveryInfo = (props) => {
       props.generateDCPdf(pdfPayload);
     }
   }, [props.inward.deliverySuccess]);
+
   useEffect(() => {
     if (props.inward.dcpdfSuccess) {
       message
@@ -272,6 +251,7 @@ const DeliveryInfo = (props) => {
         });
     }
   }, [props.inward.dcpdfSuccess]);
+
   useEffect(() => {
     if (props.inward?.unprocessedSuccess?.length) {
       const fullHandlingList = props.inward?.unprocessedSuccess.map((item) => {
@@ -327,7 +307,6 @@ const DeliveryInfo = (props) => {
         vehicleNo,
         laminationId,
         inwardListForDelivery: props.inward.inwardListForDelivery,
-        additionalWeights: additionalWeights,
       };
       props.postDeliveryConfirm(reqObj);
       if (props.inward?.unprocessedSuccess?.length) {
@@ -442,37 +421,6 @@ const DeliveryInfo = (props) => {
                           </p>
                         </div>
                       )}
-                      <div style={{ marginLeft: "3px", marginTop: "10px" }}>
-                        <Popover
-                          content={
-                            <div
-                              style={{
-                                display: "flex",
-                                flexDirection: "column",
-                              }}
-                            >
-                              <p>
-                                Thickness:{" "}
-                                {elem.actualWeight &&
-                                elem.rates &&
-                                elem.rates?.thicknessRate
-                                  ? elem.actualWeight *
-                                    elem.rates?.thicknessRate
-                                  : 0}
-                              </p>
-                              <p>Process: {elem.process?.processName}</p>
-                              <p>
-                                Material:{" "}
-                                {elem.rates?.materialType?.description}
-                              </p>
-                            </div>
-                          }
-                          title="Rate"
-                        >
-                          <InfoCircleOutlined />
-                        </Popover>
-                      </div>
-
                       <div style={{ marginLeft: "20px" }}>
                         <Input
                           placeholder="Remarks"
@@ -482,9 +430,6 @@ const DeliveryInfo = (props) => {
                             elem.remarks = event.target.value;
                           }}
                         />
-                      </div>
-                      <div style={{ marginLeft: "20px" }}>
-                        <CloseSquareTwoTone style={{ width: "20px" }} />
                       </div>
                     </div>
                   </div>
@@ -592,13 +537,6 @@ const DeliveryInfo = (props) => {
                   Cancel
                 </Button>,
                 <Button
-                  key="recalculate"
-                  type="primary"
-                  onClick={() => handlePacketPrice(false)}
-                >
-                  Recalculate rates
-                </Button>,
-                <Button
                   key="goToRate"
                   type="primary"
                   disabled={validationStatus}
@@ -623,14 +561,13 @@ const DeliveryInfo = (props) => {
                 dataSource={props.packetwisePriceDC?.priceDetailsList}
               />
             </Modal>
-            <button
-              style={{ marginBottom: "10px", padding: "6px 15px" }}
+            <Button
               onClick={() => {
                 props.history.push("/company/locationwise-register");
               }}
             >
               Go Back
-            </button>
+            </Button>
           </div>
         </div>
       ) : (

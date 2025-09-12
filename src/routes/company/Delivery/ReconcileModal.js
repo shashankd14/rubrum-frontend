@@ -20,14 +20,14 @@ const ReconcileModal=(props)=>{
     const TabPane = Tabs.TabPane;
     const { Dragger } = Upload;
     const {getFieldDecorator} = props.form;
-    const [mode, setMode] = useState('top');
+    
     return(
         <Modal
         visible={props.showModal}
         width={1020}>
             <Tabs
                 defaultActiveKey="1"
-                tabPosition={mode}
+                tabPosition="top"
             >
             <TabPane tab="Weigh Bridge Outward Update" key="1">
                 <Row>

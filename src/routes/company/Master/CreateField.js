@@ -18,7 +18,7 @@ const CreateField = (props) => {
     const { setFields, btnName } = props;
     const [selectType, setSelectType] = useState({});
     const [showParameters, setShowParamters] = useState(false);  
-    const { getFieldDecorator, getFieldValue } = props.form;
+    const { getFieldDecorator } = props.form;
 
     useEffect(() => {
       setSelectType(selectType);

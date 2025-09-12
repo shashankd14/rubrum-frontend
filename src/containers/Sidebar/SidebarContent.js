@@ -343,12 +343,12 @@ useEffect(() => setOpenKeys(getOpenKeys(pathname)), [pathname]);
                     </Link>
                   </Menu.Item>
                 )}
-                {/* {(true) && <Menu.Item key="company/salesOrderModule">
+                {(true) && <Menu.Item key="company/salesOrderModule">
                   <Link to="/company/sales-orderModule">
                     <i className="icon icon-crypto"/>
                     <span><IntlMessages id="sidebar.company.salesOrder"/></span>
                   </Link>
-                </Menu.Item>} */}
+                </Menu.Item>}
               </MenuItemGroup>
             </MenuItemGroup>
           </Menu>
