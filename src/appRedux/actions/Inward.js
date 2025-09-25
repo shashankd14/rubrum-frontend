@@ -64,6 +64,9 @@ import {
   CHECK_BATCH_NO_EXIST,
   CHECK_BATCH_NO_EXIST_ERROR,
   CHECK_BATCH_NO_EXIST_SUCCESS,
+  GET_PO_DETAILS,
+  GET_PO_DETAILS_SUCCESS,
+  GET_PO_DETAILS_ERROR,
   INSTRUCTION_GROUP_SAVE,
   INSTRUCTION_GROUP_SAVE_SUCCESS,
   INSTRUCTION_GROUP_SAVE_ERROR,
@@ -82,6 +85,9 @@ import {
   GET_PACKET_WISE_PRICE_DC_REQUEST,
   GET_PACKET_WISE_PRICE_DC_SUCCESS,
   GET_PACKET_WISE_PRICE_DC_ERROR,
+  GET_MATERIALS_BY_POID,
+  GET_MATERIALS_BY_POID_SUCCESS,
+  GET_MATERIALS_BY_POID_ERROR,
   UPDATE_INSTRUCTION_POSITIVE_TOLERANCE,
 } from "../../constants/ActionTypes";
 import * as actionTypes from "../../constants/ActionTypes";
@@ -200,6 +206,7 @@ export const checkDuplicateCoilError = (error) => ({
     type: CHECK_COIL_EXISTS_ERROR,
     error
 })
+
 export const checkCustomerBatchNumber = (customerBatchId) => ({
     type: CHECK_BATCH_NO_EXIST,
     customerBatchId
@@ -214,6 +221,36 @@ export const checkCustomerBatchNumberError = (error) => ({
     type: CHECK_BATCH_NO_EXIST_ERROR,
     error
 })
+
+export const getPoDetails = (locationId) => ({
+  type: GET_PO_DETAILS,
+  locationId,
+});
+
+export const getPoDetailsSuccess = (poList) => ({
+  type: GET_PO_DETAILS_SUCCESS,
+  poList,
+});
+
+export const getPoDetailsError = (error) => ({
+  type: GET_PO_DETAILS_ERROR,
+  error,
+});
+
+export const fetchMaterialsByPoID = (poId) => ({
+  type: GET_MATERIALS_BY_POID,
+  poId,
+});
+
+export const fetchMaterialsByPoIDSuccess = (materialList) => ({
+  type: GET_MATERIALS_BY_POID_SUCCESS,
+  materialList,
+});
+
+export const fetchMaterialsByPoIDError = (error) => ({
+  type: GET_MATERIALS_BY_POID_ERROR,
+  error,
+});
 
 export const getGradeByMaterialId = (materialId) => ({
     type: FETCH_MATERIAL_GRADE_LIST_REQUEST,

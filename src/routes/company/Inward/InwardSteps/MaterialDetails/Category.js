@@ -111,13 +111,26 @@ const CategoryForm = (props) => {
                   { required: false, message: "Please select material !" },
                 ],
               })(
-                <Search
-                  allowClear
-                  placeholder="enter material Id"
-                  onSearch={(value) => {
-                    if (value) props.searchByMaterialId(value);
-                  }}
-                />
+                <Select
+                  disabled={props.inward.disableSelection}
+                  showSearch
+                  placeholder="Select a material"
+                  optionFilterProp="children"
+                  onSelect={(materialId, option) =>
+                    props.searchByMaterialId(materialId)
+                  }
+                  filterOption={(input, option) =>
+                    option.props.children
+                      .toLowerCase()
+                      .indexOf(input.toLowerCase()) >= 0
+                  }
+                >
+                  {props.inwardStatus?.materialList?.map((materialId) => (
+                    <Option key={materialId} value={materialId}>
+                      {materialId}
+                    </Option>
+                  ))}
+                </Select>
               )}
             </Form.Item>
           </Col>

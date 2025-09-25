@@ -1,6 +1,6 @@
 import { all, put, fork, takeLatest, call } from "redux-saga/effects";
 import { getUserToken } from "./common";
-import toNumber from "lodash";
+import toNumber, { get } from "lodash";
 import moment from "moment";
 import {
   CHECK_COIL_EXISTS,
@@ -32,6 +32,8 @@ import {
   FETCH_INWARD_LIST_WITH_OLD_API_REQUEST,
   UPDATE_CLASSIFICATION_SLITANDCUT_BEFORE_FINISH,
   FETCH_INWARD_MATERIAL_LIST,
+  GET_PO_DETAILS,
+  GET_MATERIALS_BY_POID,
 } from "../../constants/ActionTypes";
 
 import {
@@ -90,7 +92,11 @@ import {
   saveInwardMaterialDetails,
   errorInwardMaterialDetails,
   updateInstructionPT,
-  labelPrintEditFinish
+  labelPrintEditFinish,
+  getPoDetailsSuccess,
+  getPoDetailsError,
+  fetchMaterialsByPoIDSuccess,
+  fetchMaterialsByPoIDError,
 } from "../actions";
 import { userSignOutSuccess } from "../../appRedux/actions/Auth";
 
@@ -595,6 +601,46 @@ function* fetchInwardListByParty(action) {
     yield put(getCoilsByPartyIdError(error));
   }
 }
+
+function* getPODetails(action) {
+  try {
+    const fetchPOList = yield fetch(
+      `${baseUrl}api/location/warehouse/polist`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...getHeaders() },
+        body: JSON.stringify({ locationId: action.locationId }),
+      }
+    );
+    if (fetchPOList.status === 200) {
+      const fetchPOListResponse = yield fetchPOList.json();
+      yield put(getPoDetailsSuccess(fetchPOListResponse));
+    } else if (fetchPOList.status === 401) {
+      yield put(userSignOutSuccess());
+    } else yield put(getPoDetailsError("error"));
+  } catch (error) {
+    yield put(getPoDetailsError(error));
+  }
+}
+
+function* getMaterialsByPoID(action) {
+  try {
+    const fetchPOList = yield fetch(`${baseUrl}api/xternal/podetails`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...getHeaders() },
+      body: JSON.stringify({ poId: action.poId }),
+    });
+    if (fetchPOList.status === 200) {
+      const fetchPOListResponse = yield fetchPOList.json();
+      yield put(fetchMaterialsByPoIDSuccess(fetchPOListResponse));
+    } else if (fetchPOList.status === 401) {
+      yield put(userSignOutSuccess());
+    } else yield put(fetchMaterialsByPoIDError("error"));
+  } catch (error) {
+    yield put(fetchMaterialsByPoIDError(error));
+  }
+}
+
 function* fetchPartyListById(action) {
   try {
     const fetchPartyInwardList = yield fetch(
@@ -1283,6 +1329,8 @@ export function* watchFetchRequests() {
   );
   yield takeLatest(SAVE_UNPROCESSED_FOR_DELIVERY, saveUnprocessedDelivery);
   yield takeLatest(UPDATE_INWARD_LIST, updateInward);
+  yield takeLatest(GET_PO_DETAILS, getPODetails);
+  yield takeLatest(GET_MATERIALS_BY_POID, getMaterialsByPoID);
   yield takeLatest(DELETE_INWARD_LIST_BY_ID, deleteInwardEntryById);
   yield takeLatest(DELETE_INSTRUCTION_BY_ID, deleteInstructionById);
   yield takeLatest(CHECK_BATCH_NO_EXIST, checkCustomerBatchNumber);

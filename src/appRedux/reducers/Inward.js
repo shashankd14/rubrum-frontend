@@ -500,8 +500,8 @@ export default (state = INIT_STATE, action) => {
           instructionUpdateSuccess: true,
           instructionUpdateFailure: false,
           isPositiveToleranceError: false,
-          ptErrorCode: '',
-          ptWeight: '',
+          ptErrorCode: "",
+          ptWeight: "",
           error: false,
         };
       }
@@ -960,6 +960,60 @@ export default (state = INIT_STATE, action) => {
           inwardMaterialDetails: action.payload,
         };
       }
+      case actionTypes.GET_PO_DETAILS: {
+        return {
+          ...state,
+          loading: true,
+          error: false,
+          errorMessage: "",
+        };
+      }
+      case actionTypes.GET_PO_DETAILS_SUCCESS: {
+        return {
+          ...state,
+          loading: false,
+          error: false,
+          errorMessage: "",
+          poList: action.poList,
+        };
+      }
+
+      case actionTypes.GET_PO_DETAILS_ERROR: {
+        return {
+          ...state,
+          loading: false,
+          error: true,
+          errorMessage: action.error,
+        };
+      }
+
+      case actionTypes.GET_MATERIALS_BY_POID: {
+        return {
+          ...state,
+          loading: true,
+          error: false,
+          errorMessage: "",
+        };
+      }
+      case actionTypes.GET_MATERIALS_BY_POID_SUCCESS: {
+        return {
+          ...state,
+          loading: false,
+          error: false,
+          errorMessage: "",
+          materialList: action.materialList,
+        };
+      }
+
+      case actionTypes.GET_MATERIALS_BY_POID_ERROR: {
+        return {
+          ...state,
+          loading: false,
+          error: true,
+          errorMessage: action.error,
+        };
+      }
+
       default:
         return state;
     }

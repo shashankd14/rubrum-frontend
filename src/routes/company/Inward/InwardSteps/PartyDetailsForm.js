@@ -4,6 +4,8 @@ import { useIntl } from "react-intl";
 import {
   setInwardDetails,
   checkCustomerBatchNumber,
+  getPoDetails,
+  fetchMaterialsByPoID,
 } from "../../../../appRedux/actions";
 import {
   Form,
@@ -129,6 +131,9 @@ const CreatePartyDetailsForm = (props) => {
                 style={{ width: 200 }}
                 placeholder="Select a location"
                 optionFilterProp="children"
+                onSelect={(value, option) => {
+                  props.getPoDetails(value);
+                }}
                 // onChange={onChange}
                 // onFocus={onFocus}
                 // onBlur={onBlur}
@@ -151,15 +156,32 @@ const CreatePartyDetailsForm = (props) => {
             label={intl.formatMessage({ id: "inward.create.label.customerId" })}
           >
             {getFieldDecorator("customerId")(
-              <Input id="customerId" disabled />
+              <Input id="customerId" disabled style={{ width: 200 }} />
             )}
           </Form.Item>
-           <Form.Item label="PO number">
-              {getFieldDecorator('invoiceNumber', {
-                  rules: [{ required: true, message: 'Please enter PO number' }]
-              })(
-                  <Input id="invoiceNumber" />
-              )}
+          <Form.Item label="PO number">
+            {getFieldDecorator("invoiceNumber", {
+              rules: [{ required: true, message: "Please enter PO number" }],
+            })(
+              <Select
+                disabled={props.inward.disableSelection}
+                showSearch
+                placeholder="Select a PO number"
+                optionFilterProp="children"
+                onSelect={(poId, option) => props.fetchMaterialsByPoID(poId)}
+                filterOption={(input, option) =>
+                  option.props.children
+                    .toLowerCase()
+                    .indexOf(input.toLowerCase()) >= 0
+                }
+              >
+                {props.inwardStatus?.poList?.map((po) => (
+                  <Option key={po.poId} value={`${po.poId}`}>
+                    {po.poReference}
+                  </Option>
+                ))}
+              </Select>
+            )}
           </Form.Item>
           <Form.Item
             label={intl.formatMessage({
@@ -175,9 +197,7 @@ const CreatePartyDetailsForm = (props) => {
                   }),
                 },
               ],
-            })(
-              <Input />
-            )}
+            })(<Input />)}
           </Form.Item>
 
           <Form.Item
@@ -294,4 +314,6 @@ const PartyDetailsForm = Form.create({
 export default connect(mapStateToProps, {
   setInwardDetails,
   checkCustomerBatchNumber,
+  getPoDetails,
+  fetchMaterialsByPoID,
 })(PartyDetailsForm);
