@@ -114,7 +114,6 @@ const MainApp = () => {
           </Footer>
         </Content>
       </Layout>
-      <Customizer/>
     </Layout>
   )
 };

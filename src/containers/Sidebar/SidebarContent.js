@@ -269,10 +269,7 @@ useEffect(() => setOpenKeys(getOpenKeys(pathname)), [pathname]);
                   {menuLabelList.includes(sidebarMenuItems.material) && (
                     <Menu.Item key="/company/master/material">
                       <Link to="/company/master/material">
-                        <i
-                          className="icon icon-diamond"
-                          style={{ "min-width": "14px" }}
-                        />
+                        <i className="icon icon-diamond" style={{"min-width" : '14px'}} />
                         <span>
                           <IntlMessages id="sidebar.master.material" />
                         </span>
