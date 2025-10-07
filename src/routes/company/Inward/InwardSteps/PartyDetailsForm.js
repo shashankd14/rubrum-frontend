@@ -20,6 +20,7 @@ import {
 } from "antd";
 import { formItemLayout } from "../Create";
 import IntlMessages from "util/IntlMessages";
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 
 const Option = Select.Option;
 
@@ -27,6 +28,7 @@ const CreatePartyDetailsForm = (props) => {
   const { getFieldDecorator } = props.form;
   const [dataSource, setDataSource] = useState([]);
 
+  const history = useHistory();
   const intl = useIntl();
 
   useEffect(() => {
@@ -48,7 +50,7 @@ const CreatePartyDetailsForm = (props) => {
     props.form.setFieldsValue({
       purposeType: "STEEL SERVICE CENTRE",
     });
-  }, [])
+  }, []);
 
   useEffect(() => {
     if (props.party.partyList.length > 0) {
@@ -68,7 +70,7 @@ const CreatePartyDetailsForm = (props) => {
       props.inward.customerBatchNo = props.inward.customerBatchId;
     }
   }, [props.params]);
-  
+
   const handleChange = (e) => {
     props.inward.party.partyName = e;
   };
@@ -238,6 +240,13 @@ const CreatePartyDetailsForm = (props) => {
           </Form.Item>
           <Row className="gx-mt-4">
             <Col span={12} offset={4} style={{ textAlign: "center" }}>
+              <Button
+                style={{ marginLeft: 8 }}
+                onClick={() => history.goBack()}
+              >
+                <Icon type="left" />
+                Back
+              </Button>
               <Button type="primary" htmlType="submit">
                 <IntlMessages id="Forward" />
                 <Icon type="right" />
