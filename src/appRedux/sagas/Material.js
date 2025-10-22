@@ -45,10 +45,15 @@ const getHeaders = () => ({
 });
 
 function* fetchMaterialList() {
+    const body = {
+      pageNo: 1,
+      pageSize: 15,
+    };
     try {
         const fetchMaterialList =  yield fetch(`${baseUrl}api/material/list`, {
-            method: 'GET',
-            headers: getHeaders()
+            method: 'POST',
+            headers: { "Content-Type": "application/json", ...getHeaders()},
+            body: JSON.stringify(body)
         });
         if(fetchMaterialList.status === 200) {
             const fetchMaterialListResponse = yield fetchMaterialList.json();

@@ -56,7 +56,7 @@ const CategoryForm = (props) => {
       );
     });
     setDataSource(options);
-  }, [props.material.categoriesList]);
+  }, [props.material?.categoriesList]);
 
   useEffect(() => {
     if (!props.inward.materialId && props.inward.disableSelection) {
@@ -125,11 +125,13 @@ const CategoryForm = (props) => {
                       .indexOf(input.toLowerCase()) >= 0
                   }
                 >
-                  {props.inwardStatus?.materialList?.map((materialId) => (
-                    <Option key={materialId} value={materialId}>
-                      {materialId}
-                    </Option>
-                  ))}
+                  {props.inwardStatus?.materialList?.length > 0 && props.inwardStatus?.materialList?.map(
+                    (materialId) => (
+                      <Option key={materialId} value={materialId}>
+                        {materialId}
+                      </Option>
+                    )
+                  )}
                 </Select>
               )}
             </Form.Item>

@@ -438,6 +438,7 @@ function* submitInward(action) {
       moment(action.inward.invoiceDate).format("YYYY-MM-DD HH:mm:ss")
     );
     data.append("invoiceNumber", action.inward.invoiceNumber);
+    data.append("poId", action.inward.invoiceNumber);
     data.append("valueOfGoods", action.inward.valueOfGoods);
 
     //quality details
@@ -632,7 +633,7 @@ function* getMaterialsByPoID(action) {
     });
     if (fetchPOList.status === 200) {
       const fetchPOListResponse = yield fetchPOList.json();
-      yield put(fetchMaterialsByPoIDSuccess(fetchPOListResponse));
+      yield put(fetchMaterialsByPoIDSuccess(fetchPOListResponse?.data));
     } else if (fetchPOList.status === 401) {
       yield put(userSignOutSuccess());
     } else yield put(fetchMaterialsByPoIDError("error"));
