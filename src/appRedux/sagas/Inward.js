@@ -427,7 +427,7 @@ function* submitInward(action) {
 
     // invoice details
     data.append(
-      "inwardDate",
+      "receivedDate",
       moment(action.inward.receivedDate).format("YYYY-MM-DD HH:mm:ss")
     );
     data.append("batchNumber", action.inward.batchNo);
