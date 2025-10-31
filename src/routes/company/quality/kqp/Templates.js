@@ -98,11 +98,7 @@ const templateLinkListAactionColumn = {
 
   useEffect(() => {
     if (props.match) {
-        console.log(props.match)
-        console.log(location)
-        
         const params = new URLSearchParams(location.search);
-        console.log(params.get('view'));
         if(params.get('view') === 'links') {
           setTabKey("2");
         } else {

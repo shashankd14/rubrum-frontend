@@ -13,7 +13,9 @@ import SearchBox from "../../../components/SearchBox";
 import ReconcileModal from "./ReconcileModal";
 import moment from "moment";
 import IntlMessages from "../../../util/IntlMessages";
+
 const Option = Select.Option;
+
 function List(props) {
   const [sortedInfo, setSortedInfo] = useState({
     order: "descend",

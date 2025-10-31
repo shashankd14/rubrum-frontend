@@ -26,14 +26,9 @@ import {
     PDF_GENERATE_INWARD,
     PDF_GENERATE_DELIVERY,
     PDF_S3_URL,
-    GET_RECONCILE_REPORT_SUCCESS,
     GET_RECONCILE_REPORT,
-    GET_RECONCILE_REPORT_ERROR,
-    QR_Code_GENERATE_PLAN,
-    QR_GENERATE_INWARD,
     GET_PACKET_WISE_PRICE_DC_REQUEST,
     GET_PACKET_WISE_PRICE_DC_FULL_HANDLING_REQUEST,
-    COIL_NOT_FOUND,
     FETCH_INWARD_LIST_WITH_OLD_API_REQUEST,
     UPDATE_CLASSIFICATION_SLITANDCUT_BEFORE_FINISH
 } from "../../constants/ActionTypes";
@@ -929,7 +924,6 @@ function* getReconcileReportSaga(action) {
 
 function* getPacketwisePriceDCSaga(action) {
 
-    console.log('Saga: ', action);
     let req_obj ={};
     if(action.payload?.inwardListForDelivery){
         let packetsData = [];
@@ -952,7 +946,6 @@ function* getPacketwisePriceDCSaga(action) {
         }
     }
     try {
-        console.log('request: ', req_obj);
         const response = yield call(fetch, `${baseUrl}api/delivery/validatePriceMapping`, {
             method: 'POST', headers: { "Content-Type": "application/json", ...getHeaders()}, body: JSON.stringify(req_obj)
         });

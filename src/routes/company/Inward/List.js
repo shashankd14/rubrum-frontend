@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { Button, Card, Divider, Icon, Table, message } from "antd";
+import { Button, Card, Divider, Table, message } from "antd";
 import moment from "moment";
 import SearchBox from "../../../components/SearchBox";
 
@@ -12,7 +12,6 @@ import {
   resetDeleteInward,
   fetchPartyListById,
 } from "../../../appRedux/actions/Inward";
-import { onDeleteContact } from "../../../appRedux/actions";
 import {sidebarMenuItems} from "../../../constants";
 
 const inwardMenuConstants = {

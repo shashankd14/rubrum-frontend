@@ -1,10 +1,8 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import 'antd/dist/antd.css';
-import { Table, Input, Button, Form, Popconfirm, Divider } from 'antd';
-import { useHistory, withRouter } from 'react-router-dom';
-import { useLocation } from 'react-router-dom/cjs/react-router-dom.min';
-const EditableContext = React.createContext();
+import { Table, Input, Form } from 'antd';
+import { withRouter } from 'react-router-dom';
+const EditableContext = React.createContext(null);
 
 const EditableRow = ({ form, index, ...props }) => (
   <EditableContext.Provider value={form}>
@@ -17,6 +15,7 @@ const EditableFormRow = Form.create()(EditableRow);
 class EditableCell extends React.Component {
   state = {
     editing: false,
+      // this.toggleEdit = this.toggleEdit.bind(this);
   };
 
   toggleEdit = () => {
@@ -172,9 +171,9 @@ class EditableCell extends React.Component {
       </Form.Item>
     ) : (
       <div
-        className='editable-cell-value-wrap'
-        style={{ paddingRight: 24 }}
-        onClick={this.toggleEdit}
+        className="editable-cell-value-wrap"
+        style={{ paddingRight: 24, width: '100px', height: '50px' }}
+        onClick={this.toggleEdit.bind(this)}
         onFocus={this.handleFocus}
         tabIndex={0}
       >
@@ -215,11 +214,10 @@ class EditableTableQR extends React.Component {
       dataSource: this.props.dataSource,
       count: this.props.dataSource.length,
       toleranceData: this.props.toleranceData,
-      thicknessSlit: this.props.thicknessSlit
+      thicknessSlit: this.props.thicknessSlit,
     };
-    console.log('properties :', this.props);
     this.columns.push({
-      title: 'operation',
+      title: 'Operation',
       dataIndex: 'operation',
       render: (text, record) =>
         this.state.dataSource.length >= 1 ? (
@@ -246,7 +244,6 @@ class EditableTableQR extends React.Component {
   handleEdit = (key) => {
     const { history } = this.props;
     history.push('/company/quality/templates');
-    console.log(`Editing record with key: ${key}`);
   };
 
   handleAdd = () => {

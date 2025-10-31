@@ -1,16 +1,17 @@
 import React, { useEffect } from "react";
 import asyncComponent from "util/asyncComponent";
-import {Redirect, Route, Switch} from "react-router-dom";
+import { Route, Switch } from "react-router-dom";
 
-const QualityTemplateCreate = ({match}) => {
-    useEffect(() => {
-        console.log(match)
-        // console.log(match.path+(match.params?.hasOwnProperty("id") ? "/" + match.params.id : ""))
-    }, [])
-    return (
+const QualityTemplateCreate = ({ match }) => {
+  return (
     <Switch>
-        <Route exact path={`${match.url}`} component={asyncComponent(() => import('./CreateTemplate'))}/>
+      <Route
+        exact
+        path={`${match.url}`}
+        component={asyncComponent(() => import("./CreateTemplate"))}
+      />
     </Switch>
-)};
+  );
+};
 
 export default QualityTemplateCreate;

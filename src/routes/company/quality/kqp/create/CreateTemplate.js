@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { connect } from 'react-redux';
 import { Button, Card, Input, Row, Select } from 'antd'
-import { useIntl } from "react-intl";
 import IntlMessages from '../../../../../util/IntlMessages'
-import { QUALITY_TEMPLATE_ACTIONS, QUALITY_TEMPLATE_COLUMNS, QUALITY_LINKED_TEMPLATE_ACTIONS, STAGES } from "../../../../../constants/quality/ComponentConstants";
-import { Label } from "recharts";
+import { STAGES } from "../../../../../constants/quality/ComponentConstants";
 import {
     saveKqp,
     getKqpById,
@@ -16,8 +14,6 @@ import TextArea from "antd/lib/input/TextArea";
 
 const CreateTemplate = (props) => {
 
-    const intl = useIntl();
-
     const [kqpName, setKqpName] = useState("");
     const [kqpNameErr, setKqpNameErr] = useState(false);
     const [stageName, setStageName] = useState("");
@@ -26,13 +22,11 @@ const CreateTemplate = (props) => {
     const [action, setAction] = useState("create");
     const [isDisabled, setIsDisabled] = useState(false);
 
-
     const Option = Select.Option;
 
     useEffect(() => {
         if (props.match) {
             const urlPaths = props.match.url.split('/')
-            console.log(urlPaths)
             if (urlPaths[urlPaths.length - 2] == 'view' || urlPaths[urlPaths.length - 2] == 'edit') {
                 setAction(urlPaths[urlPaths.length - 2])
                 props.getKqpById(urlPaths[urlPaths.length - 1])
@@ -44,7 +38,6 @@ const CreateTemplate = (props) => {
 
     useEffect(() => {
         if (!props.templateDetails.loading && !props.templateDetails.error && props.templateDetails.operation === 'kqpById') {
-            console.log(props.templateDetails)
             setKqpName(props.templateDetails.data.kqpName);
             setStageName(props.templateDetails.data.stageName?.toUpperCase())
             setKqpDescription(props.templateDetails.data.kqpDesc)
