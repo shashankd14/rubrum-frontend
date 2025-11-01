@@ -30,10 +30,6 @@ const QualityDetailsForm = (props) => {
     });
   };
 
-  const handleChange = (e) => {
-    props.inward.materialGrade.gradeName = e;
-  };
-
   useEffect(() => {
     if (props.params !== "") {
       const { Option } = AutoComplete;
