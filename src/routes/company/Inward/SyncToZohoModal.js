@@ -8,7 +8,8 @@ const SyncToZohoModal = (props) => {
   const inwardState = useSelector((state) => state.inward);
 
   useEffect(() => {
-    dispatch(getInwardsAgainstPo(props.poInvoiceNumber));
+    if (props.poInvoiceNumber)
+      dispatch(getInwardsAgainstPo(props.poInvoiceNumber));
   }, [props.poInvoiceNumber]);
 
   useEffect(() => {

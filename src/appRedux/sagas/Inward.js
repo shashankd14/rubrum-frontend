@@ -446,8 +446,8 @@ function* submitInward(action) {
       "invoiceDate",
       moment(action.inward.invoiceDate).format("YYYY-MM-DD HH:mm:ss")
     );
-    data.append("invoiceNumber", action.inward.invoiceNumber);
-    data.append("poId", action.inward.invoiceNumber);
+    data.append("invoiceNumber", action.inward.invoiceNumber?.key);
+    data.append("poId", action.inward.invoiceNumber?.key);
     data.append("valueOfGoods", action.inward.valueOfGoods);
 
     //quality details
@@ -457,7 +457,7 @@ function* submitInward(action) {
     data.append(
       "mmId",
       action.inward.materialId !== undefined
-        ? action.inward.materialId
+        ? action.inward.materialId?.label
         : action.inward.mmId
     );
 

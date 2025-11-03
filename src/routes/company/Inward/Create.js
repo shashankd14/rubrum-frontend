@@ -172,10 +172,7 @@ const CreateForm = (props) => {
           <Step title="Material" onClick={() => setCurrentStep(1)} />
           <Step title="Invoice" onClick={() => setCurrentStep(2)} />
           <Step title="Quality" onClick={() => setCurrentStep(3)} />
-          <Step
-            title="Summary"
-            onClick={() => setCurrentStep(4)}
-          />
+          <Step title="Summary" onClick={() => setCurrentStep(4)} />
         </Steps>
         <Row className="gx-justify-content-center">
           {steps.length > 0 && steps[currentStep].content}
@@ -277,7 +274,7 @@ const Create = Form.create({
         value: props.match.params
           ? props.inward.inward.fLength
           : props.inward.inward.length
-          ? props.inward.inward.length
+          ? props.inward.inward.length  
           : "",
       }),
     };

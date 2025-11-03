@@ -30,6 +30,16 @@ const List = (props) => {
       },
     },
     {
+      title: "Sync Remarks",
+      dataIndex: "poInvSyncRemarks",
+      key: "poInvSyncRemarks",
+      render: (text, record) => {
+        return record.poInvSyncRemarks
+          ? toPascalCase(record.poInvSyncRemarks)
+          : "-";
+      },
+    },
+    {
       title: "Sync",
       dataIndex: "",
       key: "",

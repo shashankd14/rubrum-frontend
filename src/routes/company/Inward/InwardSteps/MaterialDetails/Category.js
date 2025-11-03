@@ -173,7 +173,7 @@ const CategoryForm = (props) => {
                   placeholder="Select a material"
                   optionFilterProp="children"
                   onSelect={(materialId, option) =>
-                    props.searchByMaterialId(materialId)
+                    props.searchByMaterialId(materialId?.key)
                   }
                   filterOption={(input, option) =>
                     option.props.children
@@ -183,7 +183,11 @@ const CategoryForm = (props) => {
                 >
                   {props.inwardStatus?.materialList?.length > 0 &&
                     props.inwardStatus?.materialList?.map((materialId) => (
-                      <Option key={materialId} value={materialId}>
+                      <Option
+                        key={materialId}
+                        value={materialId}
+                        label={materialId}
+                      >
                         {materialId}
                       </Option>
                     ))}

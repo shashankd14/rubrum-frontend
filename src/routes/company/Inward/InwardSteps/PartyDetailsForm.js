@@ -190,7 +190,8 @@ const CreatePartyDetailsForm = (props) => {
                 placeholder="Select a PO number"
                 optionFilterProp="children"
                 showArrow={true}
-                onSelect={(poId, option) => props.fetchMaterialsByPoID(poId)}
+                onSelect={(poId, option) => {
+                  props.fetchMaterialsByPoID(poId?.key)}}
                 filterOption={(input, option) =>
                   option.props.children
                     .toLowerCase()

@@ -106,7 +106,10 @@ const InwardEntrySummary = (props) => {
                       <p>Location Id : {props.inward.customerId}</p>
                     )}
                     {props.inward.invoiceNumber && (
-                      <p>PO number : {props.inward.invoiceNumber}</p>
+                      <p>
+                        PO number :{" "}
+                        {props.inward.invoiceNumber?.label}
+                      </p>
                     )}
                     {props.inward.customerBatchNo && (
                       <p>SC inward id : {props.inward.customerBatchNo}</p>

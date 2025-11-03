@@ -143,31 +143,31 @@ const InvoiceDetailsForm = props => {
           <Card title="Coil Details" style={{ width: 300 }}>
             <p>
               Location Name :{" "}
-              {props.params !== "" && props.inward.party
-                ? props.inward.party?.partyName
-                : partyName(props.party.partyList)}
+              {props.params !== "" && props?.inward?.party
+                ? props?.inward?.party?.partyName
+                : partyName(props?.party?.partyList)}
             </p>
             {props.inward.customerId && (
-              <p>Location Id : {props.inward.customerId}</p>
+              <p>Location Id : {props?.inward?.customerId}</p>
             )}
             {props.inward.invoiceNumber && (
-              <p>PO number : {props.inward.invoiceNumber}</p>
+              <p>PO number : {props?.inward?.invoiceNumber?.label}</p>
             )}
             {props.inward.customerBatchNo && (
-              <p>SC inward id : {props.inward.customerBatchNo}</p>
+              <p>SC inward id : {props?.inward?.customerBatchNo}</p>
             )}
             {props.inward.customerInvoiceNo && (
-              <p>Purchase Invoice No : {props.inward.customerInvoiceNo}</p>
+              <p>Purchase Invoice No : {props?.inward?.customerInvoiceNo}</p>
             )}
             {props.inward.purposeType && (
-              <p>Purpose Type : {props.inward.purposeType}</p>
+              <p>Purpose Type : {props?.inward?.purposeType}</p>
             )}
-            <p>Batch no. : {props.inward.coilNumber}</p>
+            <p>Batch no. : {props?.inward?.coilNumber}</p>
             <p>
               Material Description :{" "}
               {props.params !== ""
                 ? props.inward?.material?.description
-                : props.inward.description}
+                : props?.inward?.description}
             </p>
             <p>
               Dimensions : {props.params !== "" ? dimensionEdit : dimension}
@@ -175,10 +175,10 @@ const InvoiceDetailsForm = props => {
             <p>
               Net Weight :{" "}
               {props.params !== ""
-                ? props.inward.fpresent
-                : props.inward.netWeight}
+                ? props?.inward?.fpresent
+                : props?.inward?.netWeight}
             </p>
-            <p>Gross Weight : {props.inward.grossWeight}</p>
+            <p>Gross Weight : {props?.inward?.grossWeight}</p>
           </Card>
         </Col>
       </>
