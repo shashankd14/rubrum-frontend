@@ -16,6 +16,7 @@ class EditableCell extends React.Component {
   state = {
     editing: false,
       // this.toggleEdit = this.toggleEdit.bind(this);
+      // this.toggleEdit = this.toggleEdit.bind(this);
   };
 
   toggleEdit = () => {
