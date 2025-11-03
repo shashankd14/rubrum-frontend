@@ -332,7 +332,7 @@ const SlitAndCutForm = (props) => {
   );
   const gridCardStyle = {
     width: "50%",
-    height: 300,
+    // height: 300,
     textAlign: "left",
     display: "grid",
     paddingRight: 25,
@@ -340,7 +340,7 @@ const SlitAndCutForm = (props) => {
 
   const gridStyle = {
     width: "100%",
-    height: 350,
+    // height: 350,
     textAlign: "left",
   };
 
