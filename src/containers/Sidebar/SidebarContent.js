@@ -148,7 +148,10 @@ useEffect(() => setOpenKeys(getOpenKeys(pathname)), [pathname]);
                   {menuLabelList.includes(sidebarMenuItems.material) && (
                     <Menu.Item key="/company/master/material">
                       <Link to="/company/master/material">
-                        <i className="icon icon-diamond" style={{"min-width" : '14px'}} />
+                        <i
+                          className="icon icon-diamond"
+                          style={{ "min-width": "14px" }}
+                        />
                         <span>
                           <IntlMessages id="sidebar.master.material" />
                         </span>
@@ -272,6 +275,16 @@ useEffect(() => setOpenKeys(getOpenKeys(pathname)), [pathname]);
                     </Link>
                   </Menu.Item>
                 )}
+                {true && (
+                  <Menu.Item key="/company/purchase-invoices">
+                    <Link to="/company/purchase-invoices">
+                      <i className="icon icon-product-list" />
+                      <span>
+                        <IntlMessages id="sidebar.company.purchaseInvoices" />
+                      </span>
+                    </Link>
+                  </Menu.Item>
+                )}
                 {menuLabelList.includes(sidebarMenuItems.labelPrint) && (
                   <Menu.Item key="/company/labelPrint">
                     <Link to="/company/labelPrint">
@@ -343,12 +356,16 @@ useEffect(() => setOpenKeys(getOpenKeys(pathname)), [pathname]);
                     </Link>
                   </Menu.Item>
                 )}
-                {(true) && <Menu.Item key="company/salesOrderModule">
-                  <Link to="/company/sales-orderModule">
-                    <i className="icon icon-crypto"/>
-                    <span><IntlMessages id="sidebar.company.salesOrder"/></span>
-                  </Link>
-                </Menu.Item>}
+                {true && (
+                  <Menu.Item key="company/salesOrderModule">
+                    <Link to="/company/sales-orderModule">
+                      <i className="icon icon-crypto" />
+                      <span>
+                        <IntlMessages id="sidebar.company.salesOrder" />
+                      </span>
+                    </Link>
+                  </Menu.Item>
+                )}
               </MenuItemGroup>
             </MenuItemGroup>
           </Menu>

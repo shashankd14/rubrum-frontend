@@ -89,6 +89,7 @@ import {
   GET_MATERIALS_BY_POID_SUCCESS,
   GET_MATERIALS_BY_POID_ERROR,
   UPDATE_INSTRUCTION_POSITIVE_TOLERANCE,
+  SAVE_TEMPORARY,
 } from "../../constants/ActionTypes";
 import * as actionTypes from "../../constants/ActionTypes";
 
@@ -653,3 +654,36 @@ export const errorInwardMaterialDetails = (error) => ({
   error
 });
 
+export const saveTemporary = () => ({
+  type: actionTypes.SAVE_TEMPORARY,
+});
+
+export const syncToZoho = (payload) => ({
+  type: actionTypes.REQUEST_SYNC_TO_ZOHO,
+  payload,
+});
+
+export const syncToZohoSuccess = (payload) => ({
+  type: actionTypes.REQUEST_SYNC_TO_ZOHO_SUCCESS,
+  payload,
+});
+
+export const syncToZohoError = (error) => ({
+  type: actionTypes.REQUEST_SYNC_TO_ZOHO_ERROR,
+  error,
+});
+
+export const getInwardsAgainstPo = (poInvoiceNo) => ({
+  type: actionTypes.INWARDS_AGAINST_PO_REQUEST,
+  poInvoiceNo,
+});
+
+export const getInwardsAgainstPoSuccess = (payload) => ({
+  type: actionTypes.INWARDS_AGAINST_PO_REQUEST_SUCCESS,
+  payload,
+});
+
+export const getInwardsAgainstPoError = (error) => ({
+  type: actionTypes.INWARDS_AGAINST_PO_REQUEST_ERROR,
+  error,
+});

@@ -19,6 +19,7 @@ import LabelPrint from './LabelPrint';
 import YielsLossRatio from './YielsLossRatio';
 import SalesOrder from './SalesOrder';
 import ProductInfo from './ProductInfo';
+import PurchaseInvoices from "./PurchaseInvoices";
 
 const createRootReducer = (history) => combineReducers({
   router: connectRouter(history),
@@ -40,7 +41,8 @@ const createRootReducer = (history) => combineReducers({
   labelPrint: LabelPrint,
   yieldLossRatio: YielsLossRatio,
   salesOrder: SalesOrder,
-  productInfo: ProductInfo
+  productInfo: ProductInfo,
+  purchaseInvoices: PurchaseInvoices,
 });
 
 export default createRootReducer

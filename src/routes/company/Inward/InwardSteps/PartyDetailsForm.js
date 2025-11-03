@@ -27,6 +27,7 @@ const Option = Select.Option;
 const CreatePartyDetailsForm = (props) => {
   const { getFieldDecorator } = props.form;
   const [dataSource, setDataSource] = useState([]);
+  const [value, setValue] = useState("");
 
   const history = useHistory();
   const intl = useIntl();
@@ -49,6 +50,15 @@ const CreatePartyDetailsForm = (props) => {
   useEffect(() => {
     props.form.setFieldsValue({
       purposeType: "STEEL SERVICE CENTRE",
+      customerInvoiceNo: props.inwardStatus.saveTemporary
+        ? props.inwardStatus.customerInvoiceNo
+        : props.inward.customerInvoiceNo,
+      invoiceNumber: props.inwardStatus.saveTemporary
+        ? props.inwardStatus.invoiceNumber
+        : props.inward.invoiceNumber,
+      partyName: props.inwardStatus.saveTemporary
+        ? props.inwardStatus.partyName
+        : props.inward.partyName,
     });
   }, []);
 
@@ -166,10 +176,20 @@ const CreatePartyDetailsForm = (props) => {
               rules: [{ required: true, message: "Please enter PO number" }],
             })(
               <Select
-                disabled={props.inward.disableSelection}
-                showSearch
+                labelInValue
+                mode="combobox"
+                optionLabelProp="label"
+                disabled={
+                  props.inward.disableSelection ||
+                  props.inwardStatus.saveTemporary
+                }
+                allowClear={true}
+                value={value}
+                notFoundContent={null}
+                showSearch={true}
                 placeholder="Select a PO number"
                 optionFilterProp="children"
+                showArrow={true}
                 onSelect={(poId, option) => props.fetchMaterialsByPoID(poId)}
                 filterOption={(input, option) =>
                   option.props.children
@@ -178,7 +198,11 @@ const CreatePartyDetailsForm = (props) => {
                 }
               >
                 {props.inwardStatus?.poList?.map((po) => (
-                  <Option key={po.poId} value={`${po.poId}`}>
+                  <Option
+                    key={po.poId}
+                    value={`${po.poId}`}
+                    label={po.poReference}
+                  >
                     {po.poReference}
                   </Option>
                 ))}
@@ -216,7 +240,12 @@ const CreatePartyDetailsForm = (props) => {
                   }),
                 },
               ],
-            })(<Input id="customerInvoiceNo" />)}
+            })(
+              <Input
+                id="customerInvoiceNo"
+                disabled={props.inwardStatus.saveTemporary}
+              />
+            )}
           </Form.Item>
 
           <Form.Item label="Purpose Type">

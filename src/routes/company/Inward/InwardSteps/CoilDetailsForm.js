@@ -10,14 +10,13 @@ const CoilDetailsForm = (props) => {
     const {getFieldDecorator} = props.form;
     const [dataSource, setDataSource] = useState([]);
     const [approxLength, setLength] = useState(0);
-
     
     const handleSubmit = e => {
         e.preventDefault();
 
         props.form.validateFields((err, values) => {
             if (!err) {
-                let length = props.params!== "" ?(parseFloat(parseFloat(props.inward.fpresent)/(parseFloat(props.inward.fThickness)* METAL_DENSITY *(props.inward.fWidth/1000))).toFixed(4))*1000:(parseFloat(parseFloat(props.inward.netWeight)/(parseFloat(props.inward.thickness)* METAL_DENSITY *(props.inward.width/1000))).toFixed(4))*1000;
+                let length = props.params!== "" ? (parseFloat(parseFloat(props.inward.fpresent)/(parseFloat(props.inward.fThickness)* METAL_DENSITY *(props.inward.fWidth/1000))).toFixed(4))*1000:(parseFloat(parseFloat(props.inward.netWeight)/(parseFloat(props.inward.thickness)* METAL_DENSITY *(props.inward.width/1000))).toFixed(4))*1000;
                 let inward = props.inward;
                 if(props.params!== ""){
                     inward.fLength = length;
@@ -31,7 +30,7 @@ const CoilDetailsForm = (props) => {
         });
     };
     const handleChange = (e,path) =>{
-        if(path === 'material.description'){
+        if(path === 'material.description') {
         props.inward?.material?.description = e.target.value;
         } else if (path === 'fWidth'){
             props.inward.fWidth = e.target.value;

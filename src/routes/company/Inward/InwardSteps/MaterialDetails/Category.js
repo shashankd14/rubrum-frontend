@@ -162,8 +162,14 @@ const CategoryForm = (props) => {
                 ],
               })(
                 <Select
+                  mode="combobox"
+                  optionLabelProp="label"
+                  labelInValue={true}
+                  notFoundContent={null}
+                  showSearch={true}
+                  showArrow={true}
+                  allowClear={true}
                   disabled={props.inward.disableSelection}
-                  showSearch
                   placeholder="Select a material"
                   optionFilterProp="children"
                   onSelect={(materialId, option) =>

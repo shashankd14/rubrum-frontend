@@ -2,8 +2,26 @@ import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import moment from "moment";
 
-import {submitInwardEntry, resetInwardForm,updateInward, pdfGenerateInward, QrGenerateInward} from "../../../../appRedux/actions";
-import {Button, Card, Col, Icon, message, Row, Spin} from "antd";
+import {
+  submitInwardEntry,
+  resetInwardForm,
+  updateInward,
+  pdfGenerateInward,
+  QrGenerateInward,
+  saveTemporary,
+  syncToZoho,
+  getInwardsAgainstPo,
+} from "../../../../appRedux/actions";
+import {
+  Button,
+  Card,
+  Col,
+  Icon,
+  message,
+  Row,
+  Spin,
+  
+} from "antd";
 import { withRouter } from 'react-router-dom';
 
 import {APPLICATION_DATE_FORMAT} from '../../../../constants/index';
@@ -11,7 +29,6 @@ import {APPLICATION_DATE_FORMAT} from '../../../../constants/index';
 const InwardEntrySummary = (props) => {
     const [generate, setGenerate]= useState(true);
     const [payload, setPayload]= useState({});
-    const [showCreateModal, setShowCreateModal] = useState(false);
 
     useEffect(() => {
         if(props.inwardUpdateSuccess) {
@@ -23,10 +40,6 @@ const InwardEntrySummary = (props) => {
                 },
                 type:'inward'
             });
-           // setTimeout(() => {
-            //    props.history.push('/company/inward/list');
-            //}, 2000);
-           // props.resetInwardForm();
         }
     }, [props.inwardUpdateSuccess]);
 
@@ -39,6 +52,12 @@ const InwardEntrySummary = (props) => {
                 },
                 type:'inward'
             });
+            message.success('Inward entry has been submitted successfully', 2);
+            props.saveTemporary();
+            props.resetInwardForm();
+            props.updateStep(0);
+            console.log("props.inwardSubmitSuccess", props);
+            props.setShowSyncToZoho(true);
         }
     }, [props.inwardSubmitSuccess]);
     
@@ -210,12 +229,10 @@ const InwardEntrySummary = (props) => {
                 disabled={props.inwardSubmitSuccess}
                 onClick={(e) => {
                   e.preventDefault();
-                  props.params !== ""
-                    ? props.updateInward(props.inward)
-                    : props.submitInwardEntry(props.inward);
+                  props.submitInwardEntry(props.inward);
                 }}
               >
-                Submit <Icon type="right" />
+                Save <Icon type="right" />
               </Button>
               <Button
                 type="primary"
@@ -246,10 +263,15 @@ const mapStateToProps = state => ({
     party: state.party,
 });
 
-export default withRouter(connect(mapStateToProps, {
+export default withRouter(
+  connect(mapStateToProps, {
     submitInwardEntry,
     resetInwardForm,
     updateInward,
     pdfGenerateInward,
-    QrGenerateInward
-})(InwardEntrySummary));
+    QrGenerateInward,
+    saveTemporary,
+    syncToZoho,
+    getInwardsAgainstPo,
+  })(InwardEntrySummary)
+);

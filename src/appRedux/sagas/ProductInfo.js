@@ -78,7 +78,7 @@ function* fetchProducts(action) {
 function* fetchProductsList(action) {
   const body = {
     pageNo: 1,
-    pageSize: 1500,
+    pageSize: 15,
   };
   try {
     const fetchPartyList = yield fetch(`${baseUrl}api/material/product`, {
@@ -123,7 +123,7 @@ function* fetchProductForms(action) {
 function* fetchProductGradesList(action) {
   const body = {
     pageNo: 1,
-    pageSize: 1000,
+    pageSize: 10,
     productId: action.productId,
   };
   try {

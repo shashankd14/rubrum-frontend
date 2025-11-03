@@ -83,6 +83,7 @@ import {
   UPDATE_INSTRUCTION_POSITIVE_TOLERANCE,
 } from "../../constants/ActionTypes";
 import * as actionTypes from "../../constants/ActionTypes";
+import { syncToZoho } from "../actions";
 
 const INIT_STATE = {
     inwardList: [],
@@ -95,6 +96,7 @@ const INIT_STATE = {
     success: false,
     error: false,
     inward: {},
+    saveTemporary: false,
     inwardEntry:{},
     inwardSubmitLoading: false,
     inwardSubmitSuccess: false,
@@ -1013,7 +1015,65 @@ export default (state = INIT_STATE, action) => {
           errorMessage: action.error,
         };
       }
-
+      case actionTypes.SAVE_TEMPORARY: {
+        return {
+          ...state,
+          saveTemporary: true,
+          invoiceNumber: state.inward.invoiceNumber,
+          customerInvoiceNo: state.inward.customerInvoiceNo,
+          partyName: state.inward.partyName,
+        };
+      }
+      case actionTypes.REQUEST_SYNC_TO_ZOHO: {
+        return {
+          ...state,
+          syncToZohoLoading: true,
+          syncToZohoSuccess: false,
+          syncToZohoError: false,
+        };
+      }
+      case actionTypes.REQUEST_SYNC_TO_ZOHO_SUCCESS: {
+        return {
+          ...state,
+          syncToZohoLoading: false,
+          syncToZohoSuccess: true,
+          syncToZohoError: false,
+        };
+      }
+      case actionTypes.REQUEST_SYNC_TO_ZOHO_ERROR: {
+        return {
+          ...state,
+          syncToZohoLoading: false,
+          syncToZohoSuccess: false,
+          syncToZohoError: true,
+          syncToZohoErrorMessage: action.error,
+        };
+      }
+      case actionTypes.INWARDS_AGAINST_PO_REQUEST: {
+        return {
+          ...state,
+          inwardsAgainstPoLoading: true,
+          inwardsAgainstPoSuccess: false,
+          inwardsAgainstPoError: false,
+        };
+      }
+      case actionTypes.INWARDS_AGAINST_PO_REQUEST_SUCCESS: {
+        return {
+          ...state,
+          inwardsAgainstPoLoading: false,
+          inwardsAgainstPoSuccess: true,
+          inwardsAgainstPoError: false,
+          inwardsAgainstPoList: action.payload,
+        };
+      }
+      case actionTypes.INWARDS_AGAINST_PO_REQUEST_ERROR: {
+        return {
+          ...state,
+          inwardsAgainstPoLoading: false,
+          inwardsAgainstPoSuccess: false,
+          inwardsAgainstPoError: true,
+        };
+      } 
       default:
         return state;
     }
