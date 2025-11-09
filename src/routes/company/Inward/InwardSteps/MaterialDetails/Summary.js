@@ -1,7 +1,6 @@
 import { Button, Col, Icon, Row, Descriptions, Card } from "antd";
 import { connect } from "react-redux";
-import React, { useEffect } from "react";
-import ProductInfo from "./ProductInfo";
+import React from "react";
 import {
   setInwardDetails,
   getRefinedProducts
@@ -28,7 +27,6 @@ const Summary = (props) => {
         <Descriptions.Item label="Product Type">{productType}</Descriptions.Item>
         <Descriptions.Item label="HSN">{props.productInfo?.refinedProducts?.length > 0 && !hsn ? props?.productInfo?.refinedProducts[0]?.hsn : hsn}</Descriptions.Item>
         <Descriptions.Item label="Brand">{brandName}</Descriptions.Item>
-        <Descriptions.Item label="Unit of measure">{uom}</Descriptions.Item>
         <Descriptions.Item label="Form">{form}</Descriptions.Item>
         <Descriptions.Item label="Grade">{grade}</Descriptions.Item>
         <Descriptions.Item label="Sub grade">{subGradeName}</Descriptions.Item>
