@@ -89,7 +89,6 @@ import {
   GET_MATERIALS_BY_POID_SUCCESS,
   GET_MATERIALS_BY_POID_ERROR,
   UPDATE_INSTRUCTION_POSITIVE_TOLERANCE,
-  SAVE_TEMPORARY,
 } from "../../constants/ActionTypes";
 import * as actionTypes from "../../constants/ActionTypes";
 
@@ -654,9 +653,6 @@ export const errorInwardMaterialDetails = (error) => ({
   error
 });
 
-export const saveTemporary = () => ({
-  type: actionTypes.SAVE_TEMPORARY,
-});
 
 export const syncToZoho = (payload) => ({
   type: actionTypes.REQUEST_SYNC_TO_ZOHO,

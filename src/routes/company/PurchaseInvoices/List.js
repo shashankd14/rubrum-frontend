@@ -3,7 +3,7 @@ import { fetchPurchaseInvoices } from "../../../appRedux/actions";
 import IntlMessages from "../../../util/IntlMessages";
 import { Table, Card } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import { toPascalCase } from "util/Common";
+import { toPascalCase, capitalizeFirstLetter } from "util/Common";
 import SyncToZohoModal from "../../company/Inward/SyncToZohoModal";
 
 const List = (props) => {
@@ -35,7 +35,7 @@ const List = (props) => {
       key: "poInvSyncRemarks",
       render: (text, record) => {
         return record.poInvSyncRemarks
-          ? toPascalCase(record.poInvSyncRemarks)
+          ? capitalizeFirstLetter(JSON.parse(record.poInvSyncRemarks).message)
           : "-";
       },
     },

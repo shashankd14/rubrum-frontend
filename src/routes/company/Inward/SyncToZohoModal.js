@@ -31,7 +31,7 @@ const SyncToZohoModal = (props) => {
 
   return (
     <Modal
-      title="Sync To Zoho - Inwards Against PO"
+      title="Sync To Zoho - inwards against invoices"
       visible={props.showSyncModal}
       onOk={() => {
         dispatch(syncToZoho(props.poInvoiceNumber));

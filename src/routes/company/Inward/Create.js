@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Card, Form, Steps, Row, Button } from "antd";
+import { Card, Form, Steps, Row, Button, Dropdown, Icon, Menu } from "antd";
 import { connect } from "react-redux";
 import {
   resetInwardForm,
@@ -10,6 +10,7 @@ import {
   searchByMaterialId,
   syncToZoho,
   getInwardsAgainstPo,
+  pdfGenerateInward,
 } from "../../../appRedux/actions";
 
 import PartyDetailsForm from "./InwardSteps/PartyDetailsForm";
@@ -33,7 +34,6 @@ export const formItemLayout = {
 };
 
 const { Step } = Steps;
-
 const CreateForm = (props) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [steps, setSteps] = useState([]);
@@ -42,8 +42,35 @@ const CreateForm = (props) => {
 
   useEffect(() => {
     props.fetchMaterialList();
-    props.fetchPartyList();
+    // props.fetchPartyList();
   }, []);
+
+  const menu = (
+    <Menu>
+      <Menu.Item key="1" onClick={() => setShowSyncModal(true)}>
+        Sync to Zoho
+      </Menu.Item>
+      {currentStep === 4 && <Menu.Item key="2" onClick={() => {
+        props.resetInwardForm();
+        setCurrentStep(0);
+      }}>
+        Add more
+      </Menu.Item>}
+      {currentStep === 4 && <Menu.Item
+        key="3"
+        onClick={() => {
+          props.pdfGenerateInward({
+            payloadObj: {
+              inwardId: props.inward.submitInward,
+            },
+            type: "inward",
+          });
+        }}
+      >
+        Generate PDF & QR
+      </Menu.Item>}
+    </Menu>
+  );
 
   useEffect(() => {
     const steps = [
@@ -152,16 +179,12 @@ const CreateForm = (props) => {
         className="gx-card"
         title="Inward Entry"
         extra={
-          showSyncToZoho ? (
-            <Button
-              type="primary"
-              onClick={(e) => {
-                e.preventDefault();
-                setShowSyncModal(true);
-              }}
-            >
-              Sync to Zoho
-            </Button>
+          props.inward.inwardSubmitSuccess ? (
+            <Dropdown overlay={menu}>
+              <Button>
+                Actions <Icon type="down" />
+              </Button>
+            </Dropdown>
           ) : (
             <></>
           )
@@ -274,7 +297,7 @@ const Create = Form.create({
         value: props.match.params
           ? props.inward.inward.fLength
           : props.inward.inward.length
-          ? props.inward.inward.length  
+          ? props.inward.inward.length
           : "",
       }),
     };
@@ -293,4 +316,5 @@ export default connect(mapStateToProps, {
   resetInwardForm,
   syncToZoho,
   getInwardsAgainstPo,
+  pdfGenerateInward,
 })(Create);

@@ -8,7 +8,6 @@ import {
   updateInward,
   pdfGenerateInward,
   QrGenerateInward,
-  saveTemporary,
   syncToZoho,
   getInwardsAgainstPo,
 } from "../../../../appRedux/actions";
@@ -27,51 +26,23 @@ import { withRouter } from 'react-router-dom';
 import {APPLICATION_DATE_FORMAT} from '../../../../constants/index';
 
 const InwardEntrySummary = (props) => {
-    const [generate, setGenerate]= useState(true);
-    const [payload, setPayload]= useState({});
-
-    useEffect(() => {
-        if(props.inwardUpdateSuccess) {
-            message.success('Inward entry has been updated successfully', 2);
-            setGenerate(false)
-            setPayload({
-                payloadObj:{
-                    inwardId: props.inward?.inwardEntryId
-                },
-                type:'inward'
-            });
-        }
-    }, [props.inwardUpdateSuccess]);
-
+    
     useEffect(() => {
         if(props.inwardSubmitSuccess) {
-            setGenerate(false)
-            setPayload({
-                payloadObj:{
-                    inwardId: props.inwardObject.submitInward
-                },
-                type:'inward'
-            });
+            // setPayload({
+            //     payloadObj:{
+            //         inwardId: props.inwardObject.submitInward
+            //     },
+            //     type:'inward'
+            // });
             message.success('Inward entry has been submitted successfully', 2);
-            props.saveTemporary();
-            props.resetInwardForm();
-            props.updateStep(0);
-            console.log("props.inwardSubmitSuccess", props);
-            props.setShowSyncToZoho(true);
+            // props.saveTemporary();
+            // props.resetInwardForm();
+            // props.updateStep(0);
+            // props.setShowSyncToZoho(true);
         }
     }, [props.inwardSubmitSuccess]);
     
-    useEffect(() => {
-        if(props.inwardObject.pdfSuccess) {
-           
-            message.success('Inward Saved & PDF generated successfully', 2);
-            setTimeout(() => {
-                props.history.push('list');
-            }, 2000);
-            props.resetInwardForm();
-        }
-    }, [props.inwardObject.pdfSuccess]);
-
     const partyName =(partyList) => {
         
        partyList = partyList.find(item => item.nPartyId===Number(props.inward.partyName))
@@ -237,7 +208,7 @@ const InwardEntrySummary = (props) => {
               >
                 Save <Icon type="right" />
               </Button>
-              <Button
+              {/* <Button
                 type="primary"
                 onClick={(e) => {
                   e.preventDefault();
@@ -246,7 +217,7 @@ const InwardEntrySummary = (props) => {
                 }}
               >
                 Generate PDF & QR
-              </Button>
+              </Button> */}
             </Col>
           </>
         )}
@@ -273,7 +244,6 @@ export default withRouter(
     updateInward,
     pdfGenerateInward,
     QrGenerateInward,
-    saveTemporary,
     syncToZoho,
     getInwardsAgainstPo,
   })(InwardEntrySummary)
