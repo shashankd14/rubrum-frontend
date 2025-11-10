@@ -405,10 +405,9 @@ const Plan = (props) => {
                                                 <Col lg={7} md={7} sm={24} xs={24} className="gx-align-self-center gx-branch-lvl2">
                                                     <>
                                                         <Col lg={24} md={24} sm={24} xs={24} className="gx-align-self-center plan-dl-box">
-                                                            <Card key={`${props.inward.plan.coilNumber}${instruction.instructionId}`} className="cardLevel2InsideDiv gx-delivery-single" size="small">
-                                                                <img style={{ position: "absolute", right: "10.35px" }} src={require("assets/images/inward/info_icon.svg")} alt="Packaging" title="Packaging" />
-                                                                <div style={{ marginLeft: "8px" }}> <span class="inline-packaging-lbl"><IntlMessages id="partywise.plan.packaging" /></span>
-                                                                    <div>
+                                                            <Card style={{backgroundColor: '#003366', width: '250px'}} key={`${props.inward.plan.coilNumber}${instruction.instructionId}`} className="cardLevel2InsideDiv gx-delivery-single" size="small">
+                                                                <div style={{ marginLeft: "8px" }}> <h2 style={{color: 'white'}} class="inline-packaging-lbl"><IntlMessages id="partywise.plan.packaging" /></h2>
+                                                                    <div style={{ marginTop: '15px'}} >
                                                                         <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.deliveryId" /> : <span className="gx-coil-details-label">{instruction.deliveryDetails?.deliveryId}</span></p>
                                                                         <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.date" /> : <span className="gx-coil-details-label">{moment(instruction.updatedOn).format('DD/MM/YYYY')}</span></p>
                                                                         <p className="gx-coil-details-label"><IntlMessages id="partywise.plan.deliveredWeight" /> : <span className="gx-coil-details-label">{instruction?.actualWeight}</span></p>
