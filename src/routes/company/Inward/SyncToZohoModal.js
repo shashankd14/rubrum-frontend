@@ -31,18 +31,19 @@ const SyncToZohoModal = (props) => {
 
   return (
     <Modal
-      title="Sync To Zoho - inwards against invoices"
+      title="Sync To Zoho - Inwards against Invoice"
       visible={props.showSyncModal}
       onOk={() => {
         dispatch(syncToZoho(props.poInvoiceNumber));
       }}
+      width={700}
       onCancel={() => props.setShowSyncModal(false)}
     >
       <Table
         dataSource={inwardState?.inwardsAgainstPoList?.content || []}
         columns={[
           {
-            title: "Coil Number",
+            title: "Batch Number",
             dataIndex: "coilNumber",
             key: "coilNumber",
           },
@@ -55,6 +56,11 @@ const SyncToZohoModal = (props) => {
             title: "Material ID",
             dataIndex: "mmId",
             key: "mmId",
+          },
+          {
+            title: "Quantity",
+            dataIndex: "qty",
+            key: "qty",
           },
         ]}
       />
