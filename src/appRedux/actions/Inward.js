@@ -683,3 +683,7 @@ export const getInwardsAgainstPoError = (error) => ({
   type: actionTypes.INWARDS_AGAINST_PO_REQUEST_ERROR,
   error,
 });
+
+export const saveTemporary = () => ({
+  type: actionTypes.SAVE_TEMPORARY,
+});

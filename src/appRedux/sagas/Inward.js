@@ -476,6 +476,7 @@ function* submitInward(action) {
       );
     }
 
+    data.append("manualPoFlag", action.inward.isManual ? "Y" : "N");
     data.append("statusId", 1);
     data.append("heatnumber", "123");
     data.append("plantname", "test plant name");

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect} from "react";
 import {connect} from "react-redux";
 import moment from "moment";
 
@@ -29,25 +29,13 @@ const InwardEntrySummary = (props) => {
     
     useEffect(() => {
         if(props.inwardSubmitSuccess) {
-            // setPayload({
-            //     payloadObj:{
-            //         inwardId: props.inwardObject.submitInward
-            //     },
-            //     type:'inward'
-            // });
             message.success('Inward entry has been submitted successfully', 2);
-            // props.saveTemporary();
-            // props.resetInwardForm();
-            // props.updateStep(0);
-            // props.setShowSyncToZoho(true);
         }
     }, [props.inwardSubmitSuccess]);
     
     const partyName =(partyList) => {
-        
        partyList = partyList.find(item => item.nPartyId===Number(props.inward.partyName))
        return partyList.partyName
-    
     }
     let dimensionEdit = `${props.inward.fThickness} X ${props.inward.fWidth} X ${props.inward.fLength}`;
     let dimension = `${props.inward.thickness} X ${props.inward.width} X ${props.inward.length}`;
@@ -203,7 +191,7 @@ const InwardEntrySummary = (props) => {
                 disabled={props.inwardSubmitSuccess}
                 onClick={(e) => {
                   e.preventDefault();
-                  props.submitInwardEntry(props.inward);
+                  props.submitInwardEntry({...props.inward, isManual: props.isManual});
                 }}
               >
                 Save <Icon type="right" />
@@ -235,6 +223,7 @@ const mapStateToProps = state => ({
     inwardUpdateError: state.inward.inwardUpdateError,
     inwardObject: state.inward,
     party: state.party,
+    isManual: state.productInfo.isManual,
 });
 
 export default withRouter(

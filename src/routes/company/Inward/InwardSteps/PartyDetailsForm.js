@@ -10,7 +10,6 @@ import {
 import {
   Form,
   Spin,
-  AutoComplete,
   Icon,
   Button,
   Col,
@@ -26,26 +25,10 @@ const Option = Select.Option;
 
 const CreatePartyDetailsForm = (props) => {
   const { getFieldDecorator } = props.form;
-  const [dataSource, setDataSource] = useState([]);
   const [value, setValue] = useState("");
 
   const history = useHistory();
   const intl = useIntl();
-
-  useEffect(() => {
-    if (props.params !== "") {
-      const { Option } = AutoComplete;
-      const options = props.party.partyList.filter((party) => {
-        if (party?.nPartyId === props.inward.party?.nPartyId)
-          return (
-            <Option key={party.nPartyId} value={`${party.nPartyId}`}>
-              {party.partyName}
-            </Option>
-          );
-      });
-      setDataSource(options);
-    }
-  }, [props.party]);
 
   useEffect(() => {
     props.form.setFieldsValue({
@@ -63,27 +46,11 @@ const CreatePartyDetailsForm = (props) => {
   }, []);
 
   useEffect(() => {
-    if (props.party.partyList.length > 0) {
-      const { Option } = AutoComplete;
-      const options = props.party.partyList.map((party) => (
-        <Option key={party.nPartyId} value={`${party.nPartyId}`}>
-          {party.partyName}
-        </Option>
-      ));
-      setDataSource(options);
-    }
-  }, [props.party]);
-
-  useEffect(() => {
     if (props.params !== "") {
       props.inward.customerId = props.inward.party?.nPartyId || "";
       props.inward.customerBatchNo = props.inward.customerBatchId;
     }
   }, [props.params]);
-
-  const handleChange = (e) => {
-    props.inward.party.partyName = e;
-  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -146,10 +113,6 @@ const CreatePartyDetailsForm = (props) => {
                 onSelect={(value, option) => {
                   props.getPoDetails(value);
                 }}
-                // onChange={onChange}
-                // onFocus={onFocus}
-                // onBlur={onBlur}
-                // onSearch={onSearch}
                 filterOption={(input, option) =>
                   option.props.children
                     .toLowerCase()

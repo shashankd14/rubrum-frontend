@@ -11,6 +11,7 @@ import {
   syncToZoho,
   getInwardsAgainstPo,
   pdfGenerateInward,
+  saveTemporary
 } from "../../../appRedux/actions";
 
 import PartyDetailsForm from "./InwardSteps/PartyDetailsForm";
@@ -38,19 +39,19 @@ const CreateForm = (props) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [steps, setSteps] = useState([]);
   const [showSyncModal, setShowSyncModal] = useState(false);
-  const [showSyncToZoho, setShowSyncToZoho] = useState(false);
 
   useEffect(() => {
     props.fetchMaterialList();
-    // props.fetchPartyList();
+    props.fetchPartyList();
   }, []);
 
   const menu = (
     <Menu>
-      <Menu.Item key="1" onClick={() => setShowSyncModal(true)}>
+     {!props.isManual && <Menu.Item key="1" onClick={() => setShowSyncModal(true)}>
         Sync to Zoho
-      </Menu.Item>
+      </Menu.Item>}
       {currentStep === 4 && <Menu.Item key="2" onClick={() => {
+        props.saveTemporary();            
         props.resetInwardForm();
         setCurrentStep(0);
       }}>
@@ -136,7 +137,6 @@ const CreateForm = (props) => {
                 ? props.match.params.inwardEntryId
                 : ""
             }
-            setShowSyncToZoho={() => setShowSyncToZoho(!showSyncModal)}
           />
         ),
       },
@@ -210,6 +210,7 @@ const mapStateToProps = (state) => ({
   material: state.material,
   inward: state.inward,
   inwardForm: state.inward.inward,
+  isManual: state.productInfo.isManual,
 });
 
 const Create = Form.create({
@@ -317,4 +318,5 @@ export default connect(mapStateToProps, {
   syncToZoho,
   getInwardsAgainstPo,
   pdfGenerateInward,
+  saveTemporary,
 })(Create);
