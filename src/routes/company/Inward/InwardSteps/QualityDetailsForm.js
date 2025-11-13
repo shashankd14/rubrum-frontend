@@ -63,8 +63,8 @@ const QualityDetailsForm = (props) => {
     );
     return partyList.partyName;
   };
-  let dimensionEdit = `${props.inward.fWidth} X ${props.inward.fThickness} X ${props.inward.fLength}`;
-  let dimension = `${props.inward.width} X ${props.inward.thickness} X ${props.inward.length}`;
+  let dimensionEdit = `${props.inward.fThickness} X ${props.inward.fWidth} X ${props.inward.fLength}`;
+  let dimension = `${props.inward.thickness} X ${props.inward.width} X ${props.inward.length}`;
 
   return (
     <>
