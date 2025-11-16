@@ -89,6 +89,7 @@ import {
   GET_MATERIALS_BY_POID_SUCCESS,
   GET_MATERIALS_BY_POID_ERROR,
   UPDATE_INSTRUCTION_POSITIVE_TOLERANCE,
+  RESET_INWARD_FORM_PO,
 } from "../../constants/ActionTypes";
 import * as actionTypes from "../../constants/ActionTypes";
 
@@ -413,7 +414,11 @@ export const resetInstruction = () => ({
 
 export const resetInwardForm = () => ({
     type: RESET_INWARD_FORM,
-})
+});
+
+export const resetInwardFormPO = () => ({
+  type: RESET_INWARD_FORM_PO,
+});
 export const resetDeleteInward = () => ({
     type: RESET_DELETE_INWARD,
 })

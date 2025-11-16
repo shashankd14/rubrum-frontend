@@ -20,6 +20,7 @@ import InvoiceDetailsForm from "./InwardSteps/InvoiceDetailsForm";
 import QualityDetailsForm from "./InwardSteps/QualityDetailsForm";
 import InwardEntrySummary from "./InwardSteps/InwardEntrySummary";
 import SyncToZohoModal from "./SyncToZohoModal";
+import ErrorCases from "./ErrorCases";
 
 export const formItemLayout = {
   labelCol: {
@@ -170,6 +171,7 @@ const CreateForm = (props) => {
 
   return (
     <>
+      <ErrorCases />
       <SyncToZohoModal
         showSyncModal={showSyncModal}
         setShowSyncModal={setShowSyncModal}

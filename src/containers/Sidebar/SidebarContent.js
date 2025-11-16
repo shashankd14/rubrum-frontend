@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from "react";
-import {Menu} from "antd";
-import {Link} from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Menu } from "antd";
+import { Link } from "react-router-dom";
 import { Icon } from "antd";
 
 import CustomScrollbars from "util/CustomScrollbars";
@@ -9,22 +9,26 @@ import UserProfile from "./UserProfile";
 import {
   NAV_STYLE_NO_HEADER_EXPANDED_SIDEBAR,
   NAV_STYLE_NO_HEADER_MINI_SIDEBAR,
-  THEME_TYPE_LITE
+  THEME_TYPE_LITE,
 } from "../../constants/ThemeSetting";
 import IntlMessages from "../../util/IntlMessages";
-import {useSelector} from "react-redux";
-import {sidebarMenuItems} from "../../constants";
+import { useSelector } from "react-redux";
+import { sidebarMenuItems } from "../../constants";
 
 const SubMenu = Menu.SubMenu;
 const MenuItemGroup = Menu.ItemGroup;
 
 const SidebarContent = () => {
-
-  let {navStyle, themeType, pathname} = useSelector(({settings}) => settings);
+  let { navStyle, themeType, pathname } = useSelector(
+    ({ settings }) => settings
+  );
   const [menuLabelList, setMenuLabelList] = useState([]);
-  
+
   const getNoHeaderClass = (navStyle) => {
-    if (navStyle === NAV_STYLE_NO_HEADER_MINI_SIDEBAR || navStyle === NAV_STYLE_NO_HEADER_EXPANDED_SIDEBAR) {
+    if (
+      navStyle === NAV_STYLE_NO_HEADER_MINI_SIDEBAR ||
+      navStyle === NAV_STYLE_NO_HEADER_EXPANDED_SIDEBAR
+    ) {
       return "gx-no-header-notifications";
     }
     return "";
@@ -37,45 +41,47 @@ const SidebarContent = () => {
     return "";
   };
 
-const getSelectedKey = (path) => {
-  const parts = path.split("/").filter(Boolean); // ['company','master','material','edit','123']
-  // For 3-level sections like /company/master/<leaf> and /company/quality/<leaf>
-  if (
-    parts[0] === "company" &&
-    (parts[1] === "master" || parts[1] === "quality") &&
-    parts[2]
-  ) {
-    return `/${parts.slice(0, 3).join("/")}`; // /company/master/material
-  }
-  // Default: first 2 segments (e.g., /company/inward)
-  return `/${parts.slice(0, Math.min(parts.length, 2)).join("/")}`;
-};
+  const getSelectedKey = (path) => {
+    const parts = path.split("/").filter(Boolean); // ['company','master','material','edit','123']
+    // For 3-level sections like /company/master/<leaf> and /company/quality/<leaf>
+    if (
+      parts[0] === "company" &&
+      (parts[1] === "master" || parts[1] === "quality") &&
+      parts[2]
+    ) {
+      return `/${parts.slice(0, 3).join("/")}`; // /company/master/material
+    }
+    // Default: first 2 segments (e.g., /company/inward)
+    return `/${parts.slice(0, Math.min(parts.length, 2)).join("/")}`;
+  };
 
-// keep the parent submenu open
-const getOpenKeys = (path) => {
-  const parts = path.split("/").filter(Boolean);
-  if (parts.length >= 2) {
-    return [`/${parts.slice(0, 2).join("/")}`]; // /company/master or /company/inward
-  }
-  return [];
-};
+  // keep the parent submenu open
+  const getOpenKeys = (path) => {
+    const parts = path.split("/").filter(Boolean);
+    if (parts.length >= 2) {
+      return [`/${parts.slice(0, 2).join("/")}`]; // /company/master or /company/inward
+    }
+    return [];
+  };
 
   // Pick the longest segment that matches a menu item key
-const selectedKeys = getSelectedKey(pathname);
-const [openKeys, setOpenKeys] = useState(getOpenKeys(pathname));
-useEffect(() => setOpenKeys(getOpenKeys(pathname)), [pathname]);
+  const selectedKeys = getSelectedKey(pathname);
+  const [openKeys, setOpenKeys] = useState(getOpenKeys(pathname));
+  useEffect(() => setOpenKeys(getOpenKeys(pathname)), [pathname]);
 
   const defaultOpenKeys = [];
 
   useEffect(() => {
-    const menus = localStorage.getItem('Menus') ? JSON.parse(localStorage.getItem('Menus')) : [];
+    const menus = localStorage.getItem("Menus")
+      ? JSON.parse(localStorage.getItem("Menus"))
+      : [];
 
-    if(menus.length > 0) {
-      const menuLabels = menus.map(menu => menu.menuKey);
+    if (menus.length > 0) {
+      const menuLabels = menus.map((menu) => menu.menuKey);
       setMenuLabelList(menuLabels);
     }
-  }, [])
-  
+  }, []);
+
   return (
     <>
       <SidebarLogo />
@@ -145,20 +151,6 @@ useEffect(() => setOpenKeys(getOpenKeys(pathname)), [pathname]);
                     </span>
                   }
                 >
-                  {menuLabelList.includes(sidebarMenuItems.material) && (
-                    <Menu.Item key="/company/master/material">
-                      <Link to="/company/master/material">
-                        <i
-                          className="icon icon-diamond"
-                          style={{ "min-width": "14px" }}
-                        />
-                        <span>
-                          <IntlMessages id="sidebar.master.material" />
-                        </span>
-                      </Link>
-                    </Menu.Item>
-                  )}
-
                   {menuLabelList.includes(sidebarMenuItems.party) && (
                     <Menu.Item key="/company/master/party">
                       <Link to="/company/master/party">
@@ -377,4 +369,3 @@ useEffect(() => setOpenKeys(getOpenKeys(pathname)), [pathname]);
 
 SidebarContent.propTypes = {};
 export default SidebarContent;
-

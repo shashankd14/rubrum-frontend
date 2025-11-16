@@ -32,6 +32,13 @@ const InwardEntrySummary = (props) => {
             message.success('Inward entry has been submitted successfully', 2);
         }
     }, [props.inwardSubmitSuccess]);
+
+
+    useEffect(() => {
+      if (props.inwardSubmitError) {
+        message.error("Error while saving the inward, please try again", 2);
+      }
+    }, [props.inwardSubmitError]);
     
     const partyName =(partyList) => {
        partyList = partyList.find(item => item.nPartyId===Number(props.inward.partyName))

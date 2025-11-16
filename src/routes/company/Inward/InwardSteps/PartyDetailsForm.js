@@ -6,21 +6,13 @@ import {
   checkCustomerBatchNumber,
   getPoDetails,
   fetchMaterialsByPoID,
+  resetInwardForm,
+  resetInwardFormPO
 } from "../../../../appRedux/actions";
-import {
-  Form,
-  Spin,
-  Icon,
-  Button,
-  Col,
-  Row,
-  Input,
-  Select,
-} from "antd";
+import { Form, Spin, Icon, Button, Col, Row, Input, Select } from "antd";
 import { formItemLayout } from "../Create";
 import IntlMessages from "util/IntlMessages";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
-
 const Option = Select.Option;
 
 const CreatePartyDetailsForm = (props) => {
@@ -135,43 +127,58 @@ const CreatePartyDetailsForm = (props) => {
             )}
           </Form.Item>
           <Form.Item label="PO number">
-            {getFieldDecorator("invoiceNumber", {
-              rules: [{ required: true, message: "Please enter PO number" }],
-            })(
-              <Select
-                labelInValue
-                mode="combobox"
-                optionLabelProp="label"
-                disabled={
-                  props.inward.disableSelection ||
-                  props.inwardStatus.saveTemporary
-                }
-                allowClear={true}
-                value={value}
-                notFoundContent={null}
-                showSearch={true}
-                placeholder="Select a PO number"
-                optionFilterProp="children"
-                showArrow={true}
-                onSelect={(poId, option) => {
-                  props.fetchMaterialsByPoID(poId?.key)}}
-                filterOption={(input, option) =>
-                  option.props.children
-                    .toLowerCase()
-                    .indexOf(input.toLowerCase()) >= 0
-                }
-              >
-                {props.inwardStatus?.poList?.map((po) => (
-                  <Option
-                    key={po.poId}
-                    value={`${po.poId}`}
-                    label={po.poReference}
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <div style={{ width: "100%" }}>
+                {getFieldDecorator("invoiceNumber", {
+                  rules: [
+                    { required: true, message: "Please enter PO number" },
+                  ],
+                })(
+                  <Select
+                    style={{ flex: 1, minWidth: 0 }}
+                    labelInValue
+                    mode="combobox"
+                    optionLabelProp="label"
+                    disabled={
+                      props.inward.disableSelection ||
+                      props.inwardStatus.saveTemporary
+                    }
+                    allowClear={true}
+                    value={value}
+                    notFoundContent={null}
+                    showSearch={true}
+                    placeholder="Select a PO number"
+                    optionFilterProp="children"
+                    showArrow={true}
+                    onSelect={(poId, option) => {
+                      props.fetchMaterialsByPoID(poId?.key);
+                    }}
+                    filterOption={(input, option) =>
+                      option.props.children
+                        .toLowerCase()
+                        .indexOf(input.toLowerCase()) >= 0
+                    }
                   >
-                    {po.poReference}
-                  </Option>
-                ))}
-              </Select>
-            )}
+                    {props.inwardStatus?.poList?.map((po) => (
+                      <Option
+                        key={po.poId}
+                        value={`${po.poId}`}
+                        label={po.poReference}
+                      >
+                        {po.poReference}
+                      </Option>
+                    ))}
+                  </Select>
+                )}
+              </div>
+              {props.inwardStatus.poDetailsLoading && (
+                <Icon
+                  type="loading"
+                  style={{ fontSize: 24, marginLeft: "10px" }}
+                  spin
+                />
+              )}
+            </div>
           </Form.Item>
           <Form.Item
             label={intl.formatMessage({
@@ -244,6 +251,17 @@ const CreatePartyDetailsForm = (props) => {
                 <IntlMessages id="Forward" />
                 <Icon type="right" />
               </Button>
+              {props.inward.disableSelection ||
+              props.inwardStatus.saveTemporary ? (
+                <Button
+                  onClick={() => {
+                    props.resetInwardFormPO();
+                    props.form.resetFields();
+                  }}
+                >
+                  Clear form
+                </Button>
+              ) : null}
             </Col>
           </Row>
         </Form>
@@ -315,7 +333,9 @@ const PartyDetailsForm = Form.create({
 
 export default connect(mapStateToProps, {
   setInwardDetails,
+  resetInwardForm,
   checkCustomerBatchNumber,
   getPoDetails,
   fetchMaterialsByPoID,
+  resetInwardFormPO,
 })(PartyDetailsForm);

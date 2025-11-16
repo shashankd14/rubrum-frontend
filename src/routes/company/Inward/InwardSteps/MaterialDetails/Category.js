@@ -131,9 +131,10 @@ const CategoryForm = (props) => {
   const debouncedCheck = debounce(async (resolve, reject, value) => {
     try {
       const exists = await checkIfCoilExistsApi(value);
-      if (exists) reject(
-        intl.formatMessage({ id: "inward.create.label.inwardAlreadyExists" })
-      );
+      if (exists)
+        reject(
+          intl.formatMessage({ id: "inward.create.label.inwardAlreadyExists" })
+        );
       else resolve();
     } catch (err) {
       reject("Error checking coil");
@@ -156,43 +157,50 @@ const CategoryForm = (props) => {
         <Row>
           <Col span={12}>
             <Form.Item label="Material Id">
-              {getFieldDecorator("materialId", {
-                rules: [
-                  { required: false, message: "Please select material !" },
-                ],
-              })(
-                <Select
-                  mode="combobox"
-                  optionLabelProp="label"
-                  labelInValue={true}
-                  notFoundContent={null}
-                  showSearch={true}
-                  showArrow={true}
-                  allowClear={true}
-                  disabled={props.inward.disableSelection}
-                  placeholder="Select a material"
-                  optionFilterProp="children"
-                  onSelect={(materialId, option) =>
-                    props.searchByMaterialId(materialId?.key)
-                  }
-                  filterOption={(input, option) =>
-                    option.props.children
-                      .toLowerCase()
-                      .indexOf(input.toLowerCase()) >= 0
-                  }
-                >
-                  {props.inwardStatus?.materialList?.length > 0 &&
-                    props.inwardStatus?.materialList?.map((materialId) => (
-                      <Option
-                        key={materialId}
-                        value={materialId}
-                        label={materialId}
-                      >
-                        {materialId}
-                      </Option>
-                    ))}
-                </Select>
-              )}
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <div style={{ width: "100%" }}>
+                  {getFieldDecorator("materialId", {
+                    rules: [
+                      { required: false, message: "Please select material !" },
+                    ],
+                  })(
+                    <Select
+                      mode="combobox"
+                      style={{ width: "100%" }}
+                      optionLabelProp="label"
+                      labelInValue={true}
+                      notFoundContent={null}
+                      showSearch={true}
+                      showArrow={true}
+                      allowClear={true}
+                      placeholder="Select a material"
+                      optionFilterProp="children"
+                      onSelect={(materialId, option) => {
+                        props.searchByMaterialId(materialId?.key);
+                      }}
+                      onSearch={(value) => {
+                        if (value) props.searchByMaterialId(value);
+                      }}
+                      filterOption={(input, option) =>
+                        option.props.children
+                          .toLowerCase()
+                          .indexOf(input.toLowerCase()) >= 0
+                      }
+                    >
+                      {props.inwardStatus?.materialList?.length > 0 &&
+                        props.inwardStatus?.materialList?.map((materialId) => (
+                          <Option
+                            key={materialId}
+                            value={materialId}
+                            label={materialId}
+                          >
+                            {materialId}
+                          </Option>
+                        ))}
+                    </Select>
+                  )}
+                </div>
+              </div>
             </Form.Item>
           </Col>
           <Col span={12}>
@@ -501,6 +509,7 @@ const CategoryForm = (props) => {
               onClick={() => {
                 props.setInwardDetails({
                   ...props.inward,
+                  categoryId: "",
                   productTypeId: "",
                   productUom: "",
                   productForm: "",
@@ -514,6 +523,7 @@ const CategoryForm = (props) => {
                   length: "",
                   od: "",
                   id: "",
+                  disableSelection: false,
                 });
                 props.getRefinedProducts(props.inward, "productType");
               }}

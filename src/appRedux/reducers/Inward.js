@@ -81,9 +81,9 @@ import {
   GET_PACKET_WISE_PRICE_DC_REQUEST,
   GET_PACKET_WISE_PRICE_DC_ERROR,
   UPDATE_INSTRUCTION_POSITIVE_TOLERANCE,
+  RESET_INWARD_FORM_PO,
 } from "../../constants/ActionTypes";
 import * as actionTypes from "../../constants/ActionTypes";
-import { syncToZoho } from "../actions";
 
 const INIT_STATE = {
     inwardList: [],
@@ -393,6 +393,27 @@ export default (state = INIT_STATE, action) => {
           QrSuccess: false,
           QrLoading: false,
           QrError: false,
+        };
+      }
+      case RESET_INWARD_FORM_PO: {
+        return {
+          ...state,
+          inwardSubmitLoading: false,
+          inwardSubmitSuccess: false,
+          inwardSubmitError: false,
+          inward: {},
+          inwardUpdateLoading: false,
+          inwardUpdateSuccess: false,
+          inwardUpdateError: false,
+          submitInward: "",
+          pdfLoading: false,
+          pdfSuccess: false,
+          pdfError: false,
+          QrSuccess: false,
+          QrLoading: false,
+          QrError: false,
+          disableSelection: false,
+          saveTemporary: false
         };
       }
 
@@ -965,17 +986,17 @@ export default (state = INIT_STATE, action) => {
       case actionTypes.GET_PO_DETAILS: {
         return {
           ...state,
-          loading: true,
-          error: false,
-          errorMessage: "",
+          poDetailsLoading: true,
+          poDetailsError: false,
+          poDetailsErrorMessage: "",
         };
       }
       case actionTypes.GET_PO_DETAILS_SUCCESS: {
         return {
           ...state,
-          loading: false,
-          error: false,
-          errorMessage: "",
+          poDetailsLoading: false,
+          poDetailsError: false,
+          poDetailsErrorMessage: "",
           poList: action.poList,
         };
       }
@@ -983,26 +1004,26 @@ export default (state = INIT_STATE, action) => {
       case actionTypes.GET_PO_DETAILS_ERROR: {
         return {
           ...state,
-          loading: false,
-          error: true,
-          errorMessage: action.error,
+          poDetailsLoading: false,
+          poDetailsError: true,
+          poDetailsErrorMessage: action.error,
         };
       }
 
       case actionTypes.GET_MATERIALS_BY_POID: {
         return {
           ...state,
-          loading: true,
-          error: false,
-          errorMessage: "",
+          loadingPoMaterials: true,
+          errorPoMaterials: false,
+          errorMessagePoMaterials: "",
         };
       }
       case actionTypes.GET_MATERIALS_BY_POID_SUCCESS: {
         return {
           ...state,
-          loading: false,
-          error: false,
-          errorMessage: "",
+          loadingPoMaterials: false,
+          errorPoMaterials: false,
+          errorMessagePoMaterials: "",
           materialList: action.materialList,
         };
       }
@@ -1010,9 +1031,9 @@ export default (state = INIT_STATE, action) => {
       case actionTypes.GET_MATERIALS_BY_POID_ERROR: {
         return {
           ...state,
-          loading: false,
-          error: true,
-          errorMessage: action.error,
+          loadingPoMaterials: false,
+          errorPoMaterials: true,
+          errorMessagePoMaterials: action.error,
         };
       }
       case actionTypes.SAVE_TEMPORARY: {
