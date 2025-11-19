@@ -22,6 +22,7 @@ import {
   getRefinedProducts,
 } from "../../../../../appRedux/actions";
 import { debounce } from "lodash";
+import TextArea from "antd/lib/input/TextArea";
 
 const formItemLayout = {
   labelCol: {
@@ -449,6 +450,17 @@ const CategoryForm = (props) => {
               <Input id="productTypeId" disabled value={props?.inward?.hsn} />
             </Form.Item>
           </Col>
+          {props.inward.disableSelection ? (
+            <Col span={12}>
+              <Form.Item label="Material Description">
+                <TextArea id="productTypeId" disabled value={props?.productInfo?.refinedProducts?.length &&
+                  !props.material.displayInfo > 0
+                    ? props?.productInfo?.refinedProducts[0]?.mmDescription
+                    : props.material.displayInfo.mmDescription}>
+                </TextArea>
+              </Form.Item>
+            </Col>
+          ) : null}
         </Row>
         <Row>
           <Col span={12}>

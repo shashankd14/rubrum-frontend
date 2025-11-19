@@ -43,17 +43,20 @@ const List = (props) => {
       title: "Sync",
       dataIndex: "",
       key: "",
-      render: (text, record, index) => (
-        <span
-          className="gx-link"
-          onClick={() => {
-            setPurchaseInvoicesNo(record.poInvoiceNo);
-            setShowSyncModal(true);
-          }}
-        >
-          Sync to Zoho
-        </span>
-      ),
+      render: (text, record, index) =>
+        record.poInvSyncStatus === "PENDING" ? (
+          <span
+            className="gx-link"
+            onClick={() => {
+              setPurchaseInvoicesNo(record.poInvoiceNo);
+              setShowSyncModal(true);
+            }}
+          >
+            Sync to Zoho
+          </span>
+        ) : (
+          <></>
+        ),
     },
     // {
     //   title: "Process name",
