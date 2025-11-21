@@ -57,6 +57,14 @@ const Company = ({ match }) => (
       path={`${match.url}/sales-orderModule`}
       component={asyncComponent(() => import("./SalesOrderModule"))}
     />
+    <Route
+      path={`${match.url}/sales-orderModule`}
+      component={asyncComponent(() => import("./SalesOrderModule"))}
+    />
+    <Route
+      path={`${match.url}/consolidated-plans`}
+      component={asyncComponent(() => import("./ConsolidatedPlans"))}
+    />
   </Switch>
 );
 

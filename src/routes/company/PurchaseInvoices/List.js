@@ -44,7 +44,8 @@ const List = (props) => {
       dataIndex: "",
       key: "",
       render: (text, record, index) =>
-        record.poInvSyncStatus === "PENDING" ? (
+        record.poInvSyncStatus === "PENDING" ||
+        record.manualPoFlag === "N" ? (
           <span
             className="gx-link"
             onClick={() => {

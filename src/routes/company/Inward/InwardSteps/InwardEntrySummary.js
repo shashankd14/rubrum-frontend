@@ -36,7 +36,8 @@ const InwardEntrySummary = (props) => {
 
     useEffect(() => {
       if (props.inwardSubmitError) {
-        message.error("Error while saving the inward, please try again", 2);
+        console.log("error message", props.iwardSubmitErrorMessage);
+        message.error(props.iwardSubmitErrorMessage, 2);
       }
     }, [props.inwardSubmitError]);
     
