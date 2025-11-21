@@ -107,8 +107,8 @@ const CreatePartyDetailsForm = (props) => {
                 }}
                 filterOption={(input, option) =>
                   option.props.children
-                    .toLowerCase()
-                    .indexOf(input.toLowerCase()) >= 0
+                    ?.toLowerCase()
+                    .indexOf(input?.toLowerCase()) >= 0
                 }
               >
                 {props.party.partyList.map((party) => (
@@ -156,7 +156,7 @@ const CreatePartyDetailsForm = (props) => {
                     filterOption={(input, option) =>
                       option.props.children
                         ?.toLowerCase()
-                        ?.indexOf(input.toLowerCase()) >= 0
+                        ?.indexOf(input?.toLowerCase()) >= 0
                     }
                   >
                     {props.inwardStatus?.poList?.map((po) => (
