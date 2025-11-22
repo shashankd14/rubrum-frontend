@@ -689,6 +689,21 @@ export const getInwardsAgainstPoError = (error) => ({
   error,
 });
 
+export const requestDocSync = (billId) => ({
+  type: actionTypes.SYNC_DOC_REQUEST,
+  billId,
+});
+
+export const requestDocSyncSuccess = (payload) => ({
+  type: actionTypes.SYNC_DOC_SUCCESS,
+  payload,
+});
+
+export const requestDocSyncError = (error) => ({
+  type: actionTypes.SYNC_DOC_ERROR,
+  error,
+});
+
 export const saveTemporary = () => ({
   type: actionTypes.SAVE_TEMPORARY,
 });

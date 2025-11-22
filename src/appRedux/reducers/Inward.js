@@ -413,7 +413,7 @@ export default (state = INIT_STATE, action) => {
           QrLoading: false,
           QrError: false,
           disableSelection: false,
-          saveTemporary: false
+          saveTemporary: false,
         };
       }
 
@@ -1094,7 +1094,33 @@ export default (state = INIT_STATE, action) => {
           inwardsAgainstPoSuccess: false,
           inwardsAgainstPoError: true,
         };
-      } 
+      }
+
+      case actionTypes.SYNC_DOC_REQUEST: {
+        return {
+          ...state,
+          invoiceDocSync: true,
+          invoiceDocSyncSuccess: false,
+          invoiceDocSyncError: false,
+        };
+      }
+      case actionTypes.SYNC_DOC_SUCCESS: {
+        return {
+          ...state,
+          invoiceDocSyncLoading: false,
+          invoiceDocSyncSuccess: true,
+          invoiceDocSyncError: false,
+        };
+      }
+      case actionTypes.SYNC_DOC_ERROR: {
+        return {
+          ...state,
+          invoiceDocSyncLoading: false,
+          invoiceDocSyncSuccess: false,
+          invoiceDocSyncError: true,
+          invoiceDocSyncErrorMessage: action.error,
+        };
+      }
       default:
         return state;
     }

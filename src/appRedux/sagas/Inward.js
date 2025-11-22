@@ -36,6 +36,7 @@ import {
   GET_MATERIALS_BY_POID,
   REQUEST_SYNC_TO_ZOHO,
   INWARDS_AGAINST_PO_REQUEST,
+  SYNC_DOC_REQUEST,
 } from "../../constants/ActionTypes";
 
 import {
@@ -103,9 +104,10 @@ import {
   getInwardsAgainstPoError,
   syncToZohoSuccess,
   syncToZohoError,
+  requestDocSyncSuccess,
+  requestDocSyncError,
 } from "../actions";
 import { userSignOutSuccess } from "../../appRedux/actions/Auth";
-import { message } from "antd";
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
 
@@ -1283,6 +1285,31 @@ function* requestSyncToZoho(action) {
   }
 }
 
+function* requestDocSync(action) {
+  try {
+    const updateClassification = yield fetch(`${baseUrl}api/xternal/uploaddoc `, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...getHeaders() },
+      body: JSON.stringify({ billId: action.billId }),
+    });
+    if (updateClassification.status === 200) {
+      const groupSaveListObj = yield updateClassification.json();
+      yield put(requestDocSyncSuccess(groupSaveListObj));
+    } else if (updateClassification.status === 401) {
+      yield put(userSignOutSuccess());
+    } else {
+      const errorMessageObj = yield updateClassification.json();
+      yield put(
+        requestDocSyncError(
+          errorMessageObj?.message ? errorMessageObj?.message : "error"
+        )
+      );
+    }
+  } catch (error) {
+    yield put(syncToZohoError(error));
+  }
+}
+
 function* getInwardMaterialList(action) {
   const req_obj = {
     pageNo: 1,
@@ -1408,6 +1435,7 @@ export function* watchFetchRequests() {
   );
   yield takeLatest(REQUEST_SYNC_TO_ZOHO, requestSyncToZoho);
   yield takeLatest(INWARDS_AGAINST_PO_REQUEST, getInwardsAgainstPo);
+  yield takeLatest(SYNC_DOC_REQUEST, requestDocSync);
 }
 
 export default function* inwardSagas() {
