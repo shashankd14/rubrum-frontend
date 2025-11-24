@@ -309,7 +309,7 @@ export const submitInwardSuccess = (inward) => ({
 
 export const submitInwardError = (inward) => ({
     type: SUBMIT_INWARD_ERROR,
-    inward
+    payload: inward
 });
 
 export const getCoilsByPartyId = (partyId) => ({
