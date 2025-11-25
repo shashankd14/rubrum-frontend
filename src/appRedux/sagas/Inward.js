@@ -499,9 +499,17 @@ function* submitInward(action) {
       yield put(submitInwardSuccess(submitInwardResponse.inwardEntryId));
     } else if (newInwardEntry.status === 401) {
       yield put(userSignOutSuccess());
-    } else yield put(submitInwardError("error"));
+    } else {
+      let errorResponse = {};
+      errorResponse = yield newInwardEntry.json();
+      const errMsg = (errorResponse && errorResponse.message) || "Something went wrong";
+      message.error(errMsg);
+      yield put(submitInwardError(errMsg));
+    }
   } catch (error) {
-    yield put(submitInwardError(error));
+    const errMsg = error.message || "Something went wrong";
+    message.error(errMsg);
+    yield put(submitInwardError(errMsg));
   }
 }
 function* updateInward(action) {

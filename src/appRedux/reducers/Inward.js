@@ -299,8 +299,8 @@ export default (state = INIT_STATE, action) => {
         return {
           ...state,
           inwardSubmitLoading: false,
-          inwardSubmitError: true,
           inwardSubmitSuccess: false,
+          inwardSubmitError: action.payload || action.error || action.inward || "Something went wrong",
         };
       }
       case FETCH_INWARD_LIST_BY_PARTY_REQUEST: {
