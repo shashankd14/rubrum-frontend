@@ -503,12 +503,10 @@ function* submitInward(action) {
       let errorResponse = {};
       errorResponse = yield newInwardEntry.json();
       const errMsg = (errorResponse && errorResponse.message) || "Something went wrong";
-      message.error(errMsg);
       yield put(submitInwardError(errMsg));
     }
   } catch (error) {
     const errMsg = error.message || "Something went wrong";
-    message.error(errMsg);
     yield put(submitInwardError(errMsg));
   }
 }
