@@ -73,6 +73,12 @@ const InvoiceDetailsForm = props => {
                 ],
               })(
                 <DatePicker
+                  disabledDate={(current) => {
+                    let customDate = moment().format("YYYY-MM-DD");
+                    return (
+                      current && current > moment(customDate, "YYYY-MM-DD")
+                    );
+                  }}
                   style={{ width: 200 }}
                   className="gx-w-100"
                   format={APPLICATION_DATE_FORMAT}
@@ -117,12 +123,6 @@ const InvoiceDetailsForm = props => {
                 ],
               })(
                 <DatePicker
-                  disabledDate={(current) => {
-                    let customDate = moment().format("YYYY-MM-DD");
-                    return (
-                      current && current < moment(customDate, "YYYY-MM-DD")
-                    );
-                  }}
                   style={{ width: 200 }}
                   className="gx-mb-3 gx-w-100"
                   format={APPLICATION_DATE_FORMAT}
