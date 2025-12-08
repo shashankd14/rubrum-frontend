@@ -189,13 +189,13 @@ const CategoryForm = (props) => {
                       }
                     >
                       {props.inwardStatus?.materialList?.length > 0 &&
-                        props.inwardStatus?.materialList?.map((materialId) => (
+                        props.inwardStatus?.materialList?.map((material) => (
                           <Option
-                            key={materialId}
-                            value={materialId}
-                            label={materialId}
+                            key={material.sku}
+                            value={material.sku}
+                            label={material.sku}
                           >
-                            {materialId}
+                            {material.sku}
                           </Option>
                         ))}
                     </Select>
