@@ -1,7 +1,8 @@
 import React, { useEffect } from "react";
-import { Modal, Table, message } from "antd";
+import { Modal, Table, message, Typography } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { syncToZoho, getInwardsAgainstPo } from "../../../appRedux/actions";
+const { Title, Text } = Typography;
 
 const SyncToZohoModal = (props) => {
   const dispatch = useDispatch();
@@ -36,11 +37,21 @@ const SyncToZohoModal = (props) => {
       onOk={() => {
         dispatch(syncToZoho(props.poInvoiceNumber));
       }}
-      width={700}
+      width={800}
       onCancel={() => props.setShowSyncModal(false)}
     >
+      <Title level={4}>
+        Invoice value of goods{" "}
+        <Text type="warning">
+          {inwardState?.inwardsAgainstPoList?.content
+            ? inwardState?.inwardsAgainstPoList?.content.totalValueOfGoods
+            : 0}
+        </Text>
+      </Title>
       <Table
-        dataSource={inwardState?.inwardsAgainstPoList?.content || []}
+        dataSource={
+          inwardState?.inwardsAgainstPoList?.content?.inwardList || []
+        }
         columns={[
           {
             title: "Batch Number",
@@ -61,6 +72,11 @@ const SyncToZohoModal = (props) => {
             title: "Quantity",
             dataIndex: "qty",
             key: "qty",
+          },
+          {
+            title: "Value of goods",
+            dataIndex: "valueOfGoods",
+            key: "valueOfGoods",
           },
         ]}
       />
