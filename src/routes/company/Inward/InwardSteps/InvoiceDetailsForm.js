@@ -74,9 +74,8 @@ const InvoiceDetailsForm = props => {
               })(
                 <DatePicker
                   disabledDate={(current) => {
-                    let customDate = moment().format("YYYY-MM-DD");
                     return (
-                      current && current > moment(customDate, "YYYY-MM-DD")
+                      current && current >  moment().endOf("day")
                     );
                   }}
                   style={{ width: 200 }}
