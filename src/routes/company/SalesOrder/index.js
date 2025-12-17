@@ -240,6 +240,10 @@ const SalesOrder = () => {
       title: "Sales Order Number",
       dataIndex: "deliveryDetails.customerInvoiceNo",
       key: "soNumber",
+      filters: [
+        { text: "Panned", value: 1 },
+        { text: "Unplanned", value: 2 },
+      ],
       render: (text, record, index) => (
         <div style={{ display: "flex", alignItems: "center" }}>
           <Select
