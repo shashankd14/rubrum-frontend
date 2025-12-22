@@ -43,6 +43,7 @@ import {
   getProductGradesListSuccess,
   getProductGradesListError,
   getRefinedProducts as getRefinedProductsAction,
+  setIsManual,
 } from "../actions";
 import { userSignOutSuccess } from "../../appRedux/actions/Auth";
 import { getInwardEntryFields } from "../selectors";
@@ -78,7 +79,7 @@ function* fetchProducts(action) {
 function* fetchProductsList(action) {
   const body = {
     pageNo: 1,
-    pageSize: 1500,
+    pageSize: 15,
   };
   try {
     const fetchPartyList = yield fetch(`${baseUrl}api/material/product`, {
@@ -123,7 +124,7 @@ function* fetchProductForms(action) {
 function* fetchProductGradesList(action) {
   const body = {
     pageNo: 1,
-    pageSize: 1000,
+    pageSize: 10,
     productId: action.productId,
   };
   try {
@@ -706,6 +707,8 @@ function* getRefinedProducts(action) {
     });
     if (fetchPartyList.status === 200) {
       const fetchPartyListResponse = yield fetchPartyList.json();
+      if(action.type === "FETCH_PRODUCTS_REFINED_FINAL")
+        yield put(setIsManual(true));
       yield put(getRefinedProductsSuccess(fetchPartyListResponse));
     } else if (fetchPartyList.status === 401) {
       yield put(userSignOutSuccess());

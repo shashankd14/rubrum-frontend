@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useIntl } from "react-intl";
 import {
   AutoComplete,
@@ -20,8 +20,9 @@ import {
   searchByMaterialId,
   enableMaterialSelection,
   getRefinedProducts,
-  checkIfCoilExists,
 } from "../../../../../appRedux/actions";
+import { debounce } from "lodash";
+import TextArea from "antd/lib/input/TextArea";
 
 const formItemLayout = {
   labelCol: {
@@ -35,17 +36,44 @@ const formItemLayout = {
 };
 
 const { Option } = AutoComplete;
-const { Search } = Input;
 const { Text } = Typography;
+
+const baseUrl = process.env.REACT_APP_BASE_URL;
+export const getUserToken = () => {
+  return `Bearer ${localStorage.getItem("userToken") || ""}`;
+};
+const getHeaders = () => ({
+  Authorization: getUserToken(),
+});
+
+const checkIfCoilExistsApi = async (coilNumber) => {
+  try {
+    const res = await fetch(
+      `${baseUrl}api/inwardEntry/isCoilPresent?coilNumber=${coilNumber}`,
+      {
+        method: "GET",
+        headers: getHeaders(),
+      }
+    );
+    // Assume API returns { exists: true/false }
+    return await res.json();
+  } catch (err) {
+    console.error("Error checking coil:", err);
+    return false; // default to false if API fails
+  }
+};
 
 const CategoryForm = (props) => {
   const { getFieldDecorator } = props.form;
   const [dataSource, setDataSource] = useState([]);
   const intl = useIntl();
+  const didFetchCategories = React.useRef(false);
 
   useEffect(() => {
+    if (didFetchCategories.current) return;
     props.getMaterialCategories();
-  }, []);
+    didFetchCategories.current = true;
+  }, [props.getMaterialCategories]);
 
   useEffect(() => {
     const options = props.material.categoriesList.map((category) => {
@@ -63,37 +91,61 @@ const CategoryForm = (props) => {
       props.form.resetFields();
       props.enableMaterialSelection();
     }
-  }, [props.inward.materialId]);
+  }, [props.inward?.materialId, props.inward?.disableSelection]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    props.form.validateFieldsAndScroll((err, values) => {
-      if (!err) {
-        props.updateStep(1);
-      }
-    });
-  };
+  const handleSubmit = useCallback(
+    (e) => {
+      e.preventDefault();
+      props.form.validateFieldsAndScroll((err, values) => {
+        if (!err) {
+          props.setInwardDetails({ ...props.inward, ...values });
+          props.updateStep(1);
+        }
+      });
+    },
+    [props]
+  );
 
-  const onCategoryChange = (categoryId, categoryName) => {
-    props.form.setFieldsValue({
-      subcategoryId: null,
-      leafcategoryId: null,
-    });
-    props.getRefinedProducts({categoryId: categoryId}, 'subCategory', {...props.inward, categoryId: categoryId, subcategoryId: null, leafcategoryId: null, brandId: null, productTypeId: null, productUom: null, productForm: null, hsn: '', materialId: ''});
-  }
+  const onCategoryChange = useCallback(
+    (categoryId, categoryName) => {
+      props.form.setFieldsValue({
+        subcategoryId: null,
+        leafcategoryId: null,
+      });
 
-  const checkIfCoilExists = (rule, value, callback) => {
-    if (
-      value == "" ||
-      (!props.inwardStatus.loading &&
-        props.inwardStatus.success &&
-        !props.inwardStatus.duplicateCoil)
-    ) {
-      return callback();
+      props.getRefinedProducts({ categoryId: categoryId }, "subCategory", {
+        ...props.inward,
+        categoryId: categoryId,
+        subcategoryId: null,
+        leafcategoryId: null,
+        brandId: null,
+        productTypeId: null,
+        productUom: null,
+        productForm: null,
+        hsn: "",
+        materialId: "",
+      });
+    },
+    [props.form, props.getRefinedProducts, props.inward]
+  );
+
+  const debouncedCheck = debounce(async (resolve, reject, value) => {
+    try {
+      const exists = await checkIfCoilExistsApi(value);
+      if (exists)
+        reject(
+          intl.formatMessage({ id: "inward.create.label.inwardAlreadyExists" })
+        );
+      else resolve();
+    } catch (err) {
+      reject("Error checking coil");
     }
-    callback(
-      intl.formatMessage({ id: "inward.create.label.inwardAlreadyExists" })
-    );
+  }, 500);
+
+  const checkIfCoilExists = (rule, value) => {
+    return new Promise((resolve, reject) => {
+      debouncedCheck(resolve, reject, value);
+    });
   };
 
   return (
@@ -106,34 +158,50 @@ const CategoryForm = (props) => {
         <Row>
           <Col span={12}>
             <Form.Item label="Material Id">
-              {getFieldDecorator("materialId", {
-                rules: [
-                  { required: false, message: "Please select material !" },
-                ],
-              })(
-                <Select
-                  disabled={props.inward.disableSelection}
-                  showSearch
-                  placeholder="Select a material"
-                  optionFilterProp="children"
-                  onSelect={(materialId, option) =>
-                    props.searchByMaterialId(materialId)
-                  }
-                  filterOption={(input, option) =>
-                    option.props.children
-                      .toLowerCase()
-                      .indexOf(input.toLowerCase()) >= 0
-                  }
-                >
-                  {props.inwardStatus?.materialList?.length > 0 && props.inwardStatus?.materialList?.map(
-                    (materialId) => (
-                      <Option key={materialId} value={materialId}>
-                        {materialId}
-                      </Option>
-                    )
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <div style={{ width: "100%" }}>
+                  {getFieldDecorator("materialId", {
+                    rules: [
+                      { required: false, message: "Please select material !" },
+                    ],
+                  })(
+                    <Select
+                      mode="combobox"
+                      style={{ width: "100%" }}
+                      optionLabelProp="label"
+                      labelInValue={true}
+                      notFoundContent={null}
+                      showSearch={true}
+                      showArrow={true}
+                      allowClear={true}
+                      placeholder="Select a material"
+                      optionFilterProp="children"
+                      onSelect={(materialId, option) => {
+                        props.searchByMaterialId(materialId?.key);
+                      }}
+                      onSearch={(value) => {
+                        if (value) props.searchByMaterialId(value);
+                      }}
+                      filterOption={(input, option) =>
+                        option.props.children
+                          .toLowerCase()
+                          .indexOf(input.toLowerCase()) >= 0
+                      }
+                    >
+                      {props.inwardStatus?.materialList?.length > 0 &&
+                        props.inwardStatus?.materialList?.map((material) => (
+                          <Option
+                            key={material.sku}
+                            value={material.sku}
+                            label={material.sku}
+                          >
+                            {material.sku}
+                          </Option>
+                        ))}
+                    </Select>
                   )}
-                </Select>
-              )}
+                </div>
+              </div>
             </Form.Item>
           </Col>
           <Col span={12}>
@@ -141,16 +209,10 @@ const CategoryForm = (props) => {
               {getFieldDecorator("coilNumber", {
                 rules: [
                   { required: true, message: "Please enter batch number !" },
-                  { validator: props.params === "" ? checkIfCoilExists : "" },
+                  { validator: checkIfCoilExists },
                 ],
-              })(
-                <Input
-                  placeholder="enter batch number"
-                  id="validating"
-                  onChange={(e) => props.checkIfCoilExists(e.target.value)}
-                  onBlur={(e) => props.checkIfCoilExists(e.target.value)}
-                />
-              )}
+                validateTrigger: "onBlur",
+              })(<Input placeholder="enter batch number" id="validating" />)}
             </Form.Item>
           </Col>
         </Row>
@@ -388,6 +450,17 @@ const CategoryForm = (props) => {
               <Input id="productTypeId" disabled value={props?.inward?.hsn} />
             </Form.Item>
           </Col>
+          {props.inward.disableSelection ? (
+            <Col span={12}>
+              <Form.Item label="Material Description">
+                <TextArea id="productTypeId" disabled value={props?.productInfo?.refinedProducts?.length &&
+                  !props.material.displayInfo > 0
+                    ? props?.productInfo?.refinedProducts[0]?.mmDescription
+                    : props.material.displayInfo.mmDescription}>
+                </TextArea>
+              </Form.Item>
+            </Col>
+          ) : null}
         </Row>
         <Row>
           <Col span={12}>
@@ -448,6 +521,7 @@ const CategoryForm = (props) => {
               onClick={() => {
                 props.setInwardDetails({
                   ...props.inward,
+                  categoryId: "",
                   productTypeId: "",
                   productUom: "",
                   productForm: "",
@@ -461,6 +535,7 @@ const CategoryForm = (props) => {
                   length: "",
                   od: "",
                   id: "",
+                  disableSelection: false,
                 });
                 props.getRefinedProducts(props.inward, "productType");
               }}
@@ -540,5 +615,4 @@ export default connect(mapStateToProps, {
   searchByMaterialId,
   enableMaterialSelection,
   getRefinedProducts,
-  checkIfCoilExists
 })(Category);

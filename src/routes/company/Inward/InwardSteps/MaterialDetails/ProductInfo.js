@@ -9,6 +9,7 @@ import {
   Input,
   Select,
   message,
+  Modal,
 } from "antd";
 import { connect } from "react-redux";
 import {
@@ -22,6 +23,7 @@ import {
   getRefinedProductsFinal,
 } from "../../../../../appRedux/actions";
 import { METAL_DENSITY } from "../../../../../constants";
+const { confirm } = Modal;
 
 const formItemLayout = {
   labelCol: {
@@ -53,7 +55,24 @@ const ProductInfoForm = (props) => {
           props.inward.disableSelection ||
           props?.productInfo?.refinedProducts.length === 1
         ) {
-          props.updateStep(2);
+          if (
+            props.inward.grossWeight < 100 ||
+            props.inward.grossWeight > 50000 ||
+            props.inward.netWeight < 100 ||
+            props.inward.netWeight > 50000
+          ) {
+            confirm({
+              title: "Please enter weight in kgs not in tons",
+              content: "Do you wish to continue with the existing weight",
+              okText: "Yes",
+              okType: "danger",
+              cancelText: "No",
+              onOk() {
+                props.updateStep(2);
+              },
+            });
+            return false;
+          } else props.updateStep(2);
         } else {
           message.error(
             "Material Id not found, please try again after entering all the data"

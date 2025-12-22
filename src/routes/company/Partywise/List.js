@@ -26,6 +26,7 @@ import {
 } from "../../../appRedux/actions";
 import { sidebarMenuItems } from "../../../constants";
 import { toPascalCase } from "util/Common";
+import { debounce } from "lodash";
 
 const Option = Select.Option;
 
@@ -500,36 +501,32 @@ const List = (props) => {
 
   const exportSelectedData = () => {};
 
+  const fetchInwardListDebounced = useRef(
+    debounce((params) => {
+      props.fetchInwardList(...params);
+    }, 300)
+  ).current;
+
   const handleCustomerChange = (value) => {
     if (value) {
       setCustomerValue(value);
       setPageNo(1);
-      props.fetchInwardList(
-        1,
-        pageSize,
-        filteredInfo?.coilnumber && filteredInfo?.coilnumber[0]
-          ? filteredInfo?.coilnumber[0]
-          : "",
-        value,
-        sortOrder,
-        sortColumn,
-        filteredInfo
-      );
     } else {
       setCustomerValue("");
-      props.fetchInwardList(
-        1,
-        pageSize,
-        filteredInfo?.coilnumber && filteredInfo?.coilnumber[0]
-          ? filteredInfo?.coilnumber[0]
-          : "",
-        "",
-        sortOrder,
-        sortColumn,
-        filteredInfo
-      );
-      // setFilteredInwardList(filteredInwardList);
+      setPageNo(1);
     }
+    fetchInwardListDebounced([
+      1,
+      pageSize,
+      filteredInfo?.coilnumber && filteredInfo?.coilnumber[0]
+        ? filteredInfo?.coilnumber[0]
+        : "",
+      value ? value : "",
+      sortOrder,
+      sortColumn,
+      filteredInfo,
+    ]);
+    // setFilteredInwardList(filteredInwardList);
   };
 
   const handleBlur = () => {};
@@ -537,18 +534,12 @@ const List = (props) => {
   function handleFocus() {}
 
   const storeKey = (data, selected) => {
-    if (selectedCBKeys.includes(data.key) && !selected) {
-      const newSet = selectedCBKeys;
-      const index = selectedCBKeys.indexOf(data.key);
-      newSet.splice(index, 1);
-      setSelectedCBKeys(newSet);
-      setSelectedRowData((oldData) =>
-        oldData.filter((row) => row.key !== data.key)
-      );
-      return;
-    } else if (selected && !selectedCBKeys.includes(data.key)) {
-      setSelectedCBKeys((oldArr) => [...oldArr, data.key]);
-      setSelectedRowData((oldData) => [...oldData, data]);
+    if (!selectedCBKeys.includes(data.key) && selected) {
+      setSelectedCBKeys([...selectedCBKeys, data.key]);
+      setSelectedRowData([...selectedRowData, data]);
+    } else if (selectedCBKeys.includes(data.key) && !selected) {
+      setSelectedCBKeys(selectedCBKeys.filter((k) => k !== data.key));
+      setSelectedRowData(selectedRowData.filter((row) => row.key !== data.key));
     }
   };
 
@@ -566,7 +557,7 @@ const List = (props) => {
 
   const rowSelection = {
     onSelect: (record, selected, selectedRows) => {
-      console.log(record.status.statusName)
+      console.log(record.status.statusName);
       if (
         record.status.statusName === "READY TO DELIVER" ||
         record.status.statusName === "RECEIVED"
@@ -632,12 +623,12 @@ const List = (props) => {
           <div>
             <p>Plan PDF</p>
             {props.inward.s3pdfurl?.plan_pdfs?.map((item) => (
-              <>
+              <div key={item.id}>
                 <a href={item?.pdfS3Url} target="_blank">
                   {item.id}
                 </a>
                 <br />
-              </>
+              </div>
             ))}
           </div>
         )}
@@ -735,7 +726,7 @@ const List = (props) => {
                       );
                     }
                   }}
-                  disabled={!!selectedCBKeys?.length < 1}
+                  disabled={selectedCBKeys?.length < 1}
                 >
                   Deliver
                 </Button>

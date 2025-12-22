@@ -1,6 +1,6 @@
 import { all, put, fork, takeLatest, call } from "redux-saga/effects";
 import { getUserToken } from "./common";
-import toNumber, { get } from "lodash";
+import toNumber from "lodash";
 import moment from "moment";
 import {
   CHECK_COIL_EXISTS,
@@ -34,6 +34,9 @@ import {
   FETCH_INWARD_MATERIAL_LIST,
   GET_PO_DETAILS,
   GET_MATERIALS_BY_POID,
+  REQUEST_SYNC_TO_ZOHO,
+  INWARDS_AGAINST_PO_REQUEST,
+  SYNC_DOC_REQUEST,
 } from "../../constants/ActionTypes";
 
 import {
@@ -97,8 +100,15 @@ import {
   getPoDetailsError,
   fetchMaterialsByPoIDSuccess,
   fetchMaterialsByPoIDError,
+  getInwardsAgainstPoSuccess,
+  getInwardsAgainstPoError,
+  syncToZohoSuccess,
+  syncToZohoError,
+  requestDocSyncSuccess,
+  requestDocSyncError,
 } from "../actions";
 import { userSignOutSuccess } from "../../appRedux/actions/Auth";
+import { message } from "antd";
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
 
@@ -304,9 +314,11 @@ function* fetchWIPInwardList(action) {
     ...(action.filterInfo !== undefined &&
     action.filterInfo["coilNumber"] !== null
       ? {
-          batchNoFilter: action.filterInfo["coilNumber"] && action.filterInfo["coilNumber"].length > 0
-            ? action.filterInfo["coilNumber"][0]
-            : "",
+          batchNoFilter:
+            action.filterInfo["coilNumber"] &&
+            action.filterInfo["coilNumber"].length > 0
+              ? action.filterInfo["coilNumber"][0]
+              : "",
         }
       : ""),
   };
@@ -437,8 +449,8 @@ function* submitInward(action) {
       "invoiceDate",
       moment(action.inward.invoiceDate).format("YYYY-MM-DD HH:mm:ss")
     );
-    data.append("invoiceNumber", action.inward.invoiceNumber);
-    data.append("poId", action.inward.invoiceNumber);
+    data.append("invoiceNumber", action.inward.invoiceNumber?.key);
+    data.append("poId", action.inward.invoiceNumber?.key);
     data.append("valueOfGoods", action.inward.valueOfGoods);
 
     //quality details
@@ -448,7 +460,7 @@ function* submitInward(action) {
     data.append(
       "mmId",
       action.inward.materialId !== undefined
-        ? action.inward.materialId
+        ? action.inward.materialId?.label
         : action.inward.mmId
     );
 
@@ -467,6 +479,7 @@ function* submitInward(action) {
       );
     }
 
+    data.append("manualPoFlag", action.inward.isManual ? "Y" : "N");
     data.append("statusId", 1);
     data.append("heatnumber", "123");
     data.append("plantname", "test plant name");
@@ -487,9 +500,15 @@ function* submitInward(action) {
       yield put(submitInwardSuccess(submitInwardResponse.inwardEntryId));
     } else if (newInwardEntry.status === 401) {
       yield put(userSignOutSuccess());
-    } else yield put(submitInwardError("error"));
+    } else {
+      let errorResponse = {};
+      errorResponse = yield newInwardEntry.json();
+      const errMsg = (errorResponse && errorResponse.message) || "Something went wrong";
+      yield put(submitInwardError(errMsg));
+    }
   } catch (error) {
-    yield put(submitInwardError(error));
+    const errMsg = error.message || "Something went wrong";
+    yield put(submitInwardError(errMsg));
   }
 }
 function* updateInward(action) {
@@ -605,14 +624,11 @@ function* fetchInwardListByParty(action) {
 
 function* getPODetails(action) {
   try {
-    const fetchPOList = yield fetch(
-      `${baseUrl}api/location/warehouse/polist`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json", ...getHeaders() },
-        body: JSON.stringify({ locationId: action.locationId }),
-      }
-    );
+    const fetchPOList = yield fetch(`${baseUrl}api/location/warehouse/polist`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...getHeaders() },
+      body: JSON.stringify({ locationId: action.locationId }),
+    });
     if (fetchPOList.status === 200) {
       const fetchPOListResponse = yield fetchPOList.json();
       yield put(getPoDetailsSuccess(fetchPOListResponse));
@@ -820,7 +836,7 @@ function* requestUpdateInstruction(action) {
     if (updateInstruction.status === 200) {
       yield put(updateInstructionSuccess(updateInstruction));
       yield put(labelPrintEditFinish(action.coil));
-    } else if(updateInstruction.status === 400) {
+    } else if (updateInstruction.status === 400) {
       const errorResponse = yield updateInstruction.json();
       yield put(updateInstructionPT(errorResponse));
     } else if (updateInstruction.status === 401) {
@@ -1256,11 +1272,56 @@ function* updateClassificationSlitAndCutBeforeFinish(action) {
   }
 }
 
+function* requestSyncToZoho(action) {
+  try {
+    const updateClassification = yield fetch(`${baseUrl}api/xternal/postgrn`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...getHeaders() },
+      body: JSON.stringify({ poInvoiceNo: action.payload }),
+    });
+    if (updateClassification.status === 200) {
+      const groupSaveListObj = yield updateClassification.json();
+      yield put(syncToZohoSuccess(groupSaveListObj));
+    } else if (updateClassification.status === 401) {
+      yield put(userSignOutSuccess());
+    } else {
+      const errorMessageObj = yield updateClassification.json();
+      yield put(syncToZohoError(errorMessageObj?.message ? errorMessageObj?.message : "error"))};
+  } catch (error) {
+    yield put(syncToZohoError(error));
+  }
+}
+
+function* requestDocSync(action) {
+  try {
+    const updateClassification = yield fetch(`${baseUrl}api/xternal/uploaddoc `, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...getHeaders() },
+      body: JSON.stringify({ billId: action.billId }),
+    });
+    if (updateClassification.status === 200) {
+      const groupSaveListObj = yield updateClassification.json();
+      yield put(requestDocSyncSuccess(groupSaveListObj));
+    } else if (updateClassification.status === 401) {
+      yield put(userSignOutSuccess());
+    } else {
+      const errorMessageObj = yield updateClassification.json();
+      yield put(
+        requestDocSyncError(
+          errorMessageObj?.message ? errorMessageObj?.message : "error"
+        )
+      );
+    }
+  } catch (error) {
+    yield put(syncToZohoError(error));
+  }
+}
+
 function* getInwardMaterialList(action) {
   const req_obj = {
     pageNo: 1,
     pageSize: 1115,
-    param: action.param
+    param: action.param,
   };
   try {
     const updateClassification = yield fetch(
@@ -1272,11 +1333,14 @@ function* getInwardMaterialList(action) {
       }
     );
     if (updateClassification.status === 200) {
-      const arrayedData = {gradeMap: [], productMap: []};
+      const arrayedData = { gradeMap: [], productMap: [] };
       const inwardMaterialList = yield updateClassification.json();
 
-      Object.keys(inwardMaterialList.gradeMap).forEach((key) => { 
-          arrayedData.gradeMap.push({gradeId: key, gradeName: inwardMaterialList.gradeMap[key]});
+      Object.keys(inwardMaterialList.gradeMap).forEach((key) => {
+        arrayedData.gradeMap.push({
+          gradeId: key,
+          gradeName: inwardMaterialList.gradeMap[key],
+        });
       });
 
       Object.keys(inwardMaterialList.productMap).forEach((key) => {
@@ -1291,6 +1355,30 @@ function* getInwardMaterialList(action) {
     } else yield put(errorInwardMaterialDetails("error"));
   } catch (error) {
     yield put(errorInwardMaterialDetails(error));
+  }
+}
+
+function* getInwardsAgainstPo(action) {
+  const req_obj = {
+    poInvoiceNo: action.poInvoiceNo,
+  };
+  try {
+    const updateClassification = yield fetch(
+      `${baseUrl}api/xternal/powiseinwardlist`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...getHeaders() },
+        body: JSON.stringify(req_obj),
+      }
+    );
+    if (updateClassification.status === 200) {
+      const inwardMaterialList = yield updateClassification.json();
+      yield put(getInwardsAgainstPoSuccess(inwardMaterialList));
+    } else if (updateClassification.status === 401) {
+      yield put(userSignOutSuccess());
+    } else yield put(getInwardsAgainstPoError("error"));
+  } catch (error) {
+    yield put(getInwardsAgainstPoError(error));
   }
 }
 
@@ -1352,6 +1440,9 @@ export function* watchFetchRequests() {
     UPDATE_CLASSIFICATION_SLITANDCUT_BEFORE_FINISH,
     updateClassificationSlitAndCutBeforeFinish
   );
+  yield takeLatest(REQUEST_SYNC_TO_ZOHO, requestSyncToZoho);
+  yield takeLatest(INWARDS_AGAINST_PO_REQUEST, getInwardsAgainstPo);
+  yield takeLatest(SYNC_DOC_REQUEST, requestDocSync);
 }
 
 export default function* inwardSagas() {

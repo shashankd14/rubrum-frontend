@@ -36,8 +36,6 @@ import {
 } from '../../../appRedux/actions';
 import { labelPrintEditFinish } from '../../../appRedux/actions/LabelPrint';
 import IntlMessages from 'util/IntlMessages';
-import { set } from 'nprogress';
-import { values } from 'lodash';
 
 const { Panel } = Collapse;
 const Option = Select.Option;

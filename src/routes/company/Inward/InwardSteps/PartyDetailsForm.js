@@ -6,63 +6,36 @@ import {
   checkCustomerBatchNumber,
   getPoDetails,
   fetchMaterialsByPoID,
+  resetInwardForm,
+  resetInwardFormPO
 } from "../../../../appRedux/actions";
-import {
-  Form,
-  Spin,
-  AutoComplete,
-  Icon,
-  Button,
-  Col,
-  Row,
-  Input,
-  Select,
-} from "antd";
+import { Form, Spin, Icon, Button, Col, Row, Input, Select } from "antd";
 import { formItemLayout } from "../Create";
 import IntlMessages from "util/IntlMessages";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
-
 const Option = Select.Option;
 
 const CreatePartyDetailsForm = (props) => {
   const { getFieldDecorator } = props.form;
-  const [dataSource, setDataSource] = useState([]);
+  const [value, setValue] = useState("");
 
   const history = useHistory();
   const intl = useIntl();
 
   useEffect(() => {
-    if (props.params !== "") {
-      const { Option } = AutoComplete;
-      const options = props.party.partyList.filter((party) => {
-        if (party?.nPartyId === props.inward.party?.nPartyId)
-          return (
-            <Option key={party.nPartyId} value={`${party.nPartyId}`}>
-              {party.partyName}
-            </Option>
-          );
-      });
-      setDataSource(options);
-    }
-  }, [props.party]);
-
-  useEffect(() => {
     props.form.setFieldsValue({
       purposeType: "STEEL SERVICE CENTRE",
+      customerInvoiceNo: props.inwardStatus.saveTemporary
+        ? props.inwardStatus.customerInvoiceNo
+        : props.inward.customerInvoiceNo,
+      invoiceNumber: props.inwardStatus.saveTemporary
+        ? props.inwardStatus.invoiceNumber
+        : props.inward.invoiceNumber,
+      partyName: props.inwardStatus.saveTemporary
+        ? props.inwardStatus.partyName
+        : props.inward.partyName,
     });
   }, []);
-
-  useEffect(() => {
-    if (props.party.partyList.length > 0) {
-      const { Option } = AutoComplete;
-      const options = props.party.partyList.map((party) => (
-        <Option key={party.nPartyId} value={`${party.nPartyId}`}>
-          {party.partyName}
-        </Option>
-      ));
-      setDataSource(options);
-    }
-  }, [props.party]);
 
   useEffect(() => {
     if (props.params !== "") {
@@ -70,10 +43,6 @@ const CreatePartyDetailsForm = (props) => {
       props.inward.customerBatchNo = props.inward.customerBatchId;
     }
   }, [props.params]);
-
-  const handleChange = (e) => {
-    props.inward.party.partyName = e;
-  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -136,14 +105,10 @@ const CreatePartyDetailsForm = (props) => {
                 onSelect={(value, option) => {
                   props.getPoDetails(value);
                 }}
-                // onChange={onChange}
-                // onFocus={onFocus}
-                // onBlur={onBlur}
-                // onSearch={onSearch}
                 filterOption={(input, option) =>
                   option.props.children
-                    .toLowerCase()
-                    .indexOf(input.toLowerCase()) >= 0
+                    ?.toLowerCase()
+                    .indexOf(input?.toLowerCase()) >= 0
                 }
               >
                 {props.party.partyList.map((party) => (
@@ -162,28 +127,58 @@ const CreatePartyDetailsForm = (props) => {
             )}
           </Form.Item>
           <Form.Item label="PO number">
-            {getFieldDecorator("invoiceNumber", {
-              rules: [{ required: true, message: "Please enter PO number" }],
-            })(
-              <Select
-                disabled={props.inward.disableSelection}
-                showSearch
-                placeholder="Select a PO number"
-                optionFilterProp="children"
-                onSelect={(poId, option) => props.fetchMaterialsByPoID(poId)}
-                filterOption={(input, option) =>
-                  option.props.children
-                    .toLowerCase()
-                    .indexOf(input.toLowerCase()) >= 0
-                }
-              >
-                {props.inwardStatus?.poList?.map((po) => (
-                  <Option key={po.poId} value={`${po.poId}`}>
-                    {po.poReference}
-                  </Option>
-                ))}
-              </Select>
-            )}
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <div style={{ width: "100%" }}>
+                {getFieldDecorator("invoiceNumber", {
+                  rules: [
+                    { required: true, message: "Please enter PO number" },
+                  ],
+                })(
+                  <Select
+                    style={{ flex: 1, minWidth: 0 }}
+                    labelInValue
+                    mode="combobox"
+                    optionLabelProp="label"
+                    disabled={
+                      props.inward.disableSelection ||
+                      props.inwardStatus.saveTemporary
+                    }
+                    allowClear={true}
+                    value={value}
+                    notFoundContent={null}
+                    showSearch={true}
+                    placeholder="Select a PO number"
+                    optionFilterProp="children"
+                    showArrow={true}
+                    onSelect={(poId, option) => {
+                      props.fetchMaterialsByPoID(poId?.key);
+                    }}
+                    filterOption={(input, option) =>
+                      option.props.children
+                        ?.toLowerCase()
+                        ?.indexOf(input?.toLowerCase()) >= 0
+                    }
+                  >
+                    {props.inwardStatus?.poList?.map((po) => (
+                      <Option
+                        key={po.poId}
+                        value={`${po.poId}`}
+                        label={po.poReference}
+                      >
+                        {po.poReference}
+                      </Option>
+                    ))}
+                  </Select>
+                )}
+              </div>
+              {props.inwardStatus.poDetailsLoading && (
+                <Icon
+                  type="loading"
+                  style={{ fontSize: 24, marginLeft: "10px" }}
+                  spin
+                />
+              )}
+            </div>
           </Form.Item>
           <Form.Item
             label={intl.formatMessage({
@@ -216,7 +211,12 @@ const CreatePartyDetailsForm = (props) => {
                   }),
                 },
               ],
-            })(<Input id="customerInvoiceNo" />)}
+            })(
+              <Input
+                id="customerInvoiceNo"
+                disabled={props.inwardStatus.saveTemporary}
+              />
+            )}
           </Form.Item>
 
           <Form.Item label="Purpose Type">
@@ -251,6 +251,17 @@ const CreatePartyDetailsForm = (props) => {
                 <IntlMessages id="Forward" />
                 <Icon type="right" />
               </Button>
+              {props.inward.disableSelection ||
+              props.inwardStatus.saveTemporary ? (
+                <Button
+                  onClick={() => {
+                    props.resetInwardFormPO();
+                    props.form.resetFields();
+                  }}
+                >
+                  Clear form
+                </Button>
+              ) : null}
             </Col>
           </Row>
         </Form>
@@ -322,7 +333,9 @@ const PartyDetailsForm = Form.create({
 
 export default connect(mapStateToProps, {
   setInwardDetails,
+  resetInwardForm,
   checkCustomerBatchNumber,
   getPoDetails,
   fetchMaterialsByPoID,
+  resetInwardFormPO,
 })(PartyDetailsForm);

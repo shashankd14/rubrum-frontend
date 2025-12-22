@@ -15,25 +15,26 @@ import {
     SEARCH_MATERIAL_BY_ID
 } from "../../constants/ActionTypes";
 import {
-    fetchMaterialListError,
-    fetchMaterialListSuccess,
-    addMaterialSuccess,
-    addMaterialError,
-    fetchMaterialListByIdSuccess,
-    fetchMaterialListByIdError,
-    updateMaterialSuccess,
-    updateMaterialError,
-    getMaterialCategoriesSuccess,
-    getMaterialCategoriesError,
-    getMaterialSubCategoriesSuccess,
-    getMaterialSubCategoriesError,
-    searchByMaterialIdSuccess,
-    searchByMaterialIdError,
-    setMaterialData,
-    saveMaterialDisplayInfo,
-    setInwardDetails,
-    getRefinedProducts,
-    saveMaterialInfo   
+  fetchMaterialListError,
+  fetchMaterialListSuccess,
+  addMaterialSuccess,
+  addMaterialError,
+  fetchMaterialListByIdSuccess,
+  fetchMaterialListByIdError,
+  updateMaterialSuccess,
+  updateMaterialError,
+  getMaterialCategoriesSuccess,
+  getMaterialCategoriesError,
+  getMaterialSubCategoriesSuccess,
+  getMaterialSubCategoriesError,
+  searchByMaterialIdSuccess,
+  searchByMaterialIdError,
+  setMaterialData,
+  saveMaterialDisplayInfo,
+  setInwardDetails,
+  getRefinedProducts,
+  saveMaterialInfo,
+  setIsManual,
 } from "../actions";
 import { userSignOutSuccess } from "../../appRedux/actions/Auth";
 import { getInwardEntryFields } from "../selectors";
@@ -314,6 +315,7 @@ function* searchByMaterialId(action) {
                     mmDescription: fetchPartyListResponse.content[0].mmDescription,
                 }));
             }
+            yield put(setIsManual(false));
             yield put(searchByMaterialIdSuccess(fetchPartyListResponse));
         } else if (fetchPartyList.status === 401) {
             yield put(userSignOutSuccess());

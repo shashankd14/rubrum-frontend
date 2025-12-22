@@ -89,6 +89,7 @@ import {
   GET_MATERIALS_BY_POID_SUCCESS,
   GET_MATERIALS_BY_POID_ERROR,
   UPDATE_INSTRUCTION_POSITIVE_TOLERANCE,
+  RESET_INWARD_FORM_PO,
 } from "../../constants/ActionTypes";
 import * as actionTypes from "../../constants/ActionTypes";
 
@@ -308,7 +309,7 @@ export const submitInwardSuccess = (inward) => ({
 
 export const submitInwardError = (inward) => ({
     type: SUBMIT_INWARD_ERROR,
-    inward
+    payload: inward
 });
 
 export const getCoilsByPartyId = (partyId) => ({
@@ -413,7 +414,11 @@ export const resetInstruction = () => ({
 
 export const resetInwardForm = () => ({
     type: RESET_INWARD_FORM,
-})
+});
+
+export const resetInwardFormPO = () => ({
+  type: RESET_INWARD_FORM_PO,
+});
 export const resetDeleteInward = () => ({
     type: RESET_DELETE_INWARD,
 })
@@ -653,3 +658,52 @@ export const errorInwardMaterialDetails = (error) => ({
   error
 });
 
+
+export const syncToZoho = (payload) => ({
+  type: actionTypes.REQUEST_SYNC_TO_ZOHO,
+  payload,
+});
+
+export const syncToZohoSuccess = (payload) => ({
+  type: actionTypes.REQUEST_SYNC_TO_ZOHO_SUCCESS,
+  payload,
+});
+
+export const syncToZohoError = (error) => ({
+  type: actionTypes.REQUEST_SYNC_TO_ZOHO_ERROR,
+  error,
+});
+
+export const getInwardsAgainstPo = (poInvoiceNo) => ({
+  type: actionTypes.INWARDS_AGAINST_PO_REQUEST,
+  poInvoiceNo,
+});
+
+export const getInwardsAgainstPoSuccess = (payload) => ({
+  type: actionTypes.INWARDS_AGAINST_PO_REQUEST_SUCCESS,
+  payload,
+});
+
+export const getInwardsAgainstPoError = (error) => ({
+  type: actionTypes.INWARDS_AGAINST_PO_REQUEST_ERROR,
+  error,
+});
+
+export const requestDocSync = (billId) => ({
+  type: actionTypes.SYNC_DOC_REQUEST,
+  billId,
+});
+
+export const requestDocSyncSuccess = (payload) => ({
+  type: actionTypes.SYNC_DOC_SUCCESS,
+  payload,
+});
+
+export const requestDocSyncError = (error) => ({
+  type: actionTypes.SYNC_DOC_ERROR,
+  error,
+});
+
+export const saveTemporary = () => ({
+  type: actionTypes.SAVE_TEMPORARY,
+});

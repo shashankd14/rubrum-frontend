@@ -31,6 +31,7 @@ const SalesOrder = () => {
   const [packetsList, setPacketsList] = useState(salesOrder.packets.data);
   const [customerValue, setCustomerValue] = useState("");
   const [filteredInfo, setFilteredInfo] = useState({});
+  const [soNumbers, setSoNumbers] = useState([]);
 
   const [pageSize, setPageSize] = useState(10);
   const [pageNo, setPageNo] = React.useState(1);
@@ -56,6 +57,7 @@ const SalesOrder = () => {
   useEffect(() => {
     if (salesOrder.packets.data) {
       setPacketsList(salesOrder.packets.data);
+      setSoNumbers(salesOrder.packets.soNumbers);
     }
   }, [salesOrder.packets.data]);
 
@@ -244,7 +246,57 @@ const SalesOrder = () => {
       ],
       render: (text, record, index) => (
         <div style={{ display: "flex", alignItems: "center" }}>
-          <Input value={record.soNumber} onChange={onInputChange(index)} />
+          <Select
+            style={{ width: 160 }}
+            mode="combobox"
+            labelInValue
+            optionLabelProp="label"
+            showSearch
+            placeholder="Select SO Number"
+            value={
+              record.soNumber
+                ? { key: record.soNumber, label: record.soNumber }
+                : undefined
+            }
+            notFoundContent={null}
+            allowClear={true}
+            showArrow={true}
+            optionFilterProp="children"
+
+            // When user selects SO
+            onSelect={(selected) => {
+              onInputChange(index)({
+                target: { value: selected?.key }
+              });
+            }}
+
+            // When user types custom entry
+            onChange={(valueObj) => {
+              const val = typeof valueObj === "string"
+                ? valueObj
+                : valueObj?.key;
+
+              onInputChange(index)({
+                target: { value: val }
+              });
+            }}
+
+            filterOption={(input, option) =>
+              option.props.children
+                ?.toLowerCase()
+                ?.includes(input.toLowerCase())
+            }
+          >
+            {(soNumbers || []).map((so) => (
+              <Option
+                key={so}
+                value={so}
+                label={so}
+              >
+                {so}
+              </Option>
+            ))}
+          </Select>
           <Icon
             onClick={() => dispatch(saveSalesOrderForPacket(record))}
             style={{ marginLeft: "8px" }}
