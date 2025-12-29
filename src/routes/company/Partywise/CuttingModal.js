@@ -1467,10 +1467,6 @@ const CreateCuttingDetailsForm = (props) => {
   }, []);
 
   useEffect(() => {
-    console.log(
-      "props.inward?.isPositiveToleranceError",
-      props.inward.ptErrorCode
-    );
     if (
       props.inward?.isPositiveToleranceError &&
       props.inward?.ptErrorCode === "PT_AVAILABLE"
