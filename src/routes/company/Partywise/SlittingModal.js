@@ -1751,6 +1751,7 @@ const CreateSlittingDetailsForm = (props) => {
         )
       );
       const coil = {
+        positiveToleranceFlag: "PT_CHECK_REQUIRED",
         number: props.coil.coilNumber,
         instruction: instructionList,
         unfinish: props?.unfinish,
