@@ -15,7 +15,7 @@ import {
   Collapse,
   Card,
 } from 'antd';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import SweetAlert from 'react-bootstrap-sweetalert';
 import { connect, useDispatch } from 'react-redux';
 import moment from 'moment';
@@ -1148,7 +1148,7 @@ const CreateSlittingDetailsForm = (props) => {
   const [yieldLossRatio, setYieldLossRatio] = useState([]);
   const [packetClassification, setPacketClassification] = useState([]);
   const [editedRecordState, setEditedRecordState] = useState([]);
-  const [showPositiveToleranceModal, setShowPositiveToleranceModal] =
+  const [showSlittingPositiveToleranceModal, setShowSlittingPositiveToleranceModal] =
     useState(false);
 
   const [groupedInstructions, setGroupedInstructions] = useState(new Map());
@@ -1692,7 +1692,7 @@ const CreateSlittingDetailsForm = (props) => {
         props.inward?.isPositiveToleranceError &&
         props.inward?.ptErrorCode === "PT_AVAILABLE"
       )
-        setShowPositiveToleranceModal(true);
+        setShowSlittingPositiveToleranceModal(true);
       else if (
         props?.inward?.isPositiveToleranceError &&
         props.inward?.ptErrorCode === "PT_UPPERLIMIT_REACHED"
@@ -1700,7 +1700,7 @@ const CreateSlittingDetailsForm = (props) => {
         message.error(
           "Positive tolerance limit reached. You can add up to 5% of the coil weight as Positive Tolerance (PT)."
         );
-      else setShowPositiveToleranceModal(false);
+      else setShowSlittingPositiveToleranceModal(false);
     }, [props.inward?.isPositiveToleranceError]);
 
   const handleCancel = (e) => {
@@ -2060,7 +2060,7 @@ const CreateSlittingDetailsForm = (props) => {
       };
       props.updateInstruction(coil);
       // props.labelPrintEditFinish(coil);
-      setShowPositiveToleranceModal(false);
+      setShowSlittingPositiveToleranceModal(false);
       if (props.setShowSlittingModal) props.setShowSlittingModal(false);
     };
 
@@ -2474,15 +2474,17 @@ const CreateSlittingDetailsForm = (props) => {
                   </Col>
                 </Row>
               )}
-
               <Modal
                 width={700}
                 title="Additional weight confirmation"
-                visible={showPositiveToleranceModal}
+                visible={showSlittingPositiveToleranceModal}
                 onOk={() => {
                   handlePositiveToleranceAccepted();
                 }}
-                onCancel={() => setShowPositiveToleranceModal(false)}
+                onCancel={() => {
+                  props.setShowSlittingModal(true)
+                  setShowSlittingPositiveToleranceModal(false);
+                }}
               >
                 <p>
                   Are you sure you want to add additional weight{" "}
