@@ -15,7 +15,7 @@ import {
   Collapse,
   Card,
 } from 'antd';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import SweetAlert from 'react-bootstrap-sweetalert';
 import { connect, useDispatch } from 'react-redux';
 import moment from 'moment';
@@ -1132,8 +1132,6 @@ const CreateSlittingDetailsForm = (props) => {
   const [tweight, settweight] = useState(0);
   const [totalActualweight, setTotalActualWeight] = useState(0);
   const [actualYLR, setactualYLR] = useState(0);
-  const [actualSlitCutYLR, setactualSlitCutYLR] = useState(0);
-  const [actualSlittingYLR, setactualSlittingYLR] = useState(0);
   const [page, setPage] = useState(1);
   const [edit, setEdit] = useState([]);
   const [validate, setValidate] = useState(true);
@@ -1148,9 +1146,10 @@ const CreateSlittingDetailsForm = (props) => {
   const [deleteRecord, setDeleteRecord] = useState({});
   const [panelList, setPanelList] = useState([]);
   const [yieldLossRatio, setYieldLossRatio] = useState([]);
-  const [tagsName, setTagsName] = useState();
   const [packetClassification, setPacketClassification] = useState([]);
   const [editedRecordState, setEditedRecordState] = useState([]);
+  const [showSlittingPositiveToleranceModal, setShowSlittingPositiveToleranceModal] =
+    useState(false);
 
   const [groupedInstructions, setGroupedInstructions] = useState(new Map());
   const dispatch = useDispatch();
@@ -1679,6 +1678,7 @@ const CreateSlittingDetailsForm = (props) => {
       }, 1000);
     }
   }, [props.inward.instructionSaveSlittingSuccess]);
+
   useEffect(() => {
     if (props?.inward?.instructionUpdateSuccess) {
       message.success('Successfully Updated!', 2).then(() => {
@@ -1686,6 +1686,22 @@ const CreateSlittingDetailsForm = (props) => {
       });
     }
   }, [props?.inward?.instructionUpdateSuccess]);
+
+    useEffect(() => {
+      if (
+        props.inward?.isPositiveToleranceError &&
+        props.inward?.ptErrorCode === "PT_AVAILABLE"
+      )
+        setShowSlittingPositiveToleranceModal(true);
+      else if (
+        props?.inward?.isPositiveToleranceError &&
+        props.inward?.ptErrorCode === "PT_UPPERLIMIT_REACHED"
+      )
+        message.error(
+          "Positive tolerance limit reached. You can add up to 5% of the coil weight as Positive Tolerance (PT)."
+        );
+      else setShowSlittingPositiveToleranceModal(false);
+    }, [props.inward?.isPositiveToleranceError]);
 
   const handleCancel = (e) => {
     e.preventDefault();
@@ -1751,13 +1767,14 @@ const CreateSlittingDetailsForm = (props) => {
         )
       );
       const coil = {
+        positiveToleranceFlag: "PT_CHECK_REQUIRED",
         number: props.coil.coilNumber,
         instruction: instructionList,
         unfinish: props?.unfinish,
         editFinish: props?.editFinish,
       };
       props.updateInstruction(coil);
-      props.labelPrintEditFinish(coil);
+      // props.labelPrintEditFinish(coil);
       props.setShowSlittingModal(false);
     } else if (props.editFinish) {
       const instructionList = tableData.filter((item) =>
@@ -2027,6 +2044,25 @@ const CreateSlittingDetailsForm = (props) => {
       </Button>,
     ];
   };
+
+    const handlePositiveToleranceAccepted = () => {
+      const instructionList = tableData.filter((item) =>
+        editedRecordState.some(
+          (record) => record.instructionId === item.instructionId
+        )
+      );
+      const coil = {
+        positiveToleranceFlag: "ACCEPTED",
+        number: props.coil.coilNumber,
+        instruction: instructionList,
+        unfinish: props?.unfinish,
+        editFinish: props?.editFinish,
+      };
+      props.updateInstruction(coil);
+      // props.labelPrintEditFinish(coil);
+      setShowSlittingPositiveToleranceModal(false);
+      if (props.setShowSlittingModal) props.setShowSlittingModal(false);
+    };
 
   return (
     <>
@@ -2438,7 +2474,24 @@ const CreateSlittingDetailsForm = (props) => {
                   </Col>
                 </Row>
               )}
-
+              <Modal
+                width={700}
+                title="Additional weight confirmation"
+                visible={showSlittingPositiveToleranceModal}
+                onOk={() => {
+                  handlePositiveToleranceAccepted();
+                }}
+                onCancel={() => {
+                  props.setShowSlittingModal(true)
+                  setShowSlittingPositiveToleranceModal(false);
+                }}
+              >
+                <p>
+                  Are you sure you want to add additional weight{" "}
+                  {props.inward.ptWeight}kgs for the packet ?
+                </p>
+                <p>Please click OK to confirm</p>
+              </Modal>
               <Modal
                 title="Confirmation"
                 visible={showDeleteModal}

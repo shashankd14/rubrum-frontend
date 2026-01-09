@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   AutoComplete,
   Button,
@@ -23,6 +23,7 @@ import {
   getRefinedProductsFinal,
 } from "../../../../../appRedux/actions";
 import { METAL_DENSITY } from "../../../../../constants";
+import { useMemo } from "react";
 const { confirm } = Modal;
 
 const formItemLayout = {
@@ -40,7 +41,16 @@ const { TextArea } = Input;
 const ProductInfoForm = (props) => {
   const { Option } = AutoComplete;
   const { getFieldDecorator } = props.form;
-  
+
+  const availableQty = useMemo(() => {
+    const selectedMaterial = props.inwardStatus?.materialList.filter(
+      (material) => material.sku === props.inward.materialId.key
+    )[0];
+    return (
+      (selectedMaterial.quantity - selectedMaterial.quantity_billed || 0) * 1000
+    );
+  }, [props.inward.materialId.key]);
+
   const handleSubmit = (e) => {
     if (!props.inward.disableSelection)
       props.getRefinedProductsFinal({
@@ -73,7 +83,10 @@ const ProductInfoForm = (props) => {
             });
             return false;
           } else props.updateStep(2);
-        } else {
+        } else if (
+          props?.productInfo?.refinedProducts?.length === 0 ||
+          !props.inward.materialId
+        ) {
           message.error(
             "Material Id not found, please try again after entering all the data"
           );
@@ -609,7 +622,14 @@ const ProductInfoForm = (props) => {
                 </Select>
               )}
             </Form.Item>
-            <Form.Item label="Net Weight (in kgs)">
+            <Form.Item
+              label="Net Weight (in kgs)"
+              help={
+                props.form.getFieldError("netWeight")
+                  ? props.form.getFieldError("netWeight")
+                  : `You can enter maximum of ${availableQty} kgs`
+              }
+            >
               {getFieldDecorator("netWeight", {
                 rules: [
                   {
@@ -619,6 +639,11 @@ const ProductInfoForm = (props) => {
                   {
                     validator: (rule, value) => (value > 0 ? true : false),
                     message: "Net weight should be greater than 0",
+                  },
+                  {
+                    validator: (rule, value) =>
+                      value > availableQty ? false : true,
+                    message: `Net weight should be less than or equal ${availableQty} kgs`,
                   },
                 ],
               })(
