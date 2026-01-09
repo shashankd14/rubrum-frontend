@@ -83,7 +83,10 @@ const ProductInfoForm = (props) => {
             });
             return false;
           } else props.updateStep(2);
-        } else {
+        } else if (
+          props?.productInfo?.refinedProducts?.length === 0 ||
+          !props.inward.materialId
+        ) {
           message.error(
             "Material Id not found, please try again after entering all the data"
           );
