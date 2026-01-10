@@ -44,12 +44,12 @@ const ProductInfoForm = (props) => {
 
   const availableQty = useMemo(() => {
     const selectedMaterial = props.inwardStatus?.materialList?.filter(
-      (material) => material.sku === props.inward.materialId.key
+      (material) => material.sku === props?.inward?.materialId?.key
     )[0];
     return (
       (selectedMaterial?.quantity - selectedMaterial?.quantity_billed || 0) * 1000
     );
-  }, [props.inward.materialId.key]);
+  }, [props?.isManual]);
 
   const handleSubmit = (e) => {
     if (!props.inward.disableSelection)

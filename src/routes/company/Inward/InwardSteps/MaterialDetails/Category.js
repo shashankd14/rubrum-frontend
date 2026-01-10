@@ -97,6 +97,15 @@ const CategoryForm = (props) => {
   const handleSubmit = useCallback(
     (e) => {
       e.preventDefault();
+      if (
+        props.inward.brandId &&
+        props.inward.productTypeId &&
+        props.inward.productForm &&
+        !props.inward.disableSelection &&
+        !props.inward.materialId
+      ) {
+        props.setIsManual(true);
+      }
       props.form.validateFieldsAndScroll((err, values) => {
         if (!err) {
           props.setInwardDetails({ ...props.inward, ...values });
