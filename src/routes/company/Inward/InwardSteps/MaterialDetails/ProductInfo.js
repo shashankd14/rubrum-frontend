@@ -43,11 +43,11 @@ const ProductInfoForm = (props) => {
   const { getFieldDecorator } = props.form;
 
   const availableQty = useMemo(() => {
-    const selectedMaterial = props.inwardStatus?.materialList.filter(
+    const selectedMaterial = props.inwardStatus?.materialList?.filter(
       (material) => material.sku === props.inward.materialId.key
     )[0];
     return (
-      (selectedMaterial.quantity - selectedMaterial.quantity_billed || 0) * 1000
+      (selectedMaterial?.quantity - selectedMaterial?.quantity_billed || 0) * 1000
     );
   }, [props.inward.materialId.key]);
 
@@ -627,7 +627,7 @@ const ProductInfoForm = (props) => {
               help={
                 props.form.getFieldError("netWeight")
                   ? props.form.getFieldError("netWeight")
-                  : `You can enter maximum of ${availableQty} kgs`
+                  : !props.isManual ? `You can enter maximum of ${availableQty} kgs` : null
               }
             >
               {getFieldDecorator("netWeight", {
@@ -642,7 +642,7 @@ const ProductInfoForm = (props) => {
                   },
                   {
                     validator: (rule, value) =>
-                      value > availableQty ? false : true,
+                      !props.isManual && value > availableQty ? false : true,
                     message: `Net weight should be less than or equal ${availableQty} kgs`,
                   },
                 ],
@@ -688,6 +688,7 @@ const mapStateToProps = (state) => ({
   inwardStatus: state.inward,
   productInfo: state.productInfo,
   material: state.material,
+  isManual: state.productInfo.isManual,
 });
 
 const ProductInfo = Form.create({

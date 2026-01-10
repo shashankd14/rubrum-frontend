@@ -315,7 +315,6 @@ function* searchByMaterialId(action) {
                     mmDescription: fetchPartyListResponse.content[0].mmDescription,
                 }));
             }
-            yield put(setIsManual(false));
             yield put(searchByMaterialIdSuccess(fetchPartyListResponse));
         } else if (fetchPartyList.status === 401) {
             yield put(userSignOutSuccess());
