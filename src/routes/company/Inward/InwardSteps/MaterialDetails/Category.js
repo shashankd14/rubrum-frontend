@@ -105,6 +105,15 @@ const CategoryForm = (props) => {
         !props.inward.materialId
       ) {
         props.setIsManual(true);
+      } else if(props.inward?.materialId?.key) {
+        if (props.inwardStatus?.materialList?.length > 0) {
+          const isFromList = props.inwardStatus?.materialList.some(
+            (opt) => opt.value === props.inward?.materialId?.key
+          );
+          if (!isFromList) {
+            props.setIsManual(true);
+          } else props.setIsManual(false);
+        }
       }
       props.form.validateFieldsAndScroll((err, values) => {
         if (!err) {
@@ -192,16 +201,6 @@ const CategoryForm = (props) => {
                       onSearch={(value) => {
                         if (value) {
                           props.searchByMaterialId(value);
-                          if (props.inwardStatus?.materialList?.length > 0) {
-                            const isFromList =
-                              props.inwardStatus?.materialList.some(
-                                (opt) => opt.value === value
-                              );
-                            if (!isFromList) {
-                              props.setIsManual(true);
-                            } else
-                              props.setIsManual(false);
-                          }
                         }
                       }}
                       filterOption={(input, option) =>
