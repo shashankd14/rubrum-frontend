@@ -41,6 +41,10 @@ const DeliveryInfo = (props) => {
   const dispatch = useDispatch();
 
   const handlePacketPrice = (e) => {
+    if(checkRemarksIncomplete()){
+      message.error("Please fill all remarks for all the packets before proceeding", 2);
+      return;
+    }
     setPriceModal(true);
     const iList = props?.inward.inwardListForDelivery.filter(
       (item) =>
@@ -272,13 +276,6 @@ const DeliveryInfo = (props) => {
     }
   }, [props.inward.unprocessedSuccess]);
 
-  const handleRemark = (elem, id) => {
-    let index = remarksList.findIndex((elem) => elem.id === id);
-    let newRemarksList = remarksList;
-    newRemarksList[index] = { instructionId: id, remark: elem.target.value };
-    setRemarksList(newRemarksList);
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -329,6 +326,24 @@ const DeliveryInfo = (props) => {
       }
     }
   };
+
+  const checkRemarksIncomplete = () => {
+    let incomplete = false;
+    if (props.inward.inwardList.length > 0) {
+      props.inward.inwardListForDelivery.forEach((item) => {
+        if (
+          (item?.instructionId ||
+          item?.status?.statusName === "RECEIVED" ||
+          item?.status?.statusName ===
+            "READY TO DELIVER") && (!item.remarks || item.remarks.trim() === "")
+        ) {
+          incomplete = true;
+        }
+      });
+    }
+    return incomplete;
+  };
+
   return (
     <div>
       <h1>Delivery Information</h1>
