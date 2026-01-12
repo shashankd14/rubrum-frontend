@@ -113,6 +113,8 @@ const CategoryForm = (props) => {
           if (!isFromList) {
             props.setIsManual(true);
           } else props.setIsManual(false);
+        } else {
+          props.setIsManual(true);
         }
       }
       props.form.validateFieldsAndScroll((err, values) => {
