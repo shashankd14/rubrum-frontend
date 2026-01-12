@@ -108,7 +108,7 @@ const CategoryForm = (props) => {
       } else if(props.inward?.materialId?.key) {
         if (props.inwardStatus?.materialList?.length > 0) {
           const isFromList = props.inwardStatus?.materialList.some(
-            (opt) => opt.value === props.inward?.materialId?.key
+            (opt) => opt.sku === props.inward?.materialId?.key
           );
           if (!isFromList) {
             props.setIsManual(true);
