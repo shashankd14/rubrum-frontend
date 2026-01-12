@@ -20,6 +20,7 @@ import {
   searchByMaterialId,
   enableMaterialSelection,
   getRefinedProducts,
+  setIsManual,
 } from "../../../../../appRedux/actions";
 import { debounce } from "lodash";
 import TextArea from "antd/lib/input/TextArea";
@@ -96,6 +97,24 @@ const CategoryForm = (props) => {
   const handleSubmit = useCallback(
     (e) => {
       e.preventDefault();
+      if (
+        props.inward.brandId &&
+        props.inward.productTypeId &&
+        props.inward.productForm &&
+        !props.inward.disableSelection &&
+        !props.inward.materialId
+      ) {
+        props.setIsManual(true);
+      } else if(props.inward?.materialId?.key) {
+        if (props.inwardStatus?.materialList?.length > 0) {
+          const isFromList = props.inwardStatus?.materialList.some(
+            (opt) => opt.value === props.inward?.materialId?.key
+          );
+          if (!isFromList) {
+            props.setIsManual(true);
+          } else props.setIsManual(false);
+        }
+      }
       props.form.validateFieldsAndScroll((err, values) => {
         if (!err) {
           props.setInwardDetails({ ...props.inward, ...values });
@@ -180,7 +199,9 @@ const CategoryForm = (props) => {
                         props.searchByMaterialId(materialId?.key);
                       }}
                       onSearch={(value) => {
-                        if (value) props.searchByMaterialId(value);
+                        if (value) {
+                          props.searchByMaterialId(value);
+                        }
                       }}
                       filterOption={(input, option) =>
                         option.props.children
@@ -453,11 +474,16 @@ const CategoryForm = (props) => {
           {props.inward.disableSelection ? (
             <Col span={12}>
               <Form.Item label="Material Description">
-                <TextArea id="productTypeId" disabled value={props?.productInfo?.refinedProducts?.length &&
-                  !props.material.displayInfo > 0
-                    ? props?.productInfo?.refinedProducts[0]?.mmDescription
-                    : props.material.displayInfo.mmDescription}>
-                </TextArea>
+                <TextArea
+                  id="productTypeId"
+                  disabled
+                  value={
+                    props?.productInfo?.refinedProducts?.length &&
+                    !props.material.displayInfo > 0
+                      ? props?.productInfo?.refinedProducts[0]?.mmDescription
+                      : props.material.displayInfo.mmDescription
+                  }
+                ></TextArea>
               </Form.Item>
             </Col>
           ) : null}
@@ -615,4 +641,5 @@ export default connect(mapStateToProps, {
   searchByMaterialId,
   enableMaterialSelection,
   getRefinedProducts,
+  setIsManual,
 })(Category);
