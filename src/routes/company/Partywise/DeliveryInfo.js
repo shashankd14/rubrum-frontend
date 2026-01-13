@@ -30,76 +30,6 @@ const DeliveryInfo = (props) => {
   const [soMaterialIds, setSoMaterialIds] = useState({});
 
   const [priceModal, setPriceModal] = useState(false);
-  const [validationStatus, setValidationStatus] = useState(false);
-
-  useEffect(() => {
-    if (
-      props.packetwisePriceDC &&
-      typeof props.packetwisePriceDC.validationStatus === "boolean"
-    ) {
-      setValidationStatus(props.packetwisePriceDC.validationStatus);
-    }
-  }, [props.packetwisePriceDC.validationStatus]);
-
-  const handlePacketPrice = (e) => {
-    if(checkRemarksIncomplete()){
-      message.error("Please fill all remarks for all the packets before proceeding", 2);
-      return;
-    }
-    setPriceModal(true);
-    const iList = props?.inward.inwardListForDelivery.filter(
-      (item) =>
-        (item?.inwardEntryId && item?.status?.statusName === "RECEIVED") ||
-        (item?.instruction?.length &&
-          !item.childInstructions &&
-          !item.instructionId &&
-          item?.status?.statusName === "READY TO DELIVER")
-    );
-
-    if (iList?.length) {
-      const payload = {
-        inwardEntryId: iList.map((item) => ({
-          inwardId: item.inwardEntryId,
-        })),
-        laminationId,
-        vehicleNo,
-        packingRateId,
-        // motherCoilDispatch: true
-      };
-      setFullHandling(true);
-      props.getPacketwisePriceDCFullHandling(payload);
-      // props.saveUnprocessedDelivery(payload)
-      const reqObj = {
-        packingRateId,
-        laminationId,
-        vehicleNo,
-        inwardListForDelivery: props.inward.inwardListForDelivery.map(
-          (item) => ({
-            instructionId: item.instructionId,
-            remarks: item.remarks || null,
-            actualWeight: item.plannedWeight || item.actualWeight,
-          })
-        ),
-      };
-      dispatch(getPacketwisePriceDC(reqObj));
-    } else {
-      const reqObj = {
-        packingRateId,
-        vehicleNo,
-        laminationId,
-        inwardListForDelivery: props.inward.inwardListForDelivery.map(
-          (item) => ({
-            instructionId: item.instructionId,
-            remarks: item.remarks || null,
-            actualWeight: item.plannedWeight || item.actualWeight,
-          })
-        ),
-      };
-      dispatch(getPacketwisePriceDC(reqObj));
-    }
-    setPriceModal(true);
-  };
-  
   const deliveryColumns = [
     {
       title: "Plan Id",
@@ -214,6 +144,8 @@ const DeliveryInfo = (props) => {
   ];
   const [priceColumn, setPriceColumn] = useState(deliveryColumns);
 
+  const [validationStatus, setValidationStatus] = useState(false);
+
   const onInputChange = (index, soID, field) => {
     const newData = { ...soMaterialIds };
     newData[index] = { ...newData[index], ...{ [field]: soID } };
@@ -230,6 +162,222 @@ const DeliveryInfo = (props) => {
   }, [props.packetwisePriceDC.validationStatus]);
 
   const dispatch = useDispatch();
+
+  const handlePacketPrice = (e) => {
+    if (checkRemarksIncomplete()) {
+      message.error(
+        "Please fill all remarks for all the packets before proceeding",
+        2
+      );
+      return;
+    }
+    setPriceModal(true);
+    const iList = props?.inward.inwardListForDelivery.filter(
+      (item) =>
+        (item?.inwardEntryId && item?.status?.statusName === "RECEIVED") ||
+        (item?.instruction?.length &&
+          !item.childInstructions &&
+          !item.instructionId &&
+          item?.status?.statusName === "READY TO DELIVER")
+    );
+
+    if (iList?.length) {
+      const payload = {
+        inwardEntryId: iList.map((item) => ({
+          inwardId: item.inwardEntryId,
+        })),
+        laminationId,
+        vehicleNo,
+        deliveryType,
+        packingRateId,
+        // motherCoilDispatch: true
+      };
+      setFullHandling(true);
+      props.getPacketwisePriceDCFullHandling(payload);
+      // props.saveUnprocessedDelivery(payload)
+      const reqObj = {
+        packingRateId,
+        laminationId,
+        vehicleNo,
+        deliveryType,
+        inwardListForDelivery: props.inward.inwardListForDelivery.map(
+          (item) => ({
+            instructionId: item.instructionId,
+            remarks: item.remarks || null,
+            actualWeight: item.plannedWeight || item.actualWeight,
+          })
+        ),
+      };
+      dispatch(getPacketwisePriceDC(reqObj));
+    } else {
+      const reqObj = {
+        packingRateId,
+        vehicleNo,
+        deliveryType,
+        laminationId,
+        inwardListForDelivery: props.inward.inwardListForDelivery.map(
+          (item) => ({
+            instructionId: item.instructionId,
+            remarks: item.remarks || null,
+            actualWeight: item.plannedWeight || item.actualWeight,
+          })
+        ),
+      };
+      dispatch(getPacketwisePriceDC(reqObj));
+    }
+    setPriceModal(true);
+    setPriceColumn([
+      ...deliveryColumns,
+      ...(deliveryType === "Sales Order"
+        ? [
+            {
+              title: "Sales Order Number",
+              dataIndex: "deliveryDetails.customerInvoiceNo",
+              width: 200,
+              key: "soNumber",
+              render: (text, record, index) => (
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <Select
+                    style={{ flex: 1, minWidth: 0 }}
+                    labelInValue
+                    mode="combobox"
+                    optionLabelProp="label"
+                    // disabled={
+                    //   props.inward.disableSelection || props.inwardStatus.saveTemporary
+                    // }
+                    allowClear={true}
+                    value={
+                      record?.sono
+                        ? { key: record.sono, label: record.sono }
+                        : soMaterialIds[record.instructionId]?.sono
+                        ? {
+                            key: soMaterialIds[record.instructionId]?.sono,
+                            label: soMaterialIds[record.instructionId]?.sono,
+                          }
+                        : undefined
+                    }
+                    notFoundContent={null}
+                    showSearch={true}
+                    placeholder="Select a SO number"
+                    optionFilterProp="children"
+                    showArrow={true}
+                    onSelect={(soId, option) => {
+                      if (!soId) {
+                        onInputChange(record.instructionId, null, "sono");
+                        return;
+                      }
+                      dispatch(fetchMaterialsBySoID(soId?.key));
+                      onInputChange(record.instructionId, soId?.key, "sono");
+                    }}
+                    onChange={(materialId, option) => {
+                      if (!materialId) {
+                        onInputChange(record.instructionId, null, "sono");
+                        return;
+                      }
+                      onInputChange(
+                        record.instructionId,
+                        materialId?.key,
+                        "sono"
+                      );
+                    }}
+                    filterOption={(input, option) =>
+                      option.props.children
+                        ?.toLowerCase()
+                        ?.indexOf(input?.toLowerCase()) >= 0
+                    }
+                  >
+                    {(record?.mappedSOList || []).map((so) => (
+                      <Option key={so} value={so} label={so}>
+                        {so}
+                      </Option>
+                    ))}
+                  </Select>
+                </div>
+              ),
+            },
+            {
+              title: "Materials",
+              dataIndex: "deliveryDetails.materialId",
+              key: "materialId",
+              width: 200,
+              render: (text, record, index) => (
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <Select
+                    style={{ flex: 1, minWidth: 0 }}
+                    labelInValue
+                    mode="combobox"
+                    optionLabelProp="label"
+                    // disabled={
+                    //   props.inward.disableSelection || props.inwardStatus.saveTemporary
+                    // }
+                    allowClear={true}
+                    value={
+                      record?.mmid
+                        ? { key: record.mmid, label: record.mmid }
+                        : soMaterialIds[record.instructionId]?.mmid
+                        ? {
+                            key: soMaterialIds[record.instructionId]?.mmid,
+                            label: soMaterialIds[record.instructionId]?.mmid,
+                          }
+                        : undefined
+                    }
+                    notFoundContent={null}
+                    showSearch={true}
+                    placeholder="Select a material ID"
+                    optionFilterProp="children"
+                    showArrow={true}
+                    onSelect={(materialId, option) => {
+                      if (!materialId) {
+                        onInputChange(record.instructionId, null, "mmid");
+                        return;
+                      }
+                      onInputChange(
+                        record.instructionId,
+                        materialId?.key,
+                        "mmid"
+                      );
+                    }}
+                    onChange={(materialId, option) => {
+                      if (!materialId) {
+                        onInputChange(record.instructionId, null, "mmid");
+                        return;
+                      }
+                      onInputChange(
+                        record.instructionId,
+                        materialId?.key,
+                        "mmid"
+                      );
+                    }}
+                    filterOption={(input, option) =>
+                      option.props.children
+                        ?.toLowerCase()
+                        ?.indexOf(input?.toLowerCase()) >= 0
+                    }
+                  >
+                    {soMaterialIds[record.instructionId]?.sono &&
+                    props.salesOrder?.materials
+                      ? (
+                          props.salesOrder?.materials[
+                            soMaterialIds[record.instructionId]?.sono
+                          ] || []
+                        ).map((material) => (
+                          <Option
+                            key={material}
+                            value={material}
+                            label={material}
+                          >
+                            {material}
+                          </Option>
+                        ))
+                      : null}
+                  </Select>
+                </div>
+              ),
+            },
+          ]
+        : []),
+    ]);
+  };
 
   useEffect(() => {
     const partyId = props.inward.inwardListForDelivery?.map(
@@ -364,9 +512,9 @@ const DeliveryInfo = (props) => {
       props.inward.inwardListForDelivery.forEach((item) => {
         if (
           (item?.instructionId ||
-          item?.status?.statusName === "RECEIVED" ||
-          item?.status?.statusName ===
-            "READY TO DELIVER") && (!item.remarks || item.remarks.trim() === "")
+            item?.status?.statusName === "RECEIVED" ||
+            item?.status?.statusName === "READY TO DELIVER") &&
+          (!item.remarks || item.remarks.trim() === "")
         ) {
           incomplete = true;
         }
