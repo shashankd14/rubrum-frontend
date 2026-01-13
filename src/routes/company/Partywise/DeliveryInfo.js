@@ -10,6 +10,7 @@ import {
   generateDCPdf,
   resetInstruction,
   saveUnprocessedDelivery,
+  fetchMaterialsBySoID,
 } from "../../../appRedux/actions";
 import moment from "moment";
 import { Button, Table, Modal } from "antd";
@@ -17,6 +18,7 @@ import { Button, Table, Modal } from "antd";
 const DeliveryInfo = (props) => {
   const Option = Select.Option;
   const [vehicleNo, setVehicleNo] = useState("");
+  const [deliveryType, setDeliveryType] = useState("");
   const [remarksList, setRemarksList] = useState([]);
   const [instructionList, setInstructionList] = useState([]);
   const [fullHandling, setFullHandling] = useState(false);
@@ -25,6 +27,7 @@ const DeliveryInfo = (props) => {
   const [packingRateId, setPackingRateId] = useState("");
   const [laminationCharges, setLaminationCharges] = useState(0);
   const [laminationId, setLaminationId] = useState("");
+  const [soMaterialIds, setSoMaterialIds] = useState({});
 
   const [priceModal, setPriceModal] = useState(false);
   const [validationStatus, setValidationStatus] = useState(false);
@@ -37,8 +40,6 @@ const DeliveryInfo = (props) => {
       setValidationStatus(props.packetwisePriceDC.validationStatus);
     }
   }, [props.packetwisePriceDC.validationStatus]);
-
-  const dispatch = useDispatch();
 
   const handlePacketPrice = (e) => {
     if(checkRemarksIncomplete()){
@@ -98,7 +99,8 @@ const DeliveryInfo = (props) => {
     }
     setPriceModal(true);
   };
-  const priceColumn = [
+  
+  const deliveryColumns = [
     {
       title: "Plan Id",
       dataIndex: "instructionId",
@@ -210,6 +212,24 @@ const DeliveryInfo = (props) => {
       key: "totalPrice",
     },
   ];
+  const [priceColumn, setPriceColumn] = useState(deliveryColumns);
+
+  const onInputChange = (index, soID, field) => {
+    const newData = { ...soMaterialIds };
+    newData[index] = { ...newData[index], ...{ [field]: soID } };
+    setSoMaterialIds(newData);
+  };
+
+  useEffect(() => {
+    if (
+      props.packetwisePriceDC &&
+      typeof props.packetwisePriceDC.validationStatus === "boolean"
+    ) {
+      setValidationStatus(props.packetwisePriceDC.validationStatus);
+    }
+  }, [props.packetwisePriceDC.validationStatus]);
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const partyId = props.inward.inwardListForDelivery?.map(
@@ -288,6 +308,16 @@ const DeliveryInfo = (props) => {
           item?.status?.statusName === "READY TO DELIVER")
     );
 
+    const emptySo =
+      deliveryType === "Sales Order" &&
+      (Object.values(soMaterialIds).length == 0 ||
+        Object.values(soMaterialIds).some((item) => !item.sono || !item.mmid));
+
+    if (emptySo) {
+      message.error("Please select Sales Order Number and Material ID");
+      return;
+    }
+
     if (iList?.length) {
       const payload = {
         inwardEntryId: iList.map((item) => item.inwardEntryId),
@@ -304,6 +334,7 @@ const DeliveryInfo = (props) => {
         vehicleNo,
         laminationId,
         inwardListForDelivery: props.inward.inwardListForDelivery,
+        soMaterialIds: soMaterialIds,
       };
       props.postDeliveryConfirm(reqObj);
       if (props.inward?.unprocessedSuccess?.length) {
@@ -458,10 +489,10 @@ const DeliveryInfo = (props) => {
       {props.inward.inwardList.length > 0 ? (
         <div>
           <div style={{ display: "flex" }}>
-            <div style={{ width: "20%", marginBottom: "15px" }}>
+            <div style={{ marginBottom: "15px" }}>
               <Select
                 showSearch
-                style={{ width: 300 }}
+                style={{ width: "300px" }}
                 className="Packing Rate"
                 placeholder="Select Packing"
                 name="partyName"
@@ -481,11 +512,10 @@ const DeliveryInfo = (props) => {
                 ))}
               </Select>
             </div>{" "}
-            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
-            <div style={{ width: "20%", marginBottom: "15px", flex: 5 }}>
+            <div style={{ marginBottom: "15px", flex: 5 }}>
               <Select
                 showSearch
-                style={{ width: 400 }}
+                style={{ width: "300px", marginLeft: "20px" }}
                 className="Packing Rate"
                 placeholder="Select Lamination Charges"
                 name="partyName"
@@ -505,7 +535,7 @@ const DeliveryInfo = (props) => {
               </Select>
             </div>
           </div>
-          <Row>
+          <div style={{ display: "flex" }}>
             <Col span={8}>
               {!!partyRate && (
                 <div style={{ marginRight: "270px" }}>
@@ -520,18 +550,41 @@ const DeliveryInfo = (props) => {
                 </div>
               )}
             </Col>
-          </Row>
-          <div style={{ width: "20%", marginBottom: "15px" }}>
-            <Input
-              placeholder="Vehicle Number"
-              type="text"
-              onChange={(e) => setVehicleNo(e.target.value)}
-            />
+          </div>
+          <div style={{ display: "flex" }}>
+            <div>
+              <div style={{ marginBottom: "15px" }}>
+                <Input
+                  style={{ width: "300px" }}
+                  placeholder="Vehicle Number"
+                  type="text"
+                  onChange={(e) => setVehicleNo(e.target.value)}
+                />
+              </div>
+            </div>
+            <div>
+              <div
+                style={{
+                  marginBottom: "15px",
+                }}
+              >
+                <Select
+                  placeholder="Delivery Type"
+                  style={{ width: "300px", marginLeft: "20px" }}
+                  onSelect={(value) => setDeliveryType(value)}
+                >
+                  <Option value="Sales Order">Sales Order</Option>
+                  <Option value="Stock Transfer">⁠Stock Transfer</Option>
+                  <Option value="Scrap">⁠Scrap</Option>
+                  <Option value="Others">Others</Option>
+                </Select>
+              </div>
+            </div>
           </div>
           <div>
             <Button
               type="primary"
-              disabled={vehicleNo.length < 1}
+              disabled={vehicleNo.length < 1 || !deliveryType}
               onClick={handlePacketPrice}
             >
               Confirm
@@ -539,7 +592,7 @@ const DeliveryInfo = (props) => {
             <Modal
               title="Packet wise Rate Details"
               visible={priceModal}
-              width={1500}
+              width={2500}
               onCancel={() => {
                 setPriceModal(false);
               }}
@@ -605,6 +658,7 @@ const mapStateToProps = (state) => {
     packing: state.packing,
     packetwisePriceDC: state.inward?.packetwisePriceDC,
     laminationCharges: state.rates.laminationChargesParty,
+    salesOrder: state.salesOrder,
   };
   return mappedProps;
 };

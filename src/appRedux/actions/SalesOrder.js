@@ -11,8 +11,11 @@ import {
   REQUEST_SAVE_SO_FOR_PACKET_SUCCESS,
   REQUEST_SO_PDF,
   REQUEST_SO_PDF_SUCCESS,
-  REQUEST_SO_PDF_ERROR
-} from '../../constants/ActionTypes';
+  REQUEST_SO_PDF_ERROR,
+  REQUEST_MATERIALS_BY_SO_ID,
+  REQUEST_MATERIALS_BY_SO_ID_SUCCESS,
+  REQUEST_MATERIALS_BY_SO_ID_ERROR,
+} from "../../constants/ActionTypes";
 
 export const fetchSalesOrderList = (page, pageSize, searchValue, partyId) =>  ({
   type: REQUEST_SALES_ORDER_LIST,
@@ -85,4 +88,20 @@ export const openSoPdfSuccess = (soPdf) => ({
 export const openSoPdfError = (soPdf) => ({
   type: REQUEST_SO_PDF_ERROR,
   soPdf
+});
+
+export const fetchMaterialsBySoID = (soId) => ({
+  type: REQUEST_MATERIALS_BY_SO_ID,
+  soId,
+});
+
+export const fetchMaterialsBySoIDSuccess = (materials, soId) => ({
+  type: REQUEST_MATERIALS_BY_SO_ID_SUCCESS,
+  materials,
+  soId,
+});
+
+export const fetchMaterialsBySoIDError = (error) => ({
+  type: REQUEST_MATERIALS_BY_SO_ID_ERROR,
+  error,
 });
