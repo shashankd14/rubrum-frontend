@@ -8,12 +8,13 @@ import {
   deleteByDeliveryId,
   resetDeleteInward,
 } from "../../../appRedux/actions";
-import { Card, Table, Select, Input, message } from "antd";
+import { Card, Table, Select, Input, message, Modal } from "antd";
 import SearchBox from "../../../components/SearchBox";
 import ReconcileModal from "./ReconcileModal";
 import moment from "moment";
 import IntlMessages from "../../../util/IntlMessages";
 const Option = Select.Option;
+
 function List(props) {
   const { totalItems } = props.delivery;
   const [searchValue, setSearchValue] = useState("");
@@ -21,6 +22,7 @@ function List(props) {
   const [reconcileModal, setreconcileModal] = useState(false);
   const [deliveryRecord, setDeliveryRecord] = useState();
   const [customerValue, setCustomerValue] = useState("");
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const [pageNo, setPageNo] = React.useState(1);
   const [totalPageItems, setTotalItems] = React.useState(0);
@@ -114,6 +116,7 @@ function List(props) {
             onClick={() => handleAdd(record)}
           />
           <i
+            style={{ color: "red", marginLeft: 10 }}
             className="icon icon-trash gx-margin"
             onClick={() => handleDelete(record)}
           />
@@ -131,17 +134,20 @@ function List(props) {
       ),
     },
   ];
+
   useEffect(() => {
     if (props.delivery.deleteSuccess) {
-      message.success("Successfully deleted the coil", 2).then(() => {
+      message.success("Delivery deleted successfully", 2).then(() => {
         props.fetchDeliveryList(pageNo, 15);
         props.resetDeleteInward();
       });
     }
   }, [props.delivery.deleteSuccess]);
+
   const handleDelete = (record) => {
-    props.deleteByDeliveryId(Number(record.deliveryDetails.deliveryId));
+    setShowDeleteModal(record);
   };
+
   const handleAdd = (record) => {
     let reqObj = {
       deliveryId: record.deliveryDetails.deliveryId,
@@ -150,12 +156,14 @@ function List(props) {
     };
     props.postDeliveryConfirm(reqObj);
   };
+
   const onInputChange =
     (key, index, type) => (e: React.ChangeEvent<HTMLInputElement>) => {
       const newData = [...deliveryList];
       newData[index].deliveryDetails[key] = e.target.value;
       setDeliveryList(newData);
     };
+
   useEffect(() => {
     props.fetchPartyList();
   }, []);
@@ -178,8 +186,7 @@ function List(props) {
     }
   }, [searchValue]);
 
-  const handleChange = (pagination, filters, sorter) => {
-  };
+  const handleChange = (pagination, filters, sorter) => {};
 
   const handleCustomerChange = (value) => {
     if (value) {
@@ -241,6 +248,7 @@ function List(props) {
           columns={columns}
           dataSource={deliveryList}
           onChange={handleChange}
+          loading={props.delivery.loading}
           pagination={{
             pageSize: 15,
             onChange: (page) => {
@@ -252,6 +260,20 @@ function List(props) {
           }}
         />
       </Card>
+      <Modal
+        title="Delete confirmation"
+        visible={showDeleteModal}
+        onOk={() => {
+          props.deleteByDeliveryId(
+            Number(showDeleteModal?.deliveryDetails?.deliveryId)
+          );
+          setShowDeleteModal(false);
+        }}
+        onCancel={() => setShowDeleteModal(false)}
+      >
+        <p>Are you sure to proceed for delete delivery ? </p>
+        <p>Please click OK to confirm</p>
+      </Modal>
     </div>
   );
 }

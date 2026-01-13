@@ -28,9 +28,12 @@ import {
   updateClassificationSlitAndCutBeforeFinish,
 } from "../../../appRedux/actions/Inward";
 import { labelPrintEditFinish } from "../../../appRedux/actions/LabelPrint";
-import { APPLICATION_DATE_FORMAT, METAL_DENSITY } from "../../../constants";
+import {
+  APPLICATION_DATE_FORMAT,
+  METAL_DENSITY,
+  STATUS_IN_PROGRESS,
+} from "../../../constants";
 import { fetchYLRList } from "../../../appRedux/actions";
-import { use } from "react";
 
 const Option = Select.Option;
 
@@ -125,6 +128,7 @@ const CreateCuttingDetailsForm = (props) => {
         : props.coilDetails.childInstructions
       : cuts
   );
+
   const columns = [
     {
       title: "Plan No",
@@ -461,6 +465,7 @@ const CreateCuttingDetailsForm = (props) => {
       key: "processDate",
     },
   ];
+
   const columnsSlitCut = [
     {
       title: "Serial No",
@@ -546,6 +551,7 @@ const CreateCuttingDetailsForm = (props) => {
       key: "action",
     },
   ];
+
   const columnsSlit = [
     {
       title: "Serial No",
@@ -596,7 +602,7 @@ const CreateCuttingDetailsForm = (props) => {
     });
     setTagsName(record?.packetClassification?.tagId);
   };
-
+  
   const [weightAdditions, setWeightAdditions] = useState([]);
   const [totalWeightAddition, setTotalWeightAddition] = useState(0);
   const [cuttingfilteredData, setCuttingFilteredData] = useState();
@@ -714,17 +720,17 @@ const CreateCuttingDetailsForm = (props) => {
     } else {
       setValidate(false);
       setSaveInstruction((prev) => {
-        return prev.length > 0
-          ? [
-              {
-                ...prev[0],
-                instructionRequestDTOs: prev[0]?.instructionRequestDTOs?.filter(
-                  (item) => item.deleteUniqId !== record.deleteUniqId
-                ),
-              },
-            ]
-          : [];
+        const updated = [
+          {
+            ...prev[0],
+            instructionRequestDTOs: prev[0].instructionRequestDTOs.filter(
+              (item) => item.deleteUniqId !== record.deleteUniqId
+            ),
+          },
+        ];
+        return updated;
       });
+
       setlength(
         length + Number(record.plannedLength) * Number(record.plannedNoOfPieces)
       );
@@ -746,6 +752,7 @@ const CreateCuttingDetailsForm = (props) => {
       no: no,
     });
   };
+
   //Add Size >
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -835,6 +842,7 @@ const CreateCuttingDetailsForm = (props) => {
       }
     });
   };
+
   useEffect(() => {
     if (props.inward.process.length && props.inward.process.no) {
       let weight = cuts.map((i) =>
@@ -928,32 +936,36 @@ const CreateCuttingDetailsForm = (props) => {
         } else {
           data = data.flat();
           let cutsData = [...data];
-          cutsData =
-            props.unfinish || props.editFinish
-              ? props.slitCut
-                ? cutsData.filter(
-                    (item) =>
-                      item.process.processId === 3 &&
-                      item.status.statusId === 3 &&
-                      item.parentGroupId !== null
-                  )
-                : cutsData.filter(
-                    (item) =>
-                      item.process.processId === 1 && item.status.statusId === 3
-                  )
-              : props.wip
-              ? props.slitCut
-                ? cutsData.filter(
-                    (item) =>
-                      item.process.processId === 3 &&
-                      item.status.statusId === 2 &&
-                      item.parentGroupId !== null
-                  )
-                : cutsData.filter(
-                    (item) =>
-                      item.process.processId === 1 && item.status.statusId === 2
-                  )
-              : cutsData.filter((item) => item.process.processId === 1);
+          cutsData = cutsData.filter((item) => {
+            const isSlitCut = props.slitCut;
+            const processId = isSlitCut ? 3 : 1;
+
+            // Determine the desired status
+            let statusId;
+            if (props.unfinish || props.editFinish) {
+              statusId = 3;
+            } else if (props.wip) {
+              statusId = 2;
+            } else {
+              //added default to remove already delivered packets from the list
+              statusId = STATUS_IN_PROGRESS; // no specific status filter
+            }
+
+            // Parent group check only applies for slitCut items
+            const parentGroupCheck = isSlitCut
+              ? item.parentGroupId !== null
+              : true;
+
+            // If no status filter, just filter by process
+            if (statusId === null) return item.process.processId === 1;
+
+            return (
+              item.process.processId === processId &&
+              item.status.statusId === statusId &&
+              parentGroupCheck
+            );
+          });
+          console.log("cutsData", cutsData);
           setCuts(cutsData);
         }
       }
@@ -1634,6 +1646,14 @@ const CreateCuttingDetailsForm = (props) => {
       } else {
         props.setShowCuttingModal(false);
       }
+    } else if(props.coilDetails && props.coilDetails.instruction) {
+      console.log(props.coilDetails);
+      const coil = {
+        number: props.coil.coilNumber,
+        instruction: props.coilDetails.instruction,
+        editFinish: true,
+      };
+      props.updateInstruction(coil);
     }
   };
 
@@ -1741,15 +1761,19 @@ const CreateCuttingDetailsForm = (props) => {
         key="submit"
         type="primary"
         loading={loading}
-        disabled={props.inward.loading}
+        disabled={props.inward.loading || cuts.length === 0}
         onClick={handleOk}
       >
         {props.inward.loading
           ? "Loading..."
           : cuts.length > 0
-          ? props.wip
+          ? props.wip && !props.unfinish
             ? "Finish"
+            : props.wip && props.unfinish
+            ? "Unfinish"
             : "Save & Generate"
+          : props.wip && props.unfinish
+          ? "Unfinish"
           : "OK"}
       </Button>,
     ];

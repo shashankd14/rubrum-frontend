@@ -27,3 +27,4 @@ export const sidebarMenuItems = {
     packing: "Packing",
     purchaseInvoices: "Purchase Invoices",
 }
+export const STATUS_IN_PROGRESS = 2;
