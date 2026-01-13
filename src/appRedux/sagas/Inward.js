@@ -835,7 +835,8 @@ function* requestUpdateInstruction(action) {
     });
     if (updateInstruction.status === 200) {
       yield put(updateInstructionSuccess(updateInstruction));
-      yield put(labelPrintEditFinish(action.coil));
+      if(!unfinish)
+        yield put(labelPrintEditFinish(action.coil));
     } else if (updateInstruction.status === 400) {
       const errorResponse = yield updateInstruction.json();
       yield put(updateInstructionPT(errorResponse));
