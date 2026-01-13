@@ -348,7 +348,7 @@ const SidebarContent = () => {
                     </Link>
                   </Menu.Item>
                 )}
-                {/* {true && (
+                {true && (
                   <Menu.Item key="company/salesOrderModule">
                     <Link to="/company/sales-orderModule">
                       <i className="icon icon-crypto" />
@@ -357,8 +357,8 @@ const SidebarContent = () => {
                       </span>
                     </Link>
                   </Menu.Item>
-                )} */}
-                {/* {true && (
+                )} 
+                {true && (
                   <Menu.Item key="company/consolidatedPlans">
                     <Link to="/company/consolidated-plans">
                       <i className="icon icon-crypto" />
@@ -367,7 +367,7 @@ const SidebarContent = () => {
                       </span>
                     </Link>
                   </Menu.Item>
-                )} */}
+                )}
               </MenuItemGroup>
             </MenuItemGroup>
           </Menu>

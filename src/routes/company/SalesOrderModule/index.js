@@ -18,14 +18,21 @@ const SalesOrderModule = () => {
  
 const iframeRef = useCallback((node) => {
     if (node !== null) {
-      node.onload = () => node?.contentWindow?.postMessage({
-      type: 'SET_DATA',
-      payload: {
-        token: localStorage.getItem('userToken') || '',
-        refreshToken: localStorage.getItem('refreshToken') || '',
-        user: { name: localStorage.getItem('userToken'), id: localStorage.getItem('userId') },
-      },
-    }, 'http://localhost:5173');
+      node.onload = () =>
+        node?.contentWindow?.postMessage(
+          {
+            type: "SET_DATA",
+            payload: {
+              token: localStorage.getItem("userToken") || "",
+              refreshToken: localStorage.getItem("refreshToken") || "",
+              user: {
+                name: localStorage.getItem("userToken"),
+                id: localStorage.getItem("userId"),
+              },
+            },
+          },
+          "https://app-uat.workeazy.in/so"
+        );
     }
 }, [])
 
@@ -46,11 +53,11 @@ const iframeRef = useCallback((node) => {
     return (
       <iframe
         ref={iframeRef}
-        src="http://localhost:5173/sales-order"
+        src="https://app-uat.workeazy.in/so/sales-order"
         title="Vite App"
-        style={{ width: '100%', height: '900px', border: 'none' }}
+        style={{ width: "100%", height: "900px", border: "none" }}
       ></iframe>
-    )
+    );
 }
 
 export default SalesOrderModule;

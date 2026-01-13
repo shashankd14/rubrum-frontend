@@ -886,11 +886,20 @@ function* postDeliveryConfirmRequest(payload) {
           tempItem.additionalWeight = parseFloat(
             payload?.payload?.additionalWeights[item.instructionId]
           );
-        packetsData.push(tempItem);
+          if (
+            payload.payload?.soMaterialIds &&
+            payload.payload?.soMaterialIds[item.instructionId]
+          ) {
+            tempItem.sono =
+              payload.payload?.soMaterialIds[item.instructionId]?.sono;
+            tempItem.mmid = payload.payload?.soMaterialIds[item.instructionId]?.mmid;
+          }
+          packetsData.push(tempItem);
       }
     }
     req_obj = {
       vehicleNo: payload.payload?.vehicleNo,
+      deliveryType: payload.payload?.deliveryType,
       packingRateId: payload.payload?.packingRateId,
       laminationId: payload.payload?.laminationId,
       taskType: payload.payload?.taskType ? payload.payload?.taskType : "",
@@ -937,6 +946,7 @@ function* fetchInwardInstructionDetails(action) {
     yield put(getInstructionByIdError(error));
   }
 }
+
 function* saveUnprocessedDelivery(action) {
   let fetchInwardInstruction;
   try {

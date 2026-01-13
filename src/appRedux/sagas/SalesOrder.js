@@ -4,6 +4,7 @@ import {
   REQUEST_ALL_PACKETS_LIST,
   REQUEST_SAVE_SO_FOR_PACKET,
   REQUEST_SO_PDF,
+  REQUEST_MATERIALS_BY_SO_ID,
 } from "../../constants/ActionTypes";
 import { getUserToken } from "./common";
 import {
@@ -16,6 +17,8 @@ import {
   saveSalesOrderForPacketError,
   openSoPdfSuccess,
   openSoPdfError,
+  fetchMaterialsBySoIDSuccess,
+  fetchMaterialsBySoIDError,
 } from "../actions";
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -25,7 +28,6 @@ const getHeaders = () => ({
 });
 
 function* fetchAllPackets(action) {
-  console.log("Action in saga", action);
   const body = {
     pageNo: action.page,
     pageSize: action.pageSize,
@@ -122,11 +124,30 @@ function* fetchSoPdf(action) {
   }
 }
 
+function* fetchMaterialsBySoID(action) {
+  try {
+    const materialsRequest = yield fetch(`${baseUrl}api/so/mmidbyso`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...getHeaders() },
+      body: JSON.stringify({ soNo: action.soId }),
+    });
+    if (materialsRequest.status === 200) {   
+      const materialsResponse = yield materialsRequest.json();
+      yield put(fetchMaterialsBySoIDSuccess(materialsResponse, action.soId));
+    } else if (materialsRequest.status === 401) {
+      yield put(userSignOutSuccess());
+    } else yield put(fetchMaterialsBySoIDError("error"));
+  } catch (error) {
+    yield put(fetchMaterialsBySoIDError(error));
+  }
+}
+
 export function* watchAllFetchRequests() {
   yield takeLatest(REQUEST_ALL_PACKETS_LIST, fetchAllPackets);
   yield takeLatest(REQUEST_SALES_ORDER_LIST, fetchSalesOrders);
   yield takeLatest(REQUEST_SAVE_SO_FOR_PACKET, saveSoForPacket);
   yield takeLatest(REQUEST_SO_PDF, fetchSoPdf);
+  yield takeLatest(REQUEST_MATERIALS_BY_SO_ID, fetchMaterialsBySoID);
 }
 
 export default function* SalesOrderSagas() {
