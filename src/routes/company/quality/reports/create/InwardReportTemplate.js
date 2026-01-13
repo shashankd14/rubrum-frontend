@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Card, Col, Icon, Input, Radio, Row } from 'antd'
+import { Button, Col, Icon, Input, Radio, Row } from 'antd'
 import Dragger from 'antd/lib/upload/Dragger'
 import { useHistory } from 'react-router';
 
@@ -52,7 +52,6 @@ const InwardReportTemplate = (props) => {
     const [isDisabled, setIsDisabled] = useState(false);
 
     useEffect(() => {
-        console.log(props)
         setIsDisabled(props.action === 'view')
         if (props.from === "qr") {
             initTemplateForm();
@@ -68,7 +67,6 @@ const InwardReportTemplate = (props) => {
         templateDetailsData.forEach((td) => {
             val[td.id] = td;
         });
-        console.log(val)
         setTemplateData(val)
     }
     const [comments, setComment] = useState('');

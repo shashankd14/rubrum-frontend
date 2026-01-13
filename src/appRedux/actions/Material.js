@@ -24,6 +24,20 @@ import {
     FETCH_THICKNESS,
     FETCH_THICKNESS_SUCCESS,
     FETCH_THICKNESS_ERROR,
+    FETCH_MATERIAL_CATEGORIES,
+    FETCH_MATERIAL_CATEGORIES_SUCCESS,
+    FETCH_MATERIAL_CATEGORIES_ERROR,
+    FETCH_MATERIAL_SUB_CATEGORIES,
+    FETCH_MATERIAL_SUB_CATEGORIES_SUCCESS,
+    FETCH_MATERIAL_SUB_CATEGORIES_ERROR,
+    FETCH_MATERIAL_LEAF_CATEGORY,
+    FETCH_MATERIAL_LEAF_CATEGORY_SUCCESS,
+    FETCH_MATERIAL_LEAF_CATEGORY_ERROR,
+    SAVE_MATERIAL_DISPLAY_INFO,
+    SEARCH_MATERIAL_BY_ID,
+    SEARCH_MATERIAL_BY_ID_SUCCESS,
+    SEARCH_MATERIAL_BY_ID_ERROR,
+    SAVE_MATERIAL_DISPLAY_INFO_OBJ
 } from "../../constants/ActionTypes";
 
 export const fetchMaterialList = () => ({
@@ -141,3 +155,72 @@ export const fetchThicknessError = (error) => ({
 });
 
 
+export const getMaterialCategories = () => ({
+    type: FETCH_MATERIAL_CATEGORIES,
+});
+
+export const getMaterialCategoriesSuccess = (categories) => ({
+    type: FETCH_MATERIAL_CATEGORIES_SUCCESS,
+    categories
+});
+
+export const getMaterialCategoriesError = (error) => ({
+    type: FETCH_MATERIAL_CATEGORIES_ERROR,
+    error
+});
+
+export const getMaterialSubCategories = (categoryId) => ({
+    type: FETCH_MATERIAL_SUB_CATEGORIES,
+    categoryId
+});
+
+export const getMaterialSubCategoriesSuccess = (subCategories) => ({
+    type: FETCH_MATERIAL_SUB_CATEGORIES_SUCCESS,
+    subCategories
+});
+
+export const getMaterialSubCategoriesError = (error) => ({
+    type: FETCH_MATERIAL_SUB_CATEGORIES_ERROR,
+    error
+});
+
+export const getLeafCategory = (subCategoryId) => ({
+    type: FETCH_MATERIAL_LEAF_CATEGORY,
+    subCategoryId
+});
+
+export const getLeafCategorySuccess = (leafCategories) => ({
+    type: FETCH_MATERIAL_LEAF_CATEGORY_SUCCESS,
+    leafCategories
+});
+
+export const getLeafCategoryError = (error) => ({
+    type: FETCH_MATERIAL_LEAF_CATEGORY_ERROR,
+    error
+});
+
+export const searchByMaterialId = (materialId) => ({
+    type: SEARCH_MATERIAL_BY_ID,
+    materialId
+});
+
+export const searchByMaterialIdSuccess = (materailData) => ({
+    type: SEARCH_MATERIAL_BY_ID_SUCCESS,
+    materailData
+});
+
+export const searchByMaterialIdError = (error) => ({
+    type: SEARCH_MATERIAL_BY_ID_ERROR,
+    error
+});
+
+export const saveMaterialInfo = (displayKey,displayValue) => ({
+    type: SAVE_MATERIAL_DISPLAY_INFO,
+    displayKey,
+    displayValue
+});
+
+export const saveMaterialDisplayInfo = (displayInfo) => ({
+    type: SAVE_MATERIAL_DISPLAY_INFO_OBJ,
+    displayInfo
+});

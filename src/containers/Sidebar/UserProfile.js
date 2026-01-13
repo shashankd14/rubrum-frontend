@@ -9,7 +9,6 @@ const UserProfile = () => {
   const userMenuOptions = (
     <ul className="gx-user-popover">
       <li>My Account</li>
-      <li>Connections</li>
       <li onClick={() => dispatch(userSignOut())}>Logout
       </li>
     </ul>

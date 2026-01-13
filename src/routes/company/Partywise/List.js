@@ -1,8 +1,18 @@
 //src-routes-company-Partywise-List.js
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { connect } from "react-redux";
-import { Button, Card, Divider, Select, Table, Modal, message } from "antd";
-import SearchBox from "../../../components/SearchBox";
+import {
+  Button,
+  Card,
+  Divider,
+  Select,
+  Table,
+  Modal,
+  message,
+  Input,
+  Icon,
+} from "antd";
+import moment from "moment";
 
 import IntlMessages from "../../../util/IntlMessages";
 import {
@@ -14,39 +24,43 @@ import {
   fetchPartyList,
   setInwardSelectedForDelivery,
 } from "../../../appRedux/actions";
-import {sidebarMenuItems} from "../../../constants";
+import { sidebarMenuItems } from "../../../constants";
+import { toPascalCase } from "util/Common";
+import { debounce } from "lodash";
 
 const Option = Select.Option;
 
 const partyWiseMenuConstants = {
-  'plan': "Plan",
-  'retrieve': 'Retrieve',
-  'view': 'View',
-  'export': 'Export',
-  'cancelFinish': 'Cancel Finish',
-  'editFinish': 'Edit Finish',
-  'addInward': 'Add Inward',
-  'deliver': 'Deliver',
-}
+  plan: "Plan",
+  retrieve: "Retrieve",
+  view: "View",
+  export: "Export",
+  cancelFinish: "Cancel Finish",
+  editFinish: "Edit Finish",
+  addInward: "Add Inward",
+  deliver: "Deliver",
+};
+
+const filterLabels = {
+  coilage: "Age",
+  fthickness: "Thickness",
+  fwidth: "Width",
+  fLength: "Length",
+};
+
 const List = (props) => {
   const [sortedInfo, setSortedInfo] = useState({
-    // order: "descend",
-    // columnKey: "age",
-    order: "ASC",
+    order: "ascend",
     columnKey: "fThickness",
   });
-  const [filteredInfo, setFilteredInfo] = useState(null);
+  const [filteredInfo, setFilteredInfo] = useState({});
   const [searchValue, setSearchValue] = useState("");
+
   const [customerValue, setCustomerValue] = useState("");
-  const { inwardList, totalItems } = props.inward;
-  let filter = inwardList.map((item) => {
-    if (item.instruction.length > 0) {
-      item.children = item.instruction.filter((ins) => ins.groupId === null);
-    }
-    return item;
-  });
-  const [filteredInwardList, setFilteredInwardList] = useState(filter);
-  const [expandedRow, setExpandedRecord] = useState([]);
+  const { totalItems } = props.inward;
+
+  let searchInput = useRef(true);
+
   const [menuPartyWiseLabelList, setMenuPartyWiseLabelList] = useState([]);
   const [partywisepermission, setPartywisePermission] = useState([]);
 
@@ -54,124 +68,192 @@ const List = (props) => {
   const [selectedRowData, setSelectedRowData] = React.useState([]);
 
   const [pageNo, setPageNo] = React.useState(1);
-  const [totalPageItems, setTotalItems] = React.useState(0);
   const [showRetrieve, setShowRetrieve] = React.useState(false);
   const [selectedCoil, setSelectedCoil] = React.useState([]);
   const [pageSize, setPageSize] = useState(15);
-  const [sortColumn, setSortColumn] = useState(null);
-  const [sortOrder, setSortOrder] = useState(null);
-  
+  const [sortColumn, setSortColumn] = useState("inwardEntryId");
+  const [sortOrder, setSortOrder] = useState("DESC");
+
+  const getColumnSearchProps = (dataIndex) => ({
+    filterDropdown: ({
+      setSelectedKeys,
+      selectedKeys,
+      confirm,
+      clearFilters,
+    }) => {
+      return (
+        <div style={{ padding: 8 }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              gap: "4px",
+            }}
+          >
+            <Input
+              ref={(node) => {
+                searchInput = node;
+              }}
+              placeholder={`Search ${filterLabels[dataIndex]}`}
+              value={selectedKeys ? selectedKeys[0] : ""}
+              onChange={(e) => {
+                setSelectedKeys(e.target.value ? [e.target.value] : []);
+              }}
+              onPressEnter={() => {
+                confirm();
+              }}
+              style={{ width: 80, marginBottom: 8, display: "flex", flex: 1 }}
+            />
+          </div>
+          <div>
+            <Button
+              type="primary"
+              onClick={() => {
+                setSelectedKeys([filteredInfo[dataIndex]]);
+                confirm();
+              }}
+              icon="search"
+              size="small"
+              style={{ width: 90, marginRight: 8 }}
+            >
+              Search
+            </Button>
+            <Button
+              onClick={() => clearFilters()}
+              size="small"
+              style={{ width: 90 }}
+            >
+              Reset
+            </Button>
+          </div>
+        </div>
+      );
+    },
+    filterIcon: (filtered) => (
+      <Icon type="search" style={{ color: filtered ? "#1890ff" : undefined }} />
+    ),
+    onFilterDropdownVisibleChange: (visible) => {
+      if (visible) {
+        setTimeout(() => searchInput.select());
+      }
+    },
+    onFilter: (value, record) => true,
+    // render: (text) => ("age" === dataIndex ? <></> : text),
+  });
+
   const columns = [
     {
-      title: "Coil Number",
+      title: "Batch no.",
       dataIndex: "coilNumber",
-      key: "coilNumber",
+      key: "coilnumber",
       filters: [],
-      sorter: (a, b) => a.coilNumber?.length - b.coilNumber?.length,
-      sortOrder: sortedInfo.columnKey === "coilNumber" && sortedInfo.order,
+      sorter: true,
+      sortOrder:
+        sortedInfo.columnKey === "coilnumber" ? sortedInfo.order : null,
+      filteredValue: filteredInfo ? filteredInfo["coilnumber"] : null,
+      filterDropdown: ({ setSelectedKeys, confirm, clearFilters }) => {
+        return (
+          <div style={{ padding: 8 }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                gap: "4px",
+              }}
+            >
+              <Input
+                ref={(node) => {
+                  searchInput = node;
+                }}
+                placeholder={`Search Batch no.`}
+                value={
+                  filteredInfo["coilnumber"] ? filteredInfo["coilnumber"] : ""
+                }
+                onChange={(e) => {
+                  setFilteredInfo({
+                    ...filteredInfo,
+                    coilnumber: e.target.value,
+                  });
+                }}
+                onPressEnter={() => {
+                  setSelectedKeys([filteredInfo["coilnumber"]]);
+                  confirm();
+                }}
+                style={{
+                  width: 80,
+                  marginBottom: 8,
+                  display: "flex",
+                  flex: 1,
+                }}
+              />
+            </div>
+            <div>
+              <Button
+                type="primary"
+                onClick={() => {
+                  setSelectedKeys([filteredInfo["coilnumber"]]);
+                  confirm();
+                }}
+                icon="search"
+                size="small"
+                style={{ width: 90, marginRight: 8 }}
+              >
+                Search
+              </Button>
+              <Button
+                onClick={() => clearFilters()}
+                size="small"
+                style={{ width: 90 }}
+              >
+                Reset
+              </Button>
+            </div>
+          </div>
+        );
+      },
+      filterIcon: (filtered) => (
+        <Icon
+          type="search"
+          style={{ color: filtered ? "#1890ff" : undefined }}
+        />
+      ),
+      onFilterDropdownVisibleChange: (visible) => {
+        if (visible) {
+          setTimeout(() => searchInput.select());
+        }
+      },
+      render: (text, record) => {
+        return record.coilNumber === "undefined" ? "-" : record.coilNumber;
+      },
     },
     {
-      title: "Customer Batch No",
+      title: "SC inward id",
       dataIndex: "customerBatchId",
       key: "customerBatchId",
+      sorter: false,
       filteredValue: filteredInfo ? filteredInfo["customerBatchId"] : null,
-      onFilter: (value, record) => record.customerBatchId == value,
+      onFilter: (value, record) => record.customerBatchId === value,
       filters: [],
-      sorter: (a, b) => a.customerBatchId?.length - b.customerBatchId?.length,
-      sortOrder: sortedInfo.columnKey === "customerBatchId" && sortedInfo.order,
-      // render: (text, record) => {
-      //   if (record.customerBatchId) return record.customerBatchId;
-      //   else {
-      //     let batchId = "";
-      //     expandedRow.forEach((row) => {
-      //       if (row.child.includes(record.instructionId)) {
-      //         batchId = row.batch;
-      //       }
-      //     });
-      //     return batchId;
-      //   }
-      // },
+      // sorter: true,
+      render: (text, record) => {
+        return record.customerBatchId === "undefined" ||
+          record.batch === "undefined"
+          ? "-"
+          : record.customerBatchId || record.batch;
+      },
     },
     {
       title: "Material",
-      dataIndex: "material.description",
-      key: "material.description",
-      filteredValue: filteredInfo ? filteredInfo["material.description"] : null,
-      onFilter: (value, record) => record.material?.description == value,
-      filters:
-        inwardList.length > 0
-          ? [
-              ...new Set(inwardList.map((item) => item.material?.description)),
-            ].map((material) => ({ text: material, value: material }))
-          : [],
-      sorter: (a, b) =>
-        a.material?.description.length - b.material?.description.length,
-      sortOrder:
-        sortedInfo.columnKey === "material.description" && sortedInfo.order,
+      dataIndex: "material.mmDescConcatenated",
+      key: "material.mmDescConcatenated",
+      sorter: false,
     },
     {
-      title: "Thickness",
-      dataIndex: "fThickness",
-      key: "fThickness",
-      filters: [],
-      sorter: (a, b) => a.fThickness - b.fThickness,
-      sortOrder: sortedInfo.columnKey === "fThickness" && sortedInfo.order,
-      // render: (text, record) => {
-      //   if (record.fThickness) return record.fThickness;
-      //   else {
-      //     let thickness = "";
-      //     expandedRow.forEach((row) => {
-      //       if (row.child.includes(record.instructionId)) {
-      //         thickness = row.fThickness;
-      //       }
-      //     });
-      //     return thickness;
-      //   }
-      // },
-    },
-    {
-      title: "Width",
-      dataIndex: "fWidth",
-      key: "fWidth",
-      filters: [],
-      sorter: (a, b) => a.fWidth - b.fWidth,
-      sortOrder: sortedInfo.columnKey === "fWidth" && sortedInfo.order,
-      render: (text, record) => {
-        return record.fWidth || record.actualWidth || record.plannedWidth;
-      },
-    },
-    {
-      title: "Length",
-      dataIndex: "fLength",
-      key: "fLength",
-      filters: [],
-      sorter: (a, b) => a.fLength - b.fLength,
-      sortOrder: sortedInfo.columnKey === "fLength" && sortedInfo.order,
-      render: (text, record) => {
-        return record.fLength || record.actualLength || record.plannedLength;
-      },
-    },
-    {
-      title: "No.of Pcs",
-      dataIndex: "actualNoOfPieces",
-      key: "actualNoOfPieces",
-      filters: [],
-      sorter: (a, b) => a.actualNoOfPieces - b.actualNoOfPieces,
-      sortOrder: sortedInfo.columnKey === "actualNoOfPieces" && sortedInfo.order,
-      render: (text, record) => {
-        if (record.status && record.status.statusName === "DISPATCHED") {
-          return 0;
-        }
-        return text;
-      },
-    },
-    {
-      title: "Present Weight",
+      title: "Available Quantity",
       dataIndex: "inStockWeight",
       key: "inStockWeight",
       filters: [],
-      sorter: (a, b) => a.inStockWeight - b.inStockWeight,
-      sortOrder: sortedInfo.columnKey === "inStockWeight" && sortedInfo.order,
+      sorter: false,
       render: (text, record) => {
         return (
           record.inStockWeight || record.actualWeight || record.plannedWeight
@@ -179,172 +261,272 @@ const List = (props) => {
       },
     },
     {
+      title: "Ageing (Days)",
+      dataIndex: "ageing",
+      key: "coilage",
+      sorter: true,
+      sortOrder: sortedInfo.columnKey === "coilage" ? sortedInfo.order : null,
+      render: (text, record) => {
+        return record.instructionId
+          ? moment().diff(record.instructionDate, "days")
+          : record.ageing === "undefined" || record.ageing === ""
+          ? "-"
+          : record.ageing;
+      },
+      filteredValue:
+        filteredInfo && filteredInfo["coilage"]
+          ? filteredInfo["coilage"]
+          : null,
+      // onFilter: (value, record) => record?.ageinging == value,
+      ...getColumnSearchProps("coilage"),
+    },
+    {
+      title: "Thickness (mm)",
+      dataIndex: "fThickness",
+      key: "fthickness",
+      sorter: true,
+      sortOrder:
+        sortedInfo.columnKey === "fthickness" ? sortedInfo.order : null,
+      render: (text, record) => {
+        return record.instructionId
+          ? record.fThickness
+          : record.fThickness === "undefined" || record.fThickness === ""
+          ? "-"
+          : record.fThickness;
+      },
+      filteredValue:
+        filteredInfo && filteredInfo?.["fthickness"]
+          ? filteredInfo["fthickness"]
+          : null,
+      // onFilter: (value, record) => record.fThickness == value,
+      ...getColumnSearchProps("fthickness"),
+    },
+    {
+      title: "Width (mm)",
+      dataIndex: "fWidth",
+      key: "fwidth",
+      sorter: true,
+      sortOrder: sortedInfo.columnKey === "fwidth" ? sortedInfo.order : null,
+      render: (text, record) => {
+        return record.instructionId
+          ? record?.plannedWidth
+          : record.fWidth === "undefined" || record.fWidth === ""
+          ? "-"
+          : record.fWidth;
+      },
+      filteredValue:
+        filteredInfo && filteredInfo?.["fwidth"]
+          ? filteredInfo["fwidth"]
+          : null,
+      ...getColumnSearchProps("fwidth"),
+    },
+    {
+      title: "Length (mm)",
+      dataIndex: "fLength",
+      key: "flength",
+      sorter: true,
+      sortOrder: sortedInfo.columnKey === "flength" ? sortedInfo.order : null,
+      filteredValue:
+        filteredInfo && filteredInfo?.["flength"]
+          ? filteredInfo["flength"]
+          : null,
+      render: (text, record) => {
+        return record.fLength || record.plannedLength;
+      },
+      ...getColumnSearchProps("flength"),
+    },
+    {
       title: "Status",
       dataIndex: "status.statusName",
       key: "status.statusName",
-      filters: [],
-      sorter: (a, b) => a.status.statusName.length - b.status.statusName.length,
-      sortOrder:
-        sortedInfo.columnKey === "status.statusName" && sortedInfo.order,
+      sorter: false,
+      render: (text, record) => {
+        return record.status ? toPascalCase(record.status.statusName) : "-";
+      },
     },
     {
       title: "Classification",
       dataIndex: "packetClassification.classificationName",
       key: "packetClassification.classificationName",
+      sorter: false,
+      render: (text, record) => {
+        return record.packetClassification
+          ? record.packetClassification.classificationName === "FG"
+            ? "Ready to deliver"
+            : toPascalCase(record.packetClassification.classificationName)
+          : "-";
+      },
     },
-    partywisepermission  === 'ENDUSER_TAG_WISE_PACKETS' ? {} : {
-      title: "End User Tags",
-      dataIndex: "endUserTagsentity.tagName",
-      key: "endUserTagsentity.tagName",
-    },
-    partywisepermission  === 'ENDUSER_TAG_WISE_PACKETS' ? {} : {
-      title: "Action",
-      dataIndex: "",
-      key: "x",
-      render: (text, record) => (
-        <span>
-          {record.instructionId ? (
-            <span className="gx-link"></span>
-          ) : (
+    partywisepermission === "ENDUSER_TAG_WISE_PACKETS"
+      ? {}
+      : {
+          title: "Action",
+          dataIndex: "",
+          key: "x",
+          render: (text, record) => (
             <span>
-              {menuPartyWiseLabelList.length > 0 && menuPartyWiseLabelList.includes(partyWiseMenuConstants.plan) && <><span
-                className="gx-link"
-                onClick={() => props.history.push(`plan/${record.coilNumber}`)}
-              >
-                Plan
-              </span>
-              <Divider type="vertical" /></>}
-              {menuPartyWiseLabelList.length > 0 && menuPartyWiseLabelList.includes(partyWiseMenuConstants.retrieve) && <><span
-                className="gx-link"
-                onClick={() => {
-                  props.getS3PDFUrl(record.inwardEntryId);
-                  setShowRetrieve(true);
-                }}
-              >
-                Retrieve
-              </span>
-              <Divider type="vertical" /></>}
-              {menuPartyWiseLabelList.length > 0 && menuPartyWiseLabelList.includes(partyWiseMenuConstants.cancelFinish) && <><span
-                className="gx-link"
-                onClick={() =>
-                  props.history.push(`unfinish/${record.coilNumber}`)
-                }
-              >
-                Cancel finish
-              </span>
-              <Divider type="vertical" /></>}
-              {menuPartyWiseLabelList.length > 0 && menuPartyWiseLabelList.includes(partyWiseMenuConstants.editFinish) && <span
-                className="gx-link"
-                onClick={() =>
-                  props.history.push(`editFinish/${record.coilNumber}`)
-                }
-              >
-                Edit finish
-              </span>}
+              {record.instructionId ? (
+                <span className="gx-link"></span>
+              ) : (
+                <span>
+                  {menuPartyWiseLabelList.length > 0 &&
+                    menuPartyWiseLabelList.includes(
+                      partyWiseMenuConstants.plan
+                    ) && (
+                      <>
+                        <span
+                          className="gx-link"
+                          onClick={() =>
+                            props.history.push(`plan/${record.coilNumber}`)
+                          }
+                        >
+                          Plan
+                        </span>
+                        <Divider type="vertical" />
+                      </>
+                    )}
+                  {menuPartyWiseLabelList.length > 0 &&
+                    menuPartyWiseLabelList.includes(
+                      partyWiseMenuConstants.retrieve
+                    ) &&
+                    record.status.statusName !== "RECEIVED" && (
+                      <>
+                        <span
+                          className="gx-link"
+                          onClick={() => {
+                            props.getS3PDFUrl(record.inwardEntryId);
+                            setShowRetrieve(true);
+                          }}
+                        >
+                          Retrieve
+                        </span>
+                        <Divider type="vertical" />
+                      </>
+                    )}
+                  {menuPartyWiseLabelList.length > 0 &&
+                    menuPartyWiseLabelList.includes(
+                      partyWiseMenuConstants.cancelFinish
+                    ) && (
+                      <>
+                        <span
+                          className="gx-link"
+                          onClick={() =>
+                            props.history.push(`unfinish/${record.coilNumber}`)
+                          }
+                        >
+                          Cancel finish
+                        </span>
+                        <Divider type="vertical" />
+                      </>
+                    )}
+                  {menuPartyWiseLabelList.length > 0 &&
+                    menuPartyWiseLabelList.includes(
+                      partyWiseMenuConstants.editFinish
+                    ) && (
+                      <span
+                        className="gx-link"
+                        onClick={() =>
+                          props.history.push(`editFinish/${record.coilNumber}`)
+                        }
+                      >
+                        Edit finish
+                      </span>
+                    )}
+                </span>
+              )}
             </span>
-          )}
-        </span>
-      ),
-    },
+          ),
+        },
   ];
   //filter data which is dispatched
   // const filteredInwardListWithoutDispatched = filteredInwardList.filter(item => !(item.status && item.status.statusId === 4 && item.status.statusName === "DISPATCHED"));
 
   useEffect(() => {
     props.fetchPartyList();
-  }, []);
-
-
-  useEffect(() => {
-    const menus = localStorage.getItem('Menus') ? JSON.parse(localStorage.getItem('Menus')) : [];
-    if(menus.length > 0) {
-      const menuLabels = menus.filter(menu => menu.menuKey === sidebarMenuItems.partywiseRegister);
+    props.fetchInwardList(
+      1,
+      20,
+      searchValue,
+      customerValue,
+      sortOrder,
+      sortColumn,
+      filteredInfo
+    );
+    const menus = localStorage.getItem("Menus")
+      ? JSON.parse(localStorage.getItem("Menus"))
+      : [];
+    if (menus.length > 0) {
+      const menuLabels = menus.filter(
+        (menu) => menu.menuKey === sidebarMenuItems.partywiseRegister
+      );
       let menuPartyWiseLabels = [];
-      if(menuLabels.length > 0) {
-        menuPartyWiseLabels = menuLabels[0]?.permission ? menuLabels[0]?.permission?.split(',') : [];
-        if(menuLabels.length === 1)
+      if (menuLabels.length > 0) {
+        menuPartyWiseLabels = menuLabels[0]?.permission
+          ? menuLabels[0]?.permission?.split(",")
+          : [];
+        if (menuLabels.length === 1)
           setPartywisePermission(menuLabels[0].permission);
       }
       setMenuPartyWiseLabelList(menuPartyWiseLabels);
     }
-  }, [])
-
-  useEffect(() => {
-    if (totalItems) {
-      setTotalItems(totalItems);
-    }
-  }, [totalItems]);
-
-  const getFilterData = (list) => {
-    let filter = list.map((item) => {
-      if (item.instruction.length > 0) {
-        item.children = item.instruction.filter((ins) => ins.groupId === null);
-      }
-      return item;
-    });
-    return filter;
-  };
-  useEffect(() => {
-    if (!props.inward.loading && props.inward.success) {
-      // setFilteredInwardList(getFilterData(inwardList));
-      // console.log(inwardList)
-      if(inwardList.length !==0){
-        inwardList[0].children = inwardList[0].instruction
-      }
-        setFilteredInwardList(inwardList);
-    }
-  }, [props.inward.loading, props.inward.success]);
-
-  useEffect(() => {
-    if (searchValue) {
-      if (searchValue.length >= 3) {
-        setPageNo(1);
-        props.fetchInwardList(1, 20, searchValue, customerValue);
-      }
-    } else {
-      setPageNo(1);
-      props.fetchInwardList(1, 20, searchValue, customerValue);
-    }
-  }, [searchValue]);
+  }, []);
 
   const handleChange = (pagination, filters, sorter, partyId) => {
     setSortedInfo(sorter);
     setFilteredInfo(filters);
     setSortColumn(sorter.columnKey);
-    setSortOrder(sorter.order==='descend'?'DESC':'ASC');
-  };
-  useEffect(() => {
-    if (sortColumn && sortOrder) {
-        setPageNo(1);
-        props.fetchInwardList(1, 20, searchValue, customerValue,  sortOrder, sortColumn);
-    }
-  }, [sortColumn, sortOrder]);
+    setSortOrder(sorter.order);
+    setPageNo(pagination.current);
 
+    props.fetchInwardList(
+      pagination.current,
+      pagination.pageSize,
+      filters?.coilnumber && filters?.coilnumber[0]
+        ? filters?.coilnumber[0]
+        : "",
+      customerValue,
+      sorter.order === "descend" ? "DESC" : "ASC",
+      sorter.columnKey,
+      filters
+    );
+  };
 
   const clearFilters = (value) => {
     setCustomerValue("");
-    setFilteredInfo(null);
+    setFilteredInfo({});
     setSearchValue("");
     setPageNo(1);
     props.fetchInwardList(1, 15);
   };
 
-  const clearAll = () => {
-    setSortedInfo(null);
-    setFilteredInfo(null);
-  };
-
   const exportSelectedData = () => {};
+
+  const fetchInwardListDebounced = useRef(
+    debounce((params) => {
+      props.fetchInwardList(...params);
+    }, 300)
+  ).current;
 
   const handleCustomerChange = (value) => {
     if (value) {
       setCustomerValue(value);
       setPageNo(1);
-      props.fetchInwardList(1, pageSize, searchValue, value, '', '', partywisepermission  === 'ENDUSER_TAG_WISE_PACKETS' ? 'ENDUSER' : '');
     } else {
       setCustomerValue("");
-      setFilteredInwardList(inwardList);
+      setPageNo(1);
     }
+    fetchInwardListDebounced([
+      1,
+      pageSize,
+      filteredInfo?.coilnumber && filteredInfo?.coilnumber[0]
+        ? filteredInfo?.coilnumber[0]
+        : "",
+      value ? value : "",
+      sortOrder,
+      sortColumn,
+      filteredInfo,
+    ]);
+    // setFilteredInwardList(filteredInwardList);
   };
 
   const handleBlur = () => {};
@@ -352,18 +534,12 @@ const List = (props) => {
   function handleFocus() {}
 
   const storeKey = (data, selected) => {
-    if (selectedCBKeys.includes(data.key) && !selected) {
-      const newSet = selectedCBKeys;
-      const index = selectedCBKeys.indexOf(data.key);
-      newSet.splice(index, 1);
-      setSelectedCBKeys(newSet);
-      setSelectedRowData((oldData) =>
-        oldData.filter((row) => row.key !== data.key)
-      );
-      return;
-    } else if (selected && !selectedCBKeys.includes(data.key)) {
-      setSelectedCBKeys((oldArr) => [...oldArr, data.key]);
-      setSelectedRowData((oldData) => [...oldData, data]);
+    if (!selectedCBKeys.includes(data.key) && selected) {
+      setSelectedCBKeys([...selectedCBKeys, data.key]);
+      setSelectedRowData([...selectedRowData, data]);
+    } else if (selectedCBKeys.includes(data.key) && !selected) {
+      setSelectedCBKeys(selectedCBKeys.filter((k) => k !== data.key));
+      setSelectedRowData(selectedRowData.filter((row) => row.key !== data.key));
     }
   };
 
@@ -381,6 +557,7 @@ const List = (props) => {
 
   const rowSelection = {
     onSelect: (record, selected, selectedRows) => {
+      console.log(record.status.statusName);
       if (
         record.status.statusName === "READY TO DELIVER" ||
         record.status.statusName === "RECEIVED"
@@ -400,8 +577,9 @@ const List = (props) => {
           });
         } else getKey(record, selected);
       }
-      const selectedCoil = selectedRows.map(row => row?.party?.nPartyId) || []
-      setSelectedCoil(Array.from(new Set(selectedCoil)))
+      const selectedCoil =
+        selectedRows.map((row) => row?.party?.nPartyId) || [];
+      setSelectedCoil(Array.from(new Set(selectedCoil)));
     },
     getCheckboxProps: (record) => ({
       disabled:
@@ -422,33 +600,35 @@ const List = (props) => {
           }
         });
       }
-      console.log(selectedRows);
-      const selectedCoil = selectedRows.map(row => row?.party?.nPartyId) || []
-      setSelectedCoil(Array.from(new Set(selectedCoil)))
+      const selectedCoil =
+        selectedRows.map((row) => row?.party?.nPartyId) || [];
+      setSelectedCoil(Array.from(new Set(selectedCoil)));
     },
     selectedRowKeys: selectedCBKeys,
   };
+
   const gets3PDFurl = () => {
     return (
       <>
         <div>
           <a href={props?.inward.s3pdfurl?.inward_pdf} target="_blank">
             Inward PDF
-          </a> &nbsp;&nbsp;&nbsp;
-          <a href={props?.inward.s3pdfurl?.qrcode_inward_pdf} target="_blank">
+          </a>{" "}
+          &nbsp;&nbsp;&nbsp;
+          {/* <a href={props?.inward.s3pdfurl?.qrcode_inward_pdf} target="_blank">
             Inward QR Code
-          </a>
+          </a> */}
         </div>
         {props.inward.s3pdfurl?.plan_pdfs?.length > 0 && (
           <div>
             <p>Plan PDF</p>
             {props.inward.s3pdfurl?.plan_pdfs?.map((item) => (
-              <>
+              <div key={item.id}>
                 <a href={item?.pdfS3Url} target="_blank">
                   {item.id}
                 </a>
                 <br />
-              </>
+              </div>
             ))}
           </div>
         )}
@@ -465,6 +645,7 @@ const List = (props) => {
       </>
     );
   };
+
   return (
     <div>
       <h1>
@@ -472,12 +653,15 @@ const List = (props) => {
       </h1>
       <Card>
         <div className="gx-flex-row gx-flex-1">
-          <div className="table-operations gx-col">
+          <div
+            className="table-operations gx-col"
+            style={{ paddingLeft: "0px" }}
+          >
             <Select
               id="select"
               showSearch
               style={{ width: 200 }}
-              placeholder="Select a customer"
+              label="Select a location"
               optionFilterProp="children"
               onChange={handleCustomerChange}
               value={customerValue}
@@ -491,53 +675,77 @@ const List = (props) => {
             >
               {props.party.partyList.length > 0 &&
                 props.party.partyList.map((party) => (
-                  <Option key={party.nPartyId} value={party.nPartyId}>{party.partyName}</Option>
+                  <Option key={party.nPartyId} value={party.nPartyId}>
+                    {party.partyName}
+                  </Option>
                 ))}
-            </Select>&emsp;
-            {menuPartyWiseLabelList.length > 0 && menuPartyWiseLabelList.includes(partyWiseMenuConstants.export) && <Button onClick={exportSelectedData} style={{marginBottom: "1px"}}>Export</Button>}
-            <Button onClick={clearFilters} style={{marginBottom: "1px"}}>Clear All filters</Button>
+            </Select>
+            &emsp;
+            {menuPartyWiseLabelList.length > 0 &&
+              menuPartyWiseLabelList.includes(
+                partyWiseMenuConstants.export
+              ) && (
+                <Button
+                  onClick={exportSelectedData}
+                  style={{ marginBottom: "1px" }}
+                >
+                  Export
+                </Button>
+              )}
+            <Button onClick={clearFilters} style={{ marginBottom: "1px" }}>
+              Clear All filters
+            </Button>
           </div>
-          <div className="gx-flex-row gx-w-50">
-            {menuPartyWiseLabelList.length > 0 && menuPartyWiseLabelList.includes(partyWiseMenuConstants.deliver) && <Button
-              type="primary"
-              icon={() => <i className="icon icon-add" />}
-              size="default"
-              onClick={() => {
-                console.log("selected rows", selectedRowData, selectedCBKeys, selectedCoil);
-                if (selectedCoil?.length > 1) {
-                  message.error('Please select coils of same party');
-                } else {
-                  const newList = selectedRowData.filter((item) => {
-                    if (item?.instruction?.length) {
-                      return !item.childInstructions && item.inwardEntryId && selectedRowData.length === 1;
+          <div className="gx-flex-row">
+            {menuPartyWiseLabelList.length > 0 &&
+              menuPartyWiseLabelList.includes(
+                partyWiseMenuConstants.deliver
+              ) && (
+                <Button
+                  type="primary"
+                  icon={() => <i className="icon icon-add" />}
+                  size="default"
+                  onClick={() => {
+                    if (selectedCoil?.length > 1) {
+                      message.error("Please select inwards of same location");
                     } else {
-                      return true;
+                      const newList = selectedRowData.filter((item) => {
+                        if (item?.instruction?.length) {
+                          return (
+                            !item.childInstructions &&
+                            item.inwardEntryId &&
+                            selectedRowData.length === 1
+                          );
+                        } else {
+                          return true;
+                        }
+                      });
+                      props.setInwardSelectedForDelivery(newList);
+                      props.history.push(
+                        "/company/locationwise-register/delivery"
+                      );
                     }
-                  });
-                  props.setInwardSelectedForDelivery(newList);
-                  props.history.push("/company/partywise-register/delivery");
-                }
-              }}
-              disabled={!!selectedCBKeys?.length < 1}
-            >
-              Deliver
-            </Button>}
-            {menuPartyWiseLabelList.length > 0 && menuPartyWiseLabelList.includes(partyWiseMenuConstants.addInward) && <Button
-              type="primary"
-              icon={() => <i className="icon icon-add" />}
-              size="default"
-              onClick={() => {
-                props.history.push("/company/inward/create");
-              }}
-            >
-              Add Inward
-            </Button>}
-            <SearchBox
-              styleName="gx-flex-1"
-              placeholder="Search for coil number or party name..."
-              value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
-            />
+                  }}
+                  disabled={selectedCBKeys?.length < 1}
+                >
+                  Deliver
+                </Button>
+              )}
+            {menuPartyWiseLabelList.length > 0 &&
+              menuPartyWiseLabelList.includes(
+                partyWiseMenuConstants.addInward
+              ) && (
+                <Button
+                  type="primary"
+                  icon={() => <i className="icon icon-add" />}
+                  size="default"
+                  onClick={() => {
+                    props.history.push("/company/inward/create");
+                  }}
+                >
+                  Add Inward
+                </Button>
+              )}
           </div>
         </div>
         {showRetrieve && (
@@ -553,36 +761,28 @@ const List = (props) => {
           </Modal>
         )}
         <Table
+          rowClassName={(record, index) =>
+            record.instructionId ? "table-row-dark" : "table-row-light"
+          }
+          key={props.inward?.inwardList[0]?.inwardEntryId || pageNo}
           scroll={{ y: 540 }}
           className="gx-table-responsive"
           columns={columns}
-          dataSource={filteredInwardList}
-          // dataSource={filteredInwardListWithoutDispatched}
+          rowKey={(record) => record.key}
+          loading={props.inward.loading}
+          dataSource={[...props.inward.inwardList] || []}
           onChange={handleChange}
-          rowSelection={partywisepermission  === 'ENDUSER_TAG_WISE_PACKETS' ? false : rowSelection}
-          // onExpand={(expanded, record, data) => {
-          //   const motherRecord = {
-          //     key: record.key,
-          //     child: record.instruction
-          //       ? record.instruction?.map((r) => r.instructionId)
-          //       : record.childInstructions?.map((r) => r.instructionId),
-          //     batch: record.customerBatchId,
-          //     fThickness: record.fThickness,
-          //   };
-          //   const result = expanded
-          //     ? expandedRow
-          //     : expandedRow.filter((row) => row.key !== record.key);
-          //   setExpandedRecord([...result, motherRecord]);
-          // }}
-          
+          rowSelection={
+            partywisepermission === "ENDUSER_TAG_WISE_PACKETS"
+              ? false
+              : rowSelection
+          }
           pagination={{
             pageSize: 15,
-            onChange: (page) => {
-              setPageNo(page);
-              props.fetchInwardList(page, pageSize, searchValue, customerValue, sortOrder, sortColumn, partywisepermission  === 'ENDUSER_TAG_WISE_PACKETS' ? 'ENDUSER' : '');
-            },
             current: pageNo,
-            total: totalPageItems,
+            total: totalItems, // force it to render
+            showTotal: (total, range) =>
+              `Showing ${range[0]}-${range[1]} of ${total} items`,
           }}
         />
       </Card>

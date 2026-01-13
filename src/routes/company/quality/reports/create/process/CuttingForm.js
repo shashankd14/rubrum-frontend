@@ -1,5 +1,4 @@
 import { Button, Card, Col, DatePicker, Input, Row } from 'antd'
-import TextArea from 'antd/lib/input/TextArea';
 import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux';
 import moment from 'moment';
@@ -318,10 +317,7 @@ const CuttingForm = (props) => {
     }
 
     const onOptionChange = (key, changeEvent) => {
-        console.log("changeEvent", changeEvent)
-        console.log("key", key)
         cutFormData[key] = changeEvent.target.value;
-        console.log("changeEvent.target.value", changeEvent.target.value)
     }
 
     useEffect(() => {
@@ -340,11 +336,9 @@ const CuttingForm = (props) => {
     }
 
     const handleInspectionTableChange = (tableData) => {
-        console.log('handleInspectionTableChange', tableData)
         setCutInspectionData(tableData)
     } 
     const handleToleranceTableChange = (tableData) => {
-        console.log('handleInspectionTableChange', tableData)
         settoleranceInspectionDataCut(tableData)
     } 
 
@@ -355,7 +349,7 @@ const CuttingForm = (props) => {
                 <Card.Grid style={gridCardStyle}>
                     <Row>
                         <Col span={24}>
-                            <label>Customer Name</label>
+                            <label>Location Name</label>
                             <Input disabled value={props.inward?.plan?.party?.partyName} onChange={(e) => onOptionChange('customerName', e)}></Input>
                         </Col>
                     </Row>
@@ -404,11 +398,11 @@ const CuttingForm = (props) => {
                     </Row>
                     <Row>
                         <Col span={12}>
-                            <label>Mother Coil No.</label>
+                            <label>Mother Inward No.</label>
                             <Input onChange={(e) => onOptionChange('motherCoilNumber', e)}></Input>
                         </Col>
                         <Col span={12}>
-                            <label>Internal Coil No</label>
+                            <label>Internal Inward No</label>
                             <Input disabled value={props.inward?.plan?.coilNumber} onChange={(e) => onOptionChange('aspenCoilNumber', e)}></Input>
                         </Col>
 

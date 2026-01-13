@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { connect, useDispatch } from "react-redux";
+import { connect } from "react-redux";
 import {
   Button,
   Card,
@@ -11,15 +11,15 @@ import {
   Form,
   Input,
   Select,
-  Checkbox,
   Tabs,
-  message,
 } from "antd";
-import { CheckboxChangeEvent } from "antd/es/checkbox";
-import moment from "moment";
 import SearchBox from "../../../components/SearchBox";
 import EditAdditionalRates from "./editAdditionalRates";
-import { LeftOutlined, RightOutlined, EllipsisOutlined } from '@ant-design/icons';
+import {
+  LeftOutlined,
+  RightOutlined,
+  EllipsisOutlined,
+} from "@ant-design/icons";
 import IntlMessages from "../../../util/IntlMessages";
 import {
   fetchRatesList,
@@ -46,9 +46,10 @@ import {
   addLminationCharges,
   updateLminationCharges,
   deleteLminationCharges,
-  resetLaminationChargesRequest
+  resetLaminationChargesRequest,
+  getProducts,
+  getProductGradesList
 } from "../../../appRedux/actions";
-import { onDeleteContact } from "../../../appRedux/actions";
 import AdditionalRates from "./addAdditionalRates";
 
 const Option = Select.Option;
@@ -73,18 +74,48 @@ const Rates = (props) => {
     columnKey: "age",
   });
   const laminationDD = [
-    {laminationDetailsId : 1, laminationDetailsDesc : "Single Side lamination charges per meter (labour)"},
-    {laminationDetailsId : 2, laminationDetailsDesc : "Single Side lamination charges per meter (material)"},
-    {laminationDetailsId : 3, laminationDetailsDesc : "Single Side lamination charges per meter (labour and material)"},
-    {laminationDetailsId : 4, laminationDetailsDesc : "Double Side lamination charges per meter (labour)"},
-    {laminationDetailsId : 5, laminationDetailsDesc : "Double Side lamination charges per meter (material)"},
-    {laminationDetailsId : 6, laminationDetailsDesc : "Double Side lamination charges per meter (labour and material)"},
-  ]
-  const [selectedOption, setSelectedOption] = useState(laminationDD[0].laminationDetailsId);
+    {
+      laminationDetailsId: 1,
+      laminationDetailsDesc:
+        "Single Side lamination charges per meter (labour)",
+    },
+    {
+      laminationDetailsId: 2,
+      laminationDetailsDesc:
+        "Single Side lamination charges per meter (material)",
+    },
+    {
+      laminationDetailsId: 3,
+      laminationDetailsDesc:
+        "Single Side lamination charges per meter (labour and material)",
+    },
+    {
+      laminationDetailsId: 4,
+      laminationDetailsDesc:
+        "Double Side lamination charges per meter (labour)",
+    },
+    {
+      laminationDetailsId: 5,
+      laminationDetailsDesc:
+        "Double Side lamination charges per meter (material)",
+    },
+    {
+      laminationDetailsId: 6,
+      laminationDetailsDesc:
+        "Double Side lamination charges per meter (labour and material)",
+    },
+  ];
+  const [selectedOption, setSelectedOption] = useState(
+    laminationDD[0].laminationDetailsId
+  );
   const [filteredInfo, setFilteredInfo] = useState(null);
   const [searchValue, setSearchValue] = useState("");
   const [searchThickness, setSearchThickness] = useState("");
-  const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: props.rates.totalItems || 0, });
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: props.rates.totalItems || 0,
+  });
   const [pageNo, setPageNo] = useState(1);
   const [showAddRates, setShowAddRates] = useState(false);
   const [showAddPackingRates, setShowAddPackingRates] = useState(false);
@@ -95,9 +126,7 @@ const Rates = (props) => {
   const [viewMaterialData, setViewMaterialData] = useState({});
   const [viewPackingRateData, setViewPackingRateData] = useState({});
   const [type, setType] = useState([]);
-  const [filteredInwardList, setFilteredInwardList] = useState(
-    []
-  );
+  const [filteredInwardList, setFilteredInwardList] = useState([]);
   const [filteredPackingRateList, setfilteredPackingRateList] = useState();
   const [gradeList, setGradeList] = useState([]);
   const [checked, setChecked] = useState(false);
@@ -108,106 +137,58 @@ const Rates = (props) => {
   const [showAdditionalRates, setShowAdditionalRates] = useState(false);
   const [staticList, setStaticList] = useState([]);
   const [selectedProcessId, setSelectedProcessId] = useState("");
-  const [additionPriceList, setAdditionalPriceList] = useState([]);
+  const [additionPriceList, setAdditionalPriceList] = useState(props.rates.additionalRatesList || []);
   const [viewAdditionalRates, setViewAdditionalRates] = useState(false);
   const [editPriceModal, setEditPriceModal] = useState(false);
   const [staticSelected, setStaticSelected] = useState();
   const [selectedParty, setSelectedParty] = useState("");
-  const [totalPageItems, setTotalItems] = useState(0); 
+  const [totalPageItems, setTotalItems] = useState(0);
   const { ratesList, totalItems } = props.rates;
-  const [showAddLaminationCharges, setShowAddLaminationCharges] = useState(false);
+  const [showAddLaminationCharges, setShowAddLaminationCharges] =
+    useState(false);
   const [editLaminationCharges, setEditLaminationCharges] = useState(false);
-  const [viewLaminationChargesData, setViewLaminationChargesData] = useState({});
+  const [viewLaminationChargesData, setViewLaminationChargesData] = useState(
+    {}
+  );
   const [viewLaminationCharges, setViewLaminationCharges] = useState(false);
-  const [laminationChargesList, setLaminationChargesList] = useState([]);
+  const [laminationChargesList, setLaminationChargesList] = useState(props.laminationCharges || []);
   const [laminationStaticSelected, setLaminationStaticSelected] = useState();
+
   const columns = [
     {
       title: "Rate Id",
       dataIndex: "id",
       key: "id",
-      filters: [],
-      sorter: (a, b) => {
-        return a.id - b.id;
-      },
-      sortOrder: sortedInfo.columnKey === "id" && sortedInfo.order,
     },
     {
-      title: "Party Name",
+      title: "Location",
       dataIndex: "partyName",
       key: "partyName",
-      filteredValue: filteredInfo ? filteredInfo["partyName"] : null,
-        filters: [...new Set(props.rates.ratesList.map(item => item.partyName))].map(material => {
-            return ({ text: material || '', value: material || '' })}),
-        onFilter: (value, record) => record.partyName == value,
-        sorter: (a, b) => a.partyName?.length - b.partyName?.length,
-        sortOrder: sortedInfo.columnKey === 'partyName' && sortedInfo.order,
     },
     {
       title: "Process Name",
       dataIndex: "processName",
       key: "processName",
-      filteredValue: filteredInfo ? filteredInfo["processName"] : null,
-        filters: [...new Set(props.rates.ratesList.map(item => item.processName))].map(material => {
-            return ({ text: material || '', value: material || '' })}),
-        onFilter: (value, record) => record.processName == value,
-        sorter: (a, b) => a.processName?.length - b.processName?.length,
-        sortOrder: sortedInfo.columnKey === 'processName' && sortedInfo.order,
     },
     {
       title: "Material description",
       dataIndex: "materialDescription",
       key: "materialDescription",
-      filteredValue: filteredInfo ? filteredInfo["materialDescription"] : null,
-        filters: [...new Set(props.rates.ratesList.map(item => item.materialDescription))].map(material => {
-            return ({ text: material || '', value: material || '' })}),
-        onFilter: (value, record) => record.materialDescription == value,
-        sorter: (a, b) => a.materialDescription?.length - b.materialDescription?.length,
-        sortOrder: sortedInfo.columnKey === 'materialDescription' && sortedInfo.order,
     },
     {
       title: "Material Grade",
       dataIndex: "matGradeName",
-      key: "matGradeName",
-      filteredValue: filteredInfo ? filteredInfo["matGradeName"] : null,
-        filters: [...new Set(props.rates.ratesList.map(item => item.matGradeName))].map(material => {
-            return ({ text: material || '', value: material || '' })}),
-        onFilter: (value, record) => record.matGradeName == value,
-        sorter: (a, b) => a.matGradeName?.length - b.matGradeName?.length,
-        sortOrder: sortedInfo.columnKey === 'matGradeName' && sortedInfo.order,
+      key: "gradeName",
     },
     {
       title: "Thickness Range",
       dataIndex: "thicknessFrom",
       render: (text, record) => `${record.thicknessFrom}-${record.thicknessTo}`,
-      filteredValue: filteredInfo ? filteredInfo["thicknessFrom"] : null,
-       filters: [
-           ...new Set(
-           props.rates.ratesList.map(
-          (item) => `${item.thicknessFrom}-${item.thicknessTo}`
-          )
-          ),
-         ].map((thicknessRange) => {
-        return { text: thicknessRange || '', value: thicknessRange || '' };
-        }),
-      onFilter: (value, record) => {
-       const [from, to] = value.split('-');
-       const thicknessFrom = parseFloat(from);
-       const thicknessTo = parseFloat(to);
-      return (
-      thicknessFrom <= record.thicknessFrom && thicknessTo >= record.thicknessTo
-       );
-     },
-      sorter: (a, b) =>
-      a.thicknessFrom - b.thicknessFrom || a.thicknessTo - b.thicknessTo,
-      sortOrder: sortedInfo.columnKey === 'thicknessFrom' && sortedInfo.order,
     },
     {
       title: "Thickness rate",
       dataIndex: "price",
       key: "price",
-      sorter: (a, b) => a.price - b.price,
-      sortOrder: sortedInfo.columnKey === "price" && sortedInfo.order,
     },
 
     {
@@ -233,20 +214,14 @@ const Rates = (props) => {
   ];
   const additionalPriceColumns = [
     {
-      title: "Party Name",
+      title: "Location",
       dataIndex: "partyName",
       key: "partyName",
-      filters: [],
-      sorter: (a, b) => a.partyName - b.partyName,
-      sortOrder: sortedInfo.columnKey === "partyName" && sortedInfo.order,
     },
     {
       title: "Process Name",
       dataIndex: "processName",
       key: "processName",
-      filters: [],
-      sorter: (a, b) => a.processName - b.processName,
-      sortOrder: sortedInfo.columnKey === "processName" && sortedInfo.order,
     },
     {
       title: "Range",
@@ -257,8 +232,6 @@ const Rates = (props) => {
       title: "Additional Rates",
       dataIndex: "price",
       key: "price",
-      sorter: (a, b) => a.price - b.price,
-      sortOrder: sortedInfo.columnKey === "price" && sortedInfo.order,
     },
     {
       title: "Action",
@@ -282,117 +255,91 @@ const Rates = (props) => {
     },
   ];
 
-  const packingRateColumn = [{
-    title: 'S No',
-    dataIndex: 'packingRateId',
-    key: 'packingRateId',
-    filters: [],
-    sorter: (a, b) => {
-        return a.packingRateId - b.packingRateId
+  const packingRateColumn = [
+    {
+      title: "S No",
+      dataIndex: "packingRateId",
+      key: "packingRateId",
     },
-    sortOrder: sortedInfo.columnKey === 'packingRateId' && sortedInfo.order,
-},
-{
-    title: 'Party Name',
-    dataIndex: 'partyName',
-    key: 'partyName',
-    filters: [],
-    sorter: (a, b) => {
-        return a.partyName - b.partyName
+    {
+      title: "Location",
+      dataIndex: "partyName",
+      key: "partyName",
     },
-    sortOrder: sortedInfo.columnKey === 'partyName' && sortedInfo.order,
-},
-{
-    title: 'Bucket Name',
-    dataIndex: 'packingBucketName',
-    key: 'packingBucketName',
-    filters: [],
-    sorter: (a, b) => {
-        return a.packingBucketName - b.packingBucketName
+    {
+      title: "Bucket Name",
+      dataIndex: "packingBucketName",
+      key: "packingBucketName",
     },
-    sortOrder: sortedInfo.columnKey === 'packingBucketName' && sortedInfo.order,
-},
-{
-  title: 'Rate',
-  dataIndex: 'packingRate',
-  key: 'packingRate',
-  filters: [],
-  sorter: (a, b) => {
-      return a.packingRate - b.packingRate
-  },
-  sortOrder: sortedInfo.columnKey === 'packingRate' && sortedInfo.order,
-},
-{
-  title: 'Description',
-  dataIndex: 'packingRateDesc',
-  key: 'packingRateDesc',
-  filteredValue: filteredInfo ? filteredInfo["packingRateDesc"] : null,
-  filters: [],
-  onFilter: (value, record) => record.packingRateDesc == value,
-  sorter: (a, b) => a.packingRateDesc?.length - b.packingRateDesc?.length,
-  sortOrder: sortedInfo.columnKey === 'packingRateDesc' && sortedInfo.order,
-},
-{
-    title: 'Action',
-    dataIndex: '',
-    key: 'x',
-    render: (text, record, index) => (
+    {
+      title: "Rate",
+      dataIndex: "packingRate",
+      key: "packingRate",
+    },
+    {
+      title: "Description",
+      dataIndex: "packingRateDesc",
+      key: "packingRateDesc",
+    },
+    {
+      title: "Action",
+      dataIndex: "",
+      key: "x",
+      render: (text, record, index) => (
         <span>
-            <span className="gx-link" onClick={(e) => onView(record, e)}>View</span>
-            <Divider type="vertical"/>
-            <span className="gx-link" onClick={(e) => onEdit(record,e)}>Edit</span>
-            <Divider type="vertical"/>
-            <span className="gx-link"onClick={() => {}}>Delete</span>
+          <span className="gx-link" onClick={(e) => onView(record, e)}>
+            View
+          </span>
+          <Divider type="vertical" />
+          <span className="gx-link" onClick={(e) => onEdit(record, e)}>
+            Edit
+          </span>
+          <Divider type="vertical" />
+          <span className="gx-link" onClick={() => {}}>
+            Delete
+          </span>
         </span>
-    ),
-},
-];
+      ),
+    },
+  ];
 
-const laminationChargesColumn = [{
-  title: 'Lamination ID',
-  dataIndex: 'laminationId',
-  key: 'laminationId',
-  filters: [],
-  sorter: (a, b) => {
-      return a.laminationId - b.laminationId
-  },
-  sortOrder: sortedInfo.columnKey === 'laminationId' && sortedInfo.order,
-},
-{
-  title: 'Party Name',
-  dataIndex: 'partyName',
-  key: 'partyName',
-  filters: [],
-  sorter: (a, b) => {
-      return a.partyName - b.partyName
-  },
-  sortOrder: sortedInfo.columnKey === 'partyName' && sortedInfo.order,
-},
-{
-title: 'Charges',
-dataIndex: 'charges',
-key: 'charges',
-filters: [],
-sorter: (a, b) => {
-    return a.laminationSSmaterial - b.laminationSSmaterial
-},
-sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
-},
-{
-  title: 'Action',
-  dataIndex: '',
-  key: 'x',
-  render: (text, record, index) => (
-      <span>
-          <span className="gx-link" onClick={(e) => onView(record, e)}>View</span>
-          <Divider type="vertical"/>
-          <span className="gx-link" onClick={(e) => onEdit(record,e)}>Edit</span>
-          <Divider type="vertical"/>
-          <span className="gx-link"onClick={(e) => onDelete(record,e)}>Delete</span>
-      </span>
-  ),
-},
-];
+  const laminationChargesColumn = [
+    {
+      title: "Lamination ID",
+      dataIndex: "laminationId",
+      key: "laminationId",
+    },
+    {
+      title: "Location",
+      dataIndex: "partyName",
+      key: "partyName",
+    },
+    {
+      title: "Charges",
+      dataIndex: "charges",
+      key: "charges",
+    },
+    {
+      title: "Action",
+      dataIndex: "",
+      key: "x",
+      render: (text, record, index) => (
+        <span>
+          <span className="gx-link" onClick={(e) => onView(record, e)}>
+            View
+          </span>
+          <Divider type="vertical" />
+          <span className="gx-link" onClick={(e) => onEdit(record, e)}>
+            Edit
+          </span>
+          <Divider type="vertical" />
+          <span className="gx-link" onClick={(e) => onDelete(record, e)}>
+            Delete
+          </span>
+        </span>
+      ),
+    },
+  ];
 
   const onView = (record, e) => {
     e.preventDefault();
@@ -415,19 +362,19 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
     e.preventDefault();
     if (tabKey === "1") {
       props.deleteRates(record?.id);
-    } else if (tabKey === "4"){
-      props.deleteLminationCharges(record.laminationId)
+    } else if (tabKey === "4") {
+      props.deleteLminationCharges(record.laminationId);
     } else {
       props.deleteAdditionalRates(record?.id);
     }
   };
-  const onEdit = (record, e) => {   
+  const onEdit = (record, e) => {
     e.preventDefault();
-    if (tabKey === "1") { 
-    const list = props.material.materialList.filter(
-      (material) => material.matId === record.matId
-    );
-    setGradeList(list.map((item) => item.materialGrade)?.flat());
+    if (tabKey === "1") {
+      const list = props.material.materialList.filter(
+        (material) => material.matId === record.matId
+      );
+      setGradeList(list.map((item) => item.materialGrade)?.flat());
       props.fetchRatesListById(record.id);
       setEditRates(true);
       setTimeout(() => {
@@ -440,7 +387,7 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
         setShowAddPackingRates(true);
       }, 1000);
     } else if (tabKey === "4") {
-     props.getLaminationChargesById(record.laminationId);
+      props.getLaminationChargesById(record.laminationId);
       setEditLaminationCharges(true);
       setTimeout(() => {
         setShowAddLaminationCharges(true);
@@ -454,7 +401,8 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
   };
   useEffect(() => {
     props.fetchPartyList();
-    props.fetchMaterialList();
+    props.getProducts();
+    props.getProductGradesList();
     props.fetchProcessList();
     props.fetchAdditionalPriceList();
     props.fetchPackingRatesList();
@@ -463,21 +411,17 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
   }, []);
 
   useEffect(() => {
-    props.fetchRatesList();
-  }, [showAddRates]);
-
-  useEffect(() => {
     props.getLaminationChargesList();
   }, [showAddLaminationCharges, editLaminationCharges]);
 
   useEffect(() => {
-   // props.fetchPackingRatesList();
-   props.fetchRatesList({
-    pageNo: pagination.current,
-    pageSize: pagination.pageSize,
-    searchText: searchValue,
-    thicknessRange: searchThickness,
-  });
+    // props.fetchPackingRatesList();
+    props.fetchRatesList({
+      pageNo: pagination.current,
+      pageSize: pagination.pageSize,
+      searchText: searchValue,
+      thicknessRange: searchThickness,
+    });
   }, [showAddPackingRates]);
 
   // useEffect(() => {
@@ -488,11 +432,11 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
 
   useEffect(() => {
     const { packingRateList } = props.rates;
-    setfilteredPackingRateList(packingRateList)
+    setfilteredPackingRateList(packingRateList);
   }, [props.rates.packingRateList]);
-  
+
   useEffect(() => {
-      setLaminationChargesList(props.rates?.laminationChargesList || [])
+    setLaminationChargesList(props.rates?.laminationChargesList || []);
   }, [props.rates.laminationChargesList]);
 
   // useEffect(() => {
@@ -509,7 +453,7 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
         searchText: searchValue,
         thicknessRange: searchThickness,
       });
-     // props.fetchRatesList();
+      // props.fetchRatesList();
       props.resetRates();
     }
     if (props?.rates?.staticList) {
@@ -539,17 +483,18 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
         item.processId === selectedProcessId &&
         item?.partyId === selectedParty
     );
-    setAdditionalPriceList(list);
+    setAdditionalPriceList(list.length > 0 ? list : props.rates.additionalRatesList);
   }, [props?.rates?.additionalRatesList]);
+
   useEffect(() => {
     const list = props?.rates?.laminationChargesList.filter(
       (item) =>
         item?.laminationDetailsId === laminationStaticSelected &&
-       // item.processId === selectedProcessId &&
+        // item.processId === selectedProcessId &&
         item?.partyId === selectedParty
     );
     setLaminationChargesList(list);
-  }, [props?.rates?.laminationChargesList]);
+  }, [props?.laminationChargesList]);
 
   useEffect(() => {
     const { rates } = props;
@@ -566,13 +511,14 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
           }
         });
         setfilteredPackingRateList(filteredData);
-      }
-      else {
+      } else {
         const filteredData = rates?.ratesList?.filter((rate) => {
           if (
             rate?.id?.toString() === searchValue ||
             rate?.partyId?.toString() === searchValue ||
-           ( rate?.partyName?.toLowerCase().includes(searchValue.toLowerCase())) ||
+            rate?.partyName
+              ?.toLowerCase()
+              .includes(searchValue.toLowerCase()) ||
             rate?.matGradeId?.toString() === searchValue ||
             rate?.processId?.toString() === searchValue ||
             rate?.price?.toString() === searchValue
@@ -611,7 +557,7 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
         (material) => material.matId === type
       );
       setGradeList(list.map((item) => item.materialGrade)?.flat());
-    } 
+    }
   }, [type, checked]);
 
   useEffect(() => {
@@ -623,17 +569,15 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
   const handleChange = (pagination, filters, sorter) => {
     setSortedInfo(sorter);
     setFilteredInfo(filters);
-    setPagination(pagination)
+    setPagination(pagination);
   };
 
   const handleMaterialTypeChange = (e) => {
-    console.log("material", e);
     setType(e);
   };
 
   const checkboxChange = (e) => {
     setChecked(e.target.checked);
-    console.log(`checked = ${e.target.checked}`);
   };
   const callback = (key) => {
     setTabKey(key);
@@ -652,9 +596,11 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
       setSelectedProcessId(e);
     }
   };
+
   const handlePartyChange = (e) => {
-      setSelectedParty(e);
+    setSelectedParty(e);
   };
+
   const handleStaticChange = (e) => {
     setStaticSelected(e);
     const list = props?.rates?.additionalRatesList.filter(
@@ -665,15 +611,16 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
     );
     setAdditionalPriceList(list);
   };
+
   const handleLaminationChange = (e) => {
     setLaminationStaticSelected(e);
     const list = props?.rates?.laminationChargesList.filter(
       (item) =>
-        item?.laminationDetailsId === e &&
-        item?.partyId === selectedParty
+        item?.laminationDetailsId === e && item?.partyId === selectedParty
     );
     setLaminationChargesList(list);
   };
+
   const clearFilters = (value) => {
     setFilteredInfo(null);
   };
@@ -690,6 +637,7 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
       thicknessRange: searchThickness,
     });
   };
+
   useEffect(() => {
     fetchData();
   }, [pagination]);
@@ -699,28 +647,31 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
       pageNo: 1,
       pageSize: pagination.pageSize,
       searchText: searchValue,
-      thicknessRange: '',
+      thicknessRange: "",
     });
     const filteredData = props.rates?.ratesList?.filter((rate) => {
       if (
-         ( rate?.partyName?.toLowerCase().includes(searchValue.toLowerCase())) ||
-        (rate?.processName?.toLowerCase().includes(searchValue.toLowerCase())) ||
-        (rate?.materialDescription?.toLowerCase().includes(searchValue.toLowerCase())) ||
-        (rate?.matGradeName?.toLowerCase().includes(searchValue.toLowerCase()))
+        rate?.partyName?.toLowerCase().includes(searchValue.toLowerCase()) ||
+        rate?.processName?.toLowerCase().includes(searchValue.toLowerCase()) ||
+        rate?.materialDescription
+          ?.toLowerCase()
+          .includes(searchValue.toLowerCase()) ||
+        rate?.matGradeName?.toLowerCase().includes(searchValue.toLowerCase())
       ) {
         return rate;
       }
     });
     setFilteredInwardList(filteredData);
-  }, [ searchValue]);
+  }, [searchValue]);
+
   useEffect(() => {
     props.fetchRatesList({
       pageNo: 1,
       pageSize: pagination.pageSize,
-      searchText: '',
+      searchText: "",
       thicknessRange: searchThickness,
-      })
-  }, [ searchThickness]);
+    });
+  }, [searchThickness]);
 
   const handleDropdownChange = (value) => {
     setSelectedOption(value);
@@ -728,6 +679,7 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
   const filteredLaminations = props.laminationCharges.filter(
     (item) => item.partyId === selectedParty
   );
+
   return (
     <div>
       <h1>
@@ -759,7 +711,7 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
                 icon={() => <i className="icon icon-add" />}
                 size="default"
                 onClick={() => {
-                  props.resetRates();
+                  // props.resetRates();
                   props.form.resetFields();
                   setShowAddRates(true);
                 }}
@@ -787,7 +739,7 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
                 icon={() => <i className="icon icon-add" />}
                 size="default"
                 onClick={() => {
-                 props.resetLaminationChargesRequest();
+                  props.resetLaminationChargesRequest();
                   props.form.resetFields();
                   setShowAddLaminationCharges(true);
                 }}
@@ -797,17 +749,18 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
             )}
             <SearchBox
               styleName="gx-flex-1"
-              placeholder="Search for party name, process name or material ..."
+              placeholder="Search for location, process name or material ..."
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
-            />&nbsp;
-              {tabKey === "1" && (
-            <SearchBox
-              styleName="gx-flex-1"
-              placeholder="Search for thickness range..."
-              value={searchThickness}
-              onChange={(e) => setSearchThickness(e.target.value)}
             />
+            &nbsp;
+            {tabKey === "1" && (
+              <SearchBox
+                styleName="gx-flex-1"
+                placeholder="Search for thickness range..."
+                value={searchThickness}
+                onChange={(e) => setSearchThickness(e.target.value)}
+              />
             )}
           </div>
         </div>
@@ -821,21 +774,21 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
               onChange={handleChange}
               pagination={{
                 ...pagination,
-                total: props.rates.totalItems || 0, 
+                total: props.rates.totalItems || 0,
                 itemRender: (current, type, originalElement) => {
-                  if (type === 'prev') {
+                  if (type === "prev") {
                     return <LeftOutlined />;
                   }
-                  if (type === 'next') {
+                  if (type === "next") {
                     return <RightOutlined />;
                   }
-                  if (type === 'jump-prev' || type === 'jump-next') {
+                  if (type === "jump-prev" || type === "jump-next") {
                     return <EllipsisOutlined />;
                   }
                   return originalElement;
                 },
-                showLessItems: true, 
-                pageSizeOptions: ['10', '20', '50'],
+                showLessItems: true,
+                pageSizeOptions: ["10", "20", "50"],
               }}
             />
           </TabPane>
@@ -843,12 +796,14 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
             <Select
               style={{ width: 300 }}
               className="additional_price_select"
-              placeholder="Select Party"
+              placeholder="Select Location"
               name="partyName"
               onChange={handlePartyChange}
             >
               {props.party?.partyList?.map((party) => (
-                <Option key={party.nPartyId} value={party.nPartyId}>{party.partyName}</Option>
+                <Option key={party.nPartyId} value={party.nPartyId}>
+                  {party.partyName}
+                </Option>
               ))}
             </Select>
             <Select
@@ -872,11 +827,17 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
                   onChange={handleStaticChange}
                 >
                   {staticList?.map((item) => (
-                    <Option key={item.id} value={item.id}>{item.priceDesc}</Option>
+                    <Option key={item.id} value={item.id}>
+                      {item.priceDesc}
+                    </Option>
                   ))}
                 </Select>
               </>
             )}
+            <Row className="gx-mt-3">
+              <Col span={24}>
+              </Col>
+            </Row>
             {additionPriceList.length > 0 && (
               <>
                 <Table
@@ -890,15 +851,16 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
             )}
           </TabPane>
           <TabPane tab="Packing Rate" key="3">
-            <Table 
+            <Table
               className="gx-table-responsive"
               columns={packingRateColumn}
               dataSource={filteredPackingRateList}
               onChange={handleChange}
-              />
+            />
           </TabPane>
+
           <TabPane tab="Lamination Charges" key="4">
-          <Select
+            <Select
               style={{ width: 300 }}
               className="additional_price_select"
               placeholder="Select Party"
@@ -906,7 +868,9 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
               onChange={handlePartyChange}
             >
               {props.party?.partyList?.map((party) => (
-                <Option key={party.nPartyId} value={party.nPartyId}>{party.partyName}</Option>
+                <Option key={party.nPartyId} value={party.nPartyId}>
+                  {party.partyName}
+                </Option>
               ))}
             </Select>
             {props.laminationCharges.length > 0 && (
@@ -918,17 +882,26 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
                   onChange={handleLaminationChange}
                 >
                   {filteredLaminations?.map((item) => (
-                    <Option key={item.laminationDetailsId} value={item.laminationDetailsId}>{item.laminationDetailsDesc}</Option>
+                    <Option
+                      key={item.laminationDetailsId}
+                      value={item.laminationDetailsId}
+                    >
+                      {item.laminationDetailsDesc}
+                    </Option>
                   ))}
                 </Select>
               </>
             )}
+            <Row className="gx-mt-3">
+              <Col span={24}>
+              </Col>
+            </Row>
             {laminationChargesList.length > 0 && (
-            <Table 
-              className="gx-table-responsive"
-              columns={laminationChargesColumn}
-              dataSource={laminationChargesList}
-              onChange={handleChange}
+              <Table
+                className="gx-table-responsive"
+                columns={laminationChargesColumn}
+                dataSource={laminationChargesList}
+                onChange={handleChange}
               />
             )}
           </TabPane>
@@ -944,7 +917,7 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
               <Col span={24}>
                 <Card>
                   <p>
-                    <strong>Party Name :</strong> {viewMaterialData?.partyId}
+                    <strong>Location :</strong> {viewMaterialData?.partyId}
                   </p>
                   <p>
                     <strong>Material Type :</strong>{" "}
@@ -981,7 +954,7 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
               <Col span={24}>
                 <Card>
                   <p>
-                    <strong>Party Name :</strong> {viewMaterialData?.partyId}
+                    <strong>Location :</strong> {viewMaterialData?.partyId}
                   </p>
                   <p>
                     <strong>Process Name :</strong>{" "}
@@ -1011,8 +984,8 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
               props.form.validateFields((err, values) => {
                 values.partyId = [values.partyId];
                 values.matGradeId = [values.matGradeId];
-                const data = { values, id: props.rates?.rates?.id  };
-                 props.updateRates(data);
+                const data = { values, id: props.rates?.rates?.id };
+                props.updateRates(data);
                 props.form.resetFields();
                 setEditRates(false);
                 setShowAddRates(false);
@@ -1024,8 +997,8 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
                 } else {
                   const payload = {
                     ...values,
-                    matGradeId: [values.matGradeId],
-                    partyId: [values.partyId],
+                    gradeId: [values.gradeId],
+                    locationId: values.partyId,
                   };
                   props.addRates(payload);
                 }
@@ -1053,108 +1026,79 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
                 className="gx-align-self-center"
               >
                 <Form {...formItemLayout} className="gx-pt-4">
-                  <Form.Item>
-                    <Checkbox onChange={checkboxChange}>
-                      Apply to multiple fields
-                    </Checkbox>
+                  <Form.Item label="Location">
+                    {getFieldDecorator("partyId", {
+                      rules: [
+                        {
+                          required: true,
+                          message: "Please select location!",
+                        },
+                      ],
+                    })(
+                      <Select
+                        id="partyId"
+                        showSearch
+                        mode="multiple"
+                        style={{ width: "100%" }}
+                      >
+                        {props.party?.partyList?.map((party) => (
+                          <Option key={party.nPartyId} value={party.nPartyId}>
+                            {party.partyName}
+                          </Option>
+                        ))}
+                      </Select>
+                    )}
                   </Form.Item>
-                  {checked && (
-                    <>
-                      <Form.Item label="Party Name">
-                        {getFieldDecorator("partyId", {
-                          rules: [
-                            {
-                              required: true,
-                              message: "Please select party name!",
-                            },
-                          ],
-                        })(
-                          <Select
-                            id="partyId"
-                            showSearch
-                            mode="multiple"
-                            style={{ width: "100%" }}
+                  <Form.Item label="Product Id">
+                    {getFieldDecorator("productId", {
+                      rules: [
+                        {
+                          required: true,
+                          message: "Please select product!",
+                        },
+                      ],
+                    })(
+                      <Select
+                        id="materialType"
+                        showSearch
+                        mode="multiple"
+                        style={{ width: "100%" }}
+                        onChange={handleMaterialTypeChange}
+                      >
+                        {props.products?.products?.map((material) => (
+                          <Option key={material.productId} value={material.productId}>
+                            {material?.productName}
+                          </Option>
+                        ))}
+                      </Select>
+                    )}
+                  </Form.Item>
+                  <Form.Item label="Material Grade">
+                    {getFieldDecorator("gradeId", {
+                      rules: [
+                        {
+                          required: true,
+                          message: "Please select material grade!",
+                        },
+                      ],
+                    })(
+                      <Select
+                        id="gradeId"
+                        mode="multiple"
+                        style={{ width: "100%" }}
+                      >
+                        {props.products?.grades?.map((material) => (
+                          <Option
+                            key={material.gradeId}
+                            value={material.gradeId}
                           >
-                            {props.party?.partyList?.map((party) => (
-                              <Option key={party.nPartyId} value={party.nPartyId}>
-                                {party.partyName}
-                              </Option>
-                            ))}
-                          </Select>
-                        )}
-                      </Form.Item>
-                      <Form.Item label="Material Type">
-                        {getFieldDecorator("materialType", {
-                          rules: [
-                            {
-                              required: true,
-                              message: "Please select material type!",
-                            },
-                          ],
-                        })(
-                          <Select
-                            id="materialType"
-                            showSearch
-                            mode="multiple"
-                            style={{ width: "100%" }}
-                            onChange={handleMaterialTypeChange}
-                          >
-                            {props.material?.materialList?.map((material) => (
-                              <Option key={material.matId} value={material.matId}>
-                                {material.description}
-                              </Option>
-                            ))}
-                          </Select>
-                        )}
-                      </Form.Item>
-                      <Form.Item label="Material Grade">
-                        {getFieldDecorator("matGradeId", {
-                          rules: [
-                            {
-                              required: true,
-                              message: "Please select material grade!",
-                            },
-                          ],
-                        })(
-                          <Select
-                            id="matGradeId"
-                            mode="multiple"
-                            style={{ width: "100%" }}
-                          >
-                            {gradeList?.map((material) => (
-                              <Option key={material.gradeId} value={material.gradeId}>
-                                {material.gradeName}
-                              </Option>
-                            ))}
-                          </Select>
-                        )}
-                      </Form.Item>
-                    </>
-                  )}
-                  {!checked && (
-                    <Form.Item label="Party Name">
-                      {getFieldDecorator("partyId", {
-                        rules: [
-                          {
-                            required: true,
-                            message: "Please enter Party name!",
-                          },
-                        ],
-                      })(
-                        <Select
-                          showSearch
-                          style={{ width: 300 }}
-                          placeholder="Select a Party"
-                        >
-                          {props.party?.partyList?.map((party) => (
-                            <Option key={party.nPartyId} value={party.nPartyId}>
-                              {party.partyName}
-                            </Option>
-                          ))}
-                        </Select>
-                      )}
-                    </Form.Item>
-                  )}
+                            {material.gradeName}
+                          </Option>
+                        ))}
+                      </Select>
+                    )}
+                  </Form.Item>
+
                   <Form.Item label="Process Name">
                     {getFieldDecorator("processId", {
                       rules: [
@@ -1170,61 +1114,16 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
                         placeholder="Select a Process"
                       >
                         {props.process?.processList?.map((process) => (
-                          <Option key={process.processId} value={process.processId}>
+                          <Option
+                            key={process.processId}
+                            value={process.processId}
+                          >
                             {process.processName}
                           </Option>
                         ))}
                       </Select>
                     )}
                   </Form.Item>
-                  {!checked && (
-                    <Form.Item label="Material Type">
-                      {getFieldDecorator("materialType", {
-                        rules: [
-                          {
-                            required: true,
-                            message: "Please enter material Type!",
-                          },
-                        ],
-                      })(
-                        <Select
-                          showSearch
-                          value={type}
-                          style={{ width: 300 }}
-                          placeholder="Select a Material"
-                          onChange={handleMaterialTypeChange}
-                        >
-                          {props.material?.materialList?.map((material) => (
-                            <Option key={material.matId} value={material.matId}>
-                              {material.description}
-                            </Option>
-                          ))}
-                        </Select>
-                      )}
-                    </Form.Item>
-                  )}
-                  {!checked && (
-                    <Form.Item label="Material Grade">
-                      {getFieldDecorator("matGradeId", {
-                        rules: [
-                          { required: true, message: "Please enter grade!" },
-                        ],
-                      })(
-                        <Select
-                          showSearch
-                          mode='multiple'
-                          style={{ width: 300 }}
-                          placeholder="Select a Grade"
-                        >
-                          {gradeList?.map((material) => (
-                            <Option key={material.gradeId} value={material.gradeId}>
-                              {material.gradeName}
-                            </Option>
-                          ))}
-                        </Select>
-                      )}
-                    </Form.Item>
-                  )}
                   <Form.Item label="Minimum Thickness">
                     {getFieldDecorator("thicknessFrom", {
                       rules: [
@@ -1272,10 +1171,11 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
               <Col span={24}>
                 <Card>
                   <p>
-                    <strong>Bucket Name:</strong> {viewPackingRateData?.packingBucketName}
+                    <strong>Bucket Name:</strong>{" "}
+                    {viewPackingRateData?.packingBucketName}
                   </p>
                   <p>
-                    <strong>Party Name:</strong>{" "}
+                    <strong>Location:</strong>{" "}
                     {viewPackingRateData?.partyName}
                   </p>
                   <p>
@@ -1283,7 +1183,8 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
                     {viewPackingRateData?.packingRate}
                   </p>
                   <p>
-                    <strong>Description:</strong> {viewPackingRateData?.packingRateDesc}
+                    <strong>Description:</strong>{" "}
+                    {viewPackingRateData?.packingRateDesc}
                   </p>
                 </Card>
               </Col>
@@ -1298,8 +1199,12 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
             e.preventDefault();
             if (editPackingRates) {
               const values = props.form.getFieldsValue();
-              console.log('Received values of form: ', values);
-              if (values.packingBucketId !== '' && values.rPartyId !== '' && values.packingRate !== '' && values.packingRateDesc !== '') {
+              if (
+                values.packingBucketId !== "" &&
+                values.rPartyId !== "" &&
+                values.packingRate !== "" &&
+                values.packingRateDesc !== ""
+              ) {
                 const packingRateId = props?.packingRates?.packingRateId;
                 props.updatePackingRates({ ...values, packingRateId });
                 setEditPackingRates(false);
@@ -1307,8 +1212,12 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
               }
             } else {
               const values = props.form.getFieldsValue();
-              console.log('Received values of form: ', values);
-              if (values.packingBucketId !== '' && values.rPartyId !== '' && values.packingRate !== '' && values.packingRateDesc !== '') {
+              if (
+                values.packingBucketId !== "" &&
+                values.rPartyId !== "" &&
+                values.packingRate !== "" &&
+                values.packingRateDesc !== ""
+              ) {
                 props.addPackingRates(values);
                 setShowAddPackingRates(false);
               }
@@ -1332,72 +1241,92 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
                 className="gx-align-self-center"
               >
                 <Form {...formItemLayout} className="gx-pt-4">
-                <Form.Item label="Bucket Id">
-                    {getFieldDecorator('packingBucketId', {
-                        rules: [{ required: true, message: 'Please select Items' }],
+                  <Form.Item label="Bucket Id">
+                    {getFieldDecorator("packingBucketId", {
+                      rules: [
+                        { required: true, message: "Please select Items" },
+                      ],
                     })(
-                        <Select
+                      <Select
                         id="packingItem"
                         showSearch
-                        style={{ width: '100%' }}
+                        style={{ width: "100%" }}
                         filterOption={(input, option) => {
-                            return option?.props?.children?.toLowerCase().includes(input.toLowerCase());
+                          return option?.props?.children
+                            ?.toLowerCase()
+                            .includes(input.toLowerCase());
                         }}
                         filterSort={(optionA, optionB) =>
-                            optionA?.props?.children.toLowerCase().localeCompare(optionB?.props?.children.toLowerCase())
+                          optionA?.props?.children
+                            .toLowerCase()
+                            .localeCompare(
+                              optionB?.props?.children.toLowerCase()
+                            )
                         }
-                        >{props?.packing?.bucketList?.map(item => {
-                            return <Option key={item?.bucketId} value={item?.bucketId}>{item?.packingBucketId}</Option>
-                        })}</Select>
+                      >
+                        {props?.packing?.bucketList?.map((item) => {
+                          return (
+                            <Option key={item?.bucketId} value={item?.bucketId}>
+                              {item?.packingBucketId}
+                            </Option>
+                          );
+                        })}
+                      </Select>
                     )}
-                </Form.Item>
-                <Form.Item label="Party Name">
-                  {getFieldDecorator("rPartyId", {
-                    rules: [{
-                        required: true,
-                        message: "Please select party name!",
-                      }],
-                  })(
-                    <Select
-                      id="partyId"
-                      showSearch
-                      style={{ width: "100%" }}
-                      filterOption={(input, option) => {
-                        return option?.props?.children?.toLowerCase().includes(input.toLowerCase());
-                      }}
-                      filterSort={(optionA, optionB) =>
-                        optionA?.props?.children.toLowerCase().localeCompare(optionB?.props?.children.toLowerCase())
-                      }
-                    >
-                      {props.party?.partyList?.map((party) => (
-                        <Option key={party.nPartyId} value={party.nPartyId}>
-                          {party.partyName}
-                        </Option>
-                      ))}
-                    </Select>
-                  )}
-                </Form.Item>
-                <Form.Item label="Packing Rate" >
-                      {getFieldDecorator('packingRate', {
-                          rules: [{ required: true, message: 'Please enter rate' }],
-                          })(
-                          <Input id="packingRate" />
-                      )}
                   </Form.Item>
-                  <Form.Item label="Description" >
-                      {getFieldDecorator('packingRateDesc', {
-                          rules: [{ required: true, message: 'Please enter description' }],
-                          })(
-                          <Input id="packingRateDesc" />
-                      )}
+                  <Form.Item label="Location">
+                    {getFieldDecorator("rPartyId", {
+                      rules: [
+                        {
+                          required: true,
+                          message: "Please select location!",
+                        },
+                      ],
+                    })(
+                      <Select
+                        id="partyId"
+                        showSearch
+                        style={{ width: "100%" }}
+                        filterOption={(input, option) => {
+                          return option?.props?.children
+                            ?.toLowerCase()
+                            .includes(input.toLowerCase());
+                        }}
+                        filterSort={(optionA, optionB) =>
+                          optionA?.props?.children
+                            .toLowerCase()
+                            .localeCompare(
+                              optionB?.props?.children.toLowerCase()
+                            )
+                        }
+                      >
+                        {props.party?.partyList?.map((party) => (
+                          <Option key={party.nPartyId} value={party.nPartyId}>
+                            {party.partyName}
+                          </Option>
+                        ))}
+                      </Select>
+                    )}
+                  </Form.Item>
+                  <Form.Item label="Packing Rate">
+                    {getFieldDecorator("packingRate", {
+                      rules: [{ required: true, message: "Please enter rate" }],
+                    })(<Input id="packingRate" />)}
+                  </Form.Item>
+                  <Form.Item label="Description">
+                    {getFieldDecorator("packingRateDesc", {
+                      rules: [
+                        { required: true, message: "Please enter description" },
+                      ],
+                    })(<Input id="packingRateDesc" />)}
                   </Form.Item>
                 </Form>
               </Col>
             </Row>
           </Card>
         </Modal>
-      {/* Lamination Charges */}
-      <Modal
+        {/* Lamination Charges */}
+        <Modal
           title="Lamination Charges Details"
           visible={viewLaminationCharges}
           onOk={() => setViewLaminationCharges(false)}
@@ -1408,16 +1337,16 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
             <Row>
               <Col span={24}>
                 <Card>
-                <p>
-                    <strong>Party Name:</strong>{" "}
+                  <p>
+                    <strong>Location:</strong>{" "}
                     {viewLaminationChargesData?.partyName}
                   </p>
                   <p>
-                    <strong>Lamination Details Name:</strong> {" "} 
+                    <strong>Lamination Details Name:</strong>{" "}
                     {viewLaminationChargesData?.laminationDetailsDesc}
                   </p>
                   <p>
-                    <strong>Lamination Charges:</strong> {" "} 
+                    <strong>Lamination Charges:</strong>{" "}
                     {viewLaminationChargesData?.charges}
                   </p>
                 </Card>
@@ -1426,28 +1355,39 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
           </Card>
         </Modal>
 
-      <Modal
-          title={editLaminationCharges ? "Edit Lamination Charges" : "Add Lamination Charges"}
+        <Modal
+          title={
+            editLaminationCharges
+              ? "Edit Lamination Charges"
+              : "Add Lamination Charges"
+          }
           visible={showAddLaminationCharges}
           onOk={(e) => {
             e.preventDefault();
             if (editLaminationCharges) {
               const values = props.form.getFieldsValue();
-              console.log('Received values of form: ', values);
-               if (values.laminationDetailsId !== '' && values.lPartyId !== '' && values.charges !== '') {
-                 const laminationId = props?.rates?.laminationCharges?.laminationId;
-                 props.updateLminationCharges({...values, laminationId});
+              if (
+                values.laminationDetailsId !== "" &&
+                values.lPartyId !== "" &&
+                values.charges !== ""
+              ) {
+                const laminationId =
+                  props?.rates?.laminationCharges?.laminationId;
+                props.updateLminationCharges({ ...values, laminationId });
                 setEditLaminationCharges(false);
                 setShowAddLaminationCharges(false);
-               }
+              }
             } else {
               const values = props.form.getFieldsValue();
-              console.log('Received values of form: ', values);
-
-              if (values.laminationDetailsId !== '' && values.lPartyId !== '' && values.charges !== '') {
+              
+              if (
+                values.laminationDetailsId !== "" &&
+                values.lPartyId !== "" &&
+                values.charges !== ""
+              ) {
                 props.addLminationCharges(values);
                 setShowAddLaminationCharges(false);
-               }
+              }
             }
             props.form.resetFields();
           }}
@@ -1468,69 +1408,88 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
                 className="gx-align-self-center"
               >
                 <Form {...formItemLayout} className="gx-pt-4">
-                <Form.Item label="Party Name">
-                  {getFieldDecorator("lPartyId", {
-                    rules: [{
-                        required: true,
-                        message: "Please select party name!",
-                      }],
-                  })(
-                    <Select
-                      id="lPartyId"
-                      showSearch
-                     // mode='multiple'
-                      style={{ width: "100%" }}
-                      filterOption={(input, option) => {
-                        return option?.props?.children?.toLowerCase().includes(input.toLowerCase());
-                      }}
-                      filterSort={(optionA, optionB) =>
-                        optionA?.props?.children.toLowerCase().localeCompare(optionB?.props?.children.toLowerCase())
-                      }
-                    >
-                      {props.party?.partyList?.map((party) => (
-                        <Option key={party.nPartyId} value={party.nPartyId}>
-                          {party.partyName}
-                        </Option>
-                      ))}
-                    </Select>
-                  )}
-                </Form.Item>
+                  <Form.Item label="Location">
+                    {getFieldDecorator("lPartyId", {
+                      rules: [
+                        {
+                          required: true,
+                          message: "Please select location!",
+                        },
+                      ],
+                    })(
+                      <Select
+                        id="lPartyId"
+                        showSearch
+                        // mode='multiple'
+                        style={{ width: "100%" }}
+                        filterOption={(input, option) => {
+                          return option?.props?.children
+                            ?.toLowerCase()
+                            .includes(input.toLowerCase());
+                        }}
+                        filterSort={(optionA, optionB) =>
+                          optionA?.props?.children
+                            .toLowerCase()
+                            .localeCompare(
+                              optionB?.props?.children.toLowerCase()
+                            )
+                        }
+                      >
+                        {props.party?.partyList?.map((party) => (
+                          <Option key={party.nPartyId} value={party.nPartyId}>
+                            {party.partyName}
+                          </Option>
+                        ))}
+                      </Select>
+                    )}
+                  </Form.Item>
 
-                <Form.Item label="Select Lamination Details">
-                  {getFieldDecorator("laminationDetailsId", {
-                    rules: [{
-                        required: true,
-                        message: "Please select lamination!",
-                      }],
-                  })(
-                    <Select
-                      id="laminationDetailsId"
-                      showSearch
-                     // mode='multiple'
-                      style={{ width: "100%" }}
-                      onChange={handleDropdownChange}
-                      value={selectedOption}
-                      filterOption={(input, option) => {
-                        return option?.props?.children?.toLowerCase().includes(input.toLowerCase());
-                      }}
-                      filterSort={(optionA, optionB) =>
-                        optionA?.props?.children.toLowerCase().localeCompare(optionB?.props?.children.toLowerCase())
-                      }
-                    >
-                       {laminationDD.map((option) => (
-                          <option key={option.laminationDetailsId} value={option.laminationDetailsId}>
+                  <Form.Item label="Select Lamination Details">
+                    {getFieldDecorator("laminationDetailsId", {
+                      rules: [
+                        {
+                          required: true,
+                          message: "Please select lamination!",
+                        },
+                      ],
+                    })(
+                      <Select
+                        id="laminationDetailsId"
+                        showSearch
+                        // mode='multiple'
+                        style={{ width: "100%" }}
+                        onChange={handleDropdownChange}
+                        value={selectedOption}
+                        filterOption={(input, option) => {
+                          return option?.props?.children
+                            ?.toLowerCase()
+                            .includes(input.toLowerCase());
+                        }}
+                        filterSort={(optionA, optionB) =>
+                          optionA?.props?.children
+                            .toLowerCase()
+                            .localeCompare(
+                              optionB?.props?.children.toLowerCase()
+                            )
+                        }
+                      >
+                        {laminationDD.map((option) => (
+                          <option
+                            key={option.laminationDetailsId}
+                            value={option.laminationDetailsId}
+                          >
                             {option.laminationDetailsDesc}
                           </option>
                         ))}
-                    </Select>
-                  )}
-                </Form.Item>
-                <Form.Item label="Lamination Charges" >
-                      {getFieldDecorator('charges', {
-                          rules: [{ required: true, message: 'Please enter charges' }],
-                          })(
-                          <Input id="charges" />
-                      )}
+                      </Select>
+                    )}
+                  </Form.Item>
+                  <Form.Item label="Lamination Charges">
+                    {getFieldDecorator("charges", {
+                      rules: [
+                        { required: true, message: "Please enter charges" },
+                      ],
+                    })(<Input id="charges" />)}
                   </Form.Item>
                 </Form>
               </Col>
@@ -1564,7 +1523,8 @@ const mapStateToProps = (state) => ({
   packing: state.packing,
   packingRates: state.rates.packingRates,
   laminationCharges: state.rates.laminationChargesList,
-  laminationChargesView: state.rates.laminationChargesById
+  laminationChargesView: state.rates.laminationChargesById,
+  products: state.productInfo
 });
 
 const addRatesForm = Form.create({
@@ -1578,17 +1538,17 @@ const addRatesForm = Form.create({
         ...props.rates?.rates?.processId,
         value: props.rates?.rates?.processId || undefined,
       }),
-      materialType: Form.createFormField({
-        ...props.rates?.rates?.matId,
-        value: props.rates?.rates?.matId || undefined,
+      productId: Form.createFormField({
+        ...props.rates?.rates?.productId,
+        value: props.rates?.rates?.productId || undefined,
       }),
       matGradeName: Form.createFormField({
         ...props.rates?.rates?.matGradeName,
         value: props.rates?.rates?.matGradeName || undefined,
       }),
-      matGradeId: Form.createFormField({
-        ...props.rates?.rates?.matGradeId,
-        value: props.rates?.rates?.matGradeId || undefined,
+      gradeId: Form.createFormField({
+        ...props.rates?.rates?.gradeId,
+        value: props.rates?.rates?.gradeId || undefined,
       }),
       thicknessFrom: Form.createFormField({
         ...props.rates?.rates?.thicknessFrom,
@@ -1695,5 +1655,7 @@ export default connect(mapStateToProps, {
   addLminationCharges,
   updateLminationCharges,
   deleteLminationCharges,
-  resetLaminationChargesRequest
+  resetLaminationChargesRequest,
+  getProducts,
+  getProductGradesList
 })(addRatesForm);

@@ -1,4 +1,3 @@
-
 //src-routes-company-kqp-Template.js
 
 import React, { useEffect, useState } from "react";
@@ -97,17 +96,13 @@ const templateLinkListAactionColumn = {
   };
 
   useEffect(() => {
-    if (props.match) {
-        console.log(props.match)
-        console.log(location)
-        
-        const params = new URLSearchParams(location.search);
-        console.log(params.get('view'));
-        if(params.get('view') === 'links') {
-          setTabKey("2");
-        } else {
-          setTabKey("1");
-        }
+    if (props.match) {        
+      const params = new URLSearchParams(location.search);
+      if(params.get('view') === 'links') {
+        setTabKey("2");
+      } else {
+        setTabKey("1");
+      }
     }
 }, [])
 

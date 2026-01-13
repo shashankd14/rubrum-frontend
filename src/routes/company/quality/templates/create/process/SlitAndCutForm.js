@@ -420,26 +420,21 @@ const SlitAndCutForm = (props) => {
     }
 
     const handleSlitInspectionTableChange = (tableData) => {
-        console.log('handleSlitInspectionTableChange', tableData)
         setSlitInspectionData(tableData)
     } 
 
     const handleCutInspectionTableChange = (tableData) => {
-        console.log('handleCutInspectionTableChange', tableData)
         setCutInspectionData(tableData)
     } 
 
     const handleFinalInspectionTableChange = (tableData) => {
-        console.log('handleFinalInspectionTableChange', tableData)
         setFinalInspectionData(tableData)
     } 
 
     const handleToleranceTableChange = (tableData) => {
-        console.log('handleInspectionTableChange', tableData)
         setToleranceInspectionData(tableData)
     } 
     const handleToleranceTableChangeSlit = (tableData) => {
-        console.log('handleInspectionTableChange', tableData)
         setToleranceInspectionDataSlit(tableData)
     } 
     return (
@@ -448,8 +443,8 @@ const SlitAndCutForm = (props) => {
                 <Card.Grid style={gridCardStyle}>
                     <Row>
                         <Col span={24}>
-                            <label>Customer Name</label>
-                            <Input placeholder='Enter customer name' disabled value={slitCutFormData.customerName} onChange={(e) => onOptionChange('customerName', e)}></Input>
+                            <label>Location Name</label>
+                            <Input placeholder='Enter location name' disabled value={slitCutFormData.customerName} onChange={(e) => onOptionChange('customerName', e)}></Input>
                         </Col>
                     </Row>
                     <Row>
@@ -458,7 +453,7 @@ const SlitAndCutForm = (props) => {
                             <DatePicker disabled value={slitCutFormData.processDate} onChange={(e) => onOptionChange('processDate', e)}> </DatePicker>
                         </Col>
                         <Col span={12}>
-                            <label>Batch Number</label>
+                            <label>SC inward id</label>
                             <Input disabled value={slitCutFormData.batchNumber} onChange={(e) => onOptionChange('batchNumber', e)}></Input>
                         </Col>
 

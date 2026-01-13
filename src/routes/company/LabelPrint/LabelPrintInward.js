@@ -32,99 +32,83 @@ const LabelPrintInward = (props) => {
     const { totalItems } = props.template;
    
     const columns = [
-        {
-            title: "Coil Number",
-            dataIndex: "coilNo",
-            key: "coilNo",
-            filters: [],
-            sorter: (a, b) => a.coilNo.length - b.coilNo.length,
-            sortOrder: sortedInfo.columnKey === "coilNo" && sortedInfo.order,
+      {
+        title: "Batch no.",
+        dataIndex: "coilNo",
+        key: "coilNo",
+        filters: [],
+        sorter: false,
+      },
+      {
+        title: "SC inward id",
+        dataIndex: "customerBatchNo",
+        key: "customerBatchNo",
+        sorter: false,
+        render: (text, record) => {
+          return record.customerBatchNo == "undefined" ||
+            record.batch == "undefined"
+            ? "-"
+            : record.customerBatchId || record.batch;
         },
-        {
-            title: "Batch Number",
-            dataIndex: "customerBatchNo",
-            key: "customerBatchNo",
-            filteredValue: filteredInfo ? filteredInfo["customerBatchNo"] : null,
-            onFilter: (value, record) => record.customerBatchNo == value,
-            filters: [],
-            sorter: (a, b) => a.customerBatchNo.length - b.customerBatchNo.length,
-            sortOrder: sortedInfo.columnKey === "customerBatchNo" && sortedInfo.order,
+      },
+      {
+        title: "Inward Date",
+        dataIndex: "planDate",
+        render(value) {
+          const formattedDate = moment(value, "DD/MM/YYYY").format(
+            "Do MMM YYYY"
+          );
+          return <span>{formattedDate}</span>;
         },
-        {
-            title: "Inward Date",
-            dataIndex: "planDate",
-            render(value) {
-               const formattedDate = moment(value, "DD/MM/YYYY").format("Do MMM YYYY");
-                return <span>{formattedDate}</span>;
-            },
-            key: "planDate",
-            filters: [],
-            sorter: (a, b) => moment(a.planDate, "DD/MM/YYYY").valueOf() - moment(b.planDate, "DD/MM/YYYY").valueOf(),
-            sortOrder: sortedInfo.columnKey === "planDate" && sortedInfo.order,
-        },
-        {
-            title: "Material",
-            dataIndex: "materialDesc",
-            key: "materialDesc",
-            filteredValue: filteredInfo ? filteredInfo["materialDesc"] : null,
-            onFilter: (value, record) => record.materialDesc == value,
-            filters: [],
-            sorter: (a, b) =>
-                a.materialDesc.length - b.materialDesc.length,
-            sortOrder:
-                sortedInfo.columnKey === "materialDesc" && sortedInfo.order,
-        },
-        {
-            title: "Grade",
-            dataIndex: "materialGrade",
-            key: "materialGrade",
-            filteredValue: filteredInfo ? filteredInfo["materialGrade"] : null,
-            onFilter: (value, record) => record.materialGrade == value,
-            filters: [],
-            sorter: (a, b) =>
-                a.materialGrade.length - b.materialGrade.length,
-            sortOrder:
-                sortedInfo.columnKey === "materialGrade" && sortedInfo.order,
-        },
-        {
-            title: "Thickness",
-            dataIndex: "fthickness",
-            key: "fthickness",
-            filters: [],
-            sorter: (a, b) => a.fthickness - b.fthickness,
-            sortOrder: sortedInfo.columnKey === "fthickness" && sortedInfo.order,
-        },
-        {
-            title: "Width",
-            dataIndex: "fwidth",
-            key: "fwidth",
-            filters: [],
-            sorter: (a, b) => a.fwidth - b.fwidth,
-            sortOrder: sortedInfo.columnKey === "fwidth" && sortedInfo.order,
-        },
-        {
-            title: "Weight",
-            dataIndex: "targetWeight",
-            key: "targetWeight",
-            filters: [],
-            sorter: (a, b) => a.targetWeight - b.targetWeight,
-            sortOrder: sortedInfo.columnKey === "targetWeight" && sortedInfo.order,
-        },
-        {
-            title: "Action",
-            dataIndex: "",
-            key: "x",
-            render: (text, record, index) => (
-                <span>
-                     <span
-                        className="gx-link"
-                        onClick={() => onPdf(record.inwardEntryId)}
-                    >
-                       Label Print
-                    </span>
-                </span>
-            ),
-        },
+        key: "planDate",
+        filters: [],
+        sorter: false,
+      },
+      {
+        title: "Material",
+        dataIndex: "materialDesc",
+        key: "materialDesc",
+        sorter: false,
+      },
+      {
+        title: "Grade",
+        dataIndex: "materialGrade",
+        key: "materialGrade",
+        sorter: false,
+      },
+      {
+        title: "Thickness",
+        dataIndex: "fthickness",
+        key: "fthickness",
+        sorter: false,
+      },
+      {
+        title: "Width",
+        dataIndex: "fwidth",
+        key: "fwidth",
+        sorter: false,
+      },
+      {
+        title: "Weight",
+        dataIndex: "targetWeight",
+        key: "targetWeight",
+        sorter: false,
+      },
+      {
+        title: "Action",
+        dataIndex: "",
+        key: "x",
+        render: (text, record, index) => (
+          <span>
+            <span
+              className="gx-link"
+              onClick={() => onPdf(record.inwardEntryId)}
+            >
+              Label Print
+            </span>
+          </span>
+        ),
+      },
     ];
 
     useEffect(() => {
@@ -148,12 +132,9 @@ const LabelPrintInward = (props) => {
     useEffect(() => {
         if (!isInitialMount.current){
         if (!props.template.loading && !props.template.error && props.template.operation == "fetchQualityReport") {
-            console.log(props.template)
             setQualityReportList(props.template.data)
         } else if (!props.template.loading && !props.template.error && props.template.operation == "fetchQualityReportStage") {
-            console.log(props.template)
             setFilteredInwardList(props.template.data)
-            console.log(props.template.data)
         }}
         else {
             // This block will be executed only on the first render
@@ -162,7 +143,6 @@ const LabelPrintInward = (props) => {
     }, [props.template.loading, props.template.error, props.template.operation]);
 
     const handleChange = (e) => {
-        console.log(e)
         setTemplateId(e)
     };
 
@@ -190,7 +170,6 @@ const LabelPrintInward = (props) => {
 
     useEffect(() => {
         if (!props.party.loading && !props.party.error) {
-            console.log(props.party)
             setPartyList(props.party.partyList)
         }
     }, [props.party.loading, props.party.error]);
@@ -220,7 +199,7 @@ const LabelPrintInward = (props) => {
                         id="select"
                         showSearch
                         style={{ width: 200 }}
-                        placeholder="Select a customer"
+                        placeholder="Select a Location"
                         optionFilterProp="children"
                         onChange={handleCustomerChange}
                         value={customerValue}
@@ -242,13 +221,14 @@ const LabelPrintInward = (props) => {
                 <div className="table-operations gx-col">
                     <SearchBox
                         styleName="gx-flex-1"
-                        placeholder="Search by Coil no. or Customer batch no"
+                        placeholder="Search by Coil no. or SC inward id"
                         value={searchValue}
                         onChange={(e) => setSearchValue(e.target.value)}>
                     </SearchBox>
 
                 </div>
             </div>
+            <br></br>
             {/* <div className="gx-flex-row gx-flex-1"> */}
             <div>
                 <Table

@@ -1,0 +1,13 @@
+name: Build & Deploy to JSWone
+on:
+  push:
+    branches:
+      - jsw_one
+jobs:
+  build-deploy: 
+  name: Deploy to JSWone prod env
+  runns-on: ubuntu-latest
+  steps:
+    - uses: actions/checkout@v2
+    - name: Checkout JSWone branch
+      run: git checkout jsw_one

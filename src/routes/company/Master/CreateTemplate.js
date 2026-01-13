@@ -8,7 +8,6 @@ import PreDispatchStageForm from './TemplateStageSteps/PreDispatchStageForm';
 import PostDispatchStageForm from './TemplateStageSteps/PostDispatchStageForm';
 
 const { Step } = Steps;
-let uuid = 0;
 export const formItemLayout = {
     labelCol: {
         xs: {span: 24},

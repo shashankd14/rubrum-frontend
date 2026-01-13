@@ -124,9 +124,10 @@ function* fetchPackingRatesList() {
 function* savePriceMaster(action) {
    
     const data= [{ 
-        partyId:action.rates.partyId,
+        locationId:action.rates.locationId,
         processId:action?.rates?.processId,
-        matGradeId:action?.rates?.matGradeId.flat(),
+        productId:action?.rates?.productId.flat(),
+        gradeId:action?.rates?.gradeId.flat(),
         thicknessFrom:action?.rates?.thicknessFrom,
         thicknessTo:action?.rates?.thicknessTo,
         price:action?.rates?.price

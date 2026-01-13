@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { connect } from "react-redux";
-import { Button, Card, Divider, Icon, Table, message } from "antd";
+import { Button, Card, Icon, Table, message, Input } from "antd";
 import moment from "moment";
-import SearchBox from "../../../components/SearchBox";
+import { useHistory } from "react-router-dom";
 
 import IntlMessages from "../../../util/IntlMessages";
 import {
@@ -10,60 +10,263 @@ import {
   resetInwardForm,
   deleteInwardEntryById,
   resetDeleteInward,
-  fetchPartyListById,
-} from "../../../appRedux/actions/Inward";
-import { onDeleteContact } from "../../../appRedux/actions";
-import {sidebarMenuItems} from "../../../constants";
+  fetchPartyList,
+  getProductGradesList,
+  getInwardMaterialDetails,
+} from "../../../appRedux/actions";
+import { sidebarMenuItems } from "../../../constants";
+import { toPascalCase } from "util/Common";
 
 const inwardMenuConstants = {
-  'view': "View",
-  'addInward': 'Add Inward',
-  'export': 'Export',
-  'edit': 'Edit',
-  'delete': 'Delete',
-}
+  view: "View",
+  addInward: "Add Inward",
+  export: "Export",
+};
+
+const filterLabels = {
+  fwidth: "Width",
+};
+
 const List = (props) => {
   const [sortedInfo, setSortedInfo] = useState({
-    order: "descend",
-    columnKey: "age",
+    order: "ascend",
+    columnKey: "fwidth",
   });
-  const [filteredInfo, setFilteredInfo] = useState(null);
+  const history = useHistory();
+
+  const [filteredInfo, setFilteredInfo] = useState({});
   const [searchValue, setSearchValue] = useState("");
-  const [filteredInwardList, setFilteredInwardList] = useState(
-    props.inward.inwardList
-  );
 
   const [pageNo, setPageNo] = React.useState(1);
-  const [totalPageItems, setTotalItems] = React.useState(0);
   const [menuInwardLabelList, setMenuInwardLabelList] = useState([]);
 
   const { totalItems } = props.inward;
+  let searchInput = useRef(true);
+
+  const handleSearch = (selectedKeys, confirm, dataIndex) => {
+    confirm();
+  };
+
+  const getColumnSearchProps = (dataIndex) => ({
+    filterDropdown: ({ setSelectedKeys,selectedKeys, confirm, clearFilters }) => {
+      return (
+        <div style={{ padding: 8 }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              gap: "4px",
+            }}
+          >
+            <Input
+              ref={(node) => {
+                searchInput = node;
+              }}
+              placeholder={`Enter ${filterLabels[dataIndex]}`}
+              value={selectedKeys ? selectedKeys[0] : ""}
+              onChange={(e) => 
+                setSelectedKeys(e.target.value ? [e.target.value] : [])
+              }
+              onPressEnter={() => {
+                confirm();
+              }}
+              style={{ width: 80, marginBottom: 8, display: "flex", flex: 1 }}
+            />
+          </div>
+          <div>
+            <Button
+              type="primary"
+              onClick={() => {
+                confirm();
+              }}
+              icon="search"
+              size="small"
+              style={{ width: 90, marginRight: 8 }}
+            >
+              Search
+            </Button>
+            <Button
+              onClick={() => {
+                clearFilters(clearFilters);
+              }}
+              size="small"
+              style={{ width: 90 }}
+            >
+              Reset
+            </Button>
+          </div>
+        </div>
+      );
+    },
+    filterIcon: (filtered) => (
+      <Icon type="search" style={{ color: filtered ? "#1890ff" : undefined }} />
+    ),
+    onFilterDropdownVisibleChange: (visible) => {
+      if (visible) {
+        setTimeout(() => searchInput.select());
+      }
+    },
+    onFilter: (value, record) => true,
+    // render: (text) => ("age" === dataIndex ? <></> : text),
+  });
 
   const columns = [
     {
-      title: "Coil Number",
+      title: "Batch no.",
       dataIndex: "coilNumber",
-      key: "coilNumber",
-      filters: [],
-      sorter: (a, b) => a.coilNumber.length - b.coilNumber.length,
-      sortOrder: sortedInfo.columnKey === "coilNumber" && sortedInfo.order,
+      key: "coilnumber",
+      sorter: true,
+      sortOrder: sortedInfo.columnKey === "coilnumber" && sortedInfo.order,
+      filteredValue:
+        filteredInfo && filteredInfo["coilnumber"]
+          ? filteredInfo["coilnumber"]
+          : null,
+      filterDropdown: ({
+        setSelectedKeys,
+        selectedKeys,
+        confirm,
+        clearFilters,
+      }) => {
+        return (
+          <div style={{ padding: 8 }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                gap: "4px",
+              }}
+            >
+              <Input
+                ref={(node) => {
+                  searchInput = node;
+                }}
+                placeholder={`Search Batch no.`}
+                value={selectedKeys ? selectedKeys[0] : ""}
+                onChange={(e) =>
+                  setSelectedKeys(e.target.value ? [e.target.value] : [])
+                }
+                onPressEnter={() => {
+                  confirm();
+                }}
+                style={{
+                  width: 80,
+                  marginBottom: 8,
+                  display: "flex",
+                  flex: 1,
+                }}
+              />
+            </div>
+            <div>
+              <Button
+                type="primary"
+                onClick={() => {
+                  confirm();
+                }}
+                icon="search"
+                size="small"
+                style={{ width: 90, marginRight: 8 }}
+              >
+                Search
+              </Button>
+              <Button
+                onClick={() => {
+                  clearFilters({ closeDropdown: true });
+                  confirm();
+                }}
+                size="small"
+                style={{ width: 90 }}
+              >
+                Reset
+              </Button>
+            </div>
+          </div>
+        );
+      },
+      filterIcon: (filtered) => (
+        <Icon
+          type="search"
+          style={{ color: filtered ? "#1890ff" : undefined }}
+        />
+      ),
+      onFilterDropdownVisibleChange: (visible) => {
+        if (visible) {
+          setTimeout(() => searchInput.select());
+        }
+      },
+      render: (text, record) => {
+        return record.coilNumber == "undefined" ? "-" : record.coilNumber;
+      },
+      onFilter: (value, record) => true,
     },
     {
-      title: "Party Name",
+      title: "SC Inward id",
+      dataIndex: "customerBatchId",
+      key: "customerBatchId",
+      sorter: false,
+      render: (text, record) => {
+        return record.customerBatchId == "undefined" ||
+          record.batch == "undefined"
+          ? "-"
+          : record.customerBatchId || record.batch;
+      },
+    },
+    {
+      title: "Location",
       dataIndex: "party.partyName",
-      key: "party.partyName",
-      filteredValue: filteredInfo ? filteredInfo["party.partyName"] : null,
-      onFilter: (value, record) => record.party.partyName == value,
-      filters:
-        props.inward.inwardList.length > 0
-          ? [
-              ...new Set(
-                props.inward.inwardList.map((item) => item.party.partyName)
-              ),
-            ].map((partyName) => ({ text: partyName, value: partyName }))
-          : [],
-      sorter: (a, b) => a.party.partyName.length - b.party.partyName.length,
-      sortOrder: sortedInfo.columnKey === "party.partyName" && sortedInfo.order,
+      key: "partyId",
+      filteredValue: filteredInfo ? filteredInfo["partyId"] : null,
+      filterDropdown: ({
+        setSelectedKeys,
+        selectedKeys,
+        confirm,
+        clearFilters,
+      }) => (
+        <div style={{ padding: 8, minWidth: 120 }}>
+          {props.partyList.map((party) => (
+            <div
+              key={party.nPartyId}
+              style={{
+                padding: "6px 10px",
+                cursor: "pointer",
+                borderRadius: 4,
+                background:
+                  selectedKeys[0] === party.nPartyId
+                    ? "rgba(24,144,255,0.1)"
+                    : "transparent",
+                marginBottom: 4,
+                transition: "background 0.2s",
+              }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.background =
+                  selectedKeys[0] === party.nPartyId
+                    ? "rgba(24,144,255,0.15)"
+                    : "rgba(0,0,0,0.04)")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.background =
+                  selectedKeys[0] === party.nPartyId
+                    ? "rgba(24,144,255,0.1)"
+                    : "transparent")
+              }
+              onClick={() => {
+                setSelectedKeys([party.nPartyId]);
+                confirm();
+              }}
+            >
+              {party.partyName}
+            </div>
+          ))}
+          <div style={{ marginTop: 8, textAlign: "right" }}>
+            <Button
+              style={{ width: "100%" }}
+              size="small"
+              onClick={() => clearFilters(clearFilters)}
+            >
+              Reset
+            </Button>
+          </div>
+        </div>
+      ),
     },
     {
       title: "Inward Date",
@@ -72,53 +275,102 @@ const List = (props) => {
         return moment(value).format("Do MMM YYYY");
       },
       key: "dReceivedDate",
-      filters: [],
-      sorter: (a, b) => a.dReceivedDate - b.dReceivedDate,
-      sortOrder: sortedInfo.columnKey === "dReceivedDate" && sortedInfo.order,
     },
     {
       title: "Material",
-      dataIndex: "material.description",
-      key: "material.description",
-      filteredValue: filteredInfo ? filteredInfo["material.description"] : null,
-      onFilter: (value, record) => record.material.description == value,
-      filters:
-        props.inward.inwardList.length > 0
-          ? [
-              ...new Set(
-                props.inward.inwardList.map((item) => item.material.description)
-              ),
-            ].map((material) => ({ text: material, value: material }))
-          : [],
-      sorter: (a, b) =>
-        a.material.description.length - b.material.description.length,
-      sortOrder:
-        sortedInfo.columnKey === "material.description" && sortedInfo.order,
+      dataIndex: "material.mmDescConcatenated",
+      key: "material.mmDescConcatenated",
     },
     {
-      title: "Status",
-      dataIndex: "status.statusName",
-      key: "status.statusName",
-      filters: [],
-      sorter: (a, b) => a.status.statusName.length - b.status.statusName.length,
-      sortOrder:
-        sortedInfo.columnKey === "status.statusName" && sortedInfo.order,
+      title: "Material Grade",
+      dataIndex: "materialGrade.gradeName",
+      key: "gradeId",
+      sorter: true,
+      sortOrder: sortedInfo.columnKey === "gradeId" && sortedInfo.order,
+      filteredValue: filteredInfo ? filteredInfo["gradeId"] : null,
+      filterDropdown: ({
+        setSelectedKeys,
+        selectedKeys,
+        confirm,
+        clearFilters,
+      }) => (
+        <div style={{ padding: 8, minWidth: 120 }}>
+          {props?.inward?.inwardMaterialDetails?.gradeMap.map((grade) => (
+            <div
+              key={grade.gradeId}
+              style={{
+                padding: "6px 10px",
+                cursor: "pointer",
+                borderRadius: 4,
+                background:
+                  selectedKeys[0] === grade.gradeId
+                    ? "rgba(24,144,255,0.1)"
+                    : "transparent",
+                marginBottom: 4,
+                transition: "background 0.2s",
+              }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.background =
+                  selectedKeys[0] === grade.gradeId
+                    ? "rgba(24,144,255,0.15)"
+                    : "rgba(0,0,0,0.04)")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.background =
+                  selectedKeys[0] === grade.gradeId
+                    ? "rgba(24,144,255,0.1)"
+                    : "transparent")
+              }
+              onClick={() => {
+                setSelectedKeys([grade.gradeId]);
+                confirm();
+              }}
+            >
+              {grade.gradeName}
+            </div>
+          ))}
+          <div style={{ marginTop: 8, textAlign: "right" }}>
+            <Button
+              style={{ width: "100%" }}
+              size="small"
+              onClick={() => {
+                clearFilters();
+                confirm();
+              }}
+            >
+              Reset
+            </Button>
+          </div>
+        </div>
+      ),
     },
     {
       title: "Thickness",
       dataIndex: "fThickness",
       key: "fThickness",
-      filters: [],
-      sorter: (a, b) => a.fThickness - b.fThickness,
-      sortOrder: sortedInfo.columnKey === "fThickness" && sortedInfo.order,
+    },
+    {
+      title: "Width",
+      dataIndex: "fWidth",
+      key: "fwidth",
+      sorter: true,
+      sortOrder: sortedInfo.columnKey === "fwidth" && sortedInfo.order,
+      filteredValue:
+        filteredInfo && filteredInfo["fwidth"] ? filteredInfo["fwidth"] : null,
+      ...getColumnSearchProps("fwidth"),
     },
     {
       title: "Weight",
       dataIndex: "fQuantity",
       key: "fQuantity",
-      filters: [],
-      sorter: (a, b) => a.fQuantity - b.fQuantity,
-      sortOrder: sortedInfo.columnKey === "fQuantity" && sortedInfo.order,
+    },
+    {
+      title: "Status",
+      dataIndex: "status.statusName",
+      key: "status.statusName",
+      render: (text, record) => {
+        return record.status ? toPascalCase(record.status.statusName) : "-";
+      },
     },
     {
       title: "Action",
@@ -126,39 +378,36 @@ const List = (props) => {
       key: "x",
       render: (text, record, index) => (
         <span>
-          {menuInwardLabelList.length > 0 && menuInwardLabelList.includes(inwardMenuConstants.view) && <><span
-              className="gx-link"
-              onClick={() => props.history.push(`${record.coilNumber}`)}
-          >
-            View
-          </span>
-            <Divider type="vertical" />
-          </>}
-          {menuInwardLabelList.length > 0 && menuInwardLabelList.includes(inwardMenuConstants.edit) && <><span className="gx-link" onClick={(e) => onEdit(record, index, e)}>
-            Edit
-          </span>
-          <Divider type="vertical" /></>}
-          {menuInwardLabelList.length > 0 && menuInwardLabelList.includes(inwardMenuConstants.delete) && <span className="gx-link" onClick={(e) => onDelete(record, index, e)}>
-            Delete
-          </span>
-          }
+          {menuInwardLabelList.length > 0 &&
+            menuInwardLabelList.includes(inwardMenuConstants.view) && (
+              <>
+                <span
+                  className="gx-link"
+                  onClick={() => props.history.push(`${record.coilNumber}`)}
+                >
+                  View
+                </span>
+              </>
+            )}
         </span>
       ),
     },
   ];
-  const onDelete = (record, key, e) => {
-    let id = [];
-    id.push(record.inwardEntryId);
-    e.preventDefault();
-    props.deleteInwardEntryById(id);
-    console.log(record, key);
-  };
-  const onEdit = (record, key, e) => {
-    props.fetchPartyListById(record.inwardEntryId);
-    setTimeout(() => {
-      props.history.push(`create/${record.inwardEntryId}`);
-    }, 2000);
-  };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    props.fetchInwardListOldAPI(
+      1,
+      15,
+      "",
+      "",
+      sortedInfo.columnKey,
+      sortedInfo.order === "descend" ? "DESC" : "ASC"
+    );
+    props.getInwardMaterialDetails("");
+    if (props.partyList.length === 0) props.fetchPartyList();
+  }, []);
+
   useEffect(() => {
     if (props.inward.deleteSuccess) {
       message.success("Successfully deleted the coil", 2).then(() => {
@@ -166,6 +415,7 @@ const List = (props) => {
       });
     }
   }, [props.inward.deleteSuccess]);
+
   useEffect(() => {
     if (props.inward.deleteFail) {
       message.success("Unable to delete the coil", 2).then(() => {
@@ -174,61 +424,77 @@ const List = (props) => {
     }
   }, [props.inward.deleteFail]);
 
-  useEffect(() => {
-    if (totalItems) {
-      setTotalItems(totalItems);
-    }
-  }, [totalItems]);
-
-  useEffect(() => {
-    if (searchValue) {
-      if (searchValue.length >= 3) {
-        setPageNo(1);
-        props.fetchInwardListOldAPI(1, 15, searchValue);
-      }
-    } else {
-      setPageNo(1);
-      props.fetchInwardListOldAPI(1, 15, searchValue);
-    }
-  }, [searchValue]);
-
   const handleChange = (pagination, filters, sorter) => {
     setSortedInfo(sorter);
     setFilteredInfo(filters);
+    setPageNo(pagination.current);
+
+    props.fetchInwardListOldAPI(
+      pagination.current,
+      pagination.pageSize,
+      filters?.coilnumber && filters?.coilnumber[0]
+        ? filters?.coilnumber[0]
+        : "",
+      filters?.partyId ? filters?.partyId[0] : "",
+      sorter.order === "descend" ? "DESC" : "ASC",
+      sorter.columnKey,
+      filters
+    );
   };
 
-  const clearFilters = () => {
-    setFilteredInfo(null);
-  };
-
-  const clearAll = () => {
-    setSortedInfo(null);
-    setFilteredInfo(null);
+  const clearFilters = (value) => {
+    setFilteredInfo({});
+    setSearchValue("");
+    setPageNo(1);
+    props.fetchInwardListOldAPI(
+      1,
+      15,
+      "",
+      "",
+      sortedInfo.order === "descend" ? "DESC" : "ASC",
+      sortedInfo.columnKey,
+      value || {}
+    );
   };
 
   const exportSelectedData = () => {};
 
-  const deleteSelectedCoils = () => {
-    console.log("dfd");
-  };
-
   useEffect(() => {
-    if (!props.inward.loading && props.inward.success) {
-      setFilteredInwardList(props.inward.inwardList);
-    }
-  }, [props.inward.loading, props.inward.success]);
-
-  useEffect(() => {
-    const menus = localStorage.getItem('Menus') ? JSON.parse(localStorage.getItem('Menus')) : [];
-    if(menus.length > 0) {
-      const menuLabels = menus.filter(menu => menu.menuKey === sidebarMenuItems.inward);
+    const menus = localStorage.getItem("Menus")
+      ? JSON.parse(localStorage.getItem("Menus"))
+      : [];
+    if (menus.length > 0) {
+      const menuLabels = menus.filter(
+        (menu) => menu.menuKey === sidebarMenuItems.inward
+      );
       let menuInwardLabels = [];
-      if(menuLabels.length > 0) {
-        menuInwardLabels = menuLabels[0]?.permission ? menuLabels[0]?.permission?.split(',') : [];
+      if (menuLabels.length > 0) {
+        menuInwardLabels = menuLabels[0]?.permission
+          ? menuLabels[0]?.permission?.split(",")
+          : [];
       }
       setMenuInwardLabelList(menuInwardLabels);
     }
-  }, [])
+  }, []);
+
+  const expandedRowRendered = (record) => {
+    const columns = [
+      {
+        title: "Plan Id",
+        dataIndex: "instructionId",
+        key: "instructionId",
+      },
+      { title: "Length", dataIndex: "plannedLength", key: "plannedLength" },
+      { title: "Width", dataIndex: "plannedWidth", key: "plannedWidth" },
+      { title: "Weight", dataIndex: "plannedWeight", key: "plannedWeight" },
+      {
+        title: "No. of cuts",
+        dataIndex: "plannedNoOfPieces",
+        key: "plannedNoOfPieces",
+      },
+    ];
+    return <Table columns={columns} dataSource={record} pagination={false} />;
+  };
 
   return (
     <div>
@@ -237,46 +503,65 @@ const List = (props) => {
       </h1>
       <Card>
         <div className="gx-flex-row gx-flex-1">
-          <div className="table-operations gx-col">
-            {menuInwardLabelList.length > 0 && menuInwardLabelList.includes(inwardMenuConstants.delete) &&
-                <Button onClick={deleteSelectedCoils}>Delete</Button>}
-            {menuInwardLabelList.length > 0 && menuInwardLabelList.includes(inwardMenuConstants.export) && <Button onClick={exportSelectedData}>Export</Button>}
+          <div
+            className="table-operations gx-col"
+            style={{ paddingLeft: "0px" }}
+          >
+            {menuInwardLabelList.length > 0 &&
+              menuInwardLabelList.includes(inwardMenuConstants.export) && (
+                <Button onClick={exportSelectedData}>Export</Button>
+              )}
             <Button onClick={clearFilters}>Clear All filters</Button>
           </div>
-          <div className="gx-flex-row gx-w-50">
-            {menuInwardLabelList.length > 0 && menuInwardLabelList.includes(inwardMenuConstants.addInward) && <Button
-              type="primary"
-              icon={() => <i className="icon icon-add" />}
-              size="default"
-              onClick={() => {
-                props.resetInwardForm();
-                props.history.push("/company/inward/create");
-              }}
-            >
-              Add Inward
-            </Button>}
-            <SearchBox
-              styleName="gx-flex-1"
-              placeholder="Search for coil number or party name..."
-              value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
-            />
+          <div className="gx-flex-row">
+            {menuInwardLabelList.length > 0 &&
+              menuInwardLabelList.includes(inwardMenuConstants.addInward) && (
+                <Button
+                  type="primary"
+                  icon={() => <i className="icon icon-add" />}
+                  size="default"
+                  onClick={() => {
+                    history.push("/company/inward/create");
+                    // window.location.reload("/company/inward/create");
+                    // window.location.href = window.location.origin+'#/company/inward/create';
+                  }}
+                >
+                  Add Inward
+                </Button>
+              )}
           </div>
         </div>
         <Table
-          rowSelection={[]}
+          key={props.inward?.inwardList[0]?.inwardEntryId || pageNo}
           className="gx-table-responsive"
           columns={columns}
-          dataSource={filteredInwardList}
+          expandedRowRender={(record) =>
+            expandedRowRendered(record.instruction)
+          }
+          expandIcon={({ expanded, onExpand, record }) =>
+            record.instruction.length > 0 ? (
+              <div
+                className={
+                  !expanded
+                    ? "ant-table-row-expand-icon ant-table-row-collapsed"
+                    : "ant-table-row-expand-icon ant-table-row-expanded"
+                }
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onExpand(record, e);
+                }}
+              />
+            ) : null
+          }
+          rowKey={(record) => record.inwardEntryId}
+          dataSource={[...props.inward.inwardList]}
           onChange={handleChange}
           pagination={{
             pageSize: 15,
-            onChange: (page) => {
-              setPageNo(page);
-              props.fetchInwardListOldAPI(page, 15, searchValue);
-            },
+            showTotal: (total, range) =>
+              `Showing ${range[0]}-${range[1]} of ${total} items`,
             current: pageNo,
-            total: totalPageItems,
+            total: totalItems,
           }}
         />
       </Card>
@@ -286,12 +571,15 @@ const List = (props) => {
 
 const mapStateToProps = (state) => ({
   inward: state.inward,
+  partyList: state.party.partyList,
 });
 
 export default connect(mapStateToProps, {
   fetchInwardListOldAPI,
   resetInwardForm,
   deleteInwardEntryById,
-  fetchPartyListById,
   resetDeleteInward,
+  getProductGradesList,
+  fetchPartyList,
+  getInwardMaterialDetails,
 })(List);

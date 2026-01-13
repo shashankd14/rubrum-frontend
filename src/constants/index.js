@@ -4,6 +4,8 @@ export const SLIT_CUT_INSTRUCTION_PROCESS_ID = 3;
 
 export const APPLICATION_DATE_FORMAT = 'DD/MM/YYYY';
 
+export const METAL_DENSITY = 8.1;
+
 export const sidebarMenuItems = {
     inward: 'Inward',
     partywiseRegister: "Partywise Register",
@@ -14,7 +16,7 @@ export const sidebarMenuItems = {
     billingInfo: "Billing Info",
     userAccess: "User Access",
     material: "Material",
-    party: "Party",
+    party: "Location",
     yieldLoss: "Yield Loss Ratio",
     rates: "Rates",
     tags: "Tags",
@@ -22,5 +24,7 @@ export const sidebarMenuItems = {
     Templates: "Templates",
     Reports: "Reports",
     KQP: "KQP",
-    packing: "Packing"
+    packing: "Packing",
+    purchaseInvoices: "Purchase Invoices",
 }
+export const STATUS_IN_PROGRESS = 2;

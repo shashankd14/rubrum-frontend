@@ -1,8 +1,8 @@
 //PostDispatchReport
 import React, { useEffect, useRef, useState } from 'react'
 import { connect } from "react-redux";
-import {Link, useHistory, useLocation, withRouter} from "react-router-dom";
-import { Button, Card, Col, Divider, Icon, Modal, Radio, Row, Select, Table } from 'antd'
+import { withRouter} from "react-router-dom";
+import { Col, Divider, Modal, Row, Select, Table } from 'antd'
 import {
     fetchPartyList,
     fetchTemplatesList,
@@ -14,18 +14,10 @@ import {
     fetchQualityReportStageList,
     pdfGenerateQMreportInward
 } from "../../../../appRedux/actions";
-import moment from "moment";
-import { useIntl } from "react-intl";
 import SearchBox from "../../../../components/SearchBox";
-
-import IntlMessages from "../../../../util/IntlMessages";
-import { compose } from 'redux';
 
 const PostDispatchReport = (props) => {
 
-    const intl = useIntl();
-    const history = useHistory();
-    const location = useLocation();
     const [sortedInfo, setSortedInfo] = useState({
         order: "descend",
         columnKey: "age",
@@ -46,7 +38,6 @@ const PostDispatchReport = (props) => {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showCreateQrScreen, setShowCreateQrScreen] = useState(false);
     const [action, setAction] = useState(undefined);
-    const disabledEle = 'disabled-ele';
     const renderStatusColumn = (record) => {
         const qirId = record.qirId;
 
@@ -87,7 +78,7 @@ const PostDispatchReport = (props) => {
               }),
         },
         {
-            title: "Batch No",
+            title: "SC inward id",
             dataIndex: "customerBatchNo",
             key: "customerBatchNo",
             filteredValue: filteredInfo ? filteredInfo["customerBatchNo"] : null,
@@ -130,7 +121,7 @@ const PostDispatchReport = (props) => {
             sortOrder: sortedInfo.columnKey === "deliveryRemarks" && sortedInfo.order,
         },
         {
-            title: "Customer Invoice No.",
+            title: "Purchase Invoice No.",
             dataIndex: "customerInvoiceNo",
             key: "customerInvoiceNo",
             filters: [],
@@ -138,7 +129,7 @@ const PostDispatchReport = (props) => {
             sortOrder: sortedInfo.columnKey === "customerInvoiceNo" && sortedInfo.order,
         },
         {
-            title: "Customer Invoice Date",
+            title: "Purchase Invoice Date",
             dataIndex: "customerInvoiceDate",
             key: "customerInvoiceDate",
             filters: [],
@@ -227,14 +218,12 @@ const PostDispatchReport = (props) => {
     }
 
     const showTemplateList = (record, key) => {
-        console.log(record, key)
         setSelectedItemForQr(record)
         setShowCreateModal(true)
         props.fetchTemplatesLinkList({ partyId: record.npartyId });
     }
 
     const showReportView = (record, key) => {
-         console.log("record, key", record, key);
         // const templateDetails = qualityReportList.find(qr => qr.coilNumber === record.coilNumber && qr.inwardId === record.inwardEntryId)
         // props.history.push({pathname: '/company/quality/reports/create/postdispatch', state: {selectedItemForQr: record, templateDetails: templateDetails, action: 'view'}})
          setSelectedItemForQr(record)
@@ -247,13 +236,10 @@ const PostDispatchReport = (props) => {
     useEffect(() => {
         if (!isInitialMount.current){
         if (!props.template.loading && !props.template.error && props.template.operation == "fetchQualityReport") {
-            console.log(props.template)
             setQualityReportList(props.template.data)
         } else if (!props.template.loading && !props.template.error && props.template.operation == "fetchQualityReportStage") {
-            console.log(props.template)
              setFilteredPostDispatchList(props.template.data)
         } else if (!props.template.loading && !props.template.error && props.template.operation === 'templateById') {
-            console.log(props)
             setShowCreateQrScreen(true)
             // history.push('/company/quality/reports/create/postdispatch')
             props.history.push({ pathname: '/company/quality/reports/create/postdispatch', state: { selectedItemForQr: selectedItemForQr, templateDetails: props.template.data, action: 'create' } })
@@ -262,10 +248,8 @@ const PostDispatchReport = (props) => {
             setTemplateLinkList(tempData.filter(x=> x.stageName==="POST_DISPATCH"))
             setShowCreateModal(true)
         } else if (!props.template.loading && !props.template.error && props.template.operation === 'templateList') {
-            console.log(props.template)
             setTemplateList(props.template.data)
         } else if (!props.template.loading && !props.template.error && props.template.operation == "qualityReportById") {
-            console.log("qualityReportById", props.template)
             props.history.push({ pathname: '/company/quality/reports/create/postdispatch', state: { selectedItemForQr: selectedItemForQr, templateDetails: props.template.data, action: action } })
         }}
         else {
@@ -274,13 +258,10 @@ const PostDispatchReport = (props) => {
     }, [props.template.loading, props.template.error, props.template.operation]);
 
     const onDelete = (record, key, e) => {
-        console.log(record, key);
-        console.log("record.qirId", record.qirId);
         props.deleteQualityReport(record.qirId);
     };
 
     const onEdit = (record, key, e) => {
-        console.log(record, key)
         setSelectedItemForQr(record);
         setAction('edit');
         props.getQualityReportById(record.qirId);
@@ -289,7 +270,6 @@ const PostDispatchReport = (props) => {
     };
 
     const handleChange = (e) => {
-        console.log(e)
         setTemplateId(e)
     };
 
@@ -313,14 +293,12 @@ const PostDispatchReport = (props) => {
 
     useEffect(() => {
         if (!props.template.loading && !props.template.error && props.template.operation === 'templateList') {
-            console.log(props.template)
             setTemplateList(props.template.data)
         }
     }, [props.template.loading, props.template.error]);
 
     useEffect(() => {
         if (!props.party.loading && !props.party.error) {
-            console.log(props.party)
             setPartyList(props.party.partyList)
         }
     }, [props.party.loading, props.party.error]);
@@ -363,7 +341,7 @@ const PostDispatchReport = (props) => {
                             id="select"
                             showSearch
                             style={{ width: 200 }}
-                            placeholder="Select a customer"
+                            placeholder="Select a location"
                             optionFilterProp="children"
                             onChange={handleCustomerChange}
                             value={customerValue}
@@ -385,7 +363,7 @@ const PostDispatchReport = (props) => {
                     <div className="table-operations gx-col">
                         <SearchBox
                             styleName="gx-flex-1"
-                            placeholder="Search by Coil no. or Customer batch no"
+                            placeholder="Search by Coil no. or SC inward id"
                             value={searchValue}
                             onChange={(e) => setSearchValue(e.target.value)}>
                         </SearchBox>
@@ -421,7 +399,7 @@ const PostDispatchReport = (props) => {
                         <Col span={24}>
                             <Row>
                                 <Col span={12}>
-                                    <strong>Customer Name</strong>
+                                    <strong>Location Name</strong>
                                     <p>{selectedItemForQr?.partyName}</p>
                                 </Col>
                                 <Col span={12} style={{ right: 0, position: 'absolute' }}>
@@ -432,11 +410,11 @@ const PostDispatchReport = (props) => {
 
                             <Row>
                                 <Col span={6}>
-                                    <strong>Coil No.</strong>
+                                    <strong>Inward No.</strong>
                                     <p>{selectedItemForQr?.coilNo}</p>
                                 </Col>
                                 <Col span={6}>
-                                    <strong>Batch No.</strong>
+                                    <strong>SC inward id</strong>
                                     <p>{selectedItemForQr?.customerBatchNo}</p>
                                 </Col>
                                 <Col span={6}>
@@ -450,11 +428,11 @@ const PostDispatchReport = (props) => {
                             </Row>
                             <Row>
                                 <Col span={12}>
-                                    <strong>Customer Invoice Date</strong>
+                                    <strong>Purchase Invoice Date</strong>
                                     <p>{selectedItemForQr?.customerInvoiceDate}</p>
                                 </Col>
                                 <Col span={12} style={{ right: 0, position: 'absolute' }}>
-                                    <strong>Customer Invoice No.</strong>
+                                    <strong>Purchase Invoice No.</strong>
                                     <p>{selectedItemForQr?.customerInvoiceNo}</p>
                                 </Col>
                             </Row>
@@ -465,7 +443,7 @@ const PostDispatchReport = (props) => {
                                     id="select"
                                     showSearch
                                     style={{ width: "100%" }}
-                                    placeholder="Select a customer"
+                                    placeholder="Select a location"
                                     optionFilterProp="children"
                                     onChange={handleChange}
                                     value={templateId}

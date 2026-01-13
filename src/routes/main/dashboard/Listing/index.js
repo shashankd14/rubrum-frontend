@@ -6,9 +6,6 @@ import Auxiliary from "util/Auxiliary";
 import ChartCard from "components/dashboard/Listing/ChartCard";
 import {citiesData, propertiesData, queriesData, visitsData} from "../../Metrics/data";
 import UserImages from "components/dashboard/Listing/UserImages";
-import RecentActivity from "components/dashboard/CRM/RecentActivity";
-import {recentActivity} from "../../../socialApps/Wall/data";
-import Widget from "components/Widget/index";
 import CurrentPlan from "components/dashboard/Listing/CurrentPlan";
 import DealsClosedCard from "components/dashboard/Listing/DealsClosedCard";
 import PropertiesCard from "components/dashboard/Listing/PropertiesCard";
@@ -101,12 +98,6 @@ const Listing = () => {
               </AreaChart>
             </ResponsiveContainer>}
           />
-        </Col>
-
-        <Col xl={8} lg={24} md={24} sm={24} xs={24} className="gx-order-lg-2">
-          <Widget>
-            <RecentActivity recentList={recentActivity}/>
-          </Widget>
         </Col>
 
         <Col xl={16} lg={24} md={24} sm={24} xs={24} className="gx-order-lg-1">

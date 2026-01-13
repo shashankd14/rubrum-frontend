@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {connect} from "react-redux";
 import moment from "moment";
-import {Button, Card, Col, Icon, message, Row, Spin} from "antd";
-import { withRouter } from 'react-router-dom';
+import {Button, Card, Col, Icon, Row, Spin} from "antd";
 import {setInwardDetails, fetchInwardList} from "../../../appRedux/actions";
 import {APPLICATION_DATE_FORMAT} from '../../../constants/index';
 
@@ -35,18 +34,18 @@ const View = (props) => {
                 <Col span={24} className="gx-pt-4">
                     <Row>
                         <Col span={12}>
-                            <Card title="Customer Details" style={{ width: 300 }}>
-                                {props.inward.inward.party && <p>Customer Name : {props.inward.inward.party.partyName}</p>}
-                                {props.inward.inward.customerId && <p>Customer Id : {props.inward.inward.customerId}</p>}
-                                {props.inward.inward.customerBatchNo && <p>Customer Batch No : {props.inward.inward.customerBatchNo}</p>}
-                                {props.inward.inward.customerInvoiceNo && <p>Customer Invoice No : {props.inward.inward.customerInvoiceNo}</p>}
+                            <Card title="Location Details" style={{ width: 300 }}>
+                                {props.inward.inward.party && <p>Location Name : {props.inward.inward.party.partyName}</p>}
+                                {props.inward.inward.customerId && <p>Location Id : {props.inward.inward.customerId}</p>}
+                                {props.inward.inward.customerBatchNo && <p>SC inward id : {props.inward.inward.customerBatchNo}</p>}
+                                {props.inward.inward.customerInvoiceNo && <p>Purchase invoice no : {props.inward.inward.customerInvoiceNo}</p>}
                                 {props.inward.inward.purposeType && <p>Purpose Type : {props.inward.inward.purposeType}</p>}
                             </Card>
                         </Col>
                         <Col span={12}>
                             <Card title="Coil Details" style={{ width: 300 }}>
-                                {props.inward.inward.coilNumber && <p>Coil number : {props.inward.inward.coilNumber}</p>}
-                                {props.inward.inward.material && <p>Material Description : {props.inward.inward.material.description}</p>}
+                                {props.inward.inward.coilNumber && <p>Batch no. : {props.inward.inward.coilNumber}</p>}
+                                {props.inward.inward.material && <p>Material Description : {props.inward.inward?.material?.description}</p>}
                                 {props.inward.inward && <p>Dimensions : {props.inward.inward.fWidth}X{props.inward.inward.fThickness}X{props.inward.inward.fLength}mm</p>}
                                 {props.inward.inward.netWeight && <p>Net Weight : {props.inward.inward.netWeight}kg </p>}
                                 {props.inward.inward.grossWeight && <p>Gross Weight : {props.inward.inward.grossWeight}kg</p>}
@@ -66,7 +65,7 @@ const View = (props) => {
                         </Col>
                         <Col span={12}>
                             <Card title="Quality Details" style={{ width: 300 }}>
-                                {props.inward.inward.materialGrade && <p>Grade : {props.inward.inward.materialGrade.gradeName}</p>}
+                                {props.inward.inward.materialGrade && <p>Grade : {props.inward.inward?.materialGrade?.gradeName}</p>}
                                 {props.inward.inward.testCertificateNo && <p>Test Certificate No : {props.inward.inward.testCertificateNo}</p>}
                                 {props.inward.inward.testFile && <p>Test File : {props.inward.inward.testFile.fileList[0].name}</p>}
                                 {props.inward.inward.moreFiles && <p>More attachments :</p>}

@@ -61,7 +61,6 @@ export default (state = INIT_STATE, action) => {
       };
     }
     case actionTypes.GENERATE_FG_LABEL_PRINT_PDF_SUCCESS: {
-      console.log("fgLabelPdf Success Reducer", action.payload)
       return {
         ...state,
         labelPrintLoading: false,

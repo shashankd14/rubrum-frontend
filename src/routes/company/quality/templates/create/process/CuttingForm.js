@@ -235,11 +235,9 @@ const CuttingForm = (props) => {
     }
 
     const handleInspectionTableChange = (tableData) => {
-        console.log('handleInspectionTableChange', tableData)
         setCutInspectionData(tableData)
     } 
     const handleToleranceTableChange = (tableData) => {
-        console.log('handleInspectionTableChange', tableData)
         setToleranceInspectionData(tableData)
     } 
 
@@ -249,8 +247,8 @@ const CuttingForm = (props) => {
                 <Card.Grid style={gridCardStyle}>
                     <Row>
                         <Col span={24}>
-                            <label>Customer Name</label>
-                            <Input placeholder='Enter customer name' disabled value={cutFormData.customerName} onChange={(e) => onOptionChange('customerName', e)}></Input>
+                            <label>Location Name</label>
+                            <Input placeholder='Enter location name' disabled value={cutFormData.customerName} onChange={(e) => onOptionChange('customerName', e)}></Input>
                         </Col>
                     </Row>
                     <Row>

@@ -2,10 +2,9 @@
 
 import React, { useEffect, useState } from 'react'
 import { connect } from "react-redux";
-import { Button, Select, Table } from 'antd';
+import { Button, Table } from 'antd';
 import { useIntl } from "react-intl";
 import SearchBox from '../../../../components/SearchBox';
-import IntlMessages from '../../../../util/IntlMessages';
 
 import {
     fetchPartyList,
@@ -22,26 +21,20 @@ const LinkedTemplateList = (props) => {
     const [totalPageItems, setTotalItems] = useState(0);
     const [templateList, setTemplateList] = useState([]);
 
-
     useEffect(() => {
-        console.log("init")
         setTemplateList([]);
         setSearchValue([]);
         setPageNo([]);
     }, []);
 
     useEffect(() => {
-        console.log("data load")
         props.fetchPartyList();
         props.fetchTemplatesLinkList();
     }, []);
 
-   
-
     useEffect(() => {
         // if (!props.template.loading && !props.template.error) {
         if (!props.template.loading && !props.template.error && props.template.operation === 'templateLinkList') {
-            console.log(props.template)
 
             const jsonData =props.template.data;
             const groupedData = {};
@@ -64,7 +57,6 @@ const LinkedTemplateList = (props) => {
                 groupedData[key].parties.push(partyName);
               });
               const groupedArray = Object.values(groupedData);
-              console.log(groupedArray);
            // setTemplateList(props.template.data)
            setTemplateList(groupedArray)
         }

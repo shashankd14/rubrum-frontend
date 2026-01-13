@@ -27,7 +27,6 @@ function handleMenuClick(e) {
 }
 
 function handleChange(value) {
-  console.log(`selected ${value}`);
 }
 
 const HorizontalDefault = () => {

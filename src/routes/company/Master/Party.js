@@ -1,14 +1,11 @@
 import React, {useEffect, useState} from "react";
 import {connect} from 'react-redux';
 import {Button, Card, Divider, Table, Modal, Row, Col, Form, Input, Select,Checkbox} from "antd";
-import moment from 'moment';
 import SearchBox from "../../../components/SearchBox";
 
 import IntlMessages from "../../../util/IntlMessages";
 import { fetchPartyList, addParty, fetchPartyListId, updateParty, resetParty, fetchClassificationList,fetchEndUserTagsList, fetchTemplatesList } from "../../../appRedux/actions";
-import { onDeleteContact } from "../../../appRedux/actions";
 
-const FormItem = Form.Item;
 export const formItemLayout = {
     labelCol: {
         xs: {span: 24},
@@ -55,7 +52,7 @@ const Party = (props) => {
 
 
     const columns = [{
-        title: 'Party Id',
+        title: 'Location Id',
         dataIndex: 'nPartyId',
         key: 'nPartyId',
         filters: [],
@@ -65,7 +62,7 @@ const Party = (props) => {
         sortOrder: sortedInfo.columnKey === 'nPartyId' && sortedInfo.order,
     },
     {
-        title: 'Party Name',
+        title: 'Location',
         dataIndex: 'partyName',
         key: 'partyName',
         filters: [],
@@ -194,6 +191,7 @@ const Party = (props) => {
             setFilteredInwardList(party.partyList);
         }
     }, [searchValue])
+
     const handleChange = (pagination, filters, sorter) => {
         setSortedInfo(sorter);
         setFilteredInfo(filters)
@@ -209,7 +207,6 @@ const Party = (props) => {
     }
 
     const deleteSelectedCoils = () => {
-        console.log('dfd');
     };
 
     const addNewKey = (idx, key) => {
@@ -237,7 +234,6 @@ const Party = (props) => {
         });
     }
     const handleSelectChange=(e)=>{
-        console.log(e)
     }
 
     useEffect(() => {
@@ -246,7 +242,8 @@ const Party = (props) => {
         setDailyReportsList(party.dailyReportsList || []);
         setMonthlyReportsList(party.monthlyReportsList || []);
       }, [party]);
-      const { dailyReportsList: initialDailyReportsList, monthlyReportsList: initialMonthlyReportsList, ...otherProps } = props.party.party;
+
+    const { dailyReportsList: initialDailyReportsList, monthlyReportsList: initialMonthlyReportsList, ...otherProps } = props.party.party;
 
     return (
         <div>
@@ -264,8 +261,8 @@ const Party = (props) => {
                                     props.form.resetFields()
                                     setShowAddParty(true)
                                 }}
-                        >Add Party</Button>
-                        <SearchBox styleName="gx-flex-1" placeholder="Search for party id or party name..." value={searchValue} onChange={(e) => setSearchValue(e.target.value)}/>
+                        >Add Location</Button>
+                        <SearchBox styleName="gx-flex-1" placeholder="Search for party id or location..." value={searchValue} onChange={(e) => setSearchValue(e.target.value)}/>
                     </div>
                 </div>
                 <Table rowSelection={[]}
@@ -275,7 +272,7 @@ const Party = (props) => {
                     onChange={handleChange}
                 />
                 <Modal
-                    title='Party Details'
+                    title='Location Details'
                     visible={viewParty}
                     width={600}
                     onOk={() => setViewParty(false)}
@@ -286,8 +283,8 @@ const Party = (props) => {
                         <Row>
                             <Col span={24}>
                                 <Card>
-                                    <p><strong>Party Name :</strong> {viewPartyDate?.partyName}</p>
-                                    {viewPartyDate?.partyNickname && <p><strong>Party Nickname :</strong> {viewPartyDate?.partyNickname}</p>}
+                                    <p><strong>Location :</strong> {viewPartyDate?.partyName}</p>
+                                    {viewPartyDate?.partyNickname && <p><strong>Location Nickname :</strong> {viewPartyDate?.partyNickname}</p>}
                                     <p><strong>Phone Number :</strong> {viewPartyDate?.phone1}</p>
                                     {viewPartyDate?.phone2 && <p><strong>Alternate phone number 1 :</strong> {viewPartyDate?.phone2}</p>}
                                     {viewPartyDate?.phone3 && <p><strong>Alternate phone number 2:</strong> {viewPartyDate?.phone3}</p>}
@@ -369,16 +366,16 @@ const Party = (props) => {
                         <Row>
                             <Col lg={24} md={24} sm={24} xs={24} className="gx-align-self-center">
                                 <Form {...formItemLayout} className="gx-pt-4">
-                                    <Form.Item label="Party/Customer Name">
+                                    <Form.Item label="Location Name">
                                         {getFieldDecorator('partyName', {
-                                            rules: [{ required: true, message: 'Please input Party name!' }],
+                                            rules: [{ required: true, message: 'Please input location!' }],
                                         })(
                                             <Input id="partyName" />
                                         )}
                                     </Form.Item>
-                                    <Form.Item label="Party/Customer Nick Name">
+                                    <Form.Item label="Location Nick Name">
                                         {getFieldDecorator('partyNickname', {
-                                            rules: [{ required: false, message: 'Please input Party name!' }],
+                                            rules: [{ required: false, message: 'Please input location!' }],
                                         })(
                                             <Input id="partyNickname" />
                                         )}
@@ -588,21 +585,21 @@ const Party = (props) => {
                                             value={dailyReportsList}
                                             onChange={(checkedValues) => {setDailyReportsList(checkedValues)}}
                                         >
-                                            <Checkbox value="STOCKREPORT">STOCKREPORT</Checkbox>
-                                            <Checkbox value="FGREPORT">FGREPORT</Checkbox>
-                                            <Checkbox value="WIPREPORT">WIPREPORT</Checkbox>
-                                            <Checkbox value="STOCKSUMMARYREPORT">STOCKSUMMARYREPORT</Checkbox>
-                                            <Checkbox value="RMREPORT">RMREPORT</Checkbox>
-                                            <Checkbox value="MONTHWISE_PLAN_TRACKER">MONTHWISE PLAN TRACKER</Checkbox>                                        </Checkbox.Group>
+                                            <Checkbox value="STOCKREPORT">Stock report</Checkbox>
+                                            <Checkbox value="FGREPORT">Ready to deliver report</Checkbox>
+                                            <Checkbox value="WIPREPORT">Wip report</Checkbox>
+                                            <Checkbox value="STOCKSUMMARYREPORT">Stock summary report</Checkbox>
+                                            <Checkbox value="RMREPORT">RM report</Checkbox>
+                                            <Checkbox value="MONTHWISE_PLAN_TRACKER">Monthwise plan tracker</Checkbox>                                        </Checkbox.Group>
                                     </Form.Item>
                                     <Form.Item label = "Monthly Reports">
                                         <Checkbox.Group id="monthlyReportsList"
                                             value={monthlyReportsList}
                                             onChange={(checkedValues) => {setMonthlyReportsList(checkedValues)}}>
-                                            <Checkbox value="INWARDREPORT">INWARDREPORT</Checkbox>
-                                            <Checkbox value="STOCKREPORT">STOCKREPORT</Checkbox>
-                                            <Checkbox value="OUTWARDREPORT">OUTWARDREPORT</Checkbox>
-                                            <Checkbox value="PROCESSINGREPORT ">PROCESSINGREPORT </Checkbox>
+                                            <Checkbox value="INWARDREPORT">Inward report</Checkbox>
+                                            <Checkbox value="STOCKREPORT">Stock report</Checkbox>
+                                            <Checkbox value="OUTWARDREPORT">Outward report</Checkbox>
+                                            <Checkbox value="PROCESSINGREPORT">Processing report</Checkbox>
                                         </Checkbox.Group>
                                     </Form.Item>
                                 </Form>

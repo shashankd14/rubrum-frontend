@@ -1,9 +1,9 @@
-import React, {useEffect} from "react";
+import React from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {Drawer, Layout} from "antd";
 
 import SidebarContent from "./SidebarContent";
-import {toggleCollapsedSideNav, updateWindowWidth} from "appRedux/actions/Setting";
+import {toggleCollapsedSideNav} from "appRedux/actions/Setting";
 import {
   NAV_STYLE_DRAWER,
   NAV_STYLE_FIXED,

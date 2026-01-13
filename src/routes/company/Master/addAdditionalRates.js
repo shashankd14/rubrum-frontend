@@ -58,7 +58,6 @@ const AdditionalRates = (props) => {
 
   const checkboxChange = (e: CheckboxChangeEvent) => {
     setChecked(e.target.checked);
-    console.log(`checked = ${e.target.checked}`);
   };
   const processSelectChange = (e) => {
     setProcessId(e);
@@ -83,7 +82,6 @@ const AdditionalRates = (props) => {
     form.setFieldsValue({
       [type]: nextKeys,
     });
-    console.log("keys", form.getFieldValue(`${type}`));
   };
   const removeKey = (k, type) => {
     const { form } = props;
@@ -304,12 +302,12 @@ const AdditionalRates = (props) => {
               </Form.Item>
               {checked && (
                 <>
-                  <Form.Item label="Party Name">
+                  <Form.Item label="Location">
                     {getFieldDecorator("partyId", {
                       rules: [
                         {
                           required: true,
-                          message: "Please select party name!",
+                          message: "Please select location!",
                         },
                       ],
                     })(
@@ -329,16 +327,16 @@ const AdditionalRates = (props) => {
                 </>
               )}
               {!checked && (
-                <Form.Item label="Party Name">
+                <Form.Item label="Location">
                   {getFieldDecorator("partyId", {
                     rules: [
-                      { required: true, message: "Please enter Party name!" },
+                      { required: true, message: "Please enter location!" },
                     ],
                   })(
                     <Select
                       showSearch
                       style={{ width: 300 }}
-                      placeholder="Select a Party"
+                      placeholder="Select a Location"
                     >
                       {props.party?.partyList?.map((party) => (
                         <Option value={party.nPartyId}>

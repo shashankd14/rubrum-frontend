@@ -27,9 +27,9 @@ const LinkedTemplateList = (props) => {
     }, []);
 
     useEffect(() => {
-        console.log("data load")
         props.fetchKqpLinkList(1, 15, searchValue);
     }, []);
+
     useEffect(() => {
         if (!props.template.loading && !props.template.error && props.template.operation === 'kqpLinkList') {
             const jsonData = props.template.data;
@@ -50,7 +50,6 @@ const LinkedTemplateList = (props) => {
                 }
                 //  groupedData[key].parties.push(partyName);
                  const partyIds = JSON.parse(partyIdList);;
-                 console.log(partyIds)
                  if (Array.isArray(partyIds)) {
                  const partyNames = partyIds.map((partyId) => {
                     // Check if partyId is defined
@@ -61,12 +60,10 @@ const LinkedTemplateList = (props) => {
                       return null; 
                     }
                   });
-                  console.log(partyNames)
                   groupedData[key].parties.push(partyNames);
                 }
             });
             const groupedArray = Object.values(groupedData);
-            console.log(groupedArray);
     
             // Update the totalPageItems state
             setTotalItems(groupedArray.length);

@@ -24,13 +24,28 @@ import {
     FETCH_THICKNESS,
     FETCH_THICKNESS_SUCCESS,
     FETCH_THICKNESS_ERROR,
+    FETCH_MATERIAL_CATEGORIES,
+    FETCH_MATERIAL_CATEGORIES_SUCCESS,
+    FETCH_MATERIAL_CATEGORIES_ERROR,
+    FETCH_MATERIAL_SUB_CATEGORIES,
+    FETCH_MATERIAL_SUB_CATEGORIES_SUCCESS,
+    FETCH_MATERIAL_SUB_CATEGORIES_ERROR,
+    FETCH_MATERIAL_LEAF_CATEGORY,
+    FETCH_MATERIAL_LEAF_CATEGORY_SUCCESS,
+    FETCH_MATERIAL_LEAF_CATEGORY_ERROR,
+    SAVE_MATERIAL_DISPLAY_INFO,
+    SEARCH_MATERIAL_BY_ID_SUCCESS,
+    SEARCH_MATERIAL_BY_ID_ERROR,
+    SEARCH_MATERIAL_BY_ID,
+    SAVE_MATERIAL_DISPLAY_INFO_OBJ
 } from "../../constants/ActionTypes";
 
 const INIT_STATE = {
     materialList: [],
     material: {},
     loading: false,
-    error: false
+    error: false,
+    categoriesList: [],
 };
 
 export default (state = INIT_STATE, action) => {
@@ -210,6 +225,103 @@ export default (state = INIT_STATE, action) => {
             }
         }
 
+        case FETCH_MATERIAL_CATEGORIES: {
+            return {
+                ...state,
+                loading: true
+            }
+        }
+        case FETCH_MATERIAL_CATEGORIES_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                categoriesList: action.categories
+            }
+        }
+        case FETCH_MATERIAL_CATEGORIES_ERROR: {
+            return {
+                ...state,
+                loading: false,
+                error: true,
+            }
+        }
+        case FETCH_MATERIAL_SUB_CATEGORIES: {
+            return {
+                ...state,
+                loading: true
+            }
+        }
+        case FETCH_MATERIAL_SUB_CATEGORIES_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                subCategoriesList: action.subCategories
+            }
+        }
+        case FETCH_MATERIAL_SUB_CATEGORIES_ERROR: {
+            return {
+                ...state,
+                loading: false,
+                error: true,
+            }
+        }
+        case FETCH_MATERIAL_LEAF_CATEGORY: {
+            return {
+                ...state,
+                loading: true
+            }
+        }
+        case FETCH_MATERIAL_LEAF_CATEGORY_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                leafCategoriesList: action.leafCategories
+            }
+        }
+        case FETCH_MATERIAL_LEAF_CATEGORY_ERROR: {
+            return {
+                ...state,
+                loading: false,
+                error: true,
+            }
+        }
+        case SAVE_MATERIAL_DISPLAY_INFO: {
+            return {
+                ...state,
+                displayInfo: {
+                    ...state.displayInfo,
+                    [action.displayKey]: action.displayValue
+                }
+            }
+        }
+        case SEARCH_MATERIAL_BY_ID: {
+            return {
+                ...state,
+                loading: true
+            }
+        }
+        case SEARCH_MATERIAL_BY_ID_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                mmIdData: action.materailData
+            }
+        }
+        case SEARCH_MATERIAL_BY_ID_ERROR: {
+            return {
+                ...state,
+                loading: false,
+                error: true,
+            }
+        }
+        case SAVE_MATERIAL_DISPLAY_INFO_OBJ: {
+            return {
+                ...state,
+                displayInfo: {
+                    ...action.displayInfo
+                }
+            }
+        }
         default:
             return state;
     }

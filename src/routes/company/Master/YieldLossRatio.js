@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { connect, useDispatch } from 'react-redux';
+import { connect} from 'react-redux';
 import {
   Button,
   Card,
@@ -12,8 +12,6 @@ import {
   Input,
   Select,
 } from 'antd';
-import moment from 'moment';
-import SearchBox from '../../../components/SearchBox';
 
 import IntlMessages from '../../../util/IntlMessages';
 import {
@@ -28,7 +26,6 @@ import {
   deleteYLR,
   fetchProcessList
 } from '../../../appRedux/actions';
-import { onDeleteContact } from '../../../appRedux/actions';
 
 export const formItemLayout = {
   labelCol: {
@@ -55,14 +52,11 @@ const YieldLoss = (props) => {
   const [editYLR, setEditYLR] = useState(false);
   const [viewYLRData, setViewYLRData] = useState({});
   const [filteredInfo, setFilteredInfo] = useState(null);
-  const [searchValue, setSearchValue] = useState('');
   const [filteredYLRList, setFilteredYLRList] = useState(
     props.yieldLossRatio?.YLRList?.content || []
   );
   const [pageNo, setPageNo] = React.useState(1);
-  const [totalPageItems, setTotalItems] = React.useState(0);
   const [customerValue, setCustomerValue] = useState("");
-  const [pageSize, setPageSize] = useState(15);
 
   const keys = getFieldValue('keys');
   const Option = Select.Option;
@@ -79,7 +73,7 @@ const YieldLoss = (props) => {
       sortOrder: sortedInfo.columnKey === 'ylrId' && sortedInfo.order,
     },
     {
-      title: 'Party Name',
+      title: 'Location',
       dataIndex: 'partyName',
       key: 'partyName',
       filters: [],
@@ -238,7 +232,6 @@ const YieldLoss = (props) => {
   const exportSelectedData = () => {};
 
   const deleteSelectedCoils = () => {
-    console.log('dfd');
   };
 
   const addNewKey = (idx) => {
@@ -262,24 +255,6 @@ const YieldLoss = (props) => {
     form.setFieldsValue({
       keys: keys.filter((key, idx) => idx !== k),
     });
-  };
-
-  const handleSelectChange = (e) => {
-    console.log(e);
-  };
-
-  const [selectedParty, setSelectedParty] = useState('');
-  const [selectedProcessId, setSelectedProcessId] = useState('');
-  const handleProcessChange = (e) => {
-    if (e?.target?.name === 'partyName') {
-      setSelectedParty(e.target.value);
-    } else {
-      props.getStaticList(e);
-      setSelectedProcessId(e);
-    }
-  };
-  const handlePartyChange = (e) => {
-    setSelectedParty(e);
   };
 
   const handleCustomerChange = (partyId) => {
@@ -312,7 +287,7 @@ const YieldLoss = (props) => {
               id="select"
               showSearch
               style={{ width: 250, paddingTop: '-50px' }}
-              placeholder="Select a customer"
+              placeholder="Select a location"
               optionFilterProp="children"
               onChange={handleCustomerChange}
               // value={customerValue}
@@ -381,7 +356,7 @@ const YieldLoss = (props) => {
             <Row>
               <Col span={24}>
                 <Card>
-                <p><strong>Party Name :</strong> {viewYLRData?.partyName}</p>
+                <p><strong>Location :</strong> {viewYLRData?.partyName}</p>
                 <p><strong>Process Name :</strong> {viewYLRData?.processName}</p>
                 <p><strong>Loss Ratio from :</strong> {viewYLRData?.lossRatioPercentageFrom}</p>
                 <p><strong>Loss Ratio to :</strong> {viewYLRData?.lossRatioPercentageTo}</p>
@@ -400,7 +375,6 @@ const YieldLoss = (props) => {
             if (editYLR) {
               props.form.validateFields((err, values) => {
                 if (!err) {
-                  console.log('Received values of form: ', values);
                   const data = { values, ylrId: props.yieldLossRatio?.YLR?.ylrId };
                   props.updateYLR(data);
                   props.form.resetFields();
@@ -412,7 +386,6 @@ const YieldLoss = (props) => {
             } else {
               props.form.validateFields((err, values) => {
                 if (!err) {
-                  console.log('Received values of form: ', values);
                   props.addYLR(values);
                   setShowAddYLR(false);
                 }
@@ -438,12 +411,12 @@ const YieldLoss = (props) => {
                 className='gx-align-self-center'
               >
                 <Form {...formItemLayout} className='gx-pt-4'>
-                  <Form.Item label='Party Name'>
+                  <Form.Item label='Location'>
                     {getFieldDecorator('partyIdList', {
                       rules: [
                         {
                           required: true,
-                          message: 'Please select party name!',
+                          message: 'Please select location!',
                         },
                       ],
                     })(
@@ -451,7 +424,7 @@ const YieldLoss = (props) => {
                         id='partyId'
                         showSearch
                         mode='multiple'
-                        placeholder='Select customer'
+                        placeholder='Select location'
                         style={{ width: '100%' }}
                         filterOption={(input, option) => {
                           return option?.props?.children

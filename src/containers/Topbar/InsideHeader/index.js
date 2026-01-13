@@ -1,8 +1,6 @@
 import React, {useState} from "react";
 import {Button, Dropdown, Icon, Layout, Menu, message, Popover} from 'antd';
 import {connect, useDispatch, useSelector} from "react-redux";
-import CustomScrollbars from "util/CustomScrollbars";
-import languageData from "../languageData";
 import SearchBox from "components/SearchBox";
 import UserInfo from "components/UserInfo";
 import AppNotification from "components/AppNotification";
@@ -31,22 +29,7 @@ const InsideHeader = () => {
   const dispatch = useDispatch();
 
   const [searchText, setSearchText] = useState('');
-  const locale = useSelector(({settings}) => settings.locale);
   const navCollapsed = useSelector(({settings}) => settings.navCollapsed);
-
-  const languageMenu = () => (
-    <CustomScrollbars className="gx-popover-lang-scroll">
-      <ul className="gx-sub-popover">
-        {languageData.map(language =>
-          <li className="gx-media gx-pointer" key={JSON.stringify(language)} onClick={(e) =>
-            dispatch(switchLanguage(language))
-          }>
-            <i className={`flag flag-24 gx-mr-2 flag-${language.icon}`}/>
-            <span className="gx-language-text">{language.name}</span>
-          </li>
-        )}
-      </ul>
-    </CustomScrollbars>);
 
   const updateSearchChatUser = (evt) => {
     setSearchText(evt.target.value)
@@ -84,7 +67,7 @@ const InsideHeader = () => {
             <Link to="/" className="gx-d-block gx-d-lg-none gx-pointer gx-mr-xs-3 gx-pt-xs-1 gx-w-logo">
               <img alt="" src={require("assets/images/w-logo.png")}/></Link>
             <Link to="/" className="gx-d-none gx-d-lg-block gx-pointer gx-mr-xs-5 gx-logo">
-              <img alt="" src={require("assets/images/logo.png")}/></Link>
+              <img alt="" src={require("assets/images/w-logo.png")}/></Link>
 
             <div className="gx-header-horizontal-nav gx-header-horizontal-nav-curve gx-d-none gx-d-lg-block">
               <HorizontalNav/>
@@ -123,14 +106,6 @@ const InsideHeader = () => {
                 <i className="icon icon-chat-new"/>
                 <span className="gx-status gx-status-rtl gx-small gx-orange"/>
                 </span>
-                </Popover>
-              </li>
-              <li className="gx-language">
-                <Popover overlayClassName="gx-popover-horizantal" placement="bottomRight"
-                         content={languageMenu()} trigger="click">
-              <span className="gx-pointer gx-flex-row gx-align-items-center"><i
-                className={`flag flag-24 flag-${locale.icon}`}/>
-              </span>
                 </Popover>
               </li>
               <li className="gx-user-nav"><UserInfo/></li>

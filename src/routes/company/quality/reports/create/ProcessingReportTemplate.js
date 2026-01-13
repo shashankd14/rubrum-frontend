@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Card, Col, Icon, Input, Radio, Row, Select, Modal } from 'antd'
+import { Button, Col, Icon, Input, Radio, Row, Select, Modal } from 'antd'
 import Dragger from 'antd/lib/upload/Dragger'
 import { PROCESSES } from "../../../../../constants/quality/ComponentConstants";
 import SlittingForm from '../create/process/SlittingForm';
@@ -12,13 +12,11 @@ import {
   fetchQualityReportStageList,
   getCoilPlanDetails
 } from "../../../../../appRedux/actions"
-import { Link, useLocation, useHistory, withRouter } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 
 const ProcessingReportTemplate = (props) => {
 
   const Option = Select.Option;
-  const history = useHistory();
-
   const [templateData, setTemplateData] = useState({
     1: {
       "id": 1,
@@ -132,7 +130,6 @@ const ProcessingReportTemplate = (props) => {
   const onFilesChange = (type, file) => {
     templateData[type].fileList = file.fileList.slice(-1)
     templateData[type].fileName = templateData[type].fileList[0].name;
-    console.log(templateData)
     setTemplateData({ ...templateData })
   }
   const [comments, setComment] = useState('');

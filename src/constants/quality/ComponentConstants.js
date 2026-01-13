@@ -68,7 +68,7 @@ export const QUALITY_LINKED_TEMPLATE_COLUMNS = [
         sorter: (a, b) => a.coilNumber?.length - b.coilNumber?.length,
     },
     {
-        title: "Customer Name", 
+        title: "Location Name", 
         dataIndex: "parties",
         key: "parties",
         render: (parties) => parties.join(', ')
@@ -89,7 +89,7 @@ export const QUALITY_REPORT_CREATE_COLUMNS = [
         key: "coilNo",
     },
     {
-        title: "Customer Name",
+        title: "Location",
         dataIndex: "partyName",
         key: "party.partyName",
     },
@@ -122,7 +122,7 @@ export const QUALITY_REPORT_CREATE_COLUMNS = [
 
 export const QUALITY_REPORT_INWARD_COLUMNS = [
     {
-        title: "Coil Number",
+        title: "Inward Id",
         dataIndex: "coilNumber",
         key: "coilNumber",
         filters: [],
@@ -162,7 +162,7 @@ export const QUALITY_REPORT_INWARD_COLUMNS = [
         dataIndex: "material.description",
         key: "material.description",
         // filteredValue: filteredInfo ? filteredInfo["material.description"] : null,
-        onFilter: (value, record) => record.material.description == value,
+       // onFilter: (value, record) => record.material.description == value,
         // filters:
             // props.inward.inwardList.length > 0
             //     ? [
@@ -171,8 +171,8 @@ export const QUALITY_REPORT_INWARD_COLUMNS = [
             //         ),
             //     ].map((material) => ({ text: material, value: material }))
             //     : [],
-        sorter: (a, b) =>
-            a.material.description.length - b.material.description.length,
+       // sorter: (a, b) =>
+        //    a.material.description.length - b.material.description.length,
         // sortOrder:
         //     sortedInfo.columnKey === "material.description" && sortedInfo.order,
     },
@@ -252,7 +252,7 @@ export const KQP_LINK_COLUMNS = [
         sorter: (a, b) => a.stageName - b.stageName,
     },
     {
-        title: "Customer Name",
+        title: "Location Name",
         dataIndex: "parties",
         key: "parties",
         render: (parties) => parties.join(', '),

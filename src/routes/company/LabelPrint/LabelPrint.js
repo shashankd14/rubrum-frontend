@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { connect } from 'react-redux';
 import { Card, Tabs } from 'antd'
-import { useIntl } from "react-intl";
 import { useLocation } from 'react-router-dom';
 import IntlMessages from '../../../util/IntlMessages'
 import { 
@@ -18,13 +17,8 @@ const LabelPrint = (props) => {
   const location = useLocation();
 
   useEffect(() => {
-    console.log(props.history)
-    if (props.match) {
-        console.log(props.match)
-        console.log(location)
-        
+    if (props.match) {        
         const params = new URLSearchParams(location.search);
-        console.log(params.get('view'));
         if(params.get('view') === 'links') {
           setTabKey("2");
         } else {

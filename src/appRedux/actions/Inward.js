@@ -1,111 +1,115 @@
 import {
-    FETCH_INWARD_LIST_REQUEST,
-    FETCH_INWARD_LIST_SUCCESS,
-    FETCH_INWARD_LIST_ERROR,
-
-    FETCH_WIP_INWARD_LIST_REQUEST,
-    FETCH_WIP_INWARD_LIST_SUCCESS,
-    FETCH_WIP_INWARD_LIST_ERROR,
-
-    CHECK_COIL_EXISTS,
-
-    SET_INWARD_DETAILS,
-    SUBMIT_INWARD_ENTRY,
-    SUBMIT_INWARD_SUCCESS,
-    SUBMIT_INWARD_ERROR,
-    CHECK_COIL_EXISTS_SUCCESS,
-    CHECK_COIL_EXISTS_ERROR,
-    FETCH_INWARD_LIST_BY_PARTY_REQUEST,
-    FETCH_INWARD_LIST_BY_PARTY_SUCCESS,
-    FETCH_INWARD_LIST_BY_PARTY_ERROR,
-
-    FETCH_INWARD_PLAN_DETAILS_REQUESTED,
-    FETCH_INWARD_PLAN_DETAILS_SUCCESS,
-    FETCH_INWARD_PLAN_DETAILS_ERROR,
-    SET_PROCESS_DETAILS,
-    REQUEST_SAVE_CUTTING_DETAILS,
-    SAVE_CUTTING_DETAILS_SUCCESS,
-    SAVE_CUTTING_DETAILS_ERROR,
-
-    REQUEST_SAVE_SLITTING_DETAILS,
-    SAVE_SLITTING_DETAILS_SUCCESS,
-    SAVE_SLITTING_DETAILS_ERROR,
-
-    REQUEST_UPDATE_INSTRUCTION_DETAILS, 
-    REQUEST_UPDATE_INSTRUCTION_DETAILS_SUCCESS,
-    REQUEST_UPDATE_INSTRUCTION_DETAILS_ERROR,
-   
-
-    RESET_INSTRUCTION_FORM,
-    RESET_INWARD_FORM,
-    RESET_DELETE_INWARD,
-    REST_ISDELETED,
-
-    FETCH_MATERIAL_GRADE_LIST_REQUEST,
-    FETCH_MATERIAL_GRADE_LIST_SUCCESS,
-    FETCH_MATERIAL_GRADE_LIST_ERROR,
-
-    SET_INWARD_SELECTED_FOR_DELIVERY,
-    POST_DELIVERY_CONFIRM_REQUESTED,
-    POST_DELIVERY_CONFIRM_SUCCESS,
-    POST_DELIVERY_CONFIRM_ERROR,
-    FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST,
-    FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST_SUCCESS,
-    FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST_ERROR,
-    FETCH_INWARD_INSTRUCTION_DETAILS_REQUESTED,
-    FETCH_INWARD_INSTRUCTION_DETAILS_SUCCESS,
-    FETCH_INWARD_INSTRUCTION_DETAILS_ERROR,
-    FETCH_INWARD_INSTRUCTION_WIP_DETAILS_REQUESTED,
-    FETCH_INWARD_INSTRUCTION_WIP_DETAILS_SUCCESS,
-    FETCH_INWARD_INSTRUCTION_WIP_DETAILS_ERROR,
-    SAVE_UNPROCESSED_FOR_DELIVERY,
-    SAVE_UNPROCESSED_FOR_DELIVERY_SUCCESS,
-    SAVE_UNPROCESSED_FOR_DELIVERY_ERROR,
-    FETCH_INWARD_LIST_BY_ID,
-    FETCH_INWARD_LIST_BY_ID_SUCCESS,
-    FETCH_INWARD_LIST_BY_ID_ERROR,
-    UPDATE_INWARD_LIST,
-    UPDATE_INWARD_LIST_SUCCESS,
-    UPDATE_INWARD_LIST_ERROR,
-    DELETE_INWARD_LIST_BY_ID,
-    DELETE_INWARD_LIST_BY_ID_ERROR,
-    DELETE_INWARD_LIST_BY_ID_SUCCESS,
-    DELETE_INSTRUCTION_BY_ID,
-    DELETE_INSTRUCTION_BY_ID_ERROR,
-    DELETE_INSTRUCTION_BY_ID_SUCCESS,
-    DELETE_INSTRUCTION_BY_ID_SUCCESS_SLIT,
-    CHECK_BATCH_NO_EXIST,
-    CHECK_BATCH_NO_EXIST_ERROR,
-    CHECK_BATCH_NO_EXIST_SUCCESS,
-    INSTRUCTION_GROUP_SAVE,
-    INSTRUCTION_GROUP_SAVE_SUCCESS,
-    INSTRUCTION_GROUP_SAVE_ERROR,
-    PDF_GENERATE_INWARD,
-    PDF_GENERATE_INWARD_ERROR,
-    PDF_GENERATE_INWARD_SUCCESS,
-    PDF_GENERATE_DELIVERY,
-    PDF_GENERATE_DELIVERY_SUCCESS,
-    PDF_GENERATE_DELIVERY_ERROR,
-    PDF_S3_URL,
-    PDF_S3_URL_SUCCESS,
-    PDF_S3_URL_ERROR,
-    GET_RECONCILE_REPORT,
-    GET_RECONCILE_REPORT_SUCCESS,
-    GET_RECONCILE_REPORT_ERROR,
-    GET_PACKET_WISE_PRICE_DC_REQUEST,
-    GET_PACKET_WISE_PRICE_DC_SUCCESS,
-    GET_PACKET_WISE_PRICE_DC_ERROR
+  FETCH_INWARD_LIST_REQUEST,
+  FETCH_INWARD_LIST_SUCCESS,
+  FETCH_INWARD_LIST_ERROR,
+  FETCH_WIP_INWARD_LIST_REQUEST,
+  FETCH_WIP_INWARD_LIST_SUCCESS,
+  FETCH_WIP_INWARD_LIST_ERROR,
+  CHECK_COIL_EXISTS,
+  SET_INWARD_DETAILS,
+  SUBMIT_INWARD_ENTRY,
+  SUBMIT_INWARD_SUCCESS,
+  SUBMIT_INWARD_ERROR,
+  CHECK_COIL_EXISTS_SUCCESS,
+  CHECK_COIL_EXISTS_ERROR,
+  FETCH_INWARD_LIST_BY_PARTY_REQUEST,
+  FETCH_INWARD_LIST_BY_PARTY_SUCCESS,
+  FETCH_INWARD_LIST_BY_PARTY_ERROR,
+  FETCH_INWARD_PLAN_DETAILS_REQUESTED,
+  FETCH_INWARD_PLAN_DETAILS_SUCCESS,
+  FETCH_INWARD_PLAN_DETAILS_ERROR,
+  SET_PROCESS_DETAILS,
+  REQUEST_SAVE_CUTTING_DETAILS,
+  SAVE_CUTTING_DETAILS_SUCCESS,
+  SAVE_CUTTING_DETAILS_ERROR,
+  REQUEST_SAVE_SLITTING_DETAILS,
+  SAVE_SLITTING_DETAILS_SUCCESS,
+  SAVE_SLITTING_DETAILS_ERROR,
+  REQUEST_UPDATE_INSTRUCTION_DETAILS,
+  REQUEST_UPDATE_INSTRUCTION_DETAILS_SUCCESS,
+  REQUEST_UPDATE_INSTRUCTION_DETAILS_ERROR,
+  RESET_INSTRUCTION_FORM,
+  RESET_INWARD_FORM,
+  RESET_DELETE_INWARD,
+  REST_ISDELETED,
+  FETCH_MATERIAL_GRADE_LIST_REQUEST,
+  FETCH_MATERIAL_GRADE_LIST_SUCCESS,
+  FETCH_MATERIAL_GRADE_LIST_ERROR,
+  SET_INWARD_SELECTED_FOR_DELIVERY,
+  POST_DELIVERY_CONFIRM_REQUESTED,
+  POST_DELIVERY_CONFIRM_SUCCESS,
+  POST_DELIVERY_CONFIRM_ERROR,
+  FETCH_INWARD_INSTRUCTION_DETAILS_REQUESTED,
+  FETCH_INWARD_INSTRUCTION_DETAILS_SUCCESS,
+  FETCH_INWARD_INSTRUCTION_DETAILS_ERROR,
+  FETCH_INWARD_INSTRUCTION_WIP_DETAILS_REQUESTED,
+  FETCH_INWARD_INSTRUCTION_WIP_DETAILS_SUCCESS,
+  FETCH_INWARD_INSTRUCTION_WIP_DETAILS_ERROR,
+  SAVE_UNPROCESSED_FOR_DELIVERY,
+  SAVE_UNPROCESSED_FOR_DELIVERY_SUCCESS,
+  SAVE_UNPROCESSED_FOR_DELIVERY_ERROR,
+  FETCH_INWARD_LIST_BY_ID,
+  FETCH_INWARD_LIST_BY_ID_SUCCESS,
+  FETCH_INWARD_LIST_BY_ID_ERROR,
+  UPDATE_INWARD_LIST,
+  UPDATE_INWARD_LIST_SUCCESS,
+  UPDATE_INWARD_LIST_ERROR,
+  DELETE_INWARD_LIST_BY_ID,
+  DELETE_INWARD_LIST_BY_ID_ERROR,
+  DELETE_INWARD_LIST_BY_ID_SUCCESS,
+  DELETE_INSTRUCTION_BY_ID,
+  DELETE_INSTRUCTION_BY_ID_ERROR,
+  DELETE_INSTRUCTION_BY_ID_SUCCESS,
+  DELETE_INSTRUCTION_BY_ID_SUCCESS_SLIT,
+  CHECK_BATCH_NO_EXIST,
+  CHECK_BATCH_NO_EXIST_ERROR,
+  CHECK_BATCH_NO_EXIST_SUCCESS,
+  GET_PO_DETAILS,
+  GET_PO_DETAILS_SUCCESS,
+  GET_PO_DETAILS_ERROR,
+  INSTRUCTION_GROUP_SAVE,
+  INSTRUCTION_GROUP_SAVE_SUCCESS,
+  INSTRUCTION_GROUP_SAVE_ERROR,
+  PDF_GENERATE_INWARD,
+  PDF_GENERATE_INWARD_ERROR,
+  PDF_GENERATE_INWARD_SUCCESS,
+  PDF_GENERATE_DELIVERY,
+  PDF_GENERATE_DELIVERY_SUCCESS,
+  PDF_GENERATE_DELIVERY_ERROR,
+  PDF_S3_URL,
+  PDF_S3_URL_SUCCESS,
+  PDF_S3_URL_ERROR,
+  GET_RECONCILE_REPORT,
+  GET_RECONCILE_REPORT_SUCCESS,
+  GET_RECONCILE_REPORT_ERROR,
+  GET_PACKET_WISE_PRICE_DC_REQUEST,
+  GET_PACKET_WISE_PRICE_DC_SUCCESS,
+  GET_PACKET_WISE_PRICE_DC_ERROR,
+  GET_MATERIALS_BY_POID,
+  GET_MATERIALS_BY_POID_SUCCESS,
+  GET_MATERIALS_BY_POID_ERROR,
+  UPDATE_INSTRUCTION_POSITIVE_TOLERANCE,
+  RESET_INWARD_FORM_PO,
 } from "../../constants/ActionTypes";
 import * as actionTypes from "../../constants/ActionTypes";
 
-export const fetchInwardList = (page, pageSize, searchValue, partyId, sortOrder, sortColumn) => ({
-    type: FETCH_INWARD_LIST_REQUEST,
-    page: page,
-    pageSize: 15,
-    searchValue: searchValue,
-    partyId: partyId,
-    sortOrder: sortOrder,
-    sortColumn: sortColumn
+export const fetchInwardList = (
+  page,
+  pageSize = 15,
+  searchValue,
+  partyId,
+  sortOrder,
+  sortColumn,
+  filterInfo
+) => ({
+  type: FETCH_INWARD_LIST_REQUEST,
+  page: page,
+  pageSize: pageSize,
+  searchValue: searchValue,
+  partyId: partyId,
+  sortOrder: sortOrder,
+  sortColumn: sortColumn,
+  filterInfo,
 });
 
 export const fetchInwardListSuccess = (inwardList, totalItems) => ({
@@ -124,12 +128,23 @@ export const coilNotFound = (totalItems) => ({
     totalItems: 'Coil not found.'
 });
 //inward with old api
-export const fetchInwardListOldAPI = (page, pageSize, searchValue, partyId) => ({
-    type: actionTypes.FETCH_INWARD_LIST_WITH_OLD_API_REQUEST,
-    page,
-    pageSize,
-    searchValue,
-    partyId
+export const fetchInwardListOldAPI = (
+  page,
+  pageSize,
+  searchValue,
+  partyId,
+  sortKey,
+  sortOrder,
+  filterInfo = {}
+) => ({
+  type: actionTypes.FETCH_INWARD_LIST_WITH_OLD_API_REQUEST,
+  page,
+  pageSize,
+  searchValue,
+  partyId,
+  sortKey,
+  sortOrder,
+  filterInfo,
 });
 
 export const fetchInwardListOldAPISuccess = (inwardList, totalItems) => ({
@@ -143,12 +158,23 @@ export const fetchInwardListOldAPIError = (error) => ({
     error
 });
 
-export const fetchWIPInwardList = (page, pageSize, searchValue, partyId) => ({
-    type: FETCH_WIP_INWARD_LIST_REQUEST,
-    page,
-    pageSize,
-    searchValue,
-    partyId
+export const fetchWIPInwardList = (
+  page,
+  pageSize,
+  searchValue,
+  partyId,
+  sortOrder,
+  sortColumn,
+  filterInfo
+) => ({
+  type: FETCH_WIP_INWARD_LIST_REQUEST,
+  page,
+  pageSize,
+  searchValue,
+  partyId,
+  sortOrder,
+  sortColumn,
+  filterInfo,
 });
 
 export const fetchWIPInwardListSuccess = (wipList, totalItems) => ({
@@ -181,6 +207,7 @@ export const checkDuplicateCoilError = (error) => ({
     type: CHECK_COIL_EXISTS_ERROR,
     error
 })
+
 export const checkCustomerBatchNumber = (customerBatchId) => ({
     type: CHECK_BATCH_NO_EXIST,
     customerBatchId
@@ -195,6 +222,36 @@ export const checkCustomerBatchNumberError = (error) => ({
     type: CHECK_BATCH_NO_EXIST_ERROR,
     error
 })
+
+export const getPoDetails = (locationId) => ({
+  type: GET_PO_DETAILS,
+  locationId,
+});
+
+export const getPoDetailsSuccess = (poList) => ({
+  type: GET_PO_DETAILS_SUCCESS,
+  poList,
+});
+
+export const getPoDetailsError = (error) => ({
+  type: GET_PO_DETAILS_ERROR,
+  error,
+});
+
+export const fetchMaterialsByPoID = (poId) => ({
+  type: GET_MATERIALS_BY_POID,
+  poId,
+});
+
+export const fetchMaterialsByPoIDSuccess = (materialList) => ({
+  type: GET_MATERIALS_BY_POID_SUCCESS,
+  materialList,
+});
+
+export const fetchMaterialsByPoIDError = (error) => ({
+  type: GET_MATERIALS_BY_POID_ERROR,
+  error,
+});
 
 export const getGradeByMaterialId = (materialId) => ({
     type: FETCH_MATERIAL_GRADE_LIST_REQUEST,
@@ -252,7 +309,7 @@ export const submitInwardSuccess = (inward) => ({
 
 export const submitInwardError = (inward) => ({
     type: SUBMIT_INWARD_ERROR,
-    inward
+    payload: inward
 });
 
 export const getCoilsByPartyId = (partyId) => ({
@@ -341,6 +398,12 @@ export const updateInstructionSuccess = (payload) => ({
     type: REQUEST_UPDATE_INSTRUCTION_DETAILS_SUCCESS,
     payload
 });
+
+export const updateInstructionPT = (payload) => ({
+  type: UPDATE_INSTRUCTION_POSITIVE_TOLERANCE,
+  payload,
+});
+
 export const updateInstructionError = (payload) => ({
     type: REQUEST_UPDATE_INSTRUCTION_DETAILS_ERROR,
     payload
@@ -351,7 +414,11 @@ export const resetInstruction = () => ({
 
 export const resetInwardForm = () => ({
     type: RESET_INWARD_FORM,
-})
+});
+
+export const resetInwardFormPO = () => ({
+  type: RESET_INWARD_FORM_PO,
+});
 export const resetDeleteInward = () => ({
     type: RESET_DELETE_INWARD,
 })
@@ -565,4 +632,78 @@ export const getPacketwisePriceDCFullHandlingError = (error) => ({
 export const updateClassificationSlitAndCutBeforeFinish = (payload) => ({
     type: actionTypes.UPDATE_CLASSIFICATION_SLITANDCUT_BEFORE_FINISH,
     payload
+});
+
+export const setMaterialData = (payload) => ({
+    type: actionTypes.SET_MATERIAL_DATA,
+    payload
+});
+
+export const enableMaterialSelection = () => ({
+    type: actionTypes.ENABLE_MATERIAL_SELECTION,
+});
+
+export const getInwardMaterialDetails = (param) => ({
+  type: actionTypes.FETCH_INWARD_MATERIAL_LIST,
+  param,
+});
+
+export const saveInwardMaterialDetails = (payload) => ({
+  type: actionTypes.FETCH_INWARD_MATERIAL_LIST_SUCCESS,
+  payload
+});
+
+export const errorInwardMaterialDetails = (error) => ({
+  type: actionTypes.FETCH_INWARD_MATERIAL_LIST_ERROR,
+  error
+});
+
+
+export const syncToZoho = (payload) => ({
+  type: actionTypes.REQUEST_SYNC_TO_ZOHO,
+  payload,
+});
+
+export const syncToZohoSuccess = (payload) => ({
+  type: actionTypes.REQUEST_SYNC_TO_ZOHO_SUCCESS,
+  payload,
+});
+
+export const syncToZohoError = (error) => ({
+  type: actionTypes.REQUEST_SYNC_TO_ZOHO_ERROR,
+  error,
+});
+
+export const getInwardsAgainstPo = (poInvoiceNo) => ({
+  type: actionTypes.INWARDS_AGAINST_PO_REQUEST,
+  poInvoiceNo,
+});
+
+export const getInwardsAgainstPoSuccess = (payload) => ({
+  type: actionTypes.INWARDS_AGAINST_PO_REQUEST_SUCCESS,
+  payload,
+});
+
+export const getInwardsAgainstPoError = (error) => ({
+  type: actionTypes.INWARDS_AGAINST_PO_REQUEST_ERROR,
+  error,
+});
+
+export const requestDocSync = (billId) => ({
+  type: actionTypes.SYNC_DOC_REQUEST,
+  billId,
+});
+
+export const requestDocSyncSuccess = (payload) => ({
+  type: actionTypes.SYNC_DOC_SUCCESS,
+  payload,
+});
+
+export const requestDocSyncError = (error) => ({
+  type: actionTypes.SYNC_DOC_ERROR,
+  error,
+});
+
+export const saveTemporary = () => ({
+  type: actionTypes.SAVE_TEMPORARY,
 });

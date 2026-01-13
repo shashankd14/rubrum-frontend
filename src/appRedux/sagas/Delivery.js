@@ -17,7 +17,6 @@ function* fetchDeliveryList({ page = 1, pageSize = 15, searchValue = '', partyId
         });
         if(fetchDeliveryList.status === 200) {
             const fetchDeliveryListResponse = yield fetchDeliveryList.json();
-            console.log(fetchDeliveryListResponse);
             yield put(fetchDeliveryListSuccess(fetchDeliveryListResponse));
         } else if (fetchDeliveryList.status === 401) {
             yield put(userSignOutSuccess());

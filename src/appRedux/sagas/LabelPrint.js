@@ -48,7 +48,6 @@ function* GenerateInwardLabelPrint(action) {
 }
 
 function* GenerateWIPLabelPrint(action) {
-  console.log('action.inwardEntryId', action.payloadpdf.inwardEntryId);
   try {
     const generateLabelPdf = yield fetch(
       `${baseUrl}api/inwardEntry/getLabels/wip/${action.payloadpdf.inwardEntryId}`,
@@ -70,7 +69,6 @@ function* GenerateWIPLabelPrint(action) {
 }
 
 function* GenerateFGLabelPrint(action) {
-  console.log('action.inwardEntryId', action.payloadpdf.inwardEntryId);
   try {
     const generateLabelPdf = yield fetch(
       `${baseUrl}api/inwardEntry/getLabels/fg/${action.payloadpdf.inwardEntryId}`,

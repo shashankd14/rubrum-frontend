@@ -68,126 +68,144 @@ const InwardReport = (props) => {
       };
 
     const columns = [
-        {
-            title: "Coil Number",
-            dataIndex: "coilNo",
-            key: "coilNo",
-            filters: [],
-            sorter: (a, b) => a.coilNo.length - b.coilNo.length,
-            sortOrder: sortedInfo.columnKey === "coilNo" && sortedInfo.order,
-            onCell: (record) => ({
-                className: "gx-link",
-                onClick: () => onPdf(record.inwardEntryId),
-              }),
+      {
+        title: "Batch no.",
+        dataIndex: "coilNo",
+        key: "coilNo",
+        filters: [],
+        sorter: (a, b) => a.coilNo.length - b.coilNo.length,
+        sortOrder: sortedInfo.columnKey === "coilNo" && sortedInfo.order,
+        onCell: (record) => ({
+          className: "gx-link",
+          onClick: () => onPdf(record.inwardEntryId),
+        }),
+      },
+      {
+        title: "SC inward id",
+        dataIndex: "customerBatchNo",
+        key: "customerBatchNo",
+        filteredValue: filteredInfo ? filteredInfo["customerBatchNo"] : null,
+        onFilter: (value, record) => record.customerBatchNo == value,
+        filters: [],
+        sorter: (a, b) => a.customerBatchNo.length - b.customerBatchNo.length,
+        sortOrder:
+          sortedInfo.columnKey === "customerBatchNo" && sortedInfo.order,
+      },
+      {
+        title: "Inward Date",
+        dataIndex: "planDate",
+        render(value) {
+          // return moment(value).format("Do MMM YYYY");
+          const formattedDate = moment(value, "DD/MM/YYYY").format(
+            "Do MMM YYYY"
+          );
+          return <span>{formattedDate}</span>;
         },
-        {
-            title: "Batch Number",
-            dataIndex: "customerBatchNo",
-            key: "customerBatchNo",
-            filteredValue: filteredInfo ? filteredInfo["customerBatchNo"] : null,
-            onFilter: (value, record) => record.customerBatchNo == value,
-            filters: [],
-            sorter: (a, b) => a.customerBatchNo.length - b.customerBatchNo.length,
-            sortOrder: sortedInfo.columnKey === "customerBatchNo" && sortedInfo.order,
-        },
-        {
-            title: "Inward Date",
-            dataIndex: "planDate",
-            render(value) {
-               // return moment(value).format("Do MMM YYYY");
-               const formattedDate = moment(value, "DD/MM/YYYY").format("Do MMM YYYY");
-                return <span>{formattedDate}</span>;
-            },
-            key: "planDate",
-            filters: [],
-            //sorter: (a, b) => a.planDate - b.planDate,
-            sorter: (a, b) => moment(a.planDate, "DD/MM/YYYY").valueOf() - moment(b.planDate, "DD/MM/YYYY").valueOf(),
-            sortOrder: sortedInfo.columnKey === "planDate" && sortedInfo.order,
-        },
-        {
-            title: "Material",
-            dataIndex: "materialGrade",
-            key: "materialGrade",
-            filteredValue: filteredInfo ? filteredInfo["materialGrade"] : null,
-            onFilter: (value, record) => record.materialGrade == value,
-            filters: [],
-            sorter: (a, b) =>
-                a.materialGrade.length - b.materialGrade.length,
-            sortOrder:
-                sortedInfo.columnKey === "materialGrade" && sortedInfo.order,
-        },
-        {
-            title: "Thickness",
-            dataIndex: "fthickness",
-            key: "fthickness",
-            filters: [],
-            sorter: (a, b) => a.fthickness - b.fthickness,
-            sortOrder: sortedInfo.columnKey === "fthickness" && sortedInfo.order,
-        },
-        {
-            title: "Weight",
-            dataIndex: "targetWeight",
-            key: "targetWeight",
-            filters: [],
-            sorter: (a, b) => a.targetWeight - b.targetWeight,
-            sortOrder: sortedInfo.columnKey === "targetWeight" && sortedInfo.order,
-        },
-        {
-            title: "Status",
-            dataIndex: "status",
-            key: "status",
-            filters: [],
-            sorter: (a, b) => a.status.length - b.status.length,
-            sortOrder:
-                sortedInfo.columnKey === "status" && sortedInfo.order,
-                render: (text, record) => renderStatusColumn(record),
-        },
-        {
-            title: "Action",
-            dataIndex: "",
-            key: "x",
-            render: (text, record, index) => (
-                <span>
-                    <span
-                        className="gx-link"
-                        onClick={!record.qirId ? (e) => showTemplateList(record, index, e) : null}
-                        style={!record.qirId ? {} : { opacity: 0.5, pointerEvents: 'none' }}
-                    >
-                        Create QR
-                    </span>
-                    <Divider type="vertical" />
-                    <span
-                       className="gx-link"
-                       onClick={record.qirId ? (e) => showReportView(record, index, e) : null}
-                       style={record.qirId ? {} : { opacity: 0.5, pointerEvents: 'none' }}
-                    >
-                        View
-                    </span>
-                        <Divider type="vertical" />
-                        <span 
-                        className="gx-link"
-                        onClick={record.qirId ? (e) => onEdit(record, index, e) : null}
-                        style={record.qirId ? {} : { opacity: 0.5, pointerEvents: 'none' }}>
-                        Edit
-                        </span>
-                    <Divider type="vertical" />
-                    <span 
-                    className="gx-link"
-                    onClick={record.qirId ? (e) => onDelete(record, index, e) : null}
-                    style={record.qirId ? {} : { opacity: 0.5, pointerEvents: 'none' }}>
-                        Delete
-                    </span>
-                    <Divider type="vertical" />
-                    <span
-                        className="gx-link"
-                        onClick={() => onQRPdf(record.qirId)}
-                        style={record.qirId ? {} : { opacity: 0.5, pointerEvents: 'none' }}
-                    >
-                       PDF
-                    </span>
-                </span>
-            ),
-        },
+        key: "planDate",
+        filters: [],
+        //sorter: (a, b) => a.planDate - b.planDate,
+        sorter: (a, b) =>
+          moment(a.planDate, "DD/MM/YYYY").valueOf() -
+          moment(b.planDate, "DD/MM/YYYY").valueOf(),
+        sortOrder: sortedInfo.columnKey === "planDate" && sortedInfo.order,
+      },
+      {
+        title: "Material",
+        dataIndex: "materialDesc",
+        key: "materialDesc",
+        filteredValue: filteredInfo ? filteredInfo["materialDesc"] : null,
+        onFilter: (value, record) => record.materialDesc == value,
+        filters: [],
+        sorter: (a, b) => a.materialDesc.length - b.materialDesc.length,
+        sortOrder: sortedInfo.columnKey === "materialDesc" && sortedInfo.order,
+      },
+      {
+        title: "Thickness",
+        dataIndex: "fthickness",
+        key: "fthickness",
+        filters: [],
+        sorter: (a, b) => a.fthickness - b.fthickness,
+        sortOrder: sortedInfo.columnKey === "fthickness" && sortedInfo.order,
+      },
+      {
+        title: "Weight",
+        dataIndex: "targetWeight",
+        key: "targetWeight",
+        filters: [],
+        sorter: (a, b) => a.targetWeight - b.targetWeight,
+        sortOrder: sortedInfo.columnKey === "targetWeight" && sortedInfo.order,
+      },
+      {
+        title: "Status",
+        dataIndex: "status",
+        key: "status",
+        filters: [],
+        sorter: (a, b) => a.status.length - b.status.length,
+        sortOrder: sortedInfo.columnKey === "status" && sortedInfo.order,
+        render: (text, record) => renderStatusColumn(record),
+      },
+      {
+        title: "Action",
+        dataIndex: "",
+        key: "x",
+        render: (text, record, index) => (
+          <span>
+            <span
+              className="gx-link"
+              onClick={
+                !record.qirId ? (e) => showTemplateList(record, index, e) : null
+              }
+              style={
+                !record.qirId ? {} : { opacity: 0.5, pointerEvents: "none" }
+              }
+            >
+              Create QR
+            </span>
+            <Divider type="vertical" />
+            <span
+              className="gx-link"
+              onClick={
+                record.qirId ? (e) => showReportView(record, index, e) : null
+              }
+              style={
+                record.qirId ? {} : { opacity: 0.5, pointerEvents: "none" }
+              }
+            >
+              View
+            </span>
+            <Divider type="vertical" />
+            <span
+              className="gx-link"
+              onClick={record.qirId ? (e) => onEdit(record, index, e) : null}
+              style={
+                record.qirId ? {} : { opacity: 0.5, pointerEvents: "none" }
+              }
+            >
+              Edit
+            </span>
+            <Divider type="vertical" />
+            <span
+              className="gx-link"
+              onClick={record.qirId ? (e) => onDelete(record, index, e) : null}
+              style={
+                record.qirId ? {} : { opacity: 0.5, pointerEvents: "none" }
+              }
+            >
+              Delete
+            </span>
+            <Divider type="vertical" />
+            <span
+              className="gx-link"
+              onClick={() => onQRPdf(record.qirId)}
+              style={
+                record.qirId ? {} : { opacity: 0.5, pointerEvents: "none" }
+              }
+            >
+              PDF
+            </span>
+          </span>
+        ),
+      },
     ];
 
     useEffect(() => {
@@ -218,14 +236,10 @@ const InwardReport = (props) => {
     useEffect(() => {
         if (!isInitialMount.current){
         if (!props.template.loading && !props.template.error && props.template.operation == "fetchQualityReport") {
-            console.log(props.template);
             setQualityReportList(props.template.data);
         } else if (!props.template.loading && !props.template.error && props.template.operation == "fetchQualityReportStage") {
-            console.log(props.template);
             setFilteredInwardList(props.template.data);
-            console.log(props.template.data);
         } else if (!props.template.loading && !props.template.error && props.template.operation === 'templateById') {
-            console.log(props);
             setShowCreateQrScreen(true);
             props.history.push({ pathname: '/company/quality/reports/create/inward', state: { selectedItemForQr: selectedItemForQr, templateDetails: props.template.data, action: 'create' } })
         } else if (!props.template.loading && !props.template.error && props.template.operation == "templateLinkList") {
@@ -233,10 +247,8 @@ const InwardReport = (props) => {
             setTemplateLinkList(tempData.filter(x=> x.stageName==="INWARD"));
             setShowCreateModal(true);
         } else if (!props.template.loading && !props.template.error && props.template.operation === 'templateList') {
-            console.log(props.template);
             setTemplateList(props.template.data);
         } else if (!props.template.loading && !props.template.error && props.template.operation == "qualityReportById") {
-            console.log("qualityReportById", props.template);
             props.history.push({ pathname: '/company/quality/reports/create/inward', state: { selectedItemForQr: selectedItemForQr, templateDetails: props.template.data, action: action } });
         }}
         else {
@@ -254,14 +266,12 @@ const InwardReport = (props) => {
     }
 
     const showTemplateList = (record, key) => {
-        console.log(record, key)
         setSelectedItemForQr(record)
         setShowCreateModal(true);
         props.fetchTemplatesLinkList({ partyId: record.npartyId});
     }
 
     const showReportView = (record, key) => {
-        console.log("record, key", record, key)
         setSelectedItemForQr(record)
         // const templateDetails = qualityReportList.find(qr => qr.coilNumber === record.coilNumber && qr.inwardId === record.inwardEntryId)
         // props.history.push({pathname: '/company/quality/reports/create/postdispatch', state: {selectedItemForQr: record, templateDetails: templateDetails, action: 'view'}})
@@ -271,20 +281,16 @@ const InwardReport = (props) => {
     }
 
     const onDelete = (record, key, e) => {
-        console.log(record, key);
-        console.log("record.qirId", record.qirId);
         props.deleteQualityReport(record.qirId);
     };
 
     const onEdit = (record, key, e) => {
-        console.log(record, key)
         setSelectedItemForQr(record)
         setAction('edit');
         props.getQualityReportById(record.qirId);
     };
 
     const handleChange = (e) => {
-        console.log(e)
         setTemplateId(e)
     };
 
@@ -306,18 +312,19 @@ const InwardReport = (props) => {
     
     useEffect(() => {
         if (!props.party.loading && !props.party.error) {
-            console.log(props.party)
             setPartyList(props.party.partyList)
         }
     }, [props.party.loading, props.party.error]);
 
     const [payload, setPayload] = useState({});
+
     const onPdf = (inwardEntryId) => {
         setPayload({
             inwardId:{inwardId:inwardEntryId},
             type:'inward'
         })
     }
+    
     useEffect(() => {
         props.pdfGenerateQMreportInward(payload);
       }, [payload]);
@@ -338,7 +345,7 @@ const InwardReport = (props) => {
                         id="select"
                         showSearch
                         style={{ width: 200 }}
-                        placeholder="Select a customer"
+                        placeholder="Select a location"
                         optionFilterProp="children"
                         onChange={handleCustomerChange}
                         value={customerValue}
@@ -360,7 +367,7 @@ const InwardReport = (props) => {
                 <div className="table-operations gx-col">
                     <SearchBox
                         styleName="gx-flex-1"
-                        placeholder="Search by Coil no. or Customer batch no"
+                        placeholder="Search by Coil no. or SC inward id"
                         value={searchValue}
                         onChange={(e) => setSearchValue(e.target.value)}>
                     </SearchBox>
@@ -387,7 +394,7 @@ const InwardReport = (props) => {
             </div>
 
             <Modal
-                title={`Batch No: ${selectedItemForQr?.customerBatchNo}`}
+                title={`SC inward id: ${selectedItemForQr?.customerBatchNo}`}
                 visible={showCreateModal}
                 onOk={() => showCreateQr(true)}
                 onCancel={() => setShowCreateModal(false)}
@@ -397,7 +404,7 @@ const InwardReport = (props) => {
                     <Col span={24}>
                         <Row>
                             <Col span={12}>
-                                <strong>Customer Name</strong>
+                                <strong>Location Name</strong>
                                 <p>{selectedItemForQr?.partyName}</p>
                             </Col>
                             <Col span={12} style={{ right: 0, position: 'absolute' }}>
@@ -408,11 +415,11 @@ const InwardReport = (props) => {
 
                         <Row>
                             <Col span={6}>
-                                <strong>Coil No.</strong>
+                                <strong>Inward No.</strong>
                                 <p>{selectedItemForQr?.coilNo}</p>
                             </Col>
                             <Col span={6}>
-                                <strong>Batch No.</strong>
+                                <strong>SC inward id.</strong>
                                 <p>{selectedItemForQr?.customerBatchNo}</p>
                             </Col>
                             <Col span={6}>
@@ -431,7 +438,7 @@ const InwardReport = (props) => {
                                 id="select"
                                 showSearch
                                 style={{ width: "100%" }}
-                                placeholder="Select a customer"
+                                placeholder="Select a location"
                                 optionFilterProp="children"
                                 onChange={handleChange}
                                 value={templateId}

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { Link, useHistory, useLocation, withRouter } from "react-router-dom";
-import { Button, Card, Col, Icon, Input, Modal, Radio, Row, Select } from 'antd'
+import { withRouter } from "react-router-dom";
+import { Button, Col, Icon, Input, Modal, Radio, Row, Select } from 'antd'
 import Dragger from 'antd/lib/upload/Dragger'
 import { PROCESSES } from "../../../../../constants/quality/ComponentConstants";
 import SlittingForm from './process/SlittingForm';
@@ -11,7 +11,6 @@ import SlitAndCutForm from './process/SlitAndCutForm';
 const ProcessingTemplate = (props) => {
 
   const Option = Select.Option;
-  const history = useHistory();
 
   const [templateData, setTemplateData] = useState({
     1: {
@@ -71,22 +70,18 @@ const ProcessingTemplate = (props) => {
       templateDetailsData.forEach((td) => {
         val[td.id] = td;
       });
-      console.log(val)
       setTemplateData(val)
     }
   }, [props.templateDetails]);
+
   const onFilesChange = (type, file) => {
-    console.log(type, file)
     templateData[type].fileList = file.fileList.slice(-1)
     templateData[type].fileName = templateData[type].fileList[0].name;
-    console.log(templateData)
     setTemplateData({ ...templateData })
   }
 
   const onOptionChange = (type, value) => {
-    console.log(type, value)
     templateData[type].value = value.target ? value.target.value : value
-    console.log(templateData)
     setTemplateData({ ...templateData })
   }
 
@@ -95,7 +90,6 @@ const ProcessingTemplate = (props) => {
   }
 
   const updateFormData = (formData) => {
-    console.log(formData)
     templateData['formData']['value'] = formData;
     setShowCreateModal(false);
   }
@@ -105,7 +99,7 @@ const ProcessingTemplate = (props) => {
       <Col span={24} className="gx-pt-4">
         <Row>
           <Col span={8}>
-            <div style={{ display: 'grid', marginTop: 15 }}>
+            <div style={{ display: "grid", marginTop: 15 }}>
               <label>Select Process</label>
               <Select
                 id="process"
@@ -115,28 +109,27 @@ const ProcessingTemplate = (props) => {
                 value={templateData[1].value}
               >
                 {PROCESSES.map((stage) => (
-                  <Option value={stage.value}>
-                    {stage.label}
-                  </Option>
+                  <Option value={stage.value}>{stage.label}</Option>
                 ))}
               </Select>
             </div>
           </Col>
           <Col span={8}>
-            <div style={{ display: 'grid', marginTop: 33 }}>
-              {templateData[1].value && <Button
-                onClick={
-                  () => setShowCreateModal(true)
-                }
-              >
-                {`Fill ${templateData[1].value.charAt(0).toUpperCase() + templateData[1].value.slice(1).toLowerCase()} Process form first`}
-              </Button>}
+            <div style={{ display: "grid", marginTop: 33 }}>
+              {templateData[1].value && (
+                <Button onClick={() => setShowCreateModal(true)}>
+                  {`Fill ${
+                    templateData[1].value.charAt(0).toUpperCase() +
+                    templateData[1].value.slice(1).toLowerCase()
+                  } Process form first`}
+                </Button>
+              )}
             </div>
           </Col>
         </Row>
         <Row>
           <Col span={8}>
-            <div style={{ display: 'grid', marginTop: 15 }}>
+            <div style={{ display: "grid", marginTop: 15 }}>
               <label>Enter Wastage Weight</label>
               <Input
                 id="wastageWeight"
@@ -150,9 +143,13 @@ const ProcessingTemplate = (props) => {
         </Row>
         <Row>
           <Col span={8}>
-            <div style={{ display: 'grid', marginTop: 45 }}>
+            <div style={{ display: "grid", marginTop: 45 }}>
               <label>Packing Requirements</label>
-              <Radio.Group onChange={(e) => onOptionChange(3, e)} value={templateData[3].value} disabled={isDisabled}>
+              <Radio.Group
+                onChange={(e) => onOptionChange(3, e)}
+                value={templateData[3].value}
+                disabled={isDisabled}
+              >
                 <Radio value="Yes">Yes</Radio>
                 <Radio value="No">No</Radio>
               </Radio.Group>
@@ -162,9 +159,13 @@ const ProcessingTemplate = (props) => {
 
         <Row>
           <Col span={8}>
-            <div style={{ display: 'grid', marginTop: 45 }}>
+            <div style={{ display: "grid", marginTop: 45 }}>
               <label>Stickers</label>
-              <Radio.Group onChange={(e) => onOptionChange(4, e)} value={templateData[4].value} disabled={isDisabled}>
+              <Radio.Group
+                onChange={(e) => onOptionChange(4, e)}
+                value={templateData[4].value}
+                disabled={isDisabled}
+              >
                 <Radio value="Yes">Yes</Radio>
                 <Radio value="No">No</Radio>
               </Radio.Group>
@@ -173,8 +174,8 @@ const ProcessingTemplate = (props) => {
         </Row>
         <Row>
           <Col span={8}>
-            <div style={{ display: 'grid', marginTop: 45 }}>
-              <label>Customer Approval</label>
+            <div style={{ display: "grid", marginTop: 45 }}>
+              <label>Location Approval</label>
               <Input
                 id="customerApproval"
                 onChange={(e) => onOptionChange(5, e)}
@@ -186,56 +187,93 @@ const ProcessingTemplate = (props) => {
         </Row>
         <Row>
           <Col span={8}>
-            <div style={{ display: 'grid', marginTop: 15 }}>
-              {props.action === 'view' && props.templateDetails.packingIntactPreSingedURL && <img src={props.templateDetails.packingIntactPreSingedURL} style={{ width: 50 }} />}
-              {props.action === 'edit' && <> {props.templateDetails.packingIntactPreSingedURL && <img src={props.templateDetails.packingIntactPreSingedURL} style={{ width: 50 }} />}
+            <div style={{ display: "grid", marginTop: 15 }}>
+              {props.action === "view" &&
+                props.templateDetails.packingIntactPreSingedURL && (
+                  <img
+                    alt="pre signed"
+                    src={props.templateDetails.packingIntactPreSingedURL}
+                    style={{ width: 50 }}
+                  />
+                )}
+              {props.action === "edit" && (
+                <>
+                  {" "}
+                  {props.templateDetails.packingIntactPreSingedURL && (
+                    <img
+                      alt="pre signed"
+                      src={props.templateDetails.packingIntactPreSingedURL}
+                      style={{ width: 50 }}
+                    />
+                  )}
+                  <Dragger
+                    name="packingIntact"
+                    height={50}
+                    beforeUpload={() => false}
+                    action=""
+                    onChange={(e) => onFilesChange(1, e)}
+                    // fileList={templateData[1].fileList}
+                  >
+                    <p>
+                      <Icon type="upload" />
+                      &nbsp;Click or drag img
+                    </p>
+                  </Dragger>{" "}
+                </>
+              )}
+              {props.action === "create" && (
                 <Dragger
-                  name='packingIntact'
+                  name="packingIntact"
                   height={50}
                   beforeUpload={() => false}
-                  action=''
+                  action=""
                   onChange={(e) => onFilesChange(1, e)}
-                // fileList={templateData[1].fileList}
+                  // fileList={templateData[1].fileList}
                 >
                   <p>
                     <Icon type="upload" />
                     &nbsp;Click or drag img
                   </p>
-                </Dragger> </>}
-              {props.action === 'create' && <Dragger
-                name='packingIntact'
-                height={50}
-                beforeUpload={() => false}
-                action=''
-                onChange={(e) => onFilesChange(1, e)}
-              // fileList={templateData[1].fileList}
-              >
-                <p>
-                  <Icon type="upload" />
-                  &nbsp;Click or drag img
-                </p>
-              </Dragger>}
+                </Dragger>
+              )}
             </div>
           </Col>
         </Row>
-        {props.action !== 'view' && <Row >
-          <div style={{ marginTop: 45 }}>
-            <Button style={{ marginLeft: 8 }} disabled={isDisabled}>
-              Cancel
-            </Button>
-            {props.action === 'create' ? <Button type="primary" htmlType="submit" onClick={createTemplate} disabled={isDisabled}>
-              Create Template
-            </Button> :
-              <Button type="primary" htmlType="submit" onClick={createTemplate} disabled={isDisabled}>
-                Update Template
+        {props.action !== "view" && (
+          <Row>
+            <div style={{ marginTop: 45 }}>
+              <Button style={{ marginLeft: 8 }} disabled={isDisabled}>
+                Cancel
               </Button>
-            }
-          </div>
-        </Row>}
+              {props.action === "create" ? (
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  onClick={createTemplate}
+                  disabled={isDisabled}
+                >
+                  Create Template
+                </Button>
+              ) : (
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  onClick={createTemplate}
+                  disabled={isDisabled}
+                >
+                  Update Template
+                </Button>
+              )}
+            </div>
+          </Row>
+        )}
       </Col>
       <Modal
-        title={`${templateData[1].value.charAt(0).toUpperCase() + templateData[1].value.slice(1).toLowerCase()} Process`}
-        style={{top: 20}}
+        title={`${
+          templateData[1].value.charAt(0).toUpperCase() +
+          templateData[1].value.slice(1).toLowerCase()
+        } Process`}
+        style={{ top: 20 }}
         //width={1080}
         width={1180}
         visible={showCreateModal}
@@ -244,15 +282,16 @@ const ProcessingTemplate = (props) => {
         onCancel={() => setShowCreateModal(false)}
         destroyOnClose={true}
       >
-       {(templateData[1].value==='SLITTING') ? (<SlittingForm onSave={updateFormData}></SlittingForm>
-        ) : (templateData[1].value==='CUTTING') ? (
-        <CuttingForm onSave={updateFormData}></CuttingForm>
+        {templateData[1].value === "SLITTING" ? (
+          <SlittingForm onSave={updateFormData}></SlittingForm>
+        ) : templateData[1].value === "CUTTING" ? (
+          <CuttingForm onSave={updateFormData}></CuttingForm>
         ) : (
           <SlitAndCutForm onSave={updateFormData}></SlitAndCutForm>
-         )}
+        )}
       </Modal>
     </div>
-  )
+  );
 }
 
 export default withRouter(ProcessingTemplate)

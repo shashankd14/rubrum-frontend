@@ -1,10 +1,6 @@
 import React, {useEffect, useState} from "react";
-import {Button, Card, Divider, Table, Modal, Row, Col, Form, Input, Icon, Tabs} from "antd";
-import {useDispatch, useSelector} from "react-redux";
+import {Button, Form,  Icon} from "antd";
 
-const FormItem = Form.Item;
-const TabPane = Tabs.TabPane;
-let uuid = 0;
 export const formItemLayout = {
     labelCol: {
         xs: {span: 24},
@@ -18,23 +14,11 @@ export const formItemLayout = {
     },
 };
 
-const formItemLayoutWithOutLabel = {
-    wrapperCol: {
-      xs: {span: 24, offset: 0},
-      sm: {span: 20, offset: 4},
-    },
-  };
-
 const CreateField = (props) => {
-    const { name, formFields, setFields, btnName } = props;
-  
+    const { setFields, btnName } = props;
     const [selectType, setSelectType] = useState({});
-
-    const [showParameters, setShowParamters] = useState(false);
-  
-  
-    const { getFieldDecorator, getFieldValue, getFieldProps } = props.form;
-
+    const [showParameters, setShowParamters] = useState(false);  
+    const { getFieldDecorator } = props.form;
 
     useEffect(() => {
       setSelectType(selectType);
@@ -47,7 +31,6 @@ const CreateField = (props) => {
         });
     }
     
-  
     const getNumberFields = () => {
         return (
             <div style={{ width: "100%", textAlign: "center", padding: "15px", marginBottom: 10 }}>
@@ -75,16 +58,7 @@ const CreateField = (props) => {
       );
     };
 
-    const getTextAreaFields = () => {
-      return (
-        <>
-          <input name='value' placeholder='enter default value' value={selectType.value} onChange={e => numberChange(e)}></input>
-        </>
-      )
-    }
-  
     const generateFieldsByType = (obj = {}) => {
-        console.log('inside fun');
         const type = obj.type || '';
         switch (type) {
             case 'number':
@@ -100,42 +74,7 @@ const CreateField = (props) => {
     }
   
     getFieldDecorator('keys', {initialValue: []});
-    const keys = getFieldValue('keys');
-
-    // const remove = (k) => {
-    //     const {form} = props;
-    //     // can use data-binding to get
-    //     const keys = form.getFieldValue('keys');
-    //     // We need at least one passenger
-    //     if (keys.length === 1) {
-    //       return;
-    //     }
     
-    //     // can use data-binding to set
-    //     form.setFieldsValue({
-    //       keys: keys.filter(key => key !== k),
-    //     });
-    //     setSelectType(prev => {
-    //       delete prev[k];
-    //       return {
-    //         ...prev
-    //       }
-    //     });
-    //   };
-  
-    // const add = () => {
-    //     const {form} = props;
-    //     // can use data-binding to get
-    //     const keys = form.getFieldValue('keys');
-    //     const nextKeys = keys.concat(uuid);
-    //     uuid++;
-    //     // can use data-binding to set
-    //     // important! notify form to detect changes
-    //     form.setFieldsValue({
-    //       keys: nextKeys,
-    //     });
-    //   };
-
     const clearParameterForm = () => {
       document.getElementById('name').value = '';
       document.getElementById('type').selectedIndex = 0;
@@ -151,7 +90,6 @@ const CreateField = (props) => {
             <input id="name" type='text' placeholder="Paramter Name" value={selectType.label} onChange={(e) => {
                 e.preventDefault();
                 var val = e.target.value;
-                console.log(val);
                 setSelectType(prev => { 
                     return { ...prev, label: val } });
             }} className="ant-input" style={{ width: '35%', marginLeft: '10px' }} />
@@ -171,7 +109,6 @@ const CreateField = (props) => {
               </select>
               {generateFieldsByType(selectType)}
               <Button style={{ marginLeft: '10px' }}  type="primary" onClick={() => {
-                  console.log(selectType); //
                   // props.setFormItemsObj(selectType); // calling
                   // dispatch(createFormFields(selectType, props.name));
                   setFields(prev => [...prev, selectType]);

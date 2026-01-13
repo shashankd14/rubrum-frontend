@@ -1,35 +1,27 @@
 import React, {useEffect} from "react";
-import {Button, Checkbox, Form, Icon, Input, message} from "antd";
+import { Button, Form, Icon, Input, Alert } from "antd";
 import {useDispatch, useSelector} from "react-redux";
-import {Link, useHistory} from "react-router-dom";
+import {useHistory} from "react-router-dom";
 
 import {
   hideMessage,
   showAuthLoader,
-  userFacebookSignIn,
-  userGithubSignIn,
-  userGoogleSignIn,
   userSignIn,
-  userTwitterSignIn
 } from "appRedux/actions/Auth";
 
 import IntlMessages from "util/IntlMessages";
-import CircularProgress from "components/CircularProgress/index";
+import { useState } from "react";
 
 const FormItem = Form.Item;
 
 const SignIn =(props)=> {
 
   const dispatch = useDispatch();
-  const {loader, alertMessage, showMessage,authUser}= useSelector(({auth}) => auth);
+  const {showMessage,authUser}= useSelector(({auth}) => auth);
   const history = useHistory();
+  const [showPassword, setShowPassword] = useState(false)
 
   useEffect(() => {
-    if (showMessage) {
-      setTimeout(() => {
-       dispatch(hideMessage());
-      }, 100);
-    }
     if (authUser !== null) {
       history.push('/');
     }
@@ -45,93 +37,80 @@ const SignIn =(props)=> {
     });
   };
 
-
-
     const {getFieldDecorator} = props.form;
 
     return (
-      <div className="gx-app-login-wrap">
-        <div className="gx-app-login-container">
-          <div className="gx-app-login-main-content">
-            <div className="gx-app-logo-content">
-              <div className="gx-app-logo-content-bg">
-                <img src={"https://via.placeholder.com/272x395"} alt='Neature'/>
+      <div className="login-container">
+        <div className="login-backdrop">
+          <div className="logo-container">
+            <img
+              alt="logo"
+              className="login-logo"
+              src={require("assets/images/Logo.svg")}
+            />
+            <div className="content-container">
+              <div className="slider-container">
+                <h4 className="login-heading">
+                  Order &#x2022; Consolidate &#x2022; Allocate &#x2022; Deliver
+                </h4>
+                <p className="description">
+                  Create Sales Orders and Manage the Consolidated Plan to
+                  Process Them
+                </p>
               </div>
-              <div className="gx-app-logo-wid">
-                <h1><IntlMessages id="app.userAuth.signIn"/></h1>
-                <p><IntlMessages id="app.userAuth.bySigning"/></p>
-                <p><IntlMessages id="app.userAuth.getAccount"/></p>
-              </div>
-              <div className="gx-app-logo">
-                <img alt="example" src={require("assets/images/logo.png")}/>
+              <div style={{alignSelf: 'center'}}>
+                <img
+                  alt="login-widget"
+                  className="login-widget1"
+                  src={require("assets/images/Widget.svg")}
+                />
               </div>
             </div>
-            <div className="gx-app-login-content">
-              <Form onSubmit={handleSubmit} className="gx-signin-form gx-form-row0">
-
-                <FormItem>
-                  {getFieldDecorator('email', {
-                    initialValue: "admin",
-                  })(
-                    <Input placeholder="Username"/>
-                  )}
-                </FormItem>
-                <FormItem>
-                  {getFieldDecorator('password', {
-                    initialValue: "admin@123",
-                    rules: [{required: true, message: 'Please input your Password!'}],
-                  })(
-                    <Input type="password" placeholder="Password"/>
-                  )}
-                </FormItem>
-                <FormItem>
-                  <Button type="primary" className="gx-mb-0" htmlType="submit">
-                    <IntlMessages id="app.userAuth.signIn"/>
-                  </Button>
-                  <span><IntlMessages id="app.userAuth.or"/></span> <Link to="/signup"><IntlMessages
-                  id="app.userAuth.signUp"/></Link>
-                </FormItem>
-                {/* Keeping the code for future use */}
-                {/* <div className="gx-flex-row gx-justify-content-between">
-                  <span>or connect with</span>
-                  <ul className="gx-social-link">
-                    <li>
-                      <Icon type="google" onClick={() => {
-                        dispatch(showAuthLoader());
-                        dispatch(userGoogleSignIn());
-                      }}/>
-                    </li>
-                    <li>
-                      <Icon type="facebook" onClick={() => {
-                        dispatch(showAuthLoader());
-                        dispatch(userFacebookSignIn());
-                      }}/>
-                    </li>
-                    <li>
-                      <Icon type="github" onClick={() => {
-                        dispatch(showAuthLoader());
-                        dispatch(userGithubSignIn());
-                      }}/>
-                    </li>
-                    <li>
-                      <Icon type="twitter" onClick={() => {
-                        dispatch(showAuthLoader());
-                        dispatch(userTwitterSignIn());
-                      }}/>
-                    </li>
-                  </ul>
-                </div>
-                <span
-                  className="gx-text-light gx-fs-sm"> demo user email: 'demo@example.com' and password: 'demo#123'</span> */}
-              </Form>
-            </div>
-
-            {loader ?
-              <div className="gx-loader-view">
-                <CircularProgress/>
-              </div> : null}
-            {showMessage ?
-              message.error("Login Error") : null}
+          </div>
+          <p className="copy-right">@Copyright, Workeazy Pvt. Ltd.</p>
+        </div>
+        <div className="login-form-container">
+          <div className="login-box-container">
+            <h3 className="login-title">Login</h3>
+            {showMessage ? (
+              <Alert
+                message="Email ID and Password do not match!"
+                type="error"
+                showIcon
+                closable
+                afterClose={hideMessage}
+              />
+            ) : null}
+            <Form
+              onSubmit={handleSubmit}
+              className="ant-form ant-form-vertical gx-signin-form gx-form-row0"
+            >
+              <FormItem label="Email Address">
+                {getFieldDecorator("email", {
+                })(
+                  <Input placeholder="Username" prefix={<Icon type="mail" />} />
+                )}
+              </FormItem>
+              <FormItem label="Password">
+                {getFieldDecorator("password", {
+                  rules: [
+                    { required: true, message: "Please input your Password!" },
+                  ],
+                })(
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Password"
+                    prefix={<Icon type="lock" />}
+                    suffix={<Icon type={showPassword ? "eye-invisible" : "eye"} onClick={() => setShowPassword(!showPassword)} />}
+                  />
+                )}
+              </FormItem>
+              <FormItem>
+                <Button type="primary" className="gx-mb-0 login-submit" htmlType="submit">
+                  <IntlMessages id="app.userAuth.login" />
+                </Button>
+              </FormItem>
+            </Form>
           </div>
         </div>
       </div>

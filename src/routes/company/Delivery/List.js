@@ -8,26 +8,21 @@ import {
   deleteByDeliveryId,
   resetDeleteInward,
 } from "../../../appRedux/actions";
-import { Card, Table, Select, Input, message } from "antd";
+import { Card, Table, Select, Input, message, Modal } from "antd";
 import SearchBox from "../../../components/SearchBox";
 import ReconcileModal from "./ReconcileModal";
 import moment from "moment";
 import IntlMessages from "../../../util/IntlMessages";
 const Option = Select.Option;
+
 function List(props) {
-  const [sortedInfo, setSortedInfo] = useState({
-    order: "descend",
-    columnKey: "age",
-  });
-
   const { totalItems } = props.delivery;
-
-  const [filteredInfo, setFilteredInfo] = useState(null);
   const [searchValue, setSearchValue] = useState("");
   const [deliveryList, setDeliveryList] = useState(props.delivery.deliveryList);
   const [reconcileModal, setreconcileModal] = useState(false);
   const [deliveryRecord, setDeliveryRecord] = useState();
   const [customerValue, setCustomerValue] = useState("");
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const [pageNo, setPageNo] = React.useState(1);
   const [totalPageItems, setTotalItems] = React.useState(0);
@@ -68,7 +63,7 @@ function List(props) {
     },
 
     {
-      title: "Customer Name",
+      title: "Location Name",
       dataIndex: "partyName",
       key: "partyName",
       sorter: (a, b) => a.partyName.length - b.partyName.length,
@@ -92,7 +87,7 @@ function List(props) {
         a.deliveryDetails.vehicleNo.length - b.deliveryDetails.vehicleNo.length,
     },
     {
-      title: "Customer Invoice Number",
+      title: "Purchase Invoice Number",
       dataIndex: "deliveryDetails.customerInvoiceNo",
       render: (text, record, index) => (
         <Input
@@ -102,7 +97,7 @@ function List(props) {
       ),
     },
     {
-      title: "Customer Invoice Date",
+      title: "Purchase Invoice Date",
       dataIndex: "deliveryDetails.customerInvoiceDate",
       render: (text, record, index) => (
         <Input
@@ -121,6 +116,7 @@ function List(props) {
             onClick={() => handleAdd(record)}
           />
           <i
+            style={{ color: "red", marginLeft: 10 }}
             className="icon icon-trash gx-margin"
             onClick={() => handleDelete(record)}
           />
@@ -138,17 +134,20 @@ function List(props) {
       ),
     },
   ];
+
   useEffect(() => {
     if (props.delivery.deleteSuccess) {
-      message.success("Successfully deleted the coil", 2).then(() => {
+      message.success("Delivery deleted successfully", 2).then(() => {
         props.fetchDeliveryList(pageNo, 15);
         props.resetDeleteInward();
       });
     }
   }, [props.delivery.deleteSuccess]);
+
   const handleDelete = (record) => {
-    props.deleteByDeliveryId(Number(record.deliveryDetails.deliveryId));
+    setShowDeleteModal(record);
   };
+
   const handleAdd = (record) => {
     let reqObj = {
       deliveryId: record.deliveryDetails.deliveryId,
@@ -157,12 +156,14 @@ function List(props) {
     };
     props.postDeliveryConfirm(reqObj);
   };
+
   const onInputChange =
     (key, index, type) => (e: React.ChangeEvent<HTMLInputElement>) => {
       const newData = [...deliveryList];
       newData[index].deliveryDetails[key] = e.target.value;
       setDeliveryList(newData);
     };
+
   useEffect(() => {
     props.fetchPartyList();
   }, []);
@@ -185,9 +186,7 @@ function List(props) {
     }
   }, [searchValue]);
 
-  const handleChange = (pagination, filters, sorter) => {
-    console.log("params", pagination, filters, sorter);
-  };
+  const handleChange = (pagination, filters, sorter) => {};
 
   const handleCustomerChange = (value) => {
     if (value) {
@@ -218,7 +217,7 @@ function List(props) {
           ) : null}
           <SearchBox
             styleName="gx-flex-1"
-            placeholder="Search for coil number or party name or customer batch No..."
+            placeholder="Search for batch no. or location or SC inward id..."
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
           />
@@ -226,7 +225,7 @@ function List(props) {
             <Select
               showSearch
               style={{ width: 200 }}
-              placeholder="Select a customer"
+              placeholder="Select a location"
               optionFilterProp="children"
               onChange={handleCustomerChange}
               filterOption={(input, option) =>
@@ -249,6 +248,7 @@ function List(props) {
           columns={columns}
           dataSource={deliveryList}
           onChange={handleChange}
+          loading={props.delivery.loading}
           pagination={{
             pageSize: 15,
             onChange: (page) => {
@@ -260,6 +260,20 @@ function List(props) {
           }}
         />
       </Card>
+      <Modal
+        title="Delete confirmation"
+        visible={showDeleteModal}
+        onOk={() => {
+          props.deleteByDeliveryId(
+            Number(showDeleteModal?.deliveryDetails?.deliveryId)
+          );
+          setShowDeleteModal(false);
+        }}
+        onCancel={() => setShowDeleteModal(false)}
+      >
+        <p>Are you sure to proceed for delete delivery ? </p>
+        <p>Please click OK to confirm</p>
+      </Modal>
     </div>
   );
 }

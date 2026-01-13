@@ -7,7 +7,8 @@ import {
     FETCH_DELIVERY_LIST_ERROR_BY_ID,
     DELETE_DELIVERY_BY_ID,
     DELETE_DELIVERY_BY_ID_SUCCESS,
-    DELETE_DELIVERY_BY_ID_ERROR
+    DELETE_DELIVERY_BY_ID_ERROR,
+    RESET_DELETE_DELIVERY
 } from "../../constants/ActionTypes";
 
 const INIT_STATE = {
@@ -89,6 +90,13 @@ export default (state = INIT_STATE, action) => {
                 loading: false,
                 deleteSuccess:false,
                 deleteError: true
+            }
+        }
+        case RESET_DELETE_DELIVERY: {
+            return {
+                ...state,
+                deleteSuccess:false,
+                deleteError: false
             }
         }
         default:
