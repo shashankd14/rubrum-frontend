@@ -557,7 +557,6 @@ const List = (props) => {
 
   const rowSelection = {
     onSelect: (record, selected, selectedRows) => {
-      console.log(record.status.statusName);
       if (
         record.status.statusName === "READY TO DELIVER" ||
         record.status.statusName === "RECEIVED"
