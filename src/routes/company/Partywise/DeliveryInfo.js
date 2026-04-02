@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { connect, useDispatch } from "react-redux";
-import { Input, Card, message, Select, Row, Col } from "antd";
+import { Input, Card, message, Select, Col } from "antd";
 import {
   fetchPackingListByParty,
   getPacketwisePriceDCFullHandling,
@@ -19,7 +19,6 @@ const DeliveryInfo = (props) => {
   const Option = Select.Option;
   const [vehicleNo, setVehicleNo] = useState("");
   const [deliveryType, setDeliveryType] = useState("");
-  const [remarksList, setRemarksList] = useState([]);
   const [instructionList, setInstructionList] = useState([]);
   const [fullHandling, setFullHandling] = useState(false);
   const [thickness, setThickness] = useState();
@@ -27,9 +26,11 @@ const DeliveryInfo = (props) => {
   const [packingRateId, setPackingRateId] = useState("");
   const [laminationCharges, setLaminationCharges] = useState(0);
   const [laminationId, setLaminationId] = useState("");
-  const [soMaterialIds, setSoMaterialIds] = useState({});
 
   const [priceModal, setPriceModal] = useState(false);
+  const [priceDetails, setPriceDetails] = useState(
+    props.packetwisePriceDC?.priceDetailsList,
+  );
   const deliveryColumns = [
     {
       title: "Plan Id",
@@ -61,9 +62,24 @@ const DeliveryInfo = (props) => {
       key: "matGradeName",
     },
     {
+      title: "Material Subgrade Name",
+      dataIndex: "subGradeName",
+      key: "subGradeName",
+    },
+    {
       title: "Thickness",
       dataIndex: "thickness",
       key: "thickness",
+    },
+    {
+      title: "Width",
+      dataIndex: "width",
+      key: "width",
+    },
+    {
+      title: "Length",
+      dataIndex: "length",
+      key: "length",
     },
     {
       title: "Actual Weight\n(in KG)",
@@ -86,26 +102,7 @@ const DeliveryInfo = (props) => {
         return <div>{totalWeight}</div>;
       },
     },
-    {
-      title: "Base Rate\n(per ton)",
-      dataIndex: "basePrice",
-      key: "basePrice",
-    },
-    {
-      title: "Packing Rate\n(per ton)",
-      dataIndex: "packingPrice",
-      key: "packingPrice",
-    },
-    {
-      title: "Additional Rate\n(per ton)",
-      dataIndex: "additionalPrice",
-      key: "additionalPrice",
-    },
-    {
-      title: "Lamination Charges\n(per ton)",
-      dataIndex: "laminationCharges",
-      key: "laminationCharges",
-    },
+
     {
       title: "Total Rate\n(per ton)",
       dataIndex: "rate",
@@ -147,10 +144,38 @@ const DeliveryInfo = (props) => {
   const [validationStatus, setValidationStatus] = useState(false);
 
   const onInputChange = (index, soID, field) => {
-    const newData = { ...soMaterialIds };
-    newData[index] = { ...newData[index], ...{ [field]: soID } };
-    setSoMaterialIds(newData);
+    setPriceDetails((prev) => {
+      if (!Array.isArray(prev)) return prev;
+
+      const updated = [...prev];
+      updated[index] = {
+        ...updated[index],
+        [field]: soID,
+      };
+
+      return updated;
+    });
   };
+
+  useEffect(() => {
+    if (props.packetwisePriceDC?.priceDetailsList)
+      setPriceDetails(props.packetwisePriceDC?.priceDetailsList);
+  }, [props.packetwisePriceDC?.priceDetailsList]);
+
+  useEffect(() => {
+    if (props.salesOrder?.materials && priceDetails) {
+      const updatedPriceDetails = priceDetails.map((priceDetail) => {
+        if (!priceDetail.sono) return priceDetail;
+
+        return {
+          ...priceDetail,
+          materialList: props.salesOrder.materials[priceDetail.sono] || [],
+        };
+      });
+
+      setPriceDetails(updatedPriceDetails);
+    }
+  }, [props.salesOrder?.materials]);
 
   useEffect(() => {
     if (
@@ -167,7 +192,7 @@ const DeliveryInfo = (props) => {
     if (checkRemarksIncomplete()) {
       message.error(
         "Please fill all remarks for all the packets before proceeding",
-        2
+        2,
       );
       return;
     }
@@ -178,7 +203,7 @@ const DeliveryInfo = (props) => {
         (item?.instruction?.length &&
           !item.childInstructions &&
           !item.instructionId &&
-          item?.status?.statusName === "READY TO DELIVER")
+          item?.status?.statusName === "READY TO DELIVER"),
     );
 
     if (iList?.length) {
@@ -205,7 +230,7 @@ const DeliveryInfo = (props) => {
             instructionId: item.instructionId,
             remarks: item.remarks || null,
             actualWeight: item.plannedWeight || item.actualWeight,
-          })
+          }),
         ),
       };
       dispatch(getPacketwisePriceDC(reqObj));
@@ -220,7 +245,7 @@ const DeliveryInfo = (props) => {
             instructionId: item.instructionId,
             remarks: item.remarks || null,
             actualWeight: item.plannedWeight || item.actualWeight,
-          })
+          }),
         ),
       };
       dispatch(getPacketwisePriceDC(reqObj));
@@ -242,18 +267,10 @@ const DeliveryInfo = (props) => {
                     labelInValue
                     mode="combobox"
                     optionLabelProp="label"
-                    // disabled={
-                    //   props.inward.disableSelection || props.inwardStatus.saveTemporary
-                    // }
                     allowClear={true}
                     value={
                       record?.sono
                         ? { key: record.sono, label: record.sono }
-                        : soMaterialIds[record.instructionId]?.sono
-                        ? {
-                            key: soMaterialIds[record.instructionId]?.sono,
-                            label: soMaterialIds[record.instructionId]?.sono,
-                          }
                         : undefined
                     }
                     notFoundContent={null}
@@ -263,31 +280,35 @@ const DeliveryInfo = (props) => {
                     showArrow={true}
                     onSelect={(soId, option) => {
                       if (!soId) {
-                        onInputChange(record.instructionId, null, "sono");
+                        onInputChange(index, null, "sono");
                         return;
                       }
                       dispatch(fetchMaterialsBySoID(soId?.key));
-                      onInputChange(record.instructionId, soId?.key, "sono");
+                      onInputChange(index, soId?.key, "sono");
                     }}
                     onChange={(materialId, option) => {
                       if (!materialId) {
-                        onInputChange(record.instructionId, null, "sono");
+                        onInputChange(index, null, "sono");
                         return;
                       }
-                      onInputChange(
-                        record.instructionId,
-                        materialId?.key,
-                        "sono"
+                      onInputChange(index, materialId?.key, "sono");
+                    }}
+                    filterOption={(input, option) => {
+                      const name = String(
+                        option?.props["data-name"] || "",
+                      ).toLowerCase();
+                      const code = String(
+                        option?.props?.label || "",
+                      ).toLowerCase();
+                      const searchText = String(input || "").toLowerCase();
+
+                      return (
+                        name.includes(searchText) || code.includes(searchText)
                       );
                     }}
-                    filterOption={(input, option) =>
-                      option.props.children
-                        ?.toLowerCase()
-                        ?.indexOf(input?.toLowerCase()) >= 0
-                    }
                   >
                     {(record?.mappedSOList || []).map((so) => (
-                      <Option key={so} value={so} label={so}>
+                      <Option key={so} value={so} label={so} data-name={so}>
                         {so}
                       </Option>
                     ))}
@@ -301,7 +322,7 @@ const DeliveryInfo = (props) => {
               key: "materialId",
               width: 200,
               render: (text, record, index) => (
-                <div style={{ display: "flex", alignItems: "center" }}>
+                <div style={{ display: "flex", flexDirection: "column" }}>
                   <Select
                     style={{ flex: 1, minWidth: 0 }}
                     labelInValue
@@ -310,15 +331,11 @@ const DeliveryInfo = (props) => {
                     // disabled={
                     //   props.inward.disableSelection || props.inwardStatus.saveTemporary
                     // }
+                    dropdownMatchSelectWidth={false} // default is true, but make sure it isn't false
                     allowClear={true}
-                    value={
+                    vvalue={
                       record?.mmid
                         ? { key: record.mmid, label: record.mmid }
-                        : soMaterialIds[record.instructionId]?.mmid
-                        ? {
-                            key: soMaterialIds[record.instructionId]?.mmid,
-                            label: soMaterialIds[record.instructionId]?.mmid,
-                          }
                         : undefined
                     }
                     notFoundContent={null}
@@ -328,49 +345,63 @@ const DeliveryInfo = (props) => {
                     showArrow={true}
                     onSelect={(materialId, option) => {
                       if (!materialId) {
-                        onInputChange(record.instructionId, null, "mmid");
+                        onInputChange(index, null, "mmid");
+                        onInputChange(index, null, "materialName");
                         return;
                       }
+                      onInputChange(index, materialId?.key, "mmid");
                       onInputChange(
-                        record.instructionId,
-                        materialId?.key,
-                        "mmid"
+                        index,
+                        option?.props["data-material-name"],
+                        "materialName",
                       );
                     }}
                     onChange={(materialId, option) => {
                       if (!materialId) {
-                        onInputChange(record.instructionId, null, "mmid");
+                        onInputChange(index, null, "mmid");
+                        onInputChange(index, null, "materialName");
                         return;
                       }
+                      onInputChange(index, materialId?.key, "mmid");
                       onInputChange(
-                        record.instructionId,
-                        materialId?.key,
-                        "mmid"
+                        index,
+                        option?.props["data-material-name"],
+                        "materialName",
                       );
                     }}
-                    filterOption={(input, option) =>
-                      option.props.children
-                        ?.toLowerCase()
-                        ?.indexOf(input?.toLowerCase()) >= 0
+                    filterOption={(input, option) => {
+                         const name = String(
+                           option?.props["data-material-name"] || "",
+                         ).toLowerCase();
+                         const code = String(
+                           option?.props?.label || "",
+                         ).toLowerCase();
+                         const searchText = String(input || "").toLowerCase();
+
+                         return (
+                           name.includes(searchText) ||
+                           code.includes(searchText)
+                         );
+                      }
                     }
                   >
-                    {soMaterialIds[record.instructionId]?.sono &&
-                    props.salesOrder?.materials
-                      ? (
-                          props.salesOrder?.materials[
-                            soMaterialIds[record.instructionId]?.sono
-                          ] || []
-                        ).map((material) => (
+                    {record?.sono && record?.materialList
+                      ? (record?.materialList || []).map((material) => (
                           <Option
-                            key={material}
-                            value={material}
-                            label={material}
+                            key={material.mmid}
+                            value={material.mmid}
+                            label={material.mmid}
+                            data-material-name={material?.materialName}
                           >
-                            {material}
+                            <div>
+                              <p>{material.mmid}</p>
+                              <p>{material.materialName}</p>
+                            </div>
                           </Option>
                         ))
                       : null}
                   </Select>
+                  <p style={{ marginTop: "2px" }}>{record?.materialName}</p>
                 </div>
               ),
             },
@@ -381,7 +412,7 @@ const DeliveryInfo = (props) => {
 
   useEffect(() => {
     const partyId = props.inward.inwardListForDelivery?.map(
-      (ele) => ele?.party?.nPartyId || ""
+      (ele) => ele?.party?.nPartyId || "",
     );
     props.fetchPackingListByParty(partyId);
     props.getLaminationChargesByPartyId(partyId);
@@ -390,7 +421,7 @@ const DeliveryInfo = (props) => {
   useEffect(() => {
     let insList = props.inward.inwardListForDelivery?.map((i) => {
       const inwardList = props?.inward?.inwardList.filter(
-        (item) => item.inwardEntryId === i.inwardEntryId
+        (item) => item.inwardEntryId === i.inwardEntryId,
       );
       inwardList.map((item) => setThickness(item?.fThickness));
       return i?.instruction?.length ? i?.instruction : i;
@@ -453,13 +484,11 @@ const DeliveryInfo = (props) => {
         (item?.instruction?.length &&
           !item.childInstructions &&
           !item.instructionId &&
-          item?.status?.statusName === "READY TO DELIVER")
+          item?.status?.statusName === "READY TO DELIVER"),
     );
 
     const emptySo =
-      deliveryType === "Sales Order" &&
-      (Object.values(soMaterialIds).length == 0 ||
-        Object.values(soMaterialIds).some((item) => !item.sono || !item.mmid));
+      deliveryType === "Sales Order" && checkSalesOrderMaterials();
 
     if (emptySo) {
       message.error("Please select Sales Order Number and Material ID");
@@ -472,6 +501,7 @@ const DeliveryInfo = (props) => {
         laminationId,
         vehicleNo,
         packingRateId,
+        deliveryType,
         motherCoilDispatch: true,
       };
       setFullHandling(true);
@@ -482,7 +512,8 @@ const DeliveryInfo = (props) => {
         vehicleNo,
         laminationId,
         inwardListForDelivery: props.inward.inwardListForDelivery,
-        soMaterialIds: soMaterialIds,
+        priceDetails: priceDetails,
+        deliveryType,
       };
       props.postDeliveryConfirm(reqObj);
       if (props.inward?.unprocessedSuccess?.length) {
@@ -491,7 +522,7 @@ const DeliveryInfo = (props) => {
             if (item?.process?.processId === 8) {
               return item;
             }
-          }
+          },
         );
         const reqObj = {
           vehicleNo,
@@ -517,6 +548,19 @@ const DeliveryInfo = (props) => {
           (!item.remarks || item.remarks.trim() === "")
         ) {
           incomplete = true;
+        }
+      });
+    }
+    return incomplete;
+  };
+
+  const checkSalesOrderMaterials = () => {
+    let incomplete = false;
+    if (priceDetails.length > 0) {
+      priceDetails.forEach((item) => {
+        if (item?.sono === null || item?.mmid === null) {
+          incomplete = true;
+          return;
         }
       });
     }
@@ -628,7 +672,7 @@ const DeliveryInfo = (props) => {
                     </div>
                   </div>
                 </div>
-              )
+              ),
           )
         ) : (
           <div> Nothing selected for delivery</div>
@@ -773,8 +817,9 @@ const DeliveryInfo = (props) => {
               ]}
             >
               <Table
+                rowKey={(record) => record.instructionId}
                 columns={priceColumn}
-                dataSource={props.packetwisePriceDC?.priceDetailsList}
+                dataSource={priceDetails}
               />
             </Modal>
             <Button

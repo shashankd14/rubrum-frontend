@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { Modal, Select, Table } from 'antd';
 import {
-  fetchPartyList,
   fetchInwardList,
   getQualityReportById,
   fetchQualityReportStageList,
@@ -129,7 +128,7 @@ const LabelPrintFG = (props) => {
 
   useEffect(() => {
     props.fetchQualityReportStageList({ stage: "inward", page: 1, pageSize: 15, searchValue:'', customerValue: '' });
-    props.fetchPartyList();
+    // props.fetchPartyList();
   }, []);
 
   useEffect(() => {
@@ -331,7 +330,6 @@ const mapStateToProps = (state) => ({
 
 export default connect(mapStateToProps, {
   fetchInwardList,
-  fetchPartyList,
   getQualityReportById,
   fetchQualityReportStageList,
   labelPrintFG,

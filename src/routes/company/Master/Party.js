@@ -4,7 +4,7 @@ import {Button, Card, Divider, Table, Modal, Row, Col, Form, Input, Select,Check
 import SearchBox from "../../../components/SearchBox";
 
 import IntlMessages from "../../../util/IntlMessages";
-import { fetchPartyList, addParty, fetchPartyListId, updateParty, resetParty, fetchClassificationList,fetchEndUserTagsList, fetchTemplatesList } from "../../../appRedux/actions";
+import { addParty, fetchPartyListId, updateParty, resetParty, fetchClassificationList,fetchEndUserTagsList, fetchTemplatesList } from "../../../appRedux/actions";
 
 export const formItemLayout = {
     labelCol: {
@@ -160,7 +160,6 @@ const Party = (props) => {
 
     useEffect(() => {
         setTimeout(() => {
-            props.fetchPartyList();
             props.fetchClassificationList();
             props.fetchEndUserTagsList();
             props.fetchTemplatesList()
@@ -720,7 +719,6 @@ const addPartyForm = Form.create({
 })(Party);
 
 export default connect(mapStateToProps, {
-    fetchPartyList,
     addParty,
     fetchPartyListId,
     updateParty,

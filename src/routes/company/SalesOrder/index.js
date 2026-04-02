@@ -4,7 +4,6 @@ import {
   fetchPacketList,
   fetchSalesOrderList,
   saveSalesOrderForPacket,
-  fetchPartyList,
   fetchMaterialsBySoID,
 } from "../../../appRedux/actions";
 import { useDispatch, useSelector } from "react-redux";
@@ -117,8 +116,8 @@ const SalesOrder = () => {
                       15,
                       customerValue,
                       "",
-                      filteredInfo["instructionId"][0]
-                    )
+                      filteredInfo["instructionId"][0],
+                    ),
                   );
                 }}
                 icon="search"
@@ -302,58 +301,86 @@ const SalesOrder = () => {
       width: 200,
       render: (text, record, index) => (
         <div style={{ display: "flex", alignItems: "center" }}>
-          <Select
-            style={{ flex: 1, minWidth: 0 }}
-            labelInValue
-            mode="combobox"
-            optionLabelProp="label"
-            // disabled={
-            //   props.inward.disableSelection || props.inwardStatus.saveTemporary
-            // }
-            allowClear={true}
-            value={
-              record?.mmid
-                ? { key: record.mmid, label: record.mmid }
-                : undefined
-            }
-            notFoundContent={null}
-            showSearch={true}
-            placeholder="Select a material ID"
-            optionFilterProp="children"
-            showArrow={true}
-            onSelect={(materialId, option) => {
-              if (!materialId) {
-                onInputChange(index, null, "mmId");
-                return;
+          <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+            <Select
+              style={{ flex: 1, minWidth: 0 }}
+              labelInValue
+              mode="combobox"
+              optionLabelProp="label"
+              dropdownMatchSelectWidth={false} // default is true, but make sure it isn't false
+              // disabled={
+              //   props.inward.disableSelection || props.inwardStatus.saveTemporary
+              // }
+              allowClear={true}
+              value={
+                record?.mmid
+                  ? { key: record.mmid, label: record.mmid }
+                  : undefined
               }
-              onInputChange(index, materialId?.key, "mmid");
-            }}
-            onChange={(materialId, option) => {
-              if (!materialId) {
-                onInputChange(index, null, "mmid");
-                return;
+              notFoundContent={null}
+              showSearch={true}
+              placeholder="Select a material ID"
+              optionFilterProp="children"
+              showArrow={true}
+              onSelect={(materialId, option) => {
+                if (!materialId) {
+                  onInputChange(index, null, "mmId");
+                  onInputChange(index, null, "mmName");
+                  return;
+                }
+                onInputChange(index, materialId?.key, "mmid");
+                onInputChange(
+                  index,
+                  option?.props["data-material-name"],
+                  "mmName",
+                );
+              }}
+              onChange={(materialId, option) => {
+                if (!materialId) {
+                  onInputChange(index, null, "mmid");
+                  onInputChange(index, null, "mmName");
+                  return;
+                }
+                onInputChange(index, materialId?.key, "mmid");
+                onInputChange(
+                  index,
+                  option?.props["data-material-name"],
+                  "mmName",
+                );
+              }}
+              filterOption={(input, option) =>
+                option.props.children
+                  ?.toLowerCase()
+                  ?.indexOf(input?.toLowerCase()) >= 0
               }
-              onInputChange(index, materialId?.key, "mmid");
-            }}
-            filterOption={(input, option) =>
-              option.props.children
-                ?.toLowerCase()
-                ?.indexOf(input?.toLowerCase()) >= 0
-            }
-          >
-            {record?.soNumber &&
-            salesOrder?.materials &&
-            salesOrder?.materials[record.soNumber]
-              ? salesOrder?.materials[record.soNumber].map((material) => (
-                  <Option key={material} value={material} label={material}>
-                    {material}
-                  </Option>
-                ))
-              : null}
-          </Select>
+            >
+              {record?.soNumber &&
+              salesOrder?.materials &&
+              salesOrder?.materials[record.soNumber]
+                ? salesOrder?.materials[record.soNumber].map((material) => (
+                    <Option
+                      key={material.mmid}
+                      data-material-name={material?.materialName}
+                      label={material.mmid}
+                    >
+                      <div>
+                        <p>{material.mmid}</p>
+                        <p>{material.materialName}</p>
+                      </div>
+                    </Option>
+                  ))
+                : null}
+            </Select>
+            <p style={{marginTop: '2px'}}>{record?.mmName}</p>
+          </div>
           <Icon
             onClick={() => dispatch(saveSalesOrderForPacket(record))}
-            style={{ marginLeft: "8px" }}
+            style={{
+              marginLeft: "8px",
+              alignSelf: "flex-start",
+              cursor: "pointer",
+              marginTop: "10px",
+            }}
             type="check"
           />
         </div>
@@ -370,13 +397,12 @@ const SalesOrder = () => {
         customerValue,
         "",
         "",
-        filters
-      )
+        filters,
+      ),
     );
   };
 
   useEffect(() => {
-    dispatch(fetchPartyList());
     dispatch(fetchPacketList(1, pageSize, "", ""));
     dispatch(fetchSalesOrderList());
     // dispatch(fetchEndUserTagsList());
@@ -388,7 +414,6 @@ const SalesOrder = () => {
     }
   }, [salesOrder.success]);
 
-
   const handleCustomerChange = (value) => {
     if (value) {
       setCustomerValue(value);
@@ -398,8 +423,7 @@ const SalesOrder = () => {
       setCustomerValue("");
       // setSalesOrderList(salesOrderList);
     }
-};
-
+  };
 
   return (
     <div>

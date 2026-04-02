@@ -90,6 +90,9 @@ import {
   GET_MATERIALS_BY_POID_ERROR,
   UPDATE_INSTRUCTION_POSITIVE_TOLERANCE,
   RESET_INWARD_FORM_PO,
+  FETCH_INWARD_SALES_NUMBERS_REQUESTED,
+  FETCH_INWARD_SALES_NUMBERS_SUCCESS,
+  FETCH_INWARD_SALES_NUMBERS_ERROR
 } from "../../constants/ActionTypes";
 import * as actionTypes from "../../constants/ActionTypes";
 
@@ -341,6 +344,21 @@ export const getCoilPlanDetailsError = (error) => ({
     type: FETCH_INWARD_PLAN_DETAILS_ERROR,
     error
 })
+
+export const getCoilSalesNumbers = (coilNumber) => ({
+  type: FETCH_INWARD_SALES_NUMBERS_REQUESTED,
+  coilNumber,
+});
+
+export const getCoilSalesNumbersSuccess = (payload) => ({
+  type: FETCH_INWARD_SALES_NUMBERS_SUCCESS,
+  payload,
+});
+
+export const getCoilSalesNumbersError = (error) => ({
+  type: FETCH_INWARD_SALES_NUMBERS_ERROR,
+  error,
+});
 
 export const setProcessDetails = (processDetails) => ({
     type: SET_PROCESS_DETAILS,

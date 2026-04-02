@@ -43,7 +43,7 @@ const CreateForm = (props) => {
 
   useEffect(() => {
     props.fetchMaterialList();
-    props.fetchPartyList();
+    // props.fetchPartyList();
   }, []);
 
   const menu = (

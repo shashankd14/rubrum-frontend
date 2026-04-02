@@ -1,22 +1,7 @@
-import React, { useCallback} from 'react';
+import React, { useCallback } from "react";
 
 const SalesOrderModule = () => {
-
-//   const sendDataToIframe = () => {
-//     const message = {
-//       type: 'SET_DATA',
-//       payload: {
-//         token: 'abc123',
-//         user: { name: 'Pragati' },
-//       },
-//     };
-//   if (iframeRef.current?.contentWindow) {
-//     iframeRef?.current?.contentWindow?.postMessage(message, 'http://localhost:5173');
-//   }
-// };
-
- 
-const iframeRef = useCallback((node) => {
+  const iframeRef = useCallback((node) => {
     if (node !== null) {
       node.onload = () =>
         node?.contentWindow?.postMessage(
@@ -31,33 +16,19 @@ const iframeRef = useCallback((node) => {
               },
             },
           },
-          "https://app-uat.workeazy.in/so"
+          window.location.origin
         );
     }
-}, [])
+  }, []);
 
-
-  //   useEffect(() => {
-  //   const script = document.createElement('script');
-  //   script.src = '/sales/index.html';
-  //   script.onload = () => {
-  //     if (window.mountNextApp) {
-  //       window.mountNextApp('next-container');
-  //     } else {
-  //       console.error('mountNextApp is not defined on window');
-  //     }
-  //   };
-  //   document.body.appendChild(script);
-  // }, []);
-
-    return (
-      <iframe
-        ref={iframeRef}
-        src="https://app-uat.workeazy.in/so/sales-order"
-        title="Vite App"
-        style={{ width: "100%", height: "900px", border: "none" }}
-      ></iframe>
-    );
-}
+  return (
+    <iframe
+      ref={iframeRef}
+      src="/so/sales-order"
+      title="Vite App"
+      style={{ width: "100%", height: "900px", border: "none" }}
+    ></iframe>
+  );
+};
 
 export default SalesOrderModule;

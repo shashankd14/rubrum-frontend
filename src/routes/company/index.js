@@ -65,6 +65,10 @@ const Company = ({ match }) => (
       path={`${match.url}/consolidated-plans`}
       component={asyncComponent(() => import("./ConsolidatedPlans"))}
     />
+    <Route
+      path={`${match.url}/allocated-coils`}
+      component={asyncComponent(() => import("./AllocatedCoils"))}
+    />
   </Switch>
 );
 

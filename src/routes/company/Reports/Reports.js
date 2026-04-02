@@ -13,7 +13,6 @@ import {
 } from "antd";
 import moment from "moment";
 import {
-  fetchPartyList,
   sendReportRequest,
   resetSendReportSuccess,
 } from "../../../appRedux/actions";
@@ -37,10 +36,6 @@ const { Option } = Select;
 const Reports = (props) => {
   const { getFieldDecorator } = props.form;
   const [dataSource, setDataSource] = useState([]);
-
-  useEffect(() => {
-    props.fetchPartyList();
-  }, []);
 
   useEffect(() => {
     if (props.isReportSuccess) {
@@ -183,7 +178,6 @@ const mapStateToProps = (state) => ({
 const ReportForm = Form.create()(Reports);
 
 export default connect(mapStateToProps, {
-  fetchPartyList,
   sendReportRequest,
   resetSendReportSuccess,
 })(ReportForm);

@@ -3,7 +3,6 @@ import { Form, Steps } from "antd";
 import { connect } from "react-redux";
 import {
   fetchMaterialList,
-  fetchPartyList,
   setInwardDetails,
   submitInwardEntry,
 } from "../../../../appRedux/actions";
@@ -93,7 +92,6 @@ const MaterialDetailsForm = Form.create({ name: "material_form" })(
   MaterialDetails
 );
 export default connect(mapStateToProps, {
-  fetchPartyList,
   fetchMaterialList,
   setInwardDetails,
   submitInwardEntry,

@@ -3,7 +3,6 @@ import { Menu } from "antd";
 import { Link } from "react-router-dom";
 import { Icon } from "antd";
 
-import CustomScrollbars from "util/CustomScrollbars";
 import SidebarLogo from "./SidebarLogo";
 import UserProfile from "./UserProfile";
 import {
@@ -20,7 +19,7 @@ const MenuItemGroup = Menu.ItemGroup;
 
 const SidebarContent = () => {
   let { navStyle, themeType, pathname } = useSelector(
-    ({ settings }) => settings
+    ({ settings }) => settings,
   );
   const [menuLabelList, setMenuLabelList] = useState([]);
 
@@ -91,7 +90,7 @@ const SidebarContent = () => {
         >
           <UserProfile />
         </div>
-        <CustomScrollbars className="gx-layout-sider-scrollbar">
+        <div className="custom-scrollbar" style={{ overflow: "auto" }}>
           <Menu
             defaultOpenKeys={defaultOpenKeys}
             selectedKeys={selectedKeys}
@@ -99,256 +98,234 @@ const SidebarContent = () => {
             mode="inline"
           >
             <MenuItemGroup
-              key="main"
+              key="in-built-apps"
               className="gx-menu-group"
-              title={<IntlMessages id="sidebar.main" />}
+              title="Company"
             >
               <SubMenu
-                key="dashboard"
-                className={getNavStyleSubMenuClass(navStyle)}
+                key="company/master"
+                className="gx-menu-group"
                 title={
                   <span>
                     {" "}
-                    <i className="icon icon-dasbhoard" />
+                    <i className="icon icon-company" />
                     <span>
-                      <IntlMessages id="sidebar.dashboard" />
+                      <IntlMessages id="sidebar.master" />
                     </span>
                   </span>
                 }
               >
-                <Menu.Item key="main/dashboard/sales">
-                  <Link to="/main/dashboard/sales">
-                    <i className="icon icon-crypto" />
-                    <span>
-                      <IntlMessages id="sidebar.dashboard.sales" />
-                    </span>
-                  </Link>
-                </Menu.Item>
-                <Menu.Item key="main/dashboard/stock">
-                  <Link to="/main/dashboard/stock">
-                    <i className="icon icon-crm" />
-                    <span>
-                      <IntlMessages id="sidebar.dashboard.stock" />
-                    </span>
-                  </Link>
-                </Menu.Item>
-              </SubMenu>
-              <MenuItemGroup
-                key="in-built-apps"
-                className="gx-menu-group"
-                title="Company"
-              >
-                <SubMenu
-                  key="company/master"
-                  className="gx-menu-group"
-                  title={
-                    <span>
-                      {" "}
-                      <i className="icon icon-company" />
+                {menuLabelList.includes(sidebarMenuItems.party) && (
+                  <Menu.Item key="/company/master/party">
+                    <Link to="/company/master/party">
+                      <i className="icon icon-location" />
                       <span>
-                        <IntlMessages id="sidebar.master" />
+                        <IntlMessages id="sidebar.master.party" />
                       </span>
-                    </span>
-                  }
-                >
-                  {menuLabelList.includes(sidebarMenuItems.party) && (
-                    <Menu.Item key="/company/master/party">
-                      <Link to="/company/master/party">
-                        <i className="icon icon-location" />
-                        <span>
-                          <IntlMessages id="sidebar.master.party" />
-                        </span>
-                      </Link>
-                    </Menu.Item>
-                  )}
+                    </Link>
+                  </Menu.Item>
+                )}
 
-                  {menuLabelList.includes(sidebarMenuItems.party) && (
-                    <Menu.Item key="/company/master/yieldLoss">
-                      <Link to="/company/master/yieldLoss">
-                        <i className="icon icon-default-timeline" />
-                        <span>
-                          <IntlMessages id="sidebar.master.yieldLoss" />
-                        </span>
-                      </Link>
-                    </Menu.Item>
-                  )}
+                {menuLabelList.includes(sidebarMenuItems.party) && (
+                  <Menu.Item key="/company/master/yieldLoss">
+                    <Link to="/company/master/yieldLoss">
+                      <i className="icon icon-default-timeline" />
+                      <span>
+                        <IntlMessages id="sidebar.master.yieldLoss" />
+                      </span>
+                    </Link>
+                  </Menu.Item>
+                )}
 
-                  {menuLabelList.includes(sidebarMenuItems.rates) && (
-                    <Menu.Item key="/company/master/rates">
-                      <Link to="/company/master/rates">
-                        <Icon type="dollar" />
-                        <span>
-                          <IntlMessages id="sidebar.master.rates" />
-                        </span>
-                      </Link>
-                    </Menu.Item>
-                  )}
+                {menuLabelList.includes(sidebarMenuItems.rates) && (
+                  <Menu.Item key="/company/master/rates">
+                    <Link to="/company/master/rates">
+                      <Icon type="dollar" />
+                      <span>
+                        <IntlMessages id="sidebar.master.rates" />
+                      </span>
+                    </Link>
+                  </Menu.Item>
+                )}
 
-                  {menuLabelList.includes(sidebarMenuItems.packing) && (
-                    <Menu.Item key="/company/master/packing">
-                      <Link to="/company/master/packing">
-                        <Icon type="gift" />
-                        <span>
-                          <IntlMessages id="sidebar.master.packing" />
-                        </span>
-                      </Link>
-                    </Menu.Item>
-                  )}
+                {menuLabelList.includes(sidebarMenuItems.packing) && (
+                  <Menu.Item key="/company/master/packing">
+                    <Link to="/company/master/packing">
+                      <Icon type="gift" />
+                      <span>
+                        <IntlMessages id="sidebar.master.packing" />
+                      </span>
+                    </Link>
+                  </Menu.Item>
+                )}
 
-                  {/* <Menu.Item key="company/master/quality">
+                {/* <Menu.Item key="company/master/quality">
                     <Link to="/company/master/quality">
                       <i className="icon icon-crypto" />
                       <span><IntlMessages id="sidebar.master.quality" /></span>
                     </Link>
                   </Menu.Item> */}
-                  <SubMenu
-                    key="quality"
-                    className={getNavStyleSubMenuClass(navStyle)}
-                    title={
+                <SubMenu
+                  key="quality"
+                  className={getNavStyleSubMenuClass(navStyle)}
+                  title={
+                    <span>
+                      <i className="icon icon-all-contacts" />
                       <span>
-                        <i className="icon icon-all-contacts" />
-                        <span>
-                          <IntlMessages id="sidebar.quality" />
-                        </span>
+                        <IntlMessages id="sidebar.quality" />
                       </span>
-                    }
-                  >
-                    <Menu.Item key="/company/quality/reports">
-                      <Link to="/company/quality/reports">
-                        <span>
-                          <IntlMessages id="sidebar.quality.reports" />
-                        </span>
-                      </Link>
-                    </Menu.Item>
-                    <Menu.Item key="/company/quality/templates">
-                      <Link to="/company/quality/templates">
-                        <span>
-                          <IntlMessages id="sidebar.quality.templates" />
-                        </span>
-                      </Link>
-                    </Menu.Item>
-                    <Menu.Item key="/company/quality/kqp">
-                      <Link to="/company/quality/kqp">
-                        <span>
-                          <IntlMessages id="sidebar.quality.kqp" />
-                        </span>
-                      </Link>
-                    </Menu.Item>
-                  </SubMenu>
-
-                  {menuLabelList.includes(sidebarMenuItems.tags) && (
-                    <Menu.Item key="/company/master/tags">
-                      <Link to="/company/master/tags">
-                        <i className="icon icon-tag-o" />
-                        <span>
-                          <IntlMessages id="sidebar.master.tags" />
-                        </span>
-                      </Link>
-                    </Menu.Item>
-                  )}
+                    </span>
+                  }
+                >
+                  <Menu.Item key="/company/quality/reports">
+                    <Link to="/company/quality/reports">
+                      <span>
+                        <IntlMessages id="sidebar.quality.reports" />
+                      </span>
+                    </Link>
+                  </Menu.Item>
+                  <Menu.Item key="/company/quality/templates">
+                    <Link to="/company/quality/templates">
+                      <span>
+                        <IntlMessages id="sidebar.quality.templates" />
+                      </span>
+                    </Link>
+                  </Menu.Item>
+                  <Menu.Item key="/company/quality/kqp">
+                    <Link to="/company/quality/kqp">
+                      <span>
+                        <IntlMessages id="sidebar.quality.kqp" />
+                      </span>
+                    </Link>
+                  </Menu.Item>
                 </SubMenu>
-                {menuLabelList.includes(sidebarMenuItems.inward) && (
-                  <Menu.Item key="/company/inward">
-                    <Link to="/company/inward">
-                      <i className="icon icon-apps-new" />
+
+                {menuLabelList.includes(sidebarMenuItems.tags) && (
+                  <Menu.Item key="/company/master/tags">
+                    <Link to="/company/master/tags">
+                      <i className="icon icon-tag-o" />
                       <span>
-                        <IntlMessages id="sidebar.company.inward" />
+                        <IntlMessages id="sidebar.master.tags" />
                       </span>
                     </Link>
                   </Menu.Item>
                 )}
-                {menuLabelList.includes(sidebarMenuItems.partywiseRegister) && (
-                  <Menu.Item key="/company/locationwise-register">
-                    <Link to="/company/locationwise-register">
-                      <i className="icon icon-location" />
+              </SubMenu>
+              {menuLabelList.includes(sidebarMenuItems.inward) && (
+                <Menu.Item key="/company/inward">
+                  <Link to="/company/inward">
+                    <i className="icon icon-apps-new" />
+                    <span>
+                      <IntlMessages id="sidebar.company.inward" />
+                    </span>
+                  </Link>
+                </Menu.Item>
+              )}
+              {menuLabelList.includes(sidebarMenuItems.partywiseRegister) && (
+                <Menu.Item key="/company/locationwise-register">
+                  <Link to="/company/locationwise-register">
+                    <i className="icon icon-location" />
+                    <span>
+                      <IntlMessages id="sidebar.company.partywiseRegister" />
+                    </span>
+                  </Link>
+                </Menu.Item>
+              )}
+              {true && (
+                <Menu.Item key="/company/purchase-invoices">
+                  <Link to="/company/purchase-invoices">
+                    <i className="icon icon-product-list" />
+                    <span>
+                      <IntlMessages id="sidebar.company.purchaseInvoices" />
+                    </span>
+                  </Link>
+                </Menu.Item>
+              )}
+              {menuLabelList.includes(sidebarMenuItems.labelPrint) && (
+                <Menu.Item key="/company/labelPrint">
+                  <Link to="/company/labelPrint">
+                    <i className="icon icon-editor" />
+                    <span>
+                      <IntlMessages id="sidebar.company.labelPrint" />
+                    </span>
+                  </Link>
+                </Menu.Item>
+              )}
+              {menuLabelList.includes(sidebarMenuItems.deilveredItems) && (
+                <Menu.Item key="/company/deliveredItems">
+                  <Link to="/company/deliveredItems">
+                    <i className="icon icon-tasks" />
+                    <span>
+                      <IntlMessages id="sidebar.company.deliveryItems" />
+                    </span>
+                  </Link>
+                </Menu.Item>
+              )}
+              {menuLabelList.includes(sidebarMenuItems.workInProgress) && (
+                <Menu.Item key="/company/workin-progress">
+                  <Link to="/company/workin-progress">
+                    <i className="icon icon-progress" />
+                    <span>
+                      <IntlMessages id="sidebar.company.workinprogress" />
+                    </span>
+                  </Link>
+                </Menu.Item>
+              )}
+              {menuLabelList.includes(sidebarMenuItems.reports) && (
+                <Menu.Item key="/company/reports">
+                  <Link to="/company/reports">
+                    <i className="icon icon-stats" />
+                    <span>
+                      <IntlMessages id="sidebar.company.reports" />
+                    </span>
+                  </Link>
+                </Menu.Item>
+              )}
+              {menuLabelList.includes(sidebarMenuItems.billingInfo) && (
+                <Menu.Item key="/company/billingInfo">
+                  <Link to="/company/billingInfo">
+                    <i className="icon icon-crypto" />
+                    <span>
+                      <IntlMessages id="sidebar.company.billingInfo" />
+                    </span>
+                  </Link>
+                </Menu.Item>
+              )}
+              {menuLabelList.includes(sidebarMenuItems.userAccess) && (
+                <Menu.Item key="/company/userAccess">
+                  <Link to="/company/userAccess">
+                    <i className="icon icon-user" />
+                    <span>
+                      <IntlMessages id="sidebar.company.userAccess" />
+                    </span>
+                  </Link>
+                </Menu.Item>
+              )}
+              {(menuLabelList.includes(sidebarMenuItems.salesOrder) ||
+                true) && (
+                <Menu.Item key="/company/sales-order">
+                  <Link to="/company/sales-order">
+                    <i className="icon icon-orders" />
+                    <span>
+                      <IntlMessages id="sidebar.company.salesOrder" />
+                    </span>
+                  </Link>
+                </Menu.Item>
+              )}
+              {true && (
+                <SubMenu
+                  key="salesOrderModule"
+                  className="gx-menu-group"
+                  title={
+                    <span>
+                      {" "}
+                      <i className="icon icon-sales-order" />
                       <span>
-                        <IntlMessages id="sidebar.company.partywiseRegister" />
+                        <IntlMessages id="sidebar.company.salesOrderNew" />
                       </span>
-                    </Link>
-                  </Menu.Item>
-                )}
-                {true && (
-                  <Menu.Item key="/company/purchase-invoices">
-                    <Link to="/company/purchase-invoices">
-                      <i className="icon icon-product-list" />
-                      <span>
-                        <IntlMessages id="sidebar.company.purchaseInvoices" />
-                      </span>
-                    </Link>
-                  </Menu.Item>
-                )}
-                {menuLabelList.includes(sidebarMenuItems.labelPrint) && (
-                  <Menu.Item key="/company/labelPrint">
-                    <Link to="/company/labelPrint">
-                      <i className="icon icon-editor" />
-                      <span>
-                        <IntlMessages id="sidebar.company.labelPrint" />
-                      </span>
-                    </Link>
-                  </Menu.Item>
-                )}
-                {menuLabelList.includes(sidebarMenuItems.deilveredItems) && (
-                  <Menu.Item key="/company/deliveredItems">
-                    <Link to="/company/deliveredItems">
-                      <i className="icon icon-tasks" />
-                      <span>
-                        <IntlMessages id="sidebar.company.deliveryItems" />
-                      </span>
-                    </Link>
-                  </Menu.Item>
-                )}
-                {menuLabelList.includes(sidebarMenuItems.workInProgress) && (
-                  <Menu.Item key="/company/workin-progress">
-                    <Link to="/company/workin-progress">
-                      <i className="icon icon-progress" />
-                      <span>
-                        <IntlMessages id="sidebar.company.workinprogress" />
-                      </span>
-                    </Link>
-                  </Menu.Item>
-                )}
-                {menuLabelList.includes(sidebarMenuItems.reports) && (
-                  <Menu.Item key="/company/reports">
-                    <Link to="/company/reports">
-                      <i className="icon icon-stats" />
-                      <span>
-                        <IntlMessages id="sidebar.company.reports" />
-                      </span>
-                    </Link>
-                  </Menu.Item>
-                )}
-                {menuLabelList.includes(sidebarMenuItems.billingInfo) && (
-                  <Menu.Item key="/company/billingInfo">
-                    <Link to="/company/billingInfo">
-                      <i className="icon icon-crypto" />
-                      <span>
-                        <IntlMessages id="sidebar.company.billingInfo" />
-                      </span>
-                    </Link>
-                  </Menu.Item>
-                )}
-                {menuLabelList.includes(sidebarMenuItems.userAccess) && (
-                  <Menu.Item key="/company/userAccess">
-                    <Link to="/company/userAccess">
-                      <i className="icon icon-user" />
-                      <span>
-                        <IntlMessages id="sidebar.company.userAccess" />
-                      </span>
-                    </Link>
-                  </Menu.Item>
-                )}
-                {(menuLabelList.includes(sidebarMenuItems.salesOrder) ||
-                  true) && (
-                  <Menu.Item key="/company/sales-order">
-                    <Link to="/company/sales-order">
-                      <i className="icon icon-orders" />
-                      <span>
-                        <IntlMessages id="sidebar.company.salesOrder" />
-                      </span>
-                    </Link>
-                  </Menu.Item>
-                )}
-                {true && (
+                    </span>
+                  }
+                >
                   <Menu.Item key="company/salesOrderModule">
                     <Link to="/company/sales-orderModule">
                       <i className="icon icon-crypto" />
@@ -357,21 +334,31 @@ const SidebarContent = () => {
                       </span>
                     </Link>
                   </Menu.Item>
-                )} 
-                {true && (
-                  <Menu.Item key="company/consolidatedPlans">
-                    <Link to="/company/consolidated-plans">
-                      <i className="icon icon-crypto" />
-                      <span>
-                        <IntlMessages id="sidebar.company.consolidatedPlans" />
-                      </span>
-                    </Link>
-                  </Menu.Item>
-                )}
-              </MenuItemGroup>
+                  {true && (
+                    <Menu.Item key="company/consolidatedPlans">
+                      <Link to="/company/consolidated-plans">
+                        <i className="icon icon-crypto" />
+                        <span>
+                          <IntlMessages id="sidebar.company.consolidatedPlans" />
+                        </span>
+                      </Link>
+                    </Menu.Item>
+                  )}
+                  {true && (
+                    <Menu.Item key="company/allocatedCoils">
+                      <Link to="/company/allocated-coils">
+                        <i className="icon icon-crypto" />
+                        <span>
+                          <IntlMessages id="sidebar.company.allocatedCoils" />
+                        </span>
+                      </Link>
+                    </Menu.Item>
+                  )}
+                </SubMenu>
+              )}
             </MenuItemGroup>
           </Menu>
-        </CustomScrollbars>
+        </div>
       </div>
     </>
   );

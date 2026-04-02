@@ -24,7 +24,6 @@ import IntlMessages from "../../../util/IntlMessages";
 import {
   fetchRatesList,
   fetchPackingRatesList,
-  fetchPartyList,
   fetchMaterialList,
   fetchProcessList,
   addRates,
@@ -400,7 +399,6 @@ const Rates = (props) => {
     }
   };
   useEffect(() => {
-    props.fetchPartyList();
     props.getProducts();
     props.getProductGradesList();
     props.fetchProcessList();
@@ -1633,7 +1631,6 @@ const addRatesForm = Form.create({
 export default connect(mapStateToProps, {
   fetchRatesList,
   fetchPackingRatesList,
-  fetchPartyList,
   fetchMaterialList,
   fetchProcessList,
   addRates,

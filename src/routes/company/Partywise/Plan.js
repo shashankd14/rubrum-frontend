@@ -2,7 +2,6 @@ import { Button, Card, Col, Select, Modal, message } from "antd";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { useLocation } from "react-router-dom";
 import {
   getCoilPlanDetails,
   saveUnprocessedDelivery,

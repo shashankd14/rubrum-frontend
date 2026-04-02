@@ -9,6 +9,9 @@ import {
   DELETE_DELIVERY_BY_ID_SUCCESS,
   DELETE_DELIVERY_BY_ID_ERROR,
   RESET_DELETE_DELIVERY,
+  REQUEST_INVENTORY_ADJUSTMENT,
+  REQUEST_INVENTORY_ADJUSTMENT_SUCCESS,
+  REQUEST_INVENTORY_ADJUSTMENT_ERROR,
 } from "../../constants/ActionTypes";
 
 export const fetchDeliveryList = (page, pageSize, searchValue, partyId) => ({
@@ -56,6 +59,21 @@ export const deleteDeliveryByIdSuccess = (payload) => ({
 
 export const deleteDeliveryByIdError = (error) => ({
   type: DELETE_DELIVERY_BY_ID_ERROR,
+  error,
+});
+
+export const requestInventoryAdjustment = (deliveryId) => ({
+  type: REQUEST_INVENTORY_ADJUSTMENT,
+  deliveryId,
+});
+
+export const requestInventoryAdjustmentSuccess = (payload) => ({
+  type: REQUEST_INVENTORY_ADJUSTMENT_SUCCESS,
+  payload,
+});
+
+export const requestInventoryAdjustmentError = (error) => ({
+  type: REQUEST_INVENTORY_ADJUSTMENT_ERROR,
   error,
 });
 

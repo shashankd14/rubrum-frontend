@@ -3,7 +3,7 @@ import {AutoComplete, Form, Input, Button, Icon, Row, Col, Card} from "antd";
 import {connect} from "react-redux";
 
 import {formItemLayout} from '../Create';
-import {setInwardDetails, checkIfCoilExists, getGradeByMaterialId, fetchPartyList} from "../../../../appRedux/actions";
+import {setInwardDetails, checkIfCoilExists, getGradeByMaterialId} from "../../../../appRedux/actions";
 import {METAL_DENSITY} from "../../../../constants";
 
 const CoilDetailsForm = (props) => {
@@ -91,10 +91,6 @@ const CoilDetailsForm = (props) => {
             setDataSource(options);
         }
     }, [props.material]);
-
-    useEffect(() => {
-        props.fetchPartyList();
-    }, []);
 
     useEffect(() => {
         if(props.inward.width && props.inward.thickness && props.inward.netWeight && props.inward.form == 1) {
@@ -261,6 +257,5 @@ const CoilDetails = Form.create({
 export default connect(mapStateToProps, {
     setInwardDetails,
     checkIfCoilExists,
-    fetchPartyList,
     getGradeByMaterialId
 })(CoilDetails);

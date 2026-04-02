@@ -7,12 +7,15 @@ import {
   postDeliveryConfirm,
   deleteByDeliveryId,
   resetDeleteInward,
+  requestInventoryAdjustment,
 } from "../../../appRedux/actions";
-import { Card, Table, Select, Input, message, Modal } from "antd";
+import { Card, Table, Select, message, Modal, Spin, Icon } from "antd";
 import SearchBox from "../../../components/SearchBox";
 import ReconcileModal from "./ReconcileModal";
 import moment from "moment";
 import IntlMessages from "../../../util/IntlMessages";
+import { useDispatch } from "react-redux";
+
 const Option = Select.Option;
 
 function List(props) {
@@ -23,6 +26,8 @@ function List(props) {
   const [deliveryRecord, setDeliveryRecord] = useState();
   const [customerValue, setCustomerValue] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [syncloading, setSyncLoading] = React.useState(false);
+  const dispatch = useDispatch();
 
   const [pageNo, setPageNo] = React.useState(1);
   const [totalPageItems, setTotalItems] = React.useState(0);
@@ -39,7 +44,7 @@ function List(props) {
             onClick={() => {
               props.fetchDeliveryListById(record.deliveryDetails.deliveryId);
               props.history.push(
-                `delivery/${record.deliveryDetails.deliveryId}`
+                `delivery/${record.deliveryDetails.deliveryId}`,
               );
             }}
           >
@@ -87,51 +92,47 @@ function List(props) {
         a.deliveryDetails.vehicleNo.length - b.deliveryDetails.vehicleNo.length,
     },
     {
-      title: "Purchase Invoice Number",
-      dataIndex: "deliveryDetails.customerInvoiceNo",
-      render: (text, record, index) => (
-        <Input
-          value={record.deliveryDetails.customerInvoiceNo}
-          onChange={onInputChange("customerInvoiceNo", index)}
-        />
-      ),
+      title: "Inv Adj Remarks",
+      dataIndex: "invAdjRemarks",
+      key: "invAdjRemarks",
     },
     {
-      title: "Purchase Invoice Date",
-      dataIndex: "deliveryDetails.customerInvoiceDate",
-      render: (text, record, index) => (
-        <Input
-          type="date"
-          value={record.deliveryDetails.customerInvoiceDate}
-          onChange={onInputChange("customerInvoiceDate", index)}
-        />
-      ),
+      title: "Zoho Sync Status",
+      dataIndex: "zohoSyncStts",
+      key: "zohoSyncStts",
+    },
+    {
+      title: "Sales invoice no",
+      dataIndex: "salesInvoiceNo",
+      key: "salesInvoiceNo",
     },
     {
       title: "Action",
-      render: (text, record) => (
-        <span>
-          <i
-            className="icon icon-add-circle"
-            onClick={() => handleAdd(record)}
-          />
-          <i
-            style={{ color: "red", marginLeft: 10 }}
-            className="icon icon-trash gx-margin"
-            onClick={() => handleDelete(record)}
-          />
+      render: (text, record) =>
+        record.deliveryDetails.zohoSyncStts === "PENDING" ||
+        record.deliveryDetails.zohoSyncStts === "FAIL" ||
+        record.deliveryDetails.zohoSyncStts === null ? (
           <span
             className="gx-link"
-            style={{ display: "none" }}
             onClick={() => {
-              setDeliveryRecord(record);
-              setreconcileModal(true);
+              setSyncLoading(record.deliveryDetails.deliveryId);
+              dispatch(
+                requestInventoryAdjustment(record.deliveryDetails.deliveryId),
+              );
             }}
           >
-            Reconcile
+            {record.deliveryDetails.deliveryId === syncloading && (
+              <Spin
+                indicator={
+                  <Icon type="loading" style={{ fontSize: 20 }} spin />
+                }
+              />
+            )}
+            Try again
           </span>
-        </span>
-      ),
+        ) : (
+          <></>
+        ),
     },
   ];
 
@@ -144,29 +145,12 @@ function List(props) {
     }
   }, [props.delivery.deleteSuccess]);
 
-  const handleDelete = (record) => {
-    setShowDeleteModal(record);
-  };
-
-  const handleAdd = (record) => {
-    let reqObj = {
-      deliveryId: record.deliveryDetails.deliveryId,
-      customerInvoiceDate: record.customerInvoiceDate,
-      customerInvoiceNo: record.customerInvoice,
-    };
-    props.postDeliveryConfirm(reqObj);
-  };
-
-  const onInputChange =
-    (key, index, type) => (e: React.ChangeEvent<HTMLInputElement>) => {
-      const newData = [...deliveryList];
-      newData[index].deliveryDetails[key] = e.target.value;
-      setDeliveryList(newData);
-    };
-
   useEffect(() => {
-    props.fetchPartyList();
-  }, []);
+    if (props.delivery.deliverySyncSuccess) {
+      setSyncLoading(false);
+      message.success("Delivery synced successfully");
+    }
+  }, [props.delivery.deliverySyncSuccess]);
 
   useEffect(() => {
     if (totalItems) {
@@ -265,7 +249,7 @@ function List(props) {
         visible={showDeleteModal}
         onOk={() => {
           props.deleteByDeliveryId(
-            Number(showDeleteModal?.deliveryDetails?.deliveryId)
+            Number(showDeleteModal?.deliveryDetails?.deliveryId),
           );
           setShowDeleteModal(false);
         }}

@@ -37,6 +37,7 @@ import {
   REQUEST_SYNC_TO_ZOHO,
   INWARDS_AGAINST_PO_REQUEST,
   SYNC_DOC_REQUEST,
+  FETCH_INWARD_SALES_NUMBERS_REQUESTED,
 } from "../../constants/ActionTypes";
 
 import {
@@ -106,10 +107,10 @@ import {
   syncToZohoError,
   requestDocSyncSuccess,
   requestDocSyncError,
+  getCoilSalesNumbersSuccess,
+  getCoilSalesNumbersError,
 } from "../actions";
 import { userSignOutSuccess } from "../../appRedux/actions/Auth";
-import { message } from "antd";
-
 const baseUrl = process.env.REACT_APP_BASE_URL;
 
 const getHeaders = () => ({
@@ -879,21 +880,19 @@ function* postDeliveryConfirmRequest(payload) {
     for (let item of payload.payload.inwardListForDelivery) {
       if (item.instructionId) {
         let tempItem = {};
+        const soMaterial = payload.payload.priceDetails?.filter(
+          (priceDetails) => priceDetails.instructionId === item.instructionId,
+        );
         tempItem.instructionId = item.instructionId;
         tempItem.remarks = item.remarks;
         tempItem.weight = item.actualWeight || item.plannedWeight;
+        tempItem.soNumber = soMaterial?.[0]?.sono;
+        tempItem.mmid = soMaterial?.[0]?.mmid;
+
         if (payload?.payload?.additionalWeights)
           tempItem.additionalWeight = parseFloat(
             payload?.payload?.additionalWeights[item.instructionId]
           );
-          if (
-            payload.payload?.soMaterialIds &&
-            payload.payload?.soMaterialIds[item.instructionId]
-          ) {
-            tempItem.sono =
-              payload.payload?.soMaterialIds[item.instructionId]?.sono;
-            tempItem.mmid = payload.payload?.soMaterialIds[item.instructionId]?.mmid;
-          }
           packetsData.push(tempItem);
       }
     }
@@ -1328,6 +1327,34 @@ function* requestDocSync(action) {
   }
 }
 
+function* getCoilSalesNumbers(action) {
+  try {
+    const updateClassification = yield fetch(
+      `${baseUrl}api/salesorder/coil/allocationdetails`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...getHeaders() },
+        body: JSON.stringify({ inwardEntryId: action.coilNumber }),
+      },
+    );
+    if (updateClassification.status === 200) {
+      const groupSaveListObj = yield updateClassification.json();
+      yield put(getCoilSalesNumbersSuccess(groupSaveListObj));
+    } else if (updateClassification.status === 401) {
+      yield put(userSignOutSuccess());
+    } else {
+      const errorMessageObj = yield updateClassification.json();
+      yield put(
+        getCoilSalesNumbersError(
+          errorMessageObj?.message ? errorMessageObj?.message : "error",
+        ),
+      );
+    }
+  } catch (error) {
+    yield put(getCoilSalesNumbersError(error));
+  }
+}
+
 function* getInwardMaterialList(action) {
   const req_obj = {
     pageNo: 1,
@@ -1454,6 +1481,7 @@ export function* watchFetchRequests() {
   yield takeLatest(REQUEST_SYNC_TO_ZOHO, requestSyncToZoho);
   yield takeLatest(INWARDS_AGAINST_PO_REQUEST, getInwardsAgainstPo);
   yield takeLatest(SYNC_DOC_REQUEST, requestDocSync);
+  yield takeLatest(FETCH_INWARD_SALES_NUMBERS_REQUESTED, getCoilSalesNumbers);
 }
 
 export default function* inwardSagas() {

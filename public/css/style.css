@@ -37334,3 +37334,25 @@ textarea.gx-chat-textarea {
 .table-row-dark {
   background-color: #fbfbfb;
 }
+
+/* Chrome, Edge, Safari */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #1677ff; /* antd primary */
+  border-radius: 4px;
+}
+
+/* Firefox */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+  height: calc(100vh - 72px - 145px) !important;
+}
+
