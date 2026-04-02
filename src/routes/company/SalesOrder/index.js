@@ -4,7 +4,7 @@ import {
   fetchPacketList,
   fetchSalesOrderList,
   saveSalesOrderForPacket,
-  fetchPartyList,
+  fetchMaterialsBySoID,
 } from "../../../appRedux/actions";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -31,7 +31,6 @@ const SalesOrder = () => {
   const [packetsList, setPacketsList] = useState(salesOrder.packets.data);
   const [customerValue, setCustomerValue] = useState("");
   const [filteredInfo, setFilteredInfo] = useState({});
-  const [soNumbers, setSoNumbers] = useState([]);
 
   const [pageSize, setPageSize] = useState(10);
   const [pageNo, setPageNo] = React.useState(1);
@@ -41,9 +40,9 @@ const SalesOrder = () => {
     confirm();
   };
 
-  const onInputChange = (index) => (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onInputChange = (index, soID, field) => {
     const newData = [...packetsList];
-    newData[index].soNumber = e.target.value;
+    newData[index][field] = soID;
     setPacketsList(newData);
   };
 
@@ -57,7 +56,6 @@ const SalesOrder = () => {
   useEffect(() => {
     if (salesOrder.packets.data) {
       setPacketsList(salesOrder.packets.data);
-      setSoNumbers(salesOrder.packets.soNumbers);
     }
   }, [salesOrder.packets.data]);
 
@@ -118,8 +116,8 @@ const SalesOrder = () => {
                       15,
                       customerValue,
                       "",
-                      filteredInfo["instructionId"][0]
-                    )
+                      filteredInfo["instructionId"][0],
+                    ),
                   );
                 }}
                 icon="search"
@@ -155,7 +153,7 @@ const SalesOrder = () => {
       title: "Plan date",
       dataIndex: "instructionDate",
       render(value) {
-        return moment(value).format("Do MMM YYYY");
+        return moment(value).format("DD/MM/YY");
       },
     },
     {
@@ -186,7 +184,7 @@ const SalesOrder = () => {
       key: "materialDesc",
     },
     {
-      title: "Material grade",
+      title: "Grade",
       dataIndex: "materialGrade",
       key: "materialGrade",
       render: (text, record, index) => (
@@ -198,7 +196,7 @@ const SalesOrder = () => {
       ),
     },
     {
-      title: "Material subgrade",
+      title: "Subgrade",
       dataIndex: "subGrade",
       key: "subGrade",
       render: (text, record, index) => (
@@ -239,6 +237,7 @@ const SalesOrder = () => {
     {
       title: "Sales Order Number",
       dataIndex: "deliveryDetails.customerInvoiceNo",
+      width: 200,
       key: "soNumber",
       filters: [
         { text: "Panned", value: 1 },
@@ -247,59 +246,141 @@ const SalesOrder = () => {
       render: (text, record, index) => (
         <div style={{ display: "flex", alignItems: "center" }}>
           <Select
-            style={{ width: 160 }}
-            mode="combobox"
+            style={{ flex: 1, minWidth: 0 }}
             labelInValue
+            mode="combobox"
             optionLabelProp="label"
-            showSearch
-            placeholder="Select SO Number"
+            // disabled={
+            //   props.inward.disableSelection || props.inwardStatus.saveTemporary
+            // }
+            allowClear={true}
             value={
-              record.soNumber
+              record?.soNumber
                 ? { key: record.soNumber, label: record.soNumber }
                 : undefined
             }
             notFoundContent={null}
-            allowClear={true}
-            showArrow={true}
+            showSearch={true}
+            placeholder="Select a SO number"
             optionFilterProp="children"
-
-            // When user selects SO
-            onSelect={(selected) => {
-              onInputChange(index)({
-                target: { value: selected?.key }
-              });
+            showArrow={true}
+            onSelect={(soId, option) => {
+              if (!soId) {
+                onInputChange(index, null, "soNumber");
+                return;
+              }
+              dispatch(fetchMaterialsBySoID(soId?.key));
+              onInputChange(index, soId?.key, "soNumber");
             }}
-
-            // When user types custom entry
-            onChange={(valueObj) => {
-              const val = typeof valueObj === "string"
-                ? valueObj
-                : valueObj?.key;
-
-              onInputChange(index)({
-                target: { value: val }
-              });
+            onChange={(materialId, option) => {
+              if (!materialId) {
+                onInputChange(index, null, "soNumber");
+                return;
+              }
+              onInputChange(index, materialId?.key, "soNumber");
             }}
-
             filterOption={(input, option) =>
               option.props.children
                 ?.toLowerCase()
-                ?.includes(input.toLowerCase())
+                ?.indexOf(input?.toLowerCase()) >= 0
             }
           >
-            {(soNumbers || []).map((so) => (
-              <Option
-                key={so}
-                value={so}
-                label={so}
-              >
+            {(record?.mappedSOList || []).map((so) => (
+              <Option key={so} value={so} label={so}>
                 {so}
               </Option>
             ))}
           </Select>
+        </div>
+      ),
+    },
+    {
+      title: "Materials",
+      dataIndex: "deliveryDetails.materialId",
+      key: "materialId",
+      width: 200,
+      render: (text, record, index) => (
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+            <Select
+              style={{ flex: 1, minWidth: 0 }}
+              labelInValue
+              mode="combobox"
+              optionLabelProp="label"
+              dropdownMatchSelectWidth={false} // default is true, but make sure it isn't false
+              // disabled={
+              //   props.inward.disableSelection || props.inwardStatus.saveTemporary
+              // }
+              allowClear={true}
+              value={
+                record?.mmid
+                  ? { key: record.mmid, label: record.mmid }
+                  : undefined
+              }
+              notFoundContent={null}
+              showSearch={true}
+              placeholder="Select a material ID"
+              optionFilterProp="children"
+              showArrow={true}
+              onSelect={(materialId, option) => {
+                if (!materialId) {
+                  onInputChange(index, null, "mmId");
+                  onInputChange(index, null, "mmName");
+                  return;
+                }
+                onInputChange(index, materialId?.key, "mmid");
+                onInputChange(
+                  index,
+                  option?.props["data-material-name"],
+                  "mmName",
+                );
+              }}
+              onChange={(materialId, option) => {
+                if (!materialId) {
+                  onInputChange(index, null, "mmid");
+                  onInputChange(index, null, "mmName");
+                  return;
+                }
+                onInputChange(index, materialId?.key, "mmid");
+                onInputChange(
+                  index,
+                  option?.props["data-material-name"],
+                  "mmName",
+                );
+              }}
+              filterOption={(input, option) =>
+                option.props.children
+                  ?.toLowerCase()
+                  ?.indexOf(input?.toLowerCase()) >= 0
+              }
+            >
+              {record?.soNumber &&
+              salesOrder?.materials &&
+              salesOrder?.materials[record.soNumber]
+                ? salesOrder?.materials[record.soNumber].map((material) => (
+                    <Option
+                      key={material.mmid}
+                      data-material-name={material?.materialName}
+                      label={material.mmid}
+                    >
+                      <div>
+                        <p>{material.mmid}</p>
+                        <p>{material.materialName}</p>
+                      </div>
+                    </Option>
+                  ))
+                : null}
+            </Select>
+            <p style={{marginTop: '2px'}}>{record?.mmName}</p>
+          </div>
           <Icon
             onClick={() => dispatch(saveSalesOrderForPacket(record))}
-            style={{ marginLeft: "8px" }}
+            style={{
+              marginLeft: "8px",
+              alignSelf: "flex-start",
+              cursor: "pointer",
+              marginTop: "10px",
+            }}
             type="check"
           />
         </div>
@@ -316,13 +397,12 @@ const SalesOrder = () => {
         customerValue,
         "",
         "",
-        filters
-      )
+        filters,
+      ),
     );
   };
 
   useEffect(() => {
-    dispatch(fetchPartyList());
     dispatch(fetchPacketList(1, pageSize, "", ""));
     dispatch(fetchSalesOrderList());
     // dispatch(fetchEndUserTagsList());
@@ -334,7 +414,6 @@ const SalesOrder = () => {
     }
   }, [salesOrder.success]);
 
-
   const handleCustomerChange = (value) => {
     if (value) {
       setCustomerValue(value);
@@ -344,8 +423,7 @@ const SalesOrder = () => {
       setCustomerValue("");
       // setSalesOrderList(salesOrderList);
     }
-};
-
+  };
 
   return (
     <div>

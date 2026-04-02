@@ -4,12 +4,13 @@ import {
   FETCH_PURCHASE_INVOICES_LIST_ERROR,
 } from "../../constants/ActionTypes";
 
-export const fetchPurchaseInvoices = (page, pageSize, searchValue, partyId) => ({
+export const fetchPurchaseInvoices = (page, pageSize, searchValue, partyId, inwardDate) => ({
   type: FETCH_PURCHASE_INVOICES_LIST,
   page,
   pageSize,
   searchValue,
   partyId,
+  inwardDate, 
 });
 
 export const fetchPurchaseInvoicesSuccess = (purchaseInvoicesList) => ({

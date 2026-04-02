@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux';
 import { Button, Card, Col, Row, Select, Tag, Checkbox } from 'antd'
 import {
-    fetchPartyList,
     fetchTemplatesList,
     saveQualityTemplateLink,
     getQualityTemplateLinkById,
@@ -46,7 +45,6 @@ const CreateLinkTemplate = (props) => {
             }
            
             props.fetchTemplatesList();
-            props.fetchPartyList();
             props.fetchEndUserTagsList();
             props.fetchMaterialGrades();
             props.getThicknessListQM();
@@ -456,7 +454,6 @@ const mapStateToProps = state => ({
 });
 
 export default connect(mapStateToProps, {
-    fetchPartyList,
     fetchTemplatesList,
     saveQualityTemplateLink,
     getQualityTemplateLinkById,

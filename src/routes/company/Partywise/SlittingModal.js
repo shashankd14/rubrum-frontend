@@ -16,7 +16,6 @@ import {
   Card,
 } from 'antd';
 import React, { useEffect, useState } from 'react';
-import SweetAlert from 'react-bootstrap-sweetalert';
 import { connect, useDispatch } from 'react-redux';
 import moment from 'moment';
 import { APPLICATION_DATE_FORMAT, METAL_DENSITY } from '../../../constants';
@@ -29,16 +28,16 @@ import {
   pdfGenerateInward,
   resetIsDeleted,
   QrCodeGeneratePlan,
-} from '../../../appRedux/actions/Inward';
+} from "../../../appRedux/actions/Inward";
 import {
   fetchClassificationList,
   fetchYLRList,
-} from '../../../appRedux/actions';
-import { labelPrintEditFinish } from '../../../appRedux/actions/LabelPrint';
-import IntlMessages from 'util/IntlMessages';
+} from "../../../appRedux/actions";
+import { labelPrintEditFinish } from "../../../appRedux/actions/LabelPrint";
 
 const { Panel } = Collapse;
 const Option = Select.Option;
+const { confirm } = Modal;
 
 export const formItemLayout = {
   labelCol: {
@@ -72,7 +71,7 @@ let uuid = 0;
 
 const SlittingWidths = (props) => {
   const { getFieldDecorator, getFieldValue, getFieldProps } = props.form;
-  getFieldDecorator('keys', { initialValue: [{ width: 0, no: 0, weight: 0 }] });
+  getFieldDecorator("keys", { initialValue: [{ width: 0, no: 0, weight: 0 }] });
   const [value, setValue] = useState(props.value);
   const [targetWeight, settargetWeight] = useState(0);
   const [availLength, setavailLength] = useState(0);
@@ -101,13 +100,13 @@ const SlittingWidths = (props) => {
   const [equalParts, setEqualParts] = useState(0);
   const [equalPartsDisplay, setEqualPartsDisplay] = useState(0);
   const [unsavedDeleteId, setUnsavedDeleteId] = useState(0);
-  const [tagsName, setTagsName] = useState('');
+  const [tagsName, setTagsName] = useState("");
   const [lengthExceedConfirm, setLengthExceedConfirm] = useState(false);
-  const keys = getFieldValue('keys');
+  const keys = getFieldValue("keys");
   const callBackValue = (n) => {
     let cuts = 0;
     if (props.cuts && props.cuts.length) {
-      if (n === 'length') {
+      if (n === "length") {
         cuts = props.cuts.map((i) => Number(i.plannedLength));
         cuts = [...new Set(cuts)];
       } else {
@@ -121,11 +120,11 @@ const SlittingWidths = (props) => {
     }
     return cuts;
   };
-  let cutLength = callBackValue('length');
-  let cutWidth = callBackValue('width');
+  let cutLength = callBackValue("length");
+  let cutWidth = callBackValue("width");
   let noParts = 0;
 
-  useEffect(() => {  
+  useEffect(() => {
     props.setSlitInstructionList(props.slitInstruction);
   }, [props.slitInstruction]);
 
@@ -244,7 +243,7 @@ const SlittingWidths = (props) => {
       const index = 0;
       const obj = props.cuts[props.length];
       const arr = [obj.plannedWidth, obj.plannedNoOfPieces, obj.plannedWeight];
-      const array = ['widths[0]', 'nos[0]', 'weights[0]'];
+      const array = ["widths[0]", "nos[0]", "weights[0]"];
       for (let i = 0; i < array.length; i++) {
         props.form.setFieldsValue({
           [array[i]]: `${arr[i]}`,
@@ -313,36 +312,36 @@ const SlittingWidths = (props) => {
             : props.plannedWeight(props.coilDetails);
         const slits = [];
         let slitArray = [];
-        let uniqId = '';
+        let uniqId = "";
         // if(cutLength === 0){
         //     setOldLength(Number(availLength));
         // }
         let instructionPlanDto = {
           targetWeight: targetWeight,
           length: availLength,
-          createdBy: '1',
-          updatedBy: '1',
+          createdBy: "1",
+          updatedBy: "1",
         };
         for (let i = 0; i < values.widths.length; i++) {
           for (let j = 0; j < values.nos[i]; j++) {
             let slitValue = {
               processId: 2,
-              instructionDate: moment().format('YYYY-MM-DD HH:mm:ss'),
+              instructionDate: moment().format("YYYY-MM-DD HH:mm:ss"),
               plannedLength: availLength,
               plannedWidth: values.widths[i],
               isSlitAndCut: props.slitCut ? true : false,
               plannedNoOfPieces: values.nos[i],
               status: 1,
-              createdBy: '1',
-              updatedBy: '1',
+              createdBy: "1",
+              updatedBy: "1",
               groupId: null,
               plannedWeight: (values.weights[i] / values.nos[i]).toFixed(2),
               inwardId: props.coilDetails.inwardEntryId
                 ? props.coilDetails.inwardEntryId
-                : '',
+                : "",
               parentInstructionId: props.coilDetails.instructionId
                 ? props.coilDetails.instructionId
-                : '',
+                : "",
               isScrapWeightUsed: false,
               deleteUniqId: unsavedDeleteId,
               packetClassificationName: null,
@@ -375,14 +374,14 @@ const SlittingWidths = (props) => {
         const totalWeightRound = Number(totalWeight.toFixed(0));
         const remainWeightRound = Number(remainWeight.toFixed(0));
         if (Number(availLength) > lengthValue) {
-          setLengthExceedConfirm(true);
-          message.error('Length greater than available length', 2);
+          showConfirm();
+          message.error("Length greater than available length", 2);
         } else if (totalWeightRound - remainWeightRound > remainWeightRound) {
-          message.error('Weight greater than available weight', 2);
+          message.error("Weight greater than available weight", 2);
         } else if (totalPacketsWidth !== widthValue) {
-          message.error('Sum of slits width is not same as width of coil.', 2);
+          message.error("Sum of slits width is not same as width of coil.", 2);
         } else if (totalPacketsWidth > widthValue) {
-          message.error('Sum of slits width is greater than width of coil.', 2);
+          message.error("Sum of slits width is greater than width of coil.", 2);
           // } else if (totalWidth !== widthValue) {
           //   message.error("Sum of slits width is not same as width of coil.", 2);
           // } else if (totalWidth > widthValue) {
@@ -415,7 +414,7 @@ const SlittingWidths = (props) => {
 
   const addNewKey = () => {
     const { form } = props;
-    const keys = form.getFieldValue('keys');
+    const keys = form.getFieldValue("keys");
     const nextKeys = keys.concat({ width: 0, no: 0, weight: 0 });
     form.setFieldsValue({
       keys: nextKeys,
@@ -424,7 +423,7 @@ const SlittingWidths = (props) => {
   const removeKey = (k) => {
     const { form } = props;
     // can use data-binding to get
-    const keys = form.getFieldValue('keys');
+    const keys = form.getFieldValue("keys");
     // We need at least one passenger
     if (keys.length === 1) {
       return;
@@ -523,15 +522,50 @@ const SlittingWidths = (props) => {
 
   const onConfirm = (e) => {
     setavailLength(props.coilDetails?.availableLength);
-    setLengthExceedConfirm(false);
+    // setLengthExceedConfirm(false);
   };
 
   const onCancel = (e) => {
-    setLengthExceedConfirm(false);
+    // setLengthExceedConfirm(false);
+  };
+
+  const showConfirm = () => {
+    confirm({
+      title: "Do you want to proceed with current available length?",
+      content: `Targeted length: ${availLength}
+        Current Avaialble length: ${props.coilDetails?.availableLength}
+    Targeted length is greater than the available length`,
+      okText: "Yes",
+      cancelText: "No",
+      onOk() {
+        onConfirm();
+      },
+      onCancel() {
+        onCancel();
+      },
+    });
   };
 
   return (
     <>
+      {/* <SweetAlert
+        show={lengthExceedConfirm}
+        custom
+        showCancel
+        title=""
+        confirmBtnText={<IntlMessages id="button.yes" />}
+        cancelBtnText={<IntlMessages id="button.no" />}
+        confirmBtnBsStyle="primary"
+        cancelBtnBsStyle="default"
+        // title={<IntlMessages id="sweetAlerts.doYouLikeThumb"/>}
+        onConfirm={onConfirm}
+        onCancel={onCancel}
+      >
+        <div>{`Targeted length: ${availLength}`}</div>
+        <div>{`Current Avaialble length: ${props.coilDetails?.availableLength}`}</div>
+        <div>{`Targeted length is greater than the available length`}</div>
+        <div>Do you want to proceed with current available length?</div>
+      </SweetAlert> */}
       <Form {...formItemLayoutSlitting}>
         {!props.wip && (
           <>
@@ -539,7 +573,7 @@ const SlittingWidths = (props) => {
               <label>Current Available length : {len}mm</label>
               <div>
                 <label>
-                  Available Width :{' '}
+                  Available Width :{" "}
                   {weightValue > 0
                     ? props.coilDetails.fWidth || props.coilDetails.plannedWidth
                     : 0}
@@ -556,15 +590,15 @@ const SlittingWidths = (props) => {
         )}
         {!props.wip && (
           <>
-            <Form.Item label='Process Date' className='gx-mt-4'>
-              {getFieldDecorator('processDate', {
+            <Form.Item label="Process Date" className="gx-mt-4">
+              {getFieldDecorator("processDate", {
                 initialValue: moment(new Date(), APPLICATION_DATE_FORMAT),
                 rules: [
-                  { required: true, message: 'Please select a Process date' },
+                  { required: true, message: "Please select a Process date" },
                 ],
               })(
                 <DatePicker
-                  placeholder='dd/mm/yy'
+                  placeholder="dd/mm/yy"
                   style={{ width: 200 }}
                   defaultValue={moment(new Date(), APPLICATION_DATE_FORMAT)}
                   format={APPLICATION_DATE_FORMAT}
@@ -572,39 +606,39 @@ const SlittingWidths = (props) => {
                 />
               )}
             </Form.Item>
-            <Form.Item label='No Of Parts'>
-              {getFieldDecorator('noParts', {
+            <Form.Item label="No Of Parts">
+              {getFieldDecorator("noParts", {
                 rules: [
                   {
                     required:
                       (value === 2 || value === 1) && equalParts !== 0
                         ? false
                         : true,
-                    message: 'Please enter no.of Parts',
+                    message: "Please enter no.of Parts",
                   },
                 ],
               })(
                 <Input
-                  id='noParts'
+                  id="noParts"
                   onBlur={handleBlurEvent}
                   disabled={value == 0 || value == 4 ? false : true}
                 />
               )}
             </Form.Item>
             <Form.Item>
-              {getFieldDecorator('radioParts', {
+              {getFieldDecorator("radioParts", {
                 rules: [
                   {
                     required:
                       (value === 2 || value === 1) && equalParts !== 0
                         ? false
                         : true,
-                    message: 'Please select Parts',
+                    message: "Please select Parts",
                   },
                 ],
               })(
                 <Radio.Group
-                  id='radioParts'
+                  id="radioParts"
                   onChange={radioChange}
                   disabled={
                     (value == 0 || value == 4) && weightValue !== 0
@@ -619,28 +653,28 @@ const SlittingWidths = (props) => {
               )}
             </Form.Item>
 
-            <Form.Item label='Target Weight(kg)'>
-              {getFieldDecorator('targetWeight')(
+            <Form.Item label="Target Weight(kg)">
+              {getFieldDecorator("targetWeight")(
                 <>
                   <Input
                     width={50}
-                    id='targetWeight'
+                    id="targetWeight"
                     disabled={value === 1 ? true : false}
                     value={targetWeight}
-                    name='targetWeight'
+                    name="targetWeight"
                     onChange={onTargetChange}
                   />
                 </>
               )}
             </Form.Item>
-            <Form.Item label='Length(mm)'>
-              {getFieldDecorator('length')(
+            <Form.Item label="Length(mm)">
+              {getFieldDecorator("length")(
                 <>
                   <Input
-                    id='length'
+                    id="length"
                     disabled={true}
                     value={availLength}
-                    name='length'
+                    name="length"
                   />
                 </>
               )}
@@ -659,23 +693,23 @@ const SlittingWidths = (props) => {
                 {/* <label>Action</label> */}
               </Col>
             </Row>
-            <Row className='ant-row' style={{ marginLeft: -16 }}>
+            <Row className="ant-row" style={{ marginLeft: -16 }}>
               {keys.map((k, index) => {
                 return (
                   <Row style={{ marginLeft: 0 }}>
                     <Col lg={7} md={8} sm={12} xs={24}>
-                      <Form.Item name='widths'>
+                      <Form.Item name="widths">
                         {getFieldDecorator(`widths[${index}]`, {
                           rules: [
-                            { required: true, message: 'Please enter width' },
+                            { required: true, message: "Please enter width" },
                             {
                               pattern: `^[+-]?[0-9]*\.[0-9]{0,2}$`,
-                              message: 'Only 2 decimal values allowed',
+                              message: "Only 2 decimal values allowed",
                             },
                           ],
                         })(
                           <Input
-                            id='widths'
+                            id="widths"
                             disabled={props.wip ? true : false}
                             onBlur={(e) => handleBlur(e, index)}
                           />
@@ -683,18 +717,18 @@ const SlittingWidths = (props) => {
                       </Form.Item>
                     </Col>
                     <Col lg={7} md={6} sm={12} xs={24}>
-                      <Form.Item name='nos'>
+                      <Form.Item name="nos">
                         {getFieldDecorator(`nos[${index}]`, {
                           rules: [
-                            { required: true, message: 'Please enter nos' },
+                            { required: true, message: "Please enter nos" },
                             {
-                              pattern: '^[0-9]*$',
-                              message: 'Number of slits should be a number',
+                              pattern: "^[0-9]*$",
+                              message: "Number of slits should be a number",
                             },
                           ],
                         })(
                           <Input
-                            id='nos'
+                            id="nos"
                             disabled={props.wip ? true : false}
                             onBlur={(e) => handleBlur(e, index)}
                           />
@@ -702,9 +736,9 @@ const SlittingWidths = (props) => {
                       </Form.Item>
                     </Col>
                     <Col lg={7} md={8} sm={12} xs={24}>
-                      <Form.Item name='weights'>
+                      <Form.Item name="weights">
                         {getFieldDecorator(`weights[${index}]`)(
-                          <Input id='weights' disabled={true} />
+                          <Input id="weights" disabled={true} />
                         )}
                       </Form.Item>
                     </Col>
@@ -715,7 +749,7 @@ const SlittingWidths = (props) => {
                       >
                         {keys.length - 1 > 0 ? (
                           <i
-                            className='icon icon-trash gx-margin'
+                            className="icon icon-trash gx-margin"
                             onClick={() => removeKey(k)}
                           />
                         ) : (
@@ -723,7 +757,7 @@ const SlittingWidths = (props) => {
                         )}
                         {index == keys.length - 1 ? (
                           <i
-                            className='icon icon-add-circle'
+                            className="icon icon-add-circle"
                             onClick={() => addNewKey()}
                           />
                         ) : (
@@ -735,26 +769,26 @@ const SlittingWidths = (props) => {
                 );
               })}
             </Row>
-            <Form.Item label='Total width(mm)'>
-              {getFieldDecorator('twidth', {
+            <Form.Item label="Total width(mm)">
+              {getFieldDecorator("twidth", {
                 rules: [{ required: false }],
               })(
                 <>
                   <Input
-                    id='twidth'
+                    id="twidth"
                     disabled={true}
                     value={twidth}
-                    name='twidth'
+                    name="twidth"
                   />
                 </>
               )}
             </Form.Item>
 
-            <Row className='gx-mt-4'>
-              <Col span={16} style={{ textAlign: 'center' }}>
+            <Row className="gx-mt-4">
+              <Col span={16} style={{ textAlign: "center" }}>
                 <Button
-                  type='primary'
-                  htmlType='submit'
+                  type="primary"
+                  htmlType="submit"
                   onClick={() => addNewSize()}
                   disabled={
                     props.wip
@@ -765,12 +799,12 @@ const SlittingWidths = (props) => {
                   }
                 >
                   Add Size
-                  <Icon type='right' />
+                  <Icon type="right" />
                 </Button>
               </Col>
             </Row>
             <Button
-              type='primary'
+              type="primary"
               onClick={applyData}
               hidden={
                 value === 1 &&
@@ -787,41 +821,23 @@ const SlittingWidths = (props) => {
                   : true
               }
             >
-              Apply to remainig {equalPartsDisplay} parts <Icon type='right' />
+              Apply to remainig {equalPartsDisplay} parts <Icon type="right" />
             </Button>
           </>
         )}
       </Form>
-      <SweetAlert
-        show={lengthExceedConfirm}
-        custom
-        showCancel
-        title=''
-        confirmBtnText={<IntlMessages id='button.yes' />}
-        cancelBtnText={<IntlMessages id='button.no' />}
-        confirmBtnBsStyle='primary'
-        cancelBtnBsStyle='default'
-        // title={<IntlMessages id="sweetAlerts.doYouLikeThumb"/>}
-        onConfirm={onConfirm}
-        onCancel={onCancel}
-      >
-        <div>{`Targeted length: ${availLength}`}</div>
-        <div>{`Current Avaialble length: ${props.coilDetails?.availableLength}`}</div>
-        <div>{`Targeted length is greater than the available length`}</div>
-        <div>Do you want to proceed with current available length?</div>
-      </SweetAlert>
     </>
   );
 };
 
 const CreateSlittingDetailsForm = (props) => {
   const TabPane = Tabs.TabPane;
-  const [mode, setMode] = useState('top');
+  const [mode, setMode] = useState("top");
   const { getFieldDecorator } = props.form;
   const [cuts, setCuts] = useState([]);
   const [slitPayload, setslitpayload] = useState([]);
   const [length, setLength] = useState();
-  let loading = '';
+  let loading = "";
   let cutArray = [];
   const [reset, setreset] = useState(true);
   const [slitInstruction, setSlitInstruction] = useState([]);
@@ -830,85 +846,85 @@ const CreateSlittingDetailsForm = (props) => {
   const [slitEqualInstruction, setSlitEqualInstruction] = useState([]);
   const columns = [
     {
-      title: 'Serial No',
-      dataIndex: 'instructionId',
-      key: 'instructionId',
+      title: "Serial No",
+      dataIndex: "instructionId",
+      key: "instructionId",
     },
     {
-      title: 'Plan Date',
-      dataIndex: 'instructionDate',
+      title: "Plan Date",
+      dataIndex: "instructionDate",
       render(value) {
-        return moment(value).format('DD/MM/YYYY');
+        return moment(value).format("DD/MM/YYYY");
       },
-      key: 'instructionDate',
+      key: "instructionDate",
     },
     {
-      title: 'Length',
-      dataIndex: 'plannedLength',
+      title: "Length",
+      dataIndex: "plannedLength",
       render: (text, record, index) =>
         record?.instructionId ? (
           text
         ) : (
           <Input
             value={record?.plannedLength}
-            onChange={onInputChange('plannedLength', index, record)}
+            onChange={onInputChange("plannedLength", index, record)}
           />
         ),
     },
     {
-      title: 'Actual Length',
-      dataIndex: 'actualLength',
+      title: "Actual Length",
+      dataIndex: "actualLength",
       render: (text, record, index) => {
         // addonAfter={<p>Enter valid length</p>}
         return (
           <Input
             disabled={props.unfinish}
             value={record.actualLength}
-            onChange={onInputChange('actualLength', index, record)}
+            onChange={onInputChange("actualLength", index, record)}
           />
         );
       },
     },
     {
-      title: 'Width',
-      dataIndex: 'plannedWidth',
+      title: "Width",
+      dataIndex: "plannedWidth",
       render: (text, record, index) =>
         record?.instructionId ? (
           text
         ) : (
           <Input
             value={record?.plannedWidth}
-            onChange={onInputChange('plannedWidth', index, record)}
+            onChange={onInputChange("plannedWidth", index, record)}
           />
         ),
     },
     {
-      title: 'Actual Width',
-      dataIndex: 'actualWidth',
+      title: "Actual Width",
+      dataIndex: "actualWidth",
       render: (text, record, index) => {
         return (
           <Input
             disabled={props.unfinish}
             value={record.actualWidth}
-            onChange={onInputChange('actualWidth', index, record)}
+            onChange={onInputChange("actualWidth", index, record)}
           />
         );
       },
     },
     {
-      title: 'Weight',
-      dataIndex: 'plannedWeight',
-      key: 'plannedWeight',
+      title: "Weight",
+      dataIndex: "plannedWeight",
+      key: "plannedWeight",
     },
     {
-      title: 'Actual Weight',
-      dataIndex: 'actualWeight',
+      title: "Actual Weight",
+      dataIndex: "actualWeight",
       render: (text, record, index) => {
         return (
           <Input
             disabled={props.unfinish}
             value={record.actualWeight}
-            onChange={onInputChange('actualWeight', index, record)}
+            onChange={onInputChange("actualWeight", index, record)}
             onBlur={() => {
               let actualTotalWeight = cuts.map((i) => i.actualWeight);
               actualTotalWeight = actualTotalWeight.filter(
@@ -927,23 +943,23 @@ const CreateSlittingDetailsForm = (props) => {
       },
     },
     {
-      title: 'Classification',
-      dataIndex: 'packetClassification',
+      title: "Classification",
+      dataIndex: "packetClassification",
       render: (text, record, index) => {
         return (
           <Select
             disabled={props.unfinish}
             dropdownMatchSelectWidth={false}
-            style={{ width: '100%' }}
+            style={{ width: "100%" }}
             value={
               record?.packetClassification?.tagId ||
               record?.packetClassification?.classificationId
             }
             onChange={onInputChange(
-              'packetClassification',
+              "packetClassification",
               index,
               record,
-              'select'
+              "select"
             )}
           >
             {packetClassification?.map((item) => {
@@ -954,27 +970,27 @@ const CreateSlittingDetailsForm = (props) => {
       },
     },
     {
-      title: 'End User Tags',
-      dataIndex: 'party.endUserTags',
+      title: "End User Tags",
+      dataIndex: "party.endUserTags",
       render: (text, record, index) => {
         return (
           <Select
             showSearch
             disabled={props.unfinish}
             dropdownMatchSelectWidth={false}
-            optionFilterProp='children'
+            optionFilterProp="children"
             filterOption={(input, option) => {
               return option?.props?.children
                 ?.toLowerCase()
                 .includes(input.toLowerCase());
             }}
-            style={{ width: '100px' }}
+            style={{ width: "100px" }}
             value={record?.endUserTagsentity?.tagId}
             onChange={onInputChange(
-              'endUserTagsentity',
+              "endUserTagsentity",
               index,
               record,
-              'select'
+              "select"
             )}
           >
             {props.coilDetails.party.endUserTags?.map((item) => {
@@ -985,44 +1001,44 @@ const CreateSlittingDetailsForm = (props) => {
       },
     },
     {
-      title: '',
+      title: "",
       render: (text, record) =>
         record?.instructionId ? (
-          ''
+          ""
         ) : (
           <a onClick={(e) => handleWeight(e, record)}>Save</a>
         ),
     },
   ];
 
-  const desiredTags = ['WIP(CUT ENDS)', 'WIP(EDGE TRIM)', 'WIP(FG)'];
+  const desiredTags = ["WIP(CUT ENDS)", "WIP(EDGE TRIM)", "WIP(FG)"];
   const columnsPlan = [
     {
-      title: 'Sr. No',
-      key: 'index',
+      title: "Sr. No",
+      key: "index",
       render: (text, record, index) => (page - 1) * 10 + index + 1,
     },
     {
-      title: 'Length',
-      dataIndex: 'plannedLength',
-      key: 'plannedLength',
+      title: "Length",
+      dataIndex: "plannedLength",
+      key: "plannedLength",
     },
     {
-      title: 'Width',
-      dataIndex: 'plannedWidth',
-      key: 'plannedWidth',
+      title: "Width",
+      dataIndex: "plannedWidth",
+      key: "plannedWidth",
     },
     {
-      title: 'Weight',
-      dataIndex: 'plannedWeight',
+      title: "Weight",
+      dataIndex: "plannedWeight",
       render(value) {
         return Math.round(value);
       },
-      key: 'plannedWeight',
+      key: "plannedWeight",
     },
     {
-      title: 'Classification',
-      dataIndex: 'packetClassification',
+      title: "Classification",
+      dataIndex: "packetClassification",
       render: (text, record, index) => {
         const filteredTags = packetClassification.filter((item) =>
           desiredTags.includes(item.tagName)
@@ -1032,7 +1048,7 @@ const CreateSlittingDetailsForm = (props) => {
           <Select
             disabled={props.unfinish}
             dropdownMatchSelectWidth={false}
-            style={{ width: '100%' }}
+            style={{ width: "100%" }}
             value={
               record?.packetClassification?.packetClassificationId ||
               record?.packetClassification?.classificationName ||
@@ -1053,15 +1069,15 @@ const CreateSlittingDetailsForm = (props) => {
     },
 
     {
-      title: 'End User Tags',
-      dataIndex: 'endUserTags.tagsName',
+      title: "End User Tags",
+      dataIndex: "endUserTags.tagsName",
       render: (text, record, index) => {
         return (
           <Select
             showSearch
-            style={{ width: '100px' }}
+            style={{ width: "100px" }}
             dropdownMatchSelectWidth={false}
-            optionFilterProp='children'
+            optionFilterProp="children"
             filterOption={(input, option) => {
               return option?.props?.children
                 ?.toLowerCase()
@@ -1092,27 +1108,27 @@ const CreateSlittingDetailsForm = (props) => {
       },
     },
     {
-      title: 'Action',
-      dataIndex: '',
-      key: 'x',
+      title: "Action",
+      dataIndex: "",
+      key: "x",
       render: (text, record, index) => (
         <span>
           <span
-            className='gx-link'
+            className="gx-link"
             onClick={(e) => {
               onEdit(index, e);
             }}
           >
-            <Icon type='edit' />
+            <Icon type="edit" />
           </span>
           <span
-            className='gx-link'
+            className="gx-link"
             onClick={(e) => {
               setDeleteRecord({ e, record, key: index });
               setshowDeleteModal(true);
             }}
           >
-            <Icon type='delete' />
+            <Icon type="delete" />
           </span>
         </span>
       ),
@@ -1158,12 +1174,12 @@ const CreateSlittingDetailsForm = (props) => {
 
     setDeletedSelected(true);
     if (record.isSlitAndCut && record.groupId) {
-      message.error('Unable to delete! As part instruction is already bundled');
+      message.error("Unable to delete! As part instruction is already bundled");
     } else if (record.instructionId && record.partId) {
       const payload = {
         partId: record.partId,
       };
-      props.deleteInstructionById(payload, 'slit');
+      props.deleteInstructionById(payload, "slit");
       setshowDeleteModal(false);
       props.setShowSlittingModal(false);
     } else {
@@ -1304,26 +1320,26 @@ const CreateSlittingDetailsForm = (props) => {
       const newData = [...tableData];
       const newIndex = (page - 1) * 10 + index;
       newData[newIndex][key] =
-        type === 'select'
-          ? key === 'endUserTagsentity'
+        type === "select"
+          ? key === "endUserTagsentity"
             ? { tagId: Number(e) }
             : { classificationId: Number(e) }
           : Number(e.target.value);
-      if (key === 'actualWeight') {
+      if (key === "actualWeight") {
         const data =
           (e.target.value /
-            ((newData[newIndex]['actualWidth'] / 1000) *
-            METAL_DENSITY *
+            ((newData[newIndex]["actualWidth"] / 1000) *
+              METAL_DENSITY *
               props.coil.fThickness)) *
           1000;
-        newData[newIndex]['actualLength'] = Number.isInteger(data)
+        newData[newIndex]["actualLength"] = Number.isInteger(data)
           ? data
           : data.toFixed(1);
       }
       // Yield loss Ratio
       if (
-        (key === 'packetClassification' && type === 'select') ||
-        key === 'actualWeight'
+        (key === "packetClassification" && type === "select") ||
+        key === "actualWeight"
       ) {
         const edgeTrimWeights = newData
           .filter((record) => {
@@ -1332,8 +1348,8 @@ const CreateSlittingDetailsForm = (props) => {
                 record.packetClassification?.tagId
             );
             return (
-              classificationName === 'EDGE TRIM' ||
-              classificationName === 'CUT ENDS'
+              classificationName === "EDGE TRIM" ||
+              classificationName === "CUT ENDS"
             );
           })
           .map((record) => record.actualWeight);
@@ -1362,10 +1378,10 @@ const CreateSlittingDetailsForm = (props) => {
     const filteredInstructions = response?.filter((instruction) =>
       instruction.some(
         (item) =>
-          (item.packetClassification?.classificationName === 'WIP(EDGE TRIM)' ||
-            item.packetClassification?.classificationName === 'WIP(CUT ENDS)' ||
-            item.packetClassification?.classificationName === 'EDGE TRIM' ||
-            item.packetClassification?.classificationName === 'CUT ENDS') &&
+          (item.packetClassification?.classificationName === "WIP(EDGE TRIM)" ||
+            item.packetClassification?.classificationName === "WIP(CUT ENDS)" ||
+            item.packetClassification?.classificationName === "EDGE TRIM" ||
+            item.packetClassification?.classificationName === "CUT ENDS") &&
           item.packetClassification?.classificationName !== null
       )
     );
@@ -1477,8 +1493,8 @@ const CreateSlittingDetailsForm = (props) => {
     panelList[tableIndex].map((tableRecord) => {
       // Update the relevant data in tableData
       if (
-        tableRecord.packetClassificationName === 'WIP(EDGE TRIM)' ||
-        tableRecord.packetClassificationName === 'WIP(CUT ENDS)'
+        tableRecord.packetClassificationName === "WIP(EDGE TRIM)" ||
+        tableRecord.packetClassificationName === "WIP(CUT ENDS)"
       ) {
         tableDatapacketWeight +=
           tableRecord.plannedWeight !== undefined
@@ -1507,7 +1523,7 @@ const CreateSlittingDetailsForm = (props) => {
     const updatedTotaltableDatapacketWeight =
       updatedStoredTableDatapacketWeights.reduce((acc, curr) => {
         // Check if the current element is a number
-        if (typeof curr === 'number' && !isNaN(curr)) {
+        if (typeof curr === "number" && !isNaN(curr)) {
           return acc + curr; // Add only if it's a valid number
         }
         return acc; // Otherwise, return the accumulator unchanged
@@ -1523,7 +1539,7 @@ const CreateSlittingDetailsForm = (props) => {
     const updatedTotalPlannedWeight = updatedStoredPlannedWeights.reduce(
       (acc, curr) => {
         // Check if the current element is a number
-        if (typeof curr === 'number' && !isNaN(curr)) {
+        if (typeof curr === "number" && !isNaN(curr)) {
           return acc + curr; // Add only if it's a valid number
         }
         return acc; // Otherwise, return the accumulator unchanged
@@ -1539,7 +1555,7 @@ const CreateSlittingDetailsForm = (props) => {
   };
 
   useEffect(() => {
-    let processTags = [{ tagId: 0, tagName: 'Select' }];
+    let processTags = [{ tagId: 0, tagName: "Select" }];
     processTags = [...processTags, ...props?.processTags];
     setPacketClassification(processTags);
   }, [props.processTags]);
@@ -1547,7 +1563,7 @@ const CreateSlittingDetailsForm = (props) => {
   useEffect(() => {
     if (props.slitCut) {
       if (props.inward.instructionSaveSlittingLoading && !props.wip) {
-        loading = message.loading('Saving Slit Instruction..');
+        loading = message.loading("Saving Slit Instruction..");
       }
     } else {
       if (
@@ -1555,7 +1571,7 @@ const CreateSlittingDetailsForm = (props) => {
         !props.inward.pdfSuccess &&
         !props.wip
       ) {
-        loading = message.loading('Saving Slit Instruction & Generating pdf..');
+        loading = message.loading("Saving Slit Instruction & Generating pdf..");
       }
     }
   }, [props.inward.instructionSaveSlittingLoading]);
@@ -1563,7 +1579,7 @@ const CreateSlittingDetailsForm = (props) => {
   useEffect(() => {
     if (props.inward.pdfSuccess && !props.wip) {
       message
-        .success('Slitting instruction saved & pdf generated successfully', 2)
+        .success("Slitting instruction saved & pdf generated successfully", 2)
         .then(() => {
           props.resetIsDeleted(false);
           props.setShowSlittingModal(false);
@@ -1574,40 +1590,40 @@ const CreateSlittingDetailsForm = (props) => {
   //Yield loss ratio
   const columnYieldLoss = [
     {
-      title: 'Sr. No',
-      key: 'index',
+      title: "Sr. No",
+      key: "index",
       render: (text, record, index) => (page - 1) * 10 + index + 1,
     },
     {
-      title: 'Location Name',
-      dataIndex: 'partyName',
-      key: 'partyName',
+      title: "Location Name",
+      dataIndex: "partyName",
+      key: "partyName",
     },
     {
-      title: 'Loss Ratio from',
-      dataIndex: 'lossRatioPercentageFrom',
-      key: 'lossRatioPercentageFrom',
+      title: "Loss Ratio from",
+      dataIndex: "lossRatioPercentageFrom",
+      key: "lossRatioPercentageFrom",
     },
     {
-      title: 'Loss Ratio to',
-      dataIndex: 'lossRatioPercentageTo',
-      key: 'lossRatioPercentageTo',
+      title: "Loss Ratio to",
+      dataIndex: "lossRatioPercentageTo",
+      key: "lossRatioPercentageTo",
     },
     {
-      title: 'Comments',
-      dataIndex: 'comments',
-      key: 'comments',
+      title: "Comments",
+      dataIndex: "comments",
+      key: "comments",
     },
   ];
   useEffect(() => {
     if (props.yieldLossRatioParty === undefined) {
       props.fetchYLRList({
-        pageNo: '1',
-        pageSize: '500',
+        pageNo: "1",
+        pageSize: "500",
         partyId: props.coil.party.nPartyId,
-        ipAddress: '',
-        requestId: 'YLR_PLAN_GET',
-        userId: '',
+        ipAddress: "",
+        requestId: "YLR_PLAN_GET",
+        userId: "",
       });
     }
   }, []);
@@ -1621,11 +1637,11 @@ const CreateSlittingDetailsForm = (props) => {
       };
 
       const filteredDataSlitting = filterContentByProcessName(
-        'SLITTING',
+        "SLITTING",
         props.yieldLossRatioParty
       );
       const filteredDataSlitCut = filterContentByProcessName(
-        'SLIT AND CUT',
+        "SLIT AND CUT",
         props.yieldLossRatioParty
       );
       setSlittingFilteredData(filteredDataSlitting);
@@ -1639,8 +1655,8 @@ const CreateSlittingDetailsForm = (props) => {
       props.inward.instructionSaveSlittingSuccess &&
       !props.wip
     ) {
-      loading = '';
-      message.success('Slitting instruction saved', 2).then(() => {
+      loading = "";
+      message.success("Slitting instruction saved", 2).then(() => {
         props.resetInstruction();
         let cutList = props.inward?.saveSlit.map((slit) => [
           ...slit.instructions,
@@ -1664,14 +1680,14 @@ const CreateSlittingDetailsForm = (props) => {
       };
       props.pdfGenerateInward(payload);
       dispatch(QrCodeGeneratePlan(payload));
-      loading = '';
+      loading = "";
     } else if (
       props.inward.instructionSaveSlittingSuccess &&
       props.wip &&
       !props.slitCut
     ) {
       setTimeout(() => {
-        message.success('Slitting instruction saved', 2).then(() => {
+        message.success("Slitting instruction saved", 2).then(() => {
           props.setShowSlittingModal(false);
           props.resetInstruction();
         });
@@ -1681,7 +1697,7 @@ const CreateSlittingDetailsForm = (props) => {
 
   useEffect(() => {
     if (props?.inward?.instructionUpdateSuccess) {
-      message.success('Successfully Updated!', 2).then(() => {
+      message.success("Successfully Updated!", 2).then(() => {
         props.resetInstruction();
       });
     }
@@ -1800,18 +1816,18 @@ const CreateSlittingDetailsForm = (props) => {
       );
       if (isAllWip) {
         message.error(
-          'Unable to finish Instructions. Please select the classification'
+          "Unable to finish Instructions. Please select the classification"
         );
       } else if (totalActualweight > tweight) {
         message.error(
-          'Actual Weight is greater than Total weight, Please modify actual weight!'
+          "Actual Weight is greater than Total weight, Please modify actual weight!"
         );
       } else {
         const instructionList = tableData.filter(
           (item) =>
             item?.packetClassification?.tagId !== 0 &&
             item?.packetClassification?.classificationId !== 0 &&
-            item?.packetClassification !== '' &&
+            item?.packetClassification !== "" &&
             item?.packetClassification !== null
         );
         const coil = {
@@ -1831,7 +1847,7 @@ const CreateSlittingDetailsForm = (props) => {
       if (slitInstruction.length === parts) {
         setValue(value + 3);
         setDeletedSelected(false);
-        if (name === 'Slitting') {
+        if (name === "Slitting") {
           if (slitPayload.length > 0) {
             const modifiedSlitInstruction = slitInstruction.map(
               (instruction) => {
@@ -1864,7 +1880,7 @@ const CreateSlittingDetailsForm = (props) => {
             props.setShowSlittingModal(false);
           }
         } else {
-          if (name === 'SlitCut') {
+          if (name === "SlitCut") {
             if (slitPayload.length > 0) {
               props.saveSlittingInstruction(slitInstruction);
             }
@@ -1874,7 +1890,7 @@ const CreateSlittingDetailsForm = (props) => {
           }
         }
       } else {
-        if (name === 'slittingDetail') {
+        if (name === "slittingDetail") {
           setValue(value + 3);
           props.resetIsDeleted(false);
           props.setShowSlittingModal(false);
@@ -1882,11 +1898,11 @@ const CreateSlittingDetailsForm = (props) => {
           props.setCutting(cuts);
           setDeletedSelected(false);
         } else {
-          message.error('Please enter instructions for all parts');
+          message.error("Please enter instructions for all parts");
         }
       }
     } else {
-      if (name === 'slittingDetail') {
+      if (name === "slittingDetail") {
         setValue(value + 3);
         props.resetIsDeleted(false);
         props.setShowSlittingModal(false);
@@ -1911,8 +1927,8 @@ const CreateSlittingDetailsForm = (props) => {
       if (compareYieldLoss.length > 0) {
         // message.warning('take approval from customer or change the plan');
         confirm({
-          title: 'take approval from location manager or change the plan.',
-          okText: 'OK',
+          title: "take approval from location manager or change the plan.",
+          okText: "OK",
           onOk() {
             savePlan(e, name, record);
           },
@@ -1937,7 +1953,7 @@ const CreateSlittingDetailsForm = (props) => {
       record?.packetClassification?.tagId === 0 ||
       record?.packetClassification?.classificationId === 0
     ) {
-      message.error('Error! Please select classification');
+      message.error("Error! Please select classification");
     } else {
       const instructionList = tableData
         .slice(0, tableData.length - 1)
@@ -1952,10 +1968,10 @@ const CreateSlittingDetailsForm = (props) => {
       const instructionPayload = [
         {
           partDetailsRequest: {
-            targetWeight: '0',
-            length: '0',
-            createdBy: '1',
-            updatedBy: '1',
+            targetWeight: "0",
+            length: "0",
+            createdBy: "1",
+            updatedBy: "1",
             deleteUniqId: 0,
           },
           instructionRequestDTOs: [
@@ -1971,16 +1987,16 @@ const CreateSlittingDetailsForm = (props) => {
                 record?.actualWeight || props?.coilDetails?.scrapWeight,
               plannedWidth: record?.plannedWidth,
               isSlitAndCut: false,
-              plannedNoOfPieces: '1',
+              plannedNoOfPieces: "1",
               status: 1,
-              createdBy: '1',
-              updatedBy: '1',
+              createdBy: "1",
+              updatedBy: "1",
               groupId: null,
               // plannedWeight:
               //   props?.coilDetails?.scrapWeight || record.actualWeight || 0,
               plannedWeight: props?.coilDetails?.scrapWeight || 0,
               inwardId: props?.coilDetails?.inwardEntryId,
-              parentInstructionId: '',
+              parentInstructionId: "",
               endUserTagId: record?.endUserTagsentity?.tagId,
               deleteUniqId: 0,
               isScrapWeightUsed: true,
@@ -2004,30 +2020,30 @@ const CreateSlittingDetailsForm = (props) => {
     setRowData(true);
     const newData = {
       processDate: new Date(),
-      plannedLength: '',
-      actualLength: '',
+      plannedLength: "",
+      actualLength: "",
       plannedWeight:
         props?.coilDetails?.scrapWeight === null
           ? 0
           : props?.coilDetails?.scrapWeight,
-      actualWeight: '',
+      actualWeight: "",
       packetClassification: {
-        tagName: '',
+        tagName: "",
       },
       endUserTags: {
-        tagsName: '',
+        tagsName: "",
       },
     };
     setTableData([...tableData, newData]);
   };
   const getFooterButtons = (type) => {
     return [
-      <Button key='back' onClick={handleCancel}>
+      <Button key="back" onClick={handleCancel}>
         Cancel
       </Button>,
       <Button
-        key='submit'
-        type='primary'
+        key="submit"
+        type="primary"
         loading={loading}
         disabled={props?.inward?.loading}
         onClick={(e) => {
@@ -2035,12 +2051,12 @@ const CreateSlittingDetailsForm = (props) => {
         }}
       >
         {props.inward.loading
-          ? 'Loading...'
-          : type === 'Slitting' && !props.wip
-          ? 'Save & Generate'
-          : type !== 'Slitting'
-          ? 'Proceed for Cut'
-          : 'OK'}
+          ? "Loading..."
+          : type === "Slitting" && !props.wip
+          ? "Save & Generate"
+          : type !== "Slitting"
+          ? "Proceed for Cut"
+          : "OK"}
       </Button>,
     ];
   };
@@ -2573,7 +2589,7 @@ const SlittingDetailsForm = Form.create({
     return {
       width: Form.createFormField({
         ...props.inward.process.width,
-        value: props.inward.process.width ? props.inward.process.width : '',
+        value: props.inward.process.width ? props.inward.process.width : "",
       }),
       processDate: Form.createFormField({
         ...props.inward.process.processDate,
@@ -2583,37 +2599,37 @@ const SlittingDetailsForm = Form.create({
       }),
       length: Form.createFormField({
         ...props.inward.process.length,
-        value: props.inward.process.length ? props.inward.process.length : '',
+        value: props.inward.process.length ? props.inward.process.length : "",
       }),
       no: Form.createFormField({
         ...props.inward.process.no,
-        value: props.inward.process.no ? props.inward.process.no : '',
+        value: props.inward.process.no ? props.inward.process.no : "",
       }),
       weight: Form.createFormField({
         ...props.inward.process.weight,
-        value: props.inward.process.weight ? props.inward.process.weight : '',
+        value: props.inward.process.weight ? props.inward.process.weight : "",
       }),
       twidth: Form.createFormField({
         ...props.inward.process.twidth,
-        value: props.inward.process.twidth ? props.inward.process.twidth : '',
+        value: props.inward.process.twidth ? props.inward.process.twidth : "",
       }),
       actualYieldLossRatio: Form.createFormField({
         ...props.inward.process.actualYieldLossRatio,
-        value: props.inward.process.actualYieldLossRatio || '',
+        value: props.inward.process.actualYieldLossRatio || "",
       }),
       targetWeight: Form.createFormField({
         ...props.inward.process.targetWeight,
         value: props.inward.process.targetWeight
           ? props.inward.process.targetWeight
-          : '',
+          : "",
       }),
       noParts: Form.createFormField({
         ...props.inward.process.noParts,
-        value: props.inward.process.noParts ? props.inward.process.noParts : '',
+        value: props.inward.process.noParts ? props.inward.process.noParts : "",
       }),
       plannedYieldLossRatio: Form.createFormField({
         ...props.inward.process.plannedYieldLossRatio,
-        value: props.inward.process.plannedYieldLossRatio || '',
+        value: props.inward.process.plannedYieldLossRatio || "",
       }),
     };
   },

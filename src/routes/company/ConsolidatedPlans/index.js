@@ -16,7 +16,7 @@ const ConsolidatedPlans = () => {
               },
             },
           },
-          "http://localhost:5173"
+          "/so/consolidated-plan",
         );
     }
   }, []);
@@ -24,7 +24,9 @@ const ConsolidatedPlans = () => {
   return (
     <iframe
       ref={iframeRef}
-      src="http://localhost:5173/consolidated-plan"
+      src={
+       "/so/consolidated-plan"
+      }
       title="Vite App"
       style={{ width: "100%", height: "900px", border: "none" }}
     ></iframe>

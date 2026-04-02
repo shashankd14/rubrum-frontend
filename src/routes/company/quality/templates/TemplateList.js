@@ -7,7 +7,6 @@ import { useIntl } from "react-intl";
 import SearchBox from '../../../../components/SearchBox';
 
 import {
-    fetchPartyList,
     fetchTemplatesList,
     fetchTemplatesListSuccess
 } from "../../../../appRedux/actions";
@@ -26,7 +25,6 @@ const TemplateList = (props) => {
     const [customerValue, setCustomerValue] = useState("");
 
     useEffect(() => {
-        props.fetchPartyList();
         props.fetchTemplatesList();
         // if(!props.columns.find(col => col.title === "Action"))
         //     props.columns.push(actionColumn)
@@ -163,7 +161,6 @@ const mapStateToProps = (state) => ({
 });
 
 export default connect(mapStateToProps, {
-    fetchPartyList,
     fetchTemplatesList,
     fetchTemplatesListSuccess
 })(TemplateList);

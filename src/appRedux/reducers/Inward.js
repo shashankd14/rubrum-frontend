@@ -300,7 +300,11 @@ export default (state = INIT_STATE, action) => {
           ...state,
           inwardSubmitLoading: false,
           inwardSubmitSuccess: false,
-          inwardSubmitError: action.payload || action.error || action.inward || "Something went wrong",
+          inwardSubmitError:
+            action.payload ||
+            action.error ||
+            action.inward ||
+            "Something went wrong",
         };
       }
       case FETCH_INWARD_LIST_BY_PARTY_REQUEST: {
@@ -1119,6 +1123,34 @@ export default (state = INIT_STATE, action) => {
           invoiceDocSyncSuccess: false,
           invoiceDocSyncError: true,
           invoiceDocSyncErrorMessage: action.error,
+        };
+      }
+      case actionTypes.FETCH_INWARD_SALES_NUMBERS_REQUESTED: {
+        return {
+          ...state,
+          salesOrdersLoading: true,
+          salesOrders: [],
+          salesOrdersSuccess: false,
+          salesOrdersError: false,
+        };
+      }
+      case actionTypes.FETCH_INWARD_SALES_NUMBERS_SUCCESS: {
+        return {
+          ...state,
+          salesOrdersLoading: false,
+          salesOrders: action.payload,
+          salesOrdersSuccess: true,
+          salesOrdersError: false,
+        };
+      }
+      case actionTypes.FETCH_INWARD_SALES_NUMBERS_ERROR: {
+        return {
+          ...state,
+          salesOrdersLoading: false,
+          salesOrders: [],
+          salesOrdersSuccess: false,
+          salesOrdersError: true,
+          salesOrdersErrorMessage: action.error,
         };
       }
       default:

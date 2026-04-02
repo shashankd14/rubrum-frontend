@@ -10,6 +10,7 @@ import {
   Icon,
   Input,
   Select,
+  Spin,
 } from "antd";
 import { connect } from "react-redux";
 import {
@@ -54,7 +55,7 @@ const checkIfCoilExistsApi = async (coilNumber) => {
       {
         method: "GET",
         headers: getHeaders(),
-      }
+      },
     );
     // Assume API returns { exists: true/false }
     return await res.json();
@@ -105,10 +106,10 @@ const CategoryForm = (props) => {
         !props.inward.materialId
       ) {
         props.setIsManual(true);
-      } else if(props.inward?.materialId?.key) {
+      } else if (props.inward?.materialId?.key) {
         if (props.inwardStatus?.materialList?.length > 0) {
           const isFromList = props.inwardStatus?.materialList.some(
-            (opt) => opt.sku === props.inward?.materialId?.key
+            (opt) => opt.sku === props.inward?.materialId?.key,
           );
           if (!isFromList) {
             props.setIsManual(true);
@@ -124,7 +125,7 @@ const CategoryForm = (props) => {
         }
       });
     },
-    [props]
+    [props],
   );
 
   const onCategoryChange = useCallback(
@@ -147,7 +148,7 @@ const CategoryForm = (props) => {
         materialId: "",
       });
     },
-    [props.form, props.getRefinedProducts, props.inward]
+    [props.form, props.getRefinedProducts, props.inward],
   );
 
   const debouncedCheck = debounce(async (resolve, reject, value) => {
@@ -155,7 +156,7 @@ const CategoryForm = (props) => {
       const exists = await checkIfCoilExistsApi(value);
       if (exists)
         reject(
-          intl.formatMessage({ id: "inward.create.label.inwardAlreadyExists" })
+          intl.formatMessage({ id: "inward.create.label.inwardAlreadyExists" }),
         );
       else resolve();
     } catch (err) {
@@ -178,9 +179,23 @@ const CategoryForm = (props) => {
       >
         <Row>
           <Col span={12}>
-            <Form.Item label="Material Id">
+            <Form.Item
+              label="Material Id"
+              help={
+                props?.productInfo?.refinedProducts?.length &&
+                !props?.material?.displayInfo > 0
+                  ? props?.productInfo?.refinedProducts[0]?.mmDescription
+                  : props?.material?.displayInfo?.mmDescription
+              }
+            >
               <div style={{ display: "flex", alignItems: "center" }}>
-                <div style={{ width: "100%" }}>
+                <div
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
                   {getFieldDecorator("materialId", {
                     rules: [
                       { required: false, message: "Please select material !" },
@@ -191,25 +206,35 @@ const CategoryForm = (props) => {
                       style={{ width: "100%" }}
                       optionLabelProp="label"
                       labelInValue={true}
-                      notFoundContent={null}
-                      showSearch={true}
+                      dropdownMatchSelectWidth={false} // default is true, but make sure it isn't false
+                      notFoundContent={
+                        props.material.loading ? (
+                          <Spin size="small" />
+                        ) : (
+                          "No results"
+                        )
+                      }
+                      // showSearch={true}
                       showArrow={true}
                       allowClear={true}
                       placeholder="Select a material"
-                      optionFilterProp="children"
+                      optionFilterProp="label"
                       onSelect={(materialId, option) => {
                         props.searchByMaterialId(materialId?.key);
                       }}
-                      onSearch={(value) => {
-                        if (value) {
-                          props.searchByMaterialId(value);
-                        }
+                      filterOption={(input, option) => {
+                        const name = String(
+                          option?.props["data-name"] || "",
+                        ).toLowerCase();
+                        const code = String(
+                          option?.props["data-code"] || "",
+                        ).toLowerCase();
+                        const searchText = String(input || "").toLowerCase();
+
+                        return (
+                          name.includes(searchText) || code.includes(searchText)
+                        );
                       }}
-                      filterOption={(input, option) =>
-                        option.props.children
-                          .toLowerCase()
-                          .indexOf(input.toLowerCase()) >= 0
-                      }
                     >
                       {props.inwardStatus?.materialList?.length > 0 &&
                         props.inwardStatus?.materialList?.map((material) => (
@@ -217,12 +242,31 @@ const CategoryForm = (props) => {
                             key={material.sku}
                             value={material.sku}
                             label={material.sku}
+                            data-name={material.sku} // Add custom data attributes
+                            data-code={material.name}
                           >
-                            {material.sku}
+                            <div>
+                              <p>{material.sku}</p>
+                              <p>{material.name}</p>
+                            </div>
                           </Option>
                         ))}
-                    </Select>
+                    </Select>,
                   )}
+                  <Icon
+                    type="search"
+                    onClick={() => {
+                      if (props.inward.materialId) {
+                        props.searchByMaterialId(props.inward?.materialId?.key);
+                      }
+                    }}
+                    style={{
+                      fontSize: "18px",
+                      cursor: "pointer",
+                      color: "#1890ff",
+                      marginLeft: "8px",
+                    }}
+                  />
                 </div>
               </div>
             </Form.Item>
@@ -280,7 +324,7 @@ const CategoryForm = (props) => {
                   }
                 >
                   {dataSource}
-                </Select>
+                </Select>,
               )}
             </Form.Item>
           </Col>
@@ -302,11 +346,11 @@ const CategoryForm = (props) => {
                   onSelect={(subCategoryId, option) => {
                     props.saveMaterialInfo(
                       "subCategoryName",
-                      option.props.children
+                      option.props.children,
                     );
                     props.getRefinedProducts(
                       { ...props.inward, subcategoryId: subCategoryId },
-                      "leafCategory"
+                      "leafCategory",
                     );
                   }}
                   filterOption={(input, option) =>
@@ -323,7 +367,7 @@ const CategoryForm = (props) => {
                       {subCategory.subcategoryIdName}
                     </Option>
                   ))}
-                </Select>
+                </Select>,
               )}
             </Form.Item>
           </Col>
@@ -348,7 +392,7 @@ const CategoryForm = (props) => {
                     props.saveMaterialInfo(option.props.children);
                     props.getRefinedProducts(
                       { ...props.inward, leafcategoryId: leafCategoryId },
-                      "brand"
+                      "brand",
                     );
                   }}
                   filterOption={(input, option) =>
@@ -365,7 +409,7 @@ const CategoryForm = (props) => {
                       {leafCategory.leafcategoryName}
                     </Option>
                   ))}
-                </Select>
+                </Select>,
               )}
             </Form.Item>
           </Col>
@@ -405,7 +449,7 @@ const CategoryForm = (props) => {
                     props.saveMaterialInfo("brandName", option.props.children);
                     props.getRefinedProducts(
                       { ...props.inward, brandId: brandId },
-                      "productType"
+                      "productType",
                     );
                   }}
                   filterOption={(input, option) =>
@@ -419,7 +463,7 @@ const CategoryForm = (props) => {
                       {brand.brandName}
                     </Option>
                   ))}
-                </Select>
+                </Select>,
               )}
             </Form.Item>
           </Col>
@@ -441,11 +485,11 @@ const CategoryForm = (props) => {
                   onSelect={(productId, option) => {
                     props.saveMaterialInfo(
                       "productType",
-                      option.props.children
+                      option.props.children,
                     );
                     props.getRefinedProducts(
                       { ...props.inward, productTypeId: productId },
-                      "uom"
+                      "uom",
                     );
                   }}
                   filterOption={(input, option) =>
@@ -462,7 +506,7 @@ const CategoryForm = (props) => {
                       {product.productName}
                     </Option>
                   ))}
-                </Select>
+                </Select>,
               )}
             </Form.Item>
           </Col>
@@ -527,7 +571,7 @@ const CategoryForm = (props) => {
                       {form.formName}
                     </Option>
                   ))}
-                </Select>
+                </Select>,
               )}
             </Form.Item>
           </Col>

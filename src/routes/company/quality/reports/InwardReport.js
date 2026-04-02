@@ -1,9 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { connect } from "react-redux";
-import { Link, useHistory, useLocation, withRouter } from "react-router-dom";
-import { Button, Card, Col, Divider, Icon, Modal, Radio, Row, Select, Table } from 'antd'
+import { withRouter } from "react-router-dom";
+import { Col, Divider, Modal, Row, Select, Table } from 'antd'
 import {
-    fetchPartyList,
     fetchInwardList,
     fetchTemplatesList,
     fetchTemplatesLinkList,
@@ -15,18 +14,10 @@ import {
     pdfGenerateQMreportInward
 } from "../../../../appRedux/actions";
 import moment from "moment";
-import { useIntl } from "react-intl";
 import SearchBox from "../../../../components/SearchBox";
 
-import IntlMessages from "../../../../util/IntlMessages";
-import { compose } from 'redux';
-import StatusButton from './create/StatusButton';
 
 const InwardReport = (props) => {
-
-    const intl = useIntl();
-    const history = useHistory();
-    const location = useLocation();
     const [sortedInfo, setSortedInfo] = useState({
         order: "descend",
         columnKey: "age",
@@ -215,7 +206,6 @@ const InwardReport = (props) => {
       }, [totalItems]);
 
     useEffect(() => {
-        props.fetchPartyList();
         props.fetchTemplatesList();
     }, []);
 
@@ -474,7 +464,6 @@ const mapStateToProps = (state) => ({
 export default connect(mapStateToProps, {
     fetchInwardList,
     fetchTemplatesList,
-    fetchPartyList,
     fetchTemplatesLinkList,
     getQualityTemplateById,
     getQualityReportById,

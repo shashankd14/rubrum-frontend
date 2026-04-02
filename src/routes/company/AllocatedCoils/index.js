@@ -555,6 +555,7 @@ const List = (props) => {
 
   const rowSelection = {
     onSelect: (record, selected, selectedRows) => {
+      console.log(record.status.statusName);
       if (
         record.status.statusName === "READY TO DELIVER" ||
         record.status.statusName === "RECEIVED"
@@ -646,7 +647,7 @@ const List = (props) => {
   return (
     <div>
       <h1>
-        <IntlMessages id="sidebar.company.partywiseRegister" />
+        Allocated Coils
       </h1>
       <Card>
         <div className="gx-flex-row gx-flex-1">

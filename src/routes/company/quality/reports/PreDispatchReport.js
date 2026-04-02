@@ -3,7 +3,6 @@ import { connect } from "react-redux";
 import { withRouter} from "react-router-dom";
 import { Col, Divider, Modal, Row, Select, Table } from 'antd'
 import {
-    fetchPartyList,
     fetchTemplatesList,
     fetchTemplatesLinkList,
     getQualityTemplateById,
@@ -195,7 +194,6 @@ const PreDispatchReport = (props) => {
     ];
 
     useEffect(() => {
-        props.fetchPartyList();
         props.fetchTemplatesList();
     }, []);
 
@@ -486,7 +484,6 @@ const mapStateToProps = (state) => ({
 
 export default connect(mapStateToProps, {
     fetchTemplatesList,
-    fetchPartyList,
     fetchTemplatesLinkList,
     getQualityTemplateById,
     getQualityReportById,

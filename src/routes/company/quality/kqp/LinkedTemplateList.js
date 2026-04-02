@@ -7,7 +7,6 @@ import SearchBox from '../../../../components/SearchBox';
 import {
     fetchKqpLinkList,
     fetchKqpLinkListSuccess,
-    fetchPartyList
 } from "../../../../appRedux/actions";
 
 const LinkedTemplateList = (props) => {
@@ -167,5 +166,4 @@ const mapStateToProps = (state) => ({
 export default connect(mapStateToProps, {
     fetchKqpLinkList,
     fetchKqpLinkListSuccess,
-    fetchPartyList
 })(LinkedTemplateList);

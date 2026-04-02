@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { connect, useDispatch } from "react-redux";
-import { Input, Card, message, Select, Row, Col } from "antd";
+import { Input, Card, message, Select, Col } from "antd";
 import {
   fetchPackingListByParty,
   getPacketwisePriceDCFullHandling,
@@ -10,6 +10,7 @@ import {
   generateDCPdf,
   resetInstruction,
   saveUnprocessedDelivery,
+  fetchMaterialsBySoID,
 } from "../../../appRedux/actions";
 import moment from "moment";
 import { Button, Table, Modal } from "antd";
@@ -17,7 +18,7 @@ import { Button, Table, Modal } from "antd";
 const DeliveryInfo = (props) => {
   const Option = Select.Option;
   const [vehicleNo, setVehicleNo] = useState("");
-  const [remarksList, setRemarksList] = useState([]);
+  const [deliveryType, setDeliveryType] = useState("");
   const [instructionList, setInstructionList] = useState([]);
   const [fullHandling, setFullHandling] = useState(false);
   const [thickness, setThickness] = useState();
@@ -27,78 +28,10 @@ const DeliveryInfo = (props) => {
   const [laminationId, setLaminationId] = useState("");
 
   const [priceModal, setPriceModal] = useState(false);
-  const [validationStatus, setValidationStatus] = useState(false);
-
-  useEffect(() => {
-    if (
-      props.packetwisePriceDC &&
-      typeof props.packetwisePriceDC.validationStatus === "boolean"
-    ) {
-      setValidationStatus(props.packetwisePriceDC.validationStatus);
-    }
-  }, [props.packetwisePriceDC.validationStatus]);
-
-  const dispatch = useDispatch();
-
-  const handlePacketPrice = (e) => {
-    if(checkRemarksIncomplete()){
-      message.error("Please fill all remarks for all the packets before proceeding", 2);
-      return;
-    }
-    setPriceModal(true);
-    const iList = props?.inward.inwardListForDelivery.filter(
-      (item) =>
-        (item?.inwardEntryId && item?.status?.statusName === "RECEIVED") ||
-        (item?.instruction?.length &&
-          !item.childInstructions &&
-          !item.instructionId &&
-          item?.status?.statusName === "READY TO DELIVER")
-    );
-
-    if (iList?.length) {
-      const payload = {
-        inwardEntryId: iList.map((item) => ({
-          inwardId: item.inwardEntryId,
-        })),
-        laminationId,
-        vehicleNo,
-        packingRateId,
-        // motherCoilDispatch: true
-      };
-      setFullHandling(true);
-      props.getPacketwisePriceDCFullHandling(payload);
-      // props.saveUnprocessedDelivery(payload)
-      const reqObj = {
-        packingRateId,
-        laminationId,
-        vehicleNo,
-        inwardListForDelivery: props.inward.inwardListForDelivery.map(
-          (item) => ({
-            instructionId: item.instructionId,
-            remarks: item.remarks || null,
-            actualWeight: item.plannedWeight || item.actualWeight,
-          })
-        ),
-      };
-      dispatch(getPacketwisePriceDC(reqObj));
-    } else {
-      const reqObj = {
-        packingRateId,
-        vehicleNo,
-        laminationId,
-        inwardListForDelivery: props.inward.inwardListForDelivery.map(
-          (item) => ({
-            instructionId: item.instructionId,
-            remarks: item.remarks || null,
-            actualWeight: item.plannedWeight || item.actualWeight,
-          })
-        ),
-      };
-      dispatch(getPacketwisePriceDC(reqObj));
-    }
-    setPriceModal(true);
-  };
-  const priceColumn = [
+  const [priceDetails, setPriceDetails] = useState(
+    props.packetwisePriceDC?.priceDetailsList,
+  );
+  const deliveryColumns = [
     {
       title: "Plan Id",
       dataIndex: "instructionId",
@@ -129,9 +62,24 @@ const DeliveryInfo = (props) => {
       key: "matGradeName",
     },
     {
+      title: "Material Subgrade Name",
+      dataIndex: "subGradeName",
+      key: "subGradeName",
+    },
+    {
       title: "Thickness",
       dataIndex: "thickness",
       key: "thickness",
+    },
+    {
+      title: "Width",
+      dataIndex: "width",
+      key: "width",
+    },
+    {
+      title: "Length",
+      dataIndex: "length",
+      key: "length",
     },
     {
       title: "Actual Weight\n(in KG)",
@@ -154,26 +102,7 @@ const DeliveryInfo = (props) => {
         return <div>{totalWeight}</div>;
       },
     },
-    {
-      title: "Base Rate\n(per ton)",
-      dataIndex: "basePrice",
-      key: "basePrice",
-    },
-    {
-      title: "Packing Rate\n(per ton)",
-      dataIndex: "packingPrice",
-      key: "packingPrice",
-    },
-    {
-      title: "Additional Rate\n(per ton)",
-      dataIndex: "additionalPrice",
-      key: "additionalPrice",
-    },
-    {
-      title: "Lamination Charges\n(per ton)",
-      dataIndex: "laminationCharges",
-      key: "laminationCharges",
-    },
+
     {
       title: "Total Rate\n(per ton)",
       dataIndex: "rate",
@@ -210,10 +139,280 @@ const DeliveryInfo = (props) => {
       key: "totalPrice",
     },
   ];
+  const [priceColumn, setPriceColumn] = useState(deliveryColumns);
+
+  const [validationStatus, setValidationStatus] = useState(false);
+
+  const onInputChange = (index, soID, field) => {
+    setPriceDetails((prev) => {
+      if (!Array.isArray(prev)) return prev;
+
+      const updated = [...prev];
+      updated[index] = {
+        ...updated[index],
+        [field]: soID,
+      };
+
+      return updated;
+    });
+  };
+
+  useEffect(() => {
+    if (props.packetwisePriceDC?.priceDetailsList)
+      setPriceDetails(props.packetwisePriceDC?.priceDetailsList);
+  }, [props.packetwisePriceDC?.priceDetailsList]);
+
+  useEffect(() => {
+    if (props.salesOrder?.materials && priceDetails) {
+      const updatedPriceDetails = priceDetails.map((priceDetail) => {
+        if (!priceDetail.sono) return priceDetail;
+
+        return {
+          ...priceDetail,
+          materialList: props.salesOrder.materials[priceDetail.sono] || [],
+        };
+      });
+
+      setPriceDetails(updatedPriceDetails);
+    }
+  }, [props.salesOrder?.materials]);
+
+  useEffect(() => {
+    if (
+      props.packetwisePriceDC &&
+      typeof props.packetwisePriceDC.validationStatus === "boolean"
+    ) {
+      setValidationStatus(props.packetwisePriceDC.validationStatus);
+    }
+  }, [props.packetwisePriceDC.validationStatus]);
+
+  const dispatch = useDispatch();
+
+  const handlePacketPrice = (e) => {
+    if (checkRemarksIncomplete()) {
+      message.error(
+        "Please fill all remarks for all the packets before proceeding",
+        2,
+      );
+      return;
+    }
+    setPriceModal(true);
+    const iList = props?.inward.inwardListForDelivery.filter(
+      (item) =>
+        (item?.inwardEntryId && item?.status?.statusName === "RECEIVED") ||
+        (item?.instruction?.length &&
+          !item.childInstructions &&
+          !item.instructionId &&
+          item?.status?.statusName === "READY TO DELIVER"),
+    );
+
+    if (iList?.length) {
+      const payload = {
+        inwardEntryId: iList.map((item) => ({
+          inwardId: item.inwardEntryId,
+        })),
+        laminationId,
+        vehicleNo,
+        deliveryType,
+        packingRateId,
+        // motherCoilDispatch: true
+      };
+      setFullHandling(true);
+      props.getPacketwisePriceDCFullHandling(payload);
+      // props.saveUnprocessedDelivery(payload)
+      const reqObj = {
+        packingRateId,
+        laminationId,
+        vehicleNo,
+        deliveryType,
+        inwardListForDelivery: props.inward.inwardListForDelivery.map(
+          (item) => ({
+            instructionId: item.instructionId,
+            remarks: item.remarks || null,
+            actualWeight: item.plannedWeight || item.actualWeight,
+          }),
+        ),
+      };
+      dispatch(getPacketwisePriceDC(reqObj));
+    } else {
+      const reqObj = {
+        packingRateId,
+        vehicleNo,
+        deliveryType,
+        laminationId,
+        inwardListForDelivery: props.inward.inwardListForDelivery.map(
+          (item) => ({
+            instructionId: item.instructionId,
+            remarks: item.remarks || null,
+            actualWeight: item.plannedWeight || item.actualWeight,
+          }),
+        ),
+      };
+      dispatch(getPacketwisePriceDC(reqObj));
+    }
+    setPriceModal(true);
+    setPriceColumn([
+      ...deliveryColumns,
+      ...(deliveryType === "Sales Order"
+        ? [
+            {
+              title: "Sales Order Number",
+              dataIndex: "deliveryDetails.customerInvoiceNo",
+              width: 200,
+              key: "soNumber",
+              render: (text, record, index) => (
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <Select
+                    style={{ flex: 1, minWidth: 0 }}
+                    labelInValue
+                    mode="combobox"
+                    optionLabelProp="label"
+                    allowClear={true}
+                    value={
+                      record?.sono
+                        ? { key: record.sono, label: record.sono }
+                        : undefined
+                    }
+                    notFoundContent={null}
+                    showSearch={true}
+                    placeholder="Select a SO number"
+                    optionFilterProp="children"
+                    showArrow={true}
+                    onSelect={(soId, option) => {
+                      if (!soId) {
+                        onInputChange(index, null, "sono");
+                        return;
+                      }
+                      dispatch(fetchMaterialsBySoID(soId?.key));
+                      onInputChange(index, soId?.key, "sono");
+                    }}
+                    onChange={(materialId, option) => {
+                      if (!materialId) {
+                        onInputChange(index, null, "sono");
+                        return;
+                      }
+                      onInputChange(index, materialId?.key, "sono");
+                    }}
+                    filterOption={(input, option) => {
+                      const name = String(
+                        option?.props["data-name"] || "",
+                      ).toLowerCase();
+                      const code = String(
+                        option?.props?.label || "",
+                      ).toLowerCase();
+                      const searchText = String(input || "").toLowerCase();
+
+                      return (
+                        name.includes(searchText) || code.includes(searchText)
+                      );
+                    }}
+                  >
+                    {(record?.mappedSOList || []).map((so) => (
+                      <Option key={so} value={so} label={so} data-name={so}>
+                        {so}
+                      </Option>
+                    ))}
+                  </Select>
+                </div>
+              ),
+            },
+            {
+              title: "Materials",
+              dataIndex: "deliveryDetails.materialId",
+              key: "materialId",
+              width: 200,
+              render: (text, record, index) => (
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  <Select
+                    style={{ flex: 1, minWidth: 0 }}
+                    labelInValue
+                    mode="combobox"
+                    optionLabelProp="label"
+                    // disabled={
+                    //   props.inward.disableSelection || props.inwardStatus.saveTemporary
+                    // }
+                    dropdownMatchSelectWidth={false} // default is true, but make sure it isn't false
+                    allowClear={true}
+                    vvalue={
+                      record?.mmid
+                        ? { key: record.mmid, label: record.mmid }
+                        : undefined
+                    }
+                    notFoundContent={null}
+                    showSearch={true}
+                    placeholder="Select a material ID"
+                    optionFilterProp="children"
+                    showArrow={true}
+                    onSelect={(materialId, option) => {
+                      if (!materialId) {
+                        onInputChange(index, null, "mmid");
+                        onInputChange(index, null, "materialName");
+                        return;
+                      }
+                      onInputChange(index, materialId?.key, "mmid");
+                      onInputChange(
+                        index,
+                        option?.props["data-material-name"],
+                        "materialName",
+                      );
+                    }}
+                    onChange={(materialId, option) => {
+                      if (!materialId) {
+                        onInputChange(index, null, "mmid");
+                        onInputChange(index, null, "materialName");
+                        return;
+                      }
+                      onInputChange(index, materialId?.key, "mmid");
+                      onInputChange(
+                        index,
+                        option?.props["data-material-name"],
+                        "materialName",
+                      );
+                    }}
+                    filterOption={(input, option) => {
+                         const name = String(
+                           option?.props["data-material-name"] || "",
+                         ).toLowerCase();
+                         const code = String(
+                           option?.props?.label || "",
+                         ).toLowerCase();
+                         const searchText = String(input || "").toLowerCase();
+
+                         return (
+                           name.includes(searchText) ||
+                           code.includes(searchText)
+                         );
+                      }
+                    }
+                  >
+                    {record?.sono && record?.materialList
+                      ? (record?.materialList || []).map((material) => (
+                          <Option
+                            key={material.mmid}
+                            value={material.mmid}
+                            label={material.mmid}
+                            data-material-name={material?.materialName}
+                          >
+                            <div>
+                              <p>{material.mmid}</p>
+                              <p>{material.materialName}</p>
+                            </div>
+                          </Option>
+                        ))
+                      : null}
+                  </Select>
+                  <p style={{ marginTop: "2px" }}>{record?.materialName}</p>
+                </div>
+              ),
+            },
+          ]
+        : []),
+    ]);
+  };
 
   useEffect(() => {
     const partyId = props.inward.inwardListForDelivery?.map(
-      (ele) => ele?.party?.nPartyId || ""
+      (ele) => ele?.party?.nPartyId || "",
     );
     props.fetchPackingListByParty(partyId);
     props.getLaminationChargesByPartyId(partyId);
@@ -222,7 +421,7 @@ const DeliveryInfo = (props) => {
   useEffect(() => {
     let insList = props.inward.inwardListForDelivery?.map((i) => {
       const inwardList = props?.inward?.inwardList.filter(
-        (item) => item.inwardEntryId === i.inwardEntryId
+        (item) => item.inwardEntryId === i.inwardEntryId,
       );
       inwardList.map((item) => setThickness(item?.fThickness));
       return i?.instruction?.length ? i?.instruction : i;
@@ -285,8 +484,16 @@ const DeliveryInfo = (props) => {
         (item?.instruction?.length &&
           !item.childInstructions &&
           !item.instructionId &&
-          item?.status?.statusName === "READY TO DELIVER")
+          item?.status?.statusName === "READY TO DELIVER"),
     );
+
+    const emptySo =
+      deliveryType === "Sales Order" && checkSalesOrderMaterials();
+
+    if (emptySo) {
+      message.error("Please select Sales Order Number and Material ID");
+      return;
+    }
 
     if (iList?.length) {
       const payload = {
@@ -294,6 +501,7 @@ const DeliveryInfo = (props) => {
         laminationId,
         vehicleNo,
         packingRateId,
+        deliveryType,
         motherCoilDispatch: true,
       };
       setFullHandling(true);
@@ -304,6 +512,8 @@ const DeliveryInfo = (props) => {
         vehicleNo,
         laminationId,
         inwardListForDelivery: props.inward.inwardListForDelivery,
+        priceDetails: priceDetails,
+        deliveryType,
       };
       props.postDeliveryConfirm(reqObj);
       if (props.inward?.unprocessedSuccess?.length) {
@@ -312,7 +522,7 @@ const DeliveryInfo = (props) => {
             if (item?.process?.processId === 8) {
               return item;
             }
-          }
+          },
         );
         const reqObj = {
           vehicleNo,
@@ -333,11 +543,24 @@ const DeliveryInfo = (props) => {
       props.inward.inwardListForDelivery.forEach((item) => {
         if (
           (item?.instructionId ||
-          item?.status?.statusName === "RECEIVED" ||
-          item?.status?.statusName ===
-            "READY TO DELIVER") && (!item.remarks || item.remarks.trim() === "")
+            item?.status?.statusName === "RECEIVED" ||
+            item?.status?.statusName === "READY TO DELIVER") &&
+          (!item.remarks || item.remarks.trim() === "")
         ) {
           incomplete = true;
+        }
+      });
+    }
+    return incomplete;
+  };
+
+  const checkSalesOrderMaterials = () => {
+    let incomplete = false;
+    if (priceDetails.length > 0) {
+      priceDetails.forEach((item) => {
+        if (item?.sono === null || item?.mmid === null) {
+          incomplete = true;
+          return;
         }
       });
     }
@@ -449,7 +672,7 @@ const DeliveryInfo = (props) => {
                     </div>
                   </div>
                 </div>
-              )
+              ),
           )
         ) : (
           <div> Nothing selected for delivery</div>
@@ -458,10 +681,10 @@ const DeliveryInfo = (props) => {
       {props.inward.inwardList.length > 0 ? (
         <div>
           <div style={{ display: "flex" }}>
-            <div style={{ width: "20%", marginBottom: "15px" }}>
+            <div style={{ marginBottom: "15px" }}>
               <Select
                 showSearch
-                style={{ width: 300 }}
+                style={{ width: "300px" }}
                 className="Packing Rate"
                 placeholder="Select Packing"
                 name="partyName"
@@ -481,11 +704,10 @@ const DeliveryInfo = (props) => {
                 ))}
               </Select>
             </div>{" "}
-            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
-            <div style={{ width: "20%", marginBottom: "15px", flex: 5 }}>
+            <div style={{ marginBottom: "15px", flex: 5 }}>
               <Select
                 showSearch
-                style={{ width: 400 }}
+                style={{ width: "300px", marginLeft: "20px" }}
                 className="Packing Rate"
                 placeholder="Select Lamination Charges"
                 name="partyName"
@@ -505,7 +727,7 @@ const DeliveryInfo = (props) => {
               </Select>
             </div>
           </div>
-          <Row>
+          <div style={{ display: "flex" }}>
             <Col span={8}>
               {!!partyRate && (
                 <div style={{ marginRight: "270px" }}>
@@ -520,18 +742,41 @@ const DeliveryInfo = (props) => {
                 </div>
               )}
             </Col>
-          </Row>
-          <div style={{ width: "20%", marginBottom: "15px" }}>
-            <Input
-              placeholder="Vehicle Number"
-              type="text"
-              onChange={(e) => setVehicleNo(e.target.value)}
-            />
+          </div>
+          <div style={{ display: "flex" }}>
+            <div>
+              <div style={{ marginBottom: "15px" }}>
+                <Input
+                  style={{ width: "300px" }}
+                  placeholder="Vehicle Number"
+                  type="text"
+                  onChange={(e) => setVehicleNo(e.target.value)}
+                />
+              </div>
+            </div>
+            <div>
+              <div
+                style={{
+                  marginBottom: "15px",
+                }}
+              >
+                <Select
+                  placeholder="Delivery Type"
+                  style={{ width: "300px", marginLeft: "20px" }}
+                  onSelect={(value) => setDeliveryType(value)}
+                >
+                  <Option value="Sales Order">Sales Order</Option>
+                  <Option value="Stock Transfer">⁠Stock Transfer</Option>
+                  <Option value="Scrap">⁠Scrap</Option>
+                  <Option value="Others">Others</Option>
+                </Select>
+              </div>
+            </div>
           </div>
           <div>
             <Button
               type="primary"
-              disabled={vehicleNo.length < 1}
+              disabled={vehicleNo.length < 1 || !deliveryType}
               onClick={handlePacketPrice}
             >
               Confirm
@@ -539,7 +784,7 @@ const DeliveryInfo = (props) => {
             <Modal
               title="Packet wise Rate Details"
               visible={priceModal}
-              width={1500}
+              width={2500}
               onCancel={() => {
                 setPriceModal(false);
               }}
@@ -572,8 +817,9 @@ const DeliveryInfo = (props) => {
               ]}
             >
               <Table
+                rowKey={(record) => record.instructionId}
                 columns={priceColumn}
-                dataSource={props.packetwisePriceDC?.priceDetailsList}
+                dataSource={priceDetails}
               />
             </Modal>
             <Button
@@ -605,6 +851,7 @@ const mapStateToProps = (state) => {
     packing: state.packing,
     packetwisePriceDC: state.inward?.packetwisePriceDC,
     laminationCharges: state.rates.laminationChargesParty,
+    salesOrder: state.salesOrder,
   };
   return mappedProps;
 };

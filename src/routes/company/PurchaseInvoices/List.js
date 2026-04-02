@@ -3,8 +3,18 @@ import {
   fetchPurchaseInvoices,
   requestDocSync,
 } from "../../../appRedux/actions";
+import { fetchSalesOrderList } from "../../../appRedux/actions/SalesOrder";
 import IntlMessages from "../../../util/IntlMessages";
-import { Table, Card, message, Spin, Icon } from "antd";
+import {
+  Table,
+  Card,
+  message,
+  Spin,
+  Icon,
+  Button,
+  DatePicker,
+  Select,
+} from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { toPascalCase, capitalizeFirstLetter } from "util/Common";
 import SyncToZohoModal from "../../company/Inward/SyncToZohoModal";
@@ -13,10 +23,14 @@ import SearchBox from "../../../components/SearchBox";
 const List = (props) => {
   const dispatch = useDispatch();
   const purchaseInvoices = useSelector((state) => state.purchaseInvoices);
+  const [purchaseInvoicesList, setPurchaseInvoicesList] = React.useState(
+    purchaseInvoices.list,
+  );
   const [purchaseInvoicesPageNo, setPurchaseInvoicesPageNo] = React.useState(1);
   const [purchaseInvoicesNo, setPurchaseInvoicesNo] = React.useState("");
   const [showSyncModal, setShowSyncModal] = React.useState(false);
   const inwardState = useSelector((state) => state.inward);
+  const partyList = useSelector((state) => state.party.partyList);
   const [syncloading, setSyncLoading] = React.useState(false);
   const [searchValue, setSearchValue] = React.useState("");
 
@@ -25,6 +39,66 @@ const List = (props) => {
       title: "Number",
       dataIndex: "poInvoiceNo",
       key: "poInvoiceNo",
+    },
+    {
+      title: "Location",
+      dataIndex: "locationName",
+      key: "locationName",
+    },
+    {
+      title: "Inward date",
+      dataIndex: "inwardDate",
+      key: "inwardDate",
+      filterDropdown: ({ setSelectedKeys, confirm, clearFilters }) => (
+        <div style={{ padding: 8 }}>
+          <DatePicker
+            value={filteredInfo["inwardDate"] || null}
+            onChange={(date) => {
+              setFilteredInfo({ ...filteredInfo, inwardDate: date });
+              setSelectedKeys(date ? [date] : []);
+            }}
+            style={{ marginBottom: 8, display: "block" }}
+          />
+          <div>
+            <Button
+              type="primary"
+              onClick={() => {
+                if (filteredInfo["inwardDate"]) {
+                  setSelectedKeys([filteredInfo["inwardDate"]]);
+                }
+                confirm();
+              }}
+              icon="search"
+              size="small"
+              style={{ width: 90, marginRight: 8 }}
+            >
+              Search
+            </Button>
+            <Button
+              onClick={() => {
+                setFilteredInfo({ ...filteredInfo, inwardDate: null });
+                clearFilters();
+              }}
+              size="small"
+              style={{ width: 90 }}
+            >
+              Reset
+            </Button>
+          </div>
+        </div>
+      ),
+      filterIcon: (filtered) => (
+        <Icon
+          type="calendar"
+          style={{ color: filtered ? "#1890ff" : undefined }}
+        />
+      ),
+      onFilter: (value, record) => {
+        if (!value || !record.inwardDate) return true;
+        const recordDate = new Date(record.inwardDate).toDateString();
+        const filterDate = value.toDate().toDateString();
+        return recordDate === filterDate;
+      },
     },
     {
       title: "Sync Status",
@@ -51,9 +125,15 @@ const List = (props) => {
       dataIndex: "poInvSyncRemarks",
       key: "poInvSyncRemarks",
       render: (text, record) => {
-        return record.poInvSyncRemarks
-          ? capitalizeFirstLetter(JSON.parse(record.poInvSyncRemarks).message)
-          : "-";
+        if (!record.poInvSyncRemarks) return "-";
+        let remarks = record.poInvSyncRemarks;
+        try {
+          const parsed = JSON.parse(remarks);
+          remarks = parsed.message || null;
+        } catch {
+          remarks = remarks.message || remarks;
+        }
+        return remarks ? capitalizeFirstLetter(remarks) : "-";
       },
     },
     {
@@ -92,8 +172,16 @@ const List = (props) => {
     },
   ];
 
+  const resetPurchaseInvoicesList = () => {
+    setPurchaseInvoicesList(purchaseInvoices.list);
+  };
+
   useEffect(() => {
-    dispatch(fetchPurchaseInvoices(1, 15, ""));
+    resetPurchaseInvoicesList();
+  }, [purchaseInvoices.list]);
+
+  useEffect(() => {
+    dispatch(fetchPurchaseInvoices(purchaseInvoicesPageNo, 15, ""));
   }, []);
 
   useEffect(() => {
@@ -183,17 +271,13 @@ const List = (props) => {
         <Table
           className="gx-table-responsive"
           columns={PurchaseInvoiceColumns}
-          dataSource={purchaseInvoices.list || []}
+          dataSource={purchaseInvoicesList || []}
           // expandedRowRender={(record) => expandedRowRendered(record)}
-          // onChange={handleChange}
+          onChange={handleChange}
           pagination={{
             pageSize: 15,
             showTotal: (total, range) =>
               `Showing ${range[0]}-${range[1]} of ${total} items`,
-            onChange: (page) => {
-              setPurchaseInvoicesPageNo(page);
-              dispatch(fetchPurchaseInvoices(page, 15, ""));
-            },
             current: purchaseInvoicesPageNo,
             total: purchaseInvoices.totalItems,
           }}

@@ -47,7 +47,7 @@ const ProductInfoForm = (props) => {
       (material) => material.sku === props?.inward?.materialId?.key
     )[0];
     return (
-      (selectedMaterial?.quantity - selectedMaterial?.quantity_billed || 0) * 1000
+      (selectedMaterial?.quantity - selectedMaterial?.quantity_billed || 0) * 1050
     );
   }, [props?.isManual]);
 

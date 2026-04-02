@@ -16,12 +16,14 @@ function* fetchPurchaseInvoices({ page = 1,
   pageSize = 15,
   searchValue = "",
   partyId = "",
+  inwardDate = ""
 }) {
   const body = {
     pageNo: page,
     pageSize: pageSize,
     searchText: searchValue,
     partyId: partyId,
+    inwardDate: inwardDate,
   };
 
   try {
