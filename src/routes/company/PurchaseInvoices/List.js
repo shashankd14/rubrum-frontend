@@ -14,6 +14,7 @@ import {
   Button,
   DatePicker,
   Select,
+  Tag,
 } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { toPascalCase, capitalizeFirstLetter } from "util/Common";
@@ -105,9 +106,27 @@ const List = (props) => {
       dataIndex: "poInvSyncStatus",
       key: "poInvSyncStatus",
       render: (text, record) => {
-        return record.poInvSyncStatus
-          ? toPascalCase(record.poInvSyncStatus)
-          : "-";
+        if (record.poInvSyncStatus === "PENDING") {
+          return (
+            <Tag color="orange" style={{ color: "orange" }}>
+              Pending
+            </Tag>
+          );
+        } else if (record.poInvSyncStatus === "FAIL") {
+          return (
+            <Tag color="red" style={{ color: "red" }}>
+              Fail
+            </Tag>
+          );
+        } else if (record.poInvSyncStatus === "SUCCESS") {
+          return (
+            <Tag color="green" style={{ color: "green" }}>
+              Success
+            </Tag>
+          );
+        } else {
+          return <span>-</span>;
+        }
       },
     },
     {
@@ -115,9 +134,27 @@ const List = (props) => {
       dataIndex: "zohoDocumentUploadStts",
       key: "zohoDocumentUploadStts",
       render: (text, record) => {
-        return record.zohoDocumentUploadStts
-          ? toPascalCase(record.zohoDocumentUploadStts)
-          : "-";
+        if (record.poInvSyncStatus === "PENDING") {
+          return (
+            <Tag color="orange" style={{ color: "orange" }}>
+              Pending
+            </Tag>
+          );
+        } else if (record.poInvSyncStatus === "FAIL") {
+          return (
+            <Tag color="red" style={{ color: "red" }}>
+              Fail
+            </Tag>
+          );
+        } else if (record.poInvSyncStatus === "SUCCESS") {
+          return (
+            <Tag color="green" style={{ color: "green" }}>
+              Success
+            </Tag>
+          );
+        } else {
+          return <span>-</span>;
+        }
       },
     },
     {

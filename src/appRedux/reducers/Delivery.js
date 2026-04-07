@@ -106,6 +106,7 @@ export default (state = INIT_STATE, action) => {
       return {
         ...state,
         deliverySyncLoading: true,
+        deliverySyncSuccess: false,
       };
     }
     case REQUEST_INVENTORY_ADJUSTMENT_SUCCESS: {
