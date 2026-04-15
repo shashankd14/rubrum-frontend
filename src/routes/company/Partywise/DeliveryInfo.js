@@ -333,7 +333,7 @@ const DeliveryInfo = (props) => {
                     // }
                     dropdownMatchSelectWidth={false} // default is true, but make sure it isn't false
                     allowClear={true}
-                    vvalue={
+                    value={
                       record?.mmid
                         ? { key: record.mmid, label: record.mmid }
                         : undefined
@@ -558,7 +558,7 @@ const DeliveryInfo = (props) => {
     let incomplete = false;
     if (priceDetails.length > 0) {
       priceDetails.forEach((item) => {
-        if (item?.sono === null || item?.mmid === null) {
+        if ((item?.sono === null || item?.sono === "") || (item?.mmid === null || item?.mmid === "")) {
           incomplete = true;
           return;
         }
