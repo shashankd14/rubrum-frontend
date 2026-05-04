@@ -125,6 +125,7 @@ export const getMainColumns = ({
           <Select
             disabled={props.unfinish}
             dropdownMatchSelectWidth={false}
+            getPopupContainer={(triggerNode) => triggerNode.parentNode}
             style={{ width: "100%" }}
             value={
               record?.packetClassification?.classificationId ||
@@ -167,6 +168,7 @@ export const getMainColumns = ({
           disabled={props.unfinish}
           style={{ width: "100px" }}
           dropdownMatchSelectWidth={false}
+          getPopupContainer={(triggerNode) => triggerNode.parentNode}
           showSearch
           optionFilterProp="children"
           filterOption={(input, option) => {
@@ -252,6 +254,7 @@ export const getPlanColumns = ({
           <Select
             disabled={props.unfinish}
             dropdownMatchSelectWidth={false}
+            getPopupContainer={(triggerNode) => triggerNode.parentNode}
             style={{ width: "100%" }}
             value={
               record?.packetClassification?.packetClassificationId ||
@@ -279,6 +282,7 @@ export const getPlanColumns = ({
           <Select
             style={{ width: "100px" }}
             dropdownMatchSelectWidth={false}
+            getPopupContainer={(triggerNode) => triggerNode.parentNode}
             showSearch
             optionFilterProp="children"
             filterOption={(input, option) => {
@@ -388,6 +392,7 @@ export const getSlitCutColumns = ({
           key={record.groupId}
           style={{ width: "100px" }}
           dropdownMatchSelectWidth={false}
+          getPopupContainer={(triggerNode) => triggerNode.parentNode}
           showSearch
           optionFilterProp="children"
           filterOption={(input, option) => {

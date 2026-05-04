@@ -9,12 +9,13 @@ import {
   resetDeleteInward,
   requestInventoryAdjustment,
 } from "../../../appRedux/actions";
-import { Card, Table, Select, message, Modal, Spin, Icon } from "antd";
+import { Card, Table, Select, message, Modal, Spin, Icon, Tag } from "antd";
 import SearchBox from "../../../components/SearchBox";
 import ReconcileModal from "./ReconcileModal";
 import moment from "moment";
 import IntlMessages from "../../../util/IntlMessages";
 import { useDispatch } from "react-redux";
+import { render } from "less";
 
 const Option = Select.Option;
 
@@ -93,18 +94,37 @@ function List(props) {
     },
     {
       title: "Inv Adj Remarks",
-      dataIndex: "invAdjRemarks",
+      dataIndex: "deliveryDetails.invAdjRemarks",
       key: "invAdjRemarks",
     },
     {
       title: "Zoho Sync Status",
-      dataIndex: "zohoSyncStts",
+      dataIndex: "deliveryDetails.zohoSyncStts",
       key: "zohoSyncStts",
+      render: (text, record) => {
+        if (record.deliveryDetails.zohoSyncStts === "PENDING") {
+          return (
+            <Tag color="orange" style={{ color: "orange" }}>
+              Pending
+            </Tag>
+          );
+        } else if (record.deliveryDetails.zohoSyncStts === "FAIL") {
+          return <Tag color="red" style={{ color: "red" }}>
+            Fail
+          </Tag>;
+        } else if (record.deliveryDetails.zohoSyncStts === "SUCCESS") {
+          return <Tag color="green" style={{ color: "green" }}>
+            Success
+          </Tag>;
+        } else {
+          return <span>-</span>;
+        }
+      }
     },
     {
       title: "Sales invoice no",
-      dataIndex: "salesInvoiceNo",
-      key: "salesInvoiceNo",
+      dataIndex: "deliveryDetails.salesInvoiceNo",
+      key: "deliveryDetails.salesInvoiceNo",
     },
     {
       title: "Action",
@@ -149,6 +169,7 @@ function List(props) {
     if (props.delivery.deliverySyncSuccess) {
       setSyncLoading(false);
       message.success("Delivery synced successfully");
+      props.fetchDeliveryList(pageNo, 15);
     }
   }, [props.delivery.deliverySyncSuccess]);
 
@@ -225,7 +246,7 @@ function List(props) {
             </Select>
           </div>
         </div>
-
+        <br />
         <Table
           rowSelection={[]}
           className="gx-table-responsive"

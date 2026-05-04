@@ -258,7 +258,7 @@ const DeliveryInfo = (props) => {
             {
               title: "Sales Order Number",
               dataIndex: "deliveryDetails.customerInvoiceNo",
-              width: 200,
+              width: 300,
               key: "soNumber",
               render: (text, record, index) => (
                 <div style={{ display: "flex", alignItems: "center" }}>
@@ -281,6 +281,8 @@ const DeliveryInfo = (props) => {
                     onSelect={(soId, option) => {
                       if (!soId) {
                         onInputChange(index, null, "sono");
+                        onInputChange(index, null, "mmid");
+                        onInputChange(index, null, "materialName");
                         return;
                       }
                       dispatch(fetchMaterialsBySoID(soId?.key));
@@ -289,6 +291,8 @@ const DeliveryInfo = (props) => {
                     onChange={(materialId, option) => {
                       if (!materialId) {
                         onInputChange(index, null, "sono");
+                        onInputChange(index, null, "mmid");
+                        onInputChange(index, null, "materialName");
                         return;
                       }
                       onInputChange(index, materialId?.key, "sono");
@@ -320,7 +324,7 @@ const DeliveryInfo = (props) => {
               title: "Materials",
               dataIndex: "deliveryDetails.materialId",
               key: "materialId",
-              width: 200,
+              width: 250,
               render: (text, record, index) => (
                 <div style={{ display: "flex", flexDirection: "column" }}>
                   <Select
@@ -333,7 +337,7 @@ const DeliveryInfo = (props) => {
                     // }
                     dropdownMatchSelectWidth={false} // default is true, but make sure it isn't false
                     allowClear={true}
-                    vvalue={
+                    value={
                       record?.mmid
                         ? { key: record.mmid, label: record.mmid }
                         : undefined
@@ -370,20 +374,18 @@ const DeliveryInfo = (props) => {
                       );
                     }}
                     filterOption={(input, option) => {
-                         const name = String(
-                           option?.props["data-material-name"] || "",
-                         ).toLowerCase();
-                         const code = String(
-                           option?.props?.label || "",
-                         ).toLowerCase();
-                         const searchText = String(input || "").toLowerCase();
+                      const name = String(
+                        option?.props["data-material-name"] || "",
+                      ).toLowerCase();
+                      const code = String(
+                        option?.props?.label || "",
+                      ).toLowerCase();
+                      const searchText = String(input || "").toLowerCase();
 
-                         return (
-                           name.includes(searchText) ||
-                           code.includes(searchText)
-                         );
-                      }
-                    }
+                      return (
+                        name.includes(searchText) || code.includes(searchText)
+                      );
+                    }}
                   >
                     {record?.sono && record?.materialList
                       ? (record?.materialList || []).map((material) => (
@@ -462,12 +464,20 @@ const DeliveryInfo = (props) => {
           return item;
         }
       });
+      const emptySo =
+        deliveryType === "Sales Order" && checkSalesOrderMaterials();
+
+      if (emptySo) {
+        message.error("Please select Sales Order Number and Material ID");
+        return;
+      }
       const reqObj = {
         vehicleNo,
         taskType: "FULL_HANDLING",
         packingRateId,
         laminationId,
         inwardListForDelivery: fullHandlingList,
+        priceDetails,
       };
       props.postDeliveryConfirm(reqObj);
       props.saveUnprocessedDelivery(reqObj);
@@ -503,6 +513,7 @@ const DeliveryInfo = (props) => {
         packingRateId,
         deliveryType,
         motherCoilDispatch: true,
+        priceDetails: priceDetails,
       };
       setFullHandling(true);
       props.saveUnprocessedDelivery(payload);
@@ -530,6 +541,7 @@ const DeliveryInfo = (props) => {
           packingRateId,
           laminationId,
           inwardListForDelivery: fullHandlingList,
+          priceDetails,
         };
         props.postDeliveryConfirm(reqObj);
         props.saveUnprocessedDelivery(reqObj);
@@ -558,7 +570,12 @@ const DeliveryInfo = (props) => {
     let incomplete = false;
     if (priceDetails.length > 0) {
       priceDetails.forEach((item) => {
-        if (item?.sono === null || item?.mmid === null) {
+        if (
+          item?.sono === null ||
+          item?.sono === "" ||
+          item?.mmid === null ||
+          item?.mmid === ""
+        ) {
           incomplete = true;
           return;
         }

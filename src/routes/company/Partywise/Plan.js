@@ -1,12 +1,13 @@
 import { Button, Card, Col, Select, Modal, message } from "antd";
 import moment from "moment";
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { connect } from "react-redux";
 import {
   getCoilPlanDetails,
   saveUnprocessedDelivery,
   fetchClassificationList,
   getReconcileReport,
+  getCoilSalesNumbers,
 } from "../../../appRedux/actions";
 import IntlMessages from "../../../util/IntlMessages";
 import CuttingModal from "../Partywise/CuttingModal";
@@ -37,8 +38,8 @@ const Plan = (props) => {
     actualLength = ins.fLength
       ? ins.fLength
       : ins.actualLength != null
-      ? ins.actualLength
-      : ins.plannedLength;
+        ? ins.actualLength
+        : ins.plannedLength;
     if (ins.instruction && ins.instruction?.length > 0) {
       let instruction = ins.instruction.flat();
       length = instruction.map((i) => {
@@ -80,13 +81,13 @@ const Plan = (props) => {
     actualWidth = ins.fWidth
       ? ins.fWidth
       : ins.actualWidth != null
-      ? ins.actualWidth
-      : ins.plannedWidth;
+        ? ins.actualWidth
+        : ins.plannedWidth;
 
     if (ins.instruction && ins.instruction?.length > 0) {
       let instruction = ins.instruction.flat();
       width = instruction.map((i) =>
-        i.process.processId !== 1 ? i.plannedWidth : 0
+        i.process.processId !== 1 ? i.plannedWidth : 0,
       );
       childWidth = instruction.map((i) => {
         if (i.childInstructions && i.childInstructions?.length > 0) {
@@ -119,8 +120,8 @@ const Plan = (props) => {
     actualWeight = ins.fpresent
       ? ins.fpresent
       : ins.actualWeight != null
-      ? ins.actualWeight
-      : ins.plannedWeight;
+        ? ins.actualWeight
+        : ins.plannedWeight;
     if (ins.instruction && ins.instruction?.length > 0) {
       let instruction = ins.instruction.flat();
       weight = instruction.map((i) => i.plannedWeight);
@@ -168,6 +169,10 @@ const Plan = (props) => {
   }, []);
 
   useEffect(() => {
+    dispatch(getCoilSalesNumbers(props.inward.plan.inwardEntryId));
+  }, [props?.inward?.plan?.inwardEntryId]);
+
+  useEffect(() => {
     if (unprocessedOkClick) {
       setUnprocessedOkClick(false);
       getCoilData();
@@ -179,7 +184,7 @@ const Plan = (props) => {
       setReconcileModalShow(props?.inward?.reconcileData);
     }
   }, [props?.inward?.reconcileData]);
-  
+
   useEffect(() => {
     if (slittingCoil) {
       setSlittingCoil(slittingCoil);
@@ -216,7 +221,7 @@ const Plan = (props) => {
       value.status.statusName &&
       value.status.statusName === "DELIVERED"
         ? (tempDelValue += getPlannedLength(item))
-        : (tempAvailValue += getPlannedLength(item))
+        : (tempAvailValue += getPlannedLength(item)),
     );
     if (type === "Delivered") {
       return tempDelValue;
@@ -232,7 +237,7 @@ const Plan = (props) => {
       (value.status && value.status.statusName && value.status.statusName) ===
       "DELIVERED"
         ? (tempDelValue += getPlannedWeight(item))
-        : (tempAvailValue += getPlannedWeight(item))
+        : (tempAvailValue += getPlannedWeight(item)),
     );
     if (type === "Delivered") {
       return tempDelValue;
@@ -273,6 +278,7 @@ const Plan = (props) => {
           plannedWeight={getPlannedWeight}
           coil={props.inward.plan}
           slitCut={slitCut}
+          salesOrders={props.inward.salesOrders}
         />
       )}
       {slittingCoil && (
@@ -400,7 +406,7 @@ const Plan = (props) => {
                     handleSelectChange(
                       value,
                       setChildCoil(false),
-                      props.inward.plan
+                      props.inward.plan,
                     )
                   }
                   filterOption={(input, option) =>
@@ -452,8 +458,8 @@ const Plan = (props) => {
                                       ? group[0].process.processId === 1
                                         ? "gx-cutting-group"
                                         : instruction.process.processId === 7
-                                        ? "gx-unprocessed-group"
-                                        : "gx-slitting-group"
+                                          ? "gx-unprocessed-group"
+                                          : "gx-slitting-group"
                                       : "gx-slit-cut-group"
                                   }`}
                                 >
@@ -464,8 +470,8 @@ const Plan = (props) => {
                                         ? instruction.process.processId === 1
                                           ? "gx-cutting-single"
                                           : instruction.process.processId === 7
-                                          ? "gx-unprocessed-single"
-                                          : "gx-slitting-single"
+                                            ? "gx-unprocessed-single"
+                                            : "gx-slitting-single"
                                         : "gx-slit-cut-single"
                                     }`}
                                     size="small"
@@ -498,8 +504,8 @@ const Plan = (props) => {
                                         ? instruction.process.processId === 1
                                           ? "Cutting"
                                           : instruction.process.processId === 7
-                                          ? "Unprocessed"
-                                          : "Slitting"
+                                            ? "Unprocessed"
+                                            : "Slitting"
                                         : "Slit & Cut"}
                                       <div className="gx-flex-row">
                                         <p className="gx-coil-details-label">
@@ -546,7 +552,7 @@ const Plan = (props) => {
                                               handleSelectChange(
                                                 value,
                                                 setChildCoil(true),
-                                                instruction
+                                                instruction,
                                               )
                                             }
                                             filterOption={(input, option) =>
@@ -575,7 +581,7 @@ const Plan = (props) => {
                                               handleSelectChange(
                                                 value,
                                                 setChildCoil(true),
-                                                instruction
+                                                instruction,
                                               )
                                             }
                                             filterOption={(input, option) =>
@@ -618,9 +624,9 @@ const Plan = (props) => {
                                             .process.processId === 1
                                             ? "gx-cutting-group"
                                             : instruction.process.processId ===
-                                              7
-                                            ? "gx-unprocessed-group"
-                                            : "gx-slitting-group"
+                                                7
+                                              ? "gx-unprocessed-group"
+                                              : "gx-slitting-group"
                                         }`}
                                       >
                                         <Card
@@ -630,9 +636,9 @@ const Plan = (props) => {
                                               .process.processId === 1
                                               ? "gx-cutting-single"
                                               : instruction.process
-                                                  .processId === 7
-                                              ? "gx-unprocessed-single"
-                                              : "gx-slitting-single"
+                                                    .processId === 7
+                                                ? "gx-unprocessed-single"
+                                                : "gx-slitting-single"
                                           }`}
                                           size="small"
                                         >
@@ -670,7 +676,7 @@ const Plan = (props) => {
                                                   ? 0
                                                   : getLength(
                                                       instruction.childInstructions,
-                                                      "Non-Delivered"
+                                                      "Non-Delivered",
                                                     )}
                                               </span>
                                             </div>
@@ -691,7 +697,7 @@ const Plan = (props) => {
                                                   ? 0
                                                   : getWeight(
                                                       instruction.childInstructions,
-                                                      "Non-Delivered"
+                                                      "Non-Delivered",
                                                     )}
                                               </span>
                                             </div>
@@ -712,17 +718,17 @@ const Plan = (props) => {
                                                     handleSelectChange(
                                                       value,
                                                       setChildCoil(true),
-                                                      instruction
+                                                      instruction,
                                                     )
                                                   }
                                                   filterOption={(
                                                     input,
-                                                    option
+                                                    option,
                                                   ) =>
                                                     option.props.children
                                                       .toLowerCase()
                                                       .indexOf(
-                                                        input.toLowerCase()
+                                                        input.toLowerCase(),
                                                       ) >= 0
                                                   }
                                                 >
@@ -734,7 +740,7 @@ const Plan = (props) => {
                                                         >
                                                           {instruction}
                                                         </Option>
-                                                      )
+                                                      ),
                                                     )}
                                                 </Select>
                                               </div>
@@ -788,7 +794,7 @@ const Plan = (props) => {
                                                 :{" "}
                                                 <span className="gx-coil-details-label">
                                                   {moment(
-                                                    instruction.updatedOn
+                                                    instruction.updatedOn,
                                                   ).format("DD/MM/YYYY")}
                                                 </span>
                                               </p>
@@ -829,7 +835,7 @@ const Plan = (props) => {
                       </Card>
                     ) : (
                       <></>
-                    )
+                    ),
                   )}
               </>
             ))}
