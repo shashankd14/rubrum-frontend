@@ -84,7 +84,6 @@ const MainApp = () => {
     <Layout className="gx-app-layout">
       {getSidebar(navStyle, width)}
       <Layout>
-        <Topbar />
         <Content
           className={`gx-layout-content ${getContainerClass(navStyle)} `}
         >

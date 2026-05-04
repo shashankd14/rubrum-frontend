@@ -190,7 +190,7 @@ function* fetchInwardList({
         method: "POST",
         headers: { "Content-Type": "application/json", ...getHeaders() },
         body: JSON.stringify(body),
-      }
+      },
     );
     if (fetchInwardList.status === 200) {
       const fetchInwardListResponse = yield fetchInwardList.json();
@@ -203,9 +203,8 @@ function* fetchInwardList({
           if (inward.instruction.length > 0) {
             eachInward.children = inward.instruction;
             inward.instruction.map((instruction, index) => {
-              eachInward.children[
-                index
-              ].key = `${inward.coilNumber}-${instruction.instructionId}`;
+              eachInward.children[index].key =
+                `${inward.coilNumber}-${instruction.instructionId}`;
               eachInward.children[index].coilNumber = instruction.instructionId;
               eachInward.children[index].party = inward.party;
               // eachInward.children[index].material = inward.material;
@@ -217,9 +216,8 @@ function* fetchInwardList({
                   instruction.childInstructions;
                 eachInward.children[index].children.map(
                   (childInstruction, childIndex) => {
-                    eachInward.children[index].children[
-                      childIndex
-                    ].key = `${inward.coilNumber}-${instruction.instructionId}-${childInstruction.instructionId}`;
+                    eachInward.children[index].children[childIndex].key =
+                      `${inward.coilNumber}-${instruction.instructionId}-${childInstruction.instructionId}`;
                     eachInward.children[index].children[childIndex].coilNumber =
                       childInstruction.instructionId;
                     eachInward.children[index].children[childIndex].party =
@@ -231,7 +229,7 @@ function* fetchInwardList({
                     ].customerBatchId = inward.customerBatchId;
                     eachInward.children[index].children[childIndex].fThickness =
                       inward.fThickness;
-                  }
+                  },
                 );
               }
             });
@@ -282,7 +280,7 @@ function* fetchInwardListWithOldAPI(action) {
         method: "POST",
         headers: { "Content-Type": "application/json", ...getHeaders() },
         body: JSON.stringify(body),
-      }
+      },
     );
     if (fetchInwardList.status === 200) {
       const fetchInwardListResponse = yield fetchInwardList.json();
@@ -331,7 +329,7 @@ function* fetchWIPInwardList(action) {
         method: "POST",
         headers: { "Content-Type": "application/json", ...getHeaders() },
         body: JSON.stringify(body),
-      }
+      },
     );
     if (fetchWIPInwardList.status === 200) {
       const fetchWIPInwardListResponse = yield fetchWIPInwardList.json();
@@ -368,7 +366,7 @@ function* checkCoilDuplicate(action) {
       {
         method: "GET",
         headers: getHeaders(),
-      }
+      },
     );
     if (checkCoilDuplicate.status === 200) {
       const checkCoilDuplicateResponse = yield checkCoilDuplicate.json();
@@ -387,7 +385,7 @@ function* checkCustomerBatchNumber(action) {
       {
         method: "GET",
         headers: getHeaders(),
-      }
+      },
     );
     if (checkCustomerBatchNumberResponse.status === 200) {
       const checkCoilDuplicateResponse =
@@ -408,7 +406,7 @@ function* submitInward(action) {
     data.append("partyId", action.inward.partyName);
     data.append(
       "customerCoilId",
-      action.inward.customerId || action.inward.partyName
+      action.inward.customerId || action.inward.partyName,
     );
     data.append("customerBatchId", action.inward.customerBatchNo);
     data.append("customerInvoiceNo", action.inward.customerInvoiceNo);
@@ -421,34 +419,34 @@ function* submitInward(action) {
       "width",
       action.inward.width !== undefined
         ? action.inward.width
-        : Number(action.inward.fWidth)
+        : Number(action.inward.fWidth),
     );
     data.append(
       "thickness",
       action.inward.thickness !== undefined
         ? action.inward.thickness
-        : action.inward.fThickness
+        : action.inward.fThickness,
     );
     action.inward.length && data.append("length", action.inward.length);
     data.append(
       "presentWeight",
       action.inward.netWeight !== undefined
         ? action.inward.netWeight
-        : action.inward.grossWeight
+        : action.inward.grossWeight,
     );
     data.append("grossWeight", action.inward.grossWeight);
 
     // invoice details
     data.append(
       "inwardDate",
-      moment(action.inward.receivedDate).format("YYYY-MM-DD HH:mm:ss")
+      moment(action.inward.receivedDate).format("YYYY-MM-DD HH:mm:ss"),
     );
     data.append("batchNumber", action.inward.batchNo);
     data.append("tdcNo", action.inward.tdcNo);
     data.append("vehicleNumber", action.inward.vehicleNumber);
     data.append(
       "invoiceDate",
-      moment(action.inward.invoiceDate).format("YYYY-MM-DD HH:mm:ss")
+      moment(action.inward.invoiceDate).format("YYYY-MM-DD HH:mm:ss"),
     );
     data.append("invoiceNumber", action.inward.invoiceNumber?.key);
     data.append("poId", action.inward.invoiceNumber?.key);
@@ -462,21 +460,21 @@ function* submitInward(action) {
       "mmId",
       action.inward.materialId !== undefined
         ? action.inward.materialId?.label
-        : action.inward.mmId
+        : action.inward.mmId,
     );
 
     if (action.inward.testFile) {
       data.append(
         "testCertificateFile",
         action.inward.testFile.fileList[0].originFileObj,
-        action.inward.testFile.fileList[0].name
+        action.inward.testFile.fileList[0].name,
       );
     }
     if (action.inward.invoiceCopy) {
       data.append(
         "invoiceCopy",
         action.inward.invoiceCopy.fileList[0].originFileObj,
-        action.inward.invoiceCopy.fileList[0].name
+        action.inward.invoiceCopy.fileList[0].name,
       );
     }
 
@@ -504,7 +502,8 @@ function* submitInward(action) {
     } else {
       let errorResponse = {};
       errorResponse = yield newInwardEntry.json();
-      const errMsg = (errorResponse && errorResponse.message) || "Something went wrong";
+      const errMsg =
+        (errorResponse && errorResponse.message) || "Something went wrong";
       yield put(submitInwardError(errMsg));
     }
   } catch (error) {
@@ -531,7 +530,7 @@ function* updateInward(action) {
       customerInvoiceNo: action.inward.customerInvoiceNo,
       coilNumber: action.inward.coilNumber.toString(),
       inwardDate: moment(action.inward.receivedDate).format(
-        "YYYY-MM-DD HH:mm:ss"
+        "YYYY-MM-DD HH:mm:ss",
       ),
       batchNumber: action.inward.batchNo || "",
       vehicleNumber:
@@ -610,7 +609,7 @@ function* fetchInwardListByParty(action) {
       {
         method: "GET",
         headers: getHeaders(),
-      }
+      },
     );
     if (fetchPartyInwardList.status === 200) {
       const fetchPartyInwardListResponse = yield fetchPartyInwardList.json();
@@ -666,7 +665,7 @@ function* fetchPartyListById(action) {
       {
         method: "GET",
         headers: getHeaders(),
-      }
+      },
     );
     if (fetchPartyInwardList.status === 200) {
       const fetchPartyInwardListResponse = yield fetchPartyInwardList.json();
@@ -686,7 +685,7 @@ function* fetchInwardPlanDetails(action) {
       {
         method: "GET",
         headers: getHeaders(),
-      }
+      },
     );
     if (fetchInwardPlan.status === 200) {
       const fetchInwardPlanResponse = yield fetchInwardPlan.json();
@@ -818,7 +817,7 @@ function* requestUpdateInstruction(action) {
   });
   const filteredData = ins.filter(
     (each) =>
-      each.packetClassificationId !== 0 && each.packetClassificationId !== ""
+      each.packetClassificationId !== 0 && each.packetClassificationId !== "",
   );
   const req = {
     taskType: editFinish ? "FGtoFG" : unfinish ? "FGtoWIP" : "WIPtoFG",
@@ -836,8 +835,7 @@ function* requestUpdateInstruction(action) {
     });
     if (updateInstruction.status === 200) {
       yield put(updateInstructionSuccess(updateInstruction));
-      if(!unfinish)
-        yield put(labelPrintEditFinish(action.coil));
+      if (!unfinish) yield put(labelPrintEditFinish(action.coil));
     } else if (updateInstruction.status === 400) {
       const errorResponse = yield updateInstruction.json();
       yield put(updateInstructionPT(errorResponse));
@@ -856,13 +854,13 @@ function* requestGradesByMaterialId(action) {
       {
         method: "GET",
         headers: getHeaders(),
-      }
+      },
     );
     if (fetchGradesByMaterialIdList.status === 200) {
       const fetchGradesByMaterialIdListResponse =
         yield fetchGradesByMaterialIdList.json();
       yield put(
-        getGradeByMaterialIdSuccess(fetchGradesByMaterialIdListResponse)
+        getGradeByMaterialIdSuccess(fetchGradesByMaterialIdListResponse),
       );
     } else if (fetchGradesByMaterialIdList.status === 401) {
       yield put(userSignOutSuccess());
@@ -875,13 +873,16 @@ function* requestGradesByMaterialId(action) {
 function* postDeliveryConfirmRequest(payload) {
   let req_obj = {};
   let requestType = "";
+  let packetsData = [];
+
   if (payload.payload?.inwardListForDelivery) {
-    let packetsData = [];
     for (let item of payload.payload.inwardListForDelivery) {
       if (item.instructionId) {
         let tempItem = {};
         const soMaterial = payload.payload.priceDetails?.filter(
-          (priceDetails) => priceDetails.instructionId === item.instructionId,
+          (priceDetails) =>
+            priceDetails.instructionId === item.instructionId ||
+            priceDetails.instructionId === item.inwardEntryId,
         );
         tempItem.instructionId = item.instructionId;
         tempItem.remarks = item.remarks;
@@ -891,9 +892,9 @@ function* postDeliveryConfirmRequest(payload) {
 
         if (payload?.payload?.additionalWeights)
           tempItem.additionalWeight = parseFloat(
-            payload?.payload?.additionalWeights[item.instructionId]
+            payload?.payload?.additionalWeights[item.instructionId],
           );
-          packetsData.push(tempItem);
+        packetsData.push(tempItem);
       }
     }
     req_obj = {
@@ -906,7 +907,7 @@ function* postDeliveryConfirmRequest(payload) {
     };
   } else {
     requestType = "PUT";
-    req_obj = payload.payload;
+    req_obj = { ...payload.payload, deliveryItemDetails: packetsData };
   }
   try {
     const postConfirm = yield fetch(`${baseUrl}api/delivery/save`, {
@@ -933,7 +934,7 @@ function* fetchInwardInstructionDetails(action) {
       {
         method: "GET",
         headers: getHeaders(),
-      }
+      },
     );
     if (fetchInwardInstruction.status === 200) {
       const fetchInwardPlanResponse = yield fetchInwardInstruction.json();
@@ -956,7 +957,7 @@ function* saveUnprocessedDelivery(action) {
           method: "POST",
           headers: { "Content-Type": "application/json", ...getHeaders() },
           body: JSON.stringify(action.inwardEntryId?.inwardEntryId),
-        }
+        },
       );
     } else {
       fetchInwardInstruction = yield fetch(
@@ -964,7 +965,7 @@ function* saveUnprocessedDelivery(action) {
         {
           method: "POST",
           headers: getHeaders(),
-        }
+        },
       );
     }
     if (fetchInwardInstruction.status === 200) {
@@ -987,7 +988,7 @@ function* deleteInwardEntryById(action) {
         method: "DELETE",
         body: data,
         headers: getHeaders(),
-      }
+      },
     );
     if (fetchInwardInstruction.status === 200) {
       yield put(deleteInwardEntryByIdSuccess(fetchInwardInstruction));
@@ -1009,11 +1010,11 @@ function* deleteInstructionById(action) {
           ...getHeaders(),
         },
         body: JSON.stringify(action.payload),
-      }
+      },
     );
     if (fetchInwardInstruction.status === 200) {
       yield put(
-        deleteInstructionByIdSuccess(fetchInwardInstruction, action.param)
+        deleteInstructionByIdSuccess(fetchInwardInstruction, action.param),
       );
     } else if (fetchInwardInstruction.status === 401) {
       yield put(userSignOutSuccess());
@@ -1062,7 +1063,7 @@ function* pdfGenerateInward(action) {
       pdfWindow.document.write(
         "<iframe width='100%' height='600%' src='data:application/pdf;base64, " +
           encodeURI(pdfGenerateResponse.encodedBase64String) +
-          "'></iframe>"
+          "'></iframe>",
       );
       yield put(pdfGenerateSuccess(pdfGenerateResponse));
     } else if (pdfGenerate.status === 401) {
@@ -1085,7 +1086,7 @@ function* generateDCPdf(action) {
       pdfWindow.document.write(
         "<iframe width='100%' height='600%' src='data:application/pdf;base64, " +
           encodeURI(pdfGenerateResponse.encodedBase64String) +
-          "'></iframe>"
+          "'></iframe>",
       );
       yield put(generateDCPdfSuccess(pdfGenerateResponse));
     } else if (pdfGenerate.status === 401) {
@@ -1102,7 +1103,7 @@ function* getS3PDFUrl(action) {
       {
         method: "GET",
         headers: getHeaders(),
-      }
+      },
     );
     if (getS3PDFUrl.status === 200) {
       const response = yield getS3PDFUrl.json();
@@ -1121,7 +1122,7 @@ function* getReconcileReportSaga(action) {
       {
         method: "GET",
         headers: getHeaders(),
-      }
+      },
     );
     if (getreconcileData.status === 200) {
       const response = yield getreconcileData.json();
@@ -1216,7 +1217,7 @@ function* getPacketwisePriceDCSaga(action) {
         method: "POST",
         headers: { "Content-Type": "application/json", ...getHeaders() },
         body: JSON.stringify(req_obj),
-      }
+      },
     );
     const respData = yield response.json();
     if (response.status === 200) {
@@ -1247,7 +1248,7 @@ function* getPacketwisePriceDCFullHandlingSaga(action) {
         method: "POST",
         headers: { "Content-Type": "application/json", ...getHeaders() },
         body: JSON.stringify(req_obj),
-      }
+      },
     );
     const respData = yield response.json();
     if (response.status === 200) {
@@ -1269,7 +1270,7 @@ function* updateClassificationSlitAndCutBeforeFinish(action) {
         method: "POST",
         headers: { "Content-Type": "application/json", ...getHeaders() },
         body: JSON.stringify(action.payload),
-      }
+      },
     );
     if (updateClassification.status === 200) {
       const groupSaveListObj = yield updateClassification.json();
@@ -1296,7 +1297,12 @@ function* requestSyncToZoho(action) {
       yield put(userSignOutSuccess());
     } else {
       const errorMessageObj = yield updateClassification.json();
-      yield put(syncToZohoError(errorMessageObj?.message ? errorMessageObj?.message : "error"))};
+      yield put(
+        syncToZohoError(
+          errorMessageObj?.message ? errorMessageObj?.message : "error",
+        ),
+      );
+    }
   } catch (error) {
     yield put(syncToZohoError(error));
   }
@@ -1304,11 +1310,14 @@ function* requestSyncToZoho(action) {
 
 function* requestDocSync(action) {
   try {
-    const updateClassification = yield fetch(`${baseUrl}api/xternal/uploaddoc `, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", ...getHeaders() },
-      body: JSON.stringify({ billId: action.billId }),
-    });
+    const updateClassification = yield fetch(
+      `${baseUrl}api/xternal/uploaddoc `,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...getHeaders() },
+        body: JSON.stringify({ billId: action.billId }),
+      },
+    );
     if (updateClassification.status === 200) {
       const groupSaveListObj = yield updateClassification.json();
       yield put(requestDocSyncSuccess(groupSaveListObj));
@@ -1318,8 +1327,8 @@ function* requestDocSync(action) {
       const errorMessageObj = yield updateClassification.json();
       yield put(
         requestDocSyncError(
-          errorMessageObj?.message ? errorMessageObj?.message : "error"
-        )
+          errorMessageObj?.message ? errorMessageObj?.message : "error",
+        ),
       );
     }
   } catch (error) {
@@ -1368,7 +1377,7 @@ function* getInwardMaterialList(action) {
         method: "POST",
         headers: { "Content-Type": "application/json", ...getHeaders() },
         body: JSON.stringify(req_obj),
-      }
+      },
     );
     if (updateClassification.status === 200) {
       const arrayedData = { gradeMap: [], productMap: [] };
@@ -1407,7 +1416,7 @@ function* getInwardsAgainstPo(action) {
         method: "POST",
         headers: { "Content-Type": "application/json", ...getHeaders() },
         body: JSON.stringify(req_obj),
-      }
+      },
     );
     if (updateClassification.status === 200) {
       const inwardMaterialList = yield updateClassification.json();
@@ -1424,7 +1433,7 @@ export function* watchFetchRequests() {
   yield takeLatest(FETCH_INWARD_LIST_REQUEST, fetchInwardList);
   yield takeLatest(
     FETCH_INWARD_LIST_WITH_OLD_API_REQUEST,
-    fetchInwardListWithOldAPI
+    fetchInwardListWithOldAPI,
   );
   yield takeLatest(FETCH_WIP_INWARD_LIST_REQUEST, fetchWIPInwardList);
   yield takeLatest(SUBMIT_INWARD_ENTRY, submitInward);
@@ -1435,24 +1444,24 @@ export function* watchFetchRequests() {
   yield takeLatest(REQUEST_SAVE_CUTTING_DETAILS, requestSaveCuttingInstruction);
   yield takeLatest(
     REQUEST_SAVE_SLITTING_DETAILS,
-    requestSaveSlittingInstruction
+    requestSaveSlittingInstruction,
   );
   yield takeLatest(
     REQUEST_UPDATE_INSTRUCTION_DETAILS,
-    requestUpdateInstruction
+    requestUpdateInstruction,
   );
   yield takeLatest(
     FETCH_MATERIAL_GRADE_LIST_REQUEST,
-    requestGradesByMaterialId
+    requestGradesByMaterialId,
   );
   yield takeLatest(POST_DELIVERY_CONFIRM_REQUESTED, postDeliveryConfirmRequest);
   yield takeLatest(
     FETCH_INWARD_INSTRUCTION_DETAILS_REQUESTED,
-    fetchInwardInstructionDetails
+    fetchInwardInstructionDetails,
   );
   yield takeLatest(
     FETCH_INWARD_INSTRUCTION_WIP_DETAILS_REQUESTED,
-    fetchInwardInstructionWIPDetails
+    fetchInwardInstructionWIPDetails,
   );
   yield takeLatest(SAVE_UNPROCESSED_FOR_DELIVERY, saveUnprocessedDelivery);
   yield takeLatest(UPDATE_INWARD_LIST, updateInward);
@@ -1472,11 +1481,11 @@ export function* watchFetchRequests() {
   yield takeLatest(FETCH_INWARD_MATERIAL_LIST, getInwardMaterialList);
   yield takeLatest(
     GET_PACKET_WISE_PRICE_DC_FULL_HANDLING_REQUEST,
-    getPacketwisePriceDCFullHandlingSaga
+    getPacketwisePriceDCFullHandlingSaga,
   );
   yield takeLatest(
     UPDATE_CLASSIFICATION_SLITANDCUT_BEFORE_FINISH,
-    updateClassificationSlitAndCutBeforeFinish
+    updateClassificationSlitAndCutBeforeFinish,
   );
   yield takeLatest(REQUEST_SYNC_TO_ZOHO, requestSyncToZoho);
   yield takeLatest(INWARDS_AGAINST_PO_REQUEST, getInwardsAgainstPo);

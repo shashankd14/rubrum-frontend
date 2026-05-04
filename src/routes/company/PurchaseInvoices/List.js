@@ -3,7 +3,6 @@ import {
   fetchPurchaseInvoices,
   requestDocSync,
 } from "../../../appRedux/actions";
-import { fetchSalesOrderList } from "../../../appRedux/actions/SalesOrder";
 import IntlMessages from "../../../util/IntlMessages";
 import {
   Table,
@@ -17,9 +16,11 @@ import {
   Tag,
 } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import { toPascalCase, capitalizeFirstLetter } from "util/Common";
+import { capitalizeFirstLetter } from "util/Common";
 import SyncToZohoModal from "../../company/Inward/SyncToZohoModal";
 import SearchBox from "../../../components/SearchBox";
+
+const { Option } = Select;
 
 const List = (props) => {
   const dispatch = useDispatch();
@@ -34,6 +35,8 @@ const List = (props) => {
   const partyList = useSelector((state) => state.party.partyList);
   const [syncloading, setSyncLoading] = React.useState(false);
   const [searchValue, setSearchValue] = React.useState("");
+  const [customerValue, setCustomerValue] = React.useState("");
+  const [filteredInfo, setFilteredInfo] = React.useState({});
 
   const PurchaseInvoiceColumns = [
     {
@@ -238,6 +241,32 @@ const List = (props) => {
     }
   }, [inwardState.invoiceDocSyncSuccess]);
 
+  const handleCustomerChange = (value) => {
+    if (value) {
+      setCustomerValue(value);
+      setPurchaseInvoicesPageNo(1);
+      dispatch(fetchPurchaseInvoices(1, 15, searchValue, value));
+    } else {
+      setCustomerValue("");
+      setPurchaseInvoicesList(purchaseInvoices.list);
+    }
+  };
+
+  const handleChange = (pagination, filters) => {
+    const inwardDate = filters.inwardDate?.[0];
+    const locationName = filters.locationName?.[0];
+    setPurchaseInvoicesPageNo(pagination.current);
+    dispatch(
+      fetchPurchaseInvoices(
+        pagination.current,
+        15,
+        searchValue,
+        locationName || "",
+        inwardDate ? inwardDate.format("YYYY-MM-DD") : "",
+      ),
+    );
+  };
+
   const expandedRowRendered = (record) => {
     const columns = [
       {
@@ -275,13 +304,8 @@ const List = (props) => {
     if (searchValue) {
       if (searchValue.length >= 3) {
         setPurchaseInvoicesPageNo(1);
-        dispatch(
-          fetchPurchaseInvoices(purchaseInvoicesPageNo, 15, searchValue),
-        );
+        dispatch(fetchPurchaseInvoices(1, 15, searchValue));
       }
-    } else {
-      setPurchaseInvoicesPageNo(1);
-      dispatch(fetchPurchaseInvoices(purchaseInvoicesPageNo, 15, searchValue));
     }
   }, [searchValue]);
 
@@ -298,18 +322,63 @@ const List = (props) => {
         syncToZoho={props.syncToZoho}
       />
       <Card>
-        <SearchBox
-          styleName="gx-w-50 gx-justify-content-end"
-          placeholder="Search for purchase invoice number..."
-          value={searchValue}
-          onChange={(e) => setSearchValue(e.target.value)}
-        />
+        <div
+          style={{ display: "flex" }}
+          className="table-operations gx-justify-content-between"
+        >
+          <div>
+            <Select
+              id="select"
+              showSearch
+              style={{ width: 200 }}
+              placeholder="Select a location"
+              optionFilterProp="children"
+              onChange={handleCustomerChange}
+              value={customerValue}
+              filterOption={(input, option) =>
+                option.props.children
+                  .toLowerCase()
+                  .indexOf(input.toLowerCase()) >= 0
+              }
+            >
+              {partyList.length > 0 &&
+                partyList.map((party) => (
+                  <Option key={party.nPartyId} value={party.nPartyId}>
+                    {party.partyName}
+                  </Option>
+                ))}
+            </Select>
+            &emsp;
+            <Button
+              onClick={() => {
+                setSearchValue("");
+                setFilteredInfo({});
+                setCustomerValue("");
+                setPurchaseInvoicesPageNo(1);
+                dispatch(fetchPurchaseInvoices(1, 15, "", ""));
+              }}
+              style={{ marginBottom: "1px" }}
+            >
+              Clear All filters
+            </Button>
+          </div>
+          <SearchBox
+            styleName="gx-w-50 gx-justify-content-end"
+            placeholder="Search for SO number..."
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+          />
+        </div>
         <br />
         <Table
           className="gx-table-responsive"
+          key={
+            props.inward?.inwardList[0]?.coilNumber || purchaseInvoicesPageNo
+          }
+          rowKey={(record) => record.key}
+          loading={purchaseInvoices.loading}
           columns={PurchaseInvoiceColumns}
           dataSource={purchaseInvoicesList || []}
-          // expandedRowRender={(record) => expandedRowRendered(record)}
           onChange={handleChange}
           pagination={{
             pageSize: 15,
