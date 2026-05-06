@@ -143,16 +143,16 @@ const DeliveryInfo = (props) => {
 
   const [validationStatus, setValidationStatus] = useState(false);
 
-  const onInputChange = (index, soID, field) => {
+  const onInputChange = (instructionId, soID, field) => {
     setPriceDetails((prev) => {
       if (!Array.isArray(prev)) return prev;
-
+      const idx = prev.findIndex((item) => item.instructionId === instructionId);
+      if (idx === -1) return prev;
       const updated = [...prev];
-      updated[index] = {
-        ...updated[index],
+      updated[idx] = {
+        ...updated[idx],
         [field]: soID,
       };
-
       return updated;
     });
   };
@@ -262,6 +262,7 @@ const DeliveryInfo = (props) => {
               key: "soNumber",
               render: (text, record, index) => (
                 <div style={{ display: "flex", alignItems: "center" }}>
+                  {console.log("mapped so list", record)}
                   <Select
                     style={{ flex: 1, minWidth: 0 }}
                     labelInValue
@@ -280,22 +281,22 @@ const DeliveryInfo = (props) => {
                     showArrow={true}
                     onSelect={(soId, option) => {
                       if (!soId) {
-                        onInputChange(index, null, "sono");
-                        onInputChange(index, null, "mmid");
-                        onInputChange(index, null, "materialName");
+                        onInputChange(record.instructionId, null, "sono");
+                        onInputChange(record.instructionId, null, "mmid");
+                        onInputChange(record.instructionId, null, "materialName");
                         return;
                       }
                       dispatch(fetchMaterialsBySoID(soId?.key));
-                      onInputChange(index, soId?.key, "sono");
+                      onInputChange(record.instructionId, soId?.key, "sono");
                     }}
                     onChange={(materialId, option) => {
                       if (!materialId) {
-                        onInputChange(index, null, "sono");
-                        onInputChange(index, null, "mmid");
-                        onInputChange(index, null, "materialName");
+                        onInputChange(record.instructionId, null, "sono");
+                        onInputChange(record.instructionId, null, "mmid");
+                        onInputChange(record.instructionId, null, "materialName");
                         return;
                       }
-                      onInputChange(index, materialId?.key, "sono");
+                      onInputChange(record.instructionId, materialId?.key, "sono");
                     }}
                     filterOption={(input, option) => {
                       const name = String(
@@ -349,26 +350,26 @@ const DeliveryInfo = (props) => {
                     showArrow={true}
                     onSelect={(materialId, option) => {
                       if (!materialId) {
-                        onInputChange(index, null, "mmid");
-                        onInputChange(index, null, "materialName");
+                        onInputChange(record.instructionId, null, "mmid");
+                        onInputChange(record.instructionId, null, "materialName");
                         return;
                       }
-                      onInputChange(index, materialId?.key, "mmid");
+                      onInputChange(record.instructionId, materialId?.key, "mmid");
                       onInputChange(
-                        index,
+                        record.instructionId,
                         option?.props["data-material-name"],
                         "materialName",
                       );
                     }}
                     onChange={(materialId, option) => {
                       if (!materialId) {
-                        onInputChange(index, null, "mmid");
-                        onInputChange(index, null, "materialName");
+                        onInputChange(record.instructionId, null, "mmid");
+                        onInputChange(record.instructionId, null, "materialName");
                         return;
                       }
-                      onInputChange(index, materialId?.key, "mmid");
+                      onInputChange(record.instructionId, materialId?.key, "mmid");
                       onInputChange(
-                        index,
+                        record.instructionId,
                         option?.props["data-material-name"],
                         "materialName",
                       );
