@@ -444,11 +444,13 @@ const DeliveryInfo = (props) => {
       };
       setFullHandling(false);
       props.generateDCPdf(pdfPayload);
+      setPriceModal(false);
     }
   }, [props.inward.deliverySuccess]);
 
   useEffect(() => {
     if (props.inward.dcpdfSuccess) {
+      setPriceModal(false);
       message
         .success("Delivery Challan pdf generated successfully", 2)
         .then(() => {
@@ -482,6 +484,7 @@ const DeliveryInfo = (props) => {
       };
       props.postDeliveryConfirm(reqObj);
       props.saveUnprocessedDelivery(reqObj);
+      setPriceModal(false);
       //  props.getPacketwisePriceDC(reqObj);
     }
   }, [props.inward.unprocessedSuccess]);

@@ -1,25 +1,30 @@
 import React, { useCallback } from "react";
 
 const SalesOrderModule = () => {
-  const iframeRef = useCallback((node) => {
-    if (node !== null) {
-      node.onload = () =>
-        node?.contentWindow?.postMessage(
-          {
-            type: "SET_DATA",
-            payload: {
-              token: localStorage.getItem("userToken") || "",
-              refreshToken: localStorage.getItem("refreshToken") || "",
-              user: {
-                name: localStorage.getItem("userToken"),
-                id: localStorage.getItem("userId"),
+  const iframeRef = useCallback(
+    (node) => {
+      if (!localStorage.getItem("userToken") || !iframeRef.current) return;
+
+      if (node !== null) {
+        node.onload = () =>
+          node?.contentWindow?.postMessage(
+            {
+              type: "SET_DATA",
+              payload: {
+                token: localStorage.getItem("userToken") || "",
+                refreshToken: localStorage.getItem("refreshToken") || "",
+                user: {
+                  name: localStorage.getItem("userToken"),
+                  id: localStorage.getItem("userId"),
+                },
               },
             },
-          },
-          window.location.origin
-        );
-    }
-  }, []);
+            window.location.origin,
+          );
+      }
+    },
+    [localStorage.getItem("userToken")],
+  );
 
   return (
     <iframe

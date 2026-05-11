@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { Table } from "antd";
 import { fetchDeliveryListById } from "../../../appRedux/actions";
 import { toPascalCase } from "util/Common";
+import { render } from "less";
 
 const DeliveryDetails = (props) => {
   const [deliveryById, setDeliveryById] = useState(props.delivery.deliveryById);
@@ -11,7 +12,7 @@ const DeliveryDetails = (props) => {
     {
       title: "Batch no.",
       dataIndex: "coilNumber",
-      key: "x",
+      key: "coilNumber",
     },
     {
       title: "SC inward id",
@@ -29,7 +30,7 @@ const DeliveryDetails = (props) => {
     },
     {
       title: "Coil Thickness",
-      dataIndex: "thickness",
+      dataIndex: "fthickness",
     },
     {
       title: "Coil length",
@@ -49,7 +50,10 @@ const DeliveryDetails = (props) => {
     {
       title: "Grade",
       dataIndex: "grade",
-      key: "",
+      key: "materialGrade",
+      render: (text, record) => {       
+         return record.materialGrade ? record.materialGrade : "-";
+      },
     },
     {
       title: "Packaging Classification",
@@ -75,7 +79,7 @@ const DeliveryDetails = (props) => {
       let coilList = coil.filter(
         (element) =>
           element.deliveryDetails.deliveryId ===
-          Number(props.match.params.deliveryId)
+          Number(props.match.params.deliveryId),
       );
       setCoil(coilList[0]);
     }
@@ -84,14 +88,9 @@ const DeliveryDetails = (props) => {
   useEffect(() => {
     if (!props.delivery.loading && props.delivery.success) {
       let tableData = [];
-      tableData = props.delivery.deliveryById.map((element) => {
-        element.coilNumber = coil.coilNumber;
-        element.customerBatchId = coil.customerBatchId;
-        element.material = coil?.materialDto?.material;
-        element.thickness = coil?.fThickness;
-        element.grade = coil?.materialDto?.materialGradeDto.gradeName;
-        return element;
-      });
+      tableData = props.delivery.deliveryById.map((element) => ({
+        ...element,
+      }));
       setDeliveryById(tableData);
     }
   }, [props.delivery.loading, props.delivery.success]);
@@ -103,7 +102,6 @@ const DeliveryDetails = (props) => {
       </div>
       {deliveryById.length > 0 ? (
         <Table
-          rowSelection={[]}
           className="gx-table-responsive"
           columns={columns}
           dataSource={deliveryById}
