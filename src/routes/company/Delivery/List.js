@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { connect } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 import {
   fetchDeliveryList,
   fetchPartyList,
@@ -14,8 +14,6 @@ import SearchBox from "../../../components/SearchBox";
 import ReconcileModal from "./ReconcileModal";
 import moment from "moment";
 import IntlMessages from "../../../util/IntlMessages";
-import { useDispatch } from "react-redux";
-import { render } from "less";
 
 const Option = Select.Option;
 
@@ -109,17 +107,21 @@ function List(props) {
             </Tag>
           );
         } else if (record.deliveryDetails.zohoSyncStts === "FAIL") {
-          return <Tag color="red" style={{ color: "red" }}>
-            Fail
-          </Tag>;
+          return (
+            <Tag color="red" style={{ color: "red" }}>
+              Fail
+            </Tag>
+          );
         } else if (record.deliveryDetails.zohoSyncStts === "SUCCESS") {
-          return <Tag color="green" style={{ color: "green" }}>
-            Success
-          </Tag>;
+          return (
+            <Tag color="green" style={{ color: "green" }}>
+              Success
+            </Tag>
+          );
         } else {
           return <span>-</span>;
         }
-      }
+      },
     },
     {
       title: "Sales invoice no",
@@ -132,24 +134,23 @@ function List(props) {
         record.deliveryDetails.zohoSyncStts === "PENDING" ||
         record.deliveryDetails.zohoSyncStts === "FAIL" ||
         record.deliveryDetails.zohoSyncStts === null ? (
-          <span
-            className="gx-link"
-            onClick={() => {
-              setSyncLoading(record.deliveryDetails.deliveryId);
-              dispatch(
-                requestInventoryAdjustment(record.deliveryDetails.deliveryId),
-              );
-            }}
-          >
-            {record.deliveryDetails.deliveryId === syncloading && (
-              <Spin
-                indicator={
-                  <Icon type="loading" style={{ fontSize: 20 }} spin />
-                }
-              />
-            )}
-            Try again
-          </span>
+          record.deliveryDetails.deliveryId === syncloading ? (
+            <Spin
+              indicator={<Icon type="loading" style={{ fontSize: 20 }} spin />}
+            />
+          ) : (
+            <span
+              className="gx-link"
+              onClick={() => {
+                setSyncLoading(record.deliveryDetails.deliveryId);
+                dispatch(
+                  requestInventoryAdjustment(record.deliveryDetails.deliveryId),
+                );
+              }}
+            >
+              Try again
+            </span>
+          )
         ) : (
           <></>
         ),
