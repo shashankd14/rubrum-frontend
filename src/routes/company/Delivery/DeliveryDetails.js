@@ -3,7 +3,6 @@ import { connect } from "react-redux";
 import { Table } from "antd";
 import { fetchDeliveryListById } from "../../../appRedux/actions";
 import { toPascalCase } from "util/Common";
-import { render } from "less";
 
 const DeliveryDetails = (props) => {
   const [deliveryById, setDeliveryById] = useState(props.delivery.deliveryById);

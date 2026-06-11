@@ -18,7 +18,7 @@ const SalesOrderModule = () => {
               },
             },
           },
-          "https://app.workeazy.in/so",
+          "https://app-uat.workeazy.in/so",
         );
     },
     [],
@@ -27,7 +27,7 @@ const SalesOrderModule = () => {
   return (
     <iframe
       ref={iframeRef}
-      src="https://app.workeazy.in/so/sales-order"
+      src="https://app-uat.workeazy.in/so/sales-order"
       title="Vite App"
       style={{ width: "100%", height: "900px", border: "none" }}
     ></iframe>

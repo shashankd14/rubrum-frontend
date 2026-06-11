@@ -1,6 +1,6 @@
 import { Button, Card, Col, Select, Modal, message } from "antd";
 import moment from "moment";
-import React, { use, useEffect, useState } from "react";
+import React, { use, useEffect, useRef, useState } from "react";
 import { connect } from "react-redux";
 import {
   getCoilPlanDetails,
@@ -31,6 +31,8 @@ const Plan = (props) => {
   const { Option } = Select;
   const { coilNumber } = useParams();
   const dispatch = useDispatch();
+  const prevCutting = useRef(false);
+  const prevSlitting = useRef(false);
   const getPlannedLength = (ins) => {
     let length = 0;
     let actualLength = 0;
@@ -159,10 +161,18 @@ const Plan = (props) => {
 
   useEffect(() => {
     getCoilData();
-    if (props.wip || !props.wip) {
-      props.fetchClassificationList();
-    }
-  }, [showSlittingModal, showCuttingModal]);
+    props.fetchClassificationList();
+  }, []);
+
+  useEffect(() => {
+    if (prevCutting.current && !showCuttingModal) getCoilData();
+    prevCutting.current = showCuttingModal;
+  }, [showCuttingModal]);
+
+  useEffect(() => {
+    if (prevSlitting.current && !showSlittingModal) getCoilData();
+    prevSlitting.current = showSlittingModal;
+  }, [showSlittingModal]);
 
   useEffect(() => {
     dispatch(getReconcileReport(coilNumber));

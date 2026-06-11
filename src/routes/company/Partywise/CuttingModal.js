@@ -127,6 +127,7 @@ const CreateCuttingDetailsForm = (props) => {
   const [packetClassification, setPacketClassification] = useState([]);
   const [editedRecordState, setEditedRecordState] = useState([]);
   const [salesOrders, setSalesOrders] = useState(props?.salesOrders || []);
+  const [selectedSo, setSelectedSo] = useState(null);
   const dispatch = useDispatch();
   const [tableData, setTableData] = useState(
     props.wip
@@ -252,7 +253,7 @@ const CreateCuttingDetailsForm = (props) => {
       instruction: instructionList,
     };
     props.updateInstruction(coil);
-    // props.labelPrintEditFinish(coil);
+    props.labelPrintEditFinish(coil);
     props.setShowCuttingModal(false);
   };
 
@@ -1252,7 +1253,7 @@ const CreateCuttingDetailsForm = (props) => {
       editFinish: props?.editFinish,
     };
     props.updateInstruction(coil);
-    // props.labelPrintEditFinish(coil);
+    props.labelPrintEditFinish(coil);
     setShowPositiveToleranceModal(false);
     if (props.setShowSlittingModal) props.setShowSlittingModal(false);
   };
@@ -1281,7 +1282,7 @@ const CreateCuttingDetailsForm = (props) => {
         editFinish: props?.editFinish,
       };
       props.updateInstruction(coil);
-      // props.labelPrintEditFinish(coil);
+      props.labelPrintEditFinish(coil);
       props.setShowCuttingModal(false);
     } else if (props?.editFinish) {
       const instructionList = tableData.filter((item) =>
@@ -1297,7 +1298,7 @@ const CreateCuttingDetailsForm = (props) => {
         editFinish: props?.editFinish,
       };
       props.updateInstruction(coil);
-      // props.labelPrintEditFinish(coil);
+      props.labelPrintEditFinish(coil);
       if (props.setShowSlittingModal) props.setShowSlittingModal(false);
       return;
     } else if (props.wip) {
@@ -1334,7 +1335,7 @@ const CreateCuttingDetailsForm = (props) => {
           actualCoilLevelYLR: actualCoilLevelYLR,
         };
         props.updateInstruction(coil);
-        // props.labelPrintEditFinish(coil);
+        props.labelPrintEditFinish(coil);
         props.setShowCuttingModal();
       }
     }
@@ -1454,7 +1455,10 @@ const CreateCuttingDetailsForm = (props) => {
     ];
   };
 
-  const setSoValues = (record) => {
+  const setSoValues = (refno) => {
+    const record = salesOrders.find((so) => so.refno === refno);
+    if (!record) return;
+
     const soLength = String(record.length);
     const calculatedNo = Math.floor(
       record.itemQty /
@@ -1462,6 +1466,7 @@ const CreateCuttingDetailsForm = (props) => {
     ).toFixed(0);
 
     setNo(calculatedNo);
+    setSelectedSo(refno);
 
     props.setProcessDetails({
       ...props.inward.process,
@@ -1747,12 +1752,13 @@ const CreateCuttingDetailsForm = (props) => {
                         <p style={{ marginBottom: 0 }}>Sales Order: </p>
                         <Select
                           style={{ width: "400px", marginLeft: "10px" }}
+                          value={selectedSo}
                           onSelect={(value) => setSoValues(value)}
                         >
                           {salesOrders?.filter((item) => item.isDisplay !== false)?.map((item, index) => (
                             <Option
                               key={`${item.refno}${index}`}
-                              value={item}
+                              value={item.refno}
                               label={item.refno}
                             >
                               {item.refno} <b>Length: {item.length}</b>

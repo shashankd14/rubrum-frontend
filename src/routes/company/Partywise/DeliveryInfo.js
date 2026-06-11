@@ -196,7 +196,6 @@ const DeliveryInfo = (props) => {
       );
       return;
     }
-    setPriceModal(true);
     const iList = props?.inward.inwardListForDelivery.filter(
       (item) =>
         (item?.inwardEntryId && item?.status?.statusName === "RECEIVED") ||
@@ -205,6 +204,20 @@ const DeliveryInfo = (props) => {
           !item.instructionId &&
           item?.status?.statusName === "READY TO DELIVER"),
     );
+
+    const reqObj = {
+      packingRateId,
+      laminationId,
+      vehicleNo,
+      deliveryType,
+      inwardListForDelivery: props.inward.inwardListForDelivery.map(
+        (item) => ({
+          instructionId: item.instructionId,
+          remarks: item.remarks || null,
+          actualWeight: item.plannedWeight || item.actualWeight,
+        }),
+      ),
+    };
 
     if (iList?.length) {
       const payload = {
@@ -215,41 +228,12 @@ const DeliveryInfo = (props) => {
         vehicleNo,
         deliveryType,
         packingRateId,
-        // motherCoilDispatch: true
       };
       setFullHandling(true);
       props.getPacketwisePriceDCFullHandling(payload);
-      // props.saveUnprocessedDelivery(payload)
-      const reqObj = {
-        packingRateId,
-        laminationId,
-        vehicleNo,
-        deliveryType,
-        inwardListForDelivery: props.inward.inwardListForDelivery.map(
-          (item) => ({
-            instructionId: item.instructionId,
-            remarks: item.remarks || null,
-            actualWeight: item.plannedWeight || item.actualWeight,
-          }),
-        ),
-      };
-      dispatch(getPacketwisePriceDC(reqObj));
-    } else {
-      const reqObj = {
-        packingRateId,
-        vehicleNo,
-        deliveryType,
-        laminationId,
-        inwardListForDelivery: props.inward.inwardListForDelivery.map(
-          (item) => ({
-            instructionId: item.instructionId,
-            remarks: item.remarks || null,
-            actualWeight: item.plannedWeight || item.actualWeight,
-          }),
-        ),
-      };
-      dispatch(getPacketwisePriceDC(reqObj));
     }
+
+    dispatch(getPacketwisePriceDC(reqObj));
     setPriceModal(true);
     setPriceColumn([
       ...deliveryColumns,
@@ -445,6 +429,7 @@ const DeliveryInfo = (props) => {
       setFullHandling(false);
       props.generateDCPdf(pdfPayload);
       setPriceModal(false);
+      props.history.push("/company/deliveredItems/list");
     }
   }, [props.inward.deliverySuccess]);
 
@@ -455,7 +440,7 @@ const DeliveryInfo = (props) => {
         .success("Delivery Challan pdf generated successfully", 2)
         .then(() => {
           props.resetInstruction();
-          props.history.push("/company/locationwise-register");
+          props.history.push("/company/deliveredItems/list");
         });
     }
   }, [props.inward.dcpdfSuccess]);
@@ -531,25 +516,6 @@ const DeliveryInfo = (props) => {
         deliveryType,
       };
       props.postDeliveryConfirm(reqObj);
-      if (props.inward?.unprocessedSuccess?.length) {
-        const fullHandlingList = props.inward?.unprocessedSuccess.map(
-          (item) => {
-            if (item?.process?.processId === 8) {
-              return item;
-            }
-          },
-        );
-        const reqObj = {
-          vehicleNo,
-          taskType: "FULL_HANDLING",
-          packingRateId,
-          laminationId,
-          inwardListForDelivery: fullHandlingList,
-          priceDetails,
-        };
-        props.postDeliveryConfirm(reqObj);
-        props.saveUnprocessedDelivery(reqObj);
-      }
     }
   };
 
