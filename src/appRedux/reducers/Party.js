@@ -11,7 +11,10 @@ import {
     UPDATE_PARTY_REQUEST,
     UPDATE_PARTY_SUCCESS,
     UPDATE_PARTY_ERROR,
-    RESET_PARTY_REQUEST
+    RESET_PARTY_REQUEST,
+    GET_LOCATION_LIST_REQUEST,
+    GET_LOCATION_LIST_SUCCESS,
+    GET_LOCATION_LIST_ERROR
 } from "../../constants/ActionTypes";
 
 const INIT_STATE = {
@@ -106,6 +109,26 @@ export default (state = INIT_STATE, action) => {
             }
         }
         case UPDATE_PARTY_ERROR: {
+            return {
+                ...state,
+                loading: false,
+                error: true,
+            }
+        }
+        case GET_LOCATION_LIST_REQUEST: {
+            return {
+                ...state,
+                loading: true
+            }
+        }
+        case GET_LOCATION_LIST_SUCCESS: {
+            return {
+                ...state,
+                loading: false,
+                locationList: action.locationList
+            }
+        }
+        case GET_LOCATION_LIST_ERROR: {
             return {
                 ...state,
                 loading: false,

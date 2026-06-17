@@ -1,6 +1,6 @@
 import {all, put, fork, takeLatest} from "redux-saga/effects";
 import { getUserToken } from './common';
-import { FETCH_PARTY_LIST_REQUEST, ADD_PARTY_REQUEST, FETCH_PARTY_LIST_ID_REQUEST, UPDATE_PARTY_REQUEST } from "../../constants/ActionTypes";
+import { FETCH_PARTY_LIST_REQUEST, ADD_PARTY_REQUEST, FETCH_PARTY_LIST_ID_REQUEST, UPDATE_PARTY_REQUEST, GET_LOCATION_LIST_REQUEST } from "../../constants/ActionTypes";
 import {fetchPartyListSuccess,
     fetchPartyListError,
     addPartySuccess,
@@ -8,7 +8,9 @@ import {fetchPartyListSuccess,
     fetchPartyListIdSuccess,
     fetchPartyListIdError,
     updatePartySuccess,
-    updatePartyError
+    updatePartyError,
+    getLocationListSuccess,
+    getLocationListError
 } from "../actions";
 import { userSignOutSuccess } from "../../appRedux/actions/Auth";
 
@@ -50,6 +52,25 @@ function* fetchPartyListById(action) {
             yield put(fetchPartyListIdError('error'));
     } catch (error) {
         yield put(fetchPartyListIdError(error));
+    }
+}
+
+function* getLocationList() {
+    try {
+        const getLocationList = yield fetch(`${baseUrl}api/location/list`, {
+            method: 'POST',
+            headers: getHeaders()
+        });
+        if(getLocationList.status === 200) {
+            const getLocationListResponse = yield getLocationList.json();
+            yield put(getLocationListSuccess(getLocationListResponse));
+        } else if (getLocationList.status === 401) {
+            yield put(userSignOutSuccess());
+        } else {
+            yield put(getLocationListError('error'));
+        }
+    } catch (error) {
+        yield put(getLocationListError(error));
     }
 }
 
@@ -258,6 +279,7 @@ export function* watchFetchRequests() {
     yield takeLatest(ADD_PARTY_REQUEST, addParty);
     yield takeLatest(UPDATE_PARTY_REQUEST, updateParty);
     yield takeLatest(FETCH_PARTY_LIST_ID_REQUEST, fetchPartyListById);
+    yield takeLatest(GET_LOCATION_LIST_REQUEST, getLocationList);
 }
 
 export default function* partySagas() {

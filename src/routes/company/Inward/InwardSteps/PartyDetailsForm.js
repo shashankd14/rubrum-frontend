@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
+import debounce from "lodash/debounce";
 import { connect } from "react-redux";
 import {
   setInwardDetails,
   checkCustomerBatchNumber,
+  getLocationList,
 } from "../../../../appRedux/actions";
 import {
   Form,
@@ -39,6 +41,7 @@ const CreatePartyDetailsForm = (props) => {
       setDataSource(options);
     }
   }, [props.party]);
+
   useEffect(() => {
     if (props.party.partyList.length > 0) {
       const { Option } = AutoComplete;
@@ -57,9 +60,17 @@ const CreatePartyDetailsForm = (props) => {
       props.inward.customerBatchNo = props.inward.customerBatchId;
     }
   }, [props.params]);
+
   const handleChange = (e) => {
-    props.inward.party.partyName = e;
+    console.log("selected", e);
+    // props?.inward?.party?.partyName = e;
   };
+
+  const debouncedCheckBatchNumber = useCallback(
+    debounce((value) => props.checkCustomerBatchNumber(value), 500),
+    []
+  );
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -69,6 +80,7 @@ const CreatePartyDetailsForm = (props) => {
       }
     });
   };
+
   const checkBatchNoExist = (rule, value, callback) => {
     if (
       !props.inwardStatus.loading &&
@@ -79,6 +91,11 @@ const CreatePartyDetailsForm = (props) => {
     }
     callback("The coil number already exists");
   };
+
+  useEffect(() => {
+    props.getLocationList();
+  },[]);
+
   return (
     <>
       {props.party.loading && (
@@ -155,8 +172,11 @@ const CreatePartyDetailsForm = (props) => {
             })(
               <Input
                 id="validating"
-                onChange={(e) => props.checkCustomerBatchNumber(e.target.value)}
-                onBlur={(e) => props.checkCustomerBatchNumber(e.target.value)}
+                onChange={(e) => debouncedCheckBatchNumber(e.target.value)}
+                onBlur={(e) => {
+                  debouncedCheckBatchNumber.cancel();
+                  props.checkCustomerBatchNumber(e.target.value);
+                }}
               />
             )}
           </Form.Item>
@@ -181,6 +201,21 @@ const CreatePartyDetailsForm = (props) => {
                 <Option value="EXTERNAL PROCESS AGENT">
                   External Process Agent (EPA)
                 </Option>
+              </Select>
+            )}
+          </Form.Item>
+          <Form.Item label="Location">
+            {getFieldDecorator("locationId", {
+              rules: [
+                { required: true, message: "Please select a location!" },
+              ],
+            })(
+              <Select placeholder="Select an option">
+                {props?.locationList?.map((location) => (
+                  <Option key={location.locationId} value={location.locationId}>
+                    {location.locationName}
+                  </Option>
+                ))}
               </Select>
             )}
           </Form.Item>
@@ -209,6 +244,7 @@ const mapStateToProps = (state) => ({
   party: state.party,
   inward: state.inward.inward,
   inwardStatus: state.inward,
+  locationList: state.party.locationList,
 });
 
 const PartyDetailsForm = Form.create({
@@ -252,6 +288,13 @@ const PartyDetailsForm = Form.create({
         ...props.inward.purposeType,
         value: props.inward.purposeType ? props.inward.purposeType : "",
       }),
+
+      locationId: Form.createFormField({
+        ...props.inward.locationId,
+        value: props.params !== ""
+          ? (props.inward.locationId || props.inward?.location?.locationId)
+          : (props.inward.locationId || ''),
+      }),
     };
   },
   onValuesChange(props, values) {
@@ -262,4 +305,5 @@ const PartyDetailsForm = Form.create({
 export default connect(mapStateToProps, {
   setInwardDetails,
   checkCustomerBatchNumber,
+  getLocationList
 })(PartyDetailsForm);

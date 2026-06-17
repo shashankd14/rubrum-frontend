@@ -6,7 +6,10 @@ import {FETCH_PARTY_LIST_ERROR, FETCH_PARTY_LIST_REQUEST, FETCH_PARTY_LIST_SUCCE
     UPDATE_PARTY_REQUEST,
     UPDATE_PARTY_SUCCESS,
     UPDATE_PARTY_ERROR,
-    RESET_PARTY_REQUEST
+    RESET_PARTY_REQUEST,
+    GET_LOCATION_LIST_REQUEST,
+    GET_LOCATION_LIST_SUCCESS,
+    GET_LOCATION_LIST_ERROR
 } from "../../constants/ActionTypes";
 
 export const fetchPartyList = () => ({
@@ -67,5 +70,20 @@ export const updatePartySuccess = () => ({
 
 export const updatePartyError = (error) => ({
     type: UPDATE_PARTY_ERROR,
+    error
+});
+
+export const getLocationList = (party) => ({
+    type: GET_LOCATION_LIST_REQUEST,
+    party
+});
+
+export const getLocationListSuccess = (locationList) => ({
+    type: GET_LOCATION_LIST_SUCCESS,
+    locationList
+});
+
+export const getLocationListError = (error) => ({
+    type: GET_LOCATION_LIST_ERROR,
     error
 });

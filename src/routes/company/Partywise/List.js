@@ -13,6 +13,7 @@ import {
 import {
   fetchPartyList,
   setInwardSelectedForDelivery,
+  getLocationList
 } from "../../../appRedux/actions";
 import {sidebarMenuItems} from "../../../constants";
 
@@ -37,6 +38,7 @@ const List = (props) => {
   });
   const [filteredInfo, setFilteredInfo] = useState(null);
   const [searchValue, setSearchValue] = useState("");
+  const [locationValue, setLocationValue] = useState("");
   const [customerValue, setCustomerValue] = useState("");
   const { inwardList, totalItems } = props.inward;
   let filter = inwardList.map((item) => {
@@ -46,7 +48,6 @@ const List = (props) => {
     return item;
   });
   const [filteredInwardList, setFilteredInwardList] = useState(filter);
-  const [expandedRow, setExpandedRecord] = useState([]);
   const [menuPartyWiseLabelList, setMenuPartyWiseLabelList] = useState([]);
   const [partywisepermission, setPartywisePermission] = useState([]);
 
@@ -299,11 +300,11 @@ const List = (props) => {
     if (searchValue) {
       if (searchValue.length >= 3) {
         setPageNo(1);
-        props.fetchInwardList(1, 20, searchValue, customerValue);
+        props.fetchInwardList(1, 20, searchValue, customerValue, sortOrder, sortColumn, partywisepermission  === 'ENDUSER_TAG_WISE_PACKETS' ? 'ENDUSER' : '', locationValue);
       }
     } else {
       setPageNo(1);
-      props.fetchInwardList(1, 20, searchValue, customerValue);
+      props.fetchInwardList(1, 20, searchValue, customerValue, sortOrder, sortColumn, partywisepermission  === 'ENDUSER_TAG_WISE_PACKETS' ? 'ENDUSER' : '', locationValue);
     }
   }, [searchValue]);
 
@@ -316,7 +317,7 @@ const List = (props) => {
   useEffect(() => {
     if (sortColumn && sortOrder) {
         setPageNo(1);
-        props.fetchInwardList(1, 20, searchValue, customerValue,  sortOrder, sortColumn);
+        props.fetchInwardList(1, 20, searchValue, customerValue, sortOrder, sortColumn, partywisepermission === 'ENDUSER_TAG_WISE_PACKETS' ? 'ENDUSER' : '', locationValue);
     }
   }, [sortColumn, sortOrder]);
 
@@ -329,20 +330,26 @@ const List = (props) => {
     props.fetchInwardList(1, 15);
   };
 
-  const clearAll = () => {
-    setSortedInfo(null);
-    setFilteredInfo(null);
-  };
-
   const exportSelectedData = () => {};
 
   const handleCustomerChange = (value) => {
     if (value) {
       setCustomerValue(value);
       setPageNo(1);
-      props.fetchInwardList(1, pageSize, searchValue, value, '', '', partywisepermission  === 'ENDUSER_TAG_WISE_PACKETS' ? 'ENDUSER' : '');
+      props.fetchInwardList(1, pageSize, searchValue, value, '', '', partywisepermission  === 'ENDUSER_TAG_WISE_PACKETS' ? 'ENDUSER' : '', locationValue);
     } else {
       setCustomerValue("");
+      setFilteredInwardList(inwardList);
+    }
+  };
+
+  const handleLocationChange = (value) => {
+    if (value) {
+      setLocationValue(value);
+      setPageNo(1);
+      props.fetchInwardList(1, pageSize, searchValue, customerValue, '', '', partywisepermission  === 'ENDUSER_TAG_WISE_PACKETS' ? 'ENDUSER' : '', value);
+    } else {
+      setLocationValue("");
       setFilteredInwardList(inwardList);
     }
   };
@@ -428,6 +435,13 @@ const List = (props) => {
     },
     selectedRowKeys: selectedCBKeys,
   };
+
+  useEffect(() => {
+    if (!props.party.locationList || props.party.locationList?.length === 0) {
+      props.getLocationList();
+    }
+  }, []);
+
   const gets3PDFurl = () => {
     return (
       <>
@@ -492,6 +506,27 @@ const List = (props) => {
               {props.party.partyList.length > 0 &&
                 props.party.partyList.map((party) => (
                   <Option key={party.nPartyId} value={party.nPartyId}>{party.partyName}</Option>
+                ))}
+            </Select>&emsp;
+            <Select
+              id="select"
+              showSearch
+              style={{ width: 200 }}
+              placeholder="Select a location"
+              optionFilterProp="children"
+              onChange={handleLocationChange}
+              value={locationValue}
+              onFocus={handleFocus}
+              onBlur={handleBlur}
+              filterOption={(input, option) =>
+                option.props.children
+                  .toLowerCase()
+                  .indexOf(input.toLowerCase()) >= 0
+              }
+            >
+              {props.party?.locationList?.length > 0 &&
+                props?.party?.locationList?.map((location) => (
+                  <Option key={location.locationId} value={location.locationId}>{location.locationName}</Option>
                 ))}
             </Select>&emsp;
             {menuPartyWiseLabelList.length > 0 && menuPartyWiseLabelList.includes(partyWiseMenuConstants.export) && <Button onClick={exportSelectedData} style={{marginBottom: "1px"}}>Export</Button>}
@@ -579,7 +614,7 @@ const List = (props) => {
             pageSize: 15,
             onChange: (page) => {
               setPageNo(page);
-              props.fetchInwardList(page, pageSize, searchValue, customerValue, sortOrder, sortColumn, partywisepermission  === 'ENDUSER_TAG_WISE_PACKETS' ? 'ENDUSER' : '');
+              props.fetchInwardList(page, pageSize, searchValue, customerValue, sortOrder, sortColumn, partywisepermission  === 'ENDUSER_TAG_WISE_PACKETS' ? 'ENDUSER' : '', locationValue);
             },
             current: pageNo,
             total: totalPageItems,
@@ -601,4 +636,5 @@ export default connect(mapStateToProps, {
   getCoilsByPartyId,
   setInwardSelectedForDelivery,
   getS3PDFUrl,
+  getLocationList,
 })(List);

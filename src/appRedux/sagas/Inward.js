@@ -90,10 +90,7 @@ import {
     getPacketwisePriceDCFullHandlingError,
     coilNotFound
 } from "../actions";
-import { CUTTING_INSTRUCTION_PROCESS_ID, SLITTING_INSTRUCTION_PROCESS_ID, SLIT_CUT_INSTRUCTION_PROCESS_ID } from "../../constants";
-import { formItemLayout } from "../../routes/company/Partywise/CuttingModal";
 import { userSignOutSuccess } from "../../appRedux/actions/Auth";
-import * as actions from "../actions";
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
 
@@ -101,20 +98,22 @@ const getHeaders = () => ({
     Authorization: getUserToken()
 });
 
- function* fetchInwardList({ page = '', pageSize = 15, searchValue = '', partyId = '', sortColumn='', sortOrder='' }) {
+function* fetchInwardList({ page = '', pageSize = 15, searchValue = '', partyId = '', sortColumn = '', sortOrder = '', filterType = '', locationId = '' }) {
     const body = {
         pageNo: page,
         pageSize: pageSize,
         searchText: searchValue,
         partyId: partyId,
         sortColumn: sortColumn,
-        sortOrder: sortOrder
+        sortOrder: sortOrder,
+        filterType: filterType,
+        locationId: locationId,
     }
     try {
         // const fetchInwardList = yield fetch(`${baseUrl}api/inwardEntry/partywise/${page}/${pageSize}?searchText=${searchValue}&partyId=${partyId}`, {
-            const fetchInwardList = yield fetch(`${baseUrl}api/inwardEntry/partywiselist`, {
+        const fetchInwardList = yield fetch(`${baseUrl}api/inwardEntry/partywiselist`, {
             method: 'POST',
-            headers: { "Content-Type": "application/json", ...getHeaders()},
+            headers: { "Content-Type": "application/json", ...getHeaders() },
             body: JSON.stringify(body)
         });
         if (fetchInwardList.status === 200) {
@@ -148,9 +147,9 @@ const getHeaders = () => ({
                     inwardResponse.push(eachInward);
                 });
                 yield put(fetchInwardListSuccess(inwardResponse, totalItems));
-            } 
+            }
             else if (content.length === 0) {
-                 yield put(coilNotFound(totalItems));
+                yield put(coilNotFound(totalItems));
             }
         } else if (fetchInwardList.status === 401) {
             yield put(userSignOutSuccess());
@@ -198,9 +197,9 @@ function* fetchInwardListWithOldAPI({ page = 1, pageSize = 15, searchValue = '',
                     inwardResponse.push(eachInward);
                 });
                 yield put(fetchInwardListSuccess(inwardResponse, totalItems));
-            } 
+            }
             else if (content.length === 0) {
-                 yield put(coilNotFound(totalItems));
+                yield put(coilNotFound(totalItems));
             }
         } else if (fetchInwardList.status === 401) {
             yield put(userSignOutSuccess());
@@ -324,22 +323,23 @@ function* submitInward(action) {
         data.append('coilNumber', action.inward.coilNumber);
         data.append('materialId', action.inward.description);
         data.append('width', action.inward.width !== undefined ? action.inward.width : Number(action.inward.fWidth));
-        data.append('thickness', action.inward.thickness !== undefined ? action.inward.thickness: action.inward.fThickness);
+        data.append('thickness', action.inward.thickness !== undefined ? action.inward.thickness : action.inward.fThickness);
         action.inward.length && data.append('length', action.inward.length);
-        data.append('presentWeight', action.inward.netWeight!== undefined ? action.inward.netWeight: action.inward.grossWeight);
+        data.append('presentWeight', action.inward.netWeight !== undefined ? action.inward.netWeight : action.inward.grossWeight);
         data.append('grossWeight', action.inward.grossWeight);
 
         // invoice details
         data.append('inwardDate', moment(action.inward.receivedDate).format('YYYY-MM-DD HH:mm:ss'));
         data.append('batchNumber', action.inward.batchNo);
         data.append('tdcNo', action.inward.tdcNo);
+        data.append('locationId', action.inward.locationId);
         data.append('vehicleNumber', action.inward.vehicleNumber);
         data.append('invoiceDate', moment(action.inward.invoiceDate).format('YYYY-MM-DD HH:mm:ss'));
         data.append('invoiceNumber', action.inward.invoiceNumber);
         data.append('valueOfGoods', action.inward.valueOfGoods);
 
         //quality details
-        data.append('materialGradeId', action.inward.grade !== undefined ?action.inward.grade: Number(action.inward.materialGrade.gradeId));
+        data.append('materialGradeId', action.inward.grade !== undefined ? action.inward.grade : Number(action.inward.materialGrade.gradeId));
         data.append('testCertificateNumber', action.inward.testCertificateNo);
         data.append('remarks', action.inward.remarks);
 
@@ -372,44 +372,44 @@ function* submitInward(action) {
 }
 function* updateInward(action) {
     try {
-        const partyId = action.inward.partyName !== undefined ?action.inward.partyName: action.inward.party.nPartyId;
-        const materialId = action.inward.description !== undefined ? action.inward.description: action.inward.material.matId;
-        	
+        const partyId = action.inward.partyName !== undefined ? action.inward.partyName : action.inward.party.nPartyId;
+        const materialId = action.inward.description !== undefined ? action.inward.description : action.inward.material.matId;
+
         let insObj = {
-    
-        inwardId : (action.inward.inwardEntryId).toString(),
-        partyId :	(partyId).toString(),
-        customerBatchId: action.inward.customerBatchNo || action.inward.customerBatchId || '',
-        customerInvoiceNo: action.inward.customerInvoiceNo,
-        coilNumber : (action.inward.coilNumber).toString(),
-        inwardDate : moment(action.inward.receivedDate).format('YYYY-MM-DD HH:mm:ss'),
-        batchNumber: action.inward.batchNo || '',
-        vehicleNumber : action.inward.vehicleNumber !== undefined? action.inward.vehicleNumber : action.inward.vLorryNo,
-        invoiceDate : moment(action.inward.invoiceDate).format('YYYY-MM-DD HH:mm:ss')!== undefined ?moment(action.inward.invoiceDate).format('YYYY-MM-DD HH:mm:ss'): null,
-        invoiceNumber : action.inward.invoiceNumber !== undefined ? action.inward.invoiceNumber: action.inward.vInvoiceNo,
-        valueOfGoods : action.inward.valueOfGoods !== undefined ? action.inward.valueOfGoods: 0,
-        purposeType : action.inward.purposeType,
-        testCertificateNumber: action.inward.testCertificateNo || action.inward.testCertificateNumber || '',
-        materialId : (materialId).toString(),
-        width : action.inward.width !== undefined ? action.inward.width : action.inward.fWidth,
-        thickness : action.inward.thickness !== undefined ? action.inward.thickness : action.inward.fThickness,
-        length : action.inward.length !== undefined ? action.inward.length : action.inward.fLength,
-        statusId : action.inward.status.statusId!== undefined? action.inward.status.statusId: "1" ,
-        heatnumber : "",
-        plantname : "",
-        process : "",
-        presentWeight : action.inward.weight !== undefined ? action.inward.weight : action.inward.fQuantity,
-        cast : "",
-        materialGradeId : action.inward.grade !== undefined ?action.inward.grade: (action.inward.materialGrade.gradeId).toString(),
-        createdBy : "1",
-        updatedBy : "2"
+
+            inwardId: (action.inward.inwardEntryId).toString(),
+            partyId: (partyId).toString(),
+            customerBatchId: action.inward.customerBatchNo || action.inward.customerBatchId || '',
+            customerInvoiceNo: action.inward.customerInvoiceNo,
+            coilNumber: (action.inward.coilNumber).toString(),
+            inwardDate: moment(action.inward.receivedDate || action.inward.dReceivedDate).format('YYYY-MM-DD HH:mm:ss'),
+            batchNumber: action.inward.batchNo || '',
+            vehicleNumber: action.inward.vehicleNumber !== undefined ? action.inward.vehicleNumber : action.inward.vLorryNo,
+            invoiceDate: (action.inward.invoiceDate || action.inward.dInvoiceDate) ? moment(action.inward.invoiceDate || action.inward.dInvoiceDate).format('YYYY-MM-DD HH:mm:ss') : null,
+            invoiceNumber: action.inward.invoiceNumber !== undefined ? action.inward.invoiceNumber : action.inward.vInvoiceNo,
+            valueOfGoods: action.inward.valueOfGoods !== undefined ? action.inward.valueOfGoods : 0,
+            purposeType: action.inward.purposeType,
+            locationId: action.inward.locationId !== undefined ? action.inward.locationId : "",
+            testCertificateNumber: action.inward.testCertificateNo || action.inward.testCertificateNumber || '',
+            materialId: (materialId).toString(),
+            width: action.inward.width !== undefined ? action.inward.width : action.inward.fWidth,
+            tdcNo: action.inward.tdcNo !== undefined ? action.inward.tdcNo : "",
+            thickness: action.inward.thickness !== undefined ? action.inward.thickness : action.inward.fThickness,
+            length: action.inward.length !== undefined ? action.inward.length : action.inward.fLength,
+            statusId: action.inward.status.statusId !== undefined ? action.inward.status.statusId : "1",
+            heatnumber: "",
+            plantname: "",
+            process: "",
+            presentWeight: action.inward.weight !== undefined ? action.inward.weight : action.inward.fQuantity,
+            cast: "",
+            materialGradeId: action.inward.grade !== undefined ? action.inward.grade : (action.inward.materialGrade.gradeId).toString(),
+            createdBy: "1",
+            updatedBy: "2"
         }
-const newInwardEntry = yield fetch(`${baseUrl}api/inwardEntry/update`, {
-            
-                method: 'PUT',
-                headers: { "Content-Type": "application/json", ...getHeaders()},
-                body:JSON.stringify(insObj)
-            
+        const newInwardEntry = yield fetch(`${baseUrl}api/inwardEntry/update`, {
+            method: 'PUT',
+            headers: { "Content-Type": "application/json", ...getHeaders() },
+            body: JSON.stringify(insObj)
         });
         if (newInwardEntry.status == 200) {
             yield put(updateInwardSuccess(newInwardEntry));
@@ -506,7 +506,7 @@ function* requestSaveCuttingInstruction(action) {
     try {
         const fetchPartyInwardList = yield fetch(`${baseUrl}api/instruction/save`, {
             method: 'POST',
-            headers: { "Content-Type": "application/json", ...getHeaders()},
+            headers: { "Content-Type": "application/json", ...getHeaders() },
             body: JSON.stringify(action.cuttingDetails)
         });
         if (fetchPartyInwardList.status === 201) {
@@ -533,7 +533,7 @@ function* instructionGroupsave(action) {
     try {
         const groupSaveList = yield fetch(`${baseUrl}api/instructionGroup/save`, {
             method: 'POST',
-            headers: { "Content-Type": "application/json", ...getHeaders()},
+            headers: { "Content-Type": "application/json", ...getHeaders() },
             body: JSON.stringify(action.groupDetails)
         });
         if (groupSaveList.status === 200) {
@@ -552,7 +552,7 @@ function* requestSaveSlittingInstruction(action) {
     try {
         const fetchPartyInwardList = yield fetch(`${baseUrl}api/instruction/save`, {
             method: 'POST',
-            headers: { "Content-Type": "application/json", ...getHeaders()},
+            headers: { "Content-Type": "application/json", ...getHeaders() },
             body: JSON.stringify(action.slittingDetails)
         });
         if (fetchPartyInwardList.status === 201) {
@@ -589,13 +589,13 @@ function* requestUpdateInstruction(action) {
             createdBy: item.createdBy ? item.createdBy : 1,
             updatedBy: item.updatedBy ? item.updatedBy : 1,
             packetClassificationId: item.packetClassification?.classificationId || item.packetClassification?.tagId || '',
-            endUserTagId:item?.endUserTagsentity?.tagId || ""
+            endUserTagId: item?.endUserTagsentity?.tagId || ""
         }
         return insObj;
     });
     const filteredData = ins.filter(each => each.packetClassificationId !== 0 && each.packetClassificationId !== "");
     const req = {
-        taskType: editFinish ?"FGtoFG":unfinish ? "FGtoWIP" :"WIPtoFG",
+        taskType: editFinish ? "FGtoFG" : unfinish ? "FGtoWIP" : "WIPtoFG",
         instructionDtos: (unfinish || editFinish) ? ins : filteredData,
         actualYieldLossRatio: action.coil.actualYieldLossRatio,
         plannedCoilLevelYLR: action.coil.plannedCoilLevelYLR,
@@ -604,7 +604,7 @@ function* requestUpdateInstruction(action) {
     try {
         const updateInstruction = yield fetch(`${baseUrl}api/instruction/update`, {
             method: 'PUT',
-            headers: { "Content-Type": "application/json", ...getHeaders()},
+            headers: { "Content-Type": "application/json", ...getHeaders() },
             body: JSON.stringify(req)
         });
         if (updateInstruction.status === 200) {
@@ -638,9 +638,9 @@ function* requestGradesByMaterialId(action) {
 }
 
 function* postDeliveryConfirmRequest(payload) {
-    let req_obj ={};
+    let req_obj = {};
     let requestType = '';
-    if(payload.payload?.inwardListForDelivery){
+    if (payload.payload?.inwardListForDelivery) {
         let packetsData = [];
         for (let item of payload.payload.inwardListForDelivery) {
             if (item.instructionId) {
@@ -655,21 +655,21 @@ function* postDeliveryConfirmRequest(payload) {
             vehicleNo: payload.payload?.vehicleNo,
             packingRateId: payload.payload?.packingRateId,
             laminationId: payload.payload?.laminationId,
-            taskType:payload.payload?.taskType?payload.payload?.taskType:"",
+            taskType: payload.payload?.taskType ? payload.payload?.taskType : "",
             deliveryItemDetails: packetsData
         }
-    }else{
-        requestType= 'PUT';
-        req_obj =payload.payload
+    } else {
+        requestType = 'PUT';
+        req_obj = payload.payload
     }
     try {
         const postConfirm = yield fetch(`${baseUrl}api/delivery/save`, {
-            method: 'POST', headers: { "Content-Type": "application/json", ...getHeaders()}, body: JSON.stringify(req_obj)
+            method: 'POST', headers: { "Content-Type": "application/json", ...getHeaders() }, body: JSON.stringify(req_obj)
         });
         if (postConfirm.status === 200 && requestType !== 'PUT') {
             yield put(postDeliveryConfirmSuccess());
-           
-        } else if(postConfirm.status === 200 && requestType === 'PUT'){
+
+        } else if (postConfirm.status === 200 && requestType === 'PUT') {
             yield put(postDeliveryConfirmSuccess(postConfirm));
         } else if (postConfirm.status === 401) {
             yield put(userSignOutSuccess());
@@ -700,18 +700,18 @@ function* fetchInwardInstructionDetails(action) {
 function* saveUnprocessedDelivery(action) {
     let fetchInwardInstruction
     try {
-        if(action?.inwardEntryId?.motherCoilDispatch){
-         fetchInwardInstruction = yield fetch(`${baseUrl}api/instruction/saveFullHandlingDispatch`, {
-            method: 'POST',
-            headers: { "Content-Type": "application/json", ...getHeaders()},
-            body: JSON.stringify(action.inwardEntryId?.inwardEntryId)
-        });
-    }else{
-        fetchInwardInstruction = yield fetch(`${baseUrl}api/instruction/saveUnprocessedForDelivery/${action.inwardEntryId?.inwardEntryId}`, {
-            method: 'POST',
-            headers: getHeaders()
-        });
-    }
+        if (action?.inwardEntryId?.motherCoilDispatch) {
+            fetchInwardInstruction = yield fetch(`${baseUrl}api/instruction/saveFullHandlingDispatch`, {
+                method: 'POST',
+                headers: { "Content-Type": "application/json", ...getHeaders() },
+                body: JSON.stringify(action.inwardEntryId?.inwardEntryId)
+            });
+        } else {
+            fetchInwardInstruction = yield fetch(`${baseUrl}api/instruction/saveUnprocessedForDelivery/${action.inwardEntryId?.inwardEntryId}`, {
+                method: 'POST',
+                headers: getHeaders()
+            });
+        }
         if (fetchInwardInstruction.status === 200) {
             const fetchInwardPlanResponse = yield fetchInwardInstruction.json();
             yield put(saveUnprocessedDeliverySuccess(fetchInwardPlanResponse));
@@ -726,7 +726,7 @@ function* saveUnprocessedDelivery(action) {
 function* deleteInwardEntryById(action) {
     try {
         let data = new FormData();
-        action.inwardEntryId.map(id =>data.append('ids', id))
+        action.inwardEntryId.map(id => data.append('ids', id))
         const fetchInwardInstruction = yield fetch(`${baseUrl}api/inwardEntry/deleteById`, {
             method: 'DELETE',
             body: data,
@@ -767,49 +767,49 @@ function* pdfGenerateInward(action) {
     let pdfGenerate
     try {
         // inward pdf
-        if(action.payload.type === 'inward'){
+        if (action.payload.type === 'inward') {
             pdfGenerate = yield fetch(`${baseUrl}api/pdf/inward`, {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/json",
                     ...getHeaders()
-                  },
+                },
                 body: JSON.stringify(action.payload.payloadObj)
             });
-        }else {
+        } else {
             pdfGenerate = yield fetch(`${baseUrl}api/pdf`, {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/json",
                     ...getHeaders()
-                  },
+                },
                 body: JSON.stringify(action.payload)
             });
-        } 
-    //     else{
-    //         // process pdf
-    //     pdfGenerate = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/pdf/${partDetailsId}`, {
-    //         method: 'GET',
-           
-    //     });
+        }
+        //     else{
+        //         // process pdf
+        //     pdfGenerate = yield fetch(`http://steelproduct-env.eba-dn2yerzs.ap-south-1.elasticbeanstalk.com/api/pdf/${partDetailsId}`, {
+        //         method: 'GET',
 
-    //    }
-        
-    if (pdfGenerate.status === 200) {
+        //     });
+
+        //    }
+
+        if (pdfGenerate.status === 200) {
             const pdfGenerateResponse = yield pdfGenerate.json();
-            
+
             let pdfWindow = window.open("")
-               pdfWindow.document.write(
-                  "<iframe width='100%' height='600%' src='data:application/pdf;base64, " +
-                    encodeURI(pdfGenerateResponse.encodedBase64String) + "'></iframe>"
-               )                 
+            pdfWindow.document.write(
+                "<iframe width='100%' height='600%' src='data:application/pdf;base64, " +
+                encodeURI(pdfGenerateResponse.encodedBase64String) + "'></iframe>"
+            )
             yield put(pdfGenerateSuccess(pdfGenerateResponse));
         } else if (pdfGenerate.status === 401) {
             yield put(userSignOutSuccess());
-        }  else
+        } else
             yield put(pdfGenerateError('error'));
     }
-     catch (error) {
+    catch (error) {
         yield put(pdfGenerateError(error));
     }
 }
@@ -817,16 +817,16 @@ function* generateDCPdf(action) {
     try {
         const pdfGenerate = yield fetch(`${baseUrl}api/pdf/delivery`, {
             method: 'POST',
-            headers: { "Content-Type": "application/json", ...getHeaders()},
+            headers: { "Content-Type": "application/json", ...getHeaders() },
             body: JSON.stringify(action.payload)
         });
         if (pdfGenerate.status === 200) {
             const pdfGenerateResponse = yield pdfGenerate.json();
             let pdfWindow = window.open("")
-               pdfWindow.document.write(
-                  "<iframe width='100%' height='600%' src='data:application/pdf;base64, " +
-                    encodeURI(pdfGenerateResponse.encodedBase64String) + "'></iframe>"
-               )                 
+            pdfWindow.document.write(
+                "<iframe width='100%' height='600%' src='data:application/pdf;base64, " +
+                encodeURI(pdfGenerateResponse.encodedBase64String) + "'></iframe>"
+            )
             yield put(generateDCPdfSuccess(pdfGenerateResponse));
         } else if (pdfGenerate.status === 401) {
             yield put(userSignOutSuccess());
@@ -838,7 +838,7 @@ function* generateDCPdf(action) {
 }
 function* getS3PDFUrl(action) {
     try {
-        const getS3PDFUrl = yield fetch(`${baseUrl}api/inwardEntry/getPlanPDFs/${action.inwardEntryId}`, { 
+        const getS3PDFUrl = yield fetch(`${baseUrl}api/inwardEntry/getPlanPDFs/${action.inwardEntryId}`, {
             method: 'GET',
             headers: getHeaders()
         });
@@ -855,7 +855,7 @@ function* getS3PDFUrl(action) {
 }
 function* getReconcileReportSaga(action) {
     try {
-        const getreconcileData = yield fetch(`${baseUrl}api/reports/reconcile/${action.coilNumber}`, { 
+        const getreconcileData = yield fetch(`${baseUrl}api/reports/reconcile/${action.coilNumber}`, {
             method: 'GET',
             headers: getHeaders()
         });
@@ -924,8 +924,8 @@ function* getReconcileReportSaga(action) {
 
 function* getPacketwisePriceDCSaga(action) {
 
-    let req_obj ={};
-    if(action.payload?.inwardListForDelivery){
+    let req_obj = {};
+    if (action.payload?.inwardListForDelivery) {
         let packetsData = [];
         for (let item of action.payload.inwardListForDelivery) {
             if (item.instructionId) {
@@ -940,17 +940,17 @@ function* getPacketwisePriceDCSaga(action) {
             vehicleNo: action.payload?.vehicleNo,
             packingRateId: action.payload?.packingRateId,
             laminationId: action.payload?.laminationId,
-            taskType:action.payload?.taskType?action.payload?.taskType:"",
-           //taskType:action.payload?.taskType,
+            taskType: action.payload?.taskType ? action.payload?.taskType : "",
+            //taskType:action.payload?.taskType,
             deliveryItemDetails: packetsData
         }
     }
     try {
         const response = yield call(fetch, `${baseUrl}api/delivery/validatePriceMapping`, {
-            method: 'POST', headers: { "Content-Type": "application/json", ...getHeaders()}, body: JSON.stringify(req_obj)
+            method: 'POST', headers: { "Content-Type": "application/json", ...getHeaders() }, body: JSON.stringify(req_obj)
         });
-        const respData=yield response.json();
-        if (response.status === 200 ) {
+        const respData = yield response.json();
+        if (response.status === 200) {
             yield put(getPacketwisePriceDCSuccess(respData));
         } else if (response.status === 401) {
             yield put(userSignOutSuccess());
@@ -962,8 +962,8 @@ function* getPacketwisePriceDCSaga(action) {
 }
 
 function* getPacketwisePriceDCFullHandlingSaga(action) {
-    let req_obj ={};
-    if(action.payload){
+    let req_obj = {};
+    if (action.payload) {
         req_obj = {
             vehicleNo: action.payload?.vehicleNo,
             packingRateId: action.payload?.packingRateId,
@@ -973,10 +973,10 @@ function* getPacketwisePriceDCFullHandlingSaga(action) {
     }
     try {
         const response = yield call(fetch, `${baseUrl}api/delivery/validatePriceMappingFullHandling`, {
-            method: 'POST', headers: { "Content-Type": "application/json", ...getHeaders()}, body: JSON.stringify(req_obj)
+            method: 'POST', headers: { "Content-Type": "application/json", ...getHeaders() }, body: JSON.stringify(req_obj)
         });
-        const respData=yield response.json();
-        if (response.status === 200 ) {
+        const respData = yield response.json();
+        if (response.status === 200) {
             yield put(getPacketwisePriceDCFullHandlingSuccess(respData));
         } else if (response.status === 401) {
             yield put(userSignOutSuccess());
@@ -988,16 +988,16 @@ function* getPacketwisePriceDCFullHandlingSaga(action) {
 }
 
 function* updateClassificationSlitAndCutBeforeFinish(action) {
-    const requestBody = [];    
+    const requestBody = [];
     try {
         const updateClassification = yield fetch(`${baseUrl}api/instruction/update/classification`, {
             method: 'POST',
-            headers: { "Content-Type": "application/json", ...getHeaders()},
+            headers: { "Content-Type": "application/json", ...getHeaders() },
             body: JSON.stringify(action.payload)
         });
         if (updateClassification.status === 200) {
             const groupSaveListObj = yield updateClassification.json()
-           // yield put(instructionGroupsaveSuccess(groupSaveListObj));
+            // yield put(instructionGroupsaveSuccess(groupSaveListObj));
         } else if (updateClassification.status === 401) {
             yield put(userSignOutSuccess());
         } else
@@ -1014,8 +1014,8 @@ export function* watchFetchRequests() {
     yield takeLatest(FETCH_WIP_INWARD_LIST_REQUEST, fetchWIPInwardList);
     yield takeLatest(SUBMIT_INWARD_ENTRY, submitInward);
     yield takeLatest(CHECK_COIL_EXISTS, checkCoilDuplicate);
-    yield takeLatest( FETCH_INWARD_LIST_BY_ID, fetchPartyListById);
-    yield takeLatest(FETCH_INWARD_LIST_BY_PARTY_REQUEST, fetchInwardListByParty);    
+    yield takeLatest(FETCH_INWARD_LIST_BY_ID, fetchPartyListById);
+    yield takeLatest(FETCH_INWARD_LIST_BY_PARTY_REQUEST, fetchInwardListByParty);
     yield takeLatest(FETCH_INWARD_PLAN_DETAILS_REQUESTED, fetchInwardPlanDetails);
     yield takeLatest(REQUEST_SAVE_CUTTING_DETAILS, requestSaveCuttingInstruction);
     yield takeLatest(REQUEST_SAVE_SLITTING_DETAILS, requestSaveSlittingInstruction);
@@ -1038,7 +1038,7 @@ export function* watchFetchRequests() {
     // yield takeLatest(QR_GENERATE_INWARD, QrGenerateInward);
     yield takeLatest(GET_PACKET_WISE_PRICE_DC_REQUEST, getPacketwisePriceDCSaga);
     yield takeLatest(GET_PACKET_WISE_PRICE_DC_FULL_HANDLING_REQUEST, getPacketwisePriceDCFullHandlingSaga);
-    yield takeLatest(UPDATE_CLASSIFICATION_SLITANDCUT_BEFORE_FINISH, updateClassificationSlitAndCutBeforeFinish);   
+    yield takeLatest(UPDATE_CLASSIFICATION_SLITANDCUT_BEFORE_FINISH, updateClassificationSlitAndCutBeforeFinish);
 
 }
 

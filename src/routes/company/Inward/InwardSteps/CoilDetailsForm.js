@@ -1,4 +1,5 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useCallback} from "react";
+import debounce from "lodash/debounce";
 import {AutoComplete, Form, Input, Button, Icon, Row, Col, Card} from "antd";
 import {connect} from "react-redux";
 
@@ -44,6 +45,11 @@ const CoilDetailsForm = (props) => {
             props.inward.fQuantity = e.target.value;
         }
     }
+    const debouncedCheckCoilExists = useCallback(
+        debounce((value) => props.checkIfCoilExists(value), 500),
+        []
+    );
+
     const checkCoilExists = (rule, value, callback) => {
         if (!props.inwardStatus.loading && props.inwardStatus.success && !props.inwardStatus.duplicateCoil) {
             return callback();
@@ -117,7 +123,14 @@ const CoilDetailsForm = (props) => {
                         rules: [{ required: true, message: 'Please input the coil number!' },
                             {validator: props.params ==="" ?checkCoilExists: ""}],
                     })(
-                        <Input id="validating" onChange={(e) => props.checkIfCoilExists(e.target.value)} onBlur={props.params !== "" ? "" :(e) => props.checkIfCoilExists(e.target.value)} />
+                        <Input
+                            id="validating"
+                            onChange={(e) => debouncedCheckCoilExists(e.target.value)}
+                            onBlur={props.params !== "" ? "" : (e) => {
+                                debouncedCheckCoilExists.cancel();
+                                props.checkIfCoilExists(e.target.value);
+                            }}
+                        />
                     )}
                 </Form.Item>
                 <Form.Item label="Material Description">
@@ -218,7 +231,9 @@ const CoilDetails = Form.create({
             }),
             description: Form.createFormField({
                 ...props.inward.description,
-                value: props.params !== "" ?props.inward.material.description :(props.inward.description) ? (props.inward.description):'' ,
+                value: props.params !== ""
+                    ? (props.inward.description || props.inward.material?.description)
+                    : (props.inward.description || ''),
             }),
             width: Form.createFormField({
                 ...props.inward.width,

@@ -200,11 +200,6 @@ const List = (props) => {
     setFilteredInfo(null);
   };
 
-  const clearAll = () => {
-    setSortedInfo(null);
-    setFilteredInfo(null);
-  };
-
   const exportSelectedData = () => {};
 
   const deleteSelectedCoils = () => {

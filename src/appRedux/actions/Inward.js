@@ -98,15 +98,19 @@ import {
 } from "../../constants/ActionTypes";
 import * as actionTypes from "../../constants/ActionTypes";
 
-export const fetchInwardList = (page, pageSize, searchValue, partyId, sortOrder, sortColumn) => ({
+export const fetchInwardList = (page, pageSize, searchValue, partyId, sortOrder, sortColumn, filterType, locationId) => {
+    return {
     type: FETCH_INWARD_LIST_REQUEST,
     page: page,
     pageSize: 15,
     searchValue: searchValue,
     partyId: partyId,
     sortOrder: sortOrder,
-    sortColumn: sortColumn
-});
+    sortColumn: sortColumn,
+    filterType: filterType,
+    locationId: locationId
+}
+};
 
 export const fetchInwardListSuccess = (inwardList, totalItems) => ({
     type: FETCH_INWARD_LIST_SUCCESS,
