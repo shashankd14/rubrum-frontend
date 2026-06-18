@@ -1461,7 +1461,7 @@ const CreateCuttingDetailsForm = (props) => {
 
     const soLength = String(record.length);
     const calculatedNo = Math.floor(
-      record.itemQty /
+      record.allocatedSoqty /
         (0.0000081 * record.width * record.thickness * Number(record.length)),
     ).toFixed(0);
 
@@ -1471,7 +1471,7 @@ const CreateCuttingDetailsForm = (props) => {
     props.setProcessDetails({
       ...props.inward.process,
       length: soLength,
-      weight: record.itemQty,
+      weight: record.allocatedSoqty,
       no: calculatedNo,
       soRefNo: record.refno,
       soAllocationId: record.soAllocationId,
