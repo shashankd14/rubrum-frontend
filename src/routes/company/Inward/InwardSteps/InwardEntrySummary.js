@@ -119,7 +119,9 @@ const InwardEntrySummary = (props) => {
                         }}>
                             Submit <Icon type="right" />
                         </Button>
-                        <Button type="primary" onClick={(e) => {
+                        <Button type="primary"
+                            disabled={!props.inwardSubmitSuccess}
+                             onClick={(e) => {
                             e.preventDefault();
                             props.pdfGenerateInward(payload)
                             props.QrGenerateInward(payload);
