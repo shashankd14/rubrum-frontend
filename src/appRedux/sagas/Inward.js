@@ -125,6 +125,7 @@ function* fetchInwardList({
   sortColumn = "",
   sortOrder = "",
   filterInfo,
+  endpoint,
 }) {
   const body = {
     pageNo: page,
@@ -182,10 +183,16 @@ function* fetchInwardList({
         }
       : ""),
   };
+  const inwardListUrl = endpoint
+    ? endpoint.startsWith("http")
+      ? endpoint
+      : `${baseUrl}${endpoint}`
+    : `${baseUrl}api/inwardEntry/partywiselist`;
+
   try {
     // const fetchInwardList = yield fetch(`${baseUrl}api/inwardEntry/partywise/${page}/${pageSize}?searchText=${searchValue}&partyId=${partyId}`, {
     const fetchInwardList = yield fetch(
-      `${baseUrl}api/inwardEntry/partywiselist`,
+      inwardListUrl,
       {
         method: "POST",
         headers: { "Content-Type": "application/json", ...getHeaders() },
