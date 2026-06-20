@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { connect, useDispatch } from "react-redux";
 import {
   fetchDeliveryList,
@@ -30,6 +30,7 @@ function List(props) {
 
   const [pageNo, setPageNo] = React.useState(1);
   const [totalPageItems, setTotalItems] = React.useState(0);
+  const isInitialMount = useRef(true);
 
   const columns = [
     {
@@ -181,12 +182,18 @@ function List(props) {
   }, [totalItems]);
 
   useEffect(() => {
-    if (searchValue) {
-      if (searchValue.length >= 3) {
-        setPageNo(1);
-        props.fetchDeliveryList(1, 15, searchValue, customerValue);
-      }
-    } else {
+    props.fetchDeliveryList(1, 15);
+  }, []);
+
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+    if (!searchValue) {
+      setPageNo(1);
+      props.fetchDeliveryList(1, 15, "", customerValue);
+    } else if (searchValue.length >= 3) {
       setPageNo(1);
       props.fetchDeliveryList(1, 15, searchValue, customerValue);
     }
