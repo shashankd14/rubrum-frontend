@@ -207,7 +207,7 @@ const CreatePartyDetailsForm = (props) => {
           <Form.Item label="Location">
             {getFieldDecorator("locationId", {
               rules: [
-                { required: true, message: "Please select a location!" },
+                { required: false, message: "Please select a location!" },
               ],
             })(
               <Select placeholder="Select an option">

@@ -74,7 +74,7 @@ const QualityDetailsForm = (props) => {
                     </Form.Item>
                     <Form.Item label="Test Certificate No">
                         {getFieldDecorator('testCertificateNo', {
-                            rules: [{ required: true, message: 'Please enter test certificate no' }],
+                            rules: [{ required: false, message: 'Please enter test certificate no' }],
                         })(
                             <Input id="testCertificateNo" onChange={(e) => {
                                 props.inward.testCertificateNo = e.target.value;
@@ -83,7 +83,7 @@ const QualityDetailsForm = (props) => {
                     </Form.Item>
                     <Form.Item label="Test File">
                         {getFieldDecorator('testFile', {
-                            rules: [{ required: true, message: 'Please upload test file' }],
+                            rules: [{ required: false, message: 'Please upload test file' }],
                         })(
                             <Dragger
                                 name='testFile'
