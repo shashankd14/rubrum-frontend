@@ -147,6 +147,8 @@ const RegisterList = ({ screenConfig = {}, ...props }) => {
   const menuKey = screenConfig.menuKey || defaultScreenConfig.menuKey;
   const deliveryPath =
     screenConfig.deliveryPath || defaultScreenConfig.deliveryPath;
+  const listEndpoint = screenConfig.listEndpoint;
+  const actionBasePath = screenConfig.actionBasePath;
   const isAllocatedView = screenConfig.variant === "allocatedCoils";
   const weightUnit = isAllocatedView ? "KG" : "MT";
 
@@ -409,6 +411,9 @@ const RegisterList = ({ screenConfig = {}, ...props }) => {
     return renderBadge(classificationLabel, getStatusTone(classificationLabel));
   };
 
+  const getActionPath = (path) =>
+    actionBasePath ? `${actionBasePath}/${path}` : path;
+
   const renderActionCell = (record) => (
     <span>
       {record.instructionId ? (
@@ -424,7 +429,9 @@ const RegisterList = ({ screenConfig = {}, ...props }) => {
                   className={`gx-link ${
                     isAllocatedView ? "wez-register__action-link" : ""
                   }`}
-                  onClick={() => props.history.push(`plan/${record.coilNumber}`)}
+                  onClick={() =>
+                    props.history.push(getActionPath(`plan/${record.coilNumber}`))
+                  }
                 >
                   Plan
                 </span>
@@ -461,7 +468,9 @@ const RegisterList = ({ screenConfig = {}, ...props }) => {
                       : ""
                   }`}
                   onClick={() =>
-                    props.history.push(`unfinish/${record.coilNumber}`)
+                    props.history.push(
+                      getActionPath(`unfinish/${record.coilNumber}`)
+                    )
                   }
                 >
                   Cancel finish
@@ -478,7 +487,9 @@ const RegisterList = ({ screenConfig = {}, ...props }) => {
                   isAllocatedView ? "wez-register__action-link" : ""
                 }`}
                 onClick={() =>
-                  props.history.push(`editFinish/${record.coilNumber}`)
+                  props.history.push(
+                    getActionPath(`editFinish/${record.coilNumber}`)
+                  )
                 }
               >
                 Edit finish
@@ -491,7 +502,7 @@ const RegisterList = ({ screenConfig = {}, ...props }) => {
 
   const columns = [
     {
-      title: isAllocatedView ? "Order ID" : "Batch no.",
+      title: isAllocatedView ? "Batch no." : "Batch no.",
       dataIndex: "coilNumber",
       key: "coilnumber",
       width: isAllocatedView ? 110 : undefined,
@@ -515,7 +526,7 @@ const RegisterList = ({ screenConfig = {}, ...props }) => {
                   searchInput = node;
                 }}
                 placeholder={`Search ${
-                  isAllocatedView ? "Order ID" : "Batch no."
+                  isAllocatedView ? "Batch no." : "Batch no."
                 }`}
                 value={
                   filteredInfo["coilnumber"] ? filteredInfo["coilnumber"] : ""
@@ -598,6 +609,15 @@ const RegisterList = ({ screenConfig = {}, ...props }) => {
       width: isAllocatedView ? 260 : undefined,
       sorter: false,
       render: (text, record) => renderMaterialCell(record),
+    },
+    {
+      title: "SO Number",
+      dataIndex: "sono",
+      key: "sono",
+      hidden: !isAllocatedView,
+      width: 140,
+      sorter: false,
+      render: (text) => text || "-",
     },
     {
       title: isAllocatedView ? "Total Qty." : "Available Quantity",
@@ -724,7 +744,8 @@ const RegisterList = ({ screenConfig = {}, ...props }) => {
       nextCustomerValue,
       nextSortOrder,
       nextSortColumn,
-      nextFilters
+      nextFilters,
+      listEndpoint
     );
   };
 
@@ -821,6 +842,7 @@ const RegisterList = ({ screenConfig = {}, ...props }) => {
       sortOrder,
       sortColumn,
       filteredInfo,
+      listEndpoint,
     ]);
   };
 
@@ -837,6 +859,7 @@ const RegisterList = ({ screenConfig = {}, ...props }) => {
       sortOrder,
       sortColumn,
       filteredInfo,
+      listEndpoint,
     ]);
   };
 
@@ -1040,6 +1063,31 @@ const RegisterList = ({ screenConfig = {}, ...props }) => {
     return originalElement;
   };
 
+  const handleDeliver = () => {
+    if (selectedCoil?.length > 1) {
+      message.error("Please select inwards of same location");
+      return;
+    }
+
+    const newList = selectedRowData.filter((item) => {
+      if (item?.instruction?.length) {
+        return (
+          !item.childInstructions &&
+          item.inwardEntryId &&
+          selectedRowData.length === 1
+        );
+      }
+
+      return true;
+    });
+    props.setInwardSelectedForDelivery(newList);
+    props.history.push(deliveryPath);
+  };
+
+  const showDeliverButton =
+    menuPartyWiseLabelList.length > 0 &&
+    menuPartyWiseLabelList.includes(partyWiseMenuConstants.deliver);
+
   if (isAllocatedView) {
     return (
       <div className="wez-register wez-register--allocated">
@@ -1098,9 +1146,20 @@ const RegisterList = ({ screenConfig = {}, ...props }) => {
                 </div>
               </div>
               <div className="wez-register__toolbar">
+                {showDeliverButton && (
+                  <Button
+                    type="primary"
+                    className="wez-register__toolbar-button wez-register__toolbar-button--solid"
+                    size="default"
+                    onClick={handleDeliver}
+                    disabled={selectedCBKeys?.length < 1}
+                  >
+                    Deliver
+                  </Button>
+                )}
                 <Input
                   className="wez-register__toolbar-search"
-                  placeholder="Search"
+                  placeholder="Search batch no."
                   prefix={<Icon type="search" />}
                   value={searchValue}
                   onChange={handleSearchChange}
@@ -1221,38 +1280,17 @@ const RegisterList = ({ screenConfig = {}, ...props }) => {
             </Button>
           </div>
           <div className="gx-flex-row">
-            {menuPartyWiseLabelList.length > 0 &&
-              menuPartyWiseLabelList.includes(
-                partyWiseMenuConstants.deliver
-              ) && (
-                <Button
-                  type="primary"
-                  icon={() => <i className="icon icon-add" />}
-                  size="default"
-                  onClick={() => {
-                    if (selectedCoil?.length > 1) {
-                      message.error("Please select inwards of same location");
-                    } else {
-                      const newList = selectedRowData.filter((item) => {
-                        if (item?.instruction?.length) {
-                          return (
-                            !item.childInstructions &&
-                            item.inwardEntryId &&
-                            selectedRowData.length === 1
-                          );
-                        } else {
-                          return true;
-                        }
-                      });
-                      props.setInwardSelectedForDelivery(newList);
-                      props.history.push(deliveryPath);
-                    }
-                  }}
-                  disabled={selectedCBKeys?.length < 1}
-                >
-                  Deliver
-                </Button>
-              )}
+            {showDeliverButton && (
+              <Button
+                type="primary"
+                icon={() => <i className="icon icon-add" />}
+                size="default"
+                onClick={handleDeliver}
+                disabled={selectedCBKeys?.length < 1}
+              >
+                Deliver
+              </Button>
+            )}
             {menuPartyWiseLabelList.length > 0 &&
               menuPartyWiseLabelList.includes(
                 partyWiseMenuConstants.addInward

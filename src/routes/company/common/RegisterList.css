@@ -218,12 +218,20 @@
 .wez-register__toolbar-search {
   width: 142px;
   min-width: 142px;
+  height: 34px;
+}
+
+.wez-register__toolbar .ant-input-affix-wrapper {
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  margin: 0;
 }
 
 .wez-register__toolbar .ant-input,
 .wez-register__toolbar .ant-select-selection,
 .wez-register__toolbar .ant-btn {
-  height: 30px;
+  height: 34px;
   border-radius: 6px;
 }
 
@@ -236,18 +244,27 @@
 .wez-register__toolbar .ant-input {
   padding-left: 28px;
   font-size: 11px;
+  line-height: 32px;
 }
 
-.wez-register__toolbar-button {
+.wez-register__toolbar-button.ant-btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  min-width: 90px;
+  padding: 0 14px;
   border-color: #dfe6f0;
   background: #ffffff;
   color: #5f7189;
   font-size: 11px;
   font-weight: 500;
+  line-height: 32px;
+  margin: 0;
   white-space: nowrap;
+}
+
+.wez-register__toolbar .wez-register__toolbar-button.ant-btn:not(:last-child) {
+  margin-right: 0;
 }
 
 .wez-register__toolbar-button--primary {
@@ -262,6 +279,14 @@
   border-color: #3d8bfd;
   background: #3d8bfd;
   color: #ffffff;
+}
+
+.wez-register__toolbar-button--solid.ant-btn[disabled],
+.wez-register__toolbar-button--solid.ant-btn[disabled]:hover,
+.wez-register__toolbar-button--solid.ant-btn[disabled]:focus {
+  border-color: #dfe6f0;
+  background: #f5f8fb;
+  color: #a7b3c2;
 }
 
 .wez-register__table-wrap {

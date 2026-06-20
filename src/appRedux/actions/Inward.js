@@ -103,7 +103,8 @@ export const fetchInwardList = (
   partyId,
   sortOrder,
   sortColumn,
-  filterInfo
+  filterInfo,
+  endpoint
 ) => ({
   type: FETCH_INWARD_LIST_REQUEST,
   page: page,
@@ -113,6 +114,7 @@ export const fetchInwardList = (
   sortOrder: sortOrder,
   sortColumn: sortColumn,
   filterInfo,
+  endpoint,
 });
 
 export const fetchInwardListSuccess = (inwardList, totalItems) => ({
