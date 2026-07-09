@@ -59,9 +59,16 @@ const InwardEntrySummary = (props) => {
     let dimensionEdit = `${props.inward.fWidth} X ${props.inward.fThickness} X ${props.inward.fLength}`;
     let dimension = `${props.inward.width} X ${props.inward.thickness} X ${props.inward.length}`
 
+    const submitInwardForm = (e) => {
+        e.preventDefault();
+        if (!props.inwardSubmitSuccess && !props.inwardUpdateSuccess) {
+            props.params !== "" ? props.updateInward(props.inward) : props.submitInwardEntry(props.inward)
+        }
+    }
+
     return (
         <>
-            {props.inwardSubmitLoading ? <Spin className="gx-size-100 gx-flex-row gx-justify-content-center gx-align-items-center" size="large" /> :
+            {(props.inwardSubmitLoading || props.inwardUpdateLoading) ? <Spin className="gx-size-100 gx-flex-row gx-justify-content-center gx-align-items-center" size="large" /> :
                 <>
                     <Col span={24} className="gx-pt-4">
                         <Row>
@@ -113,19 +120,16 @@ const InwardEntrySummary = (props) => {
                         <Button style={{ marginLeft: 8 }} onClick={() => props.updateStep(3)}>
                             <Icon type="left" />Back
                         </Button>
-                        <Button type="primary" htmlType="submit" disabled={props.inwardSubmitSuccess} onClick={(e) => {
-                            e.preventDefault();
-                            props.params !== "" ? props.updateInward(props.inward) : props.submitInwardEntry(props.inward)
-                        }}>
+                        <Button type="primary" htmlType="submit" disabled={props.inwardSubmitSuccess || props.inwardUpdateSuccess} onClick={submitInwardForm}>
                             Submit <Icon type="right" />
                         </Button>
                         <Button type="primary"
-                            disabled={!props.inwardSubmitSuccess}
-                             onClick={(e) => {
-                            e.preventDefault();
-                            props.pdfGenerateInward(payload)
-                            props.QrGenerateInward(payload);
-                        }}>Generate PDF & QR</Button>
+                            disabled={!props.inwardSubmitSuccess && !props.inwardUpdateSuccess}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                props.pdfGenerateInward(payload)
+                                props.QrGenerateInward(payload);
+                            }}>Generate PDF & QR</Button>
                     </Col>
                 </>
             }

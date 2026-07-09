@@ -15,7 +15,7 @@ import {
   Collapse,
   Card,
 } from 'antd';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import SweetAlert from 'react-bootstrap-sweetalert';
 import { connect, useDispatch } from 'react-redux';
 import moment from 'moment';
@@ -99,7 +99,6 @@ const SlittingWidths = (props) => {
   const [twidth, settwidth] = useState(0);
   const [totalPacketsWidth, setTotalPacketsWidth] = useState(0);
   const [totalPacketsWeight, setTotalPacketsWeight] = useState(0);
-  const [oldLength, setOldLength] = useState(0);
   const [equalParts, setEqualParts] = useState(0);
   const [equalPartsDisplay, setEqualPartsDisplay] = useState(0);
   const [unsavedDeleteId, setUnsavedDeleteId] = useState(0);
@@ -126,13 +125,11 @@ const SlittingWidths = (props) => {
   let cutLength = callBackValue('length');
   let cutWidth = callBackValue('width');
   let noParts = 0;
+  
   useEffect(() => {
-    console.log(
-      'slitInstruction set to slitInstructionList',
-      props.slitInstruction
-    );
     props.setSlitInstructionList(props.slitInstruction);
   }, [props.slitInstruction]);
+
   useEffect(() => {
     getEditValue();
   }, [props.length]);
@@ -187,6 +184,7 @@ const SlittingWidths = (props) => {
       setWeightValue(weightValue);
     }
   }, [props.coilDetails, props.cuts]);
+
   useEffect(() => {
     setWeightValue(props.coilDetails.fpresent);
   }, [props.coilDetails.fpresent]);
@@ -245,7 +243,6 @@ const SlittingWidths = (props) => {
 
   const getEditValue = () => {
     if (props.cuts.length > 0 && props.length !== undefined) {
-      const index = 0;
       const obj = props.cuts[props.length];
       const arr = [obj.plannedWidth, obj.plannedNoOfPieces, obj.plannedWeight];
       const array = ['widths[0]', 'nos[0]', 'weights[0]'];
@@ -459,9 +456,9 @@ const SlittingWidths = (props) => {
           Number(targetWeight) *
           ((Number(values.widths[i]) * Number(values.nos[i])) / widthCheck);
         wValue = Math.floor(wValue);
-        if (widthEntry === props.coilDetails.fWidth) {
-          wValue += targetWeight - (weightEntry + wValue);
-        }
+        // if (widthEntry === props.coilDetails.fWidth) {
+        //   wValue += targetWeight - (weightEntry + wValue);
+        // }
         props.form.setFieldsValue({
           [array[i]]: wValue,
         });
@@ -482,11 +479,6 @@ const SlittingWidths = (props) => {
     });
   };
 
-  const onChange = () => {
-    props.form.setFieldsValue({
-      length: len,
-    });
-  };
   const handleBlurEvent = (e) => {
     setEqualParts(Number(e.target.value));
     setEqualPartsDisplay(Number(e.target.value));
@@ -497,6 +489,7 @@ const SlittingWidths = (props) => {
       settargetWeight(weightValue / Number(e.target.value));
     }
   };
+
   const onTargetChange = (e) => {
     let weight = props.coilDetails?.fQuantity
       ? props.coilDetails.fQuantity
@@ -507,6 +500,7 @@ const SlittingWidths = (props) => {
     settargetWeight(e.target.value);
     setavailLength((length * (e.target.value / weight)).toFixed(0));
   };
+  
   const radioChange = (e) => {
     let weight = props.coilDetails?.fQuantity
       ? props.coilDetails.fQuantity
