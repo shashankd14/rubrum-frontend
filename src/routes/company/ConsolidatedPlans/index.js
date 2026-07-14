@@ -1,4 +1,5 @@
 import React, { useCallback} from 'react';
+const salesModuleUrl = process.env.SALES_MODULE_BASE_URL;
 
 const ConsolidatedPlans = () => {
   const iframeRef = useCallback((node) => {
@@ -16,7 +17,7 @@ const ConsolidatedPlans = () => {
               },
             },
           },
-          "/so/consolidated-plan",
+          `${salesModuleUrl}/consolidated-plan`,
         );
     }
   }, []);
@@ -25,7 +26,7 @@ const ConsolidatedPlans = () => {
     <iframe
       ref={iframeRef}
       src={
-       "/so/consolidated-plan"
+       `${salesModuleUrl}/consolidated-plan`
       }
       title="Vite App"
       style={{ width: "100%", height: "900px", border: "none" }}

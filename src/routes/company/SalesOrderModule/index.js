@@ -1,6 +1,9 @@
 import React, { useCallback } from "react";
 
+const salesModuleUrl = process.env.REACT_APP_SALES_MODULE_BASE_URL;
+
 const SalesOrderModule = () => {
+  console.log("salesModuleUrl", salesModuleUrl);
   const iframeRef = useCallback(
     (node) => {
       if (!localStorage.getItem("userToken") || !node) return;
@@ -18,7 +21,7 @@ const SalesOrderModule = () => {
               },
             },
           },
-          "https://app-uat.workeazy.in/so",
+          salesModuleUrl,
         );
     },
     [],
@@ -27,7 +30,7 @@ const SalesOrderModule = () => {
   return (
     <iframe
       ref={iframeRef}
-      src="https://app-uat.workeazy.in/so/sales-order"
+      src={`${salesModuleUrl}/sales-order`}
       title="Vite App"
       style={{ width: "100%", height: "900px", border: "none" }}
     ></iframe>
