@@ -17,7 +17,10 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-
+          
+      - name: Enable legacy dependencies
+        run: export NODE_OPTIONS=--openssl-legacy-provider
+        
       - name: Install dependencies
         run: npm install
 
