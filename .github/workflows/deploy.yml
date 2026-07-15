@@ -22,7 +22,7 @@ jobs:
         run: export NODE_OPTIONS=--openssl-legacy-provider
         
       - name: Install dependencies
-        run: npm install
+        run: yarn install
 
       - name: Build React app
         run: yarn build2
