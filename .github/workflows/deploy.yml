@@ -17,15 +17,14 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-          
-      - name: Enable legacy dependencies
-        run: export NODE_OPTIONS=--openssl-legacy-provider >> $GITHUB_ENV
         
       - name: Install dependencies
         run: yarn install
 
       - name: Build React app
         run: yarn build2
+        env:
+          NODE_OPTIONS: --openssl-legacy-provider
 
       - name: Copy build folder to EC2
         uses: appleboy/scp-action@v0.1.7
