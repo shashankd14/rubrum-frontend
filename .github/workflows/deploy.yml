@@ -34,7 +34,7 @@ jobs:
           username: ${{ secrets.EC2_USER_PROD }}
           key: ${{ secrets.EC2_SSH_KEY }}
           source: "build/*"
-          target: "/var/www/react-app"   # path in nginx config
+          target: "/usr/share/nginx/html"   # path in nginx config
 
       - name: Restart Nginx on EC2
         uses: appleboy/ssh-action@v0.1.7
