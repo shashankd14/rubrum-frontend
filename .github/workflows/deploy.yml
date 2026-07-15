@@ -19,7 +19,7 @@ jobs:
           node-version: '18'
           
       - name: Enable legacy dependencies
-        run: export NODE_OPTIONS=--openssl-legacy-provider
+        run: export NODE_OPTIONS=--openssl-legacy-provider >> $GITHUB_ENV
         
       - name: Install dependencies
         run: yarn install
