@@ -406,7 +406,7 @@ const CreateCuttingDetailsForm = (props) => {
                 : record?.endUserTagId
             }
             onChange={(e) =>
-              handleTagsChange(e, record, "endUser", tableData, setTableData)
+              handleTagsChange(e, record, "endUser", props.wip ? tableData : cuts, props.wip ? setTableData : setCuts)
             }
           >
             {props?.coilDetails.party?.endUserTags?.map((item) => {

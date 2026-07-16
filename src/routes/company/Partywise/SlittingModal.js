@@ -87,8 +87,8 @@ const SlittingWidths = (props) => {
     props.coilDetails.instruction && props.coilDetails.instruction.length > 0
       ? props.plannedWidth(props.coilDetails)
       : props.coilDetails.fWidth
-      ? props.coilDetails.fWidth
-      : props.plannedWidth(props.coilDetails);
+        ? props.coilDetails.fWidth
+        : props.plannedWidth(props.coilDetails);
   const weightValue1 =
     props.coilDetails.fpresent >= 0
       ? props.coilDetails.fpresent
@@ -125,7 +125,7 @@ const SlittingWidths = (props) => {
   let cutLength = callBackValue('length');
   let cutWidth = callBackValue('width');
   let noParts = 0;
-  
+
   useEffect(() => {
     props.setSlitInstructionList(props.slitInstruction);
   }, [props.slitInstruction]);
@@ -225,8 +225,8 @@ const SlittingWidths = (props) => {
       actualTotalWeight =
         actualTotalWeight.length > 0
           ? actualTotalWeight.reduce(
-              (total, num) => Number(total) + Number(num)
-            )
+            (total, num) => Number(total) + Number(num)
+          )
           : 0;
       props.totalActualweight(actualTotalWeight);
     }
@@ -296,8 +296,8 @@ const SlittingWidths = (props) => {
         let totalWidth = 0;
         let totalWeight = props.slitInstructionList.length
           ? props.slitInstructionList.map((i) =>
-              Number(i.partDetailsRequest.targetWeight)
-            )
+            Number(i.partDetailsRequest.targetWeight)
+          )
           : 0;
         totalWeight = totalWeight.length
           ? totalWeight.reduce((sum, total) => sum + total)
@@ -500,7 +500,7 @@ const SlittingWidths = (props) => {
     settargetWeight(e.target.value);
     setavailLength((length * (e.target.value / weight)).toFixed(0));
   };
-  
+
   const radioChange = (e) => {
     let weight = props.coilDetails?.fQuantity
       ? props.coilDetails.fQuantity
@@ -758,8 +758,8 @@ const SlittingWidths = (props) => {
                     props.wip
                       ? true
                       : props.slitInstructionList.length === equalParts
-                      ? true
-                      : false
+                        ? true
+                        : false
                   }
                 >
                   Add Size
@@ -772,8 +772,8 @@ const SlittingWidths = (props) => {
               onClick={applyData}
               hidden={
                 value === 1 &&
-                equalParts > 1 &&
-                props.slitInstructionList.length !== equalParts
+                  equalParts > 1 &&
+                  props.slitInstructionList.length !== equalParts
                   ? false
                   : true
               }
@@ -915,8 +915,8 @@ const CreateSlittingDetailsForm = (props) => {
               actualTotalWeight =
                 actualTotalWeight.length > 0
                   ? actualTotalWeight.reduce(
-                      (total, num) => Number(total) + Number(num)
-                    )
+                    (total, num) => Number(total) + Number(num)
+                  )
                   : 0;
               setTotalActualWeight(actualTotalWeight);
             }}
@@ -994,7 +994,7 @@ const CreateSlittingDetailsForm = (props) => {
   ];
 
   const desiredTags = ['401 - WIP(FG)', '402 - WIP(EDGETRIM)', '403 - WIP(CUTENDS)', '404 - WIP SFG (CTL PENDING)', '405 - WIP PACKING ', '406 - WIP - QCH(RM DEFECT)', '407 - WIP - QCH(PROCESS DEFECT)', '408 - WIP - QCH(PLANNING DEFECT)'];
-  
+
   const columnsPlan = [
     {
       title: 'Sr. No',
@@ -1122,8 +1122,8 @@ const CreateSlittingDetailsForm = (props) => {
       ? props.childCoil
         ? props.coilDetails
         : props.coilDetails && props.coilDetails.instruction
-        ? props.coilDetails.instruction
-        : props.coilDetails.childInstructions
+          ? props.coilDetails.instruction
+          : props.coilDetails.childInstructions
       : cuts
   );
   const [rowData, setRowData] = useState(false);
@@ -1214,8 +1214,8 @@ const CreateSlittingDetailsForm = (props) => {
     let data = props.childCoil
       ? props.coilDetails
       : props.coilDetails && props.coilDetails.instruction
-      ? props.coilDetails.instruction
-      : props.coilDetails.childInstructions;
+        ? props.coilDetails.instruction
+        : props.coilDetails.childInstructions;
 
     if (props.childCoil) {
       setInstruction(data);
@@ -1233,22 +1233,22 @@ const CreateSlittingDetailsForm = (props) => {
       data = props.wip
         ? props.unfinish || props.editFinish
           ? data.filter(
-              (item) =>
-                item.process.processId === 2 &&
-                item.status.statusId === 3 &&
-                item.groupId === null
-            )
+            (item) =>
+              item.process.processId === 2 &&
+              item.status.statusId === 3 &&
+              item.groupId === null
+          )
           : data.filter(
-              (item) =>
-                item.process.processId === 2 &&
-                item.status.statusId === 2 &&
-                item.groupId === null
-            )
+            (item) =>
+              item.process.processId === 2 &&
+              item.status.statusId === 2 &&
+              item.groupId === null
+          )
         : props.slitCut
-        ? data.filter(
+          ? data.filter(
             (item) => item.process.processId === 2 && item.isSlitAndCut === true
           )
-        : data.filter(
+          : data.filter(
             (item) =>
               item.process.processId === 2 && item.isSlitAndCut === false
           );
@@ -1264,22 +1264,22 @@ const CreateSlittingDetailsForm = (props) => {
       cutsData = props.wip
         ? props.unfinish || props.editFinish
           ? cutsData.filter(
-              (item) =>
-                item.process.processId === 2 &&
-                item.status.statusId === 3 &&
-                item.groupId === null
-            )
+            (item) =>
+              item.process.processId === 2 &&
+              item.status.statusId === 3 &&
+              item.groupId === null
+          )
           : cutsData.filter(
-              (item) =>
-                item.process.processId === 2 &&
-                item.status.statusId !== 3 &&
-                item.groupId === null
-            )
+            (item) =>
+              item.process.processId === 2 &&
+              item.status.statusId !== 3 &&
+              item.groupId === null
+          )
         : props.slitCut
-        ? cutsData.filter(
+          ? cutsData.filter(
             (item) => item.process.processId === 2 && item.isSlitAndCut === true
           )
-        : cutsData.filter(
+          : cutsData.filter(
             (item) =>
               item.process.processId === 2 && item.isSlitAndCut === false
           );
@@ -1329,7 +1329,7 @@ const CreateSlittingDetailsForm = (props) => {
           .filter((record) => {
             const classificationName = getPackatClassificationName(
               record.packetClassification?.classificationId ||
-                record.packetClassification?.tagId
+              record.packetClassification?.tagId
             );
             return (
               classificationName === 'EDGE TRIM' ||
@@ -2024,10 +2024,10 @@ const CreateSlittingDetailsForm = (props) => {
         {props.inward.loading
           ? 'Loading...'
           : type === 'Slitting' && !props.wip
-          ? 'Save & Generate'
-          : type !== 'Slitting'
-          ? 'Proceed for Cut'
-          : 'OK'}
+            ? 'Save & Generate'
+            : type !== 'Slitting'
+              ? 'Proceed for Cut'
+              : 'OK'}
       </Button>,
     ];
   };
@@ -2039,10 +2039,10 @@ const CreateSlittingDetailsForm = (props) => {
           props?.unfinish
             ? 'UnFinish Slitting Instruction'
             : props?.editFinish
-            ? 'Edit Finish Slitting Instruction'
-            : props.wip
-            ? 'Finish Slitting Instruction'
-            : 'Slitting Instruction'
+              ? 'Edit Finish Slitting Instruction'
+              : props.wip
+                ? 'Finish Slitting Instruction'
+                : 'Slitting Instruction'
         }
         visible={props.showSlittingModal}
         onOk={handleOk}
@@ -2054,8 +2054,8 @@ const CreateSlittingDetailsForm = (props) => {
               ? getFooterButtons('slittingDetail')
               : getFooterButtons('SlitCut')
             : cuts.length > 0
-            ? getFooterButtons('Slitting')
-            : getFooterButtons('Slitting')
+              ? getFooterButtons('Slitting')
+              : getFooterButtons('Slitting')
         }
       >
         <Card className='gx-card'>
@@ -2317,13 +2317,12 @@ const CreateSlittingDetailsForm = (props) => {
                               160
                             )} Slitting Date: ${date} ${String.fromCharCode(
                               160
-                            )} Yield loss (%): ${
-                              yieldLossRatio[tableIndex]
+                            )} Yield loss (%): ${yieldLossRatio[tableIndex]
                                 ? parseFloat(
-                                    yieldLossRatio[tableIndex]
-                                  ).toFixed(2)
+                                  yieldLossRatio[tableIndex]
+                                ).toFixed(2)
                                 : '0.00'
-                            } `}
+                              } `}
                             key={date}
                           >
                             <Table
@@ -2333,8 +2332,8 @@ const CreateSlittingDetailsForm = (props) => {
                                 props.wip
                                   ? tableData
                                   : reset
-                                  ? instructions
-                                  : cutArray
+                                    ? instructions
+                                    : cutArray
                               }
                               pagination={{
                                 onChange(current) {
@@ -2480,7 +2479,7 @@ const CreateSlittingDetailsForm = (props) => {
                       Available Width (mm) :{' '}
                       {props.coil.fpresent > 0
                         ? props.coilDetails.fWidth ||
-                          props.coilDetails.plannedWidth
+                        props.coilDetails.plannedWidth
                         : 0}
                     </p>
                   </Col>
@@ -2519,7 +2518,7 @@ const mapStateToProps = (state) => ({
 });
 
 const SlittingDetailsForm = Form.create({
-  onFieldsChange(props, changedFields) {},
+  onFieldsChange(props, changedFields) { },
   mapPropsToFields(props) {
     return {
       width: Form.createFormField({
