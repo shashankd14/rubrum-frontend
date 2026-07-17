@@ -3,9 +3,9 @@ name: Deploy React App
 on:
   push:
     branches:
-      - major-ui
-      - jsw_one
-      - prod_jsw
+      - major-ui  #ASPEN PROD
+      - jsw_one   #JSW UAT
+      - prod_jsw  #JSW PROD
 
 jobs:
   deploy-major-ui:
@@ -14,9 +14,18 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - run: npm install && npm run build
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
 
-      - name: Copy build to Dev EC2
+      - run: yarn install
+      - run: yarn build2
+        env:
+          NODE_OPTIONS: --openssl-legacy-provider
+          CI: false
+
+      - name: Copy build to ASPEN PROD 
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.ASPEN_HOST_PROD }}
@@ -25,7 +34,7 @@ jobs:
           source: "build/*"
           target: "/usr/share/nginx/html"
 
-      - name: Restart Nginx (Dev)
+      - name: Restart Nginx (PROD)
         uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ secrets.ASPEN_HOST_PROD }}
@@ -39,10 +48,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
-      - run: npm install && npm run build
-
-      - name: Copy build to UAT EC2
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - run: yarn install
+      - run: yarn build
+        env:
+          NODE_OPTIONS: --openssl-legacy-provider
+          CI: false
+      - name: Copy build to JSW UAT
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.JSW_HOST_UAT }}
@@ -50,8 +65,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           source: "build/*"
           target: "/usr/share/nginx/html/apps"
-
-      - name: Restart Nginx (UAT)
+      - name: Restart Nginx (JSW UAT)
         uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ secrets.JSW_HOST_UAT }}
@@ -65,10 +79,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
-      - run: npm install && npm run build
-
-      - name: Copy build to UAT EC2
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - run: yarn install
+      - run: yarn build
+        env:
+          NODE_OPTIONS: --openssl-legacy-provider
+          CI: false
+      - name: Copy build to Prod EC2
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.JSW_HOST_PROD }}
@@ -76,15 +96,11 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           source: "build/*"
           target: "/usr/share/nginx/html/apps"
-
-      - name: Restart Nginx (UAT)
+      - name: Restart Nginx (Prod)
         uses: appleboy/ssh-action@v0.1.7
         with:
-          host: ${{ secrets.JSW_HOST_UAT }}
+          host: ${{ secrets.JSW_HOST_PROD }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             sudo systemctl restart nginx
-
-
-    
