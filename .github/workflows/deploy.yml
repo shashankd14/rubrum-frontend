@@ -3,7 +3,7 @@ name: Deploy React App
 on:
   push:
     branches:
-      - major-ui   # change to your deployment branch
+      - major-ui   #change to your deployment branch
 
 jobs:
   deploy:
