@@ -40,7 +40,7 @@ jobs:
         uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST_PROD }}
-          username: ${{ secrets.EC2_HOST_PROD }}
+          username: ${{ secrets.EC2_USER_PROD }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             sudo systemctl restart nginx
