@@ -1,31 +1,42 @@
-import React, { useCallback } from "react";
+import React, { useEffect, useRef } from "react";
 
 const salesModuleUrl = process.env.REACT_APP_SALES_MODULE_BASE_URL;
+const salesModuleOrigin = salesModuleUrl ? new URL(salesModuleUrl).origin : '';
 
 const SalesOrderModule = () => {
-  console.log("salesModuleUrl", salesModuleUrl);
-  const iframeRef = useCallback(
-    (node) => {
-      if (!localStorage.getItem("userToken") || !node) return;
+  const iframeRef = useRef(null);
 
-      node.onload = () =>
-        node?.contentWindow?.postMessage(
-          {
-            type: "SET_DATA",
-            payload: {
-              token: localStorage.getItem("userToken") || "",
-              refreshToken: localStorage.getItem("refreshToken") || "",
-              user: {
-                name: localStorage.getItem("userName"),
-                id: localStorage.getItem("userId"),
-              },
+  useEffect(() => {
+    const sendData = () => {
+      if (!localStorage.getItem("userToken")) return;
+      const contentWindow = iframeRef.current?.contentWindow;
+      if (!contentWindow) return;
+      contentWindow.postMessage(
+        {
+          type: "SET_DATA",
+          payload: {
+            token: localStorage.getItem("userToken") || "",
+            refreshToken: localStorage.getItem("refreshToken") || "",
+            user: {
+              name: localStorage.getItem("userName"),
+              id: localStorage.getItem("userId"),
             },
           },
-          salesModuleUrl,
-        );
-    },
-    [],
-  );
+        },
+        salesModuleOrigin,
+      );
+    };
+
+    const handleMessage = (event) => {
+      if (event.origin !== salesModuleOrigin) return;
+      if (event.data?.type === "APP_READY") {
+        sendData();
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
 
   return (
     <iframe
