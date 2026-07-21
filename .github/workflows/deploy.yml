@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - aspen-uat     #ASPEN UAT
+      - aspen-uat     #ASPEN UAT
       - major-ui  #ASPEN PROD
       - jsw_one   #JSW UAT
       - prod_jsw  #JSW PROD
@@ -21,7 +22,7 @@ jobs:
           node-version: '20'
 
       - run: yarn install
-      - run: yarn build
+      - run: yarn build2
         env:
           NODE_OPTIONS: --openssl-legacy-provider
           CI: false
