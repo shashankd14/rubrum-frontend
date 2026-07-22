@@ -1,4 +1,4 @@
-# [Wieldy - React Redux Admin Template based on Ant Framework](https://themeforest.net/item/wieldy-react-redux-admin-template/22277962?s_rank=1 "Wieldy")
+
 Wieldy is a react redux based admin template. 
  
 # Installation
