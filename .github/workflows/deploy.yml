@@ -3,7 +3,7 @@ name: Deploy React App
 on:
   push:
     branches:
-      - aspen-uat     #ASPEN UAT
+      - aspen-uat #ASPEN UAT
       - major-ui  #ASPEN PROD
       - jsw_one   #JSW UAT
       - prod_jsw  #JSW PROD
