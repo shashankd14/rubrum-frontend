@@ -1456,7 +1456,7 @@ const CreateCuttingDetailsForm = (props) => {
   };
 
   const setSoValues = (refno) => {
-    const record = salesOrders.find((so) => so.refno === refno);
+    const record = salesOrders[refno?.split(",")[1]];
     if (!record) return;
 
     const soLength = String(record.length);
@@ -1758,7 +1758,7 @@ const CreateCuttingDetailsForm = (props) => {
                           {salesOrders?.filter((item) => item.isDisplay !== false)?.map((item, index) => (
                             <Option
                               key={`${item.refno}${index}`}
-                              value={item.refno}
+                              value={`${item.refno},${index}`}
                               label={item.refno}
                             >
                               {item.refno} <b>Length: {item.length}</b>

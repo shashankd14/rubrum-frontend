@@ -87,6 +87,9 @@ const SignIn =(props)=> {
             >
               <FormItem label="Email Address">
                 {getFieldDecorator("email", {
+                  rules: [
+                    { required: true, message: "Please input your Email Address!" },
+                  ],
                 })(
                   <Input placeholder="Username" prefix={<Icon type="mail" />} />
                 )}

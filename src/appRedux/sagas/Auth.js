@@ -1,12 +1,7 @@
-import {all, call, delay, fork, put, select, take, takeEvery} from "redux-saga/effects";
+import {all, call, fork, put, takeEvery} from "redux-saga/effects";
 import {
-  SIGNIN_FACEBOOK_USER,
-  SIGNIN_GITHUB_USER,
-  SIGNIN_GOOGLE_USER,
-  SIGNIN_TWITTER_USER,
   SIGNIN_USER,
   SIGNOUT_USER,
-  SIGNUP_USER,
   REFRESH_TOKEN,
   REFRESH_TOKEN_FAILURE,
 } from "constants/ActionTypes";
