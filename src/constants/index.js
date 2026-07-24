@@ -24,3 +24,5 @@ export const sidebarMenuItems = {
     KQP: "KQP",
     packing: "Packing"
 }
+
+export const STATUS_IN_PROGRESS = 2;

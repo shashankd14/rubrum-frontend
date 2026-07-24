@@ -36,8 +36,6 @@ import {
 } from '../../../appRedux/actions';
 import { labelPrintEditFinish } from '../../../appRedux/actions/LabelPrint';
 import IntlMessages from 'util/IntlMessages';
-import { set } from 'nprogress';
-import { values } from 'lodash';
 
 const { Panel } = Collapse;
 const Option = Select.Option;
@@ -70,10 +68,8 @@ export const formItemLayoutSlitting = {
   },
 };
 
-let uuid = 0;
-
 const SlittingWidths = (props) => {
-  const { getFieldDecorator, getFieldValue, getFieldProps } = props.form;
+  const { getFieldDecorator, getFieldValue } = props.form;
   getFieldDecorator('keys', { initialValue: [{ width: 0, no: 0, weight: 0 }] });
   const [value, setValue] = useState(props.value);
   const [targetWeight, settargetWeight] = useState(0);
@@ -124,7 +120,6 @@ const SlittingWidths = (props) => {
   };
   let cutLength = callBackValue('length');
   let cutWidth = callBackValue('width');
-  let noParts = 0;
 
   useEffect(() => {
     props.setSlitInstructionList(props.slitInstruction);
