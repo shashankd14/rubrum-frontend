@@ -474,9 +474,9 @@ const CreateCuttingDetailsForm = (props) => {
       setcurrentWeight(
         (prevWeight) => prevWeight + Number(record.plannedWeight),
       );
-      if (record.soRefNo) {
+      if (record.soAllocationId) {
         const filteredSalesOrders = salesOrders.map((so) =>
-          so.refno === record.soRefNo
+          so.soAllocationId === record.soAllocationId
             ? { ...so, isDisplay: true }
             : so,
         );
@@ -622,9 +622,9 @@ const CreateCuttingDetailsForm = (props) => {
             setSaveCutting((prev) => [...prev, newCut]);
             setCuts((prev) => [...prev, newCut]);
 
-            if (props.inward.process.soRefNo) {
+            if (props.inward.process.soAllocationId) {
               const filteredSalesOrders = salesOrders.map((so) =>
-                so.refno === props.inward.process.soRefNo
+                so.soAllocationId === props.inward.process.soAllocationId
                   ? { ...so, isDisplay: false }
                   : so,
               );
@@ -1757,8 +1757,8 @@ const CreateCuttingDetailsForm = (props) => {
                         >
                           {salesOrders?.filter((item) => item.isDisplay !== false)?.map((item, index) => (
                             <Option
-                              key={`${item.refno}${index}`}
-                              value={`${item.refno},${index}`}
+                              key={`${item.soAllocationId}`}
+                              value={`${item.soAllocationId},${index}`}
                               label={item.refno}
                             >
                               {item.refno} <b>Length: {item.length}</b>
