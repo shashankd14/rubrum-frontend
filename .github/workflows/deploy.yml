@@ -1,0 +1,142 @@
+name: Deploy React App
+
+on:
+  push:
+    branches:
+      - aspen-uat #ASPEN UAT
+      - major-ui  #ASPEN PROD
+      - jsw_one   #JSW UAT
+      - prod_jsw  #JSW PROD
+
+jobs:
+  deploy-aspen-uat:
+    if: github.ref == 'refs/heads/aspen-uat'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - run: yarn install
+      - run: yarn build
+        env:
+          NODE_OPTIONS: --openssl-legacy-provider
+          CI: false
+
+      - name: Copy build to ASPEN UAT 
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.ASPEN_HOST_UAT }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "build/*"
+          target: "/usr/share/nginx/html"
+
+      - name: Restart Nginx (ASPEN UAT)
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.ASPEN_HOST_UAT }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            sudo systemctl restart nginx
+            
+  deploy-major-ui:
+    if: github.ref == 'refs/heads/major-ui'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - run: yarn install
+      - run: yarn build2
+        env:
+          NODE_OPTIONS: --openssl-legacy-provider
+          CI: false
+
+      - name: Copy build to ASPEN PROD 
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.ASPEN_HOST_PROD }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "build/*"
+          target: "/usr/share/nginx/html"
+
+      - name: Restart Nginx (ASPEN PROD)
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.ASPEN_HOST_PROD }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            sudo systemctl restart nginx
+
+  deploy-jsw_one:
+    if: github.ref == 'refs/heads/jsw_one'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - run: yarn install
+      - run: yarn build
+        env:
+          NODE_OPTIONS: --openssl-legacy-provider
+          CI: false
+      - name: Copy build to JSW UAT
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.JSW_HOST_UAT }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "build/*"
+          target: "/usr/share/nginx/html/build"
+      - name: Restart Nginx (JSW UAT)
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.JSW_HOST_UAT }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            sudo systemctl restart nginx
+
+  deploy-prod_jsw:
+    if: github.ref == 'refs/heads/prod_jsw'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - run: yarn install
+      - run: yarn build
+        env:
+          NODE_OPTIONS: --openssl-legacy-provider
+          CI: false
+      - name: Copy build to Prod EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.JSW_HOST_PROD }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "build/*"
+          target: "/usr/share/nginx/html/build"
+      - name: Restart Nginx (JSW Prod)
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.JSW_HOST_PROD }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            sudo systemctl restart nginx
