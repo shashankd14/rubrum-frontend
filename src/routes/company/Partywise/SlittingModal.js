@@ -39,6 +39,7 @@ import IntlMessages from 'util/IntlMessages';
 
 const { Panel } = Collapse;
 const Option = Select.Option;
+const userId = localStorage.getItem("userId");
 
 export const formItemLayout = {
   labelCol: {
@@ -316,8 +317,8 @@ const SlittingWidths = (props) => {
         let instructionPlanDto = {
           targetWeight: targetWeight,
           length: availLength,
-          createdBy: '1',
-          updatedBy: '1',
+          createdBy: userId,
+          updatedBy: userId,
         };
         for (let i = 0; i < values.widths.length; i++) {
           for (let j = 0; j < values.nos[i]; j++) {
@@ -329,8 +330,8 @@ const SlittingWidths = (props) => {
               isSlitAndCut: props.slitCut ? true : false,
               plannedNoOfPieces: values.nos[i],
               status: 1,
-              createdBy: '1',
-              updatedBy: '1',
+              createdBy: userId,
+              updatedBy: userId,
               groupId: null,
               plannedWeight: (values.weights[i] / values.nos[i]).toFixed(2),
               inwardId: props.coilDetails.inwardEntryId
@@ -1603,7 +1604,7 @@ const CreateSlittingDetailsForm = (props) => {
         partyId: props.coil.party.nPartyId,
         ipAddress: '',
         requestId: 'YLR_PLAN_GET',
-        userId: '',
+        userId: userId,
       });
     }
   }, []);
@@ -1770,11 +1771,8 @@ const CreateSlittingDetailsForm = (props) => {
       props.labelPrintEditFinish(coil);
       props.setShowSlittingModal(false);
     } else if (props.wip) {
-      //
       const isAllWip = tableData.every(
-        (item) =>
-          item.packetClassification.tagId === 0 ||
-          item.packetClassification.classificationId === 0
+        (item) => item?.packetClassification?.tagName?.includes("WIP"),
       );
       if (isAllWip) {
         message.error(
@@ -1787,10 +1785,10 @@ const CreateSlittingDetailsForm = (props) => {
       } else {
         const instructionList = tableData.filter(
           (item) =>
-            item?.packetClassification?.tagId !== 0 &&
-            item?.packetClassification?.classificationId !== 0 &&
-            item?.packetClassification !== '' &&
-            item?.packetClassification !== null
+            !item?.packetClassification?.tagName?.includes("WIP") &&
+            !item?.packetClassification?.classificationName?.includes("WIP") &&
+            item?.packetClassification !== "" &&
+            item?.packetClassification !== null,
         );
         const coil = {
           actualYieldLossRatio: actualYLR,
@@ -1935,8 +1933,8 @@ const CreateSlittingDetailsForm = (props) => {
           partDetailsRequest: {
             targetWeight: '0',
             length: '0',
-            createdBy: '1',
-            updatedBy: '1',
+            createdBy: userId,
+            updatedBy: userId,
             deleteUniqId: 0,
           },
           instructionRequestDTOs: [
@@ -1954,8 +1952,8 @@ const CreateSlittingDetailsForm = (props) => {
               isSlitAndCut: false,
               plannedNoOfPieces: '1',
               status: 1,
-              createdBy: '1',
-              updatedBy: '1',
+              createdBy: userId,
+              updatedBy: userId,
               groupId: null,
               // plannedWeight:
               //   props?.coilDetails?.scrapWeight || record.actualWeight || 0,

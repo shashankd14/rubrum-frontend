@@ -292,6 +292,10 @@ const CreateCuttingDetailsForm = (props) => {
       record.packetClassificationId = e;
     }
 
+    setCuts((prev) => [...prev]);
+    setCutValue((prev) => [...prev]);
+    setRestTableData((prev) => [...prev]);
+
     if (record.instructionId) {
       setSaveCutting((prev) =>
         prev.some((item) => item.instructionId === record.instructionId)
@@ -1014,7 +1018,15 @@ const CreateCuttingDetailsForm = (props) => {
     let cutsWidth = selectedRowKeys.reduce((a, c) => c.plannedWidth);
     cutsWidth =
       selectedRowKeys.length === 1 ? cutsWidth.plannedWidth : cutsWidth;
-    setEndUserTagList(selectedRowKeys?.map((item) => item?.endUserTagsentity));
+    const uniqueEndUserTags = Array.from(
+      new Map(
+        (selectedRowKeys ?? [])
+          .map((item) => item?.endUserTagsentity)
+          .filter(Boolean)
+          .map((tag) => [tag.tagId, tag]),
+      ).values(),
+    );
+    setEndUserTagList(uniqueEndUserTags);
     setTagsList(selectedRowKeys?.map((item) => item?.packetClassification));
     let cutsValue = [];
     let instructionPlanDto = {
@@ -1022,9 +1034,6 @@ const CreateCuttingDetailsForm = (props) => {
       updatedBy: userId,
     };
     for (let i = 0; i < packetNo; i++) {
-      setEndUserTagList(
-        selectedRowKeys?.map((item) => item?.endUserTagsentity),
-      );
       let cutObj = {
         processId: 3,
         instructionDate: moment().format("YYYY-MM-DD HH:mm:ss"),
@@ -1037,11 +1046,13 @@ const CreateCuttingDetailsForm = (props) => {
         updatedBy: userId,
         plannedWidth: cutsWidth,
         inwardId: props.coil.inwardEntryId,
+        packetClassificationId: selectedRowKeys[0]?.packetClassification?.classificationId ?? selectedRowKeys[0]?.packetClassification?.tagId,
         parentInstructionId: props.coilDetails.instructionId
           ? props.coilDetails.instructionId
           : "",
         groupId: props.inward.groupId.groupId,
         deleteUniqId: unsavedDeleteId,
+        key: `${unsavedDeleteId}-${i}`,
         index: idx,
         isScrapWeightUsed: false,
         endUserTagId: "",
@@ -1096,8 +1107,16 @@ const CreateCuttingDetailsForm = (props) => {
     e.preventDefault();
     const newArray = selectedRowKeys.map((row) => row.plannedWidth);
     const isSameWidth = newArray.every((arr) => arr === newArray[0]);
+    const newClassificationArray = selectedRowKeys.map(
+      (row) => row.packetClassification?.classificationId ?? row.packetClassification?.tagId
+    );
+    const isSameClassification =
+      newClassificationArray.length > 0 &&
+      newClassificationArray.every((id) => id === newClassificationArray[0]);
+
+
     //Restricting bundle selection with same width
-    if (isSameWidth) {
+    if (isSameWidth && isSameClassification) {
       setSelectedKey([]);
       setbundledList(true);
       let selectedPastList = selectedPast.length > 0 ? selectedPast : [];
@@ -1133,7 +1152,7 @@ const CreateCuttingDetailsForm = (props) => {
       Modal.error({
         title: "Invalid attempt",
         content:
-          "Instructions with different width cannot be bundled. Please check!",
+          "Instructions with different width or classification cannot be bundled. Please check!",
       });
     }
   };
@@ -1248,9 +1267,9 @@ const CreateCuttingDetailsForm = (props) => {
       if (props.setShowSlittingModal) props.setShowSlittingModal(false);
       return;
     } else if (props.wip) {
-      const isAllWip = tableData.every(
-        (item) => item?.packetClassification?.tagId === 0,
-      );
+        const isAllWip = tableData.every(
+          (item) => item?.packetClassification?.tagName?.includes("WIP"),
+        );
       if (isAllWip) {
         message.error(
           "Unable to finish Instructions. Please select the classification",
@@ -1262,8 +1281,8 @@ const CreateCuttingDetailsForm = (props) => {
       } else {
         const instructionList = tableData.filter(
           (item) =>
-            item?.packetClassification?.tagId !== 0 &&
-            item?.packetClassification?.classificationId !== 0 &&
+            !item?.packetClassification?.tagName?.includes("WIP") &&
+            !item?.packetClassification?.classificationName?.includes("WIP") &&
             item?.packetClassification !== "" &&
             item?.packetClassification !== null,
         );
@@ -1607,6 +1626,11 @@ const CreateCuttingDetailsForm = (props) => {
                         dataSource={
                           restTableData.length ? restTableData : cutValue
                         }
+                        rowKey={(record) =>
+                          record.instructionId ??
+                          record.key ??
+                          record.deleteUniqId
+                        }
                       />
                     </Col>
                   )}
@@ -1631,6 +1655,11 @@ const CreateCuttingDetailsForm = (props) => {
                         columns={columnsSlitCut}
                         dataSource={
                           restTableData.length ? restTableData : cutValue
+                        }
+                        rowKey={(record) =>
+                          record.instructionId ??
+                          record.key ??
+                          record.deleteUniqId
                         }
                       />
                     </Col>

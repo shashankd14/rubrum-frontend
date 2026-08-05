@@ -11,9 +11,6 @@ import {
     SUBMIT_INWARD_ENTRY,
     SUBMIT_INWARD_SUCCESS,
     SUBMIT_INWARD_ERROR,
-    CHECK_COIL_EXISTS,
-    CHECK_COIL_EXISTS_SUCCESS,
-    CHECK_COIL_EXISTS_ERROR,
     FETCH_INWARD_LIST_BY_PARTY_REQUEST,
     FETCH_INWARD_LIST_BY_PARTY_SUCCESS,
     FETCH_INWARD_LIST_BY_PARTY_ERROR,
@@ -64,9 +61,6 @@ import {
     DELETE_INSTRUCTION_BY_ID_SUCCESS,
     DELETE_INSTRUCTION_BY_ID_SUCCESS_SLIT,
     DELETE_INSTRUCTION_BY_ID_ERROR,
-    CHECK_BATCH_NO_EXIST,
-    CHECK_BATCH_NO_EXIST_SUCCESS,
-    CHECK_BATCH_NO_EXIST_ERROR,
     INSTRUCTION_GROUP_SAVE,
     INSTRUCTION_GROUP_SAVE_SUCCESS,
     INSTRUCTION_GROUP_SAVE_ERROR,
@@ -227,48 +221,6 @@ export default (state = INIT_STATE, action) => {
             }
         }
 
-        case CHECK_COIL_EXISTS: {
-            return {
-                ...state,
-                loading: true,
-            }
-        }
-        case CHECK_COIL_EXISTS_SUCCESS: {
-            return {
-                ...state,
-                loading: false,
-                success: true,
-                duplicateCoil: action.status
-            }
-        }
-        case CHECK_COIL_EXISTS_ERROR: {
-            return {
-                ...state,
-                loading: false,
-                error: true,
-            }
-        }
-        case CHECK_BATCH_NO_EXIST: {
-            return {
-                ...state,
-                loading: true,
-            }
-        }
-        case CHECK_BATCH_NO_EXIST_SUCCESS: {
-            return {
-                ...state,
-                loading: false,
-                success: true,
-                duplicateBatchNo: action.status
-            }
-        }
-        case CHECK_BATCH_NO_EXIST_ERROR: {
-            return {
-                ...state,
-                loading: false,
-                error: true,
-            }
-        }
         case FETCH_INWARD_LIST_ERROR: {
             return {
                 ...state,
