@@ -7,14 +7,10 @@ import {
     FETCH_WIP_INWARD_LIST_SUCCESS,
     FETCH_WIP_INWARD_LIST_ERROR,
 
-    CHECK_COIL_EXISTS,
-
     SET_INWARD_DETAILS,
     SUBMIT_INWARD_ENTRY,
     SUBMIT_INWARD_SUCCESS,
     SUBMIT_INWARD_ERROR,
-    CHECK_COIL_EXISTS_SUCCESS,
-    CHECK_COIL_EXISTS_ERROR,
     FETCH_INWARD_LIST_BY_PARTY_REQUEST,
     FETCH_INWARD_LIST_BY_PARTY_SUCCESS,
     FETCH_INWARD_LIST_BY_PARTY_ERROR,
@@ -49,9 +45,6 @@ import {
     POST_DELIVERY_CONFIRM_REQUESTED,
     POST_DELIVERY_CONFIRM_SUCCESS,
     POST_DELIVERY_CONFIRM_ERROR,
-    FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST,
-    FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST_SUCCESS,
-    FETCH_INWARD_LIST_BY_INSTRUCTION_REQUEST_ERROR,
     FETCH_INWARD_INSTRUCTION_DETAILS_REQUESTED,
     FETCH_INWARD_INSTRUCTION_DETAILS_SUCCESS,
     FETCH_INWARD_INSTRUCTION_DETAILS_ERROR,
@@ -74,9 +67,6 @@ import {
     DELETE_INSTRUCTION_BY_ID_ERROR,
     DELETE_INSTRUCTION_BY_ID_SUCCESS,
     DELETE_INSTRUCTION_BY_ID_SUCCESS_SLIT,
-    CHECK_BATCH_NO_EXIST,
-    CHECK_BATCH_NO_EXIST_ERROR,
-    CHECK_BATCH_NO_EXIST_SUCCESS,
     INSTRUCTION_GROUP_SAVE,
     INSTRUCTION_GROUP_SAVE_SUCCESS,
     INSTRUCTION_GROUP_SAVE_ERROR,
@@ -170,35 +160,6 @@ export const setInwardDetails = (inward) => ({
     type: SET_INWARD_DETAILS,
     inward
 });
-
-export const checkIfCoilExists = (coilNumber) => ({
-    type: CHECK_COIL_EXISTS,
-    coilNumber
-});
-
-export const checkDuplicateCoilSuccess = (status) => ({
-    type: CHECK_COIL_EXISTS_SUCCESS,
-    status
-})
-
-export const checkDuplicateCoilError = (error) => ({
-    type: CHECK_COIL_EXISTS_ERROR,
-    error
-})
-export const checkCustomerBatchNumber = (customerBatchId) => ({
-    type: CHECK_BATCH_NO_EXIST,
-    customerBatchId
-});
-
-export const checkCustomerBatchNumberSuccess = (status) => ({
-    type: CHECK_BATCH_NO_EXIST_SUCCESS,
-    status
-})
-
-export const checkCustomerBatchNumberError = (error) => ({
-    type: CHECK_BATCH_NO_EXIST_ERROR,
-    error
-})
 
 export const getGradeByMaterialId = (materialId) => ({
     type: FETCH_MATERIAL_GRADE_LIST_REQUEST,

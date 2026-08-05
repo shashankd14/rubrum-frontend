@@ -6,9 +6,33 @@ import { Button, Col, Form, Icon, Input, Row, DatePicker, Card } from "antd";
 import { formItemLayout } from "../Create";
 
 import { APPLICATION_DATE_FORMAT } from '../../../../constants/index';
+import useCheckBatchNoUnique from '../../../../util/hooks/useCheckBatchNoUnique';
 
 const InvoiceDetailsForm = props => {
   const { getFieldDecorator } = props.form;
+  const { checkBatchNo, loading: batchNoLoading } = useCheckBatchNoUnique();
+
+  const validateBatchNo = (rule, value, callback) => {
+    if (!value) {
+      callback();
+      return;
+    }
+    if (props.params !== '' && value === props.inward.batchNumber) {
+      callback();
+      return;
+    }
+    checkBatchNo(value)
+      .then(isPresent => {
+        callback(isPresent ? 'This Batch No already exists' : undefined);
+      })
+      .catch(() => {
+        callback();
+      });
+  };
+
+  const validateNumeric = (rule, value, callback) => {
+    callback(value && !/^\d+(\.\d+)?$/.test(value) ? 'Please input a numeric value!' : undefined);
+  };
 
   const handleSubmit = e => {
     e.preventDefault();
@@ -44,7 +68,6 @@ const InvoiceDetailsForm = props => {
       props.inward.vehicleNumber = props.inward.vLorryNo;
       props.inward.invoiceNumber = props.inward.vInvoiceNo;
     }
-    console.log(props.inward);
   }, [props.params])
 
   const partyName = (partyList) => {
@@ -88,10 +111,17 @@ const InvoiceDetailsForm = props => {
           </Form.Item>
           <Form.Item label="Batch No.">
             {getFieldDecorator("batchNo", {
+              validateTrigger: "onBlur",
               rules: [
                 { required: false, message: "Please select a Batch No" },
+                { validator: validateBatchNo },
               ],
-            })(<Input id="batchNo" />)}
+            })(
+              <Input
+                id="batchNo"
+                suffix={batchNoLoading ? <Icon type="loading" /> : null}
+              />
+            )}
           </Form.Item>
           <Form.Item label="TDC No">
             {getFieldDecorator("tdcNo", {
@@ -124,8 +154,10 @@ const InvoiceDetailsForm = props => {
           </Form.Item>
           <Form.Item label="Value of Goods">
             {getFieldDecorator("valueOfGoods", {
+              validateTrigger: "onBlur",
               rules: [
                 { required: true, message: "Please enter value of goods" },
+                { validator: validateNumeric },
               ],
             })(<Input id="valueOfGoods" />)}
           </Form.Item>

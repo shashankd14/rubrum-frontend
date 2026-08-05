@@ -1,9 +1,8 @@
-import { all, put, fork, takeLatest, take, call } from "redux-saga/effects";
-import { getUserToken } from './common';
+import { all, put, fork, takeLatest, call } from "redux-saga/effects";
+import { getUserToken, getUserId } from './common';
 import toNumber from 'lodash';
 import moment from "moment";
 import {
-    CHECK_COIL_EXISTS,
     FETCH_INWARD_LIST_REQUEST,
     FETCH_WIP_INWARD_LIST_REQUEST,
     SUBMIT_INWARD_ENTRY,
@@ -13,7 +12,6 @@ import {
     REQUEST_SAVE_SLITTING_DETAILS, FETCH_MATERIAL_GRADE_LIST_REQUEST,
     POST_DELIVERY_CONFIRM_REQUESTED,
     REQUEST_UPDATE_INSTRUCTION_DETAILS,
-    REQUEST_UPDATE_INSTRUCTION_DETAILS_SUCCESS,
     FETCH_INWARD_INSTRUCTION_DETAILS_REQUESTED,
     FETCH_INWARD_INSTRUCTION_WIP_DETAILS_REQUESTED,
     SAVE_UNPROCESSED_FOR_DELIVERY,
@@ -21,7 +19,6 @@ import {
     UPDATE_INWARD_LIST,
     DELETE_INWARD_LIST_BY_ID,
     DELETE_INSTRUCTION_BY_ID,
-    CHECK_BATCH_NO_EXIST,
     INSTRUCTION_GROUP_SAVE,
     PDF_GENERATE_INWARD,
     PDF_GENERATE_DELIVERY,
@@ -40,8 +37,6 @@ import {
     fetchWIPInwardListError,
     submitInwardSuccess,
     submitInwardError,
-    checkDuplicateCoilSuccess,
-    checkDuplicateCoilError,
     getCoilsByPartyIdSuccess,
     getCoilsByPartyIdError,
     getCoilPlanDetailsSuccess,
@@ -70,8 +65,6 @@ import {
     deleteInwardEntryByIdError,
     deleteInstructionByIdSuccess,
     deleteInstructionByIdError,
-    checkCustomerBatchNumberSuccess,
-    checkCustomerBatchNumberError,
     instructionGroupsaveSuccess,
     instructionGroupsaveError,
     pdfGenerateSuccess,
@@ -94,6 +87,7 @@ import { userSignOutSuccess } from "../../appRedux/actions/Auth";
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
 
+const userId = getUserId();
 const getHeaders = () => ({
     Authorization: getUserToken()
 });
@@ -274,40 +268,6 @@ function* fetchInwardInstructionWIPDetails(action) {
         yield put(getInstructionWipListError(error));
     }
 }
-function* checkCoilDuplicate(action) {
-    try {
-        const checkCoilDuplicate = yield fetch(`${baseUrl}api/inwardEntry/isCoilPresent?coilNumber=${action.coilNumber}`, {
-            method: 'GET',
-            headers: getHeaders()
-        });
-        if (checkCoilDuplicate.status === 200) {
-            const checkCoilDuplicateResponse = yield checkCoilDuplicate.json();
-            yield put(checkDuplicateCoilSuccess(checkCoilDuplicateResponse));
-        } else if (checkCoilDuplicate.status === 401) {
-            yield put(userSignOutSuccess());
-        } else
-            yield put(checkDuplicateCoilError('error'));
-    } catch (error) {
-        yield put(checkDuplicateCoilError(error));
-    }
-}
-function* checkCustomerBatchNumber(action) {
-    try {
-        const checkCustomerBatchNumberResponse = yield fetch(`${baseUrl}api/inwardEntry/isCustomerBatchIdPresent?customerBatchId=${action.customerBatchId}`, {
-            method: 'GET',
-            headers: getHeaders()
-        });
-        if (checkCustomerBatchNumberResponse.status === 200) {
-            const checkCoilDuplicateResponse = yield checkCustomerBatchNumberResponse.json();
-            yield put(checkCustomerBatchNumberSuccess(checkCoilDuplicateResponse));
-        } else if (checkCustomerBatchNumberResponse.status === 401) {
-            yield put(userSignOutSuccess());
-        } else
-            yield put(checkCustomerBatchNumberError('error'));
-    } catch (error) {
-        yield put(checkCustomerBatchNumberError(error));
-    }
-}
 
 function* submitInward(action) {
     try {
@@ -327,6 +287,16 @@ function* submitInward(action) {
         action.inward.length && data.append('length', action.inward.length);
         data.append('presentWeight', action.inward.netWeight !== undefined ? action.inward.netWeight : action.inward.grossWeight);
         data.append('grossWeight', action.inward.grossWeight);
+        
+        data.append('statusId', 1);
+        //sheet specific data
+        data.append('inwardType', action.inward.inwardType);
+        if (action.inward.inwardType === 'Sheet') {
+            data.append('packetClassificationId', action.inward.packetClassificationId);
+            data.append('endUserTagId', action.inward.endUserTagId);
+            data.append('noofpieces', action.inward.noofpieces);
+            data.append('statusId', action.inward.statusId);
+        }
 
         // invoice details
         data.append('inwardDate', moment(action.inward.receivedDate).format('YYYY-MM-DD HH:mm:ss'));
@@ -347,12 +317,12 @@ function* submitInward(action) {
             data.append('testCertificateFile', action.inward.testFile.fileList[0].originFileObj, action.inward.testFile.fileList[0].name);
         }
 
-        data.append('statusId', 1);
+
         data.append('heatnumber', '123');
         data.append('plantname', 'test plant name');
         // data.append('customerInvoiceDajte',  action.inward.grade);
-        data.append('createdBy', 1);
-        data.append('updatedBy', 1);
+        data.append('createdBy', userId);
+        data.append('updatedBy', userId);
 
         const newInwardEntry = yield fetch(`${baseUrl}api/inwardEntry/addNew`, {
             method: 'POST',
@@ -403,8 +373,8 @@ function* updateInward(action) {
             presentWeight: action.inward.weight !== undefined ? action.inward.weight : action.inward.fQuantity,
             cast: "",
             materialGradeId: action.inward.grade !== undefined ? action.inward.grade : (action.inward.materialGrade.gradeId).toString(),
-            createdBy: "1",
-            updatedBy: "2"
+            createdBy: userId,
+            updatedBy: userId
         }
         const newInwardEntry = yield fetch(`${baseUrl}api/inwardEntry/update`, {
             method: 'PUT',
@@ -586,8 +556,8 @@ function* requestUpdateInstruction(action) {
             wastage: item.wastage ? item.wastage : 0,
             damage: item.damage ? item.damage : 0,
             packingWeight: item.packingWeight ? item.packingWeight : 0,
-            createdBy: item.createdBy ? item.createdBy : 1,
-            updatedBy: item.updatedBy ? item.updatedBy : 1,
+            createdBy: item.createdBy ? item.createdBy : userId,
+            updatedBy: userId,
             packetClassificationId: item.packetClassification?.classificationId || item.packetClassification?.tagId || '',
             endUserTagId: item?.endUserTagsentity?.tagId || ""
         }
@@ -652,6 +622,8 @@ function* postDeliveryConfirmRequest(payload) {
             }
         }
         req_obj = {
+            deliveryType: payload.payload?.deliveryType,
+            locationId: payload.payload?.locationId,
             vehicleNo: payload.payload?.vehicleNo,
             packingRateId: payload.payload?.packingRateId,
             laminationId: payload.payload?.laminationId,
@@ -742,6 +714,7 @@ function* deleteInwardEntryById(action) {
         yield put(deleteInwardEntryByIdError(error));
     }
 }
+
 function* deleteInstructionById(action) {
     try {
         const fetchInwardInstruction = yield fetch(`${baseUrl}api/instruction/${action.param}`, {
@@ -762,6 +735,7 @@ function* deleteInstructionById(action) {
         yield put(deleteInstructionByIdError(error));
     }
 }
+
 function* pdfGenerateInward(action) {
     let partDetailsId = action.payload.partId;
     let pdfGenerate
@@ -1007,13 +981,11 @@ function* updateClassificationSlitAndCutBeforeFinish(action) {
     }
 }
 
-
 export function* watchFetchRequests() {
     yield takeLatest(FETCH_INWARD_LIST_REQUEST, fetchInwardList);
     yield takeLatest(FETCH_INWARD_LIST_WITH_OLD_API_REQUEST, fetchInwardListWithOldAPI);
     yield takeLatest(FETCH_WIP_INWARD_LIST_REQUEST, fetchWIPInwardList);
     yield takeLatest(SUBMIT_INWARD_ENTRY, submitInward);
-    yield takeLatest(CHECK_COIL_EXISTS, checkCoilDuplicate);
     yield takeLatest(FETCH_INWARD_LIST_BY_ID, fetchPartyListById);
     yield takeLatest(FETCH_INWARD_LIST_BY_PARTY_REQUEST, fetchInwardListByParty);
     yield takeLatest(FETCH_INWARD_PLAN_DETAILS_REQUESTED, fetchInwardPlanDetails);
@@ -1028,7 +1000,6 @@ export function* watchFetchRequests() {
     yield takeLatest(UPDATE_INWARD_LIST, updateInward);
     yield takeLatest(DELETE_INWARD_LIST_BY_ID, deleteInwardEntryById);
     yield takeLatest(DELETE_INSTRUCTION_BY_ID, deleteInstructionById);
-    yield takeLatest(CHECK_BATCH_NO_EXIST, checkCustomerBatchNumber);
     yield takeLatest(INSTRUCTION_GROUP_SAVE, instructionGroupsave);
     yield takeLatest(PDF_GENERATE_INWARD, pdfGenerateInward);
     yield takeLatest(PDF_GENERATE_DELIVERY, generateDCPdf);

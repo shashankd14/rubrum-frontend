@@ -208,7 +208,7 @@ const List = (props) => {
             <span className="gx-link"></span>
           ) : (
             <span>
-              {menuPartyWiseLabelList.length > 0 && menuPartyWiseLabelList.includes(partyWiseMenuConstants.plan) && <><span
+              {menuPartyWiseLabelList.length > 0 && menuPartyWiseLabelList.includes(partyWiseMenuConstants.plan) && record.inwardType === 'Coil' && <><span
                 className="gx-link"
                 onClick={() => props.history.push(`plan/${record.coilNumber}`)}
               >

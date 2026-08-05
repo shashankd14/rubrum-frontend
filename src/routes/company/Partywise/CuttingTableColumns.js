@@ -401,6 +401,7 @@ export const getSlitCutColumns = ({
                 .toLowerCase()
                 .localeCompare(optionB?.props?.children.toLowerCase())
             }
+            value={record?.endUserTagsentity?.tagId ?? record?.endUserTagId}
             onChange={(e) => handleTagsChange(record, e, "endUser")}
           >
             {endUserTagList?.map((item) => {
@@ -461,6 +462,13 @@ export const getSlitColumns = ({ page }) => [
     title: "Weight",
     dataIndex: "plannedWeight",
     key: "plannedWeight",
+  },
+  {
+    title: "Classification Tag",
+    dataIndex: "endUserTags.tagName",
+    render: (text, record) => {
+      return record.packetClassification?.classificationName || record.endUserTagsentity?.classificationName;
+    },
   },
   {
     title: "End User Tags",
