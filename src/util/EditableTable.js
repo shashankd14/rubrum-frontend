@@ -118,7 +118,7 @@ class EditableCell extends React.Component {
   ) : (
     <div
       className="editable-cell-value-wrap"
-      style={{ paddingRight: 24 }}
+      style={{ paddingRight: 24, minHeight: 22 }}
       onClick={this.toggleEdit}
       onFocus={this.handleFocus}
       tabIndex={0}
