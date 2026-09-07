@@ -132,7 +132,7 @@ function List(props) {
     {
       title: "Action",
       render: (text, record) =>
-       record.deliveryDetails.zohoSyncStts === "PENDING" || record.deliveryDetails.zohoSyncStts === 'IN PROGRESS' ||
+       record.deliveryDetails.zohoSyncStts === "PENDING" ||
         record.deliveryDetails.zohoSyncStts === "FAIL" ||
         record.deliveryDetails.zohoSyncStts === null ? (
           record.deliveryDetails.deliveryId === syncloading ? (
