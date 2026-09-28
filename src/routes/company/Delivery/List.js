@@ -107,7 +107,7 @@ function List(props) {
               {record.deliveryDetails.zohoSyncStts === "PENDING" ? "Pending" : "In Progress"}
             </Tag>
           );
-        } else if (record.deliveryDetails.zohoSyncStts === "FAIL") {
+        } else if (record.deliveryDetails.zohoSyncStts === "FAIL" || record.deliveryDetails.zohoSyncStts === "FAILED") {
           return (
             <Tag color="red" style={{ color: "red" }}>
               Fail
@@ -134,6 +134,7 @@ function List(props) {
       render: (text, record) =>
        record.deliveryDetails.zohoSyncStts === "PENDING" ||
         record.deliveryDetails.zohoSyncStts === "FAIL" ||
+        record.deliveryDetails.zohoSyncStts === "FAILED" ||
         record.deliveryDetails.zohoSyncStts === null ? (
           record.deliveryDetails.deliveryId === syncloading ? (
             <Spin

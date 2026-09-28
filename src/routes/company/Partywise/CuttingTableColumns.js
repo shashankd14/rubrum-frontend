@@ -8,6 +8,8 @@ const Option = Select.Option;
  * Table column definitions for the Cutting Details component
  * Extracted to improve code organization and maintainability
  */
+const desiredTags = ["WIP(One Helix)", "WIP(SO)", "WIP(NSO)", "FG"];
+const desiredTagsWithoutFG = ["WIP(One Helix)", "WIP(SO)", "WIP(NSO)"];
 
 export const getMainColumns = ({
   onInputChange,
@@ -122,6 +124,7 @@ export const getMainColumns = ({
     render: (text, record, index) => {
       return (
         <div>
+          {console.log('sdfdsfds')}
           <Select
             disabled={props.unfinish}
             dropdownMatchSelectWidth={false}
@@ -140,7 +143,7 @@ export const getMainColumns = ({
           >
             {packetClassification?.map((item) => {
               return (
-                <Option key={item.tagId} value={item.tagId}>
+                <Option key={item.tagId} value={item.tagId} disabled={desiredTagsWithoutFG.includes(item.tagName) ? true : false}>
                   {item.tagName === "FG" ? "Ready to deliver" : item.tagName}
                 </Option>
               );
@@ -216,7 +219,6 @@ export const getPlanColumns = ({
   setshowDeleteModal,
   props,
 }) => {
-  const desiredTags = ["WIP(CUT ENDS)", "WIP(EDGE TRIM)", "WIP(FG)", "FG"];
 
   return [
     {

@@ -263,7 +263,6 @@ const CreateCuttingDetailsForm = (props) => {
       inwardId: record.inwardEntryId,
       packetClassificationId: record.packetClassification.classificationId,
     };
-    //console.log('payload  ==  ',payload);
     props.updateClassificationSlitAndCutBeforeFinish(payload);
   };
 
@@ -1375,6 +1374,19 @@ const CreateCuttingDetailsForm = (props) => {
       }
     } else if (validate === false) {
       if (cutPayload.length > 0) {
+        const hasMissingClassification = cuts.some(
+          (cut) =>
+            !(
+              cut?.packetClassificationId ||
+              cut?.packetClassification?.packetClassificationId ||
+              cut?.packetClassification?.classificationId ||
+              cut?.packetClassification?.tagId
+            ),
+        );
+        if (hasMissingClassification) {
+          message.error("Please select classification for all cuts");
+          return;
+        }
         const modifiedSlitInstruction = saveInstruction.map((instruction) => {
           // Add totalYield to partDetailsRequest
           return {

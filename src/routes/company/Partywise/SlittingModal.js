@@ -1011,7 +1011,7 @@ const CreateSlittingDetailsForm = (props) => {
     },
   ];
 
-  const desiredTags = ["WIP(CUT ENDS)", "WIP(EDGE TRIM)", "WIP(FG)"];
+  const desiredTags = ["WIP(One Helix)", "WIP(SO)", "WIP(NSO)", "FG"];
   const columnsPlan = [
     {
       title: "Sr. No",
