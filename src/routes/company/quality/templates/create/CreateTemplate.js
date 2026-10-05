@@ -14,7 +14,6 @@ import {
     updateQualityTemplate,
  } from "../../../../../appRedux/actions"
 
-
 const CreateTemplate = (props) => {
 
     const [templateName, setTemplateName] = useState("");
@@ -28,7 +27,7 @@ const CreateTemplate = (props) => {
     useEffect(() => {
         if (props.match) {
             const urlPaths = props.match.url.split('/')
-            if (urlPaths[urlPaths.length - 2] === 'view' || urlPaths[urlPaths.length - 2] === 'edit') {
+            if (urlPaths[urlPaths.length - 2] == 'view' || urlPaths[urlPaths.length - 2] == 'edit') {
                 setAction(urlPaths[urlPaths.length - 2])
                 props.getQualityTemplateById(urlPaths[urlPaths.length - 1])
             }
@@ -79,9 +78,9 @@ const CreateTemplate = (props) => {
         request.append("stageName", stageName);
         request.append("userId", localStorage.getItem("userId").toString());
         request.append("templateDetails", JSON.stringify(templateDetails));
-        if(action === 'create')
+        if(action == 'create')
             props.saveQualityTemplate(request);
-        else if(action === 'edit')
+        else if(action == 'edit')
             props.updateQualityTemplate(request);
         props.history.push('/company/quality/templates')
     }

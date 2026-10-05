@@ -1,97 +1,98 @@
 //src-routes-company-quality-templates-create-PreProcessingTemplate.js
 
-import React, { useEffect, useState } from 'react'
-import { Button, Col, Icon, Input, Radio, Row } from 'antd'
-import Dragger from 'antd/lib/upload/Dragger'
-import { useHistory } from 'react-router';
+import React, { useEffect, useState } from "react";
+import { Button, Col, Icon, Input, Radio, Row } from "antd";
+import Dragger from "antd/lib/upload/Dragger";
+import { useHistory } from "react-router";
 
 const PreProcessingTemplate = (props) => {
   const [templateData, setTemplateData] = useState({
     1: {
-      "id": 1,
-      "type": "wireRopeDamages",
-      "value": "No",
-      "fileName": "",
-      "fileList": []
+      id: 1,
+      type: "wireRopeDamages",
+      value: "No",
+      fileName: "",
+      fileList: [],
     },
     2: {
-      "id": 2,
-      "type": "coilBend",
-      "value": "No",
-      "fileName": "",
-      "fileList": []
+      id: 2,
+      type: "coilBend",
+      value: "No",
+      fileName: "",
+      fileList: [],
     },
     3: {
-      "id": 3,
-      "type": "rustObserved",
-      "value": "No",
-      "fileName": "",
-      "fileList": []
+      id: 3,
+      type: "rustObserved",
+      value: "No",
+      fileName: "",
+      fileList: [],
     },
     4: {
-      "id": 4,
-      "type": "safetyIssues",
-      "value": "No",
-      "fileName": "",
-      "fileList": []
+      id: 4,
+      type: "safetyIssues",
+      value: "No",
+      fileName: "",
+      fileList: [],
     },
     5: {
-      "id": 5,
-      "type": "waterExposure",
-      "value": "No",
-      "fileName": "",
-      "fileList": []
+      id: 5,
+      type: "waterExposure",
+      value: "No",
+      fileName: "",
+      fileList: [],
     },
     6: {
-      "id": 6,
-      "type": "improperStorage",
-      "value": "No",
-      "fileName": "",
-      "fileList": []
+      id: 6,
+      type: "improperStorage",
+      value: "No",
+      fileName: "",
+      fileList: [],
     },
     7: {
-      "id": 7,
-      "type": "exactWidth",
-      "value": "",
-      "fileName": "",
-      "fileList": []
-    }
+      id: 7,
+      type: "exactWidth",
+      value: "",
+      fileName: "",
+      fileList: [],
+    },
   });
 
   const [isDisabled, setIsDisabled] = useState(false);
 
   useEffect(() => {
-    // console.log(props)
-    setIsDisabled(props.action === 'view')
-    if (props.action !== 'create') {
-      const templateDetailsData = JSON.parse(props.templateDetails.templateDetails)
+    setIsDisabled(props.action === "view");
+    if (props.action !== "create") {
+      const templateDetailsData = JSON.parse(
+        props.templateDetails.templateDetails
+      );
       const val = {};
       templateDetailsData.forEach((td) => {
         val[td.id] = td;
       });
-      setTemplateData(val)
+      setTemplateData(val);
     }
   }, [props.templateDetails]);
 
   const onFilesChange = (type, file) => {
-    templateData[type].fileList = file.fileList.slice(-1)
+    templateData[type].fileList = file.fileList.slice(-1);
     templateData[type].fileName = templateData[type].fileList[0].name;
-    setTemplateData({ ...templateData })
-  }
+    setTemplateData({ ...templateData });
+  };
 
   const onOptionChange = (type, value) => {
-    templateData[type].value = value.target.value
-    setTemplateData({ ...templateData })
-  }
+    templateData[type].value = value.target.value;
+    setTemplateData({ ...templateData });
+  };
 
   const createTemplate = () => {
-    props.handleCreate(templateData)
-  }
+    props.handleCreate(templateData);
+  };
 
   const history = useHistory();
-    const handleCancel = () =>{
-        history.goBack();
-    }
+  const handleCancel = () => {
+    history.goBack();
+  };
 
   return (
     <div>
@@ -158,7 +159,6 @@ const PreProcessingTemplate = (props) => {
               {props.action === "view" &&
                 props.templateDetails.rustObservedPreSingedURL && (
                   <img
-                    alt=""
                     src={props.templateDetails.rustObservedPreSingedURL}
                     style={{ width: 50 }}
                   />
@@ -168,8 +168,7 @@ const PreProcessingTemplate = (props) => {
                   {" "}
                   {props.templateDetails.rustObservedPreSingedURL && (
                     <img
-                      alt=""
-                       src={props.templateDetails.rustObservedPreSingedURL}
+                      src={props.templateDetails.rustObservedPreSingedURL}
                       style={{ width: 50 }}
                     />
                   )}
@@ -225,7 +224,6 @@ const PreProcessingTemplate = (props) => {
               {props.action === "view" &&
                 props.templateDetails.safetyIssuesPreSingedURL && (
                   <img
-                    alt="Packing Damage"
                     src={props.templateDetails.safetyIssuesPreSingedURL}
                     style={{ width: 50 }}
                   />
@@ -235,7 +233,6 @@ const PreProcessingTemplate = (props) => {
                   {" "}
                   {props.templateDetails.safetyIssuesPreSingedURL && (
                     <img
-                      alt="Packing Damage"
                       src={props.templateDetails.safetyIssuesPreSingedURL}
                       style={{ width: 50 }}
                     />
@@ -307,7 +304,6 @@ const PreProcessingTemplate = (props) => {
               {props.action === "view" &&
                 props.templateDetails.improperStoragePreSingedURL && (
                   <img
-                    alt="Packing Damage"
                     src={props.templateDetails.improperStoragePreSingedURL}
                     style={{ width: 50 }}
                   />
@@ -317,7 +313,6 @@ const PreProcessingTemplate = (props) => {
                   {" "}
                   {props.templateDetails.improperStoragePreSingedURL && (
                     <img
-                      alt="Packing Damage"
                       src={props.templateDetails.improperStoragePreSingedURL}
                       style={{ width: 50 }}
                     />
@@ -386,6 +381,6 @@ const PreProcessingTemplate = (props) => {
       </Col>
     </div>
   );
-}
+};
 
-export default PreProcessingTemplate
+export default PreProcessingTemplate;

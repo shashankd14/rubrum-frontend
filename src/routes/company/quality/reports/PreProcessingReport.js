@@ -58,15 +58,15 @@ const PreProcessingReport = (props) => {
         }
       };
 
-    // Filter out rows with duplicate planIds
-    // const uniquePlanIds = new Set();
-    //     const filteredDataSource = filteredPreProcessingList.filter((item) => {
-    //     if (!uniquePlanIds.has(item.planId)) {
-    //         uniquePlanIds.add(item.planId);
-    //         return true;
-    //     }
-    //     return false;
-    // });
+  // Filter out rows with duplicate planIds
+  // const uniquePlanIds = new Set();
+  //     const filteredDataSource = filteredPreProcessingList.filter((item) => {
+  //     if (!uniquePlanIds.has(item.planId)) {
+  //         uniquePlanIds.add(item.planId);
+  //         return true;
+  //     }
+  //     return false;
+  // });
 
     const columns = [
         {
@@ -187,131 +187,183 @@ const PreProcessingReport = (props) => {
         },
     ];
 
-    useEffect(() => {
-        if (totalItems) {
-          setTotalItems(totalItems);
-        }
-      }, [totalItems]);
+  useEffect(() => {
+    if (totalItems) {
+      setTotalItems(totalItems);
+    }
+  }, [totalItems]);
 
     useEffect(() => {
         props.fetchTemplatesList();
     }, []);
 
-    useEffect(() => {
-        if (searchValue) {
-          if (searchValue.length >= 3) {
-            setPageNo(1);
-            props.fetchQualityReportStageList({ stage: "preprocessing", page: 1, pageSize: 15, searchValue, customerValue});
-          }
-        } else {
-          setPageNo(1);
-          props.fetchQualityReportStageList({ stage: "preprocessing", page: 1, pageSize: 15, searchValue, customerValue});
-        }
-      }, [searchValue]);
-
-    const isInitialMount = useRef(true);
-    useEffect(() => {
-        if (!isInitialMount.current){
-        if (!props.template.loading && !props.template.error && props.template.operation == "fetchQualityReport") {
-            setQualityReportList(props.template.data)
-        } else if (!props.template.loading && !props.template.error && props.template.operation == "fetchQualityReportStage") {
-             setFilteredPreProcessingList(props.template.data)
-        } else if (!props.template.loading && !props.template.error && props.template.operation === 'templateById') {
-            setShowCreateQrScreen(true)
-            props.history.push({ pathname: '/company/quality/reports/create/preprocessing', state: { selectedItemForQr: selectedItemForQr, templateDetails: props.template.data, action: 'create' } })
-        } else if (!props.template.loading && !props.template.error && props.template.operation == "templateLinkList") {
-            var tempData = props.template.data;
-            setTemplateLinkList(tempData.filter(x=> x.stageName==="PRE_PROCESSING"))
-            //setTemplateLinkList(props.template.data)
-            setShowCreateModal(true)
-        } else if (!props.template.loading && !props.template.error && props.template.operation === 'templateList') {
-            setTemplateList(props.template.data)
-        } else if (!props.template.loading && !props.template.error && props.template.operation == "qualityReportById") {
-            props.history.push({ pathname: '/company/quality/reports/create/preprocessing', state: { selectedItemForQr: selectedItemForQr, templateDetails: props.template.data, action: action } })
-        }}
-        else {
-            isInitialMount.current = false;
-        }
-    }, [props.template.loading, props.template.error, props.template.operation]);
-
-    const showCreateQr = () => {
-        setAction('create');
-         props.getQualityTemplateById(templateId)
+  useEffect(() => {
+    if (searchValue) {
+      if (searchValue.length >= 3) {
+        setPageNo(1);
+        props.fetchQualityReportStageList({
+          stage: "preprocessing",
+          page: 1,
+          pageSize: 15,
+          searchValue,
+          customerValue,
+        });
+      }
+    } else {
+      setPageNo(1);
+      props.fetchQualityReportStageList({
+        stage: "preprocessing",
+        page: 1,
+        pageSize: 15,
+        searchValue,
+        customerValue,
+      });
     }
+  }, [searchValue]);
 
-    const showTemplateList = (record, key) => {
-        setSelectedItemForQr(record)
-        setShowCreateModal(true)
-        props.fetchTemplatesLinkList({ partyId: record.npartyId });
+  const isInitialMount = useRef(true);
+  useEffect(() => {
+    if (!isInitialMount.current) {
+      if (
+        !props.template.loading &&
+        !props.template.error &&
+        props.template.operation == "fetchQualityReport"
+      ) {
+        setQualityReportList(props.template.data);
+      } else if (
+        !props.template.loading &&
+        !props.template.error &&
+        props.template.operation == "fetchQualityReportStage"
+      ) {
+        setFilteredPreProcessingList(props.template.data);
+      } else if (
+        !props.template.loading &&
+        !props.template.error &&
+        props.template.operation === "templateById"
+      ) {
+        setShowCreateQrScreen(true);
+        props.history.push({
+          pathname: "/company/quality/reports/create/preprocessing",
+          state: {
+            selectedItemForQr: selectedItemForQr,
+            templateDetails: props.template.data,
+            action: "create",
+          },
+        });
+      } else if (
+        !props.template.loading &&
+        !props.template.error &&
+        props.template.operation == "templateLinkList"
+      ) {
+        var tempData = props.template.data;
+        setTemplateLinkList(
+          tempData.filter((x) => x.stageName === "PRE_PROCESSING")
+        );
+        //setTemplateLinkList(props.template.data)
+        setShowCreateModal(true);
+      } else if (
+        !props.template.loading &&
+        !props.template.error &&
+        props.template.operation === "templateList"
+      ) {
+        setTemplateList(props.template.data);
+      } else if (
+        !props.template.loading &&
+        !props.template.error &&
+        props.template.operation == "qualityReportById"
+      ) {
+        props.history.push({
+          pathname: "/company/quality/reports/create/preprocessing",
+          state: {
+            selectedItemForQr: selectedItemForQr,
+            templateDetails: props.template.data,
+            action: action,
+          },
+        });
+      }
+    } else {
+      isInitialMount.current = false;
     }
+  }, [props.template.loading, props.template.error, props.template.operation]);
 
-    const showReportView = (record, key) => {
-        setSelectedItemForQr(record)
-       setAction('view')
-        props.getQualityReportById(record.qirId);
+  const showCreateQr = () => {
+    setAction("create");
+    props.getQualityTemplateById(templateId);
+  };
+
+  const showTemplateList = (record, key) => {
+    setSelectedItemForQr(record);
+    setShowCreateModal(true);
+    props.fetchTemplatesLinkList({ partyId: record.npartyId });
+  };
+
+  const showReportView = (record, key) => {
+    setSelectedItemForQr(record);
+    setAction("view");
+    props.getQualityReportById(record.qirId);
+  };
+
+  const onDelete = (record, key, e) => {
+    props.deleteQualityReport(record.qirId);
+  };
+
+  const onEdit = (record, key, e) => {
+    setSelectedItemForQr(record);
+    // const templateDetails = qualityReportList.find(qr => qr.coilNumber === record.coilNumber && qr.inwardId === record.inwardEntryId)
+    // props.history.push({ pathname: '/company/quality/reports/create/preprocessing', state: { selectedItemForQr: record, templateDetails: templateDetails, action: 'edit' } })
+    setAction("edit");
+    props.getQualityReportById(record.qirId);
+  };
+
+  const handleChange = (e) => {
+    setTemplateId(e);
+  };
+
+  const handleCustomerChange = (value) => {
+    if (value) {
+      setCustomerValue(value);
+      setPageNo(1);
+      props.fetchQualityReportStageList(1, 15, searchValue, value);
+    } else {
+      setCustomerValue("");
+      setFilteredPreProcessingList(props.template.data.content);
     }
+  };
 
-    const onDelete = (record, key, e) => {
-        props.deleteQualityReport(record.qirId);
-    };
+  const handleChangeTable = (pagination, filters, sorter) => {
+    setSortedInfo(sorter);
+    setFilteredInfo(filters);
+  };
 
-    const onEdit = (record, key, e) => {
-        setSelectedItemForQr(record);
-        // const templateDetails = qualityReportList.find(qr => qr.coilNumber === record.coilNumber && qr.inwardId === record.inwardEntryId)
-        // props.history.push({ pathname: '/company/quality/reports/create/preprocessing', state: { selectedItemForQr: record, templateDetails: templateDetails, action: 'edit' } })
-        setAction('edit')
-        props.getQualityReportById(record.qirId);
-    };
-
-    const handleChange = (e) => {
-        setTemplateId(e)
-    };
-
-    const handleCustomerChange = (value) => {
-        if (value) {
-          setCustomerValue(value);
-          setPageNo(1);
-          props.fetchQualityReportStageList(1, 15, searchValue, value);
-        } else {
-          setCustomerValue("");
-          setFilteredPreProcessingList(props.template.data.content);
-        }
-      };
-
-    const handleChangeTable = (pagination, filters, sorter) => {
-        setSortedInfo(sorter);
-        setFilteredInfo(filters);
-      };
-
-    useEffect(() => {
-        if (!props.inward.loading && props.inward.success) {
-            setFilteredPreProcessingList(props.inward.inwardList);
-        }
-    }, [props.inward.loading, props.inward.success]);
-
-    useEffect(() => {
-        if (!props.party.loading && !props.party.error) {
-            setPartyList(props.party.partyList)
-        }
-    }, [props.party.loading, props.party.error]);
-
-    const [payload, setPayload] = useState({});
-    const onPdf = (planId) => {
-        setPayload({
-            partDetailsId:{groupIds: null, partDetailsId:planId},
-            type:'preProcessing'
-        })
+  useEffect(() => {
+    if (!props.inward.loading && props.inward.success) {
+      setFilteredPreProcessingList(props.inward.inwardList);
     }
-    useEffect(() => {
-        props.pdfGenerateQMreportInward(payload);
-      }, [payload]);
+  }, [props.inward.loading, props.inward.success]);
 
-      const onQRPdf = (qirId) => {
-        setPayload({
-            qirId:qirId,
-            type:'QR'
-        })
+  useEffect(() => {
+    if (!props.party.loading && !props.party.error) {
+      setPartyList(props.party.partyList);
     }
+  }, [props.party.loading, props.party.error]);
+
+  const [payload, setPayload] = useState({});
+  const onPdf = (planId) => {
+    setPayload({
+      partDetailsId: { groupIds: null, partDetailsId: planId },
+      type: "preProcessing",
+    });
+  };
+  useEffect(() => {
+    props.pdfGenerateQMreportInward(payload);
+  }, [payload]);
+
+  const onQRPdf = (qirId) => {
+    setPayload({
+      qirId: qirId,
+      type: "QR",
+    });
+  };
 
     return (
         <>

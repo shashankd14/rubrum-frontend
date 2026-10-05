@@ -44,7 +44,7 @@ const filterLabels = {
   coilage: "Age",
   fthickness: "Thickness",
   fwidth: "Width",
-  fLength: "Length",
+  flength: "Length",
 };
 
 const defaultScreenConfig = {
@@ -295,7 +295,6 @@ const RegisterList = ({ screenConfig = {}, ...props }) => {
             <Button
               type="primary"
               onClick={() => {
-                setSelectedKeys([filteredInfo[dataIndex]]);
                 confirm();
               }}
               icon="search"

@@ -26,27 +26,26 @@ const CuttingForm = (props) => {
   var toleranceDiagonalDifferenceTo = 0;
 
   const templateData = JSON.parse(
-    props?.templateDetails?.data?.templateDetails,
+    props?.templateDetails?.data?.templateDetails
   );
   const formDataObject = templateData.find((item) => item.id === "formData");
   if (formDataObject) {
     const formData = formDataObject.value;
     const toleranceInspectionDataCut = formData.toleranceInspectionData;
     toleranceThicknessFrom =
-      toleranceInspectionDataCut[0]?.toleranceThicknessFrom;
-    toleranceThicknessTo = toleranceInspectionDataCut[0]?.toleranceThicknessTo;
-    toleranceWidthFrom = toleranceInspectionDataCut[0]?.toleranceWidthFrom;
-    toleranceWidthTo = toleranceInspectionDataCut[0]?.toleranceWidthTo;
+      toleranceInspectionDataCut[0].toleranceThicknessFrom;
+    toleranceThicknessTo = toleranceInspectionDataCut[0].toleranceThicknessTo;
+    toleranceWidthFrom = toleranceInspectionDataCut[0].toleranceWidthFrom;
+    toleranceWidthTo = toleranceInspectionDataCut[0].toleranceWidthTo;
     toleranceBurrHeightFrom =
-      toleranceInspectionDataCut[0]?.toleranceBurrHeightFrom;
-    toleranceBurrHeightTo =
-      toleranceInspectionDataCut[0]?.toleranceBurrHeightTo;
-    toleranceLengthFrom = toleranceInspectionDataCut[0]?.toleranceLengthFrom;
-    toleranceLengthTo = toleranceInspectionDataCut[0]?.toleranceLengthTo;
+      toleranceInspectionDataCut[0].toleranceBurrHeightFrom;
+    toleranceBurrHeightTo = toleranceInspectionDataCut[0].toleranceBurrHeightTo;
+    toleranceLengthFrom = toleranceInspectionDataCut[0].toleranceLengthFrom;
+    toleranceLengthTo = toleranceInspectionDataCut[0].toleranceLengthTo;
     toleranceDiagonalDifferenceFrom =
-      toleranceInspectionDataCut[0]?.toleranceDiagonalDifferenceFrom;
+      toleranceInspectionDataCut[0].toleranceDiagonalDifferenceFrom;
     toleranceDiagonalDifferenceTo =
-      toleranceInspectionDataCut[0]?.toleranceDiagonalDifferenceTo;
+      toleranceInspectionDataCut[0].toleranceDiagonalDifferenceTo;
   }
   const [dataSource, setDataSource] = useState([]);
   const [toleranceDataSource, setToleranceDataSource] = useState([]);
@@ -160,13 +159,13 @@ const CuttingForm = (props) => {
   }, [props.templateDetails.operation]);
 
   const instructionDate = props.templateDetails.packetDetails?.map(
-    (item) => item.instructionDate,
+    (item) => item.instructionDate
   );
 
   const [cutInspectionData, setCutInspectionData] = useState([]);
 
   const [toleranceInspectionDataCut, settoleranceInspectionDataCut] = useState(
-    [],
+    []
   );
   const [cutFormData, setCutFormData] = useState({
     processType: "cutting",
@@ -203,7 +202,7 @@ const CuttingForm = (props) => {
 
   const gridCardStyle = {
     width: "50%",
-    height: 300,
+    // height: 300,
     textAlign: "left",
     display: "grid",
     paddingRight: 25,
@@ -211,7 +210,7 @@ const CuttingForm = (props) => {
 
   const gridStyle = {
     width: "100%",
-    height: 350,
+    // height: 350,
     textAlign: "left",
   };
 

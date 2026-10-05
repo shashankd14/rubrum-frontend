@@ -263,7 +263,6 @@ const CreateCuttingDetailsForm = (props) => {
       inwardId: record.inwardEntryId,
       packetClassificationId: record.packetClassification.classificationId,
     };
-    //console.log('payload  ==  ',payload);
     props.updateClassificationSlitAndCutBeforeFinish(payload);
   };
 
@@ -474,9 +473,9 @@ const CreateCuttingDetailsForm = (props) => {
       setcurrentWeight(
         (prevWeight) => prevWeight + Number(record.plannedWeight),
       );
-      if (record.soRefNo) {
+      if (record.soAllocationId) {
         const filteredSalesOrders = salesOrders.map((so) =>
-          so.refno === record.soRefNo
+          so.soAllocationId === record.soAllocationId
             ? { ...so, isDisplay: true }
             : so,
         );
@@ -622,9 +621,9 @@ const CreateCuttingDetailsForm = (props) => {
             setSaveCutting((prev) => [...prev, newCut]);
             setCuts((prev) => [...prev, newCut]);
 
-            if (props.inward.process.soRefNo) {
+            if (props.inward.process.soAllocationId) {
               const filteredSalesOrders = salesOrders.map((so) =>
-                so.refno === props.inward.process.soRefNo
+                so.soAllocationId === props.inward.process.soAllocationId
                   ? { ...so, isDisplay: false }
                   : so,
               );
@@ -1316,8 +1315,8 @@ const CreateCuttingDetailsForm = (props) => {
       } else {
         const instructionList = tableData.filter(
           (item) =>
-            item?.packetClassification?.tagId !== 0 &&
-            item?.packetClassification?.classificationId !== 0 &&
+            !item?.packetClassification?.tagName?.includes("WIP") &&
+            !item?.packetClassification?.classificationName?.includes("WIP") &&
             item?.packetClassification !== "" &&
             item?.packetClassification !== null,
         );
@@ -1375,6 +1374,19 @@ const CreateCuttingDetailsForm = (props) => {
       }
     } else if (validate === false) {
       if (cutPayload.length > 0) {
+        const hasMissingClassification = cuts.some(
+          (cut) =>
+            !(
+              cut?.packetClassificationId ||
+              cut?.packetClassification?.packetClassificationId ||
+              cut?.packetClassification?.classificationId ||
+              cut?.packetClassification?.tagId
+            ),
+        );
+        if (hasMissingClassification) {
+          message.error("Please select classification for all cuts");
+          return;
+        }
         const modifiedSlitInstruction = saveInstruction.map((instruction) => {
           // Add totalYield to partDetailsRequest
           return {
@@ -1757,8 +1769,8 @@ const CreateCuttingDetailsForm = (props) => {
                         >
                           {salesOrders?.filter((item) => item.isDisplay !== false)?.map((item, index) => (
                             <Option
-                              key={`${item.refno}${index}`}
-                              value={`${item.refno},${index}`}
+                              key={`${item.soAllocationId}`}
+                              value={`${item.soAllocationId},${index}`}
                               label={item.refno}
                             >
                               {item.refno} <b>Length: {item.length}</b>

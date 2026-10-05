@@ -1,98 +1,96 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from "react";
 import { withRouter } from "react-router-dom";
-import { Button, Col, Icon, Input, Modal, Radio, Row, Select } from 'antd'
-import Dragger from 'antd/lib/upload/Dragger'
+import { Button, Col, Icon, Input, Modal, Radio, Row, Select } from "antd";
+import Dragger from "antd/lib/upload/Dragger";
 import { PROCESSES } from "../../../../../constants/quality/ComponentConstants";
-import SlittingForm from './process/SlittingForm';
-import CuttingForm from './process/CuttingForm';
-import SlitAndCutForm from './process/SlitAndCutForm';
-
+import SlittingForm from "./process/SlittingForm";
+import CuttingForm from "./process/CuttingForm";
+import SlitAndCutForm from "./process/SlitAndCutForm";
 
 const ProcessingTemplate = (props) => {
-
   const Option = Select.Option;
 
   const [templateData, setTemplateData] = useState({
     1: {
-      "id": 1,
-      "type": "process",
-      "value": "",
-      "fileName": "",
-      "fileList": []
+      id: 1,
+      type: "process",
+      value: "",
+      fileName: "",
+      fileList: [],
     },
     2: {
-      "id": 2,
-      "type": "wastageWeight",
-      "value": "",
-      "fileName": "",
-      "fileList": []
+      id: 2,
+      type: "wastageWeight",
+      value: "",
+      fileName: "",
+      fileList: [],
     },
     3: {
-      "id": 3,
-      "type": "packingRequirements",
-      "value": "Yes",
-      "fileName": "",
-      "fileList": []
+      id: 3,
+      type: "packingRequirements",
+      value: "Yes",
+      fileName: "",
+      fileList: [],
     },
     4: {
-      "id": 4,
-      "type": "stickers",
-      "value": "Yes",
-      "fileName": "",
-      "fileList": []
+      id: 4,
+      type: "stickers",
+      value: "Yes",
+      fileName: "",
+      fileList: [],
     },
     5: {
-      "id": 5,
-      "type": "customerApproval",
-      "value": "",
-      "fileName": "",
-      "fileList": []
+      id: 5,
+      type: "customerApproval",
+      value: "",
+      fileName: "",
+      fileList: [],
     },
     formData: {
-      "id": "formData",
-      "type": "customerApproval",
-      "value": "",
-      "fileName": "",
-      "fileList": []
+      id: "formData",
+      type: "customerApproval",
+      value: "",
+      fileName: "",
+      fileList: [],
     },
-
   });
 
   const [isDisabled, setIsDisabled] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
 
   useEffect(() => {
-    // console.log(props)
-    setIsDisabled(props.action === 'view')
-    if (props.action !== 'create') {
-      const templateDetailsData = JSON.parse(props.templateDetails.templateDetails)
+    setIsDisabled(props.action === "view");
+    if (props.action !== "create") {
+      const templateDetailsData = JSON.parse(
+        props.templateDetails.templateDetails
+      );
       const val = {};
       templateDetailsData.forEach((td) => {
         val[td.id] = td;
       });
-      setTemplateData(val)
+      setTemplateData(val);
     }
   }, [props.templateDetails]);
 
   const onFilesChange = (type, file) => {
-    templateData[type].fileList = file.fileList.slice(-1)
+    templateData[type].fileList = file.fileList.slice(-1);
     templateData[type].fileName = templateData[type].fileList[0].name;
-    setTemplateData({ ...templateData })
-  }
+    setTemplateData({ ...templateData });
+  };
 
   const onOptionChange = (type, value) => {
-    templateData[type].value = value.target ? value.target.value : value
-    setTemplateData({ ...templateData })
-  }
+    templateData[type].value = value.target ? value.target.value : value;
+    setTemplateData({ ...templateData });
+  };
 
   const createTemplate = () => {
-    props.handleCreate(templateData)
-  }
+    props.handleCreate(templateData);
+  };
 
   const updateFormData = (formData) => {
-    templateData['formData']['value'] = formData;
+    templateData["formData"]["value"] = formData;
     setShowCreateModal(false);
-  }
+  };
 
   return (
     <div>
@@ -175,7 +173,7 @@ const ProcessingTemplate = (props) => {
         <Row>
           <Col span={8}>
             <div style={{ display: "grid", marginTop: 45 }}>
-              <label>Location Approval</label>
+              <label>Customer Approval</label>
               <Input
                 id="customerApproval"
                 onChange={(e) => onOptionChange(5, e)}
@@ -191,7 +189,6 @@ const ProcessingTemplate = (props) => {
               {props.action === "view" &&
                 props.templateDetails.packingIntactPreSingedURL && (
                   <img
-                    alt="pre signed"
                     src={props.templateDetails.packingIntactPreSingedURL}
                     style={{ width: 50 }}
                   />
@@ -201,7 +198,6 @@ const ProcessingTemplate = (props) => {
                   {" "}
                   {props.templateDetails.packingIntactPreSingedURL && (
                     <img
-                      alt="pre signed"
                       src={props.templateDetails.packingIntactPreSingedURL}
                       style={{ width: 50 }}
                     />
@@ -283,15 +279,15 @@ const ProcessingTemplate = (props) => {
         destroyOnClose={true}
       >
         {templateData[1].value === "SLITTING" ? (
-          <SlittingForm onSave={updateFormData}></SlittingForm>
+          <SlittingForm onSave={updateFormData} onCancel={() => setShowCreateModal(false)}></SlittingForm>
         ) : templateData[1].value === "CUTTING" ? (
-          <CuttingForm onSave={updateFormData}></CuttingForm>
+          <CuttingForm onSave={updateFormData} onCancel={() => setShowCreateModal(false)}></CuttingForm>
         ) : (
-          <SlitAndCutForm onSave={updateFormData}></SlitAndCutForm>
+          <SlitAndCutForm onSave={updateFormData} onCancel={() => setShowCreateModal(false)}></SlitAndCutForm>
         )}
       </Modal>
     </div>
   );
-}
+};
 
-export default withRouter(ProcessingTemplate)
+export default withRouter(ProcessingTemplate);

@@ -1,96 +1,97 @@
-import React, { useEffect, useState } from 'react'
-import { Button, Col, Icon, Radio, Row } from 'antd'
-import Dragger from 'antd/lib/upload/Dragger'
+import React, { useEffect, useState } from "react";
+import { Button, Col, Icon, Radio, Row } from "antd";
+import Dragger from "antd/lib/upload/Dragger";
 
 const PreDispatchTemplate = (props) => {
   const [templateData, setTemplateData] = useState({
     1: {
-      "id": 1,
-      "type": "packingCondition",
-      "value": "No",
-      "fileName": "",
-      "fileList": []
+      id: 1,
+      type: "packingCondition",
+      value: "No",
+      fileName: "",
+      fileList: [],
     },
     2: {
-      "id": 2,
-      "type": "strapping",
-      "value": "No",
-      "fileName": "",
-      "fileList": []
+      id: 2,
+      type: "strapping",
+      value: "No",
+      fileName: "",
+      fileList: [],
     },
     3: {
-      "id": 3,
-      "type": "weighmentSlip",
-      "value": "No",
-      "fileName": "",
-      "fileList": []
+      id: 3,
+      type: "weighmentSlip",
+      value: "No",
+      fileName: "",
+      fileList: [],
     },
     4: {
-      "id": 4,
-      "type": "properLoading",
-      "value": "No",
-      "fileName": "",
-      "fileList": []
+      id: 4,
+      type: "properLoading",
+      value: "No",
+      fileName: "",
+      fileList: [],
     },
     5: {
-      "id": 5,
-      "type": "byndingTying",
-      "value": "No",
-      "fileName": "",
-      "fileList": []
+      id: 5,
+      type: "byndingTying",
+      value: "No",
+      fileName: "",
+      fileList: [],
     },
     6: {
-      "id": 6,
-      "type": "weighmentQtyMatch",
-      "value": "No",
-      "fileName": "",
-      "fileList": []
+      id: 6,
+      type: "weighmentQtyMatch",
+      value: "No",
+      fileName: "",
+      fileList: [],
     },
     7: {
-      "id": 7,
-      "type": "ewayBillMatch",
-      "value": "",
-      "fileName": "",
-      "fileList": []
+      id: 7,
+      type: "ewayBillMatch",
+      value: "",
+      fileName: "",
+      fileList: [],
     },
     8: {
-      "id": 8,
-      "type": "labelsMatch",
-      "value": "",
-      "fileName": "",
-      "fileList": []
-    }
+      id: 8,
+      type: "labelsMatch",
+      value: "",
+      fileName: "",
+      fileList: [],
+    },
   });
 
   const [isDisabled, setIsDisabled] = useState(false);
 
   useEffect(() => {
-    // console.log(props)
-    setIsDisabled(props.action === 'view')
-    if (props.action !== 'create') {
-      const templateDetailsData = JSON.parse(props.templateDetails.templateDetails)
+    setIsDisabled(props.action === "view");
+    if (props.action !== "create") {
+      const templateDetailsData = JSON.parse(
+        props.templateDetails.templateDetails
+      );
       const val = {};
       templateDetailsData.forEach((td) => {
         val[td.id] = td;
       });
-      setTemplateData(val)
+      setTemplateData(val);
     }
   }, [props.templateDetails]);
 
   const onFilesChange = (type, file) => {
-    templateData[type].fileList = file.fileList.slice(-1)
+    templateData[type].fileList = file.fileList.slice(-1);
     templateData[type].fileName = templateData[type].fileList[0].name;
-    setTemplateData({ ...templateData })
-  }
+    setTemplateData({ ...templateData });
+  };
 
   const onOptionChange = (type, value) => {
-    templateData[type].value = value.target.value
-    setTemplateData({ ...templateData })
-  }
+    templateData[type].value = value.target.value;
+    setTemplateData({ ...templateData });
+  };
 
   const createTemplate = () => {
-    props.handleCreate(templateData)
-  }
+    props.handleCreate(templateData);
+  };
 
   return (
     <div>
@@ -130,7 +131,6 @@ const PreDispatchTemplate = (props) => {
               {props.action === "view" &&
                 props.templateDetails.strappingPreSingedURL && (
                   <img
-                    alt=""
                     src={props.templateDetails.strappingPreSingedURL}
                     style={{ width: 50 }}
                   />
@@ -140,8 +140,7 @@ const PreDispatchTemplate = (props) => {
                   {" "}
                   {props.templateDetails.strappingPreSingedURL && (
                     <img
-                      alt=""
-                       src={props.templateDetails.strappingPreSingedURL}
+                      src={props.templateDetails.strappingPreSingedURL}
                       style={{ width: 50 }}
                     />
                   )}
@@ -189,7 +188,6 @@ const PreDispatchTemplate = (props) => {
               {props.action === "view" &&
                 props.templateDetails.weighmentSlipPreSingedURL && (
                   <img
-                    alt=""
                     src={props.templateDetails.weighmentSlipPreSingedURL}
                     style={{ width: 50 }}
                   />
@@ -199,7 +197,6 @@ const PreDispatchTemplate = (props) => {
                   {" "}
                   {props.templateDetails.weighmentSlipPreSingedURL && (
                     <img
-                      alt=""
                       src={props.templateDetails.weighmentSlipPreSingedURL}
                       style={{ width: 50 }}
                     />
@@ -344,6 +341,6 @@ const PreDispatchTemplate = (props) => {
       </Col>
     </div>
   );
-}
+};
 
-export default PreDispatchTemplate
+export default PreDispatchTemplate;
