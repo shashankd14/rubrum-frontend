@@ -9,7 +9,7 @@ const Option = Select.Option;
  * Extracted to improve code organization and maintainability
  */
 const desiredTags = ["WIP(One Helix)", "WIP(SO)", "WIP(NSO)", "FG"];
-const desiredTagsWithoutFG = ["WIP(One Helix)", "WIP(SO)", "WIP(NSO)"];
+const desiredTagsWithoutFG = ["WIP(One Helix)", "WIP(SO)", "WIP(NSO)", 'Select'];
 
 export const getMainColumns = ({
   onInputChange,
@@ -124,8 +124,7 @@ export const getMainColumns = ({
     render: (text, record, index) => {
       return (
         <div>
-          {console.log('sdfdsfds')}
-          <Select
+         <Select
             disabled={props.unfinish}
             dropdownMatchSelectWidth={false}
             getPopupContainer={(triggerNode) => triggerNode.parentNode}
