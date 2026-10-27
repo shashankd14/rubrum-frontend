@@ -1,4 +1,5 @@
 //src-routes-company-quality-templates-create-PostDispatchTemplate.js
+
 import React, { useEffect, useState } from "react";
 import { Button, Col, Icon, Radio, Row } from "antd";
 import Dragger from "antd/lib/upload/Dragger";
@@ -38,7 +39,6 @@ const PostDispatchTemplate = (props) => {
 
   const [isDisabled, setIsDisabled] = useState(false);
   useEffect(() => {
-    // console.log(props)
     setIsDisabled(props.action === "view");
     if (props.action !== "create") {
       const templateDetailsData = JSON.parse(
@@ -93,7 +93,6 @@ const PostDispatchTemplate = (props) => {
               {props.action === "view" &&
                 props.templateDetails.unloadingImproperPreSingedURL && (
                   <img
-                    alt="Packing Damage"
                     src={props.templateDetails.unloadingImproperPreSingedURL}
                     style={{ width: 50 }}
                   />
@@ -103,7 +102,6 @@ const PostDispatchTemplate = (props) => {
                   {" "}
                   {props.templateDetails.unloadingImproperPreSingedURL && (
                     <img
-                      alt="Packing Damage"
                       src={props.templateDetails.unloadingImproperPreSingedURL}
                       style={{ width: 50 }}
                     />
@@ -161,7 +159,6 @@ const PostDispatchTemplate = (props) => {
               {props.action === "view" &&
                 props.templateDetails.unloadingImproperPreSingedURL && (
                   <img
-                    alt="Packing Damage"
                     src={props.templateDetails.unloadingImproperPreSingedURL}
                     style={{ width: 50 }}
                   />
@@ -171,7 +168,6 @@ const PostDispatchTemplate = (props) => {
                   {" "}
                   {props.templateDetails.packingIntactPreSingedURL && (
                     <img
-                      alt="Packing Damage"
                       src={props.templateDetails.packingIntactPreSingedURL}
                       style={{ width: 50 }}
                     />
@@ -234,7 +230,6 @@ const PostDispatchTemplate = (props) => {
               {props.action === "view" &&
                 props.templateDetails.ackReceiptPreSingedURL && (
                   <img
-                    alt="Packing Damage"
                     src={props.templateDetails.ackReceiptPreSingedURL}
                     style={{ width: 50 }}
                   />
@@ -244,7 +239,6 @@ const PostDispatchTemplate = (props) => {
                   {" "}
                   {props.templateDetails.ackReceiptPreSingedURL && (
                     <img
-                      alt="Packing Damage"
                       src={props.templateDetails.ackReceiptPreSingedURL}
                       style={{ width: 50 }}
                     />
@@ -301,7 +295,6 @@ const PostDispatchTemplate = (props) => {
               {props.action === "view" &&
                 props.templateDetails.weighmentPreSingedURL && (
                   <img
-                    alt="Packing Damage"
                     src={props.templateDetails.weighmentPreSingedURL}
                     style={{ width: 50 }}
                   />
@@ -311,7 +304,6 @@ const PostDispatchTemplate = (props) => {
                   {" "}
                   {props.templateDetails.weighmentPreSingedURL && (
                     <img
-                      alt="Packing Damage"
                       src={props.templateDetails.weighmentPreSingedURL}
                       style={{ width: 50 }}
                     />

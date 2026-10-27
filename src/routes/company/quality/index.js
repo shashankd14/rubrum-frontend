@@ -1,12 +1,16 @@
 import React from "react";
 import asyncComponent from "util/asyncComponent";
-import {Route, Switch} from "react-router-dom";
+import {Redirect, Route, Switch} from "react-router-dom";
+
+const ReportsAsync = asyncComponent(() => import('./reports'));
+const TemplatesAsync = asyncComponent(() => import('./templates'));
+const KqpAsync = asyncComponent(() => import('./kqp'));
 
 const Quality = ({match}) => (
     <Switch>
-        <Route path={`${match.url}/reports`} component={asyncComponent(() => import('./reports'))}/>
-        <Route path={`${match.url}/templates`} component={asyncComponent(() => import('./templates'))}/>
-        <Route path={`${match.url}/kqp`} component={asyncComponent(() => import('./kqp'))}/>
+        <Route path={`${match.url}/reports`} component={ReportsAsync}/>
+        <Route path={`${match.url}/templates`} component={TemplatesAsync}/>
+        <Route path={`${match.url}/kqp`} component={KqpAsync}/>
     </Switch>
 );
 

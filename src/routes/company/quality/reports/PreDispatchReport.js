@@ -15,30 +15,31 @@ import {
 import SearchBox from "../../../../components/SearchBox";
 
 const PreDispatchReport = (props) => {
-    const [sortedInfo, setSortedInfo] = useState({
-        order: "descend",
-        columnKey: "age",
-    });
-    const [filteredInfo, setFilteredInfo] = useState(null);
-    const [searchValue, setSearchValue] = useState("");
-    const [customerValue, setCustomerValue] = useState("");
-    const [filteredPreDispatchList, setFilteredPreDispatchList] = useState(props.template.data.content);
-    const [qualityReportList, setQualityReportList] = useState([]);
+  const [sortedInfo, setSortedInfo] = useState({
+    order: "descend",
+    columnKey: "age",
+  });
+  const [filteredInfo, setFilteredInfo] = useState(null);
+  const [searchValue, setSearchValue] = useState("");
+  const [customerValue, setCustomerValue] = useState("");
+  const [filteredPreDispatchList, setFilteredPreDispatchList] = useState(
+    props.template.data.content
+  );
+  const [qualityReportList, setQualityReportList] = useState([]);
 
-    const [pageNo, setPageNo] = React.useState(1);
-    const [totalPageItems, setTotalItems] = React.useState(0);
-    const [partyList, setPartyList] = useState([]);
-    const [templateList, setTemplateList] = useState([]);
-    const [templateLinkList, setTemplateLinkList] = useState([]);
-    const [templateId, setTemplateId] = useState();
-    const { totalItems } = props.template;
-    const [selectedItemForQr, setSelectedItemForQr] = useState({})
-    const [showCreateModal, setShowCreateModal] = useState(false);
-    const [showCreateQrScreen, setShowCreateQrScreen] = useState(false);
-    const [action, setAction] = useState(undefined);
-
-    const renderStatusColumn = (record) => {
-        const qirId = record.qirId;
+  const [pageNo, setPageNo] = React.useState(1);
+  const [totalPageItems, setTotalItems] = React.useState(0);
+  const [partyList, setPartyList] = useState([]);
+  const [templateList, setTemplateList] = useState([]);
+  const [templateLinkList, setTemplateLinkList] = useState([]);
+  const [templateId, setTemplateId] = useState();
+  const { totalItems } = props.template;
+  const [selectedItemForQr, setSelectedItemForQr] = useState({});
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showCreateQrScreen, setShowCreateQrScreen] = useState(false);
+  const [action, setAction] = useState(undefined);
+  const renderStatusColumn = (record) => {
+    const qirId = record.qirId;
 
         if (qirId === null) {
           return (
@@ -197,146 +198,196 @@ const PreDispatchReport = (props) => {
         props.fetchTemplatesList();
     }, []);
 
-    useEffect(() => {
-        if (searchValue) {
-          if (searchValue.length >= 3) {
-            setPageNo(1);
-            props.fetchQualityReportStageList({ stage: "predispatch", page: 1, pageSize: 15, searchValue, customerValue});
-          }
-        } else {
-          setPageNo(1);
-          props.fetchQualityReportStageList({ stage: "predispatch", page: 1, pageSize: 15, searchValue, customerValue});
-        }
-      }, [searchValue]);
-
-    const isInitialMount = useRef(true);
-    useEffect(() => {
-        if (!isInitialMount.current){
-        if (!props.template.loading && !props.template.error && props.template.operation == "fetchQualityReport") {
-            setQualityReportList(props.template.data)
-        } else if (!props.template.loading && !props.template.error && props.template.operation == "fetchQualityReportStage") {
-             setFilteredPreDispatchList(props.template.data)
-        } else if (!props.template.loading && !props.template.error && props.template.operation === 'templateById') {
-            setShowCreateQrScreen(true)
-            // history.push('/company/quality/reports/create/predispatch')
-            props.history.push({ pathname: '/company/quality/reports/create/predispatch', state: { selectedItemForQr: selectedItemForQr, templateDetails: props.template.data, action: 'create' } })
-        } else if (!props.template.loading && !props.template.error && props.template.operation == "templateLinkList") {
-            var tempData = props.template.data;
-            setTemplateLinkList(tempData.filter(x=> x.stageName==="PRE_DISPATCH"))
-            setShowCreateModal(true)
-        } else if (!props.template.loading && !props.template.error && props.template.operation === 'templateList') {
-            setTemplateList(props.template.data)
-        } else if (!props.template.loading && !props.template.error && props.template.operation == "qualityReportById") {
-            props.history.push({ pathname: '/company/quality/reports/create/predispatch', state: { selectedItemForQr: selectedItemForQr, templateDetails: props.template.data, action: action } })
-        }}
-        else {
-            isInitialMount.current = false;
-        }
-    }, [props.template.loading, props.template.error, props.template.operation]);
-
-
-
-    const showCreateQr = () => {
-        // props.history.push()
-        props.getQualityTemplateById(templateId)
+  useEffect(() => {
+    if (searchValue) {
+      if (searchValue.length >= 3) {
+        setPageNo(1);
+        props.fetchQualityReportStageList({
+          stage: "predispatch",
+          page: 1,
+          pageSize: 15,
+          searchValue,
+          customerValue,
+        });
+      }
+    } else {
+      setPageNo(1);
+      props.fetchQualityReportStageList({
+        stage: "predispatch",
+        page: 1,
+        pageSize: 15,
+        searchValue,
+        customerValue,
+      });
     }
+  }, [searchValue]);
 
-    const showTemplateList = (record, key) => {
-        setSelectedItemForQr(record)
-        setShowCreateModal(true)
-        props.fetchTemplatesLinkList({ partyId: record.npartyId });
+  const isInitialMount = useRef(true);
+  useEffect(() => {
+    if (!isInitialMount.current) {
+      if (
+        !props.template.loading &&
+        !props.template.error &&
+        props.template.operation == "fetchQualityReport"
+      ) {
+        setQualityReportList(props.template.data);
+      } else if (
+        !props.template.loading &&
+        !props.template.error &&
+        props.template.operation == "fetchQualityReportStage"
+      ) {
+        setFilteredPreDispatchList(props.template.data);
+      } else if (
+        !props.template.loading &&
+        !props.template.error &&
+        props.template.operation === "templateById"
+      ) {
+        setShowCreateQrScreen(true);
+        // history.push('/company/quality/reports/create/predispatch')
+        props.history.push({
+          pathname: "/company/quality/reports/create/predispatch",
+          state: {
+            selectedItemForQr: selectedItemForQr,
+            templateDetails: props.template.data,
+            action: "create",
+          },
+        });
+      } else if (
+        !props.template.loading &&
+        !props.template.error &&
+        props.template.operation == "templateLinkList"
+      ) {
+        var tempData = props.template.data;
+        setTemplateLinkList(
+          tempData.filter((x) => x.stageName === "PRE_DISPATCH")
+        );
+        setShowCreateModal(true);
+      } else if (
+        !props.template.loading &&
+        !props.template.error &&
+        props.template.operation === "templateList"
+      ) {
+        setTemplateList(props.template.data);
+      } else if (
+        !props.template.loading &&
+        !props.template.error &&
+        props.template.operation == "qualityReportById"
+      ) {
+        props.history.push({
+          pathname: "/company/quality/reports/create/predispatch",
+          state: {
+            selectedItemForQr: selectedItemForQr,
+            templateDetails: props.template.data,
+            action: action,
+          },
+        });
+      }
+    } else {
+      isInitialMount.current = false;
     }
+  }, [props.template.loading, props.template.error, props.template.operation]);
 
-    const showReportView = (record, key) => {
-        // const templateDetails = qualityReportList.find(qr => qr.coilNumber === record.coilNumber && qr.inwardId === record.inwardEntryId)
-        // props.history.push({pathname: '/company/quality/reports/create/predispatch', state: {selectedItemForQr: record, templateDetails: templateDetails, action: 'view'}})
-        setSelectedItemForQr(record)
-        setAction('view');
-        props.getQualityReportById(record.qirId);
+  const showCreateQr = () => {
+    // props.history.push()
+    props.getQualityTemplateById(templateId);
+  };
+
+  const showTemplateList = (record, key) => {
+    setSelectedItemForQr(record);
+    setShowCreateModal(true);
+    props.fetchTemplatesLinkList({ partyId: record.npartyId });
+  };
+
+  const showReportView = (record, key) => {
+    // const templateDetails = qualityReportList.find(qr => qr.coilNumber === record.coilNumber && qr.inwardId === record.inwardEntryId)
+    // props.history.push({pathname: '/company/quality/reports/create/predispatch', state: {selectedItemForQr: record, templateDetails: templateDetails, action: 'view'}})
+    setSelectedItemForQr(record);
+    setAction("view");
+    props.getQualityReportById(record.qirId);
+  };
+
+  const onDelete = (record, key, e) => {
+    props.deleteQualityReport(record.qirId);
+  };
+
+  const onEdit = (record, key, e) => {
+    setSelectedItemForQr(record);
+    // const templateDetails = qualityReportList.find(qr => qr.coilNumber === record.coilNumber && qr.inwardId === record.inwardEntryId)
+    // props.history.push({pathname: '/company/quality/reports/create/predispatch', state: {selectedItemForQr: record, templateDetails: templateDetails, action: 'edit'}})
+    setAction("edit");
+    props.getQualityReportById(record.qirId);
+  };
+
+  const handleChange = (e) => {
+    setTemplateId(e);
+  };
+
+  useEffect(() => {
+    if (totalItems) {
+      setTotalItems(totalItems);
     }
+  }, [totalItems]);
 
-    const onDelete = (record, key, e) => {
-        props.deleteQualityReport(record.qirId);
-    };
+  const handleChangeTable = (pagination, filters, sorter) => {
+    setSortedInfo(sorter);
+    setFilteredInfo(filters);
+  };
 
-    const onEdit = (record, key, e) => {
-        setSelectedItemForQr(record);
-        // const templateDetails = qualityReportList.find(qr => qr.coilNumber === record.coilNumber && qr.inwardId === record.inwardEntryId)
-        // props.history.push({pathname: '/company/quality/reports/create/predispatch', state: {selectedItemForQr: record, templateDetails: templateDetails, action: 'edit'}})
-        setAction('edit');
-        props.getQualityReportById(record.qirId);
-    };
-
-    const handleChange = (e) => {
-        setTemplateId(e)
-    };
-
-    useEffect(() => {
-        if (totalItems) {
-          setTotalItems(totalItems);
-        }
-      }, [totalItems]);
-
-      const handleChangeTable = (pagination, filters, sorter) => {
-        setSortedInfo(sorter);
-        setFilteredInfo(filters);
-      };
-
-      const handleCustomerChange = (value) => {
-        if (value) {
-          setCustomerValue(value);
-          setPageNo(1);
-          props.fetchQualityReportStageList(1, 15, searchValue, value);
-        } else {
-          setCustomerValue("");
-          setFilteredPreDispatchList(props.template.data.content);
-        }
-      };
-
-
-    useEffect(() => {
-        if (!props.inward.loading && props.inward.success) {
-          setFilteredPreDispatchList(props.inward.inwardList);
-        }
-    }, [props.inward.loading, props.inward.success]);
-
-    useEffect(() => {
-        if (!props.party.loading && !props.party.error) {
-            setPartyList(props.party.partyList)
-        }
-    }, [props.party.loading, props.party.error]);
-
-    useEffect(() => {
-        const { template } = props;
-        if(searchValue) {
-            const filteredData = filteredPreDispatchList.filter(item => 
-                (item.coilNo.toLowerCase().includes(searchValue.toLowerCase())) ||
-                (item.customerBatchNo.toLowerCase().includes(searchValue.toLowerCase())));
-
-            setFilteredPreDispatchList(filteredData);
-        } else {
-            setFilteredPreDispatchList(template.data);
-        }
-           
-    }, [searchValue]);
-
-    const [payload, setPayload] = useState({});
-    const onPdf = (deliveryChalanNo) => {
-        setPayload({
-            dcIds:{dcIds:[deliveryChalanNo]},
-            type:'preDispatch'
-        })
+  const handleCustomerChange = (value) => {
+    if (value) {
+      setCustomerValue(value);
+      setPageNo(1);
+      props.fetchQualityReportStageList(1, 15, searchValue, value);
+    } else {
+      setCustomerValue("");
+      setFilteredPreDispatchList(props.template.data.content);
     }
-    useEffect(() => {
-        props.pdfGenerateQMreportInward(payload);
-      }, [payload]);
+  };
 
-      const onQRPdf = (qirId) => {
-        setPayload({
-            qirId:qirId,
-            type:'QR'
-        })
+  useEffect(() => {
+    if (!props.inward.loading && props.inward.success) {
+      setFilteredPreDispatchList(props.inward.inwardList);
     }
+  }, [props.inward.loading, props.inward.success]);
+
+  useEffect(() => {
+    if (!props.party.loading && !props.party.error) {
+      setPartyList(props.party.partyList);
+    }
+  }, [props.party.loading, props.party.error]);
+
+  useEffect(() => {
+    const { template } = props;
+    if (searchValue) {
+      const filteredData = filteredPreDispatchList.filter(
+        (item) =>
+          item.coilNo.toLowerCase().includes(searchValue.toLowerCase()) ||
+          item.customerBatchNo.toLowerCase().includes(searchValue.toLowerCase())
+      );
+
+      setFilteredPreDispatchList(filteredData);
+    } else {
+      setFilteredPreDispatchList(template.data);
+    }
+  }, [searchValue]);
+
+  const [payload, setPayload] = useState({});
+  const onPdf = (deliveryChalanNo) => {
+    setPayload({
+      dcIds: { dcIds: [deliveryChalanNo] },
+      type: "preDispatch",
+    });
+  };
+  useEffect(() => {
+    props.pdfGenerateQMreportInward(payload);
+  }, [payload]);
+
+  const onQRPdf = (qirId) => {
+    setPayload({
+      qirId: qirId,
+      type: "QR",
+    });
+  };
 
     return (
         <>

@@ -7,6 +7,7 @@ import SearchBox from '../../../../components/SearchBox';
 import {
     fetchKqpLinkList,
     fetchKqpLinkListSuccess,
+    fetchPartyList
 } from "../../../../appRedux/actions";
 
 const LinkedTemplateList = (props) => {
@@ -20,12 +21,6 @@ const LinkedTemplateList = (props) => {
     const [filteredTemplateList, setFilteredTemplateList] = useState([]);
 
     useEffect(() => {
-        // setTemplateList([]);
-        // setSearchValue([]);
-        // setPageNo([]);
-    }, []);
-
-    useEffect(() => {
         props.fetchKqpLinkList(1, 15, searchValue);
     }, []);
 
@@ -34,7 +29,7 @@ const LinkedTemplateList = (props) => {
             const jsonData = props.template.data;
             const groupedData = {};
             jsonData.forEach((item) => {
-                const { kqpId, kqpName, stageName, partyName, partyIdList } = item;
+                const { kqpId, kqpName, stageName, partyIdList } = item;
     
                 const key = `${kqpId}-${kqpName}-${stageName}-${partyIdList}`;
     
@@ -166,4 +161,5 @@ const mapStateToProps = (state) => ({
 export default connect(mapStateToProps, {
     fetchKqpLinkList,
     fetchKqpLinkListSuccess,
+    fetchPartyList
 })(LinkedTemplateList);

@@ -3,71 +3,87 @@ import {Route, Switch} from "react-router-dom";
 
 import asyncComponent from "util/asyncComponent";
 
+const MasterAsync = asyncComponent(() => import("./Master"));
+const InwardAsync = asyncComponent(() => import("./Inward"));
+const PartywiseAsync = asyncComponent(() => import("./Partywise"));
+const PurchaseInvoicesAsync = asyncComponent(() => import("./PurchaseInvoices"));
+const WorkinProgressAsync = asyncComponent(() => import("./WorkinProgress"));
+const LabelPrintAsync = asyncComponent(() => import("./LabelPrint"));
+const DeliveryAsync = asyncComponent(() => import("./Delivery"));
+const ReportsAsync = asyncComponent(() => import("./Reports"));
+const BillingInfoAsync = asyncComponent(() => import("./Delivery/BillingInfo"));
+const QualityAsync = asyncComponent(() => import("./quality"));
+const UserAccessAsync = asyncComponent(() => import("./UserAccess"));
+const SalesOrderAsync = asyncComponent(() => import("./SalesOrder"));
+const SalesOrderModuleAsync = asyncComponent(() => import("./SalesOrderModule"));
+const ConsolidatedPlansAsync = asyncComponent(() => import("./ConsolidatedPlans"));
+const AllocatedCoilsAsync = asyncComponent(() => import("./AllocatedCoils"));
+
 const Company = ({ match }) => (
   <Switch>
     <Route
       path={`${match.url}/master`}
-      component={asyncComponent(() => import("./Master"))}
+      component={MasterAsync}
     />
     <Route
       path={`${match.url}/inward`}
-      component={asyncComponent(() => import("./Inward"))}
+      component={InwardAsync}
     />
     <Route
       path={`${match.url}/locationwise-register`}
-      component={asyncComponent(() => import("./Partywise"))}
+      component={PartywiseAsync}
     />
     <Route
       path={`${match.url}/purchase-invoices`}
-      component={asyncComponent(() => import("./PurchaseInvoices"))}
+      component={PurchaseInvoicesAsync}
     />
     <Route
       path={`${match.url}/workin-progress`}
-      component={asyncComponent(() => import("./WorkinProgress"))}
+      component={WorkinProgressAsync}
     />
     <Route
       path={`${match.url}/labelPrint`}
-      component={asyncComponent(() => import("./LabelPrint"))}
+      component={LabelPrintAsync}
     />
     <Route
       path={`${match.url}/deliveredItems`}
-      component={asyncComponent(() => import("./Delivery"))}
+      component={DeliveryAsync}
     />
     <Route
       path={`${match.url}/reports`}
-      component={asyncComponent(() => import("./Reports"))}
+      component={ReportsAsync}
     />
     <Route
       path={`${match.url}/billingInfo`}
-      component={asyncComponent(() => import("./Delivery/BillingInfo"))}
+      component={BillingInfoAsync}
     />
     <Route
       path={`${match.url}/quality`}
-      component={asyncComponent(() => import("./quality"))}
+      component={QualityAsync}
     />
     <Route
       path={`${match.url}/userAccess`}
-      component={asyncComponent(() => import("./UserAccess"))}
+      component={UserAccessAsync}
     />
     <Route
       path={`${match.url}/sales-order`}
-      component={asyncComponent(() => import("./SalesOrder"))}
+      component={SalesOrderAsync}
     />
     <Route
       path={`${match.url}/sales-orderModule`}
-      component={asyncComponent(() => import("./SalesOrderModule"))}
+      component={SalesOrderModuleAsync}
     />
     <Route
       path={`${match.url}/sales-orderModule`}
-      component={asyncComponent(() => import("./SalesOrderModule"))}
+      component={SalesOrderModuleAsync}
     />
     <Route
       path={`${match.url}/consolidated-plans`}
-      component={asyncComponent(() => import("./ConsolidatedPlans"))}
+      component={ConsolidatedPlansAsync}
     />
     <Route
       path={`${match.url}/allocated-coils`}
-      component={asyncComponent(() => import("./AllocatedCoils"))}
+      component={AllocatedCoilsAsync}
     />
   </Switch>
 );
