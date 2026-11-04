@@ -1467,18 +1467,18 @@ const CreateCuttingDetailsForm = (props) => {
     ];
   };
 
-  const setSoValues = (refno) => {
-    const record = salesOrders[refno?.split(",")[1]];
+  const setSoValues = (allocationId) => {
+    const record = salesOrders.find((so) => so.soAllocationId === allocationId);
     if (!record) return;
 
     const soLength = String(record.length);
     const calculatedNo = Math.floor(
       record.allocatedSoqty /
-        (0.0000081 * record.width * record.thickness * Number(record.length)),
+      (0.0000081 * record.width * record.thickness * Number(record.length)),
     ).toFixed(0);
 
     setNo(calculatedNo);
-    setSelectedSo(refno);
+    setSelectedSo(allocationId);
 
     props.setProcessDetails({
       ...props.inward.process,
@@ -1769,8 +1769,8 @@ const CreateCuttingDetailsForm = (props) => {
                         >
                           {salesOrders?.filter((item) => item.isDisplay !== false)?.map((item, index) => (
                             <Option
-                              key={`${item.soAllocationId}`}
-                              value={`${item.soAllocationId},${index}`}
+                              key={item.soAllocationId}
+                              value={item.soAllocationId}
                               label={item.refno}
                             >
                               {item.refno} <b>Length: {item.length}</b>
