@@ -276,6 +276,7 @@ const CategoryForm = (props) => {
               {getFieldDecorator("coilNumber", {
                 rules: [
                   { required: true, message: "Please enter batch number !" },
+                  { pattern: /^[a-zA-Z0-9-_]+$/, message: "Please enter only alphanumeric characters !" },
                   { validator: checkIfCoilExists },
                 ],
                 validateTrigger: "onBlur",

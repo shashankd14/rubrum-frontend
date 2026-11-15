@@ -1472,7 +1472,7 @@ const CreateCuttingDetailsForm = (props) => {
     if (!record) return;
 
     const soLength = String(record.length);
-    const calculatedNo = Math.floor(
+    const calculatedNo = Math.round(
       record.allocatedSoqty /
       (0.0000081 * record.width * record.thickness * Number(record.length)),
     ).toFixed(0);
@@ -1779,6 +1779,15 @@ const CreateCuttingDetailsForm = (props) => {
                         </Select>
                         <p></p>
                       </div>
+                        Brand : <Select
+                          style={{ width: "400px", marginLeft: "10px" }}
+                          value={selectedSo}
+                          onSelect={(value) => setSoValues(value)}
+                        >
+                          <Option value={0} label="Select">
+                            One Helix
+                          </Option>
+                          </Select>
                     </Col>
                     <Col lg={12} md={12} sm={24} xs={24}>
                       <p>
@@ -1844,11 +1853,10 @@ const CreateCuttingDetailsForm = (props) => {
                               },
                             ],
                           })(
-                            <Input
-                              id="length"
-                              disabled={props.wip ? true : false}
-                              onChange={(e) => handleChange(e)}
-                            />,
+                           <Select>
+                            <Option value="1000">1000</Option>
+                            <Option value="2000">2000</Option>
+                           </Select>,
                           )}
                         </Form.Item>
                         <Form.Item label="No of cuts">
