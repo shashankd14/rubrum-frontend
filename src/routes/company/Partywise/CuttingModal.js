@@ -1779,15 +1779,6 @@ const CreateCuttingDetailsForm = (props) => {
                         </Select>
                         <p></p>
                       </div>
-                        Brand : <Select
-                          style={{ width: "400px", marginLeft: "10px" }}
-                          value={selectedSo}
-                          onSelect={(value) => setSoValues(value)}
-                        >
-                          <Option value={0} label="Select">
-                            One Helix
-                          </Option>
-                          </Select>
                     </Col>
                     <Col lg={12} md={12} sm={24} xs={24}>
                       <p>
@@ -1853,10 +1844,11 @@ const CreateCuttingDetailsForm = (props) => {
                               },
                             ],
                           })(
-                           <Select>
-                            <Option value="1000">1000</Option>
-                            <Option value="2000">2000</Option>
-                           </Select>,
+                            <Input
+                              id="length"
+                              disabled={props.wip ? true : false}
+                              onChange={(e) => handleChange(e)}
+                            />,
                           )}
                         </Form.Item>
                         <Form.Item label="No of cuts">
