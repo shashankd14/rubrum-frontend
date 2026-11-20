@@ -31,7 +31,7 @@ const CoilDetailsForm = (props) => {
                 } else {
                     inward.length = length
                 }
-                if(inward.inwardType === SHEET) {
+                if (inward.inwardType === SHEET) {
                     inward.length = values.approxLength;
                 }
                 props.setInwardDetails({ ...props.inward, ...inward });
@@ -40,7 +40,7 @@ const CoilDetailsForm = (props) => {
             }
         });
     };
-    
+
     const handleChange = (e, path) => {
         if (path === 'material.description') {
             props.inward.material.description = e.target.value;
@@ -113,7 +113,7 @@ const CoilDetailsForm = (props) => {
     useEffect(() => {
         if (props.inward.inwardType === COIL && props.inward.width && props.inward.thickness && props.inward.netWeight) {
             let length = (parseFloat(parseFloat(props.inward.netWeight) / (parseFloat(props.inward.thickness) * 7.85 * (props.inward.width / 1000))).toFixed(4)) * 1000;
-            props.setInwardDetails({ ...props.inward, approxLength : length });
+            props.setInwardDetails({ ...props.inward, approxLength: length });
         }
     }, [props.inward.thickness, props.inward.width, props.inward.netWeight, props.inward.inwardType]);
 
@@ -131,7 +131,7 @@ const CoilDetailsForm = (props) => {
     }, [fetchSheetLists]);
 
     useEffect(() => {
-        props.setInwardDetails({ ...props.inward, inwardType: COIL });
+        props.setInwardDetails({ ...props.inward, inwardType: props.params !== "" ? props.inward.inwardType : COIL });
     }, [])
 
     return (
@@ -194,21 +194,21 @@ const CoilDetailsForm = (props) => {
                         )}
                     </Form.Item>
                     {props.inward.inwardType === SHEET && <>
-                    <Form.Item label="End-user Tag">
+                        <Form.Item label="End-user Tag">
                             {getFieldDecorator("endUserTagId", {
-                            rules: [
-                                { required: false, message: "Please select a end user tag!" },
-                            ],
-                        })(
-                            <Select placeholder="Select an option">
-                                {props?.packetClassification?.endUserTags.map((packetClassification) => (
-                                    <Option key={packetClassification.tagId} value={packetClassification.tagId}>
-                                        {packetClassification.tagName}
-                                    </Option>
-                                ))}
-                            </Select>
-                        )}
-                    </Form.Item>
+                                rules: [
+                                    { required: false, message: "Please select a end user tag!" },
+                                ],
+                            })(
+                                <Select placeholder="Select an option">
+                                    {props?.packetClassification?.endUserTags.map((packetClassification) => (
+                                        <Option key={packetClassification.tagId} value={packetClassification.tagId}>
+                                            {packetClassification.tagName}
+                                        </Option>
+                                    ))}
+                                </Select>
+                            )}
+                        </Form.Item>
                         <Form.Item label="Classification Tag">
                             {getFieldDecorator("packetClassificationId", {
                                 rules: [
@@ -246,7 +246,7 @@ const CoilDetailsForm = (props) => {
                                 </Select>
                             )}
                         </Form.Item>
-                        </>}
+                    </>}
                     <Form.Item label="Net Weight (in kgs)">
                         {getFieldDecorator('netWeight', {
                             validateTrigger: 'onBlur',
@@ -321,11 +321,11 @@ const CoilDetails = Form.create({
             }),
             packetClassificationId: Form.createFormField({
                 ...props.inward.packetClassificationId,
-                value: (props.inward.packetClassificationId) ? props.inward.packetClassificationId : '',
+                value: props.params !== "" ? props.inward.packetClassification.classificationId : (props.inward.packetClassificationId) ? props.inward.packetClassificationId : '',
             }),
             endUserTagId: Form.createFormField({
                 ...props.inward.endUserTagId,
-                value: (props.inward.endUserTagId) ? props.inward.endUserTagId : '',
+                value: props.params !== "" ? props.inward.endUserTagsentity.tagId : (props.inward.endUserTagId) ? props.inward.endUserTagId : '',
             }),
             description: Form.createFormField({
                 ...props.inward.description,
@@ -347,7 +347,7 @@ const CoilDetails = Form.create({
             }),
             statusId: Form.createFormField({
                 ...props.inward.statusId,
-                value: props.params !== "" ? props.inward.statusId : (props.inward.statusId) ? props.inward.statusId : '',
+                value: props.params !== "" ? props.inward.status.statusId : (props.inward.statusId) ? props.inward.statusId : '',
             }),
             approxLength: Form.createFormField({
                 ...props.inward.approxLength,

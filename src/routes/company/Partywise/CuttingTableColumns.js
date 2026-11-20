@@ -1,7 +1,7 @@
 import React from "react";
 import { Input, Select, Button } from "antd";
 import moment from "moment";
-
+import { EDGETRIM_CUTENDS_CLASSIFICATION_TAGS } from "../../../constants";
 const Option = Select.Option;
 
 /**
@@ -261,9 +261,8 @@ export const getPlanColumns = ({
               record?.packetClassification?.classificationId ||
               record?.packetClassificationId
             }
-            onChange={(value) =>
-              handleClassificationChange(value, index, record)
-            }
+            onChange={(value) => 
+              handleClassificationChange(value, record, filteredTags[index].tagName)}
           >
             {filteredTags.map((item) => (
               <Option key={item.tagId} value={item.tagId}>

@@ -82,7 +82,6 @@ const priceColumn = [
 const DeliveryInfo = (props) => {
   const Option = Select.Option;
   const [vehicleNo, setVehicleNo] = useState("");
-  const [remarksList, setRemarksList] = useState([]);
   const [instructionList, setInstructionList] = useState([]);
   const [fullHandling, setFullHandling] = useState(false);
   const [thickness, setThickness] = useState();
@@ -96,8 +95,13 @@ const DeliveryInfo = (props) => {
   const [priceModal, setPriceModal] = useState(false);
   const [validationStatus, setValidationStatus] = useState(false);
 
+  const coilLocationId = props?.inward?.inwardListForDelivery?.[0]?.location?.locationId;
+
   useEffect(() => {
-    if (props.packetwisePriceDC && typeof props.packetwisePriceDC.validationStatus === 'boolean') {
+    if (deliveryType === "Stock Transfer") {
+      setValidationStatus(true);
+    }
+    else if (props.packetwisePriceDC && typeof props.packetwisePriceDC.validationStatus === 'boolean') {
       setValidationStatus(props.packetwisePriceDC.validationStatus);
     }
   }, [props.packetwisePriceDC.validationStatus])
@@ -120,6 +124,7 @@ const DeliveryInfo = (props) => {
       props.getPacketwisePriceDCFullHandling(payload)
       // props.saveUnprocessedDelivery(payload)
       const reqObj = {
+        deliveryType,
         packingRateId,
         laminationId,
         vehicleNo,
@@ -133,6 +138,7 @@ const DeliveryInfo = (props) => {
     }
     else {
       const reqObj = {
+        deliveryType,
         packingRateId,
         vehicleNo,
         laminationId,
@@ -142,7 +148,6 @@ const DeliveryInfo = (props) => {
           actualWeight: item.plannedWeight || item.actualWeight
         }))
       }
-      console.log('deliveryList ', props.deliveryList);
       dispatch(getPacketwisePriceDC(reqObj));
     }
     setPriceModal(true);
@@ -214,13 +219,6 @@ const DeliveryInfo = (props) => {
       //  props.getPacketwisePriceDC(reqObj);
     }
   }, [props.inward.unprocessedSuccess])
-
-  const handleRemark = (elem, id) => {
-    let index = remarksList.findIndex(elem => elem.id === id)
-    let newRemarksList = remarksList
-    newRemarksList[index] = { instructionId: id, remark: elem.target.value }
-    setRemarksList(newRemarksList)
-  }
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -460,6 +458,7 @@ const DeliveryInfo = (props) => {
                 >
                   <Option value="">Select Delivery Type</Option>
                   <Option value="Stock Transfer">Stock Transfer</Option>
+                  <Option value="Sales Order">Sales Order</Option>
                   <Option value="Others">Others</Option>
                 </Select>
               </div>
@@ -473,11 +472,14 @@ const DeliveryInfo = (props) => {
                   }}
                 >
                   <Select style={{ width: "300px" }} placeholder="Select an option" onChange={(value) => setLocationId(value)}>
-                    {props?.locationList?.map((location) => (
-                      <Option key={location.locationId} value={location.locationId}>
-                        {location.locationName}
-                      </Option>
-                    ))}
+                    <Option value="">Select a location</Option>
+                    {props?.locationList
+                      ?.filter((location) => location.locationId !== coilLocationId)
+                      .map((location) => (
+                        <Option key={location.locationId} value={location.locationId}>
+                          {location.locationName}
+                        </Option>
+                      ))}
                   </Select>
                 </div>
               </div>)}

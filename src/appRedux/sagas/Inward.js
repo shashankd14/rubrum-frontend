@@ -1,4 +1,4 @@
-import { all, put, fork, takeLatest, call } from "redux-saga/effects";
+import { all, put, fork, takeLatest, call, takeEvery } from "redux-saga/effects";
 import { getUserToken, getUserId } from './common';
 import toNumber from 'lodash';
 import moment from "moment";
@@ -73,15 +73,14 @@ import {
     generateDCPdfError,
     getS3PDFUrlError,
     getS3PDFUrlSuccess,
-    getReconcileReport,
     getReconcileReportError,
     getReconcileReportSuccess,
     getPacketwisePriceDCSuccess,
     getPacketwisePriceDCError,
-    QrGenerateInwardSuccess,
     getPacketwisePriceDCFullHandlingSuccess,
     getPacketwisePriceDCFullHandlingError,
-    coilNotFound
+    coilNotFound,
+    labelPrintEditFinish
 } from "../actions";
 import { userSignOutSuccess } from "../../appRedux/actions/Auth";
 
@@ -113,7 +112,7 @@ function* fetchInwardList({ page = '', pageSize = 15, searchValue = '', partyId 
         if (fetchInwardList.status === 200) {
             const fetchInwardListResponse = yield fetchInwardList.json();
             const inwardResponse = [];
-            const { content, totalItems } = fetchInwardListResponse;
+            const { content, totalItems, totalInStockWeight, totalPresentWeight } = fetchInwardListResponse;
             if (content.length > 0) {
                 content.map((inward) => {
                     let eachInward = { ...inward };
@@ -125,6 +124,7 @@ function* fetchInwardList({ page = '', pageSize = 15, searchValue = '', partyId 
                             eachInward.children[index].coilNumber = instruction.instructionId;
                             eachInward.children[index].party = inward.party;
                             eachInward.children[index].material = inward.material;
+                            eachInward.children[index].location = inward.location;
                             if (instruction.childInstructions && instruction.childInstructions.length > 0) {
                                 eachInward.children[index].children = instruction.childInstructions;
                                 eachInward.children[index].children.map((childInstruction, childIndex) => {
@@ -132,6 +132,7 @@ function* fetchInwardList({ page = '', pageSize = 15, searchValue = '', partyId 
                                     eachInward.children[index].children[childIndex].coilNumber = childInstruction.instructionId;
                                     eachInward.children[index].children[childIndex].party = inward.party;
                                     eachInward.children[index].children[childIndex].material = inward.material;
+                                    eachInward.children[index].children[childIndex].location = inward.location;
                                     eachInward.children[index].children[childIndex].customerBatchId = inward.customerBatchId;
                                     eachInward.children[index].children[childIndex].fThickness = inward.fThickness;
                                 })
@@ -140,7 +141,7 @@ function* fetchInwardList({ page = '', pageSize = 15, searchValue = '', partyId 
                     }
                     inwardResponse.push(eachInward);
                 });
-                yield put(fetchInwardListSuccess(inwardResponse, totalItems));
+                yield put(fetchInwardListSuccess(inwardResponse, totalItems, totalPresentWeight, totalInStockWeight));
             }
             else if (content.length === 0) {
                 yield put(coilNotFound(totalItems));
@@ -175,6 +176,7 @@ function* fetchInwardListWithOldAPI({ page = 1, pageSize = 15, searchValue = '',
                             eachInward.children[index].coilNumber = instruction.instructionId;
                             eachInward.children[index].party = inward.party;
                             eachInward.children[index].material = inward.material;
+                            eachInward.children[index].location = inward.location;
                             if (instruction.childInstructions && instruction.childInstructions.length > 0) {
                                 eachInward.children[index].children = instruction.childInstructions;
                                 eachInward.children[index].children.map((childInstruction, childIndex) => {
@@ -182,6 +184,7 @@ function* fetchInwardListWithOldAPI({ page = 1, pageSize = 15, searchValue = '',
                                     eachInward.children[index].children[childIndex].coilNumber = childInstruction.instructionId;
                                     eachInward.children[index].children[childIndex].party = inward.party;
                                     eachInward.children[index].children[childIndex].material = inward.material;
+                                    eachInward.children[index].children[childIndex].location = inward.location;
                                     eachInward.children[index].children[childIndex].customerBatchId = inward.customerBatchId;
                                     eachInward.children[index].children[childIndex].fThickness = inward.fThickness;
                                 })
@@ -225,6 +228,7 @@ function* fetchWIPInwardList({ page = 1, pageSize = 15, searchValue = '', partyI
                             eachInward.children[index].coilNumber = instruction.instructionId;
                             eachInward.children[index].party = inward.party;
                             eachInward.children[index].material = inward.material;
+                            eachInward.children[index].location = inward.location;
                             if (instruction.childInstructions && instruction.childInstructions.length > 0) {
                                 eachInward.children[index].children = instruction.childInstructions;
                                 eachInward.children[index].children.map((childInstruction, childIndex) => {
@@ -232,6 +236,7 @@ function* fetchWIPInwardList({ page = 1, pageSize = 15, searchValue = '', partyI
                                     eachInward.children[index].children[childIndex].coilNumber = childInstruction.instructionId;
                                     eachInward.children[index].children[childIndex].party = inward.party;
                                     eachInward.children[index].children[childIndex].material = inward.material;
+                                    eachInward.children[index].children[childIndex].location = inward.location;
                                     eachInward.children[index].children[childIndex].customerBatchId = inward.customerBatchId;
                                     eachInward.children[index].children[childIndex].fThickness = inward.fThickness;
                                 })
@@ -288,7 +293,6 @@ function* submitInward(action) {
         data.append('presentWeight', action.inward.netWeight !== undefined ? action.inward.netWeight : action.inward.grossWeight);
         data.append('grossWeight', action.inward.grossWeight);
         
-        data.append('statusId', 1);
         //sheet specific data
         data.append('inwardType', action.inward.inwardType);
         if (action.inward.inwardType === 'Sheet') {
@@ -296,7 +300,8 @@ function* submitInward(action) {
             data.append('endUserTagId', action.inward.endUserTagId);
             data.append('noofpieces', action.inward.noofpieces);
             data.append('statusId', action.inward.statusId);
-        }
+        } else 
+            data.append('statusId', 1);
 
         // invoice details
         data.append('inwardDate', moment(action.inward.receivedDate).format('YYYY-MM-DD HH:mm:ss'));
@@ -316,7 +321,6 @@ function* submitInward(action) {
         if (action.inward.testFile) {
             data.append('testCertificateFile', action.inward.testFile.fileList[0].originFileObj, action.inward.testFile.fileList[0].name);
         }
-
 
         data.append('heatnumber', '123');
         data.append('plantname', 'test plant name');
@@ -358,6 +362,19 @@ function* updateInward(action) {
             invoiceDate: (action.inward.invoiceDate || action.inward.dInvoiceDate) ? moment(action.inward.invoiceDate || action.inward.dInvoiceDate).format('YYYY-MM-DD HH:mm:ss') : null,
             invoiceNumber: action.inward.invoiceNumber !== undefined ? action.inward.invoiceNumber : action.inward.vInvoiceNo,
             valueOfGoods: action.inward.valueOfGoods !== undefined ? action.inward.valueOfGoods : 0,
+            inwardType: action.inward.inwardType,
+            ...action.inward.inwardType === 'Sheet' && {
+                packetClassificationId: action.inward.packetClassificationId,
+                endUserTagId: action.inward.endUserTagId,
+                noofpieces: action.inward.noofpieces,
+                statusId: action.inward.statusId
+            },
+            ...action.inward.inwardType === 'Coil' && {
+                packetClassificationId: undefined,
+                endUserTagId: undefined,
+                noofpieces: undefined,
+                statusId: undefined
+            },
             purposeType: action.inward.purposeType,
             locationId: action.inward.locationId !== undefined ? action.inward.locationId : "",
             testCertificateNumber: action.inward.testCertificateNo || action.inward.testCertificateNumber || '',
@@ -537,7 +554,7 @@ function* requestSaveSlittingInstruction(action) {
     }
 }
 function* requestUpdateInstruction(action) {
-    const { number, instruction, unfinish, editFinish } = action.coil;
+    const { instruction, unfinish, editFinish } = action.coil;
     const ins = instruction.map(item => {
         let insObj = {
             instructionId: item.instructionId ? item.instructionId : null,
@@ -578,14 +595,24 @@ function* requestUpdateInstruction(action) {
             body: JSON.stringify(req)
         });
         if (updateInstruction.status === 200) {
-            yield put(updateInstructionSuccess(updateInstruction));
+            const updateInstructionResponse = yield updateInstruction.json();
+            yield put(labelPrintEditFinish(action.coil));
+            yield put(updateInstructionSuccess(updateInstructionResponse));
         } else if (updateInstruction.status === 401) {
             yield put(userSignOutSuccess());
-        } else
-            yield put(updateInstructionError('error'));
-
+        } else {
+            const errorText = yield updateInstruction.text().catch(() => '');
+            let errorMessage = errorText;
+            try {
+                const errorBody = JSON.parse(errorText);
+                errorMessage = typeof errorBody === 'string'
+                    ? errorBody
+                    : errorBody?.message || errorBody?.errorMessage || errorBody?.error || errorText;
+            } catch (e) {}
+            yield put(updateInstructionError(errorMessage || 'Failed to update instruction'));
+        }
     } catch (error) {
-        yield put(updateInstructionError(error));
+        yield put(updateInstructionError(error?.message || 'Failed to update instruction'));
     }
 }
 
@@ -911,6 +938,7 @@ function* getPacketwisePriceDCSaga(action) {
             }
         }
         req_obj = {
+            deliveryType: action.payload?.deliveryType,
             vehicleNo: action.payload?.vehicleNo,
             packingRateId: action.payload?.packingRateId,
             laminationId: action.payload?.laminationId,
@@ -991,7 +1019,7 @@ export function* watchFetchRequests() {
     yield takeLatest(FETCH_INWARD_PLAN_DETAILS_REQUESTED, fetchInwardPlanDetails);
     yield takeLatest(REQUEST_SAVE_CUTTING_DETAILS, requestSaveCuttingInstruction);
     yield takeLatest(REQUEST_SAVE_SLITTING_DETAILS, requestSaveSlittingInstruction);
-    yield takeLatest(REQUEST_UPDATE_INSTRUCTION_DETAILS, requestUpdateInstruction);
+    yield takeEvery(REQUEST_UPDATE_INSTRUCTION_DETAILS, requestUpdateInstruction);
     yield takeLatest(FETCH_MATERIAL_GRADE_LIST_REQUEST, requestGradesByMaterialId);
     yield takeLatest(POST_DELIVERY_CONFIRM_REQUESTED, postDeliveryConfirmRequest);
     yield takeLatest(FETCH_INWARD_INSTRUCTION_DETAILS_REQUESTED, fetchInwardInstructionDetails);

@@ -102,10 +102,12 @@ export const fetchInwardList = (page, pageSize, searchValue, partyId, sortOrder,
 }
 };
 
-export const fetchInwardListSuccess = (inwardList, totalItems) => ({
+export const fetchInwardListSuccess = (inwardList, totalItems, totalPresentWeight, totalInStockWeight) => ({
     type: FETCH_INWARD_LIST_SUCCESS,
     inwardList,
-    totalItems
+    totalItems,
+    totalPresentWeight,
+    totalInStockWeight
 });
 
 export const fetchInwardListError = (error) => ({

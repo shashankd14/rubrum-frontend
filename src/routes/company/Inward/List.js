@@ -153,6 +153,7 @@ const List = (props) => {
     console.log(record, key);
   };
   const onEdit = (record, key, e) => {
+    props.resetInwardForm();
     props.fetchPartyListById(record.inwardEntryId);
     setTimeout(() => {
       props.history.push(`create/${record.inwardEntryId}`);

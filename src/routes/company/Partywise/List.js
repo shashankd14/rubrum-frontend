@@ -15,7 +15,7 @@ import {
   setInwardSelectedForDelivery,
   getLocationList
 } from "../../../appRedux/actions";
-import {sidebarMenuItems} from "../../../constants";
+import { sidebarMenuItems } from "../../../constants";
 
 const Option = Select.Option;
 
@@ -40,7 +40,9 @@ const List = (props) => {
   const [searchValue, setSearchValue] = useState("");
   const [locationValue, setLocationValue] = useState("");
   const [customerValue, setCustomerValue] = useState("");
-  const { inwardList, totalItems } = props.inward;
+  const [customerLabel, setCustomerLabel] = useState("");
+  const { inwardList, totalItems, totalPresentWeight, totalInStockWeight } = props.inward;
+
   let filter = inwardList.map((item) => {
     if (item.instruction.length > 0) {
       item.children = item.instruction.filter((ins) => ins.groupId === null);
@@ -58,10 +60,11 @@ const List = (props) => {
   const [totalPageItems, setTotalItems] = React.useState(0);
   const [showRetrieve, setShowRetrieve] = React.useState(false);
   const [selectedCoil, setSelectedCoil] = React.useState([]);
+  const [selectedLocation, setSelectedLocation] = React.useState([]);
   const [pageSize, setPageSize] = useState(15);
   const [sortColumn, setSortColumn] = useState(null);
   const [sortOrder, setSortOrder] = useState(null);
-  
+
   const columns = [
     {
       title: "Coil Number",
@@ -102,8 +105,8 @@ const List = (props) => {
       filters:
         inwardList.length > 0
           ? [
-              ...new Set(inwardList.map((item) => item.material?.description)),
-            ].map((material) => ({ text: material, value: material }))
+            ...new Set(inwardList.map((item) => item.material?.description)),
+          ].map((material) => ({ text: material, value: material }))
           : [],
       sorter: (a, b) =>
         a.material?.description.length - b.material?.description.length,
@@ -193,12 +196,12 @@ const List = (props) => {
       dataIndex: "packetClassification.classificationName",
       key: "packetClassification.classificationName",
     },
-    partywisepermission  === 'ENDUSER_TAG_WISE_PACKETS' ? {} : {
+    partywisepermission === 'ENDUSER_TAG_WISE_PACKETS' ? {} : {
       title: "End User Tags",
       dataIndex: "endUserTagsentity.tagName",
       key: "endUserTagsentity.tagName",
     },
-    partywisepermission  === 'ENDUSER_TAG_WISE_PACKETS' ? {} : {
+    partywisepermission === 'ENDUSER_TAG_WISE_PACKETS' ? {} : {
       title: "Action",
       dataIndex: "",
       key: "x",
@@ -208,13 +211,13 @@ const List = (props) => {
             <span className="gx-link"></span>
           ) : (
             <span>
-              {menuPartyWiseLabelList.length > 0 && menuPartyWiseLabelList.includes(partyWiseMenuConstants.plan) && record.inwardType === 'Coil' && <><span
+              {menuPartyWiseLabelList.length > 0 && menuPartyWiseLabelList.includes(partyWiseMenuConstants.plan) && (record.inwardType !== 'Sheet') && <><span
                 className="gx-link"
                 onClick={() => props.history.push(`plan/${record.coilNumber}`)}
               >
                 Plan
               </span>
-              <Divider type="vertical" /></>}
+                <Divider type="vertical" /></>}
               {menuPartyWiseLabelList.length > 0 && menuPartyWiseLabelList.includes(partyWiseMenuConstants.retrieve) && <><span
                 className="gx-link"
                 onClick={() => {
@@ -224,7 +227,7 @@ const List = (props) => {
               >
                 Retrieve
               </span>
-              <Divider type="vertical" /></>}
+                <Divider type="vertical" /></>}
               {menuPartyWiseLabelList.length > 0 && menuPartyWiseLabelList.includes(partyWiseMenuConstants.cancelFinish) && <><span
                 className="gx-link"
                 onClick={() =>
@@ -233,7 +236,7 @@ const List = (props) => {
               >
                 Cancel finish
               </span>
-              <Divider type="vertical" /></>}
+                <Divider type="vertical" /></>}
               {menuPartyWiseLabelList.length > 0 && menuPartyWiseLabelList.includes(partyWiseMenuConstants.editFinish) && <span
                 className="gx-link"
                 onClick={() =>
@@ -258,12 +261,12 @@ const List = (props) => {
 
   useEffect(() => {
     const menus = localStorage.getItem('Menus') ? JSON.parse(localStorage.getItem('Menus')) : [];
-    if(menus.length > 0) {
+    if (menus.length > 0) {
       const menuLabels = menus.filter(menu => menu.menuKey === sidebarMenuItems.partywiseRegister);
       let menuPartyWiseLabels = [];
-      if(menuLabels.length > 0) {
+      if (menuLabels.length > 0) {
         menuPartyWiseLabels = menuLabels[0]?.permission ? menuLabels[0]?.permission?.split(',') : [];
-        if(menuLabels.length === 1)
+        if (menuLabels.length === 1)
           setPartywisePermission(menuLabels[0].permission);
       }
       setMenuPartyWiseLabelList(menuPartyWiseLabels);
@@ -288,11 +291,10 @@ const List = (props) => {
   useEffect(() => {
     if (!props.inward.loading && props.inward.success) {
       // setFilteredInwardList(getFilterData(inwardList));
-      // console.log(inwardList)
-      if(inwardList.length !==0){
+      if (inwardList.length !== 0) {
         inwardList[0].children = inwardList[0].instruction
       }
-        setFilteredInwardList(inwardList);
+      setFilteredInwardList(inwardList);
     }
   }, [props.inward.loading, props.inward.success]);
 
@@ -300,11 +302,11 @@ const List = (props) => {
     if (searchValue) {
       if (searchValue.length >= 3) {
         setPageNo(1);
-        props.fetchInwardList(1, 20, searchValue, customerValue, sortOrder, sortColumn, partywisepermission  === 'ENDUSER_TAG_WISE_PACKETS' ? 'ENDUSER' : '', locationValue);
+        props.fetchInwardList(1, 20, searchValue, customerValue, sortOrder, sortColumn, partywisepermission === 'ENDUSER_TAG_WISE_PACKETS' ? 'ENDUSER' : '', locationValue);
       }
     } else {
       setPageNo(1);
-      props.fetchInwardList(1, 20, searchValue, customerValue, sortOrder, sortColumn, partywisepermission  === 'ENDUSER_TAG_WISE_PACKETS' ? 'ENDUSER' : '', locationValue);
+      props.fetchInwardList(1, 20, searchValue, customerValue, sortOrder, sortColumn, partywisepermission === 'ENDUSER_TAG_WISE_PACKETS' ? 'ENDUSER' : '', locationValue);
     }
   }, [searchValue]);
 
@@ -312,12 +314,12 @@ const List = (props) => {
     setSortedInfo(sorter);
     setFilteredInfo(filters);
     setSortColumn(sorter.columnKey);
-    setSortOrder(sorter.order==='descend'?'DESC':'ASC');
+    setSortOrder(sorter.order === 'descend' ? 'DESC' : 'ASC');
   };
   useEffect(() => {
     if (sortColumn && sortOrder) {
-        setPageNo(1);
-        props.fetchInwardList(1, 20, searchValue, customerValue, sortOrder, sortColumn, partywisepermission === 'ENDUSER_TAG_WISE_PACKETS' ? 'ENDUSER' : '', locationValue);
+      setPageNo(1);
+      props.fetchInwardList(1, 20, searchValue, customerValue, sortOrder, sortColumn, partywisepermission === 'ENDUSER_TAG_WISE_PACKETS' ? 'ENDUSER' : '', locationValue);
     }
   }, [sortColumn, sortOrder]);
 
@@ -330,15 +332,17 @@ const List = (props) => {
     props.fetchInwardList(1, 15);
   };
 
-  const exportSelectedData = () => {};
+  const exportSelectedData = () => { };
 
-  const handleCustomerChange = (value) => {
+  const handleCustomerChange = (value, label) => {
     if (value) {
       setCustomerValue(value);
+      setCustomerLabel(label.props.children);
       setPageNo(1);
-      props.fetchInwardList(1, pageSize, searchValue, value, '', '', partywisepermission  === 'ENDUSER_TAG_WISE_PACKETS' ? 'ENDUSER' : '', locationValue);
+      props.fetchInwardList(1, pageSize, searchValue, value, '', '', partywisepermission === 'ENDUSER_TAG_WISE_PACKETS' ? 'ENDUSER' : '', locationValue);
     } else {
       setCustomerValue("");
+      setCustomerLabel("");
       setFilteredInwardList(inwardList);
     }
   };
@@ -347,16 +351,16 @@ const List = (props) => {
     if (value) {
       setLocationValue(value);
       setPageNo(1);
-      props.fetchInwardList(1, pageSize, searchValue, customerValue, '', '', partywisepermission  === 'ENDUSER_TAG_WISE_PACKETS' ? 'ENDUSER' : '', value);
+      props.fetchInwardList(1, pageSize, searchValue, customerValue, '', '', partywisepermission === 'ENDUSER_TAG_WISE_PACKETS' ? 'ENDUSER' : '', value);
     } else {
       setLocationValue("");
       setFilteredInwardList(inwardList);
     }
   };
 
-  const handleBlur = () => {};
+  const handleBlur = () => { };
 
-  function handleFocus() {}
+  function handleFocus() { }
 
   const storeKey = (data, selected) => {
     if (selectedCBKeys.includes(data.key) && !selected) {
@@ -409,6 +413,9 @@ const List = (props) => {
       }
       const selectedCoil = selectedRows.map(row => row?.party?.nPartyId) || []
       setSelectedCoil(Array.from(new Set(selectedCoil)))
+
+      const selectedLocation = selectedRows.map(row => row?.location?.locationId) || []
+      setSelectedLocation(Array.from(new Set(selectedLocation)))
     },
     getCheckboxProps: (record) => ({
       disabled:
@@ -429,9 +436,11 @@ const List = (props) => {
           }
         });
       }
-      console.log(selectedRows);
       const selectedCoil = selectedRows.map(row => row?.party?.nPartyId) || []
       setSelectedCoil(Array.from(new Set(selectedCoil)))
+
+      const selectedLocation = selectedRows.map(row => row?.location?.locationId) || []
+      setSelectedLocation(Array.from(new Set(selectedLocation)))
     },
     selectedRowKeys: selectedCBKeys,
   };
@@ -486,11 +495,11 @@ const List = (props) => {
       </h1>
       <Card>
         <div className="gx-flex-row gx-flex-1">
-          <div className="table-operations gx-col">
+          <div className="table-operations gx-col" style={{ paddingLeft: "0px" }}>
             <Select
               id="select"
               showSearch
-              style={{ width: 200 }}
+              style={{ width: 165 }}
               placeholder="Select a customer"
               optionFilterProp="children"
               onChange={handleCustomerChange}
@@ -511,7 +520,7 @@ const List = (props) => {
             <Select
               id="select"
               showSearch
-              style={{ width: 200 }}
+              style={{ width: 165 }}
               placeholder="Select a location"
               optionFilterProp="children"
               onChange={handleLocationChange}
@@ -529,8 +538,8 @@ const List = (props) => {
                   <Option key={location.locationId} value={location.locationId}>{location.locationName}</Option>
                 ))}
             </Select>&emsp;
-            {menuPartyWiseLabelList.length > 0 && menuPartyWiseLabelList.includes(partyWiseMenuConstants.export) && <Button onClick={exportSelectedData} style={{marginBottom: "1px"}}>Export</Button>}
-            <Button onClick={clearFilters} style={{marginBottom: "1px"}}>Clear All filters</Button>
+            {menuPartyWiseLabelList.length > 0 && menuPartyWiseLabelList.includes(partyWiseMenuConstants.export) && <Button onClick={exportSelectedData} style={{ marginBottom: "1px" }}>Export</Button>}
+            <Button onClick={clearFilters} style={{ marginBottom: "1px" }}>Clear All filters</Button>
           </div>
           <div className="gx-flex-row gx-w-50">
             {menuPartyWiseLabelList.length > 0 && menuPartyWiseLabelList.includes(partyWiseMenuConstants.deliver) && <Button
@@ -538,9 +547,11 @@ const List = (props) => {
               icon={() => <i className="icon icon-add" />}
               size="default"
               onClick={() => {
-                console.log("selected rows", selectedRowData, selectedCBKeys, selectedCoil);
+                console.log("selected rows", selectedRowData);
                 if (selectedCoil?.length > 1) {
                   message.error('Please select coils of same party');
+                } else if (selectedLocation?.length > 1) {
+                  message.error('Please select coils of same location');
                 } else {
                   const newList = selectedRowData.filter((item) => {
                     if (item?.instruction?.length) {
@@ -587,6 +598,10 @@ const List = (props) => {
             {gets3PDFurl()}
           </Modal>
         )}
+        
+        {customerLabel && <Card style={{ marginBottom: 10 }} type="inner" bordered={true}>
+          {`${customerLabel} - `}<b>Total Present Weight: {totalPresentWeight} kgs Total In Stock Weight: {totalInStockWeight} kgs</b>
+        </Card>}
         <Table
           scroll={{ y: 540 }}
           className="gx-table-responsive"
@@ -594,7 +609,7 @@ const List = (props) => {
           dataSource={filteredInwardList}
           // dataSource={filteredInwardListWithoutDispatched}
           onChange={handleChange}
-          rowSelection={partywisepermission  === 'ENDUSER_TAG_WISE_PACKETS' ? false : rowSelection}
+          rowSelection={partywisepermission === 'ENDUSER_TAG_WISE_PACKETS' ? false : rowSelection}
           // onExpand={(expanded, record, data) => {
           //   const motherRecord = {
           //     key: record.key,
@@ -609,12 +624,12 @@ const List = (props) => {
           //     : expandedRow.filter((row) => row.key !== record.key);
           //   setExpandedRecord([...result, motherRecord]);
           // }}
-          
+
           pagination={{
             pageSize: 15,
             onChange: (page) => {
               setPageNo(page);
-              props.fetchInwardList(page, pageSize, searchValue, customerValue, sortOrder, sortColumn, partywisepermission  === 'ENDUSER_TAG_WISE_PACKETS' ? 'ENDUSER' : '', locationValue);
+              props.fetchInwardList(page, pageSize, searchValue, customerValue, sortOrder, sortColumn, partywisepermission === 'ENDUSER_TAG_WISE_PACKETS' ? 'ENDUSER' : '', locationValue);
             },
             current: pageNo,
             total: totalPageItems,

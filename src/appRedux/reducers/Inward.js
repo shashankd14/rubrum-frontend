@@ -158,6 +158,8 @@ export default (state = INIT_STATE, action) => {
                 loading: false,
                 inwardList: action.inwardList,
                 totalItems: action.totalItems,
+                totalPresentWeight: action?.totalPresentWeight,
+                totalInStockWeight: action?.totalInStockWeight,
                 success: true
             }
         }
@@ -448,7 +450,8 @@ export default (state = INIT_STATE, action) => {
                 loading: true,
                 instructionUpdateSuccess:false,
                 instructionUpdateFailure: true,
-                error: true
+                error: true,
+                errorMessage: action.payload,
             }
         }
         case FETCH_MATERIAL_GRADE_LIST_SUCCESS:{

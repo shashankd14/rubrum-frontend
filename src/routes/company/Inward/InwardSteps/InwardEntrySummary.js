@@ -28,6 +28,7 @@ const InwardEntrySummary = (props) => {
             // props.resetInwardForm();
         }
     }, [props.inwardUpdateSuccess]);
+
     useEffect(() => {
         if (props.inwardSubmitSuccess) {
             setGenerate(false)
@@ -39,9 +40,9 @@ const InwardEntrySummary = (props) => {
             });
         }
     }, [props.inwardSubmitSuccess]);
+
     useEffect(() => {
         if (props.inwardObject.pdfSuccess) {
-
             message.success('Inward Saved & PDF generated successfully', 2);
             setTimeout(() => {
                 props.history.push('list');
@@ -61,7 +62,7 @@ const InwardEntrySummary = (props) => {
 
     const submitInwardForm = (e) => {
         e.preventDefault();
-        if (!props.inwardSubmitSuccess && !props.inwardUpdateSuccess) {
+        if (!props.inwardUpdateLoading && !props.inwardSubmitLoading && !props.inwardSubmitSuccess && !props.inwardUpdateSuccess) {
             props.params !== "" ? props.updateInward(props.inward) : props.submitInwardEntry(props.inward)
         }
     }
