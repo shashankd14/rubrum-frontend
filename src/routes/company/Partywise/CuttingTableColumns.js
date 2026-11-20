@@ -1,7 +1,7 @@
 import React from "react";
 import { Input, Select, Button } from "antd";
 import moment from "moment";
-
+import { EDGETRIM_CUTENDS_CLASSIFICATION_TAGS } from "../../../constants";
 const Option = Select.Option;
 
 /**
@@ -261,9 +261,8 @@ export const getPlanColumns = ({
               record?.packetClassification?.classificationId ||
               record?.packetClassificationId
             }
-            onChange={(value) =>
-              handleClassificationChange(value, index, record)
-            }
+            onChange={(value) => 
+              handleClassificationChange(value, record, filteredTags[index].tagName)}
           >
             {filteredTags.map((item) => (
               <Option key={item.tagId} value={item.tagId}>
@@ -401,6 +400,7 @@ export const getSlitCutColumns = ({
                 .toLowerCase()
                 .localeCompare(optionB?.props?.children.toLowerCase())
             }
+            value={record?.endUserTagsentity?.tagId ?? record?.endUserTagId}
             onChange={(e) => handleTagsChange(record, e, "endUser")}
           >
             {endUserTagList?.map((item) => {
@@ -461,6 +461,13 @@ export const getSlitColumns = ({ page }) => [
     title: "Weight",
     dataIndex: "plannedWeight",
     key: "plannedWeight",
+  },
+  {
+    title: "Classification Tag",
+    dataIndex: "endUserTags.tagName",
+    render: (text, record) => {
+      return record.packetClassification?.classificationName || record.endUserTagsentity?.classificationName;
+    },
   },
   {
     title: "End User Tags",

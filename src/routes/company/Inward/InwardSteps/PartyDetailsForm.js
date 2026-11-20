@@ -1,9 +1,7 @@
-import React, { useEffect, useState, useCallback } from "react";
-import debounce from "lodash/debounce";
+import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import {
   setInwardDetails,
-  checkCustomerBatchNumber,
   getLocationList,
 } from "../../../../appRedux/actions";
 import {
@@ -19,6 +17,7 @@ import {
 } from "antd";
 import { formItemLayout } from "../Create";
 import { useHistory } from "react-router-dom";
+import useCheckCustomerBatchNoUnique from "../../../../util/hooks/useCheckCustomerBatchNoUnique";
 
 const Option = Select.Option;
 
@@ -26,6 +25,7 @@ const CreatePartyDetailsForm = (props) => {
   const { getFieldDecorator } = props.form;
   const [dataSource, setDataSource] = useState([]);
   const history = useHistory();
+  const { checkCustomerBatchNo } = useCheckCustomerBatchNoUnique();
 
   useEffect(() => {
     if (props.params !== "") {
@@ -66,11 +66,6 @@ const CreatePartyDetailsForm = (props) => {
     // props?.inward?.party?.partyName = e;
   };
 
-  const debouncedCheckBatchNumber = useCallback(
-    debounce((value) => props.checkCustomerBatchNumber(value), 500),
-    []
-  );
-
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -81,15 +76,22 @@ const CreatePartyDetailsForm = (props) => {
     });
   };
 
-  const checkBatchNoExist = (rule, value, callback) => {
-    if (
-      !props.inwardStatus.loading &&
-      props.inwardStatus.success &&
-      !props.inwardStatus.duplicateBatchNo
-    ) {
-      return callback();
+  const validateCustomerBatchNo = (rule, value, callback) => {
+    if (!value) {
+      callback();
+      return;
     }
-    callback("The coil number already exists");
+    if (props.params !== "" && value === props.inward.customerBatchId) {
+      callback();
+      return;
+    }
+    checkCustomerBatchNo(value)
+      .then((isPresent) => {
+        callback(isPresent ? "The Customer Batch No already exists" : undefined);
+      })
+      .catch(() => {
+        callback();
+      });
   };
 
   useEffect(() => {
@@ -137,48 +139,14 @@ const CreatePartyDetailsForm = (props) => {
               ],
             })(<Input id="customerId" disabled />)}
           </Form.Item>
-          <Form.Item
-            label="Customer Batch No"
-            hasFeedback
-            validateStatus={
-              props.inward.customerBatchNo
-                ? props.inwardStatus.loading
-                  ? "validating"
-                  : !props.inwardStatus.loading &&
-                    props.inwardStatus.success &&
-                    !props.inwardStatus.duplicateBatchNo
-                  ? "success"
-                  : props.inwardStatus.error ||
-                    props.inwardStatus.duplicateBatchNo
-                  ? "error"
-                  : ""
-                : ""
-            }
-            help={
-              props.inwardStatus.loading
-                ? "We are checking if the Batch Number already exists"
-                : !props.inwardStatus.loading &&
-                  props.inwardStatus.success &&
-                  props.inwardStatus.duplicateBatchNo
-                ? "The Batch Number already exists"
-                : ""
-            }
-          >
+          <Form.Item label="Customer Batch No">
             {getFieldDecorator("customerBatchNo", {
+              validateTrigger: "onBlur",
               rules: [
                 { required: false, message: "Please input the Batch Number!" },
-                { validator: props.params === "" ? checkBatchNoExist : "" },
+                { validator: validateCustomerBatchNo },
               ],
-            })(
-              <Input
-                id="validating"
-                onChange={(e) => debouncedCheckBatchNumber(e.target.value)}
-                onBlur={(e) => {
-                  debouncedCheckBatchNumber.cancel();
-                  props.checkCustomerBatchNumber(e.target.value);
-                }}
-              />
-            )}
+            })(<Input id="customerBatchNo" />)}
           </Form.Item>
           <Form.Item label="Customer Invoice No">
             {getFieldDecorator("customerInvoiceNo", {
@@ -304,6 +272,5 @@ const PartyDetailsForm = Form.create({
 
 export default connect(mapStateToProps, {
   setInwardDetails,
-  checkCustomerBatchNumber,
   getLocationList
 })(PartyDetailsForm);

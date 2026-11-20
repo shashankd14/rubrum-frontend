@@ -94,7 +94,7 @@ function* GenerateFGLabelPrint(action) {
 const delay1 = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 function* GenerateEditFinishLabelPrint(action) {
   yield call(delay1, 500);
-  const { number, instruction, unfinish, editFinish } = action.payloadpdf;
+  const { instruction, unfinish, editFinish } = action.payloadpdf;
   const ins = instruction.map((item) => {
     let insObj = {
       instructionId: item.instructionId ? item.instructionId : null,

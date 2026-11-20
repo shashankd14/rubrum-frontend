@@ -19,7 +19,10 @@ import React, { useEffect, useState } from 'react';
 import SweetAlert from 'react-bootstrap-sweetalert';
 import { connect, useDispatch } from 'react-redux';
 import moment from 'moment';
-import { APPLICATION_DATE_FORMAT } from '../../../constants';
+import {
+  APPLICATION_DATE_FORMAT,
+  EDGETRIM_CUTENDS_CLASSIFICATION_TAGS,
+} from '../../../constants';
 import {
   setProcessDetails,
   saveSlittingInstruction,
@@ -39,6 +42,7 @@ import IntlMessages from 'util/IntlMessages';
 
 const { Panel } = Collapse;
 const Option = Select.Option;
+const userId = localStorage.getItem("userId");
 
 export const formItemLayout = {
   labelCol: {
@@ -316,8 +320,8 @@ const SlittingWidths = (props) => {
         let instructionPlanDto = {
           targetWeight: targetWeight,
           length: availLength,
-          createdBy: '1',
-          updatedBy: '1',
+          createdBy: userId,
+          updatedBy: userId,
         };
         for (let i = 0; i < values.widths.length; i++) {
           for (let j = 0; j < values.nos[i]; j++) {
@@ -329,8 +333,8 @@ const SlittingWidths = (props) => {
               isSlitAndCut: props.slitCut ? true : false,
               plannedNoOfPieces: values.nos[i],
               status: 1,
-              createdBy: '1',
-              updatedBy: '1',
+              createdBy: userId,
+              updatedBy: userId,
               groupId: null,
               plannedWeight: (values.weights[i] / values.nos[i]).toFixed(2),
               inwardId: props.coilDetails.inwardEntryId
@@ -1126,8 +1130,6 @@ const CreateSlittingDetailsForm = (props) => {
   const [tweight, settweight] = useState(0);
   const [totalActualweight, setTotalActualWeight] = useState(0);
   const [actualYLR, setactualYLR] = useState(0);
-  const [actualSlitCutYLR, setactualSlitCutYLR] = useState(0);
-  const [actualSlittingYLR, setactualSlittingYLR] = useState(0);
   const [page, setPage] = useState(1);
   const [edit, setEdit] = useState([]);
   const [validate, setValidate] = useState(true);
@@ -1142,7 +1144,6 @@ const CreateSlittingDetailsForm = (props) => {
   const [deleteRecord, setDeleteRecord] = useState({});
   const [panelList, setPanelList] = useState([]);
   const [yieldLossRatio, setYieldLossRatio] = useState([]);
-  const [tagsName, setTagsName] = useState();
   const [packetClassification, setPacketClassification] = useState([]);
   const [editedRecordState, setEditedRecordState] = useState([]);
 
@@ -1326,9 +1327,8 @@ const CreateSlittingDetailsForm = (props) => {
               record.packetClassification?.classificationId ||
               record.packetClassification?.tagId
             );
-            return (
-              classificationName === 'EDGE TRIM' ||
-              classificationName === 'CUT ENDS'
+            return EDGETRIM_CUTENDS_CLASSIFICATION_TAGS.includes(
+              classificationName,
             );
           })
           .map((record) => record.actualWeight);
@@ -1357,11 +1357,9 @@ const CreateSlittingDetailsForm = (props) => {
     const filteredInstructions = response?.filter((instruction) =>
       instruction.some(
         (item) =>
-          (item.packetClassification?.classificationName === 'WIP(EDGE TRIM)' ||
-            item.packetClassification?.classificationName === 'WIP(CUT ENDS)' ||
-            item.packetClassification?.classificationName === 'EDGE TRIM' ||
-            item.packetClassification?.classificationName === 'CUT ENDS') &&
-          item.packetClassification?.classificationName !== null
+          EDGETRIM_CUTENDS_CLASSIFICATION_TAGS.includes(
+            item.packetClassification?.classificationName,
+          )
       )
     );
     //planned YLR
@@ -1381,7 +1379,7 @@ const CreateSlittingDetailsForm = (props) => {
     });
     let coilPlannedYLR = 0;
     coilPlannedYLR = (sumOfScrapPlannedWeight / sumOfTotalPlannedWeight) * 100;
-    setPlannedCoilLevelYLR(coilPlannedYLR);
+    setPlannedCoilLevelYLR(Number.isFinite(coilPlannedYLR) ? coilPlannedYLR : 0);
 
     //Actual YLR
     let sumOfScrapActualWeight = 0;
@@ -1395,7 +1393,7 @@ const CreateSlittingDetailsForm = (props) => {
     });
     let coilActualYLR = 0;
     coilActualYLR = (sumOfScrapActualWeight / sumOfTotalActualWeight) * 100;
-    setActualCoilLevelYLR(coilActualYLR);
+    setActualCoilLevelYLR(Number.isFinite(coilActualYLR) ? coilActualYLR : 0);
   }, []);
 
   const handleTagsChange = (value, index, record) => {
@@ -1472,8 +1470,9 @@ const CreateSlittingDetailsForm = (props) => {
     panelList[tableIndex].map((tableRecord) => {
       // Update the relevant data in tableData
       if (
-        tableRecord.packetClassificationName === 'WIP(EDGE TRIM)' ||
-        tableRecord.packetClassificationName === 'WIP(CUT ENDS)'
+        EDGETRIM_CUTENDS_CLASSIFICATION_TAGS.includes(
+          tableRecord.packetClassificationName,
+        )
       ) {
         tableDatapacketWeight +=
           tableRecord.plannedWeight !== undefined
@@ -1492,7 +1491,6 @@ const CreateSlittingDetailsForm = (props) => {
     //addition of tableDatapacketWeight for total yield loss ratio
     var totaltableDatapacketWeight = 0;
     totaltableDatapacketWeight += tableDatapacketWeight;
-    console.log('totaltableDatapacketWeight', totaltableDatapacketWeight);
     // Update storedTableDatapacketWeights with the cumulative tableDatapacketWeight for the specific table index
     const updatedStoredTableDatapacketWeights = [
       ...storedTableDatapacketWeights,
@@ -1533,7 +1531,7 @@ const CreateSlittingDetailsForm = (props) => {
     newArray[tableIndex] = TDlossRatio !== undefined ? TDlossRatio : 0;
     setYieldLossRatio(newArray);
   };
-  console.log('setTotaltableDatapacketWeight', totaltableDatapacketWeight);
+
   useEffect(() => {
     let processTags = [{ tagId: 0, tagName: 'Select' }];
     processTags = [...processTags, ...props?.processTags];
@@ -1603,7 +1601,7 @@ const CreateSlittingDetailsForm = (props) => {
         partyId: props.coil.party.nPartyId,
         ipAddress: '',
         requestId: 'YLR_PLAN_GET',
-        userId: '',
+        userId: userId,
       });
     }
   }, []);
@@ -1770,11 +1768,8 @@ const CreateSlittingDetailsForm = (props) => {
       props.labelPrintEditFinish(coil);
       props.setShowSlittingModal(false);
     } else if (props.wip) {
-      //
       const isAllWip = tableData.every(
-        (item) =>
-          item.packetClassification.tagId === 0 ||
-          item.packetClassification.classificationId === 0
+        (item) => item?.packetClassification?.tagName?.includes("WIP"),
       );
       if (isAllWip) {
         message.error(
@@ -1787,10 +1782,10 @@ const CreateSlittingDetailsForm = (props) => {
       } else {
         const instructionList = tableData.filter(
           (item) =>
-            item?.packetClassification?.tagId !== 0 &&
-            item?.packetClassification?.classificationId !== 0 &&
-            item?.packetClassification !== '' &&
-            item?.packetClassification !== null
+            !item?.packetClassification?.tagName?.includes("WIP") &&
+            !item?.packetClassification?.classificationName?.includes("WIP") &&
+            item?.packetClassification !== "" &&
+            item?.packetClassification !== null,
         );
         const coil = {
           actualYieldLossRatio: actualYLR,
@@ -1935,8 +1930,8 @@ const CreateSlittingDetailsForm = (props) => {
           partDetailsRequest: {
             targetWeight: '0',
             length: '0',
-            createdBy: '1',
-            updatedBy: '1',
+            createdBy: userId,
+            updatedBy: userId,
             deleteUniqId: 0,
           },
           instructionRequestDTOs: [
@@ -1954,8 +1949,8 @@ const CreateSlittingDetailsForm = (props) => {
               isSlitAndCut: false,
               plannedNoOfPieces: '1',
               status: 1,
-              createdBy: '1',
-              updatedBy: '1',
+              createdBy: userId,
+              updatedBy: userId,
               groupId: null,
               // plannedWeight:
               //   props?.coilDetails?.scrapWeight || record.actualWeight || 0,

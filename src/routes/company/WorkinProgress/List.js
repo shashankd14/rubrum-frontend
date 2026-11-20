@@ -147,10 +147,6 @@ function List(props) {
     }, [])
 
     useEffect(() => {
-        props.fetchWIPInwardList();
-    }, []);
-
-    useEffect(() => {
         if (props.inward.wipSuccess) {
             setFilteredInwardList(props.inward?.wipList);
         }
@@ -163,23 +159,20 @@ function List(props) {
     }, [totalItems]);
 
     useEffect(() => {
-        if (searchValue) {
-            if (searchValue?.length >= 3) {
-                setPageNo(1);
-                props.fetchWIPInwardList(1, 15, searchValue)
-            }
-        } else {
+        if (searchValue && searchValue.length < 3) return;
+        const timer = setTimeout(() => {
             setPageNo(1);
-            props.fetchWIPInwardList(1, 15, searchValue)
-        }
+            props.fetchWIPInwardList(1, 15, searchValue);
+        }, searchValue ? 500 : 0);
+        return () => clearTimeout(timer);
     }, [searchValue])
 
     const handleChange = (pagination, filters, sorter) => {
         setSortedInfo(sorter);
         setFilteredInfo(filters)
     };
+    
     const handleRow = (record) => {
-        console.log(record);
     };
 
     return (

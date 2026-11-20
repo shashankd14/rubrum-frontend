@@ -10,9 +10,7 @@ import ReconcileTable from "./ReconcileTable";
 import { useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 
-
 const Plan = (props) => {
-    
     const { instruction } = props.inward.plan;
     const [showCuttingModal, setShowCuttingModal] = useState(false);
     const [showSlittingModal, setShowSlittingModal] = useState(false);
@@ -429,10 +427,8 @@ const Plan = (props) => {
                 </Col>
             </div>
         </div>
-
     )
 }
-
 
 const mapStateToProps = state => ({
     inward: state.inward,
