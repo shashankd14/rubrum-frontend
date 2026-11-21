@@ -1,6 +1,6 @@
 import { Button, Card, Col, Select, Modal, message } from "antd";
 import moment from "moment";
-import React, { use, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { connect } from "react-redux";
 import {
   getCoilPlanDetails,
@@ -179,7 +179,8 @@ const Plan = (props) => {
   }, []);
 
   useEffect(() => {
-    dispatch(getCoilSalesNumbers(props.inward.plan.inwardEntryId));
+    if (props?.inward?.plan?.inwardEntryId)
+      dispatch(getCoilSalesNumbers(props.inward.plan.inwardEntryId));
   }, [props?.inward?.plan?.inwardEntryId]);
 
   useEffect(() => {

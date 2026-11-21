@@ -1477,7 +1477,18 @@ const CreateCuttingDetailsForm = (props) => {
       (0.0000081 * record.width * record.thickness * Number(record.length)),
     ).toFixed(0);
 
-    setNo(calculatedNo);
+    const weight = Math.round(
+      0.0000081 *
+      parseFloat(props.inward.plan.fWidth) *
+      parseFloat(props.inward.plan.fThickness) *
+      parseFloat(record.length) *
+      parseFloat(calculatedNo),
+    );
+    if (weight > currentWeight) {
+      setNo(parseFloat(calculatedNo) - 1);
+    } else
+      setNo(calculatedNo);
+
     setSelectedSo(allocationId);
 
     props.setProcessDetails({
