@@ -76,9 +76,7 @@ const QualityDetailsForm = (props) => {
                         {getFieldDecorator('testCertificateNo', {
                             rules: [{ required: false, message: 'Please enter test certificate no' }],
                         })(
-                            <Input id="testCertificateNo" onChange={(e) => {
-                                props.inward.testCertificateNo = e.target.value;
-                            }} />
+                            <Input id="testCertificateNo" />
                         )}
                     </Form.Item>
                     <Form.Item label="Test File">
@@ -175,11 +173,13 @@ const QualityDetails = Form.create({
             }),
             testCertificateNo: Form.createFormField({
                 ...props.inward.testCertificateNo,
-                value: (props.inward.testCertificateNo) ? props.inward.testCertificateNo : props.inward.testCertificateNumber || '',
+                value: props.inward?.testCertificateNo !== undefined
+                    ? props.inward.testCertificateNo
+                    : (props.inward?.testCertificateNumber || ''),
             }),
             remarks: Form.createFormField({
                 ...props.inward.remarks,
-                value: (props.inward.remarks) ? props.inward.remarks : '',
+                value: props.inward?.remarks || '',
             }),
             testFile: Form.createFormField({
                 ...props.inward.testFile,

@@ -315,8 +315,8 @@ function* submitInward(action) {
 
         //quality details
         data.append('materialGradeId', action.inward.grade !== undefined ? action.inward.grade : Number(action.inward.materialGrade.gradeId));
-        data.append('testCertificateNumber', action.inward.testCertificateNo);
-        data.append('remarks', action.inward.remarks);
+        data.append('testCertificateNumber', action.inward?.testCertificateNo || action.inward?.testCertificateNumber || '');
+        data.append('remarks', action.inward?.remarks || '');
 
         if (action.inward.testFile) {
             data.append('testCertificateFile', action.inward.testFile.fileList[0].originFileObj, action.inward.testFile.fileList[0].name);
@@ -377,7 +377,8 @@ function* updateInward(action) {
             },
             purposeType: action.inward.purposeType,
             locationId: action.inward.locationId !== undefined ? action.inward.locationId : "",
-            testCertificateNumber: action.inward.testCertificateNo || action.inward.testCertificateNumber || '',
+            testCertificateNumber: action.inward.testCertificateNo !== undefined ? action.inward.testCertificateNo : (action.inward.testCertificateNumber || ''),
+            remarks: action.inward.remarks || '',
             materialId: (materialId).toString(),
             width: action.inward.width !== undefined ? action.inward.width : action.inward.fWidth,
             tdcNo: action.inward.tdcNo !== undefined ? action.inward.tdcNo : "",

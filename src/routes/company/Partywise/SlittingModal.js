@@ -1881,8 +1881,6 @@ const CreateSlittingDetailsForm = (props) => {
         (value) => sum > value
       );
 
-      console.log('compareYieldLoss:', compareYieldLoss);
-
       if (compareYieldLoss.length > 0) {
         // message.warning('take approval from customer or change the plan');
         confirm({
@@ -1901,7 +1899,6 @@ const CreateSlittingDetailsForm = (props) => {
   };
 
   const handleWeight = (e, record) => {
-    console.log('record', record);
     e.preventDefault();
     // if (
     //   Number(record.plannedWeight) + totalActualweight > tweight ||
@@ -1996,7 +1993,6 @@ const CreateSlittingDetailsForm = (props) => {
     };
     setTableData([...tableData, newData]);
   };
-  console.log('tableData Add row', tableData);
   const getFooterButtons = (type) => {
     return [
       <Button key='back' onClick={handleCancel}>

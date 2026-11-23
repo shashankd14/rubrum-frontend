@@ -321,11 +321,11 @@ const CoilDetails = Form.create({
             }),
             packetClassificationId: Form.createFormField({
                 ...props.inward.packetClassificationId,
-                value: props.params !== "" ? props.inward.packetClassification.classificationId : (props.inward.packetClassificationId) ? props.inward.packetClassificationId : '',
+                value: props.params !== "" ? props.inward?.packetClassification?.classificationId : (props.inward.packetClassificationId) ? props.inward.packetClassificationId : '',
             }),
             endUserTagId: Form.createFormField({
                 ...props.inward.endUserTagId,
-                value: props.params !== "" ? props.inward.endUserTagsentity.tagId : (props.inward.endUserTagId) ? props.inward.endUserTagId : '',
+                value: props.params !== "" ? props.inward?.endUserTagsentity?.tagId : (props.inward.endUserTagId) ? props.inward.endUserTagId : '',
             }),
             description: Form.createFormField({
                 ...props.inward.description,

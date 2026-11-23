@@ -1,7 +1,6 @@
 import React from "react";
 import { Input, Select, Button } from "antd";
 import moment from "moment";
-import { EDGETRIM_CUTENDS_CLASSIFICATION_TAGS } from "../../../constants";
 const Option = Select.Option;
 
 /**
@@ -123,10 +122,22 @@ export const getMainColumns = ({
         return (
           <div>
             <Select
+              showSearch
               disabled={props.unfinish}
               dropdownMatchSelectWidth={false}
               getPopupContainer={(triggerNode) => triggerNode.parentNode}
               style={{ width: "100%" }}
+              optionFilterProp="children"
+              filterOption={(input, option) => {
+                return option?.props?.children
+                  ?.toLowerCase()
+                  .includes(input.toLowerCase());
+              }}
+              filterSort={(optionA, optionB) =>
+                optionA?.props?.children
+                  .toLowerCase()
+                  .localeCompare(optionB?.props?.children.toLowerCase())
+              }
               value={
                 record?.packetClassification?.classificationId ||
                 record?.packetClassification?.tagId
