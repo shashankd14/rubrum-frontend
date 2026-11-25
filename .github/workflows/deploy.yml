@@ -35,7 +35,7 @@ jobs:
           source: "build/*"
           target: "/usr/share/nginx/html"
 
-      - name: Restart Nginx (PROD)
+      - name: Restart Nginx (UAT)
         uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ secrets.ASPEN_HOST_UAT }}
