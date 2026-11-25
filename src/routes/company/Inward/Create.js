@@ -27,6 +27,7 @@ const { Step } = Steps;
 const CreateForm = (props) => {
     const [currentStep, setCurrentStep] = useState(0);
     const [steps, setSteps] = useState([]);
+
     useEffect(() => {
         props.fetchMaterialList();
         props.fetchPartyList();
@@ -56,8 +57,9 @@ const CreateForm = (props) => {
         ];
         setSteps(steps);
     }, []);
+
     useEffect(()=>{
-        if(props.inward.inwardEntry && (props.match.params.inwardEntryId === "" || props.match.params.inwardEntryId === undefined)){
+        if(props.inward.inwardEntry && (props.match.params.inwardEntryId === "" || props.match.params.inwardEntryId === undefined)) {
             let inwardValue = props.inward.inwardEntry;
             inwardValue.thickness = "";
             inwardValue.batchNo ="";
@@ -68,7 +70,6 @@ const CreateForm = (props) => {
             props.setInwardDetails({...props.inward.inward, ...inwardValue})
         }
     },[])
-    
     
     return (
         <Card className="gx-card" title="Inward Entry">

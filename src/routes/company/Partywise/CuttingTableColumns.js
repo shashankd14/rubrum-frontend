@@ -1,7 +1,6 @@
 import React from "react";
 import { Input, Select, Button } from "antd";
 import moment from "moment";
-
 const Option = Select.Option;
 
 /**
@@ -123,10 +122,22 @@ export const getMainColumns = ({
         return (
           <div>
             <Select
+              showSearch
               disabled={props.unfinish}
               dropdownMatchSelectWidth={false}
               getPopupContainer={(triggerNode) => triggerNode.parentNode}
               style={{ width: "100%" }}
+              optionFilterProp="children"
+              filterOption={(input, option) => {
+                return option?.props?.children
+                  ?.toLowerCase()
+                  .includes(input.toLowerCase());
+              }}
+              filterSort={(optionA, optionB) =>
+                optionA?.props?.children
+                  .toLowerCase()
+                  .localeCompare(optionB?.props?.children.toLowerCase())
+              }
               value={
                 record?.packetClassification?.classificationId ||
                 record?.packetClassification?.tagId
@@ -261,9 +272,8 @@ export const getPlanColumns = ({
               record?.packetClassification?.classificationId ||
               record?.packetClassificationId
             }
-            onChange={(value) =>
-              handleClassificationChange(value, index, record)
-            }
+            onChange={(value) => 
+              handleClassificationChange(value, record, filteredTags[index].tagName)}
           >
             {filteredTags.map((item) => (
               <Option key={item.tagId} value={item.tagId}>
@@ -401,6 +411,7 @@ export const getSlitCutColumns = ({
                 .toLowerCase()
                 .localeCompare(optionB?.props?.children.toLowerCase())
             }
+            value={record?.endUserTagsentity?.tagId ?? record?.endUserTagId}
             onChange={(e) => handleTagsChange(record, e, "endUser")}
           >
             {endUserTagList?.map((item) => {
@@ -461,6 +472,13 @@ export const getSlitColumns = ({ page }) => [
     title: "Weight",
     dataIndex: "plannedWeight",
     key: "plannedWeight",
+  },
+  {
+    title: "Classification Tag",
+    dataIndex: "endUserTags.tagName",
+    render: (text, record) => {
+      return record.packetClassification?.classificationName || record.endUserTagsentity?.classificationName;
+    },
   },
   {
     title: "End User Tags",
