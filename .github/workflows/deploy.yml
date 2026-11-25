@@ -5,7 +5,7 @@ on:
     branches:
       - aspen-uat #ASPEN UAT
       - major-ui  #ASPEN PROD
-      - jsw_one   #JSW UAT
+      - jsw_one   #JSW UAT env
       - prod_jsw  #JSW PROD
 
 jobs:
