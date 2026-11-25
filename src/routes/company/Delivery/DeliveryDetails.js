@@ -83,6 +83,7 @@ useEffect(() => {
     setDeliveryById(tableData);
   }
 }, [props.delivery.loading, props.delivery.success])
+
   return (
       <div>
         <div>
