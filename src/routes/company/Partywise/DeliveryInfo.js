@@ -13,8 +13,8 @@ import {
   saveUnprocessedDelivery,
   getLocationList
 } from "../../../appRedux/actions";
-import moment from "moment";
 import { Button, Table, Modal } from "antd";
+import moment from "moment";
 
 const priceColumn = [
   {
@@ -82,7 +82,6 @@ const priceColumn = [
 const DeliveryInfo = (props) => {
   const Option = Select.Option;
   const [vehicleNo, setVehicleNo] = useState("");
-  const [remarksList, setRemarksList] = useState([]);
   const [instructionList, setInstructionList] = useState([]);
   const [fullHandling, setFullHandling] = useState(false);
   const [thickness, setThickness] = useState();
@@ -138,19 +137,7 @@ const DeliveryInfo = (props) => {
       dispatch(getPacketwisePriceDC(reqObj));
     }
     else {
-      const reqObj = {
-        packingRateId,
-        vehicleNo,
-        laminationId,
-        inwardListForDelivery: props.inward.inwardListForDelivery.map((item) => ({
-          instructionId: item.instructionId,
-          remarks: item.remarks || null,
-          actualWeight: item.plannedWeight || item.actualWeight
-        }))
-      }
-      dispatch(getPacketwisePriceDC(reqObj));
-    }
-    setPriceModal(true);
+      setPriceModal(true);
       const reqObj = {
         deliveryType,
         packingRateId,
@@ -172,69 +159,6 @@ const DeliveryInfo = (props) => {
       props.getLocationList();
     }
   }, [deliveryType])
-
-  const priceColumn = [
-    {
-      title: "Instruction ID",
-      dataIndex: "instructionId",
-      key: "instructionId",
-    },
-    {
-      title: "Coil No.",
-      dataIndex: "coilNo",
-      key: "coilNo",
-    },
-    {
-      title: "Customer Batch No.",
-      dataIndex: "customerBatchNo",
-      key: "customerBatchNo",
-    },
-    {
-      title: "Material Grade Name",
-      dataIndex: "matGradeName",
-      key: "matGradeName",
-    },
-    {
-      title: "Thickness",
-      dataIndex: "thickness",
-      key: "thickness",
-    },
-    {
-      title: "Actual Weight\n(in KG)",
-      dataIndex: "actualWeight",
-      key: "actualWeight",
-    },
-    {
-      title: "Base Rate\n(per ton)",
-      dataIndex: "basePrice",
-      key: "basePrice",
-    },
-    {
-      title: "Packing Rate\n(per ton)",
-      dataIndex: "packingPrice",
-      key: "packingPrice",
-    },
-    {
-      title: "Additional Rate\n(per ton)",
-      dataIndex: "additionalPrice",
-      key: "additionalPrice",
-    },
-    {
-      title: "Lamination Charges\n(per ton)",
-      dataIndex: "laminationCharges",
-      key: "laminationCharges",
-    },
-    {
-      title: "Total Rate\n(per ton)",
-      dataIndex: "rate",
-      key: "rate",
-    },
-    {
-      title: "Amount",
-      dataIndex: "totalPrice",
-      key: "totalPrice",
-    },
-  ];
 
   useEffect(() => {
     const partyId = props.inward.inwardListForDelivery?.map(ele => ele?.party?.nPartyId || '');
@@ -345,6 +269,7 @@ const DeliveryInfo = (props) => {
       }
     }
   };
+
   return (
     <div>
       <h1>Delivery Information</h1>
