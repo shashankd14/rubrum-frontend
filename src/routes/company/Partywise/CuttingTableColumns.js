@@ -14,6 +14,7 @@ export const getMainColumns = ({
   packetClassification,
   handleWeight,
   onUpdateClassificationWIP,
+  onActualWeightBlur,
   page,
 }) => [
     {
@@ -106,12 +107,7 @@ export const getMainColumns = ({
           disabled={props.unfinish}
           value={record.actualWeight}
           onChange={onInputChange("actualWeight", index, record)}
-          onBlur={() => {
-            // This callback is passed from parent - actual weight calculation logic
-            if (onInputChange.onBlurCallback) {
-              onInputChange.onBlurCallback(record, index);
-            }
-          }}
+          onBlur={() => onActualWeightBlur?.(record, index)}
         />
       ),
     },

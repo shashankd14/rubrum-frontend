@@ -331,12 +331,22 @@ const CreateCuttingDetailsForm = (props) => {
     setTagsName(record?.packetClassification?.tagId);
   };
 
+  // Recalculate total actual weight when the user leaves an Actual Weight input
+  const onActualWeightBlur = () => {
+    const total = tableData
+      .map((item) => item.actualWeight)
+      .filter((w) => w !== undefined && w !== null && w !== "" && !isNaN(w))
+      .reduce((sum, w) => sum + Number(w), 0);
+    setTotalActualWeight(total);
+  };
+
   const columns = getMainColumns({
     onInputChange,
     props,
     packetClassification,
     handleWeight,
     onUpdateClassificationWIP,
+    onActualWeightBlur,
     page,
   });
 
