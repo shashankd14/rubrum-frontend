@@ -2160,6 +2160,7 @@ const CreateSlittingDetailsForm = (props) => {
                         },
                       }}
                     />
+                     <Col lg={12} md={12} sm={24} xs={24}>
                     <div className='form-wrapper'>
                       <Form.Item className='form-item' label='Total weight(kg)'>
                         {getFieldDecorator('tweight', {
@@ -2254,6 +2255,7 @@ const CreateSlittingDetailsForm = (props) => {
                         )}
                       </Form.Item>
                     </div>
+                    </Col>
                   </Col>
                 </Row>
               ) : (
