@@ -224,7 +224,7 @@ const DeliveryInfo = (props) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const iList = props?.inward.inwardListForDelivery.filter(item => (item?.inwardEntryId && item?.status?.statusName === "RECEIVED") || (item?.instruction?.length && !item.childInstructions && !item.instructionId && item?.status?.statusName === "READY TO DELIVER"))
+    const iList = props?.inward.inwardListForDelivery.filter(item => (item?.inwardEntryId && item?.status?.statusName === "RECEIVED") || (item?.instruction?.length && !item.childInstructions && !item.instructionId && item?.status?.statusName === "READY TO DELIVER" || (item.inwardType === "Sheet" && item?.status?.statusName === "READY TO DELIVER")));
 
     if (iList?.length) {
       const payload = {
