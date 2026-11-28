@@ -167,7 +167,7 @@ export default (state = INIT_STATE, action) => {
         case actionTypes.COIL_NOT_FOUND: {
             return {
                 ...state,
-                loading: true,
+                loading: false,
                 errorMessage: 'entered coil not exist.',
                 operation: 'coilNotFound',
             }

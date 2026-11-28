@@ -24,7 +24,6 @@ import {
   updateYLR,
   resetYLR,
   fetchClassificationList,
-  fetchPartyList,
   deleteYLR,
   fetchProcessList
 } from '../../../appRedux/actions';
@@ -188,7 +187,6 @@ const YieldLoss = (props) => {
         userId: ""
     });
       props.fetchMaterialList();
-      props.fetchPartyList();
       props.fetchClassificationList();
       props.fetchProcessList();
     }, 1000);
@@ -605,7 +603,6 @@ export default connect(mapStateToProps, {
   updateYLR,
   resetYLR,
   fetchClassificationList,
-  fetchPartyList,
   deleteYLR,
   fetchProcessList
 })(addYieldLossForm);

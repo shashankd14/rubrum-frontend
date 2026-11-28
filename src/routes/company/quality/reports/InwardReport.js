@@ -1,9 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { connect } from "react-redux";
-import { Link, useHistory, useLocation, withRouter } from "react-router-dom";
-import { Button, Card, Col, Divider, Icon, Modal, Radio, Row, Select, Table } from 'antd'
+import { useHistory, useLocation, withRouter } from "react-router-dom";
+import { Col, Divider, Modal, Row, Select, Table } from 'antd'
 import {
-    fetchPartyList,
     fetchInwardList,
     fetchTemplatesList,
     fetchTemplatesLinkList,
@@ -197,7 +196,6 @@ const InwardReport = (props) => {
       }, [totalItems]);
 
     useEffect(() => {
-        props.fetchPartyList();
         props.fetchTemplatesList();
     }, []);
 
@@ -454,7 +452,6 @@ const mapStateToProps = (state) => ({
 export default connect(mapStateToProps, {
     fetchInwardList,
     fetchTemplatesList,
-    fetchPartyList,
     fetchTemplatesLinkList,
     getQualityTemplateById,
     getQualityReportById,

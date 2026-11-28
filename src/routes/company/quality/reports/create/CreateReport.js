@@ -28,7 +28,7 @@ const CreateReport = (props) => {
   const [materialDetails, setMaterialDetails] = useState();
 
   useEffect(() => {
-    if (props.match) {
+    if (props.match.url) {
       const urlPaths = props.match.url.split("/");
       if (
         urlPaths[urlPaths.length - 2] == "view" ||
@@ -41,7 +41,7 @@ const CreateReport = (props) => {
         setAction("create");
       }
     }
-  }, [props.match]);
+  }, [props.match.url]);
 
   const [matchedTemplateName, setMatchedTemplateName] = useState("");
 

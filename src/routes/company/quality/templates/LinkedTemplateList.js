@@ -7,7 +7,6 @@ import { useIntl } from "react-intl";
 import SearchBox from "../../../../components/SearchBox";
 
 import {
-  fetchPartyList,
   fetchTemplatesLinkList,
   fetchTemplatesLinkListSuccess,
 } from "../../../../appRedux/actions";
@@ -27,7 +26,6 @@ const LinkedTemplateList = (props) => {
   }, []);
 
   useEffect(() => {
-    props.fetchPartyList();
     props.fetchTemplatesLinkList();
   }, []);
 
@@ -138,7 +136,6 @@ const mapStateToProps = (state) => ({
 });
 
 export default connect(mapStateToProps, {
-  fetchPartyList,
   fetchTemplatesLinkList,
   fetchTemplatesLinkListSuccess,
 })(LinkedTemplateList);

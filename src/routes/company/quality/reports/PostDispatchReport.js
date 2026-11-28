@@ -11,7 +11,6 @@ import {
   Table,
 } from "antd";
 import {
-  fetchPartyList,
   fetchTemplatesList,
   fetchTemplatesLinkList,
   getQualityTemplateById,
@@ -202,7 +201,6 @@ const PostDispatchReport = (props) => {
   ];
 
   useEffect(() => {
-    props.fetchPartyList();
     props.fetchTemplatesList();
   }, []);
 
@@ -546,7 +544,6 @@ const mapStateToProps = (state) => ({
 
 export default connect(mapStateToProps, {
   fetchTemplatesList,
-  fetchPartyList,
   fetchTemplatesLinkList,
   getQualityTemplateById,
   getQualityReportById,

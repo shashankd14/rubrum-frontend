@@ -5,7 +5,7 @@ import moment from 'moment';
 import SearchBox from "../../../components/SearchBox";
 
 import IntlMessages from "../../../util/IntlMessages";
-import { fetchPartyList, addParty, fetchPartyListId, updateParty, resetParty, fetchClassificationList,fetchEndUserTagsList, fetchTemplatesList } from "../../../appRedux/actions";
+import { addParty, fetchPartyListId, updateParty, resetParty, fetchClassificationList,fetchEndUserTagsList, fetchTemplatesList } from "../../../appRedux/actions";
 import { onDeleteContact } from "../../../appRedux/actions";
 
 const FormItem = Form.Item;
@@ -163,7 +163,6 @@ const Party = (props) => {
 
     useEffect(() => {
         setTimeout(() => {
-            props.fetchPartyList();
             props.fetchClassificationList();
             props.fetchEndUserTagsList();
             props.fetchTemplatesList()
@@ -723,7 +722,6 @@ const addPartyForm = Form.create({
 })(Party);
 
 export default connect(mapStateToProps, {
-    fetchPartyList,
     addParty,
     fetchPartyListId,
     updateParty,

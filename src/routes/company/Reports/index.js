@@ -5,7 +5,7 @@ import Reports from "./Reports";
 const WorkInProgress = ({match}) => (
     <Switch>
         <Redirect exact from={`${match.url}/`} to={`${match.url}/reports`}/>
-        <Route path={`${match.url}/reports`} component={props => <Reports {...props} />} />        
+        <Route path={`${match.url}/reports`} render={props => <Reports {...props} />} />     
     </Switch>
 );
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { connect } from "react-redux";
-import { useHistory, useLocation, withRouter } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import {
   Col,
   Divider,
@@ -10,7 +10,6 @@ import {
   Table,
 } from "antd";
 import {
-  fetchPartyList,
   fetchTemplatesList,
   fetchTemplatesLinkList,
   getQualityTemplateById,
@@ -202,7 +201,6 @@ const PreDispatchReport = (props) => {
   ];
 
   useEffect(() => {
-    props.fetchPartyList();
     props.fetchTemplatesList();
   }, []);
 
@@ -551,7 +549,6 @@ const mapStateToProps = (state) => ({
 
 export default connect(mapStateToProps, {
   fetchTemplatesList,
-  fetchPartyList,
   fetchTemplatesLinkList,
   getQualityTemplateById,
   getQualityReportById,

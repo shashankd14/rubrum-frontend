@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { connect } from "react-redux";
 import { Button, Card, Divider, Table, message } from "antd";
 import moment from "moment";
@@ -13,6 +13,7 @@ import {
   fetchPartyListById,
 } from "../../../appRedux/actions/Inward";
 import {sidebarMenuItems} from "../../../constants";
+import useDebounce from "../../../components/useDebounce";
 
 const inwardMenuConstants = {
   'view': "View",
@@ -33,18 +34,21 @@ const List = (props) => {
   );
 
   const [pageNo, setPageNo] = React.useState(1);
+  const [pageSize, setPageSize] = useState(15);
   const [totalPageItems, setTotalItems] = React.useState(0);
   const [menuInwardLabelList, setMenuInwardLabelList] = useState([]);
 
   const { totalItems } = props.inward;
-
+  const debouncedSearchValue = useDebounce(searchValue, 500);
+  const lastSearchRef = useRef("");
+  
   const columns = [
     {
       title: "Coil Number",
       dataIndex: "coilNumber",
       key: "coilNumber",
       filters: [],
-      sorter: (a, b) => a.coilNumber.length - b.coilNumber.length,
+      sorter: true,
       sortOrder: sortedInfo.columnKey === "coilNumber" && sortedInfo.order,
     },
     {
@@ -72,7 +76,7 @@ const List = (props) => {
       },
       key: "dReceivedDate",
       filters: [],
-      sorter: (a, b) => a.dReceivedDate - b.dReceivedDate,
+      sorter: true,
       sortOrder: sortedInfo.columnKey === "dReceivedDate" && sortedInfo.order,
     },
     {
@@ -99,7 +103,7 @@ const List = (props) => {
       dataIndex: "status.statusName",
       key: "status.statusName",
       filters: [],
-      sorter: (a, b) => a.status.statusName.length - b.status.statusName.length,
+      sorter: true,
       sortOrder:
         sortedInfo.columnKey === "status.statusName" && sortedInfo.order,
     },
@@ -108,7 +112,7 @@ const List = (props) => {
       dataIndex: "fThickness",
       key: "fThickness",
       filters: [],
-      sorter: (a, b) => a.fThickness - b.fThickness,
+      sorter: true,
       sortOrder: sortedInfo.columnKey === "fThickness" && sortedInfo.order,
     },
     {
@@ -116,7 +120,7 @@ const List = (props) => {
       dataIndex: "fQuantity",
       key: "fQuantity",
       filters: [],
-      sorter: (a, b) => a.fQuantity - b.fQuantity,
+      sorter: true,
       sortOrder: sortedInfo.columnKey === "fQuantity" && sortedInfo.order,
     },
     {
@@ -145,13 +149,14 @@ const List = (props) => {
       ),
     },
   ];
+  
   const onDelete = (record, key, e) => {
     let id = [];
     id.push(record.inwardEntryId);
     e.preventDefault();
     props.deleteInwardEntryById(id);
-    console.log(record, key);
   };
+
   const onEdit = (record, key, e) => {
     props.resetInwardForm();
     props.fetchPartyListById(record.inwardEntryId);
@@ -159,6 +164,7 @@ const List = (props) => {
       props.history.push(`create/${record.inwardEntryId}`);
     }, 2000);
   };
+
   useEffect(() => {
     if (props.inward.deleteSuccess) {
       message.success("Successfully deleted the coil", 2).then(() => {
@@ -166,6 +172,7 @@ const List = (props) => {
       });
     }
   }, [props.inward.deleteSuccess]);
+
   useEffect(() => {
     if (props.inward.deleteFail) {
       message.success("Unable to delete the coil", 2).then(() => {
@@ -181,18 +188,20 @@ const List = (props) => {
   }, [totalItems]);
 
   useEffect(() => {
-    if (searchValue) {
-      if (searchValue.length >= 3) {
+    if (debouncedSearchValue) {
+      if (debouncedSearchValue.length >= 3) {
         setPageNo(1);
-        props.fetchInwardListOldAPI(1, 15, searchValue);
+        props.fetchInwardListOldAPI(1, 15, debouncedSearchValue);
       }
     } else {
       setPageNo(1);
-      props.fetchInwardListOldAPI(1, 15, searchValue);
+      props.fetchInwardListOldAPI(1, 15, debouncedSearchValue);
     }
-  }, [searchValue]);
+  }, [debouncedSearchValue]);
 
   const handleChange = (pagination, filters, sorter) => {
+    setPageNo(pagination.current || 1);
+    setPageSize(pagination.pageSize);
     setSortedInfo(sorter);
     setFilteredInfo(filters);
   };
@@ -223,6 +232,7 @@ const List = (props) => {
       }
       setMenuInwardLabelList(menuInwardLabels);
     }
+    props.fetchInwardListOldAPI(pageNo, 15, debouncedSearchValue)
   }, [])
 
   return (
@@ -266,10 +276,6 @@ const List = (props) => {
           onChange={handleChange}
           pagination={{
             pageSize: 15,
-            onChange: (page) => {
-              setPageNo(page);
-              props.fetchInwardListOldAPI(page, 15, searchValue);
-            },
             current: pageNo,
             total: totalPageItems,
           }}

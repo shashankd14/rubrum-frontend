@@ -2,29 +2,33 @@ import React from "react";
 import asyncComponent from "util/asyncComponent";
 import { Route, Switch } from "react-router-dom";
 
+const List = asyncComponent(() => import("./Templates"));
+const CreateTemplate = asyncComponent(() => import("./create"));
+const Link = asyncComponent(() => import("./linked"));
+
 const QualityTemplate = ({ match }) => {
   return (
     <Switch>
       <Route
         exact
         path={`${match.url}/`}
-        component={asyncComponent(() => import("./Templates"))}
+        component={List}
       />
       <Route
         path={`${match.url}/create`}
-        component={asyncComponent(() => import("./create"))}
+        component={CreateTemplate}
       />
       <Route
         path={`${match.url}/view/:id`}
-        component={asyncComponent(() => import("./create"))}
+        component={CreateTemplate}
       />
       <Route
         path={`${match.url}/edit/:id`}
-        component={asyncComponent(() => import("./create"))}
+        component={CreateTemplate}
       />
       <Route
         path={`${match.url}/link`}
-        component={asyncComponent(() => import("./linked"))}
+        component={Link}
       />
       {/* <Route path={`${match.url}/link/edit/:id`} component={asyncComponent(() => import('./linked'))} />
             <Route path={`${match.url}/link/view/:id`} component={asyncComponent(() => import('./linked'))} /> */}

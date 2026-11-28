@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import {connect} from 'react-redux';
 import {Button, Card, AutoComplete, Select, Row, Col, Form, DatePicker, message} from "antd";
 import moment from 'moment';
-import { fetchPartyList, sendReportRequest, resetSendReportSuccess } from "../../../appRedux/actions";
+import { sendReportRequest, resetSendReportSuccess } from "../../../appRedux/actions";
 import {APPLICATION_DATE_FORMAT} from '../../../constants/index';
 
 export const formItemLayout = {
@@ -24,10 +24,6 @@ const Reports = (props) => {
 
     const { getFieldDecorator } = props.form;
     const [dataSource, setDataSource] = useState([]);
-
-    useEffect(() => {
-        props.fetchPartyList();
-    }, []);
 
     useEffect(() => {
         if (props.isReportSuccess) {
@@ -143,7 +139,6 @@ const mapStateToProps = state => ({
 const ReportForm = Form.create()(Reports);
 
 export default connect(mapStateToProps, {
-    fetchPartyList,
     sendReportRequest,
     resetSendReportSuccess
 })(ReportForm);

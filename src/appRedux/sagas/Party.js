@@ -1,7 +1,9 @@
 import {all, put, fork, takeLatest} from "redux-saga/effects";
 import { getUserToken } from './common';
 import { FETCH_PARTY_LIST_REQUEST, ADD_PARTY_REQUEST, FETCH_PARTY_LIST_ID_REQUEST, UPDATE_PARTY_REQUEST, GET_LOCATION_LIST_REQUEST } from "../../constants/ActionTypes";
-import {fetchPartyListSuccess,
+import {
+    fetchPartyList as fetchPartyListAction,
+    fetchPartyListSuccess,
     fetchPartyListError,
     addPartySuccess,
     addPartyError,
@@ -160,6 +162,7 @@ function* addParty(action) {
         });
         if (addParty.status == 200) {
             yield put(addPartySuccess());
+            yield put(fetchPartyListAction());
         } else if (addParty.status === 401) {
             yield put(userSignOutSuccess());
         } else
@@ -263,6 +266,7 @@ function* updateParty(action) {
         });
         if (updateParty.status == 200) {
             yield put(updatePartySuccess());
+            yield put(fetchPartyListAction());
         } else if (updateParty.status === 401) {
             yield put(userSignOutSuccess());
         } else

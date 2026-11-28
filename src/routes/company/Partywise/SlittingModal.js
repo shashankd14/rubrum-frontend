@@ -16,7 +16,7 @@ import {
   Card,
 } from 'antd';
 import React, { useEffect, useState } from 'react';
-import SweetAlert from 'react-bootstrap-sweetalert';
+
 import { connect, useDispatch } from 'react-redux';
 import moment from 'moment';
 import {
@@ -38,10 +38,11 @@ import {
   fetchYLRList,
 } from '../../../appRedux/actions';
 import { labelPrintEditFinish } from '../../../appRedux/actions/LabelPrint';
-import IntlMessages from 'util/IntlMessages';
 
 const { Panel } = Collapse;
 const Option = Select.Option;
+const { confirm } = Modal;
+
 const userId = localStorage.getItem("userId");
 
 export const formItemLayout = {
@@ -375,8 +376,8 @@ const SlittingWidths = (props) => {
         const totalWeightRound = Number(totalWeight.toFixed(0));
         const remainWeightRound = Number(remainWeight.toFixed(0));
         if (Number(availLength) > lengthValue) {
-          setLengthExceedConfirm(true);
-          message.error('Length greater than available length', 2);
+          showConfirm();
+          message.error("Length greater than available length", 2);
         } else if (totalWeightRound - remainWeightRound > remainWeightRound) {
           message.error('Weight greater than available weight', 2);
         } else if (totalPacketsWidth !== widthValue) {
@@ -525,6 +526,23 @@ const SlittingWidths = (props) => {
 
   const onCancel = (e) => {
     setLengthExceedConfirm(false);
+  };
+
+  const showConfirm = () => {
+    confirm({
+      title: "Do you want to proceed with current available length?",
+      content: `Targeted length: ${availLength}
+        Current Avaialble length: ${props.coilDetails?.availableLength}
+    Targeted length is greater than the available length`,
+      okText: "Yes",
+      cancelText: "No",
+      onOk() {
+        onConfirm();
+      },
+      onCancel() {
+        onCancel();
+      },
+    });
   };
 
   return (
@@ -789,7 +807,7 @@ const SlittingWidths = (props) => {
           </>
         )}
       </Form>
-      <SweetAlert
+      {/* <SweetAlert
         show={lengthExceedConfirm}
         custom
         showCancel
@@ -806,7 +824,7 @@ const SlittingWidths = (props) => {
         <div>{`Current Avaialble length: ${props.coilDetails?.availableLength}`}</div>
         <div>{`Targeted length is greater than the available length`}</div>
         <div>Do you want to proceed with current available length?</div>
-      </SweetAlert>
+      </SweetAlert> */}
     </>
   );
 };

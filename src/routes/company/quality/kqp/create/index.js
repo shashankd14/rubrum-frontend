@@ -1,14 +1,15 @@
-import React, { useEffect } from "react";
+import React from "react";
 import asyncComponent from "util/asyncComponent";
 import { Route, Switch } from "react-router-dom";
 
+const CreateTemplate = asyncComponent(() => import("./CreateTemplate"));
 const QualityTemplateCreate = ({ match }) => {
   return (
     <Switch>
       <Route
         exact
         path={`${match.url}`}
-        component={asyncComponent(() => import("./CreateTemplate"))}
+        component={CreateTemplate}
       />
     </Switch>
   );

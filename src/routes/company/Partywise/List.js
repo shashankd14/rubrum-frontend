@@ -1,5 +1,4 @@
-//src-routes-company-Partywise-List.js
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { connect } from "react-redux";
 import { Button, Card, Divider, Select, Table, Modal, message } from "antd";
 import SearchBox from "../../../components/SearchBox";
@@ -11,11 +10,11 @@ import {
   getS3PDFUrl,
 } from "../../../appRedux/actions/Inward";
 import {
-  fetchPartyList,
   setInwardSelectedForDelivery,
   getLocationList
 } from "../../../appRedux/actions";
 import { sidebarMenuItems } from "../../../constants";
+import useDebounce from "../../../components/useDebounce";
 
 const Option = Select.Option;
 
@@ -31,9 +30,7 @@ const partyWiseMenuConstants = {
 }
 const List = (props) => {
   const [sortedInfo, setSortedInfo] = useState({
-    // order: "descend",
-    // columnKey: "age",
-    order: "ASC",
+    order: "ascend",
     columnKey: "fThickness",
   });
   const [filteredInfo, setFilteredInfo] = useState(null);
@@ -42,6 +39,8 @@ const List = (props) => {
   const [customerValue, setCustomerValue] = useState("");
   const [customerLabel, setCustomerLabel] = useState("");
   const { inwardList, totalItems, totalPresentWeight, totalInStockWeight } = props.inward;
+  const debouncedSearchValue = useDebounce(searchValue, 500);
+  const lastSearchRef = useRef("");
 
   let filter = inwardList.map((item) => {
     if (item.instruction.length > 0) {
@@ -49,7 +48,6 @@ const List = (props) => {
     }
     return item;
   });
-  const [filteredInwardList, setFilteredInwardList] = useState(filter);
   const [menuPartyWiseLabelList, setMenuPartyWiseLabelList] = useState([]);
   const [partywisepermission, setPartywisePermission] = useState([]);
 
@@ -62,8 +60,6 @@ const List = (props) => {
   const [selectedCoil, setSelectedCoil] = React.useState([]);
   const [selectedLocation, setSelectedLocation] = React.useState([]);
   const [pageSize, setPageSize] = useState(15);
-  const [sortColumn, setSortColumn] = useState(null);
-  const [sortOrder, setSortOrder] = useState(null);
 
   const columns = [
     {
@@ -71,7 +67,7 @@ const List = (props) => {
       dataIndex: "coilNumber",
       key: "coilNumber",
       filters: [],
-      sorter: (a, b) => a.coilNumber?.length - b.coilNumber?.length,
+      sorter: true,
       sortOrder: sortedInfo.columnKey === "coilNumber" && sortedInfo.order,
     },
     {
@@ -81,20 +77,8 @@ const List = (props) => {
       filteredValue: filteredInfo ? filteredInfo["customerBatchId"] : null,
       onFilter: (value, record) => record.customerBatchId == value,
       filters: [],
-      sorter: (a, b) => a.customerBatchId?.length - b.customerBatchId?.length,
+      sorter: true,
       sortOrder: sortedInfo.columnKey === "customerBatchId" && sortedInfo.order,
-      // render: (text, record) => {
-      //   if (record.customerBatchId) return record.customerBatchId;
-      //   else {
-      //     let batchId = "";
-      //     expandedRow.forEach((row) => {
-      //       if (row.child.includes(record.instructionId)) {
-      //         batchId = row.batch;
-      //       }
-      //     });
-      //     return batchId;
-      //   }
-      // },
     },
     {
       title: "Material",
@@ -108,17 +92,14 @@ const List = (props) => {
             ...new Set(inwardList.map((item) => item.material?.description)),
           ].map((material) => ({ text: material, value: material }))
           : [],
-      sorter: (a, b) =>
-        a.material?.description.length - b.material?.description.length,
-      sortOrder:
-        sortedInfo.columnKey === "material.description" && sortedInfo.order,
+      sorter: false,
     },
     {
       title: "Thickness",
       dataIndex: "fThickness",
       key: "fThickness",
       filters: [],
-      sorter: (a, b) => a.fThickness - b.fThickness,
+      sorter: true,
       sortOrder: sortedInfo.columnKey === "fThickness" && sortedInfo.order,
       // render: (text, record) => {
       //   if (record.fThickness) return record.fThickness;
@@ -138,7 +119,7 @@ const List = (props) => {
       dataIndex: "fWidth",
       key: "fWidth",
       filters: [],
-      sorter: (a, b) => a.fWidth - b.fWidth,
+      sorter: true,
       sortOrder: sortedInfo.columnKey === "fWidth" && sortedInfo.order,
       render: (text, record) => {
         return record.fWidth || record.actualWidth || record.plannedWidth;
@@ -149,7 +130,7 @@ const List = (props) => {
       dataIndex: "fLength",
       key: "fLength",
       filters: [],
-      sorter: (a, b) => a.fLength - b.fLength,
+      sorter: true,
       sortOrder: sortedInfo.columnKey === "fLength" && sortedInfo.order,
       render: (text, record) => {
         return record.fLength || record.actualLength || record.plannedLength;
@@ -160,7 +141,7 @@ const List = (props) => {
       dataIndex: "actualNoOfPieces",
       key: "actualNoOfPieces",
       filters: [],
-      sorter: (a, b) => a.actualNoOfPieces - b.actualNoOfPieces,
+      sorter: true,
       sortOrder: sortedInfo.columnKey === "actualNoOfPieces" && sortedInfo.order,
       render: (text, record) => {
         if (record.status && record.status.statusName === "DISPATCHED") {
@@ -174,7 +155,7 @@ const List = (props) => {
       dataIndex: "inStockWeight",
       key: "inStockWeight",
       filters: [],
-      sorter: (a, b) => a.inStockWeight - b.inStockWeight,
+      sorter: true,
       sortOrder: sortedInfo.columnKey === "inStockWeight" && sortedInfo.order,
       render: (text, record) => {
         return (
@@ -187,7 +168,7 @@ const List = (props) => {
       dataIndex: "status.statusName",
       key: "status.statusName",
       filters: [],
-      sorter: (a, b) => a.status.statusName.length - b.status.statusName.length,
+      sorter: true,
       sortOrder:
         sortedInfo.columnKey === "status.statusName" && sortedInfo.order,
     },
@@ -251,15 +232,21 @@ const List = (props) => {
       ),
     },
   ];
-  //filter data which is dispatched
-  // const filteredInwardListWithoutDispatched = filteredInwardList.filter(item => !(item.status && item.status.statusId === 4 && item.status.statusName === "DISPATCHED"));
 
   useEffect(() => {
-    props.fetchPartyList();
-  }, []);
+    if (debouncedSearchValue === lastSearchRef.current) return;
+    lastSearchRef.current = debouncedSearchValue;
 
+    setPageNo(1);
+    props.fetchInwardList(1, pageSize, debouncedSearchValue, customerValue,
+      sortedInfo.order === "descend" ? "DESC" : "ASC", sortedInfo.columnKey,
+      partywisepermission === 'ENDUSER_TAG_WISE_PACKETS' ? 'ENDUSER' : '', locationValue);
+  }, [debouncedSearchValue]);
 
   useEffect(() => {
+    props.fetchInwardList(pageNo,
+      pageSize, searchValue, customerValue, sortedInfo.order === "descend" ? "DESC" : "ASC",
+      sortedInfo.columnKey, partywisepermission === 'ENDUSER_TAG_WISE_PACKETS' ? 'ENDUSER' : '', locationValue);
     const menus = localStorage.getItem('Menus') ? JSON.parse(localStorage.getItem('Menus')) : [];
     if (menus.length > 0) {
       const menuLabels = menus.filter(menu => menu.menuKey === sidebarMenuItems.partywiseRegister);
@@ -279,56 +266,37 @@ const List = (props) => {
     }
   }, [totalItems]);
 
-  const getFilterData = (list) => {
-    let filter = list.map((item) => {
-      if (item.instruction.length > 0) {
-        item.children = item.instruction.filter((ins) => ins.groupId === null);
-      }
-      return item;
-    });
-    return filter;
-  };
-  useEffect(() => {
-    if (!props.inward.loading && props.inward.success) {
-      // setFilteredInwardList(getFilterData(inwardList));
-      if (inwardList.length !== 0) {
-        inwardList[0].children = inwardList[0].instruction
-      }
-      setFilteredInwardList(inwardList);
-    }
-  }, [props.inward.loading, props.inward.success]);
-
-  useEffect(() => {
-    if (searchValue) {
-      if (searchValue.length >= 3) {
-        setPageNo(1);
-        props.fetchInwardList(1, 20, searchValue, customerValue, sortOrder, sortColumn, partywisepermission === 'ENDUSER_TAG_WISE_PACKETS' ? 'ENDUSER' : '', locationValue);
-      }
-    } else {
-      setPageNo(1);
-      props.fetchInwardList(1, 20, searchValue, customerValue, sortOrder, sortColumn, partywisepermission === 'ENDUSER_TAG_WISE_PACKETS' ? 'ENDUSER' : '', locationValue);
-    }
-  }, [searchValue]);
+  // useEffect(() => {
+  //   if (searchValue) {
+  //     if (searchValue.length >= 3) {
+  //       setPageNo(1);
+  //       props.fetchInwardList(1, 20, searchValue, customerValue, sortOrder, sortColumn, partywisepermission === 'ENDUSER_TAG_WISE_PACKETS' ? 'ENDUSER' : '', locationValue);
+  //     }
+  //   } else {
+  //     setPageNo(1);
+  //     props.fetchInwardList(1, 20, searchValue, customerValue, sortOrder, sortColumn, partywisepermission === 'ENDUSER_TAG_WISE_PACKETS' ? 'ENDUSER' : '', locationValue);
+  //   }
+  // }, [searchValue]);
 
   const handleChange = (pagination, filters, sorter, partyId) => {
     setSortedInfo(sorter);
     setFilteredInfo(filters);
-    setSortColumn(sorter.columnKey);
-    setSortOrder(sorter.order === 'descend' ? 'DESC' : 'ASC');
-  };
-  useEffect(() => {
-    if (sortColumn && sortOrder) {
-      setPageNo(1);
-      props.fetchInwardList(1, 20, searchValue, customerValue, sortOrder, sortColumn, partywisepermission === 'ENDUSER_TAG_WISE_PACKETS' ? 'ENDUSER' : '', locationValue);
-    }
-  }, [sortColumn, sortOrder]);
+    setPageNo(pagination.current || 1);
+    setPageSize(pagination.pageSize);
 
+    props.fetchInwardList(pagination.current || 1,
+      pagination.pageSize, searchValue, customerValue, sorter.order === "descend" ? "desc" : "asc",
+      sorter.columnKey, partywisepermission === 'ENDUSER_TAG_WISE_PACKETS' ? 'ENDUSER' : '', locationValue);
+  };
 
   const clearFilters = (value) => {
     setCustomerValue("");
     setFilteredInfo(null);
+    setSortedInfo({});
     setSearchValue("");
     setPageNo(1);
+    setLocationValue("");
+    lastSearchRef.current = "";
     props.fetchInwardList(1, 15);
   };
 
@@ -339,11 +307,10 @@ const List = (props) => {
       setCustomerValue(value);
       setCustomerLabel(label.props.children);
       setPageNo(1);
-      props.fetchInwardList(1, pageSize, searchValue, value, '', '', partywisepermission === 'ENDUSER_TAG_WISE_PACKETS' ? 'ENDUSER' : '', locationValue);
+      props.fetchInwardList(1, pageSize, searchValue, value, sortedInfo.order === "descend" ? "desc" : "asc", sortedInfo.columnKey, partywisepermission === 'ENDUSER_TAG_WISE_PACKETS' ? 'ENDUSER' : '', locationValue);
     } else {
       setCustomerValue("");
       setCustomerLabel("");
-      setFilteredInwardList(inwardList);
     }
   };
 
@@ -351,10 +318,10 @@ const List = (props) => {
     if (value) {
       setLocationValue(value);
       setPageNo(1);
-      props.fetchInwardList(1, pageSize, searchValue, customerValue, '', '', partywisepermission === 'ENDUSER_TAG_WISE_PACKETS' ? 'ENDUSER' : '', value);
+      props.fetchInwardList(1, pageSize, searchValue, customerValue, sortedInfo.order === "descend" ? "desc" : "asc", sortedInfo.columnKey
+        , partywisepermission === 'ENDUSER_TAG_WISE_PACKETS' ? 'ENDUSER' : '', value);
     } else {
       setLocationValue("");
-      setFilteredInwardList(inwardList);
     }
   };
 
@@ -582,7 +549,9 @@ const List = (props) => {
               styleName="gx-flex-1"
               placeholder="Search for coil number or party name..."
               value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
+              onChange={(e) => {
+                setSearchValue(e.target.value);
+              }}
             />
           </div>
         </div>
@@ -598,39 +567,22 @@ const List = (props) => {
             {gets3PDFurl()}
           </Modal>
         )}
-        
+
         {customerLabel && <Card style={{ marginBottom: 10 }} type="inner" bordered={true}>
           {`${customerLabel} - `}<b>Total Present Weight: {totalPresentWeight} kgs Total In Stock Weight: {totalInStockWeight} kgs</b>
         </Card>}
         <Table
+          loading={props.inward.loading}
           scroll={{ y: 540 }}
           className="gx-table-responsive"
           columns={columns}
-          dataSource={filteredInwardList}
-          // dataSource={filteredInwardListWithoutDispatched}
+          key={props.inward?.inwardList[0]?.inwardEntryId || pageNo}
+          rowKey={(record) => record.key}
+          dataSource={props.inward.inwardList}
           onChange={handleChange}
           rowSelection={partywisepermission === 'ENDUSER_TAG_WISE_PACKETS' ? false : rowSelection}
-          // onExpand={(expanded, record, data) => {
-          //   const motherRecord = {
-          //     key: record.key,
-          //     child: record.instruction
-          //       ? record.instruction?.map((r) => r.instructionId)
-          //       : record.childInstructions?.map((r) => r.instructionId),
-          //     batch: record.customerBatchId,
-          //     fThickness: record.fThickness,
-          //   };
-          //   const result = expanded
-          //     ? expandedRow
-          //     : expandedRow.filter((row) => row.key !== record.key);
-          //   setExpandedRecord([...result, motherRecord]);
-          // }}
-
           pagination={{
             pageSize: 15,
-            onChange: (page) => {
-              setPageNo(page);
-              props.fetchInwardList(page, pageSize, searchValue, customerValue, sortOrder, sortColumn, partywisepermission === 'ENDUSER_TAG_WISE_PACKETS' ? 'ENDUSER' : '', locationValue);
-            },
             current: pageNo,
             total: totalPageItems,
           }}
@@ -646,7 +598,6 @@ const mapStateToProps = (state) => ({
 });
 
 export default connect(mapStateToProps, {
-  fetchPartyList,
   fetchInwardList,
   getCoilsByPartyId,
   setInwardSelectedForDelivery,

@@ -25,7 +25,7 @@ const CreateTemplate = (props) => {
     const Option = Select.Option;
 
     useEffect(() => {
-        if (props.match) {
+        if (props.match.url) {
             const urlPaths = props.match.url.split('/')
             if (urlPaths[urlPaths.length - 2] == 'view' || urlPaths[urlPaths.length - 2] == 'edit') {
                 setAction(urlPaths[urlPaths.length - 2])
@@ -34,7 +34,7 @@ const CreateTemplate = (props) => {
                 setAction('create')
             }
         }
-    }, [props.match])
+    }, [props.match.url])
 
     useEffect(() => {
         if (!props.templateDetails.loading && !props.templateDetails.error && props.templateDetails.operation === 'kqpById') {

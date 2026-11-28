@@ -24,7 +24,6 @@ import IntlMessages from "../../../util/IntlMessages";
 import {
   fetchRatesList,
   fetchPackingRatesList,
-  fetchPartyList,
   fetchMaterialList,
   fetchProcessList,
   addRates,
@@ -453,7 +452,6 @@ sortOrder: sortedInfo.columnKey === 'laminationSSmaterial' && sortedInfo.order,
     }
   };
   useEffect(() => {
-    props.fetchPartyList();
     props.fetchMaterialList();
     props.fetchProcessList();
     props.fetchAdditionalPriceList();
@@ -1673,7 +1671,6 @@ const addRatesForm = Form.create({
 export default connect(mapStateToProps, {
   fetchRatesList,
   fetchPackingRatesList,
-  fetchPartyList,
   fetchMaterialList,
   fetchProcessList,
   addRates,

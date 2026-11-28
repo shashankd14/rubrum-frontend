@@ -14,7 +14,8 @@ import {
     RESET_PARTY_REQUEST,
     GET_LOCATION_LIST_REQUEST,
     GET_LOCATION_LIST_SUCCESS,
-    GET_LOCATION_LIST_ERROR
+    GET_LOCATION_LIST_ERROR,
+    SIGNOUT_USER_SUCCESS
 } from "../../constants/ActionTypes";
 
 const INIT_STATE = {
@@ -134,6 +135,9 @@ export default (state = INIT_STATE, action) => {
                 loading: false,
                 error: true,
             }
+        }
+        case SIGNOUT_USER_SUCCESS: {
+            return INIT_STATE;
         }
         
         default:
