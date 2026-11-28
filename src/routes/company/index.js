@@ -3,18 +3,29 @@ import {Route, Switch} from "react-router-dom";
 
 import asyncComponent from "util/asyncComponent";
 
+const Master = asyncComponent(() => import('./Master'));
+const Inward = asyncComponent(() => import('./Inward'));
+const Partywise = asyncComponent(() => import('./Partywise'));
+const WorkinProgress = asyncComponent(() => import('./WorkinProgress'));
+const labelPrint = asyncComponent(() => import('./LabelPrint'));
+const deliveredItems = asyncComponent(() => import('./Delivery'));
+const reports = asyncComponent(() => import('./Reports'));
+const billingInfo = asyncComponent(() => import('./Delivery/BillingInfo'));
+const quality = asyncComponent(() => import('./quality'));
+const userAccess = asyncComponent(() => import('./UserAccess'));
+
 const Company = ({match}) => (
     <Switch>
-        <Route path={`${match.url}/master`} component={asyncComponent(() => import('./Master'))}/>
-        <Route path={`${match.url}/inward`} component={asyncComponent(() => import('./Inward'))}/>
-        <Route path={`${match.url}/partywise-register`} component={asyncComponent(() => import('./Partywise'))}/>
-        <Route path={`${match.url}/workin-progress`} component={asyncComponent(() => import('./WorkinProgress'))}/>
-        <Route path={`${match.url}/labelPrint`} component={asyncComponent(() => import('./LabelPrint'))}/>
-        <Route path={`${match.url}/deliveredItems`} component={asyncComponent(() => import('./Delivery'))}/>
-        <Route path={`${match.url}/reports`} component={asyncComponent(() => import('./Reports'))}/>
-        <Route path={`${match.url}/billingInfo`} component={asyncComponent(() => import('./Delivery/BillingInfo'))}/>
-        <Route path={`${match.url}/quality`} component={asyncComponent(() => import('./quality'))}/>
-        <Route path={`${match.url}/userAccess`} component={asyncComponent(() => import('./UserAccess'))}/>
+        <Route path={`${match.url}/master`} component={Master} />
+        <Route path={`${match.url}/inward`} component={Inward} />
+        <Route path={`${match.url}/partywise-register`} component={Partywise} />
+        <Route path={`${match.url}/workin-progress`} component={WorkinProgress} />
+        <Route path={`${match.url}/labelPrint`} component={labelPrint} />
+        <Route path={`${match.url}/deliveredItems`} component={deliveredItems} />
+        <Route path={`${match.url}/reports`} component={reports} />
+        <Route path={`${match.url}/billingInfo`} component={billingInfo} />
+        <Route path={`${match.url}/quality`} component={quality} />
+        <Route path={`${match.url}/userAccess`} component={userAccess} />
     </Switch>
 );
 

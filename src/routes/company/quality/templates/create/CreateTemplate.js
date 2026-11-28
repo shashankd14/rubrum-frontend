@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { connect } from 'react-redux';
-import { Card, Form, Input, Select, Tabs } from 'antd'
-import { useIntl } from "react-intl";
+import { Card, Input, Select } from 'antd'
 import IntlMessages from '../../../../../util/IntlMessages'
-import { QUALITY_TEMPLATE_ACTIONS, QUALITY_TEMPLATE_COLUMNS, QUALITY_LINKED_TEMPLATE_ACTIONS, STAGES } from "../../../../../constants/quality/ComponentConstants";
-import { Label } from "recharts";
+import { STAGES } from "../../../../../constants/quality/ComponentConstants";
 import InwardTemplate from "./InwardTemplate";
 import PreProcessingTemplate from "./PreProcessingTemplate";
 import ProcessingTemplate from "./ProcessingTemplate";
@@ -14,32 +12,26 @@ import {
     saveQualityTemplate, 
     getQualityTemplateById,
     updateQualityTemplate,
-    deleteQualityTemplate
  } from "../../../../../appRedux/actions"
 
-
 const CreateTemplate = (props) => {
-
-    const intl = useIntl();
-
     const [templateName, setTemplateName] = useState("");
     const [templateNameErr, setTemplateNameErr] = useState(false);
     const [stageName, setStageName] = useState("");
     const [action, setAction] = useState("create");
     const [templateDetails, setTemplateDetails] = useState("");
 
-
     const Option = Select.Option;
 
     useEffect(() => {
-        if (props.match) {
+        if (props.match.url) {
             const urlPaths = props.match.url.split('/')
             if (urlPaths[urlPaths.length - 2] == 'view' || urlPaths[urlPaths.length - 2] == 'edit') {
                 setAction(urlPaths[urlPaths.length - 2])
                 props.getQualityTemplateById(urlPaths[urlPaths.length - 1])
             }
         }
-    }, [props.match])
+    }, [props.match.url])
 
     useEffect(() => {
         if (!props.templateDetails.loading && !props.templateDetails.error && props.templateDetails.operation === 'templateById') {

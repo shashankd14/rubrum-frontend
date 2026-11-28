@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import {
   fetchDeliveryList,
-  fetchPartyList,
   fetchDeliveryListById,
   postDeliveryConfirm,
   deleteByDeliveryId,
@@ -165,9 +164,6 @@ function List(props) {
       newData[index].deliveryDetails[key] = e.target.value;
       setDeliveryList(newData);
     };
-  useEffect(() => {
-    props.fetchPartyList();
-  }, []);
 
   useEffect(() => {
     if (totalItems) {
@@ -273,7 +269,6 @@ const mapStateToProps = (state) => ({
 
 export default connect(mapStateToProps, {
   fetchDeliveryList,
-  fetchPartyList,
   fetchDeliveryListById,
   postDeliveryConfirm,
   deleteByDeliveryId,

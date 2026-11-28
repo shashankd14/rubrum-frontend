@@ -1,7 +1,7 @@
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 import IntlMessages from "../../../util/IntlMessages";
-import {Button, Divider, Input, Table, Card, Modal, Form, Select, message} from "antd";
-import moment from "moment/moment";
+import { Button, Divider, Input, Table, Card, Modal, Form, Select, message } from "antd";
 import axios from "axios";
 import { getUserToken } from '../../../appRedux/sagas/common';
 
@@ -16,13 +16,16 @@ const getHeaders = () => ({
 });
 const UserAccess = (props) => {
     const [users, setUsers] = useState([]);
-    const [companyData, setCompanyData] = useState([]);
+    const partyList = useSelector((state) => state.party.partyList);
+    const companyData = partyList.map(({ partyName, nPartyId }) => ({
+        label: partyName,
+        value: nPartyId,
+    }));
     const [roleData, setRoleData] = useState([]);
     const [showAddUserModal, setShowAddUserModal] = useState(false);
     const [userEditValues, setUserEditValues] = useState({});
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-    const [deleteConfirmationLoading, setDeleteConfirmationLoading] =
-        useState(false);
+    const [deleteConfirmationLoading, setDeleteConfirmationLoading] = useState(false);
 
     const columns = [
         {
@@ -100,15 +103,6 @@ const UserAccess = (props) => {
         });
     };
 
-    const fetchCompanyData = () => {
-        axios.get(`${baseUrl}api/party/list`, { headers: getHeaders() }).then((response) => {
-            let companyData = response.data.map((company) => ({
-                label: company.partyName,
-                value: company.nPartyId,
-            }));
-            setCompanyData(companyData);
-        });
-    };
     const fetchRoleDetails = () => {
         axios.get(`${baseUrl}api/role/getRoleDetails`, { headers: getHeaders() }).then((response) => {
             let roleData = response.data?.roleDetails?.map((role) => ({
@@ -120,9 +114,6 @@ const UserAccess = (props) => {
     };
 
     useEffect(() => {
-        if (companyData.length === 0) {
-            fetchCompanyData();
-        }
         if (roleData.length === 0) {
             fetchRoleDetails();
         }
@@ -136,15 +127,15 @@ const UserAccess = (props) => {
 
     const formItemLayout = {
         labelCol: {
-            xs: {span: 8},
-            sm: {span: 8},
+            xs: { span: 8 },
+            sm: { span: 8 },
         },
         wrapperCol: {
-            xs: {span: 14},
-            sm: {span: 14},
+            xs: { span: 14 },
+            sm: { span: 14 },
         },
     };
-    const {getFieldDecorator} = props.form;
+    const { getFieldDecorator } = props.form;
 
     const onAddUser = (values) => {
         axios
@@ -198,11 +189,11 @@ const UserAccess = (props) => {
         });
     };
 
-   const handleSubmit = (e) => {
+    const handleSubmit = (e) => {
         // e.preventDefault();
         props.form.validateFieldsAndScroll((err, values) => {
             if (!err) {
-                if(values.id) {
+                if (values.id) {
                     onEditUser(values);
                 } else onAddUser(values);
                 props.form.resetFields();
@@ -228,7 +219,6 @@ const UserAccess = (props) => {
                     Add new user
                 </Button>
                 <Table
-                    rowSelection={[]}
                     className="gx-table-responsive"
                     columns={columns}
                     dataSource={users}
@@ -255,7 +245,7 @@ const UserAccess = (props) => {
                         {getFieldDecorator('id', {
                             initialValue: userEditValues?.userId,
                         })(
-                            <Input type="hidden"/>
+                            <Input type="hidden" />
                         )}
                     </FormItem>
                     <FormItem
@@ -270,7 +260,7 @@ const UserAccess = (props) => {
                         )}
                     </FormItem>
                     <FormItem {...formItemLayout}
-                              label="Email Id">
+                        label="Email Id">
                         {getFieldDecorator('email', {
                             initialValue: userEditValues?.emailId,
                             rules: [{ required: true, message: "Please input your Email Id" }, {
@@ -281,7 +271,7 @@ const UserAccess = (props) => {
                         )}
                     </FormItem>
                     <FormItem {...formItemLayout}
-                              label="Mobile No.">
+                        label="Mobile No.">
                         {getFieldDecorator('mobile', {
                             initialValue: userEditValues?.mobileNo,
                             rules: [{ required: true, message: "Please input your Mobile No." }]
@@ -290,7 +280,7 @@ const UserAccess = (props) => {
                         )}
                     </FormItem>
                     <FormItem {...formItemLayout}
-                              label="User ID">
+                        label="User ID">
                         {getFieldDecorator('userId', {
                             initialValue: userEditValues?.userName,
                             rules: [{ required: true, message: "Please input your User ID" }]
@@ -299,7 +289,7 @@ const UserAccess = (props) => {
                         )}
                     </FormItem>
                     <FormItem {...formItemLayout}
-                              label="Password">
+                        label="Password">
                         {getFieldDecorator('password', {
                             initialValue: userEditValues?.rawPassword,
                             rules: [{ required: true, message: "Please input your Password" }]
@@ -308,7 +298,7 @@ const UserAccess = (props) => {
                         )}
                     </FormItem>
                     <FormItem {...formItemLayout}
-                              label="Company Name">
+                        label="Company Name">
                         {getFieldDecorator('companyName', {
                             initialValue: userEditValues?.userPartyMap?.length > 0 ? userEditValues?.userPartyMap[0].partyId : [],
                             rules: [{ required: true, message: "Please select company name" }]
@@ -321,7 +311,7 @@ const UserAccess = (props) => {
                         )}
                     </FormItem>
                     <FormItem {...formItemLayout}
-                              label="Role">
+                        label="Role">
                         {getFieldDecorator('role', {
                             initialValue: userEditValues?.userRoleMap?.length > 0 ? userEditValues?.userRoleMap[0].roleId : [],
                             rules: [{ required: true, message: "Please assign Role" }]

@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory } from "react-router";
 import { connect } from "react-redux";
-import { Button, Card, Divider, Select, Table, Modal, message } from "antd";
+import { Button, Select, Table } from "antd";
 import { useIntl } from "react-intl";
 import SearchBox from '../../../../components/SearchBox';
-import IntlMessages from '../../../../util/IntlMessages';
 
 import {
-    fetchPartyList,
     fetchKqpList,
     fetchKqpListSuccess
 } from "../../../../appRedux/actions";
@@ -25,7 +23,6 @@ const TemplateList = (props) => {
     const [customerValue, setCustomerValue] = useState("");
 
     useEffect(() => {
-        props.fetchPartyList();
         props.fetchKqpList();
         // if(!props.columns.find(col => col.title === "Action"))
         //     props.columns.push(actionColumn)
@@ -171,7 +168,6 @@ const mapStateToProps = (state) => ({
 });
 
 export default connect(mapStateToProps, {
-    fetchPartyList,
     fetchKqpList,
     fetchKqpListSuccess
 })(TemplateList);

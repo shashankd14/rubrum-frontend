@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { Button, Card, Col, Row, Select, Tag, Checkbox, Input } from "antd";
 import {
-  fetchPartyList,
   fetchKqpList,
   saveKqpLink,
   getKqpLinkById,
@@ -57,7 +56,6 @@ const CreateLinkTemplate = (props) => {
         props.getKqpLinkById(urlPaths[urlPaths.length - 1]);
       }
       props.fetchKqpList();
-      props.fetchPartyList();
       props.fetchEndUserTagsList();
       props.fetchMaterialList();
       // props.getThicknessListQM();
@@ -688,7 +686,6 @@ const mapStateToProps = (state) => ({
 });
 
 export default connect(mapStateToProps, {
-  fetchPartyList,
   fetchKqpList,
   saveKqpLink,
   getKqpLinkById,

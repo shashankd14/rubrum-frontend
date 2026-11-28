@@ -3,7 +3,7 @@ import { AutoComplete, Form, Input, Button, Icon, Row, Col, Card, Select } from 
 import { connect } from "react-redux";
 
 import { formItemLayout } from '../Create';
-import { setInwardDetails, getGradeByMaterialId, fetchPartyList, fetchClassificationList, fetchEndUserTagsList } from "../../../../appRedux/actions";
+import { setInwardDetails, getGradeByMaterialId, fetchClassificationList, fetchEndUserTagsList } from "../../../../appRedux/actions";
 import useCheckCoilNumberUnique from '../../../../util/hooks/useCheckCoilNumberUnique';
 import useStatusList from '../../../../util/hooks/useStatusList';
 
@@ -370,7 +370,6 @@ const CoilDetails = Form.create({
 
 export default connect(mapStateToProps, {
     setInwardDetails,
-    fetchPartyList,
     getGradeByMaterialId,
     fetchClassificationList,
     fetchEndUserTagsList

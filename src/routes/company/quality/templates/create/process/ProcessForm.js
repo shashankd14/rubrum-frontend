@@ -7,11 +7,11 @@ const ProcessForm = (props) => {
   const [processName, setProcesName] = useState(undefined);
 
   useEffect(() => {
-    if (props.match) {
+    if (props.match.url) {
       const urlPaths = props.match.url.split("/");
       setProcesName(urlPaths[urlPaths.length - 1]);
     }
-  }, [props.match]);
+  }, [props.match.url]);
 
   const onSaveSlitForm = (formData) => {
     props.location.state.updateFormData(formData);

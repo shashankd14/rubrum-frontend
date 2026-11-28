@@ -4,7 +4,6 @@ import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import { Col, Divider, Modal, Row, Select, Table } from "antd";
 import {
-  fetchPartyList,
   fetchTemplatesList,
   fetchTemplatesLinkList,
   getQualityTemplateById,
@@ -189,7 +188,6 @@ const ProcessingReport = (props) => {
   ];
 
   useEffect(() => {
-    props.fetchPartyList();
     props.fetchTemplatesList();
     setAction("");
   }, []);
@@ -525,7 +523,6 @@ const mapStateToProps = (state) => ({
 
 export default connect(mapStateToProps, {
   fetchTemplatesList,
-  fetchPartyList,
   fetchTemplatesLinkList,
   getQualityTemplateById,
   getQualityReportById,
